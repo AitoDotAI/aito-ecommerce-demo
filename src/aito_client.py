@@ -113,12 +113,214 @@ class AitoClient:
         except AitoError:
             return False
 
-    # ── Query endpoints (filled in as views land) -------------------
+    # ── Query endpoints ---------------------------------------------
     #
-    # Each new endpoint method must:
-    #   1. Be documented in `docs/aito-cheatsheet.md` first.
-    #   2. Have a sanity-check assertion in `./do aito-check` in the
-    #      same PR that adds it.
+    # Each method maps 1:1 to one Aito endpoint. Method signatures
+    # mirror the JSON-body keys so the call site reads like the body
+    # it sends. Every endpoint's body shape + response shape is
+    # documented in `docs/aito-cheatsheet.md`.
     #
-    # Add `predict`, `recommend`, `relate`, `search`, `evaluate`,
-    # `match` here as their first calling view appears.
+    # No method swallows errors or substitutes empty results on
+    # failure — they all raise `AitoError`. Silent fallbacks teach
+    # the wrong pattern to a reader of this code (CLAUDE.md prime
+    # directive #2).
+
+    def predict(
+        self,
+        table: str,
+        where: dict,
+        predict_field: str,
+        *,
+        limit: int = 10,
+    ) -> dict:
+        """Run a `_predict` query.
+
+        Example:
+            client.predict(
+                table="products",
+                where={"name": "Acana Large Breed Adult", "pet_type": "dog"},
+                predict_field="dietary",
+            )
+
+        Returns Aito's response with hits like
+        ``{"$p": 0.94, "feature": "large-breed", "$why": {...}}``.
+
+        Note: the predicted value comes back in ``feature``, not in
+        a key named after the field. Selecting ``$why`` includes the
+        per-pattern lift decomposition that powers ``WhyTooltip``.
+        """
+        body = {
+            "from": table,
+            "where": where,
+            "predict": predict_field,
+            "select": [
+                "$p",
+                "feature",
+                {
+                    "$why": {
+                        "highlight": {
+                            # Sentinel tags — frontend splits and renders
+                            # without dangerouslySetInnerHTML.
+                            "posPreTag": "«",
+                            "posPostTag": "»",
+                        }
+                    }
+                },
+            ],
+            "limit": limit,
+        }
+        return self._request("POST", "/_predict", json=body)
+
+    def recommend(
+        self,
+        table: str,
+        where: dict,
+        recommend_field: str,
+        goal: dict,
+        *,
+        select: list | None = None,
+        limit: int = 8,
+    ) -> dict:
+        """Run a `_recommend` query — goal-driven ranking.
+
+        For each candidate value of ``recommend_field``, Aito returns
+        the probability that ``goal`` is satisfied given ``where``.
+        Hits come back ranked by that probability.
+
+        When ``recommend_field`` is a link column, Aito's default
+        ``select`` already returns every column of the linked table
+        — so the typical caller leaves ``select=None`` and reads
+        ``hit["name"]``, ``hit["category"]``, etc. straight off.
+
+        Example (For You):
+            client.recommend(
+                table="order_lines",
+                where={"orders.customer_id": "CUST-00001"},
+                recommend_field="product_sku",
+                goal={"returned": False},
+                limit=8,
+            )
+        """
+        body: dict = {
+            "from": table,
+            "where": where,
+            "recommend": recommend_field,
+            "goal": goal,
+            "limit": limit,
+        }
+        if select is not None:
+            body["select"] = select
+        return self._request("POST", "/_recommend", json=body)
+
+    def relate(
+        self,
+        table: str,
+        where: dict,
+        relate_field: str | dict,
+        *,
+        limit: int = 20,
+    ) -> dict:
+        """Run a `_relate` query — discover statistical co-occurrence.
+
+        Example (Bought Together):
+            client.relate(
+                table="order_lines",
+                where={"category": "dental-treats"},
+                relate_field={
+                    "$context": {"orders.order_lines.{category}": True}
+                },
+            )
+
+        Hits include lift / fs (frequency stats) / ps (probability
+        stats) so the UI can quote the actual multiplicative effect.
+        """
+        body: dict = {
+            "from": table,
+            "where": where,
+            "relate": relate_field,
+            "limit": limit,
+        }
+        return self._request("POST", "/_relate", json=body)
+
+    def search(
+        self,
+        table: str,
+        *,
+        where: dict | None = None,
+        order_by: str | dict | list | None = None,
+        limit: int = 10,
+        offset: int = 0,
+        select: list | None = None,
+    ) -> dict:
+        """Run a `_search` query — retrieve matching rows.
+
+        Smart Search uses this with a ``where`` that mixes free-text
+        token matching on ``products.name`` and the customer's
+        segment context.
+
+        Example (Smart Search re-ranked for a large-breed dog owner):
+            client.search(
+                table="products",
+                where={
+                    "name": "food",
+                    "$context": {
+                        "order_lines.{customer_segment}": "dog_owner",
+                        "order_lines.{customer_pet_size}": "large",
+                    },
+                },
+                limit=10,
+            )
+        """
+        body: dict = {"from": table, "limit": limit, "offset": offset}
+        if where is not None:
+            body["where"] = where
+        if order_by is not None:
+            body["orderBy"] = order_by
+        if select is not None:
+            body["select"] = select
+        return self._request("POST", "/_search", json=body)
+
+    def match(
+        self,
+        table: str,
+        where: dict,
+        match_field: str,
+        *,
+        select: list | None = None,
+        limit: int = 10,
+    ) -> dict:
+        """Run a `_match` query — find rows where ``match_field`` is
+        statistically likely given ``where``.
+
+        Distinct from ``_search``: ``_match`` ranks by the *match
+        score* (Aito's belief that this row is what the query is
+        looking for), not by the raw token-overlap score that
+        ``_search`` uses. Use it when the query is "find similar"
+        rather than "find matching tokens".
+        """
+        body: dict = {
+            "from": table,
+            "where": where,
+            "match": match_field,
+            "limit": limit,
+        }
+        if select is not None:
+            body["select"] = select
+        return self._request("POST", "/_match", json=body)
+
+    def evaluate(self, table: str, where: dict, predict_field: str) -> dict:
+        """Run an `_evaluate` query — score how likely a field value is.
+
+        Used for the Evaluation view: predict each model on a
+        held-out test set, report accuracy + baseline accuracy +
+        per-band breakdowns. Returns
+        ``{"accuracy": float, "baseAccuracy": float, ...}``.
+        """
+        body = {
+            "evaluate": {
+                "from": table,
+                "where": where,
+                "predict": predict_field,
+            },
+        }
+        return self._request("POST", "/_evaluate", json=body)
