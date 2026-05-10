@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Predictive E-Commerce · Powered by Aito.ai</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* zooplus-inspired: dark forest green sidebar, white content, yellow CTA */
+  --primary: #1B4332;         /* dark forest green — sidebar bg */
+  --primary-light: #2D6A4F;   /* lighter green — sidebar hover */
+  --primary-dim: #143829;     /* deeper green — sidebar active */
+  --cta: #F5A623;             /* warm yellow-orange — CTA / accents */
+  --cta-light: #F7BA4D;
+  --cta-bg: #FEF6E4;
+  --cta-border: #FAE0A8;
+  --white: #FFFFFF;
+  --bg: #F5F7F5;              /* very light green-tinted page bg */
+  --border: #DDE5DD;
+  --border-light: #EBF0EB;
+  --text: #1A2E1A;            /* dark green-black */
+  --text-2: #3D5C3D;
+  --text-muted: #8AA08A;
+  --orange: var(--cta);
+  --orange-light: var(--cta-light);
+  --orange-bg: var(--cta-bg);
+  --orange-border: var(--cta-border);
+  --green: #2D6A4F;
+  --green-bg: #E8F5EE;
+  --green-border: #B8DFC9;
+  --accent: #52B788;          /* mid green accent */
+  --accent-bg: #EBF7EE;
+  --accent-border: #C3E8CB;
+  --red: #C0392B;
+  --red-bg: #FDEDEB;
+  --red-border: #F5C6C1;
+  --amber: #C47D15;
+  --amber-bg: #FEF3DC;
+  --amber-border: #F9E0A8;
+  --blue: #1B5E9E;
+  --blue-bg: #E3EEF8;
+  --blue-border: #B8D4EE;
+  --purple: #6B3FA0;
+  --purple-bg: #F0EAF8;
+  --sidebar-w: 228px;
+  --topbar-h: 56px;
+  --aito-w: 280px;
+  --font: 'Nunito', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+/* ── Topbar ── */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--topbar-h);
+  background: var(--white); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 20px 0 0; z-index: 200; gap: 0;
+}
+.topbar-brand {
+  width: var(--sidebar-w); display: flex; align-items: center; gap: 10px;
+  padding: 0 20px; border-right: none; height: 100%; flex-shrink: 0;
+  background: var(--primary);
+}
+.logo-mark {
+  width: 32px; height: 32px; background: var(--cta); border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.logo-mark span { color: white; font-weight: 800; font-size: 13px; letter-spacing: -0.5px; }
+.logo-mark span em { color: #c8a8f0; font-style: normal; }
+.store-name { font-weight: 800; font-size: 15px; color: white; }
+.store-sub { font-size: 11px; color: rgba(255,255,255,0.55); font-weight: 500; }
+.topbar-content {
+  flex: 1; display: flex; align-items: center; padding: 0 20px; gap: 12px;
+}
+.breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-muted); }
+.breadcrumb .current { color: var(--text); font-weight: 500; }
+.breadcrumb .sep { color: var(--border); }
+.topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+.btn {
+  padding: 6px 14px; border-radius: 6px; font-size: 13px; font-family: var(--font);
+  font-weight: 500; cursor: pointer; border: none; transition: all 0.15s;
+}
+.btn-ghost { background: transparent; color: var(--text-2); border: 1px solid var(--border); }
+.btn-ghost:hover { background: var(--bg); }
+.btn-primary { background: var(--cta); color: var(--primary); font-weight: 700; }
+.btn-primary:hover { background: var(--cta-light); }
+.avatar {
+  width: 30px; height: 30px; border-radius: 50%; background: var(--cta-bg);
+  border: 2px solid var(--cta-border); display: flex; align-items: center;
+  justify-content: center; font-size: 12px; font-weight: 600; color: var(--cta);
+}
+
+/* ── Toggle buttons ── */
+.toggle-btn {
+  width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--border);
+  background: var(--white); cursor: pointer; display: flex; align-items: center;
+  justify-content: center; font-size: 14px; color: var(--text-2); flex-shrink: 0;
+  transition: all 0.15s;
+}
+.toggle-btn:hover { background: var(--bg); color: var(--text); }
+.toggle-btn.active { background: var(--cta-bg); border-color: var(--cta-border); color: var(--cta); }
+
+/* ── Layout ── */
+.layout {
+  display: flex; padding-top: var(--topbar-h); min-height: 100vh;
+  transition: all 0.25s ease;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  width: var(--sidebar-w); flex-shrink: 0; position: fixed;
+  top: var(--topbar-h); left: 0; bottom: 0;
+  background: var(--primary); border-right: none;
+  overflow-y: auto; padding: 12px 0 24px;
+  transition: transform 0.25s ease, width 0.25s ease;
+}
+.sidebar.collapsed {
+  transform: translateX(calc(-1 * var(--sidebar-w)));
+}
+.nav-section { margin-bottom: 4px; }
+.nav-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.35); padding: 8px 16px 4px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 9px; padding: 8px 16px;
+  font-size: 13.5px; font-weight: 600; color: rgba(255,255,255,0.7);
+  cursor: pointer; border-radius: 0; transition: all 0.1s;
+  border-left: 3px solid transparent; text-decoration: none;
+}
+.nav-item:hover { background: var(--primary-light); color: white; }
+.nav-item.active {
+  background: var(--primary-light); color: white;
+  font-weight: 700; border-left-color: var(--cta);
+}
+.nav-item .icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto; background: rgba(245,166,35,0.2); color: var(--cta);
+  font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px;
+}
+.nav-badge.green { background: rgba(82,183,136,0.2); color: #52B788; }
+.nav-divider { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 8px 0; }
+.sidebar-footer { padding: 12px 16px; }
+.aito-badge {
+  display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+  background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
+  font-size: 11px; color: rgba(255,255,255,0.5);
+}
+.aito-dot { width: 7px; height: 7px; border-radius: 50%; background: #52B788; flex-shrink: 0; }
+.aito-badge strong { color: rgba(255,255,255,0.85); font-weight: 700; }
+
+/* ── Main content ── */
+.main {
+  margin-left: var(--sidebar-w);
+  margin-right: var(--aito-w);
+  flex: 1; min-width: 0; padding: 28px 28px 60px;
+  transition: margin 0.25s ease;
+}
+.main.sidebar-collapsed { margin-left: 0; }
+.main.aito-collapsed { margin-right: 0; }
+
+/* ── Aito Panel ── */
+.aito-panel {
+  width: var(--aito-w); flex-shrink: 0; position: fixed;
+  top: var(--topbar-h); right: 0; bottom: 0;
+  background: #1a1f2e; border-left: 1px solid #2a3040;
+  overflow-y: auto; padding: 16px;
+  transition: transform 0.25s ease;
+}
+.aito-panel.collapsed {
+  transform: translateX(var(--aito-w));
+}
+
+/* ── Mobile overlay ── */
+.pane-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  z-index: 150; backdrop-filter: blur(1px);
+}
+.pane-overlay.visible { display: block; }
+
+@media (max-width: 900px) {
+  .main { margin-left: 0 !important; margin-right: 0 !important; padding: 20px 16px 60px; }
+  .sidebar { transform: translateX(calc(-1 * var(--sidebar-w))); z-index: 160; }
+  .sidebar.mobile-open { transform: translateX(0); }
+  .aito-panel { transform: translateX(var(--aito-w)); z-index: 160; }
+  .aito-panel.mobile-open { transform: translateX(0); }
+  .topbar-brand { width: auto; border-right: none; padding: 0 12px; }
+  .store-sub { display: none; }
+  .btn-ghost { display: none; }
+}
+/* ── Aito Panel ── */
+.aito-panel {
+  width: var(--aito-w); flex-shrink: 0; position: fixed;
+  top: var(--topbar-h); right: 0; bottom: 0;
+  background: #0c0f41;
+  border-left: 1px solid rgba(93, 80, 255, 0.2);
+  overflow-y: auto; padding: 0;
+  transition: transform 0.25s ease;
+  display: flex; flex-direction: column;
+}
+.aito-panel.collapsed { transform: translateX(var(--aito-w)); }
+
+.aito-panel-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(93, 80, 255, 0.2);
+  background: rgba(12, 15, 65, 0.92);
+  flex-shrink: 0;
+}
+.aito-logo-text {
+  font-size: 18px; font-weight: 800; color: white;
+  font-family: var(--mono); letter-spacing: -0.5px; line-height: 1;
+}
+.aito-logo-text em { color: #12B5AD; font-style: normal; }
+.aito-logo-text .dots { color: rgba(255,255,255,0.4); }
+.aito-panel-tagline {
+  font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.55);
+  letter-spacing: 0.3px; white-space: nowrap;
+}
+
+.aito-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(93, 80, 255, 0.2);
+  background: linear-gradient(135deg, rgba(55,51,107,0.92) 0%, rgba(34,35,38,0.92) 100%);
+  flex-shrink: 0;
+}
+.aito-stat {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 6px 0; background: none; border: none; border-radius: 0;
+}
+.aito-stat-val {
+  font-size: 12px; font-weight: 700; color: #12B5AD;
+  line-height: 1; font-family: var(--mono);
+}
+.aito-stat-label {
+  font-size: 9px; color: rgba(255,255,255,0.55);
+  text-transform: uppercase; letter-spacing: 0.3px; margin-top: 3px; font-weight: 400;
+}
+
+.aito-panel-content {
+  flex: 1; overflow-y: auto; padding: 16px;
+  background: rgba(12, 15, 65, 0.88);
+}
+.aito-panel-title {
+  font-size: 15px; font-weight: 700; color: #ffffff;
+  margin: 0 0 10px 0;
+}
+.aito-panel-sub {
+  font-size: 13px; color: #f0f0f0; line-height: 1.6; margin: 0 0 14px 0;
+}
+
+.aito-section-title {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.5px; color: #9B69FF; margin: 0 0 8px 0;
+}
+.aito-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
+.aito-tag {
+  display: inline-block; padding: 2px 8px; font-size: 10px; font-weight: 600;
+  font-family: var(--mono); color: #9B69FF;
+  background: rgba(155,105,255,0.15); border: 1px solid rgba(155,105,255,0.3);
+  border-radius: 3px;
+}
+.aito-tag.active { color: #12B5AD; background: rgba(18,181,173,0.15); border-color: rgba(18,181,173,0.3); }
+
+.aito-desc { font-size: 12px; color: #f0f0f0; line-height: 1.6; margin-bottom: 14px; }
+
+.aito-query {
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(93,80,255,0.2);
+  border-radius: 6px; padding: 10px; margin-bottom: 14px; overflow-x: auto;
+}
+.aito-query pre {
+  font-family: 'Source Code Pro', var(--mono); font-size: 11px; line-height: 1.5;
+  color: #f0f0f0; white-space: pre;
+}
+.aito-query .k { color: #12B5AD; }
+.aito-query .s { color: #98c379; }
+.aito-query .n { color: #9B69FF; }
+.aito-query .p { color: rgba(255,255,255,0.5); }
+
+.aito-link {
+  display: flex; align-items: center; gap: 6px;
+  padding: 3px 0; font-size: 12px; color: #f0f0f0;
+  text-decoration: none; transition: color 0.15s;
+}
+.aito-link:hover { color: #12B5AD; }
+.aito-link-icon { color: rgba(255,255,255,0.45); font-size: 11px; }
+
+.aito-panel-cta {
+  padding: 14px 16px;
+  border-top: 1px solid rgba(93, 80, 255, 0.2);
+  background: rgba(12, 15, 65, 0.92);
+  flex-shrink: 0;
+}
+.aito-cta {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; padding: 10px 16px; border-radius: 6px; font-size: 13px;
+  font-family: var(--font); font-weight: 600; cursor: pointer; border: none;
+  background: #12B5AD; color: white; text-decoration: none;
+  transition: all 0.2s ease;
+}
+.aito-cta:hover {
+  background: #0fa39b; transform: translateY(-1px);
+  box-shadow: 0 2px 12px rgba(18,181,173,0.4);
+}
+
+/* ── Page header ── */
+.page-header { margin-bottom: 24px; }
+.page-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.page-desc { font-size: 14px; color: var(--text-2); line-height: 1.5; }
+
+/* ── Cards ── */
+.card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px;
+}
+.card-sm { padding: 14px 16px; }
+.card-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.card-sub { font-size: 12px; color: var(--text-muted); }
+
+/* ── KPI grid ── */
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+.kpi-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: 14px;
+  padding: 16px 18px;
+}
+.kpi-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+.kpi-val { font-size: 24px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+.kpi-change {
+  font-size: 12px; margin-top: 4px; font-weight: 500;
+  display: flex; align-items: center; gap: 3px;
+}
+.kpi-change.up { color: var(--green); }
+.kpi-change.down { color: var(--red); }
+.kpi-accent { border-top: 3px solid var(--cta); }
+.kpi-accent-green { border-top: 3px solid var(--green); }
+.kpi-accent-blue { border-top: 3px solid var(--blue); }
+.kpi-accent-purple { border-top: 3px solid var(--purple); }
+
+/* ── Two-col layout ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px; }
+
+/* ── Table ── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th {
+  padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 600;
+  color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--border); white-space: nowrap;
+}
+.data-table td {
+  padding: 10px 12px; border-bottom: 1px solid var(--border-light);
+  vertical-align: middle;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--bg); }
+
+/* ── Pill / badge ── */
+.pill {
+  display: inline-flex; align-items: center; padding: 2px 8px;
+  border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+.pill-orange { background: var(--cta-bg); color: var(--cta); border: 1px solid var(--cta-border); }
+.pill-green { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+.pill-red { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+.pill-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+.pill-blue { background: var(--blue-bg); color: var(--blue); border: 1px solid var(--blue-border); }
+.pill-purple { background: var(--purple-bg); color: var(--purple); }
+.pill-grey { background: var(--bg); color: var(--text-2); border: 1px solid var(--border); }
+
+/* ── Lift bar ── */
+.lift-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--border-light); }
+.lift-row:last-child { border-bottom: none; }
+.lift-label { font-size: 13px; color: var(--text); min-width: 140px; }
+.lift-bar-wrap { flex: 1; height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+.lift-bar { height: 100%; border-radius: 3px; background: var(--cta); }
+.lift-bar.neutral { background: var(--border); }
+.lift-bar.positive { background: var(--green); }
+.lift-val { font-size: 12px; font-family: var(--mono); font-weight: 600; min-width: 36px; text-align: right; }
+.lift-val.high { color: var(--cta); }
+.lift-val.pos { color: var(--green); }
+.lift-val.neutral { color: var(--text-muted); }
+
+/* ── Rec cards ── */
+.rec-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.rec-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden; transition: box-shadow 0.15s; cursor: pointer;
+}
+.rec-card:hover { box-shadow: 0 4px 16px rgba(91,45,142,0.12); border-color: var(--cta-border); }
+.rec-card-img {
+  height: 88px; background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; border-bottom: 1px solid var(--border-light);
+}
+.rec-card-body { padding: 10px 10px 8px; }
+.rec-card-name { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; line-height: 1.3; }
+.rec-card-brand { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+.rec-card-price { font-size: 13px; font-weight: 700; color: var(--text); }
+.rec-card-score {
+  font-size: 10px; font-family: var(--mono); color: var(--cta);
+  background: var(--cta-bg); padding: 2px 5px; border-radius: 3px;
+  margin-left: 4px;
+}
+
+/* ── Search bar ── */
+.search-wrap {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+}
+.search-input-wrap {
+  flex: 1; position: relative;
+}
+.search-input {
+  width: 100%; padding: 9px 12px 9px 36px; border: 1px solid var(--border);
+  border-radius: 8px; font-size: 14px; font-family: var(--font); color: var(--text);
+  background: var(--white); outline: none;
+}
+.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px; }
+
+/* ── Tip box ── */
+.tip-box {
+  background: var(--accent-bg); border: 1px solid var(--accent-border);
+  border-radius: 10px; padding: 10px 14px; font-size: 12.5px;
+  color: var(--text-2); line-height: 1.5; margin-bottom: 16px;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.tip-icon { color: var(--accent); flex-shrink: 0; margin-top: 1px; }
+
+/* ── Customer row ── */
+.customer-chip {
+  display: flex; align-items: center; gap: 8px; padding: 6px 10px;
+  border: 1px solid var(--border); border-radius: 20px; background: var(--white);
+  font-size: 13px; cursor: pointer; transition: all 0.1s;
+}
+.customer-chip:hover, .customer-chip.selected {
+  border-color: var(--cta); background: var(--cta-bg); color: var(--cta);
+}
+.customer-chip .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── View sections ── */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ── Horizontal bar chart ── */
+.hbar-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border-light); }
+.hbar-row:last-child { border-bottom: none; }
+.hbar-label { font-size: 12.5px; color: var(--text); width: 150px; flex-shrink: 0; }
+.hbar-wrap { flex: 1; height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+.hbar { height: 100%; border-radius: 4px; }
+.hbar-val { font-size: 12px; font-family: var(--mono); font-weight: 600; width: 40px; text-align: right; flex-shrink: 0; }
+
+/* ── Eval table ── */
+.eval-row-pass td { background: rgba(22,163,74,0.04); }
+.eval-row-fail td { background: rgba(220,38,38,0.04); }
+.eval-mark { font-weight: 700; font-size: 14px; }
+.eval-mark.pass { color: var(--green); }
+.eval-mark.fail { color: var(--red); }
+
+/* ── Product filling ── */
+.fill-field {
+  display: flex; align-items: flex-start; gap: 12px; padding: 12px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.fill-field:last-child { border-bottom: none; }
+.fill-field-label { font-size: 12px; font-weight: 600; color: var(--text-muted); width: 110px; flex-shrink: 0; padding-top: 2px; }
+.fill-field-val { font-size: 13px; color: var(--text); flex: 1; }
+.fill-conf { font-size: 11px; font-family: var(--mono); color: var(--green); background: var(--green-bg); padding: 1px 6px; border-radius: 4px; margin-left: 8px; }
+
+/* ── Animate ── */
+@keyframes fadeIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
+.view.active { animation: fadeIn 0.2s ease; }
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <button class="toggle-btn" id="sidebar-toggle" onclick="toggleSidebar()" title="Toggle navigation" style="background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.2);color:white;">☰</button>
+    <div class="logo-mark" style="background:var(--cta);border-radius:10px;">
+      <span style="font-size:15px;">🐾</span>
+    </div>
+    <div>
+      <div class="store-name">Predictive E-Commerce</div>
+      <div class="store-sub">Powered by aito.ai</div>
+    </div>
+  </div>
+  <div class="topbar-content">
+    <div class="breadcrumb">
+      <span>E-Commerce</span>
+      <span class="sep">›</span>
+      <span class="current" id="breadcrumb-current">Dashboard</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost">Export</button>
+      <button class="btn btn-primary">Live Demo</button>
+      <button class="toggle-btn" id="aito-toggle" onclick="toggleAito()" title="Toggle Aito panel" style="background:#0c0f41;border-color:rgba(93,80,255,0.3);color:#12B5AD;">⚡</button>
+      <div class="avatar">MV</div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile overlay -->
+<div class="pane-overlay" id="pane-overlay" onclick="closeAll()"></div>
+
+<!-- Layout -->
+<div class="layout">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="nav-section">
+      <div class="nav-section-label">Overview</div>
+      <div class="nav-item active" onclick="showView('dashboard', this, 'Dashboard')">
+        <span class="icon">📊</span> Dashboard
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">Assist Customers</div>
+      <div class="nav-item" onclick="showView('smart-search', this, 'Smart Search')">
+        <span class="icon">🔍</span> Smart Search
+      </div>
+      <div class="nav-item" onclick="showView('recommendations', this, 'Recommendations')">
+        <span class="icon">✨</span> For You
+        <span class="nav-badge">Live</span>
+      </div>
+      <div class="nav-item" onclick="showView('bought-together', this, 'Bought Together')">
+        <span class="icon">🛒</span> Bought Together
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">Analyze</div>
+      <div class="nav-item" onclick="showView('purchase-analytics', this, 'Purchase Analytics')">
+        <span class="icon">📈</span> Purchase Analytics
+      </div>
+      <div class="nav-item" onclick="showView('pattern-explorer', this, 'Pattern Explorer')">
+        <span class="icon">🔗</span> Pattern Explorer
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">Automate</div>
+      <div class="nav-item" onclick="showView('product-filling', this, 'Product Filling')">
+        <span class="icon">⚡</span> Product Filling
+        <span class="nav-badge green">98%</span>
+      </div>
+      <div class="nav-item" onclick="showView('evaluation', this, 'Evaluation')">
+        <span class="icon">🧪</span> Evaluation
+      </div>
+    </div>
+    <hr class="nav-divider" style="margin: 12px 0;">
+    <div class="sidebar-footer">
+      <div class="aito-badge">
+        <div class="aito-dot"></div>
+        <div><strong>aito.ai</strong> · Predictive DB<br><span style="font-size:10px;">14,820 orders · 16ms avg</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main">
+
+    <!-- ── DASHBOARD ── -->
+    <div class="view active" id="view-dashboard">
+      <div class="page-header">
+        <div class="page-title">Store Intelligence Overview</div>
+        <div class="page-desc">Predictive insights from your purchase data — updated on every query.</div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card kpi-accent">
+          <div class="kpi-label">Products</div>
+          <div class="kpi-val">1,240</div>
+          <div class="kpi-change up">↑ 34 this month</div>
+        </div>
+        <div class="kpi-card kpi-accent-green">
+          <div class="kpi-label">Orders (12mo)</div>
+          <div class="kpi-val">14,820</div>
+          <div class="kpi-change up">↑ 18% YoY</div>
+        </div>
+        <div class="kpi-card kpi-accent-blue">
+          <div class="kpi-label">Customers</div>
+          <div class="kpi-val">3,412</div>
+          <div class="kpi-change up">↑ 11% YoY</div>
+        </div>
+        <div class="kpi-card kpi-accent-purple">
+          <div class="kpi-label">Avg. Basket</div>
+          <div class="kpi-val">€68</div>
+          <div class="kpi-change up">↑ €5 vs prev</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:14px;">Top Purchase Patterns <span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:6px;">_relate · lift scores</span></div>
+          <div class="lift-row">
+            <div class="lift-label">Dog food → Treats</div>
+            <div class="lift-bar-wrap"><div class="lift-bar" style="width:94%;"></div></div>
+            <div class="lift-val high">3.1×</div>
+          </div>
+          <div class="lift-row">
+            <div class="lift-label">Puppy food → Training pads</div>
+            <div class="lift-bar-wrap"><div class="lift-bar" style="width:88%;"></div></div>
+            <div class="lift-val high">2.8×</div>
+          </div>
+          <div class="lift-row">
+            <div class="lift-label">Cat litter → Litter scoop</div>
+            <div class="lift-bar-wrap"><div class="lift-bar" style="width:80%;"></div></div>
+            <div class="lift-val high">2.4×</div>
+          </div>
+          <div class="lift-row">
+            <div class="lift-label">Hamster cage → Bedding</div>
+            <div class="lift-bar-wrap"><div class="lift-bar" style="width:72%;"></div></div>
+            <div class="lift-val high">2.1×</div>
+          </div>
+          <div class="lift-row">
+            <div class="lift-label">Cat food → Dental treats</div>
+            <div class="lift-bar-wrap"><div class="lift-bar" style="width:60%;"></div></div>
+            <div class="lift-val high">1.7×</div>
+          </div>
+          <div class="lift-row">
+            <div class="lift-label">Leash → Collar</div>
+            <div class="lift-bar-wrap"><div class="lift-bar" style="width:50%;"></div></div>
+            <div class="lift-val high">1.5×</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:14px;">Customer Segments <span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:6px;">by pet type</span></div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:8px;">
+              <span style="font-size:20px;">🐕</span>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;">Dog owners</div>
+                <div style="font-size:11px;color:var(--text-muted);">48% of buyers · avg €74/order · monthly reorder</div>
+              </div>
+              <span class="pill pill-orange">Highest LTV</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:8px;">
+              <span style="font-size:20px;">🐈</span>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;">Cat owners</div>
+                <div style="font-size:11px;color:var(--text-muted);">36% of buyers · avg €61/order · bi-weekly litter</div>
+              </div>
+              <span class="pill pill-blue">High frequency</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:8px;">
+              <span style="font-size:20px;">🐹</span>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;">Small animals</div>
+                <div style="font-size:11px;color:var(--text-muted);">10% of buyers · avg €38/order · weekly bedding</div>
+              </div>
+              <span class="pill pill-grey">Growing</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:8px;">
+              <span style="font-size:20px;">🐟</span>
+              <div style="flex:1;">
+                <div style="font-size:13px;font-weight:600;">Aquarium / exotic</div>
+                <div style="font-size:11px;color:var(--text-muted);">6% of buyers · avg €112/order · high-value niche</div>
+              </div>
+              <span class="pill pill-purple">High AOV</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <span class="tip-icon">💡</span>
+        <span><strong>Insight:</strong> Dog owners reorder food on a 28-day cycle with 74% consistency — an automated reorder reminder at day 24 would capture this segment. New puppy buyers have 3.1× higher accessory spend in the first 60 days.</span>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="margin-bottom:14px;">Recent Orders <span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:6px;">with predicted next purchase</span></div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Order</th><th>Customer</th><th>Products</th><th>Value</th><th>Predicted Next</th><th>Confidence</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span style="font-family:var(--mono);font-size:12px;">#14820</span></td>
+              <td>Mikko L.</td>
+              <td>Royal Canin Medium Adult 15kg</td>
+              <td>€62</td>
+              <td><span class="pill pill-orange">Royal Canin reorder</span></td>
+              <td><span style="font-family:var(--mono);font-size:12px;color:var(--green);">0.89</span></td>
+            </tr>
+            <tr>
+              <td><span style="font-family:var(--mono);font-size:12px;">#14819</span></td>
+              <td>Sari K.</td>
+              <td>Purina One Kitten · Litter 10L</td>
+              <td>€41</td>
+              <td><span class="pill pill-orange">Litter refill</span></td>
+              <td><span style="font-family:var(--mono);font-size:12px;color:var(--green);">0.91</span></td>
+            </tr>
+            <tr>
+              <td><span style="font-family:var(--mono);font-size:12px;">#14818</span></td>
+              <td>Antti R.</td>
+              <td>Puppy Starter Kit · Training pads</td>
+              <td>€94</td>
+              <td><span class="pill pill-orange">Puppy food</span></td>
+              <td><span style="font-family:var(--mono);font-size:12px;color:var(--green);">0.94</span></td>
+            </tr>
+            <tr>
+              <td><span style="font-family:var(--mono);font-size:12px;">#14817</span></td>
+              <td>Leena H.</td>
+              <td>Savic Hamster Cage · Bedding</td>
+              <td>€58</td>
+              <td><span class="pill pill-orange">Bedding refill</span></td>
+              <td><span style="font-family:var(--mono);font-size:12px;color:var(--amber);">0.82</span></td>
+            </tr>
+            <tr>
+              <td><span style="font-family:var(--mono);font-size:12px;">#14816</span></td>
+              <td>Jukka M.</td>
+              <td>Hill's Science Plan Large Dog</td>
+              <td>€71</td>
+              <td><span class="pill pill-orange">Joint supplement</span></td>
+              <td><span style="font-family:var(--mono);font-size:12px;color:var(--amber);">0.67</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── SMART SEARCH ── -->
+    <div class="view" id="view-smart-search">
+      <div class="page-header">
+        <div class="page-title">Smart Search</div>
+        <div class="page-desc">Ranks by <strong>text similarity × purchase probability</strong> — not just keyword match. A dog owner searching "food" sees large-breed adult kibble first, not cat food or accessories.</div>
+      </div>
+
+      <div class="tip-box">
+        <span class="tip-icon">🔍</span>
+        <span>Traditional search shows every product matching "food" — cat, dog, fish, rabbit. Predictive search knows this customer has a Labrador and surfaces large-breed adult formulas first. The ranking adapts per customer profile.</span>
+      </div>
+
+      <div class="search-wrap">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" value="food" readonly>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="font-size:12px;color:var(--text-muted);">Context:</span>
+          <span class="pill pill-orange">🐕 Dog owner · Large breed</span>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:4px;">Standard Search <span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:4px;">text relevance only</span></div>
+          <div class="card-sub" style="margin-bottom:14px;">All products containing "food"</div>
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Product</th><th>Price</th></tr></thead>
+            <tbody>
+              <tr><td style="color:var(--text-muted);">1</td><td>Cat Food Whiskas Pouch 12×85g</td><td>€9.90</td></tr>
+              <tr><td style="color:var(--text-muted);">2</td><td>Dog Food Bowl Stainless Steel</td><td>€12.50</td></tr>
+              <tr><td style="color:var(--text-muted);">3</td><td>Rabbit Food Pellets 2kg</td><td>€7.90</td></tr>
+              <tr><td style="color:var(--text-muted);">4</td><td>Royal Canin Medium Adult 4kg</td><td>€28.90</td></tr>
+              <tr><td style="color:var(--text-muted);">5</td><td>Hill's Science Plan Large Adult</td><td>€64.90</td></tr>
+              <tr><td style="color:var(--text-muted);">6</td><td>Purina Pro Plan Large Breed 12kg</td><td>€54.90</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card" style="border-color:var(--cta-border);">
+          <div class="card-title" style="margin-bottom:4px;color:var(--cta);">Predictive Search <span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:4px;">text × purchase probability</span></div>
+          <div class="card-sub" style="margin-bottom:14px;">Ranked for this large-breed dog owner</div>
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Product</th><th>Price</th><th>Score</th></tr></thead>
+            <tbody>
+              <tr style="background:var(--cta-bg);">
+                <td style="color:var(--cta);font-weight:700;">1</td>
+                <td><strong>Royal Canin Large Adult 15kg</strong></td>
+                <td>€62.90</td>
+                <td><span style="font-family:var(--mono);font-size:11px;color:var(--cta);">0.96</span></td>
+              </tr>
+              <tr style="background:var(--cta-bg);">
+                <td style="color:var(--cta);font-weight:700;">2</td>
+                <td><strong>Hill's Science Plan Large Adult</strong></td>
+                <td>€64.90</td>
+                <td><span style="font-family:var(--mono);font-size:11px;color:var(--cta);">0.91</span></td>
+              </tr>
+              <tr style="background:var(--cta-bg);">
+                <td style="color:var(--cta);font-weight:700;">3</td>
+                <td><strong>Purina Pro Plan Large Breed 12kg</strong></td>
+                <td>€54.90</td>
+                <td><span style="font-family:var(--mono);font-size:11px;color:var(--cta);">0.87</span></td>
+              </tr>
+              <tr>
+                <td style="color:var(--text-muted);">4</td>
+                <td>Royal Canin Medium Adult 4kg</td>
+                <td>€28.90</td>
+                <td><span style="font-family:var(--mono);font-size:11px;color:var(--text-muted);">0.44</span></td>
+              </tr>
+              <tr>
+                <td style="color:var(--text-muted);">5</td>
+                <td>Dog Food Bowl Stainless Steel</td>
+                <td>€12.50</td>
+                <td><span style="font-family:var(--mono);font-size:11px;color:var(--text-muted);">0.21</span></td>
+              </tr>
+              <tr>
+                <td style="color:var(--text-muted);">6</td>
+                <td>Cat Food Whiskas Pouch 12×85g</td>
+                <td>€9.90</td>
+                <td><span style="font-family:var(--mono);font-size:11px;color:var(--text-muted);">0.03</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Cat food drops from rank 1 to rank 6 — because this customer has never bought cat products. Zero configuration required.</div>
+    </div>
+
+    <!-- ── RECOMMENDATIONS ── -->
+    <div class="view" id="view-recommendations">
+      <div class="page-header">
+        <div class="page-title">Recommended For You</div>
+        <div class="page-desc">Dog owners see dog products. Cat owners see cat products. Puppy owners see puppy-stage products. Each customer's purchase history drives entirely different recommendations from the same model.</div>
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+        <span style="font-size:13px;color:var(--text-2);align-self:center;">Viewing as:</span>
+        <div class="customer-chip selected">
+          <div class="dot" style="background:var(--cta);"></div> Mikko 🐕 (Labrador · adult)
+        </div>
+        <div class="customer-chip">
+          <div class="dot" style="background:var(--blue);"></div> Sari 🐈 (Cat owner · 2 cats)
+        </div>
+        <div class="customer-chip">
+          <div class="dot" style="background:var(--purple);"></div> Antti 🐕 (New puppy owner)
+        </div>
+        <div class="customer-chip">
+          <div class="dot" style="background:var(--green);"></div> Leena 🐹 (Small animals)
+        </div>
+      </div>
+
+      <div class="tip-box">
+        <span class="tip-icon">✨</span>
+        <span>Mikko bought Royal Canin Large Adult 15kg 28 days ago — his usual cycle. Aito predicts he's due for a reorder and is also likely to buy joint supplement chews, based on what large-breed dog owners at this purchase stage typically add.</span>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div class="card-title">Recommended for Mikko (Labrador owner)</div>
+          <span style="font-size:11px;color:var(--text-muted);font-family:var(--mono);">_recommend · 16ms</span>
+        </div>
+        <div class="rec-grid">
+          <div class="rec-card">
+            <div class="rec-card-img">🍖</div>
+            <div class="rec-card-body">
+              <div class="rec-card-name">Royal Canin Large Adult 15kg</div>
+              <div class="rec-card-brand">Royal Canin</div>
+              <div class="rec-card-price">€62.90 <span class="rec-card-score">0.92</span></div>
+            </div>
+          </div>
+          <div class="rec-card">
+            <div class="rec-card-img">💊</div>
+            <div class="rec-card-body">
+              <div class="rec-card-name">Beaphar Joint Chews Large</div>
+              <div class="rec-card-brand">Beaphar</div>
+              <div class="rec-card-price">€18.90 <span class="rec-card-score">0.78</span></div>
+            </div>
+          </div>
+          <div class="rec-card">
+            <div class="rec-card-img">🦴</div>
+            <div class="rec-card-body">
+              <div class="rec-card-name">Zara Natural Beef Treats 200g</div>
+              <div class="rec-card-brand">Zara Natural</div>
+              <div class="rec-card-price">€8.90 <span class="rec-card-score">0.74</span></div>
+            </div>
+          </div>
+          <div class="rec-card">
+            <div class="rec-card-img">🧴</div>
+            <div class="rec-card-body">
+              <div class="rec-card-name">Frontline Spot-On L (4 pipettes)</div>
+              <div class="rec-card-brand">Frontline</div>
+              <div class="rec-card-price">€24.90 <span class="rec-card-score">0.69</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card card-sm">
+          <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:10px;">REORDER REMINDERS · Due this week</div>
+          <div class="lift-row">
+            <div class="lift-label" style="min-width:160px;">Royal Canin Large 15kg</div>
+            <div class="lift-bar-wrap"><div class="lift-bar positive" style="width:95%;"></div></div>
+            <div class="lift-val pos">day 28</div>
+          </div>
+          <div class="lift-row">
+            <div class="lift-label" style="min-width:160px;">Sari · Litter 10L</div>
+            <div class="lift-bar-wrap"><div class="lift-bar positive" style="width:80%;"></div></div>
+            <div class="lift-val pos">day 14</div>
+          </div>
+          <div class="lift-row">
+            <div class="lift-label" style="min-width:160px;">Leena · Hamster bedding</div>
+            <div class="lift-bar-wrap"><div class="lift-bar positive" style="width:68%;"></div></div>
+            <div class="lift-val pos">day 7</div>
+          </div>
+        </div>
+        <div class="card card-sm">
+          <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:10px;">COMPLETE YOUR SETUP</div>
+          <div class="lift-row">
+            <div class="lift-label" style="min-width:160px;">Tick & flea collar</div>
+            <div class="lift-bar-wrap"><div class="lift-bar" style="width:86%;"></div></div>
+            <div class="lift-val high">0.86</div>
+          </div>
+          <div class="lift-row">
+            <div class="lift-label" style="min-width:160px;">Stainless food bowl</div>
+            <div class="lift-bar-wrap"><div class="lift-bar" style="width:72%;"></div></div>
+            <div class="lift-val high">0.72</div>
+          </div>
+          <div class="lift-row">
+            <div class="lift-label" style="min-width:160px;">Dog toothbrush kit</div>
+            <div class="lift-bar-wrap"><div class="lift-bar" style="width:58%;"></div></div>
+            <div class="lift-val high">0.58</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── BOUGHT TOGETHER ── -->
+    <div class="view" id="view-bought-together">
+      <div class="page-header">
+        <div class="page-title">Frequently Bought Together</div>
+        <div class="page-desc">Co-purchase lift scores from real order history. When someone buys a new puppy starter kit, what do they almost always buy next?</div>
+      </div>
+
+      <div class="two-col" style="align-items:start;">
+        <div>
+          <div class="card" style="margin-bottom:16px;">
+            <div style="display:flex;align-items:center;gap:14px;padding-bottom:14px;border-bottom:1px solid var(--border-light);margin-bottom:14px;">
+              <div style="width:60px;height:60px;background:var(--bg);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">🐾</div>
+              <div>
+                <div style="font-size:15px;font-weight:700;">Puppy Starter Kit</div>
+                <div style="font-size:12px;color:var(--text-muted);">PetNord · New puppy bundle · €49.90</div>
+                <span class="pill pill-orange" style="margin-top:4px;">Selected Product</span>
+              </div>
+            </div>
+            <div class="card-title" style="margin-bottom:12px;">Customers Also Bought <span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:4px;">_relate · from 14,820 orders</span></div>
+            <div class="rec-grid" style="grid-template-columns:1fr 1fr;">
+              <div class="rec-card">
+                <div class="rec-card-img">🍖</div>
+                <div class="rec-card-body">
+                  <div class="rec-card-name">Royal Canin Puppy Medium 4kg</div>
+                  <div class="rec-card-brand">Royal Canin</div>
+                  <div class="rec-card-price">€32.90 <span class="rec-card-score">3.4×</span></div>
+                </div>
+              </div>
+              <div class="rec-card">
+                <div class="rec-card-img">📰</div>
+                <div class="rec-card-body">
+                  <div class="rec-card-name">Training Pads 50-pack</div>
+                  <div class="rec-card-brand">PetNord</div>
+                  <div class="rec-card-price">€12.90 <span class="rec-card-score">2.9×</span></div>
+                </div>
+              </div>
+              <div class="rec-card">
+                <div class="rec-card-img">🎾</div>
+                <div class="rec-card-body">
+                  <div class="rec-card-name">Kong Classic Puppy S</div>
+                  <div class="rec-card-brand">Kong</div>
+                  <div class="rec-card-price">€9.90 <span class="rec-card-score">2.3×</span></div>
+                </div>
+              </div>
+              <div class="rec-card">
+                <div class="rec-card-img">🧴</div>
+                <div class="rec-card-body">
+                  <div class="rec-card-name">Frontline Spot-On S Puppy</div>
+                  <div class="rec-card-brand">Frontline</div>
+                  <div class="rec-card-price">€19.90 <span class="rec-card-score">2.1×</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:12px;">Statistical Evidence <span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:4px;">why these were recommended</span></div>
+          <table class="data-table" style="font-size:12px;">
+            <thead><tr><th>Product</th><th>Lift</th><th>Orders</th><th>Co-buys</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>RC Puppy Medium 4kg</td>
+                <td><span style="color:var(--cta);font-weight:700;font-family:var(--mono);">3.4×</span></td>
+                <td style="font-family:var(--mono);">2,841</td>
+                <td style="font-family:var(--mono);">812</td>
+              </tr>
+              <tr>
+                <td>Training Pads 50-pack</td>
+                <td><span style="color:var(--cta);font-weight:700;font-family:var(--mono);">2.9×</span></td>
+                <td style="font-family:var(--mono);">3,104</td>
+                <td style="font-family:var(--mono);">741</td>
+              </tr>
+              <tr>
+                <td>Kong Classic Puppy S</td>
+                <td><span style="color:var(--cta);font-weight:700;font-family:var(--mono);">2.3×</span></td>
+                <td style="font-family:var(--mono);">1,920</td>
+                <td style="font-family:var(--mono);">498</td>
+              </tr>
+              <tr>
+                <td>Frontline Puppy S</td>
+                <td><span style="color:var(--cta);font-weight:700;font-family:var(--mono);">2.1×</span></td>
+                <td style="font-family:var(--mono);">1,644</td>
+                <td style="font-family:var(--mono);">412</td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="margin-top:12px;padding:10px;background:var(--bg);border-radius:6px;font-size:12px;color:var(--text-2);">
+            <strong>Lift 3.4×</strong> means a puppy kit buyer is 3.4× more likely to also buy RC Puppy food than a random customer. Strong enough to show in cart automatically.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PURCHASE ANALYTICS ── -->
+    <div class="view" id="view-purchase-analytics">
+      <div class="page-header">
+        <div class="page-title">Purchase Analytics</div>
+        <div class="page-desc">Discover what drives purchases. Reorder cycles, segment behavior, channel performance — from your own data, not industry averages.</div>
+      </div>
+
+      <div class="three-col">
+        <div class="kpi-card" style="border-top:3px solid var(--cta);">
+          <div class="kpi-label">Dog owner reorder cycle</div>
+          <div class="kpi-val">28d</div>
+          <div class="kpi-change" style="color:var(--text-muted);">74% consistency</div>
+        </div>
+        <div class="kpi-card" style="border-top:3px solid var(--blue);">
+          <div class="kpi-label">Puppy first-60d spend</div>
+          <div class="kpi-val">3.1×</div>
+          <div class="kpi-change" style="color:var(--text-muted);">vs adult dog owner</div>
+        </div>
+        <div class="kpi-card" style="border-top:3px solid var(--green);">
+          <div class="kpi-label">Cat litter reorder</div>
+          <div class="kpi-val">14d</div>
+          <div class="kpi-change" style="color:var(--text-muted);">most predictable segment</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:14px;">Purchase Context Lift <span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:4px;">what drives conversion?</span></div>
+          <div class="hbar-row">
+            <div class="hbar-label">Email reorder reminder</div>
+            <div class="hbar-wrap"><div class="hbar" style="width:95%;background:var(--cta);"></div></div>
+            <div class="hbar-val" style="color:var(--cta);">4.2×</div>
+          </div>
+          <div class="hbar-row">
+            <div class="hbar-label">Recommendation widget</div>
+            <div class="hbar-wrap"><div class="hbar" style="width:70%;background:var(--blue);"></div></div>
+            <div class="hbar-val" style="color:var(--blue);">2.6×</div>
+          </div>
+          <div class="hbar-row">
+            <div class="hbar-label">Search result</div>
+            <div class="hbar-wrap"><div class="hbar" style="width:58%;background:var(--purple);"></div></div>
+            <div class="hbar-val" style="color:var(--purple);">2.1×</div>
+          </div>
+          <div class="hbar-row">
+            <div class="hbar-label">Browse / catalog</div>
+            <div class="hbar-wrap"><div class="hbar" style="width:28%;background:var(--border);"></div></div>
+            <div class="hbar-val" style="color:var(--text-muted);">1.0×</div>
+          </div>
+          <div class="hbar-row">
+            <div class="hbar-label">Social / Instagram</div>
+            <div class="hbar-wrap"><div class="hbar" style="width:20%;background:var(--border);"></div></div>
+            <div class="hbar-val" style="color:var(--text-muted);">0.7×</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:14px;">Geographic Lift <span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:4px;">over-index vs national avg</span></div>
+          <div class="hbar-row">
+            <div class="hbar-label">Helsinki</div>
+            <div class="hbar-wrap"><div class="hbar" style="width:86%;background:var(--cta);"></div></div>
+            <div class="hbar-val" style="color:var(--cta);">1.31×</div>
+          </div>
+          <div class="hbar-row">
+            <div class="hbar-label">Espoo</div>
+            <div class="hbar-wrap"><div class="hbar" style="width:78%;background:var(--cta);"></div></div>
+            <div class="hbar-val" style="color:var(--cta);">1.22×</div>
+          </div>
+          <div class="hbar-row">
+            <div class="hbar-label">Tampere</div>
+            <div class="hbar-wrap"><div class="hbar" style="width:64%;background:var(--blue);"></div></div>
+            <div class="hbar-val" style="color:var(--blue);">0.98×</div>
+          </div>
+          <div class="hbar-row">
+            <div class="hbar-label">Oulu</div>
+            <div class="hbar-wrap"><div class="hbar" style="width:52%;background:var(--border);"></div></div>
+            <div class="hbar-val" style="color:var(--text-muted);">0.81×</div>
+          </div>
+          <div class="hbar-row">
+            <div class="hbar-label">Turku</div>
+            <div class="hbar-wrap"><div class="hbar" style="width:48%;background:var(--border);"></div></div>
+            <div class="hbar-val" style="color:var(--text-muted);">0.74×</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="margin-bottom:4px;">Segment Comparison <span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:4px;">behavior by pet type</span></div>
+        <div class="card-sub" style="margin-bottom:14px;">Different pets, radically different purchase patterns — the same model handles all of them</div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Segment</th><th>Reorder cycle</th><th>Top category</th><th>Avg order</th><th>Retention 12mo</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>🐕 Dog owners</td>
+              <td><span style="font-family:var(--mono);">28d</span></td>
+              <td>Dry food</td>
+              <td>€74</td>
+              <td><span class="pill pill-green">72%</span></td>
+            </tr>
+            <tr>
+              <td>🐕 New puppy (&lt;6mo)</td>
+              <td><span style="font-family:var(--mono);">14d</span></td>
+              <td>Puppy food + accessories</td>
+              <td>€94</td>
+              <td><span class="pill pill-green">84%</span></td>
+            </tr>
+            <tr>
+              <td>🐈 Cat owners</td>
+              <td><span style="font-family:var(--mono);">14d</span></td>
+              <td>Litter + wet food</td>
+              <td>€61</td>
+              <td><span class="pill pill-green">68%</span></td>
+            </tr>
+            <tr>
+              <td>🐹 Small animals</td>
+              <td><span style="font-family:var(--mono);">7d</span></td>
+              <td>Bedding + feed</td>
+              <td>€38</td>
+              <td><span class="pill pill-amber">51%</span></td>
+            </tr>
+            <tr>
+              <td>🐟 Aquarium</td>
+              <td><span style="font-family:var(--mono);">30d</span></td>
+              <td>Filter media + food</td>
+              <td>€112</td>
+              <td><span class="pill pill-amber">44%</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── PATTERN EXPLORER ── -->
+    <div class="view" id="view-pattern-explorer">
+      <div class="page-header">
+        <div class="page-title">Pattern Explorer</div>
+        <div class="page-desc">Run ad-hoc discovery queries. Find which products, segments, or behaviors are statistically correlated — without building a report first.</div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span style="font-size:13px;font-weight:500;color:var(--text);">What tags over-index when</span>
+          <select style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--font);color:var(--text);background:var(--white);">
+            <option>pet_type</option>
+          </select>
+          <span style="font-size:13px;">is</span>
+          <select style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--font);color:var(--text);background:var(--white);">
+            <option>puppy</option>
+            <option>cat</option>
+            <option>hamster</option>
+          </select>
+          <button class="btn btn-primary" style="padding:6px 16px;">Analyze</button>
+          <span style="margin-left:auto;font-size:11px;color:var(--text-muted);font-family:var(--mono);">_relate · 19ms</span>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:12px;">Tags that over-index for <span class="pill pill-orange" style="font-size:11px;">puppy</span></div>
+          <div class="lift-row">
+            <div class="lift-label">training</div>
+            <div class="lift-bar-wrap"><div class="lift-bar" style="width:94%;"></div></div>
+            <div class="lift-val high">3.1×</div>
+          </div>
+          <div class="lift-row">
+            <div class="lift-label">puppy-food</div>
+            <div class="lift-bar-wrap"><div class="lift-bar" style="width:88%;"></div></div>
+            <div class="lift-val high">2.8×</div>
+          </div>
+          <div class="lift-row">
+            <div class="lift-label">chew-toy</div>
+            <div class="lift-bar-wrap"><div class="lift-bar" style="width:78%;"></div></div>
+            <div class="lift-val high">2.3×</div>
+          </div>
+          <div class="lift-row">
+            <div class="lift-label">flea-treatment</div>
+            <div class="lift-bar-wrap"><div class="lift-bar" style="width:68%;"></div></div>
+            <div class="lift-val high">1.9×</div>
+          </div>
+          <div class="lift-row">
+            <div class="lift-label">dry-food</div>
+            <div class="lift-bar-wrap"><div class="lift-bar neutral" style="width:52%;"></div></div>
+            <div class="lift-val neutral">1.0×</div>
+          </div>
+          <div class="lift-row">
+            <div class="lift-label">joint-care</div>
+            <div class="lift-bar-wrap"><div class="lift-bar neutral" style="width:24%;"></div></div>
+            <div class="lift-val neutral">0.3×</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:10px;">Discovered Insights</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="tip-box" style="margin-bottom:0;font-size:12px;">
+              <span class="tip-icon">💡</span>
+              <span>Puppy buyers have 3.1× higher training product spend. A "New Puppy" onboarding email sequence with training + food bundle would target this peak spending window.</span>
+            </div>
+            <div style="background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--text-2);">
+              <strong style="color:var(--blue);">🔵 Lifecycle signal:</strong> Joint care supplements have 0.3× lift for puppies but 2.4× lift for dogs 5+ years. Age-based product rotation in recommendations could drive this automatically.
+            </div>
+            <div style="background:var(--green-bg);border:1px solid var(--green-border);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--text-2);">
+              <strong style="color:var(--green);">🟢 Flea treatment timing:</strong> Frontline purchases spike in April and September with 2.8× seasonal lift. Targeted reminders 3 weeks before the peak would be worth testing.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PRODUCT FILLING ── -->
+    <div class="view" id="view-product-filling">
+      <div class="page-header">
+        <div class="page-title">Product Data Filling</div>
+        <div class="page-desc">Add a product with just a name and price. Aito predicts pet type, category, tags, and life stage from patterns in your existing catalog. Tested at 98% accuracy.</div>
+      </div>
+
+      <div class="tip-box">
+        <span class="tip-icon">⚡</span>
+        <span>Your team adds 30–40 new SKUs per month. Tagging each one — pet type, age group, brand category — takes time and is inconsistently done. Product Filling predicts the full taxonomy from the product name alone.</span>
+      </div>
+
+      <div class="two-col" style="align-items:start;">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:14px;">New Product Entry</div>
+          <div style="margin-bottom:12px;">
+            <div style="font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:6px;">Product Name</div>
+            <div style="padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--mono);">Hill's Science Plan Senior 7+ Large Breed</div>
+          </div>
+          <div style="margin-bottom:12px;">
+            <div style="font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:6px;">Brand</div>
+            <div style="padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--mono);">Hill's</div>
+          </div>
+          <div style="margin-bottom:16px;">
+            <div style="font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:6px;">Price</div>
+            <div style="padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--mono);">€68.90</div>
+          </div>
+          <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em;">AI-predicted fields</div>
+          <div class="fill-field">
+            <div class="fill-field-label">Pet type</div>
+            <div class="fill-field-val"><strong>Dog</strong> <span class="fill-conf">0.99</span></div>
+          </div>
+          <div class="fill-field">
+            <div class="fill-field-label">Category</div>
+            <div class="fill-field-val">Dry Dog Food <span class="fill-conf">0.97</span></div>
+          </div>
+          <div class="fill-field">
+            <div class="fill-field-label">Life stage</div>
+            <div class="fill-field-val">Senior (7+ years) <span class="fill-conf">0.94</span></div>
+          </div>
+          <div class="fill-field">
+            <div class="fill-field-label">Breed size</div>
+            <div class="fill-field-val">Large breed <span class="fill-conf">0.96</span></div>
+          </div>
+          <div class="fill-field">
+            <div class="fill-field-label">Tags</div>
+            <div class="fill-field-val">
+              <span class="pill pill-grey" style="margin-right:4px;">senior</span>
+              <span class="pill pill-grey" style="margin-right:4px;">joint-care</span>
+              <span class="pill pill-grey" style="margin-right:4px;">large-breed</span>
+              <span class="fill-conf">0.91</span>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="margin-top:14px;width:100%;">Accept Predictions & Publish</button>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:14px;">Batch Accuracy <span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:4px;">held-out test · 50 products</span></div>
+          <div style="display:flex;gap:16px;margin-bottom:14px;">
+            <div class="kpi-card" style="flex:1;border-top:3px solid var(--green);">
+              <div class="kpi-label">Pet type</div>
+              <div class="kpi-val" style="font-size:22px;">99%</div>
+            </div>
+            <div class="kpi-card" style="flex:1;border-top:3px solid var(--cta);">
+              <div class="kpi-label">Category</div>
+              <div class="kpi-val" style="font-size:22px;">98%</div>
+            </div>
+            <div class="kpi-card" style="flex:1;border-top:3px solid var(--blue);">
+              <div class="kpi-label">Life stage</div>
+              <div class="kpi-val" style="font-size:22px;">94%</div>
+            </div>
+          </div>
+          <div class="card-title" style="margin-bottom:10px;">Recent Batch Results</div>
+          <table class="data-table" style="font-size:12px;">
+            <thead><tr><th>Product</th><th>Predicted</th><th>Correct</th><th></th></tr></thead>
+            <tbody>
+              <tr class="eval-row-pass">
+                <td>Royal Canin Kitten 2kg</td>
+                <td>Cat · Kitten food</td>
+                <td>Cat · Kitten food</td>
+                <td><span class="eval-mark pass">✓</span></td>
+              </tr>
+              <tr class="eval-row-pass">
+                <td>Frontline Spot-On L Dog</td>
+                <td>Dog · Flea treatment</td>
+                <td>Dog · Flea treatment</td>
+                <td><span class="eval-mark pass">✓</span></td>
+              </tr>
+              <tr class="eval-row-pass">
+                <td>Savic Hamster Playground</td>
+                <td>Small animal · Accessory</td>
+                <td>Small animal · Accessory</td>
+                <td><span class="eval-mark pass">✓</span></td>
+              </tr>
+              <tr class="eval-row-fail">
+                <td>Beaphar Multi Vitamin</td>
+                <td>Dog · Supplement</td>
+                <td>Multi-species · Supplement</td>
+                <td><span class="eval-mark fail">✗</span></td>
+              </tr>
+              <tr class="eval-row-pass">
+                <td>Hill's Science Plan Adult S/M</td>
+                <td>Dog · Dry food · Adult</td>
+                <td>Dog · Dry food · Adult</td>
+                <td><span class="eval-mark pass">✓</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EVALUATION ── -->
+    <div class="view" id="view-evaluation">
+      <div class="page-header">
+        <div class="page-title">Model Evaluation</div>
+        <div class="page-desc">Test prediction quality with held-out data. Run accuracy benchmarks across all prediction types. Full transparency — you see exactly where the model is confident and where it isn't.</div>
+      </div>
+
+      <div class="tip-box">
+        <span class="tip-icon">🧪</span>
+        <span><strong>EU AI Act ready:</strong> Every prediction includes a confidence score and the statistical evidence behind it. A dog owner recommendation comes with lift scores, not just a rank. This satisfies transparency requirements out of the box.</span>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card kpi-accent">
+          <div class="kpi-label">Search lift</div>
+          <div class="kpi-val">+31%</div>
+          <div class="kpi-change up">vs text-only baseline</div>
+        </div>
+        <div class="kpi-card kpi-accent-green">
+          <div class="kpi-label">Pet type prediction</div>
+          <div class="kpi-val">99.0%</div>
+          <div class="kpi-change up">49.5/50 correct avg</div>
+        </div>
+        <div class="kpi-card kpi-accent-blue">
+          <div class="kpi-label">Category prediction</div>
+          <div class="kpi-val">98.0%</div>
+          <div class="kpi-change up">49/50 correct</div>
+        </div>
+        <div class="kpi-card kpi-accent-purple">
+          <div class="kpi-label">Reorder prediction</div>
+          <div class="kpi-val">87%</div>
+          <div class="kpi-change up">within ±3 days</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:14px;">Evaluate Query</div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:12px;font-family:var(--mono);font-size:11.5px;color:var(--text-2);margin-bottom:12px;line-height:1.6;">
+<span style="color:var(--cta);">{</span><br>
+&nbsp;&nbsp;<span style="color:var(--blue);">"test"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--blue);">"$index"</span>: [18, 1]<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;<span style="color:var(--blue);">"evaluate"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--blue);">"from"</span>: <span style="color:var(--green);">"products"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--blue);">"where"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--blue);">"name"</span>: { <span style="color:var(--blue);">"$get"</span>: <span style="color:var(--green);">"name"</span> }<br>
+&nbsp;&nbsp;&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--blue);">"predict"</span>: <span style="color:var(--green);">"pet_type"</span><br>
+&nbsp;&nbsp;}<br>
+<span style="color:var(--cta);">}</span>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <div style="flex:1;background:var(--cta-bg);border:1px solid var(--cta-border);border-radius:6px;padding:10px;text-align:center;">
+              <div style="font-size:20px;font-weight:700;color:var(--cta);">99.0%</div>
+              <div style="font-size:11px;color:var(--text-muted);">Accuracy</div>
+            </div>
+            <div style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;text-align:center;">
+              <div style="font-size:20px;font-weight:700;color:var(--text);">0.02</div>
+              <div style="font-size:11px;color:var(--text-muted);">Mean Rank</div>
+            </div>
+            <div style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;text-align:center;">
+              <div style="font-size:20px;font-weight:700;color:var(--text);">1.4s</div>
+              <div style="font-size:11px;color:var(--text-muted);">Total Time</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:12px;">Evaluation Cases (50) <span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:4px;">49.5 avg correct</span></div>
+          <table class="data-table" style="font-size:11.5px;">
+            <thead><tr><th>Input</th><th>Predicted</th><th>Score</th><th>Correct</th><th></th></tr></thead>
+            <tbody>
+              <tr class="eval-row-pass">
+                <td>Royal Canin Large Adult…</td>
+                <td>Dog</td>
+                <td style="font-family:var(--mono);color:var(--green);">0.991</td>
+                <td>Dog</td>
+                <td><span class="eval-mark pass">✓</span></td>
+              </tr>
+              <tr class="eval-row-pass">
+                <td>Purina One Kitten 1.5kg</td>
+                <td>Cat</td>
+                <td style="font-family:var(--mono);color:var(--green);">0.988</td>
+                <td>Cat</td>
+                <td><span class="eval-mark pass">✓</span></td>
+              </tr>
+              <tr class="eval-row-fail">
+                <td>Beaphar Multi Vitamin…</td>
+                <td>Dog</td>
+                <td style="font-family:var(--mono);color:var(--amber);">0.581</td>
+                <td>Multi</td>
+                <td><span class="eval-mark fail">✗</span></td>
+              </tr>
+              <tr class="eval-row-pass">
+                <td>Savic Hamster Cage…</td>
+                <td>Small animal</td>
+                <td style="font-family:var(--mono);color:var(--green);">0.979</td>
+                <td>Small animal</td>
+                <td><span class="eval-mark pass">✓</span></td>
+              </tr>
+              <tr class="eval-row-pass">
+                <td>Frontline Spot-On L…</td>
+                <td>Dog</td>
+                <td style="font-family:var(--mono);color:var(--green);">0.962</td>
+                <td>Dog</td>
+                <td><span class="eval-mark pass">✓</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+
+  <!-- Aito Panel -->
+  <div class="aito-panel" id="aito-panel">
+    <!-- Logo header -->
+    <div class="aito-panel-header">
+      <div class="aito-logo-text"><em>ai</em>to<span class="dots">..</span></div>
+      <div class="aito-panel-tagline">The Predictive DB</div>
+    </div>
+    <!-- Stats row -->
+    <div class="aito-stats">
+      <div class="aito-stat">
+        <div class="aito-stat-val">0.92</div>
+        <div class="aito-stat-label">Confidence</div>
+      </div>
+      <div class="aito-stat">
+        <div class="aito-stat-val">20-50ms</div>
+        <div class="aito-stat-label">Response</div>
+      </div>
+      <div class="aito-stat">
+        <div class="aito-stat-val">90K+</div>
+        <div class="aito-stat-label">Records</div>
+      </div>
+      <div class="aito-stat">
+        <div class="aito-stat-val">Zero</div>
+        <div class="aito-stat-label">Training</div>
+      </div>
+    </div>
+    <!-- Scrollable content -->
+    <div class="aito-panel-content">
+      <div class="aito-panel-title" id="panel-title">Store Intelligence</div>
+      <div class="aito-desc" id="panel-desc">
+        Pattern discovery across all purchase data. The Dashboard shows lift scores for product co-occurrences and customer segments — from a single <code style="color:#12B5AD;font-size:10px;">_relate</code> query on the orders table.
+      </div>
+
+      <div class="aito-section-title">Endpoints</div>
+      <div class="aito-tags" id="panel-tags">
+        <span class="aito-tag active">_relate</span>
+        <span class="aito-tag active">_predict</span>
+        <span class="aito-tag">_recommend</span>
+      </div>
+
+      <div class="aito-section-title">Example Query</div>
+      <div class="aito-query" id="panel-query">
+        <pre><span class="p">{</span>
+  <span class="n">"from"</span>: <span class="s">"orders"</span>,
+  <span class="n">"where"</span>: {
+    <span class="n">"product"</span>: <span class="s">"dog-food"</span>
+  },
+  <span class="n">"relate"</span>: <span class="s">"tags"</span>
+<span class="p">}</span></pre>
+      </div>
+
+      <div class="aito-section-title">Learn More</div>
+      <a class="aito-link" href="https://aito.ai/docs/api-reference/" target="_blank">
+        <span class="aito-link-icon">↗</span> API Reference
+      </a>
+      <a class="aito-link" href="https://aito.ai/docs/" target="_blank">
+        <span class="aito-link-icon">↗</span> Documentation
+      </a>
+      <a class="aito-link" href="https://aito.ai" target="_blank">
+        <span class="aito-link-icon">↗</span> aito.ai
+      </a>
+    </div>
+    <!-- CTA pinned to bottom -->
+    <div class="aito-panel-cta">
+      <a class="aito-cta" href="https://aito.ai" target="_blank">Start free trial →</a>
+    </div>
+  </div>
+
+</div><!-- /layout -->
+
+<script>
+const isMobile = () => window.innerWidth <= 900;
+
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const main = document.querySelector('.main');
+  const btn = document.getElementById('sidebar-toggle');
+  const overlay = document.getElementById('pane-overlay');
+
+  if (isMobile()) {
+    const open = sidebar.classList.toggle('mobile-open');
+    overlay.classList.toggle('visible', open);
+    // close aito if open
+    document.querySelector('.aito-panel').classList.remove('mobile-open');
+  } else {
+    const collapsed = sidebar.classList.toggle('collapsed');
+    main.classList.toggle('sidebar-collapsed', collapsed);
+    btn.classList.toggle('active', collapsed);
+  }
+}
+
+function toggleAito() {
+  const panel = document.querySelector('.aito-panel');
+  const main = document.querySelector('.main');
+  const btn = document.getElementById('aito-toggle');
+  const overlay = document.getElementById('pane-overlay');
+
+  if (isMobile()) {
+    const open = panel.classList.toggle('mobile-open');
+    overlay.classList.toggle('visible', open);
+    // close sidebar if open
+    document.querySelector('.sidebar').classList.remove('mobile-open');
+  } else {
+    const collapsed = panel.classList.toggle('collapsed');
+    main.classList.toggle('aito-collapsed', collapsed);
+    btn.classList.toggle('active', collapsed);
+    btn.style.background = collapsed ? 'var(--cta-bg)' : '#0c0f41';
+    btn.style.borderColor = collapsed ? 'var(--cta-border)' : 'rgba(93,80,255,0.3)';
+    btn.style.color = collapsed ? 'var(--primary)' : '#12B5AD';
+  }
+}
+
+function closeAll() {
+  document.querySelector('.sidebar').classList.remove('mobile-open');
+  document.querySelector('.aito-panel').classList.remove('mobile-open');
+  document.getElementById('pane-overlay').classList.remove('visible');
+}
+
+// On mobile, start with both panes closed
+if (isMobile()) {
+  document.querySelector('.sidebar').classList.remove('mobile-open');
+}
+
+const views = {
+  'dashboard': {
+    tags: ['_relate', '_predict', '_recommend'],
+    desc: 'Pattern discovery across all purchase data. Dashboard shows co-purchase lift by segment (dog/cat/small animal/aquarium) and predicted next purchase per recent order — from <code style="color:var(--cta);font-size:10px;">_relate</code> and <code style="color:var(--cta);font-size:10px;">_predict</code>.',
+    query: `<span class="k">"relate"</span>: {\n  <span class="n">"from"</span>: <span class="s">"orders"</span>,\n  <span class="n">"where"</span>: {\n    <span class="n">"product"</span>: <span class="s">"dog-food"</span>\n  },\n  <span class="n">"relate"</span>: <span class="s">"tags"</span>\n}`
+  },
+  'smart-search': {
+    tags: ['_recommend'],
+    desc: 'Reranks search results by multiplying text similarity with purchase probability. Customers see products they are likely to buy, not just products that match the query text.',
+    query: `<span class="k">"recommend"</span>: {\n  <span class="n">"from"</span>: <span class="s">"products"</span>,\n  <span class="n">"where"</span>: {\n    <span class="n">"name"</span>: { <span class="n">"$match"</span>: <span class="s">"food"</span> }\n  },\n  <span class="n">"recommend"</span>: <span class="s">"product_id"</span>,\n  <span class="n">"goal"</span>: { <span class="n">"event"</span>: <span class="s">"purchase"</span> }\n}`
+  },
+  'recommendations': {
+    tags: ['_recommend'],
+    desc: 'Personalized product recommendations per customer based on their full purchase history. Each call returns the top-N products most likely to be purchased by this customer next.',
+    query: `<span class="k">"recommend"</span>: {\n  <span class="n">"from"</span>: <span class="s">"products"</span>,\n  <span class="n">"where"</span>: {\n    <span class="n">"user_id"</span>: <span class="s">"cust_2841"</span>\n  },\n  <span class="n">"recommend"</span>: <span class="s">"product_id"</span>\n}`
+  },
+  'bought-together': {
+    tags: ['_relate'],
+    desc: 'Co-purchase lift scores — how much more likely product B is to be purchased alongside product A, compared to its base purchase rate across all orders.',
+    query: `<span class="k">"relate"</span>: {\n  <span class="n">"from"</span>: <span class="s">"orders"</span>,\n  <span class="n">"where"</span>: {\n    <span class="n">"product"</span>: <span class="s">"puppy-starter-kit"</span>\n  },\n  <span class="n">"relate"</span>: <span class="s">"product"</span>\n}`
+  },
+  'purchase-analytics': {
+    tags: ['_relate'],
+    desc: 'Statistical analysis of purchase drivers. <code style="color:var(--cta);font-size:10px;">_relate</code> computes lift for any variable combination — source, city, segment, time — against purchase outcomes.',
+    query: `<span class="k">"relate"</span>: {\n  <span class="n">"from"</span>: <span class="s">"orders"</span>,\n  <span class="n">"where"</span>: {\n    <span class="n">"pet_type"</span>: <span class="s">"puppy"</span>\n  },\n  <span class="n">"relate"</span>: <span class="s">"tags"</span>\n}`
+  },
+  'pattern-explorer': {
+    tags: ['_relate'],
+    desc: 'Ad-hoc discovery queries. Select any field + value and Aito returns which other fields have statistically unusual correlations with it. Returns lift, count, and relative strength.',
+    query: `<span class="k">"relate"</span>: {\n  <span class="n">"from"</span>: <span class="s">"orders"</span>,\n  <span class="n">"where"</span>: {\n    <span class="n">"pet_type"</span>: { <span class="n">"$get"</span>: <span class="s">"filter_val"</span> }\n  },\n  <span class="n">"relate"</span>: <span class="s">"tags"</span>\n}`
+  },
+  'product-filling': {
+    tags: ['_predict'],
+    desc: 'Predicts missing product attributes from the product name and existing catalog. One <code style="color:var(--cta);font-size:10px;">_predict</code> call resolves category, subcategory, tags, and skill level simultaneously.',
+    query: `<span class="k">"predict"</span>: {\n  <span class="n">"from"</span>: <span class="s">"products"</span>,\n  <span class="n">"where"</span>: {\n    <span class="n">"name"</span>: <span class="s">"Hill's Senior 7+ Large"</span>,\n    <span class="n">"brand"</span>: <span class="s">"Hill's"</span>\n  },\n  <span class="n">"predict"</span>: <span class="s">"category"</span>\n}`
+  },
+  'evaluation': {
+    tags: ['_evaluate'],
+    desc: 'Holds out a test set, runs predictions, and compares against ground truth. Returns accuracy, mean rank, and per-case results. Use this to validate before going to production.',
+    query: `<span class="k">"evaluate"</span>: {\n  <span class="n">"test"</span>: { <span class="n">"$index"</span>: [18, 1] },\n  <span class="n">"from"</span>: <span class="s">"products"</span>,\n  <span class="n">"where"</span>: {\n    <span class="n">"name"</span>: { <span class="n">"$get"</span>: <span class="s">"name"</span> }\n  },\n  <span class="n">"predict"</span>: <span class="s">"pet_type"</span>\n}`
+  }
+};
+
+function showView(id, el, label) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  el.classList.add('active');
+  document.getElementById('breadcrumb-current').textContent = label;
+  if (isMobile()) closeAll();
+
+  const v = views[id];
+  if (!v) return;
+
+  const tagsEl = document.getElementById('panel-tags');
+  tagsEl.innerHTML = v.tags.map(t => `<span class="aito-tag active">${t}</span>`).join('') +
+    ['_predict','_recommend','_relate','_evaluate'].filter(t => !v.tags.includes(t)).map(t => `<span class="aito-tag">${t}</span>`).join('');
+
+  document.getElementById('panel-title').textContent = label;
+  document.getElementById('panel-desc').innerHTML = v.desc;
+  document.getElementById('panel-query').querySelector('pre').innerHTML = v.query;
+}
+</script>
+</body>
+</html>

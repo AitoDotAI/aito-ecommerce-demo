@@ -1,0 +1,169 @@
+/* ═══════════════════════════════════════════════════════════
+   Predictive E-commerce — Design System (scaffold)
+   ───────────────────────────────────────────────────────────
+   Translated from predictive-ecommerce-demo.html. The full
+   chrome (sidebar, topbar, cards, KPI tiles, tables, etc.)
+   lands in build-order step 4 (Layout shell). For now this
+   file ships only:
+
+     1. The zooplus-inspired application chrome tokens.
+     2. The locked Aito panel tokens (cross-demo invariant).
+     3. A minimal reset and `.app` wrapper so the placeholder
+        page renders without horizontal scroll on a phone.
+
+   The Aito panel block is added in step 4 verbatim from the
+   other demos — colours, typography, layout. Do NOT recolour
+   the panel; the panel is the brand.
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Application chrome — zooplus-inspired palette ─────── */
+  --primary:        #1B4332;         /* dark forest green — sidebar bg */
+  --primary-light:  #2D6A4F;         /* sidebar hover */
+  --primary-dim:    #143829;         /* sidebar active */
+  --cta:            #F5A623;         /* warm yellow-orange */
+  --cta-light:      #F7BA4D;
+  --cta-bg:         #FEF6E4;
+  --cta-border:     #FAE0A8;
+
+  --bg:             #F5F7F5;         /* page background */
+  --card-bg:        #FFFFFF;
+  --border:         #DDE5DD;
+  --border-light:   #EBF0EB;
+
+  --text:           #1A2E1A;
+  --text-2:         #3D5C3D;
+  --text-muted:     #8AA08A;
+
+  --accent:         #52B788;
+  --accent-bg:      #EBF7EE;
+  --accent-border:  #C3E8CB;
+
+  --green:          #2D6A4F;
+  --green-bg:       #E8F5EE;
+  --green-border:   #B8DFC9;
+  --red:            #C0392B;
+  --red-bg:         #FDEDEB;
+  --red-border:     #F5C6C1;
+  --amber:          #C47D15;
+  --amber-bg:       #FEF3DC;
+  --amber-border:   #F9E0A8;
+  --blue:           #1B5E9E;
+  --blue-bg:        #E3EEF8;
+  --blue-border:    #B8D4EE;
+  --purple:         #6B3FA0;
+  --purple-bg:      #F0EAF8;
+
+  /* ── Aito panel — LOCKED across every demo (do not change) ── */
+  --aito-bg:        #0c0f41;
+  --aito-teal:      #12B5AD;
+  --aito-purple:    #9B69FF;
+  --aito-text:      #f0f0f0;
+  --aito-dim:       #8a8ab0;
+  --aito-border:    rgba(155, 105, 255, 0.18);
+  --aito-muted:     rgba(240, 240, 240, 0.55);
+
+  /* ── Spacing rhythm ─────────────────────────────────────── */
+  --sidebar-w:  228px;
+  --topbar-h:    56px;
+  --aito-w:     280px;
+
+  /* ── Fonts ──────────────────────────────────────────────── */
+  --font:  'Nunito', sans-serif;
+  --mono:  'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-size: 14px;
+}
+
+a { color: inherit; text-decoration: none; }
+
+.app {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Scaffold-only placeholder copy. Removed in step 4 when the real
+   layout shell lands. */
+.scaffold-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 64px 24px;
+  text-align: center;
+  min-height: 100vh;
+}
+
+.scaffold-placeholder .logo-mark {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: var(--primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.scaffold-placeholder .logo-mark span {
+  color: white;
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: -0.5px;
+}
+.scaffold-placeholder .logo-mark span em {
+  color: var(--cta);
+  font-style: normal;
+}
+
+.scaffold-placeholder h1 {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.scaffold-placeholder p {
+  font-size: 15px;
+  color: var(--text-2);
+  max-width: 540px;
+  line-height: 1.55;
+}
+
+.scaffold-placeholder code {
+  font-family: var(--mono);
+  font-size: 13px;
+  background: var(--card-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.scaffold-placeholder .health-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+}
+.scaffold-placeholder .health-pill .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--text-muted);
+}
+.scaffold-placeholder .health-pill.ok .dot { background: var(--green); }
+.scaffold-placeholder .health-pill.degraded .dot { background: var(--amber); }
+.scaffold-placeholder .health-pill.error .dot { background: var(--red); }
