@@ -15,12 +15,6 @@ next-env.d.ts
 .env.local
 .env.*.local
 
-# TASK.md is the working-brief that drove the build. Sibling demos
-# don't ship it — keep it local-only to avoid committing customer
-# / prospect references that belong in internal planning, not the
-# public artifact.
-TASK.md
-
 screenshots/
 docs/verification/screenshots/
 

@@ -1,5 +1,7 @@
 # Predictive E-commerce — Aito demo
 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+
 This is what an e-commerce platform looks like when predictions are
 native — search, recommendations, catalog enrichment, pattern
 discovery, evaluation. **No model training. No retraining schedule.
