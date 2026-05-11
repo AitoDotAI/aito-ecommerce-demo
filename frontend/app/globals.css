@@ -105,8 +105,22 @@ a { color: inherit; text-decoration: none; }
 .logo-mark span { color: white; font-weight: 800; font-size: 13px; letter-spacing: -0.5px; }
 .logo-mark span em { color: #c8a8f0; font-style: normal; }
 
-.store-name { font-weight: 800; font-size: 15px; color: white; }
-.store-sub  { font-size: 11px; color: rgba(255,255,255,0.55); font-weight: 500; }
+/* `.brand-text` wraps the family-line brand block. The two-word
+   product name renders on two lines via explicit <span>s in markup
+   — works on both the 228 px desktop slot and the auto-width mobile
+   collapse without relying on whitespace tricks. */
+.brand-text { min-width: 0; line-height: 1.05; }
+.store-name {
+  display: flex; flex-direction: column;
+  font-weight: 800; font-size: 13px; color: white;
+  letter-spacing: -0.2px;
+}
+.store-name-line { display: block; }
+.store-sub  {
+  font-size: 10px; color: rgba(255,255,255,0.55); font-weight: 500;
+  letter-spacing: 0.1px;
+  margin-top: 3px;
+}
 
 .topbar-content {
   flex: 1; display: flex; align-items: center; padding: 0 20px; gap: 12px;
@@ -182,6 +196,17 @@ a { color: inherit; text-decoration: none; }
   z-index: 100;
 }
 .sidebar.collapsed { transform: translateX(calc(-1 * var(--sidebar-w))); }
+
+.sidebar-brand-tag {
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 0.03em;
+}
+.sidebar-brand-name { font-weight: 700; }
+.sidebar-brand-dim  { color: rgba(255,255,255,0.4); font-weight: 400; margin-left: 4px; }
 
 .nav-section { margin-bottom: 4px; }
 .nav-section-label {

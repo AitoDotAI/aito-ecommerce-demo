@@ -73,6 +73,14 @@ export default function Sidebar() {
 
   return (
     <nav className={classes} aria-label="Main navigation">
+      {/* Persona tag — the dataset's identity sits one level below
+          the family brand in the topbar ("Predictive E-commerce").
+          Mirrors aito-erp-demo's `NavBar__brandTag` placement. */}
+      <div className="sidebar-brand-tag">
+        <span className="sidebar-brand-name">PetNord</span>
+        <span className="sidebar-brand-dim">· Nordic pet store</span>
+      </div>
+
       {SECTIONS.map((section) => (
         <div className="nav-section" key={section.label}>
           <div className="nav-section-label">{section.label}</div>

@@ -28,8 +28,17 @@ export default function TopBar() {
         <div className="logo-mark" aria-hidden="true">
           <span>🐾</span>
         </div>
-        <div>
-          <div className="store-name">PetNord</div>
+        <div className="brand-text">
+          {/* Family line — matches "Predictive ERP" / "Predictive Ledger"
+              from the sibling demos. PetNord is the dataset/persona and
+              gets a chip in the sidebar (see Sidebar's brand-tag).
+              Two-span layout forces the break between the two words
+              cleanly across desktop + narrow viewports, regardless of
+              the brand slot's width. */}
+          <div className="store-name">
+            <span className="store-name-line">Predictive</span>
+            <span className="store-name-line">E-commerce</span>
+          </div>
           <div className="store-sub">Powered by aito.ai</div>
         </div>
       </div>

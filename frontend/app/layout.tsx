@@ -2,7 +2,7 @@ import "./globals.css";
 import AppShell from "@/components/shell/AppShell";
 
 export const metadata = {
-  title: "Predictive E-Commerce — by Aito",
+  title: "Predictive E-commerce — by Aito",
   description:
     "Open-source reference: predictive search, recommendations, " +
     "catalog enrichment, and pattern discovery for online retail. " +
