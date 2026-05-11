@@ -174,6 +174,28 @@ their conditional probability under the segment is high.
 - **Per-customer (`order_id.customer_id`) conditioning under-fits**
   with our 3 000-customer dataset — single-row priors are too thin.
   Segment-level conditioning gets the visible flip.
+- **Multi-field `goal` does NOT behave like an AND.** A
+  `goal: {customer_segment: "dog_owner", customer_pet_size: "small"}`
+  returns the same cat-heavy result as `goal: {customer_pet_size:
+  "small"}` alone, because `pet_size=small` is shared with multi-pet
+  households (which lean cat in our fixture) and Aito's combined-goal
+  ranking collapses onto the dominant signal. The reliable shape is
+  to **split the constraints**: pet_size in `where`, segment in `goal`.
+
+```json
+POST /api/v1/_recommend
+{
+  "from": "order_lines",
+  "where": { "customer_pet_size": "small" },
+  "recommend": "product_sku",
+  "goal":  { "customer_segment": "dog_owner" },
+  "limit": 10
+}
+```
+
+With this split, Olli (dog_owner+small) returns all-dog accessories /
+grooming / health products instead of being mis-grouped with the
+multi-pet+small cat-heavy pool.
 
 ### Live numbers (Smart Search demo path)
 

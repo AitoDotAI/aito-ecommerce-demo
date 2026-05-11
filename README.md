@@ -85,6 +85,7 @@ Ports: Next.js on **8500**, FastAPI on **8501**.
 | 0004 | [Layout shell + design tokens](docs/adr/0004-layout-shell.md) | Accepted |
 | 0005 | [Dashboard view + overview_service](docs/adr/0005-dashboard.md) | Accepted |
 | 0006 | [Smart Search — predictive re-ranking](docs/adr/0006-smart-search.md) | Accepted |
+| 0007 | [For You — personalised tile grid + persona switcher](docs/adr/0007-for-you.md) | Accepted |
 
 ---
 

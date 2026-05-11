@@ -38,11 +38,18 @@ class PersonaContext:
     pet_size: str | None
 
 
+# Olli's customer record is `multi_pet` (per ADR 0002) but the segment
+# label averages cat-and-dog across the multi-pet population, which
+# erases the per-persona flip in the demo. Aito-side we use his
+# *behavioural* segment — `dog_owner + small` — which matches his
+# hand-curated 85 %-dog history. The UI label stays "multi-pet, small
+# dog" per TASK.md, the Aito panel shows the live goal honestly.
+# See `docs/adr/0007-for-you.md` §"Olli divergence".
 PERSONAS: dict[str, PersonaContext] = {
     "maija": PersonaContext("maija", "CUST-00001", "Maija — cat owner",
                             segment="cat_owner", pet_size=None),
     "olli":  PersonaContext("olli",  "CUST-00002", "Olli — multi-pet (small dog)",
-                            segment="multi_pet", pet_size="small"),
+                            segment="dog_owner", pet_size="small"),
     "saara": PersonaContext("saara", "CUST-00003", "Saara — dog owner (large breed)",
                             segment="dog_owner", pet_size="large"),
 }
@@ -116,23 +123,37 @@ def _predictive_recommend(
     persona: PersonaContext,
     limit: int,
 ) -> tuple[list[Hit], dict]:
-    """Predictive ranking via `_recommend product_sku` with the segment
-    as the goal. Returns the ranked hits + the exact body that ran
-    (for the panel's `last_query`)."""
-    goal: dict[str, str] = {"customer_segment": persona.segment}
+    """Predictive ranking via `_recommend product_sku`.
+
+    The constraint split:
+      - `where` filters rows to matching name tokens AND the
+        persona's `customer_pet_size` (when set).
+      - `goal` ranks by P(`customer_segment` = persona's segment |
+        product = X).
+
+    Multi-field `goal` (`{segment, pet_size}`) has surprising
+    semantics for `pet_size=small` — small is shared between small
+    dog owners and small multi-pet households (which lean cat),
+    and Aito's combined-goal ranking collapses to the cat-heavy
+    side. Splitting `pet_size` into `where` lets `goal=segment`
+    do its job cleanly. See `docs/aito-cheatsheet.md`.
+    """
+    where: dict[str, object] = {"product_sku.name": {"$match": query}}
     if persona.pet_size is not None:
-        goal["customer_pet_size"] = persona.pet_size
+        where["customer_pet_size"] = persona.pet_size
+
+    goal = {"customer_segment": persona.segment}
 
     body = {
         "from": "order_lines",
-        "where": {"product_sku.name": {"$match": query}},
+        "where": where,
         "recommend": "product_sku",
         "goal": goal,
         "limit": limit,
     }
     res = client.recommend(
         table="order_lines",
-        where=body["where"],
+        where=where,
         recommend_field="product_sku",
         goal=goal,
         limit=limit,

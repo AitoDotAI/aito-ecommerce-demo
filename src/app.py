@@ -25,6 +25,7 @@ from src.config import load_config
 from src.rate_limit import check_rate_limit
 from src.overview_service import get_dashboard
 from src.search_service import smart_search
+from src.recommend_service import get_for_you
 
 
 config = load_config()
@@ -178,6 +179,21 @@ def smart_search_endpoint(q: str = "food", customer: str = "saara"):
     """
     try:
         return smart_search(aito, query=q, persona_id=customer).to_dict()
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/for-you")
+def for_you_endpoint(customer: str = "maija"):
+    """Personalised tile grid via `_recommend` ranked by segment-fit.
+
+    Customer: one of `maija` / `olli` / `saara`.
+    """
+    try:
+        return get_for_you(aito, persona_id=customer).to_dict()
     except AitoError as exc:
         return JSONResponse(
             status_code=502,

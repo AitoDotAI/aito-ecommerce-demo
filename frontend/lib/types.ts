@@ -72,6 +72,34 @@ export interface HealthResponse {
   aito_url?: string | null;
 }
 
+/* ─── For You (/api/for-you) ─── */
+
+export interface ForYouTile {
+  sku: string;
+  name: string;
+  brand: string;
+  pet_type: string;
+  category: string;
+  price_eur: number;
+  rank: number;
+  /** P(segment | product) from Aito's `$p`. Surfaced as a per-tile
+   *  "0.91" score chip. */
+  score: number;
+}
+
+export interface ForYouResponse {
+  persona: {
+    id: string;
+    label: string;
+    segment: string;
+    pet_size: string | null;
+    customer_id: string;
+  };
+  tiles: ForYouTile[];
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  last_response_ms: number;
+}
+
 /* ─── Smart Search (/api/smart-search) ─── */
 
 export interface SmartSearchHit {
