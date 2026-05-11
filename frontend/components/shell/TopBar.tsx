@@ -48,6 +48,18 @@ export default function TopBar() {
           </div>
           <div className="store-sub">Powered by aito.ai</div>
         </div>
+        {/* Inline collapse arrow — same pattern as aito-erp-demo's
+            `NavBar__collapseBtn`. Desktop only; mobile uses the
+            hamburger to the left of the logo. */}
+        <button
+          type="button"
+          className="topbar-brand-collapse"
+          onClick={toggleSidebar}
+          title={sidebarCollapsed ? "Open sidebar" : "Collapse sidebar"}
+          aria-label={sidebarCollapsed ? "Open sidebar" : "Collapse sidebar"}
+        >
+          {sidebarCollapsed ? "›" : "‹"}
+        </button>
       </div>
 
       <div className="topbar-content">

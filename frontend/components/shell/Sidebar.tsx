@@ -58,7 +58,7 @@ const SECTIONS: NavSection[] = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { sidebarCollapsed, mobileOpen, closeMobile, toggleSidebar } = useShell();
+  const { sidebarCollapsed, mobileOpen, closeMobile } = useShell();
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/" || pathname === "";
@@ -72,19 +72,6 @@ export default function Sidebar() {
   ].filter(Boolean).join(" ");
 
   return (
-    <>
-    {/* Mid-edge collapse tab — vertically centred on the sidebar's
-        right edge, mirror of the Aito panel's left-edge tab. */}
-    <button
-      type="button"
-      className={`sidebar-toggle${sidebarCollapsed ? " collapsed" : ""}`}
-      onClick={toggleSidebar}
-      aria-label={sidebarCollapsed ? "Open sidebar" : "Close sidebar"}
-      title={sidebarCollapsed ? "Open sidebar" : "Close sidebar"}
-    >
-      {sidebarCollapsed ? "›" : "‹"}
-    </button>
-
     <nav className={classes} aria-label="Main navigation">
       {/* Persona tag — the dataset's identity sits one level below
           the family brand in the topbar ("Predictive E-commerce").
@@ -129,6 +116,5 @@ export default function Sidebar() {
         </div>
       </div>
     </nav>
-    </>
   );
 }
