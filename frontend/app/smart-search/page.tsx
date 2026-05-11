@@ -38,6 +38,7 @@ export default function SmartSearchPage() {
   const fetchSearch = useCallback(async (q: string, p: string) => {
     setLoading(true);
     setError(null);
+    setData(null);   // see B1 fix in bought-together/page.tsx
     try {
       const res = await apiFetch<SmartSearchResponse>(
         `/api/smart-search?q=${encodeURIComponent(q)}&customer=${p}`,
@@ -128,7 +129,7 @@ export default function SmartSearchPage() {
         <div className="two-col">
           <ResultsColumn
             title="Standard search"
-            sub="`_search where name $match q` · plain token match"
+            sub="Plain token match on the product name."
             hits={data?.baseline ?? []}
             loading={loading || !data}
           />
@@ -136,10 +137,8 @@ export default function SmartSearchPage() {
             title="Predictive search"
             sub={
               data
-                ? `_recommend goal: { segment: "${data.customer.segment}"${
-                    data.customer.pet_size ? `, pet_size: "${data.customer.pet_size}"` : ""
-                  } }`
-                : "_recommend ..."
+                ? `Re-ranked for ${data.customer.label} — same query, customer-context bias.`
+                : "Re-ranked by Aito's prediction…"
             }
             hits={data?.predictive ?? []}
             loading={loading || !data}

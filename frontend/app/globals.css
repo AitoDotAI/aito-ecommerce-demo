@@ -402,6 +402,19 @@ a { color: inherit; text-decoration: none; }
 .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
 .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px; }
 
+/* Mobile collapse — matches the mock's `isMobile = 900px` threshold.
+   Below 900 px the KPI grid drops to 2 columns; both .two-col / .three-col
+   stack so columns don't overflow the narrow main content. */
+@media (max-width: 900px) {
+  .two-col   { grid-template-columns: 1fr; }
+  .three-col { grid-template-columns: 1fr; }
+  .kpi-grid  { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 520px) {
+  .kpi-grid  { grid-template-columns: 1fr; }
+  .rec-grid  { grid-template-columns: 1fr; }
+}
+
 .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .data-table th {
   padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 600;
@@ -548,7 +561,11 @@ a { color: inherit; text-decoration: none; }
 }
 .lift-hint.up      { background: var(--green-bg); color: var(--green); }
 .lift-hint.neutral { background: var(--bg);       color: var(--text-muted); }
-.lift-hint.down    { background: var(--red-bg);   color: var(--red); }
+/* Protective patterns (lift < 0.7) sit alongside red bars in Pattern
+   Explorer. A red chip on a tinted-red bar washes out; invert so the
+   chip reads as a strong "anti-recommend" signal even when the bar
+   itself is red. */
+.lift-hint.down    { background: var(--red);      color: white; }
 
 /* ── Animations ─────────────────────────────────────────────────── */
 

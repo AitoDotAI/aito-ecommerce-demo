@@ -43,6 +43,11 @@ export default function BoughtTogetherPage() {
   const fetchData = useCallback(async (a: string) => {
     setLoading(true);
     setError(null);
+    // Clear the previous response so the anchor card + cross-sell tiles
+    // all enter the loading state together. Without this, switching to
+    // a cold-cache anchor (e.g. aquarium) leaves the previous selection
+    // visible alongside the new dropdown value — reads as broken.
+    setData(null);
     try {
       const res = await apiFetch<BoughtTogetherResponse>(
         `/api/bought-together?anchor=${a}`,
@@ -95,15 +100,9 @@ export default function BoughtTogetherPage() {
             <option key={a.id} value={a.id}>{a.display}</option>
           ))}
         </select>
-        {data && (
-          <span
-            className="pill pill-grey"
-            style={{ marginLeft: "auto", fontFamily: "var(--mono)", fontSize: 11 }}
-            title="Last `_relate` round-trip"
-          >
-            {data.last_response_ms} ms
-          </span>
-        )}
+        {/* Latency pill moved to the TopBar — subscribes to the live
+            X-Aito-Calls header so cache hits read as "cached" rather
+            than the original fetch's stale ms value. */}
       </div>
 
       {error && (
@@ -143,6 +142,7 @@ export default function BoughtTogetherPage() {
               ))}
               {!loading && data && data.cross_sells.length === 0 && (
                 <div
+                  data-empty-state
                   style={{
                     gridColumn: "1 / -1",
                     padding: 24,

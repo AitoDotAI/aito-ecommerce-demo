@@ -34,6 +34,7 @@ export default function ProductFillingPage() {
   const fetchData = useCallback(async (forSku?: string) => {
     setLoading(true);
     setError(null);
+    setData(null);   // see B1 fix in bought-together/page.tsx
     try {
       const url = forSku
         ? `/api/product-filling?sku=${encodeURIComponent(forSku)}`
@@ -90,15 +91,7 @@ export default function ProductFillingPage() {
             <option key={c.sku} value={c.sku}>{c.name}</option>
           ))}
         </select>
-        {data && (
-          <span
-            className="pill pill-grey"
-            style={{ marginLeft: "auto", fontFamily: "var(--mono)", fontSize: 11 }}
-            title="Wall-clock for 5 parallel `_predict` calls"
-          >
-            {data.last_response_ms} ms · 5 parallel
-          </span>
-        )}
+        {/* Latency pill moved to the TopBar — see LatencyBadge. */}
       </div>
 
       {error && (

@@ -38,16 +38,14 @@ export default function ForYouPage() {
   const [data, setData] = useState<ForYouResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [latencyMs, setLatencyMs] = useState<number | null>(null);
 
   const fetchTiles = useCallback(async (p: string) => {
     setLoading(true);
     setError(null);
-    const started = performance.now();
+    setData(null);   // see B1 fix in bought-together/page.tsx
     try {
       const res = await apiFetch<ForYouResponse>(`/api/for-you?customer=${p}`);
       setData(res);
-      setLatencyMs(Math.round(performance.now() - started));
       setPanel({
         ...recommendationsPanel(),
         endpoints: ["_recommend"],
@@ -89,15 +87,7 @@ export default function ForYouPage() {
             {p.label}
           </button>
         ))}
-        {latencyMs != null && (
-          <span
-            className="pill pill-grey"
-            style={{ marginLeft: "auto", fontFamily: "var(--mono)", fontSize: 11 }}
-            title="Browser-side end-to-end latency (click → grid rendered)"
-          >
-            {latencyMs} ms
-          </span>
-        )}
+        {/* Latency pill moved to the TopBar — see LatencyBadge. */}
       </div>
 
       {error && (

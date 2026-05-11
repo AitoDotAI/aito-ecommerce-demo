@@ -36,6 +36,7 @@ export default function PatternExplorerPage() {
   const fetchData = useCallback(async (a: string) => {
     setLoading(true);
     setError(null);
+    setData(null);   // see B1 fix in bought-together/page.tsx
     try {
       const res = await apiFetch<PatternResponse>(
         `/api/pattern-explorer?anchor=${a}`,
@@ -93,14 +94,7 @@ export default function PatternExplorerPage() {
             <option key={a.id} value={a.id}>{a.display}</option>
           ))}
         </select>
-        {data && (
-          <span
-            className="pill pill-grey"
-            style={{ marginLeft: "auto", fontFamily: "var(--mono)", fontSize: 11 }}
-          >
-            {data.last_response_ms} ms
-          </span>
-        )}
+        {/* Latency pill moved to the TopBar — see LatencyBadge. */}
       </div>
 
       {error && (

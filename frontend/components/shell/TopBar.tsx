@@ -1,5 +1,6 @@
 "use client";
 
+import LatencyBadge from "./LatencyBadge";
 import { useShell } from "./ShellState";
 
 /**
@@ -40,6 +41,7 @@ export default function TopBar() {
           <span className="current">{breadcrumb}</span>
         </div>
         <div className="topbar-actions">
+          <LatencyBadge />
           <button type="button" className="btn btn-ghost">Export</button>
           <a
             className="btn btn-primary"
