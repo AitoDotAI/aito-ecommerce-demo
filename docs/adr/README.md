@@ -12,6 +12,7 @@ the starting point.
 | 0005 | [Dashboard view + overview_service](0005-dashboard.md) | Accepted |
 | 0006 | [Smart Search — predictive re-ranking](0006-smart-search.md) | Accepted |
 | 0007 | [For You — personalised tile grid + persona switcher](0007-for-you.md) | Accepted |
+| 0008 | [Bought Together — order-level co-occurrence](0008-bought-together.md) | Accepted |
 
 ADRs are externally legible — an outside developer should understand
 the decision and its rationale without project-internal context. Keep

@@ -86,6 +86,13 @@ SCHEMAS: dict[str, dict] = {
             # patterns directly in the Pattern Explorer view.
             "month":       {"type": "String",  "nullable": False},
             "total_eur":   {"type": "Decimal", "nullable": False},
+            # Denormalised: every line's `<pet>__<category>` token,
+            # space-separated. Text type so Aito tokenises on
+            # whitespace and treats each underscored pair as a single
+            # feature. Drives Bought Together's order-level
+            # co-occurrence `_relate` without needing a reverse-link
+            # traversal back into `order_lines`. See ADR 0008.
+            "line_categories": {"type": "Text", "nullable": False},
         },
     },
     # 4. order_lines — links to orders AND products. Load last.

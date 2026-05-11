@@ -227,6 +227,13 @@ class Order:
     customer_id: str
     month: str          # YYYY-MM
     total_eur: float
+    # Denormalised: space-separated `<pet_type>__<category>` tokens
+    # for every line in this order. Lets Aito's `_relate from
+    # orders where {line_categories: {$match: "dog__dry-food"}} relate
+    # line_categories` do order-level co-occurrence directly, without
+    # a join-via-reverse-link that Aito's `_relate` doesn't expose.
+    # See ADR 0008.
+    line_categories: str = ""
 
 
 @dataclass
@@ -759,11 +766,24 @@ def gen_orders_and_lines(
                 continue
 
             lines.extend(this_orders_lines)
+            # Build the denormalised `line_categories` Text field from
+            # each line's product. Aito tokenises Text on whitespace
+            # AND on hyphens, so `dry-food` would split into `dry`
+            # and `food`. We strip hyphens from category names when
+            # forming the token (`dry-food` → `dryfood`,
+            # `dental-treats` → `dentaltreats`), keeping each
+            # (pet_type, category) pair as one indivisible token.
+            line_tokens: list[str] = []
+            for ln in this_orders_lines:
+                prod = _sku_to_product(products, ln.product_sku)
+                clean_cat = prod.category.replace("-", "")
+                line_tokens.append(f"{prod.pet_type}_{clean_cat}")
             orders.append(Order(
                 order_id=order_id,
                 customer_id=customer.customer_id,
                 month=month,
                 total_eur=_round_eur(order_total),
+                line_categories=" ".join(line_tokens),
             ))
 
     return orders, lines

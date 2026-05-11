@@ -72,6 +72,42 @@ export interface HealthResponse {
   aito_url?: string | null;
 }
 
+/* ─── Bought Together (/api/bought-together) ─── */
+
+export interface BoughtTogetherSkuSample {
+  sku: string;
+  name: string;
+  brand: string;
+  price_eur: number;
+}
+
+export interface BoughtTogetherCrossSell {
+  label: string;
+  token: string;
+  lift: number;
+  support: {
+    f: number;
+    f_on_condition: number;
+  };
+  sample_skus: BoughtTogetherSkuSample[];
+}
+
+export interface BoughtTogetherAnchor {
+  id: string;
+  pet_type: string;
+  category: string;
+  display: string;
+  sample_skus: BoughtTogetherSkuSample[];
+}
+
+export interface BoughtTogetherResponse {
+  anchor: BoughtTogetherAnchor;
+  cross_sells: BoughtTogetherCrossSell[];
+  available_anchors: Array<{ id: string; display: string }>;
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  last_response_ms: number;
+}
+
 /* ─── For You (/api/for-you) ─── */
 
 export interface ForYouTile {

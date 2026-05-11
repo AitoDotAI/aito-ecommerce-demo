@@ -26,6 +26,7 @@ from src.rate_limit import check_rate_limit
 from src.overview_service import get_dashboard
 from src.search_service import smart_search
 from src.recommend_service import get_for_you
+from src.bought_together_service import get_bought_together
 
 
 config = load_config()
@@ -194,6 +195,21 @@ def for_you_endpoint(customer: str = "maija"):
     """
     try:
         return get_for_you(aito, persona_id=customer).to_dict()
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/bought-together")
+def bought_together_endpoint(anchor: str = "dog_dryfood"):
+    """Order-level co-occurrence via `_relate` over the denormalised
+    `orders.line_categories` Text column. See ADR 0008."""
+    try:
+        return get_bought_together(aito, anchor_id=anchor).to_dict()
+    except ValueError as exc:
+        return JSONResponse(status_code=400, content={"error": str(exc)})
     except AitoError as exc:
         return JSONResponse(
             status_code=502,

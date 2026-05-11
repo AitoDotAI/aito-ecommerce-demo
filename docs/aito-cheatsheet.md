@@ -207,6 +207,67 @@ multi-pet+small cat-heavy pool.
 
 ---
 
+## Order-level co-occurrence — denormalised Text + `_relate`
+
+**Verified live, 2026-05-11.** The Bought Together pattern.
+
+```json
+POST /api/v1/_relate
+{
+  "from": "orders",
+  "where": { "line_categories": { "$match": "dog_dryfood" } },
+  "relate": "line_categories",
+  "limit": 12
+}
+```
+
+Returns hits with `condition`, `related`, `lift`, `fs`
+(`f`, `fOnCondition`), `ps`. The most useful read:
+
+| `related.line_categories.$has` | `lift` | Reading |
+|---|---|---|
+| `dog_dryfood`        | 2.88× | self — same token appears in same row |
+| `dog_dentaltreats`   | 2.72× | strong positive cross-sell |
+| `cat_wetfood`        | 0.27× | strong protective (anti-correlated) |
+
+### How it works
+
+`orders.line_categories` is a denormalised Text column listing
+each order's lines as `<pet>_<category>` tokens, hyphens
+stripped. Aito tokenises Text on whitespace, so each
+underscored pair is one feature. `_relate` over a Text field
+returns lift of token co-occurrence within the row.
+
+### Why denormalise
+
+Aito's `_relate` over `order_lines` does **line-level**
+(within-row) relation. The natural "order-level co-occurrence"
+shape needs a reverse-link from `orders` back into
+`order_lines` — every form we tried returned 400:
+
+- `order_id.order_lines.product_sku.category` ❌
+- `$context: {order_id: {order_lines: {...}}}` ❌
+- `order_id.product_sku.category` ❌
+
+Denormalising the aggregate (a Text field on `orders` listing
+all its lines' tokens) keeps the `_relate` simple and the data
+small. Same trick used elsewhere: ADR 0006 for
+`customer_segment` / `customer_pet_size`.
+
+### Hyphen gotcha
+
+Aito tokenises Text on whitespace **and on hyphens**. Plain
+`<pet>__<category>` returns `dog__dry` / `food` as separate
+tokens for `dry-food`. Strip hyphens at fixture-gen time so
+each pair stays one indivisible token:
+
+```python
+clean_cat = product.category.replace("-", "")
+token = f"{product.pet_type}_{clean_cat}"
+```
+
+---
+
 ## `AitoClient` method ↔ endpoint cheat reference
 
 | Method | Endpoint | First view that uses it |
