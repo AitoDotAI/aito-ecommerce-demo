@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Predictive E-commerce · Aito.ai — 8 views, one predictive database</title>
+<style>
+  /* ── Tokens — zooplus-inspired chrome + locked Aito panel ─────── */
+  :root {
+    --primary:   #1B4332;
+    --primary-2: #143829;
+    --aito-bg:   #0c0f41;
+    --aito-bg2:  #16194d;
+    --teal:      #12B5AD;
+    --purple:    #9B69FF;
+    --cta:       #F5A623;
+    --cta-soft:  #FEF6E4;
+    --cta-deep:  #6b4f0e;
+    --text:      #1A2E1A;
+    --muted:     #5a6378;
+    --line:      #E3E6EE;
+    --bg-sub:    #F5F7F5;
+  }
+
+  @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap");
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: "Nunito", system-ui, -apple-system, sans-serif;
+    background: var(--aito-bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page {
+    width: 1400px;
+    margin: 0 auto;
+    padding: 56px 64px 64px;
+    background: linear-gradient(180deg, #0c0f41 0%, #0a0d36 100%);
+  }
+
+  /* ── Header ───────────────────────────────────────────────────── */
+  .hdr {
+    text-align: center;
+    margin-bottom: 40px;
+    color: #fff;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 6px 18px;
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 999px;
+    margin-bottom: 22px;
+    background: rgba(255,255,255,0.04);
+  }
+  .brand .brand-mark {
+    font-family: "Nunito", system-ui, sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.2px;
+  }
+  .brand .brand-mark .dot {
+    color: var(--teal);
+  }
+  .brand .brand-tag {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11.5px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--teal);
+  }
+  .hdr h1 {
+    font-family: "Nunito", system-ui, sans-serif;
+    font-weight: 800;
+    font-size: 54px;
+    margin: 0 0 14px;
+    letter-spacing: -0.8px;
+    line-height: 1.05;
+  }
+  .hdr h1 .leading { color: rgba(255,255,255,0.78); font-weight: 600; }
+  .hdr h1 .title   { color: #fff; }
+  .hdr h1 .title em {
+    color: var(--cta);
+    font-style: italic;
+    font-weight: 800;
+  }
+  .hdr .sub {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+    letter-spacing: 2.5px;
+    color: var(--teal);
+    text-transform: uppercase;
+    margin: 14px 0 18px;
+  }
+  .hdr p {
+    font-size: 16px;
+    color: rgba(255,255,255,0.72);
+    max-width: 740px;
+    margin: 0 auto;
+    line-height: 1.55;
+  }
+  .hdr p code {
+    color: #fff;
+    background: rgba(255,255,255,0.08);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+  }
+
+  /* ── Category grid (2x2) ──────────────────────────────────────── */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .cat {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 28px;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+  }
+
+  .cat-hdr {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 6px;
+  }
+  .cat-hdr .icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--cta-soft);
+    color: var(--cta-deep);
+    font-size: 22px;
+  }
+  .cat-hdr .icon.teal   { background: rgba(18,181,173,0.14); color: var(--teal); }
+  .cat-hdr .icon.purple { background: rgba(155,105,255,0.14); color: var(--purple); }
+  .cat-hdr .icon.green  { background: rgba(45,106,79,0.16);   color: var(--primary); }
+  .cat-hdr h2 {
+    font-family: "Nunito", system-ui, sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text);
+  }
+  .cat-tag {
+    color: var(--muted);
+    font-size: 13.5px;
+    margin: 0 0 22px 58px;
+  }
+
+  /* ── Use-case cards (2x1 inside each category) ──────────────── */
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .card {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+  }
+  .card .thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: var(--bg-sub) center/cover no-repeat;
+    border-bottom: 1px solid var(--line);
+  }
+  .card .body {
+    padding: 12px 14px 14px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .card h3 {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 6px;
+    color: var(--text);
+    letter-spacing: -0.1px;
+  }
+  .card p {
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.45;
+    margin: 0 0 10px;
+    flex: 1;
+  }
+  .card p code {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--teal);
+    background: rgba(18,181,173,0.10);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+  .card .link {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10.5px;
+    letter-spacing: 1.4px;
+    color: var(--cta);
+    text-transform: uppercase;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  /* ── Foot ─────────────────────────────────────────────────────── */
+  .foot {
+    text-align: center;
+    margin-top: 40px;
+    color: rgba(255,255,255,0.62);
+    font-size: 13px;
+    font-family: "JetBrains Mono", monospace;
+    letter-spacing: 1.5px;
+  }
+  .foot a { color: var(--teal); text-decoration: none; }
+  .foot strong { color: rgba(255,255,255,0.92); font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="hdr">
+    <div class="brand">
+      <span class="brand-mark">aito<span class="dot">..</span>ai</span>
+      <span class="brand-tag">Predictive E-commerce</span>
+    </div>
+    <h1>
+      <span class="leading">The e-commerce that learns —</span><br>
+      <span class="title">8 views, <em>one predictive database.</em></span>
+    </h1>
+    <div class="sub">No model training · No retraining schedule · One pet-store persona (PetNord)</div>
+    <p>
+      Smart search, recommendations, basket analysis, catalog enrichment, evaluation — every view
+      in this open-source reference is built on Aito's
+      <code>_predict</code>,
+      <code>_recommend</code>,
+      <code>_relate</code>,
+      <code>_search</code>, and
+      <code>_evaluate</code>
+      operators against a single 53k-row dataset.
+    </p>
+  </header>
+
+  <main class="grid">
+
+    <!-- 1. Overview &amp; Discovery ────────────────────────────────── -->
+    <section class="cat">
+      <div class="cat-hdr">
+        <div class="icon green">📊</div>
+        <h2>Overview &amp; Discovery</h2>
+      </div>
+      <p class="cat-tag">Real numbers from the live PetNord DB — KPIs, monthly bars, top SKUs.</p>
+      <div class="cards">
+        <article class="card">
+          <div class="thumb" style="background-image:url('../screenshots/inspect/01-dashboard.png')"></div>
+          <div class="body">
+            <h3>Dashboard</h3>
+            <p>KPI tiles from <code>_search limit=0</code>; top patterns from live <code>_relate</code>; segment cards per <code>_search</code>.</p>
+            <a class="link" href="../docs/adr/0005-dashboard.md">VIEW ADR →</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="thumb" style="background-image:url('../screenshots/inspect/05-purchase-analytics.png')"></div>
+          <div class="body">
+            <h3>Purchase Analytics</h3>
+            <p>Month-over-month bars, top products, AOV per segment, category mix — paginated <code>_search</code> + Python aggregation.</p>
+            <a class="link" href="../docs/adr/0011-analytics-and-patterns.md">VIEW ADR →</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 2. Predict for the shopper ─────────────────────────────── -->
+    <section class="cat">
+      <div class="cat-hdr">
+        <div class="icon teal">✨</div>
+        <h2>Predict for the Shopper</h2>
+      </div>
+      <p class="cat-tag">Same query, different list per customer. The headline demo moments.</p>
+      <div class="cards">
+        <article class="card">
+          <div class="thumb" style="background-image:url('../screenshots/inspect/02-smart-search-maija.png')"></div>
+          <div class="body">
+            <h3>Smart Search</h3>
+            <p>Side-by-side standard vs predictive. <code>_recommend goal: {segment}</code> flips the entire right column per persona pill.</p>
+            <a class="link" href="../docs/adr/0006-smart-search.md">VIEW ADR →</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="thumb" style="background-image:url('../screenshots/inspect/03-for-you-saara.png')"></div>
+          <div class="body">
+            <h3>For You</h3>
+            <p>Personalised tile grid. Maija → cat consumables, Saara → large-breed kibble, Olli → small-dog accessories. Same query body, &lt; 300 ms flip.</p>
+            <a class="link" href="../docs/adr/0007-for-you.md">VIEW ADR →</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 3. Pattern intelligence ─────────────────────────────────── -->
+    <section class="cat">
+      <div class="cat-hdr">
+        <div class="icon purple">🔗</div>
+        <h2>Pattern Intelligence</h2>
+      </div>
+      <p class="cat-tag">Co-purchase lift live from <code>_relate</code> — positive AND protective.</p>
+      <div class="cards">
+        <article class="card">
+          <div class="thumb" style="background-image:url('../screenshots/inspect/04-bought-together-dog-dryfood.png')"></div>
+          <div class="body">
+            <h3>Bought Together</h3>
+            <p>Anchor product → cross-sell tiles ranked by lift. Dog dry-food → dental treats at <code>2.72×</code> baseline, live <code>_relate</code>.</p>
+            <a class="link" href="../docs/adr/0008-bought-together.md">VIEW ADR →</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="thumb" style="background-image:url('../screenshots/inspect/06-pattern-explorer-dog-dryfood.png')"></div>
+          <div class="body">
+            <h3>Pattern Explorer</h3>
+            <p>Full lift band — positive · neutral · protective. The same <code>_relate</code> returns "what's bought together" and "what's bought instead".</p>
+            <a class="link" href="../docs/adr/0011-analytics-and-patterns.md">VIEW ADR →</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 4. Automate the catalog ─────────────────────────────────── -->
+    <section class="cat">
+      <div class="cat-hdr">
+        <div class="icon">⚡</div>
+        <h2>Automate the Catalog</h2>
+      </div>
+      <p class="cat-tag">Multi-field fill + honest evaluation. The model knows when it doesn't know.</p>
+      <div class="cards">
+        <article class="card">
+          <div class="thumb" style="background-image:url('../screenshots/inspect/07-product-filling-default.png')"></div>
+          <div class="body">
+            <h3>Product Filling</h3>
+            <p>Five <code>_predict</code> calls in parallel — pet_type, category, weight, dietary, tax_class — all from product name + brand. Per-field <code>$why</code>.</p>
+            <a class="link" href="../docs/adr/0009-product-filling.md">VIEW ADR →</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="thumb" style="background-image:url('../screenshots/inspect/08-evaluation.png')"></div>
+          <div class="body">
+            <h3>Evaluation</h3>
+            <p>Four <code>_evaluate</code> models, +10 pp gain threshold. One model deliberately fails — return-risk gains <code>+0.0 pp</code>. Honest is the demo.</p>
+            <a class="link" href="../docs/adr/0010-evaluation.md">VIEW ADR →</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    <strong>github.com/AitoDotAI/aito-ecommerce-demo</strong>
+    &nbsp;·&nbsp; POWERED BY <a href="https://aito.ai">aito.ai</a>
+    &nbsp;·&nbsp; EU HOSTED &nbsp;·&nbsp; NO PII STORED
+  </footer>
+
+</div>
+</body>
+</html>

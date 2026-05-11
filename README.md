@@ -13,19 +13,28 @@ demos: [accounting.aito.ai](https://accounting.aito.ai) ·
 GitHub as
 [aito-ecommerce-demo](https://github.com/AitoDotAI/aito-ecommerce-demo).
 
+![Predictive E-commerce — 8 views, one predictive database](assets/teaser.png)
+
 ---
 
 ## See it in action
 
 Eight views, all live against the same Aito DB. Run `./do dev` and
 open <http://localhost:8500>. The screenshots in
-[`screenshots/`](screenshots/) are produced by the headless chromium
-helper in `./do` (gitignored — regenerate locally).
+[`screenshots/`](screenshots/) are produced by
+`frontend/scripts/inspect-views.cjs` (gitignored — regenerate
+locally; the teaser image above is built from them via
+`./do teaser`).
 
 The two-minute narrated walkthrough is in
 [`docs/demo-script.md`](docs/demo-script.md); the five demo moments
 in order are Smart Search → For You → Bought Together → Product
 Filling → Evaluation.
+
+For a print-ready overview, the
+[product sheet](docs/product-sheet/product-sheet.pdf)
+(`./do product-sheet`) collects the same content as an 11-page PDF
+with each view's spotlight.
 
 ---
 

@@ -52,6 +52,10 @@ Frontend
   typecheck         Run TypeScript type checking
   lint              Lint frontend code
 
+Assets (require screenshots/inspect/ — see frontend/scripts/inspect-views.cjs)
+  product-sheet     Compile docs/product-sheet/product-sheet.typ → PDF (requires typst)
+  teaser            Render assets/teaser.html → assets/teaser.png via headless chromium
+
 Each verb either runs immediately or prints the path of the script it
 will run. New multi-step recipes live here, not in your shell history.
 EOF
@@ -257,6 +261,83 @@ cmd_lint() {
   npx next lint 2>/dev/null || echo "No linter configured."
 }
 
+# ── Product sheet + teaser (assets for outreach) ─────────────────────
+
+_find_chrome() {
+  # 1. Playwright-managed browsers
+  for c in ${PLAYWRIGHT_BROWSERS_PATH:-/nonexistent}/chromium-*/chrome-linux/chrome; do
+    [[ -x "$c" ]] && { echo "$c"; return; }
+  done
+  # 2. Nix playwright-chromium package
+  for c in /nix/store/*playwright-chromium*/chrome-linux/chrome; do
+    [[ -x "$c" ]] && { echo "$c"; return; }
+  done
+  # 3. PATH lookups
+  for cmd in chromium chromium-browser google-chrome; do
+    local path
+    path=$(command -v "$cmd" 2>/dev/null)
+    [[ -n "$path" && -x "$path" ]] && { echo "$path"; return; }
+  done
+  echo ""
+}
+
+cmd_product_sheet() {
+  echo "Compiling product sheet..."
+  cd "$SCRIPT_DIR"
+  if ! command -v typst >/dev/null 2>&1; then
+    echo "  typst not on PATH — try: nix-shell -p typst" >&2
+    exit 1
+  fi
+  # Bring up the screenshots the .typ file references if they're missing.
+  if [[ ! -f screenshots/inspect/01-dashboard.png ]]; then
+    echo "  screenshots/inspect/ missing — run ./do dev in one terminal," >&2
+    echo "  then 'node frontend/scripts/inspect-views.cjs' to (re-)generate." >&2
+    exit 2
+  fi
+  # --root points typst at the repo root so the .typ file can `image()`
+  # screenshots that live outside `docs/product-sheet/`.
+  typst compile --root "$SCRIPT_DIR" \
+    docs/product-sheet/product-sheet.typ \
+    docs/product-sheet/product-sheet.pdf
+  echo "  ✓ docs/product-sheet/product-sheet.pdf"
+}
+
+cmd_teaser() {
+  # Render assets/teaser.html → assets/teaser.png via headless chromium.
+  # A transient python http.server lets the HTML's relative
+  # ../screenshots/... paths resolve as http URLs (chromium denies
+  # cross-dir subresources from file://).
+  local chrome
+  chrome=$(_find_chrome)
+  if [[ -z "$chrome" ]]; then
+    echo "Error: chromium not found. Install chromium or set PLAYWRIGHT_BROWSERS_PATH." >&2
+    exit 1
+  fi
+  if [[ ! -f screenshots/inspect/01-dashboard.png ]]; then
+    echo "  screenshots/inspect/ missing — regenerate via" >&2
+    echo "  'node frontend/scripts/inspect-views.cjs'" >&2
+    exit 2
+  fi
+  cd "$SCRIPT_DIR"
+
+  python3 -m http.server 8765 --bind 127.0.0.1 --directory "$SCRIPT_DIR" \
+    > /tmp/ecom_teaser_http.log 2>&1 &
+  local http_pid=$!
+  trap "kill $http_pid 2>/dev/null" EXIT
+  sleep 1
+
+  "$chrome" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage \
+    --hide-scrollbars \
+    --window-size=1500,1900 \
+    --force-device-scale-factor=2 \
+    --screenshot="$SCRIPT_DIR/assets/teaser.png" \
+    "http://127.0.0.1:8765/assets/teaser.html" 2>&1 | tail -2
+
+  kill $http_pid 2>/dev/null
+  trap - EXIT
+  echo "  ✓ assets/teaser.png"
+}
+
 case "${1:-help}" in
   help)              cmd_help ;;
   dev)               cmd_dev ;;
@@ -281,6 +362,8 @@ case "${1:-help}" in
   setup)             cmd_setup ;;
   typecheck)         cmd_typecheck ;;
   lint)              cmd_lint ;;
+  product-sheet)     cmd_product_sheet ;;
+  teaser)            cmd_teaser ;;
   *)
     echo "Unknown command: $1" >&2
     cmd_help
