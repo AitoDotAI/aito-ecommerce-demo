@@ -3,6 +3,13 @@
 import LatencyBadge from "./LatencyBadge";
 import { useShell } from "./ShellState";
 
+
+/** Adds `aito-collapsed` to the topbar when the Aito panel is hidden
+ *  so the topbar's right edge expands to the viewport's. */
+function topbarClass(aitoCollapsed: boolean): string {
+  return aitoCollapsed ? "topbar aito-collapsed" : "topbar";
+}
+
 /**
  * Topbar — brand sits in the sidebar-width slot on the left,
  * breadcrumb + actions on the right. Hamburger toggles the
@@ -11,10 +18,10 @@ import { useShell } from "./ShellState";
  * Matches `predictive-ecommerce-demo.html` lines 481–505 exactly.
  */
 export default function TopBar() {
-  const { sidebarCollapsed, aitoCollapsed, breadcrumb, toggleSidebar, toggleAito } = useShell();
+  const { sidebarCollapsed, aitoCollapsed, breadcrumb, toggleSidebar } = useShell();
 
   return (
-    <div className="topbar">
+    <div className={topbarClass(aitoCollapsed)}>
       <div className="topbar-brand">
         <button
           type="button"
@@ -60,15 +67,10 @@ export default function TopBar() {
           >
             Live Demo
           </a>
-          <button
-            type="button"
-            className={`toggle-btn toggle-btn-aito${aitoCollapsed ? " active" : ""}`}
-            onClick={toggleAito}
-            title="Toggle Aito panel"
-            aria-label="Toggle Aito panel"
-          >
-            ⚡
-          </button>
+          {/* The Aito-panel toggle used to live here. It moved to the
+              mid-edge tab on the panel itself (see AitoPanel's
+              `aito-panel-toggle`) — same affordance as the accounting
+              demo. */}
           <div className="avatar" aria-hidden="true">PN</div>
         </div>
       </div>

@@ -14,7 +14,7 @@ import { useShell } from "./ShellState";
  * Matches `predictive-ecommerce-demo.html` lines 195–309 + 1462–1515.
  */
 export default function AitoPanel() {
-  const { aitoCollapsed, mobileOpen, panel } = useShell();
+  const { aitoCollapsed, mobileOpen, panel, toggleAito } = useShell();
 
   const classes = [
     "aito-panel",
@@ -36,11 +36,23 @@ export default function AitoPanel() {
   ];
 
   return (
+    <>
+    {/* Mid-edge collapse tab — vertically centred on the panel's left
+        edge. When the panel is collapsed it slides to the viewport's
+        right edge. Same affordance as accounting.aito.ai's panel. */}
+    <button
+      type="button"
+      className={`aito-panel-toggle${aitoCollapsed ? " collapsed" : ""}`}
+      onClick={toggleAito}
+      aria-label={aitoCollapsed ? "Open Aito panel" : "Close Aito panel"}
+      title={aitoCollapsed ? "Open Aito panel" : "Close Aito panel"}
+    >
+      {aitoCollapsed ? "‹" : "›"}
+    </button>
+
     <aside className={classes} aria-label="Aito prediction context panel">
       <div className="aito-panel-header">
-        <div className="aito-logo-text">
-          aito<em>..</em><span className="dots">ai</span>
-        </div>
+        <img src="/aito-logo.svg" alt="Aito.ai" className="aito-logo-img" />
         <span className="aito-panel-tagline">Predictive DB</span>
       </div>
 
@@ -120,5 +132,6 @@ export default function AitoPanel() {
         </a>
       </div>
     </aside>
+    </>
   );
 }

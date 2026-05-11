@@ -63,8 +63,8 @@
   --aito-dim:       #8a8ab0;
 
   /* ── Spacing rhythm ─────────────────────────────────────── */
-  --sidebar-w:  228px;
-  --topbar-h:    56px;
+  --sidebar-w:  256px;   /* +28 px vs the mock so "Predictive E-commerce" gets room to breathe */
+  --topbar-h:    60px;   /* +4 px to seat the 16 px brand text comfortably */
   --aito-w:     280px;
 
   /* ── Fonts ──────────────────────────────────────────────── */
@@ -87,10 +87,17 @@ a { color: inherit; text-decoration: none; }
 /* ── Topbar ─────────────────────────────────────────────────────── */
 
 .topbar {
-  position: fixed; top: 0; left: 0; right: 0; height: var(--topbar-h);
+  /* The topbar stops at the Aito panel's left edge — the panel runs
+     top-to-bottom of the viewport. When the panel collapses, TopBar
+     adds `.aito-collapsed` so the topbar expands to the right edge. */
+  position: fixed; top: 0; left: 0; right: var(--aito-w);
+  height: var(--topbar-h);
   background: var(--white); border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; padding: 0 20px 0 0; z-index: 200; gap: 0;
+  display: flex; align-items: center; padding: 0 20px 0 0;
+  z-index: 200; gap: 0;
+  transition: right 0.25s ease;
 }
+.topbar.aito-collapsed { right: 0; }
 
 .topbar-brand {
   width: var(--sidebar-w); display: flex; align-items: center; gap: 10px;
@@ -107,19 +114,19 @@ a { color: inherit; text-decoration: none; }
 
 /* `.brand-text` wraps the family-line brand block. The two-word
    product name renders on two lines via explicit <span>s in markup
-   — works on both the 228 px desktop slot and the auto-width mobile
-   collapse without relying on whitespace tricks. */
-.brand-text { min-width: 0; line-height: 1.05; }
+   — works on both desktop and the auto-width mobile collapse
+   without relying on whitespace tricks. */
+.brand-text { min-width: 0; line-height: 1.02; }
 .store-name {
   display: flex; flex-direction: column;
-  font-weight: 800; font-size: 13px; color: white;
-  letter-spacing: -0.2px;
+  font-weight: 800; font-size: 16px; color: white;
+  letter-spacing: -0.3px;
 }
 .store-name-line { display: block; }
 .store-sub  {
-  font-size: 10px; color: rgba(255,255,255,0.55); font-weight: 500;
-  letter-spacing: 0.1px;
-  margin-top: 3px;
+  font-size: 10.5px; color: rgba(255,255,255,0.55); font-weight: 500;
+  letter-spacing: 0.2px;
+  margin-top: 4px;
 }
 
 .topbar-content {
@@ -274,29 +281,55 @@ a { color: inherit; text-decoration: none; }
 
 .aito-panel {
   width: var(--aito-w); flex-shrink: 0; position: fixed;
-  top: var(--topbar-h); right: 0; bottom: 0;
+  /* Panel runs the full viewport height — to the top of the page,
+     not just below the topbar. The topbar's right edge stops at the
+     panel's left edge (see `.topbar`'s `right: var(--aito-w)`). */
+  top: 0; right: 0; bottom: 0;
   background: var(--aito-bg);
   border-left: 1px solid rgba(93, 80, 255, 0.2);
   overflow-y: auto; padding: 0;
   transition: transform 0.25s ease;
   display: flex; flex-direction: column;
-  z-index: 100;
+  z-index: 210;   /* above .topbar (200) so the panel's own header reads on top */
 }
 .aito-panel.collapsed { transform: translateX(var(--aito-w)); }
 
+/* Mid-edge collapse tab — vertically centred on the panel's left
+   edge. Matches the affordance from aito-accounting-demo /
+   aito-demo's ContextPanel. */
+.aito-panel-toggle {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  right: var(--aito-w);
+  width: 22px; height: 64px;
+  background: var(--aito-bg);
+  border: 1px solid rgba(93, 80, 255, 0.3);
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+  cursor: pointer;
+  color: var(--aito-teal);
+  font-size: 14px;
+  z-index: 211;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+  box-shadow: -2px 0 8px rgba(12, 15, 65, 0.3);
+  transition: right 0.25s ease, background-color 0.15s;
+}
+.aito-panel-toggle:hover { background: #37336B; }
+.aito-panel-toggle.collapsed { right: 0; }
+
 .aito-panel-header {
-  display: flex; align-items: center; gap: 10px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px;
   padding: 14px 16px;
   border-bottom: 1px solid rgba(93, 80, 255, 0.2);
   background: rgba(12, 15, 65, 0.92);
   flex-shrink: 0;
 }
-.aito-logo-text {
-  font-size: 18px; font-weight: 800; color: white;
-  font-family: var(--mono); letter-spacing: -0.5px; line-height: 1;
+.aito-logo-img {
+  height: 24px; width: auto; display: block; flex-shrink: 0;
 }
-.aito-logo-text em { color: var(--aito-teal); font-style: normal; }
-.aito-logo-text .dots { color: rgba(255,255,255,0.4); }
 .aito-panel-tagline {
   font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.55);
   letter-spacing: 0.3px; white-space: nowrap;
