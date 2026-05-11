@@ -27,6 +27,8 @@ from src.overview_service import get_dashboard
 from src.search_service import smart_search
 from src.recommend_service import get_for_you
 from src.bought_together_service import get_bought_together
+from src.filling_service import get_filling
+from src.eval_service import run_evaluation
 
 
 config = load_config()
@@ -210,6 +212,31 @@ def bought_together_endpoint(anchor: str = "dog_dryfood"):
         return get_bought_together(aito, anchor_id=anchor).to_dict()
     except ValueError as exc:
         return JSONResponse(status_code=400, content={"error": str(exc)})
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/product-filling")
+def product_filling_endpoint(sku: str | None = None):
+    """Multi-field `_predict` for catalog enrichment. See ADR 0009."""
+    try:
+        return get_filling(aito, sku=sku).to_dict()
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/evaluation")
+def evaluation_endpoint():
+    """Run four `_evaluate` models in parallel and return pass/fail
+    per the +10 pp accuracy-gain threshold. See ADR 0010."""
+    try:
+        return run_evaluation(aito).to_dict()
     except AitoError as exc:
         return JSONResponse(
             status_code=502,

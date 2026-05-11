@@ -120,7 +120,7 @@ def test_evaluate_wraps_body_in_evaluate_key(client, httpx_mock: HTTPXMock):
     httpx_mock.add_response(
         url="https://example.aito.app/api/v1/_evaluate",
         method="POST",
-        json={"accuracy": 0.72, "baseAccuracy": 0.5},
+        json={"accuracy": 0.72, "baseAccuracy": 0.5, "totalCases": 200},
     )
     client.evaluate(
         table="order_lines",
@@ -128,8 +128,13 @@ def test_evaluate_wraps_body_in_evaluate_key(client, httpx_mock: HTTPXMock):
         predict_field="returned",
     )
     body = _last_body(httpx_mock)
+    # Aito requires both `testSource` (which rows to hold out) AND
+    # `evaluate` (the prediction shape). See ADR 0010.
+    assert "testSource" in body
+    assert body["testSource"]["from"] == "order_lines"
     assert "evaluate" in body
     assert body["evaluate"]["predict"] == "returned"
+    assert body["evaluate"]["where"] == {"category": {"$get": "category"}}
 
 
 def test_non_2xx_raises_aito_error(client, httpx_mock: HTTPXMock):

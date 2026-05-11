@@ -13,6 +13,8 @@ the starting point.
 | 0006 | [Smart Search — predictive re-ranking](0006-smart-search.md) | Accepted |
 | 0007 | [For You — personalised tile grid + persona switcher](0007-for-you.md) | Accepted |
 | 0008 | [Bought Together — order-level co-occurrence](0008-bought-together.md) | Accepted |
+| 0009 | [Product Filling — multi-field `_predict`](0009-product-filling.md) | Accepted |
+| 0010 | [Evaluation — honest pass/fail](0010-evaluation.md) | Accepted |
 
 ADRs are externally legible — an outside developer should understand
 the decision and its rationale without project-internal context. Keep

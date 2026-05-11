@@ -87,6 +87,8 @@ Ports: Next.js on **8500**, FastAPI on **8501**.
 | 0006 | [Smart Search — predictive re-ranking](docs/adr/0006-smart-search.md) | Accepted |
 | 0007 | [For You — personalised tile grid + persona switcher](docs/adr/0007-for-you.md) | Accepted |
 | 0008 | [Bought Together — order-level co-occurrence](docs/adr/0008-bought-together.md) | Accepted |
+| 0009 | [Product Filling — multi-field `_predict`](docs/adr/0009-product-filling.md) | Accepted |
+| 0010 | [Evaluation — honest pass/fail](docs/adr/0010-evaluation.md) | Accepted |
 
 ---
 

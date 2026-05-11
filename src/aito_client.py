@@ -66,12 +66,16 @@ class AitoClient:
         """
         start = time.perf_counter()
         try:
+            # 90 s window — `_evaluate` against `order_lines` (37 k rows,
+            # 200 held-out cases) routinely takes 20-60 s. Other endpoints
+            # are well under a second; the wider timeout costs nothing on
+            # the fast paths.
             response = httpx.request(
                 method,
                 self._url(path),
                 headers=self._headers,
                 json=json,
-                timeout=30.0,
+                timeout=90.0,
             )
         except httpx.HTTPError as exc:
             timing.record_call(path, (time.perf_counter() - start) * 1000)
@@ -308,19 +312,37 @@ class AitoClient:
             body["select"] = select
         return self._request("POST", "/_match", json=body)
 
-    def evaluate(self, table: str, where: dict, predict_field: str) -> dict:
-        """Run an `_evaluate` query — score how likely a field value is.
+    def evaluate(
+        self,
+        table: str,
+        where: dict,
+        predict_field: str,
+        *,
+        test_limit: int = 200,
+        test_where: dict | None = None,
+    ) -> dict:
+        """Run an `_evaluate` query — accuracy on a held-out test set.
 
-        Used for the Evaluation view: predict each model on a
-        held-out test set, report accuracy + baseline accuracy +
-        per-band breakdowns. Returns
-        ``{"accuracy": float, "baseAccuracy": float, ...}``.
+        Aito requires a `testSource` describing which rows to hold
+        out. Each row from `testSource` is then evaluated against
+        the `evaluate` block: the target field is hidden, predicted
+        from the `where` (which typically reads other fields off
+        the held-out row via `$get`), and compared to ground truth.
+
+        Used for the Evaluation view: per-model accuracy +
+        baseline accuracy + accuracy_gain. Returns
+        ``{"accuracy": float, "baseAccuracy": float, "n": int, ...}``.
         """
+        test_source: dict = {"from": table, "limit": test_limit}
+        if test_where is not None:
+            test_source["where"] = test_where
         body = {
+            "testSource": test_source,
             "evaluate": {
                 "from": table,
                 "where": where,
                 "predict": predict_field,
             },
+            "select": ["accuracy", "baseAccuracy", "n"],
         }
         return self._request("POST", "/_evaluate", json=body)

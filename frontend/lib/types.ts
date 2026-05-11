@@ -72,6 +72,60 @@ export interface HealthResponse {
   aito_url?: string | null;
 }
 
+/* ─── Evaluation (/api/evaluation) ─── */
+
+export interface EvalModelResult {
+  id: string;
+  label: string;
+  table: string;
+  predict: string;
+  features: string[];
+  accuracy: number;
+  base_accuracy: number;
+  accuracy_gain: number;
+  n: number;
+  threshold_pp: number;
+  verdict: "pass" | "fail";
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  error: string | null;
+}
+
+export interface EvalResponse {
+  models: EvalModelResult[];
+  last_run: string;
+  total_response_ms: number;
+}
+
+/* ─── Product Filling (/api/product-filling) ─── */
+
+export interface FillingFieldOut {
+  field: string;
+  label: string;
+  predicted_value: string | number | null;
+  confidence: number;
+  alternatives: Array<{ value: string; confidence: number }>;
+  why_factors: Array<{ field: string; value: string; lift: number }>;
+  hidden_for_demo: boolean;
+}
+
+export interface FillingResponse {
+  product: {
+    sku: string;
+    name: string;
+    brand: string;
+    pet_type: string;
+    category: string;
+    weight_kg: number | null;
+    dietary: string | null;
+    tax_class: string | null;
+    price_eur: number;
+  };
+  fields: FillingFieldOut[];
+  candidate_skus: Array<{ sku: string; name: string }>;
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  last_response_ms: number;
+}
+
 /* ─── Bought Together (/api/bought-together) ─── */
 
 export interface BoughtTogetherSkuSample {
