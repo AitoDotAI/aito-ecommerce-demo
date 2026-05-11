@@ -89,6 +89,7 @@ Ports: Next.js on **8500**, FastAPI on **8501**.
 | 0008 | [Bought Together — order-level co-occurrence](docs/adr/0008-bought-together.md) | Accepted |
 | 0009 | [Product Filling — multi-field `_predict`](docs/adr/0009-product-filling.md) | Accepted |
 | 0010 | [Evaluation — honest pass/fail](docs/adr/0010-evaluation.md) | Accepted |
+| 0011 | [Purchase Analytics + Pattern Explorer](docs/adr/0011-analytics-and-patterns.md) | Accepted |
 
 ---
 

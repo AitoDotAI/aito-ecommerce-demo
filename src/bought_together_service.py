@@ -123,11 +123,14 @@ def _token_to_pair(token: str) -> tuple[str, str] | None:
     `dryfood`) so Aito treats the pair as one Text feature. To
     decode we need the catalog of known categories; we read it from
     `products.json` once at module load.
+
+    Uses `rpartition` (split on the LAST `_`) because compound
+    pet_types like `small_animal` contain underscores; the category
+    side never does (we stripped hyphens at fixture-gen).
     """
     if token in _TOKEN_TO_PAIR:
         return _TOKEN_TO_PAIR[token]
-    # Generic decode for any (pet, cat) pair the fixtures emit.
-    pet, _, clean_cat = token.partition("_")
+    pet, _, clean_cat = token.rpartition("_")
     if not clean_cat:
         return None
     return pet, _CLEAN_TO_HYPHENATED.get(clean_cat, clean_cat)

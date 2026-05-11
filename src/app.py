@@ -29,6 +29,8 @@ from src.recommend_service import get_for_you
 from src.bought_together_service import get_bought_together
 from src.filling_service import get_filling
 from src.eval_service import run_evaluation
+from src.analytics_service import get_analytics
+from src.pattern_service import get_patterns
 
 
 config = load_config()
@@ -237,6 +239,33 @@ def evaluation_endpoint():
     per the +10 pp accuracy-gain threshold. See ADR 0010."""
     try:
         return run_evaluation(aito).to_dict()
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/purchase-analytics")
+def purchase_analytics_endpoint():
+    """Monthly orders + top products + per-segment KPIs. See ADR 0011."""
+    try:
+        return get_analytics(aito).to_dict()
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/pattern-explorer")
+def pattern_explorer_endpoint(anchor: str = "dog_dryfood"):
+    """Ad-hoc `_relate` over `orders.line_categories` — full lift
+    band (positive + neutral + protective). See ADR 0011."""
+    try:
+        return get_patterns(aito, anchor_id=anchor).to_dict()
+    except ValueError as exc:
+        return JSONResponse(status_code=400, content={"error": str(exc)})
     except AitoError as exc:
         return JSONResponse(
             status_code=502,

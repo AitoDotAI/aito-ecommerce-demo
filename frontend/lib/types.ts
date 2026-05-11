@@ -72,6 +72,73 @@ export interface HealthResponse {
   aito_url?: string | null;
 }
 
+/* ─── Purchase Analytics (/api/purchase-analytics) ─── */
+
+export interface AnalyticsMonthly {
+  month: string;
+  orders: number;
+  revenue_eur: number;
+}
+
+export interface AnalyticsTopProduct {
+  sku: string;
+  name: string;
+  pet_type: string;
+  category: string;
+  line_count: number;
+}
+
+export interface AnalyticsSegment {
+  segment: string;
+  label: string;
+  customers: number;
+  orders: number;
+  revenue_eur: number;
+  avg_basket_eur: number;
+}
+
+export interface AnalyticsCategoryMixEntry {
+  pet_type: string;
+  category: string;
+  count: number;
+  share_pct: number;
+}
+
+export interface AnalyticsCategoryMixRow {
+  segment: string;
+  label: string;
+  top_categories: AnalyticsCategoryMixEntry[];
+}
+
+export interface AnalyticsResponse {
+  monthly: AnalyticsMonthly[];
+  top_products: AnalyticsTopProduct[];
+  segments: AnalyticsSegment[];
+  category_mix_by_segment: AnalyticsCategoryMixRow[];
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  last_response_ms: number;
+}
+
+/* ─── Pattern Explorer (/api/pattern-explorer) ─── */
+
+export interface PatternEntry {
+  label: string;
+  token: string;
+  lift: number;
+  support: { f: number; f_on_condition: number };
+  p_given: number;
+  p_overall: number;
+  band: "positive" | "neutral" | "protective";
+}
+
+export interface PatternResponse {
+  anchor: { id: string; pet_type: string; category: string; display: string };
+  patterns: PatternEntry[];
+  available_anchors: Array<{ id: string; display: string }>;
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  last_response_ms: number;
+}
+
 /* ─── Evaluation (/api/evaluation) ─── */
 
 export interface EvalModelResult {
