@@ -71,3 +71,55 @@ export interface HealthResponse {
   aito_connected: boolean;
   aito_url?: string | null;
 }
+
+/* ─── Dashboard (/api/dashboard) ─── */
+
+export interface DashboardKpi {
+  value: number;
+  delta_label: string | null;
+}
+
+export interface DashboardPattern {
+  label: string;
+  lift: number;
+  bar_pct: number;
+}
+
+export interface DashboardSegment {
+  id: string;
+  emoji: string;
+  label: string;
+  share_pct: number;
+  avg_basket_eur: number;
+  note: string;
+  pill_text: string;
+  pill_tone: "orange" | "blue" | "grey" | "purple" | "green" | "red" | "amber";
+}
+
+export interface DashboardInsight {
+  headline: string;
+  body: string;
+}
+
+export interface DashboardRecentOrder {
+  order_id: string;
+  customer_short: string;
+  month: string;
+  line_summary: string;
+  total_eur: number;
+}
+
+export interface DashboardResponse {
+  kpis: {
+    products:       DashboardKpi;
+    orders_12mo:    DashboardKpi;
+    customers:      DashboardKpi;
+    avg_basket_eur: DashboardKpi;
+  };
+  top_patterns: DashboardPattern[];
+  segments: DashboardSegment[];
+  insight: DashboardInsight;
+  recent_orders: DashboardRecentOrder[];
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  last_response_ms: number;
+}

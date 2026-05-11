@@ -23,6 +23,7 @@ from src.aito_client import AitoClient, AitoError
 from src import cache, timing
 from src.config import load_config
 from src.rate_limit import check_rate_limit
+from src.overview_service import get_dashboard
 
 
 config = load_config()
@@ -151,3 +152,17 @@ def schema():
 # Evaluation) lands here as it's built. One service module per view;
 # routes stay in this single file so the table-of-contents is
 # greppable.
+
+@app.get("/api/dashboard")
+def dashboard():
+    """Dashboard summary — KPIs + top patterns + segments + recent orders.
+
+    Cached for 10 minutes per `overview_service.get_dashboard`.
+    """
+    try:
+        return get_dashboard(aito).to_dict()
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
