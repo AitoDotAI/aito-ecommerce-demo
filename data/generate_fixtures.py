@@ -236,6 +236,16 @@ class OrderLine:
     product_sku: str
     qty: int
     returned: bool
+    # Denormalised mirror of `orders.customer_id.{segment, pet_size}`.
+    # Aito's `_recommend` / `_predict` / `_relate` from `order_lines`
+    # only do single-hop link traversal — they can reach
+    # `order_id.<orders col>` and `product_sku.<products col>` but
+    # not two-hop into `order_id.customer_id.<customers col>`. Pulling
+    # the two demo-load-bearing customer attributes down to the line
+    # level lets Smart Search bias by segment + pet_size without a
+    # client-side join. See ADR 0006.
+    customer_segment: str
+    customer_pet_size: str | None = None
 
 
 # ── Generation ──────────────────────────────────────────────────────
@@ -701,6 +711,8 @@ def gen_orders_and_lines(
                     product_sku=product.sku,
                     qty=qty,
                     returned=returned,
+                    customer_segment=customer.segment,
+                    customer_pet_size=customer.pet_size,
                 )
                 line_counter += 1
                 this_orders_lines.append(line)
@@ -733,6 +745,8 @@ def gen_orders_and_lines(
                             product_sku=product.sku,
                             qty=qty,
                             returned=returned,
+                            customer_segment=customer.segment,
+                            customer_pet_size=customer.pet_size,
                         )
                         line_counter += 1
                         this_orders_lines.append(line)

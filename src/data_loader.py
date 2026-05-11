@@ -99,6 +99,15 @@ SCHEMAS: dict[str, dict] = {
                             "link": "products.sku"},
             "qty":         {"type": "Int",     "nullable": False},
             "returned":    {"type": "Boolean", "nullable": False},
+            # Denormalised mirror of `customers.{segment, pet_size}`.
+            # Aito's queries from `order_lines` only do single-hop
+            # link traversal — to bias by customer attributes without
+            # a two-hop chain (`order_id → orders → customer_id →
+            # customers`) we pull the demo-load-bearing customer
+            # fields down to the line level. Drives Smart Search's
+            # customer-context biasing. See ADR 0006.
+            "customer_segment":  {"type": "String", "nullable": False},
+            "customer_pet_size": {"type": "String", "nullable": True},
         },
     },
 }

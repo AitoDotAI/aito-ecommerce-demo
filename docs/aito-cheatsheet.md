@@ -132,6 +132,59 @@ Search view ADR will record the verified shape when we build it.
 
 ---
 
+## Predictive re-ranking — `_recommend` with `goal: { segment }`
+
+**Verified live, 2026-05-11**, against
+`shared.aito.ai/db/aito-ecommerce-demo`.
+
+```json
+POST /api/v1/_recommend
+{
+  "from": "order_lines",
+  "where": {
+    "product_sku.name": { "$match": "food" }
+  },
+  "recommend": "product_sku",
+  "goal": {
+    "customer_segment": "dog_owner",
+    "customer_pet_size": "large"
+  },
+  "limit": 10
+}
+```
+
+### Why this shape
+
+Ranks products matching the query string by
+**P(this customer-segment | a line containing this product)**. Products
+that the target segment has historically bought float to the top because
+their conditional probability under the segment is high.
+
+### Gotchas
+
+- **`goal: {returned: False}` washes out the customer-context signal.**
+  `returned` is uniform at ~3 % across all products, so the resulting
+  ranking is essentially baseline. Use a goal that *uses* the
+  customer context (`customer_segment`, `customer_pet_size`).
+- **Single-hop link traversal only.** From `order_lines`, Aito reaches
+  `order_id.<orders col>` and `product_sku.<products col>` — but
+  `order_id.customer_id.<customers col>` returns 400. The fix is
+  schema-level: denormalise the cross-table attribute down to the
+  line ( `customer_segment` / `customer_pet_size` on `order_lines`).
+- **Per-customer (`order_id.customer_id`) conditioning under-fits**
+  with our 3 000-customer dataset — single-row priors are too thin.
+  Segment-level conditioning gets the visible flip.
+
+### Live numbers (Smart Search demo path)
+
+| Persona              | Top-3 pet × category | Note |
+|---|---|---|
+| Maija (cat_owner)    | cat × dry-food × 3   | p ≈ 0.91 — strongly cat |
+| Saara (dog_owner+large) | dog × dry-food × 3 | p ≈ 0.51 — narrow pet_size constraint reduces absolute p |
+| Aquarium owner       | cat × dry-food × 3   | p ≈ 0.05 — aquarium customers rarely buy "food"-named products; ranking is noise |
+
+---
+
 ## `AitoClient` method ↔ endpoint cheat reference
 
 | Method | Endpoint | First view that uses it |

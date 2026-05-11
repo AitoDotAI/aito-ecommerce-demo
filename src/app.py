@@ -24,6 +24,7 @@ from src import cache, timing
 from src.config import load_config
 from src.rate_limit import check_rate_limit
 from src.overview_service import get_dashboard
+from src.search_service import smart_search
 
 
 config = load_config()
@@ -161,6 +162,22 @@ def dashboard():
     """
     try:
         return get_dashboard(aito).to_dict()
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/smart-search")
+def smart_search_endpoint(q: str = "food", customer: str = "saara"):
+    """Side-by-side baseline `_search` vs predictive `_recommend`.
+
+    Query: free-text token match on `products.name`.
+    Customer: one of `maija` / `olli` / `saara` (the three demo personas).
+    """
+    try:
+        return smart_search(aito, query=q, persona_id=customer).to_dict()
     except AitoError as exc:
         return JSONResponse(
             status_code=502,

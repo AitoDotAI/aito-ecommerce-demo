@@ -84,6 +84,7 @@ Ports: Next.js on **8500**, FastAPI on **8501**.
 | 0003 | [Aito schema, data loader, query-method surface](docs/adr/0003-aito-schema-and-loader.md) | Accepted |
 | 0004 | [Layout shell + design tokens](docs/adr/0004-layout-shell.md) | Accepted |
 | 0005 | [Dashboard view + overview_service](docs/adr/0005-dashboard.md) | Accepted |
+| 0006 | [Smart Search — predictive re-ranking](docs/adr/0006-smart-search.md) | Accepted |
 
 ---
 

@@ -72,6 +72,40 @@ export interface HealthResponse {
   aito_url?: string | null;
 }
 
+/* ─── Smart Search (/api/smart-search) ─── */
+
+export interface SmartSearchHit {
+  sku: string;
+  name: string;
+  brand: string;
+  pet_type: string;
+  category: string;
+  price_eur: number;
+  rank: number;
+}
+
+export interface SmartSearchHitWithDelta extends SmartSearchHit {
+  /** Rank delta vs. the baseline column. Negative = moved up.
+   *  null when this product wasn't in the baseline top-N at all
+   *  (combined with `new_entry: true` for the gold ★ chip). */
+  delta_rank: number | null;
+  new_entry: boolean;
+}
+
+export interface SmartSearchResponse {
+  query: string;
+  customer: {
+    id: string;
+    label: string;
+    segment: string;
+    pet_size: string | null;
+  };
+  baseline: SmartSearchHit[];
+  predictive: SmartSearchHitWithDelta[];
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  last_response_ms: number;
+}
+
 /* ─── Dashboard (/api/dashboard) ─── */
 
 export interface DashboardKpi {
