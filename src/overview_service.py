@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 import time
 from collections import Counter, defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Any
@@ -173,69 +174,68 @@ _PATTERN_PAIRS: list[tuple[tuple[str, str], tuple[str, str], str]] = [
 ]
 
 
-def _compute_top_patterns(k: int = 6) -> list[Pattern]:
-    """Order-level co-occurrence lift over the local fixtures.
+def _compute_top_patterns(client: AitoClient, k: int = 6) -> list[Pattern]:
+    """Order-level co-occurrence lift via live `_relate`.
 
-    For each `(pet_a, cat_a) → (pet_b, cat_b)` pattern:
-      lift = P(pair_b in order | pair_a in order)
-           / P(pair_b in order over all orders)
+    For each curated `(pet_a, cat_a) → (pet_b, cat_b)` pattern in
+    `_PATTERN_PAIRS`, runs the same query Bought Together uses:
 
-    The (pet_type, category) granularity matters: pet retail mixes
-    dog and cat categories in shared names ("dry-food" applies to
-    both), and the engineered Bought Together moment is specifically
-    *dog* dry-food → *dog* dental-treats (ADR 0002 #2). Conditioning
-    on bare category would average dog and cat behaviour into a
-    weaker number.
+      _relate from orders where {line_categories: $match <anchor>}
+              relate line_categories
 
-    The exact live-Aito `_relate` shape for this is pinned in the
-    Bought Together ADR (0008); for the dashboard summary, this
-    Python pass is the same numbers computed once per cache window.
+    and reads the target's lift off the response. See ADR 0008 for
+    the `orders.line_categories` denormalisation rationale.
+
+    Six anchors → six parallel `_relate` calls. Cached at the
+    `get_dashboard` level (10 min); inner anchors aren't cached
+    separately because Pattern Explorer / Bought Together hit the
+    same query body with their own cache keys.
+
+    The pair list stays curated (not strict sort-by-lift): aquarium
+    → aquarium niche pattern inflates lift to ≈ 16× because of its
+    low base rate, mathematically correct but visually misleading
+    for the dashboard's narrative. Pattern Explorer is the right
+    place for raw-ranked discovery.
     """
-    products, orders, lines = _load_local_data()
+    anchors_targets: list[tuple[str, str, str, str]] = []
+    for (anchor_pet, anchor_cat), (target_pet, target_cat), label in _PATTERN_PAIRS:
+        anchor_token = f"{anchor_pet}_{anchor_cat.replace('-', '')}"
+        target_token = f"{target_pet}_{target_cat.replace('-', '')}"
+        anchors_targets.append((anchor_token, target_token, label, anchor_pet))
 
-    sku_to_pair: dict[str, tuple[str, str]] = {
-        p["sku"]: (p["pet_type"], p["category"]) for p in products
-    }
+    def _lift_for(anchor_token: str, target_token: str) -> float | None:
+        try:
+            res = client.relate(
+                table="orders",
+                where={"line_categories": {"$match": anchor_token}},
+                relate_field="line_categories",
+                limit=20,
+            )
+        except Exception:
+            return None
+        for hit in res.get("hits", []):
+            rel = hit.get("related", {}).get("line_categories", {})
+            token = rel.get("$has") if isinstance(rel, dict) else None
+            if token == target_token:
+                return float(hit.get("lift", 0))
+        return None
 
-    # For each order: set of (pet, category) pairs present.
-    order_pairs: dict[str, set[tuple[str, str]]] = defaultdict(set)
-    for line in lines:
-        pair = sku_to_pair.get(line["product_sku"])
-        if pair:
-            order_pairs[line["order_id"]].add(pair)
+    with ThreadPoolExecutor(max_workers=min(6, len(anchors_targets))) as pool:
+        lifts = list(pool.map(
+            lambda t: _lift_for(t[0], t[1]),
+            anchors_targets,
+        ))
 
-    n_orders = len(orders)
-
-    # Baseline P(pair in any order)
-    pair_count: Counter[tuple[str, str]] = Counter()
-    for o in orders:
-        for pair in order_pairs.get(o["order_id"], set()):
-            pair_count[pair] += 1
-    p_base = {pair: c / n_orders for pair, c in pair_count.items()}
-
-    # The pair list is *curated*: each row is a pattern we want to
-    # surface for the dashboard narrative. We preserve `_PATTERN_PAIRS`
-    # order — sorting strictly by lift puts the aquarium niche pattern
-    # on top because its low base-rate inflates lift (≈16×), which is
-    # mathematically correct but visually misleading. Demo flow beats
-    # raw ranking here; Pattern Explorer is where the user gets to
-    # mine arbitrary pairs sorted by lift.
     out: list[Pattern] = []
-    for anchor, target, label in _PATTERN_PAIRS:
-        n_with_a = 0
-        n_with_a_and_b = 0
-        for o in orders:
-            pairs = order_pairs.get(o["order_id"], set())
-            if anchor in pairs:
-                n_with_a += 1
-                if target in pairs:
-                    n_with_a_and_b += 1
-        if n_with_a == 0 or p_base.get(target, 0) == 0:
+    for (anchor_token, target_token, label, _pet), lift in zip(anchors_targets, lifts):
+        if lift is None or lift == 0:
             continue
-        p_t_given_a = n_with_a_and_b / n_with_a
-        lift = p_t_given_a / p_base[target]
         bar_pct = min(1.0, lift / 3.5) * 100
-        out.append(Pattern(label=label, lift=round(lift, 2), bar_pct=round(bar_pct, 1)))
+        out.append(Pattern(
+            label=label,
+            lift=round(lift, 2),
+            bar_pct=round(bar_pct, 1),
+        ))
 
     return out[:k]
 
@@ -454,7 +454,7 @@ def get_dashboard(
         return _from_dict(cached)
 
     kpis, kpi_query, kpi_ms = _kpi_counts(client, today_yyyymm=today_yyyymm)
-    patterns = _compute_top_patterns()
+    patterns = _compute_top_patterns(client)
     segments = _segment_cards(client, total_customers=int(kpis.customers.value))
     products = _load_local_data()[0]
     recent = _recent_orders(client, products)

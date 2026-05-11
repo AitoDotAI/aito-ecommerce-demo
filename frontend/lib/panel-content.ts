@@ -34,21 +34,20 @@ function s(v: string): string { return `<span class="s">${v}</span>`; }
 export function dashboardPanel(): AitoPanelConfig {
   return {
     operation: "Dashboard",
-    endpoints: ["_relate", "_predict", "_recommend"],
+    endpoints: ["_search", "_relate"],
     description:
-      `Pattern discovery across all PetNord purchase data. The dashboard ` +
-      `surfaces co-purchase lift by segment (dog/cat/small animal/aquarium) ` +
-      `and a predicted next purchase per recent order — from ` +
-      `<code style="color:var(--aito-teal);">_relate</code> + ` +
-      `<code style="color:var(--aito-teal);">_predict</code>.`,
+      `KPIs from live <code style="color:var(--aito-teal);">_search limit=0</code> ` +
+      `counts. Top patterns come from live ` +
+      `<code style="color:var(--aito-teal);">_relate</code> over ` +
+      `<code>orders.line_categories</code> — the same query body that powers ` +
+      `Bought Together. Drill into any pattern there for the full lift band.`,
     query:
 `${k('"relate"')}: {
-  ${n('"from"')}: ${s('"order_lines"')},
+  ${n('"from"')}: ${s('"orders"')},
   ${n('"where"')}: {
-    ${n('"category"')}: ${s('"dry-food"')},
-    ${n('"pet_type"')}: ${s('"dog"')}
+    ${n('"line_categories"')}: { ${n('"$match"')}: ${s('"dog_dryfood"')} }
   },
-  ${n('"relate"')}: ${s('"category"')}
+  ${n('"relate"')}: ${s('"line_categories"')}
 }`,
     links: LEARN_MORE_LINKS,
   };
