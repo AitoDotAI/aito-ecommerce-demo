@@ -1,26 +1,214 @@
 /** Per-view Aito-panel content.
  *
- * The right-rail panel is the single highest-leverage piece of
- * marketing copy in the demo: it's where a CTO reads the actual
- * Aito query that's driving what they see on the page.
+ * Each view exports one `AitoPanelConfig`. The right-rail panel
+ * renders endpoint pills, a one-line "what this page is doing"
+ * description, the actual JSON body that drove the latest query,
+ * and learn-more links.
  *
- * Pages call e.g. `dashboardPanel()` to get their config. Click
- * handlers within a page may override on selection — that stays
- * per-page.
- *
- * Builders are added here as each view lands. Build order is in
- * TASK.md; the scaffold step ships none — the full layout shell
- * (with the AitoPanel component) lands in step 4.
- *
- * Every query rendered MUST be runnable against the live PetNord
- * data. No aspirational queries (CLAUDE.md prime directive #2).
+ * The example queries below are **draft** — they read straight
+ * from the visual mock's `views` object. Once each view ships
+ * its real `_predict` / `_relate` / `_recommend` / `_search`
+ * implementation, the matching builder is replaced with the
+ * runnable query body that was actually sent (CLAUDE.md prime
+ * directive #3 — no aspirational queries in the panel).
  */
 
 import type { AitoPanelConfig } from "./types";
 
-// Page-specific panel builders go here as views land.
-// Example signature (reference, not yet wired):
-//
-//   export function dashboardPanel(): AitoPanelConfig { … }
 
-export type { AitoPanelConfig };
+const LEARN_MORE_LINKS: NonNullable<AitoPanelConfig["links"]> = [
+  { label: "API Reference",  url: "https://aito.ai/docs/api/" },
+  { label: "Documentation",  url: "https://aito.ai/docs/" },
+  { label: "Source (GitHub)", url: "https://github.com/AitoDotAI/aito-ecommerce-demo", kind: "github" },
+];
+
+
+/** Shared rendering helpers — these mirror the syntax-highlight
+ *  classes in `globals.css` (`.aito-query .k|.s|.n|.p`). Kept here
+ *  so builders below stay readable. */
+function k(s: string): string { return `<span class="k">${s}</span>`; }
+function n(s: string): string { return `<span class="n">${s}</span>`; }
+function s(v: string): string { return `<span class="s">${v}</span>`; }
+
+
+export function dashboardPanel(): AitoPanelConfig {
+  return {
+    operation: "Dashboard",
+    endpoints: ["_relate", "_predict", "_recommend"],
+    description:
+      `Pattern discovery across all PetNord purchase data. The dashboard ` +
+      `surfaces co-purchase lift by segment (dog/cat/small animal/aquarium) ` +
+      `and a predicted next purchase per recent order — from ` +
+      `<code style="color:var(--aito-teal);">_relate</code> + ` +
+      `<code style="color:var(--aito-teal);">_predict</code>.`,
+    query:
+`${k('"relate"')}: {
+  ${n('"from"')}: ${s('"order_lines"')},
+  ${n('"where"')}: {
+    ${n('"category"')}: ${s('"dry-food"')},
+    ${n('"pet_type"')}: ${s('"dog"')}
+  },
+  ${n('"relate"')}: ${s('"category"')}
+}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
+export function smartSearchPanel(): AitoPanelConfig {
+  return {
+    operation: "Smart Search",
+    endpoints: ["_search"],
+    description:
+      `Re-ranks search results by combining free-text token matching ` +
+      `(<code style="color:var(--aito-teal);">$match</code> on the ` +
+      `<code style="color:var(--aito-teal);">name</code> Text column) with ` +
+      `customer-context biasing. Customers see products they're likely to ` +
+      `buy, not just products whose names contain the query.`,
+    query:
+`${k('"search"')}: {
+  ${n('"from"')}: ${s('"products"')},
+  ${n('"where"')}: {
+    ${n('"name"')}: { ${n('"$match"')}: ${s('"food"')} }
+  },
+  ${n('"limit"')}: 10
+}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
+export function recommendationsPanel(): AitoPanelConfig {
+  return {
+    operation: "For You",
+    endpoints: ["_recommend"],
+    description:
+      `Personalised product recommendations per customer. Aito ranks all ` +
+      `products by P(this customer would buy it, given their history). ` +
+      `Switching the customer in the pill bar above flips the entire grid ` +
+      `in &lt; 300 ms — same query body, different ` +
+      `<code style="color:var(--aito-teal);">where</code> context.`,
+    query:
+`${k('"recommend"')}: {
+  ${n('"from"')}: ${s('"order_lines"')},
+  ${n('"where"')}: {
+    ${n('"orders.customer_id"')}: ${s('"CUST-00001"')}
+  },
+  ${n('"recommend"')}: ${s('"product_sku"')},
+  ${n('"goal"')}: { ${n('"returned"')}: false }
+}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
+export function boughtTogetherPanel(): AitoPanelConfig {
+  return {
+    operation: "Bought Together",
+    endpoints: ["_relate"],
+    description:
+      `Co-purchase lift: how much more likely product B is bought ` +
+      `alongside product A compared to its baseline. For dog dry-food, ` +
+      `dental treats run at <strong style="color:var(--aito-teal);">≈ 2.7×</strong> ` +
+      `their normal rate.`,
+    query:
+`${k('"relate"')}: {
+  ${n('"from"')}: ${s('"order_lines"')},
+  ${n('"where"')}: {
+    ${n('"category"')}: ${s('"dry-food"')},
+    ${n('"pet_type"')}: ${s('"dog"')}
+  },
+  ${n('"relate"')}: ${s('"category"')}
+}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
+export function purchaseAnalyticsPanel(): AitoPanelConfig {
+  return {
+    operation: "Purchase Analytics",
+    endpoints: ["_search", "_relate"],
+    description:
+      `Aggregate analytics powered by <code style="color:var(--aito-teal);">_search</code> ` +
+      `and <code style="color:var(--aito-teal);">_relate</code>. Slice by month, ` +
+      `category, segment, region — no pre-built dashboards, just queries.`,
+    query:
+`${k('"search"')}: {
+  ${n('"from"')}: ${s('"orders"')},
+  ${n('"where"')}: {
+    ${n('"month"')}: ${s('"2026-04"')}
+  },
+  ${n('"limit"')}: 0
+}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
+export function patternExplorerPanel(): AitoPanelConfig {
+  return {
+    operation: "Pattern Explorer",
+    endpoints: ["_relate"],
+    description:
+      `Ad-hoc discovery queries. Pick a field + value and Aito returns ` +
+      `which other fields correlate unusually. Returns lift, support count, ` +
+      `and relative strength — read the table sorted by lift descending.`,
+    query:
+`${k('"relate"')}: {
+  ${n('"from"')}: ${s('"customers"')},
+  ${n('"where"')}: {
+    ${n('"pet_size"')}: ${s('"large"')}
+  },
+  ${n('"relate"')}: ${s('"segment"')}
+}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
+export function productFillingPanel(): AitoPanelConfig {
+  return {
+    operation: "Product Filling",
+    endpoints: ["_predict"],
+    description:
+      `Predicts missing product attributes from the product's name plus ` +
+      `the populated catalog. One <code style="color:var(--aito-teal);">_predict</code> ` +
+      `call per missing field resolves <code style="color:var(--aito-teal);">weight_kg</code>, ` +
+      `<code style="color:var(--aito-teal);">dietary</code>, and ` +
+      `<code style="color:var(--aito-teal);">tax_class</code> in one round-trip.`,
+    query:
+`${k('"predict"')}: {
+  ${n('"from"')}: ${s('"products"')},
+  ${n('"where"')}: {
+    ${n('"name"')}: ${s('"Acana Large Breed Adult"')},
+    ${n('"pet_type"')}: ${s('"dog"')},
+    ${n('"brand"')}: ${s('"Acana"')}
+  },
+  ${n('"predict"')}: ${s('"dietary"')}
+}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
+export function evaluationPanel(): AitoPanelConfig {
+  return {
+    operation: "Evaluation",
+    endpoints: ["_evaluate"],
+    description:
+      `Aito's <code style="color:var(--aito-teal);">_evaluate</code> holds out ` +
+      `a test set, runs predictions, and reports accuracy + baseline accuracy ` +
+      `+ per-case results. Honest failure cases (the return-risk model below) ` +
+      `live here — Aito tells you when it doesn't know.`,
+    query:
+`${k('"evaluate"')}: {
+  ${n('"from"')}: ${s('"order_lines"')},
+  ${n('"where"')}: {
+    ${n('"category"')}: { ${n('"$get"')}: ${s('"category"')} }
+  },
+  ${n('"predict"')}: ${s('"returned"')}
+}`,
+    links: LEARN_MORE_LINKS,
+  };
+}

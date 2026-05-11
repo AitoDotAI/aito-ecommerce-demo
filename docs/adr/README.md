@@ -8,6 +8,7 @@ the starting point.
 | 0001 | [Scaffold + stack mirrored from `aito-erp-demo`](0001-scaffold-and-stack.md) | Accepted |
 | 0002 | [Data model + deterministic fixtures](0002-data-model-and-fixtures.md) | Accepted |
 | 0003 | [Aito schema, data loader, query-method surface](0003-aito-schema-and-loader.md) | Accepted |
+| 0004 | [Layout shell + design tokens](0004-layout-shell.md) | Accepted |
 
 ADRs are externally legible — an outside developer should understand
 the decision and its rationale without project-internal context. Keep
