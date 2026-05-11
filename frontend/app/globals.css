@@ -163,14 +163,20 @@ a { color: inherit; text-decoration: none; }
 .toggle-btn:hover { background: var(--bg); color: var(--text); }
 .toggle-btn.active { background: var(--cta-bg); border-color: var(--cta-border); color: var(--cta); }
 
-/* The hamburger that lives in `.topbar-brand` is on the dark forest
-   background — needs inverted defaults. */
+/* The hamburger lives in `.topbar-brand` on the dark forest
+   background — needs inverted defaults. Desktop hides it because
+   the mid-edge `.sidebar-toggle` replaces it; mobile keeps it
+   because the sidebar is an overlay drawer there. */
 .topbar-brand .toggle-btn {
+  display: none;   /* desktop default */
   background: rgba(255,255,255,0.12);
   border-color: rgba(255,255,255,0.2);
   color: white;
 }
 .topbar-brand .toggle-btn:hover { background: rgba(255,255,255,0.22); }
+@media (max-width: 900px) {
+  .topbar-brand .toggle-btn { display: flex; }
+}
 
 /* The Aito-panel lightning toggle reads dark-panel + teal so it's
    visually paired with the panel itself, not the chrome. */
@@ -294,30 +300,54 @@ a { color: inherit; text-decoration: none; }
 }
 .aito-panel.collapsed { transform: translateX(var(--aito-w)); }
 
-/* Mid-edge collapse tab — vertically centred on the panel's left
-   edge. Matches the affordance from aito-accounting-demo /
-   aito-demo's ContextPanel. */
-.aito-panel-toggle {
+/* Mid-edge collapse tabs — vertically centred on each pane's inner
+   edge. The Aito panel's tab sits on its left edge; the sidebar's
+   sits on its right. Same affordance the accounting demo uses. */
+.aito-panel-toggle,
+.sidebar-toggle {
   position: fixed;
   top: 50%;
   transform: translateY(-50%);
-  right: var(--aito-w);
   width: 22px; height: 64px;
-  background: var(--aito-bg);
-  border: 1px solid rgba(93, 80, 255, 0.3);
-  border-right: none;
-  border-radius: 6px 0 0 6px;
+  border: 1px solid;
   cursor: pointer;
-  color: var(--aito-teal);
   font-size: 14px;
   z-index: 211;
   display: flex; align-items: center; justify-content: center;
   padding: 0;
+  transition: right 0.25s ease, left 0.25s ease, background-color 0.15s;
+}
+
+.aito-panel-toggle {
+  right: var(--aito-w);
+  background: var(--aito-bg);
+  border-color: rgba(93, 80, 255, 0.3);
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+  color: var(--aito-teal);
   box-shadow: -2px 0 8px rgba(12, 15, 65, 0.3);
-  transition: right 0.25s ease, background-color 0.15s;
 }
 .aito-panel-toggle:hover { background: #37336B; }
 .aito-panel-toggle.collapsed { right: 0; }
+
+.sidebar-toggle {
+  left: var(--sidebar-w);
+  background: var(--primary);
+  border-color: rgba(255, 255, 255, 0.18);
+  border-left: none;
+  border-radius: 0 6px 6px 0;
+  color: var(--cta);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.18);
+}
+.sidebar-toggle:hover { background: var(--primary-light); }
+.sidebar-toggle.collapsed { left: 0; }
+
+/* Both edge tabs are desktop-only; on mobile the side rails become
+   overlay drawers triggered by the hamburger in the topbar. */
+@media (max-width: 900px) {
+  .aito-panel-toggle,
+  .sidebar-toggle { display: none; }
+}
 
 .aito-panel-header {
   display: flex; align-items: center; justify-content: space-between;
