@@ -51,6 +51,81 @@ else:
     print(f"  Aito unreachable at {aito._base_url} — continuing in degraded mode.")
 
 
+def _warm_cache() -> None:
+    """Pre-compute every cacheable endpoint in a background thread.
+
+    The Churn view runs ~100 parallel `_predict` calls and is cold-load
+    expensive (~22 s); Evaluation runs four `_evaluate` calls (~15 s).
+    Without warmup the first user to hit either pays that cost. After
+    warmup completes (~30-40 s on a warm Aito) every view loads
+    instantly from the in-memory cache, and survives restart via the
+    `prediction_cache` Aito table.
+
+    Mirrors `aito-erp-demo`'s `_warm_cache()`. Daemon thread so
+    startup isn't blocked.
+    """
+    import threading
+    from concurrent.futures import ThreadPoolExecutor
+
+    def warm_or_skip(name: str, compute_fn) -> None:
+        try:
+            t0 = __import__("time").perf_counter()
+            compute_fn()
+            ms = int((__import__("time").perf_counter() - t0) * 1000)
+            print(f"  warm: {name:24s} ({ms} ms)")
+        except Exception as exc:
+            print(f"  warm ERR {name}: {exc}")
+
+    def warm() -> None:
+        if not aito.check_connectivity():
+            print("  Aito unreachable — skipping cache warmup.")
+            return
+        print("Warming cache…")
+        # Order: cheap+frequent first so the user hits a populated
+        # cache fast for the views they're most likely to click.
+        # Churn + Evaluation are the slowest and go last, parallel.
+        cheap = [
+            ("dashboard",        lambda: get_dashboard(aito)),
+            ("for-you maija",    lambda: get_for_you(aito, persona_id="maija")),
+            ("for-you olli",     lambda: get_for_you(aito, persona_id="olli")),
+            ("for-you saara",    lambda: get_for_you(aito, persona_id="saara")),
+            ("smart-search food (saara)",
+             lambda: smart_search(aito, query="food", persona_id="saara")),
+            ("smart-search food (maija)",
+             lambda: smart_search(aito, query="food", persona_id="maija")),
+            ("smart-search food (olli)",
+             lambda: smart_search(aito, query="food", persona_id="olli")),
+            ("bought-together",  lambda: get_bought_together(aito)),
+            ("pattern-explorer", lambda: get_patterns(aito)),
+            ("purchase-analytics", lambda: get_analytics(aito)),
+            ("product-filling",  lambda: get_filling(aito)),
+            ("feedback",         lambda: get_feedback(aito)),
+        ]
+        # Warm cheap ones serially — most of them parallelise internally
+        # and stacking them concurrently only fights the Aito worker
+        # pool for no real gain.
+        for name, fn in cheap:
+            warm_or_skip(name, fn)
+        # The two slow ones in parallel — they don't share keys and Aito
+        # tolerates the concurrency.
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            list(pool.map(
+                lambda nf: warm_or_skip(*nf),
+                [
+                    ("churn",      lambda: get_churn(aito)),
+                    ("evaluation", lambda: run_evaluation(aito)),
+                ],
+            ))
+        print("Cache warm.")
+
+    threading.Thread(target=warm, daemon=True).start()
+
+
+# Kick off the warmup thread. Daemon so the server keeps responding
+# to non-data routes (health, schema) while warmup runs.
+_warm_cache()
+
+
 app = FastAPI(
     title="Predictive E-commerce — Aito Demo API",
     version="0.1.0",

@@ -223,10 +223,12 @@ function ChurnRiskField({
   };
   actualTrue: boolean;
 }) {
-  // For boolean predicts, the top-hit's $p is P(predicted_value).
-  // We want P(true) regardless of which class won.
-  const topIsTrue = f.predicted_value === true;
-  const pTrue = topIsTrue ? f.confidence : (1 - f.confidence);
+  // Backend's `_predict_field` for `churn_within_90d` always returns
+  // the TRUE-class hit — so `confidence` IS P(true). No more 1 -
+  // confidence flip; the popover's $why is for the same probability
+  // the chip shows. See `src/feedback_service.py` — the
+  // "title says 6 %, body explains 94 %" bug.
+  const pTrue = f.confidence;
   const pct = Math.round(pTrue * 100);
   const band: "high" | "mid" | "low" =
     pTrue >= 0.5 ? "high" : pTrue >= 0.25 ? "mid" : "low";

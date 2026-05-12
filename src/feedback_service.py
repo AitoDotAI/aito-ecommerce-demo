@@ -205,12 +205,27 @@ def _predict_field(
             predicted_value=None, confidence=0.0,
             alternatives=[], why_factors=[], why_explanation=None,
         )
-    top = hits[0]
+
+    # For Boolean risk-style fields we always want to explain the TRUE
+    # class — the popover header reads "Why churn risk = 6 %?" and the
+    # body's base-P + lifts have to be the factors that produce that
+    # 6 % (not the 94 % of P(False)). Without this branch the popover
+    # tells two different stories: title says "6 %", body explains
+    # "94 %".
+    if predict_field == "churn_within_90d":
+        top = next(
+            (h for h in hits if h.get("feature") is True
+             or h.get("feature") == "true"),
+            hits[0],
+        )
+    else:
+        top = hits[0]
+
     predicted_value = top.get("feature")
     confidence = float(top.get("$p", 0))
     alternatives = [
         Alternative(value=str(h.get("feature", "")), confidence=float(h.get("$p", 0)))
-        for h in hits[1:4]
+        for h in hits[1:4] if h is not top
     ]
     why_factors = _parse_why(top.get("$why"))
     why_explanation = process_why(top.get("$why"), predicted_value, actual_p=confidence)
