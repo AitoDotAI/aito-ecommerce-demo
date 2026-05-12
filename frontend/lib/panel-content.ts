@@ -196,18 +196,19 @@ export function feedbackPanel(): AitoPanelConfig {
     operation: "Feedback",
     endpoints: ["_predict"],
     description:
-      `Three parallel <code style="color:var(--aito-teal);">_predict</code> calls ` +
+      `Four parallel <code style="color:var(--aito-teal);">_predict</code> calls ` +
       `over the review's <code style="color:var(--aito-teal);">text</code> column ` +
-      `return <strong>category</strong>, <strong>sentiment</strong>, and the ` +
-      `suggested <strong>assigned_to</strong> agent in one round-trip. Same ` +
-      `fanout shape as Product Filling, applied to free-form text.`,
+      `return <strong>category</strong>, <strong>sentiment</strong>, ` +
+      `<strong>assigned_to</strong>, and <strong>P(churn within 90 d)</strong> ` +
+      `in one round-trip. The churn predict reads churn risk straight from the ` +
+      `review's text — connecting feedback to retention.`,
     query:
 `${k('"predict"')}: {
   ${n('"from"')}: ${s('"reviews"')},
   ${n('"where"')}: {
     ${n('"text"')}: ${s('"Package arrived late. The seal was broken."')}
   },
-  ${n('"predict"')}: ${s('"category"')}
+  ${n('"predict"')}: ${s('"churn_within_90d"')}
 }`,
     links: LEARN_MORE_LINKS,
   };
@@ -219,22 +220,25 @@ export function churnPanel(): AitoPanelConfig {
     operation: "Churn",
     endpoints: ["_predict", "_relate", "_evaluate"],
     description:
-      `Per-customer <code style="color:var(--aito-teal);">_predict churned</code> ` +
-      `ranks active customers by risk. Drivers come from three parallel ` +
-      `<code style="color:var(--aito-teal);">_relate</code> calls over the churned ` +
-      `subset; honest accuracy from one <code style="color:var(--aito-teal);">_evaluate</code> ` +
-      `with timestamp held out.`,
+      `Time-series prediction over the <code style="color:var(--aito-teal);">customer_months</code> ` +
+      `panel — one row per customer per month with visits, purchases, ` +
+      `spend, latest review snapshot. <code style="color:var(--aito-teal);">_predict ` +
+      `churned_in_3_months</code> ranks active customers by risk. Drivers via ` +
+      `parallel <code style="color:var(--aito-teal);">_relate</code>. Accuracy via ` +
+      `<code style="color:var(--aito-teal);">_evaluate</code>.`,
     query:
 `${k('"predict"')}: {
-  ${n('"from"')}: ${s('"customers"')},
+  ${n('"from"')}: ${s('"customer_months"')},
   ${n('"where"')}: {
     ${n('"segment"')}: ${s('"small_animal_owner"')},
     ${n('"region"')}: ${s('"oulu"')},
-    ${n('"tenure_months"')}: 24,
-    ${n('"total_orders"')}: 2,
-    ${n('"total_spent_eur"')}: 47.5
+    ${n('"visits"')}: 4,
+    ${n('"purchases"')}: 0,
+    ${n('"spent_eur"')}: 0,
+    ${n('"latest_rating"')}: 2,
+    ${n('"latest_category"')}: ${s('"shipping"')}
   },
-  ${n('"predict"')}: ${s('"churned"')}
+  ${n('"predict"')}: ${s('"churned_in_3_months"')}
 }`,
     links: LEARN_MORE_LINKS,
   };

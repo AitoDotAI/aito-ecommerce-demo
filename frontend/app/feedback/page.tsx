@@ -67,9 +67,10 @@ export default function FeedbackPage() {
       <div className="page-header">
         <div className="page-title">Feedback</div>
         <div className="page-desc">
-          Three predictions per review — category, sentiment, suggested
-          assignee — in one round-trip. The support team's queue triaged
-          by Aito reading the same text the agent will read.
+          Four predictions per review — category, sentiment, suggested
+          assignee, and 90-day churn risk — all from the review's text
+          alone, in one round-trip. The 4th predict connects feedback
+          to retention.
         </div>
       </div>
 
@@ -157,6 +158,15 @@ export default function FeedbackPage() {
               <div style={{ height: 280, background: "var(--border-light)", borderRadius: 4 }} />
             )}
             {!loading && data?.fields.map((f) => {
+              if (f.field === "churn_within_90d") {
+                return (
+                  <ChurnRiskField
+                    key={`out-${f.field}`}
+                    f={f}
+                    actualTrue={data.review.actual_churn_within_90d}
+                  />
+                );
+              }
               const actualValue =
                 f.field === "category"    ? data.review.actual_category :
                 f.field === "sentiment"   ? data.review.actual_sentiment :
@@ -198,6 +208,69 @@ export default function FeedbackPage() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+
+function ChurnRiskField({
+  f,
+  actualTrue,
+}: {
+  f: { predicted_value: unknown; confidence: number; why_factors: Array<{ field: string; value: string; lift: number }>; label: string };
+  actualTrue: boolean;
+}) {
+  // For boolean predicts, the top-hit's $p is P(predicted_value).
+  // We want P(true) regardless of which class won.
+  const topIsTrue = f.predicted_value === true;
+  const pTrue = topIsTrue ? f.confidence : (1 - f.confidence);
+  const pct = Math.round(pTrue * 100);
+  const band: "high" | "mid" | "low" =
+    pTrue >= 0.5 ? "high" : pTrue >= 0.25 ? "mid" : "low";
+  const color =
+    band === "high" ? "var(--red)" :
+    band === "mid"  ? "var(--cta)" :
+                      "var(--green)";
+  const bg =
+    band === "high" ? "var(--red-bg)" :
+    band === "mid"  ? "var(--cta-bg)" :
+                      "var(--green-bg)";
+  const predictedIsTrue = pTrue >= 0.5;
+  const correct = predictedIsTrue === actualTrue;
+  return (
+    <div className="fill-field" style={{ borderTop: "1px solid var(--border-light)", paddingTop: 14, marginTop: 8 }}>
+      <div className="fill-field-label">{f.label}</div>
+      <div className="fill-field-val" style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+        <div style={{
+          background: bg, color, fontWeight: 800, fontSize: 18,
+          padding: "4px 12px", borderRadius: 8,
+        }}>
+          {pct}%
+        </div>
+        <span style={{ fontWeight: 600, color }}>
+          {band === "high" ? "AT RISK" : band === "mid" ? "MONITOR" : "STABLE"}
+        </span>
+        <span
+          className="pill"
+          style={{
+            fontSize: 10,
+            background: correct ? "var(--green-bg)" : "var(--red-bg)",
+            color: correct ? "var(--green)" : "var(--red)",
+          }}
+          title={`Ground truth: ${actualTrue ? "churned within 90 d" : "still active 90 d later"}`}
+        >
+          {correct ? "✓ matches stored" : `≠ actual: ${actualTrue ? "did churn" : "stayed"}`}
+        </span>
+        {f.why_factors.length > 0 && (
+          <WhyTooltip
+            factors={f.why_factors.map((w) => ({
+              field: w.field || "text",
+              value: w.value,
+              lift: w.lift,
+            }))}
+          />
+        )}
+      </div>
     </div>
   );
 }

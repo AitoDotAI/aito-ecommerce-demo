@@ -346,3 +346,118 @@ def test_reviews_categories_and_assignees_match(customers):
         assert r["assigned_to"] == expected_assignee[r["category"]], r
         assert r["sentiment"] in {"positive", "negative", "neutral"}, r
         assert 1 <= r["rating"] <= 5, r
+
+
+# ── Signal #8: Reviews carry forward churn label ────────────────────
+
+
+def test_review_churn_within_90d_share_in_band():
+    """`churn_within_90d` share across all reviews should land in
+    8-18 %. Below that, the Feedback view's 4th predict has nothing
+    to learn from; above that, the label correlates too strongly
+    with category and the demo's "predict from text alone" framing
+    weakens. See ADR 0013 §"Forward labels"."""
+    reviews = _load("reviews.json")
+    n_pos = sum(1 for r in reviews if r.get("churn_within_90d") is True)
+    rate = n_pos / len(reviews) if reviews else 0
+    assert 0.06 <= rate <= 0.20, (
+        f"review churn_within_90d share {rate:.1%} outside the "
+        f"6-20 % band — Feedback view's 4th predict won't read clean"
+    )
+
+
+def test_review_churn_label_correlates_with_customer_churn(customers):
+    """Every review with `churn_within_90d=True` must belong to a
+    customer who is themselves `churned=True`. The forward-looking
+    label is a SUBSET of the customer's overall churn status —
+    a review can be True only if the customer eventually stopped."""
+    reviews = _load("reviews.json")
+    by_id = {c["customer_id"]: c for c in customers}
+    for r in reviews:
+        if not r.get("churn_within_90d"):
+            continue
+        cust = by_id.get(r["customer_id"])
+        assert cust is not None
+        assert cust.get("churned") is True, (
+            f"review {r['review_id']} has churn_within_90d=True but "
+            f"customer {r['customer_id']} is not churned"
+        )
+
+
+# ── Signal #9: customer_months panel ────────────────────────────────
+
+
+def test_customer_months_panel_volume(customers):
+    """One row per customer per month they were a customer. Volume
+    should land in 20k-35k for the 3000-customer fixture."""
+    panel = _load("customer_months.json")
+    assert 20000 <= len(panel) <= 35000, (
+        f"customer_months count {len(panel)} outside 20k-35k band"
+    )
+
+
+def test_customer_months_every_customer_has_latest_row(customers):
+    """Every customer must have a row at the cutoff month
+    (2026-04). The Churn view's at-risk leaderboard filters on
+    `month = 2026-04` and expects every active customer to appear."""
+    panel = _load("customer_months.json")
+    customers_in_panel_at_cutoff = {
+        cm["customer_id"] for cm in panel if cm["month"] == "2026-04"
+    }
+    customers_with_orders = {
+        c["customer_id"] for c in customers if c.get("total_orders", 0) > 0
+    }
+    missing = customers_with_orders - customers_in_panel_at_cutoff
+    assert not missing, (
+        f"{len(missing)} customers missing their 2026-04 row "
+        f"(first 3: {list(missing)[:3]})"
+    )
+
+
+def test_customer_months_visit_decay_for_churned():
+    """At the cutoff month (2026-04), active customers' visits
+    should be substantially higher than churned customers'. The
+    Churn view's at-risk predict relies on this gap as the
+    strongest leading-indicator feature."""
+    panel = _load("customer_months.json")
+    cutoff_rows = [cm for cm in panel if cm["month"] == "2026-04"]
+    active_visits = [
+        cm["visits"] for cm in cutoff_rows
+        if cm.get("churned_in_3_months") is False
+    ]
+    churned_visits = [
+        cm["visits"] for cm in cutoff_rows
+        if cm.get("churned_in_3_months") is True
+    ]
+    assert active_visits and churned_visits
+    avg_active = sum(active_visits) / len(active_visits)
+    avg_churned = sum(churned_visits) / len(churned_visits)
+    assert avg_churned < avg_active * 0.5, (
+        f"churned-customer visits {avg_churned:.1f} not low enough "
+        f"vs active {avg_active:.1f} — visit-decay signal weak"
+    )
+
+
+def test_customer_months_label_consistent_with_customer_churn(customers):
+    """For each customer, their customer_months rows' labels must
+    match the rule: True iff customer.churned AND row.month ≥
+    customer.last_order_month."""
+    panel = _load("customer_months.json")
+    by_id = {c["customer_id"]: c for c in customers}
+    # Spot-check 100 random rows
+    import random as _rnd
+    rng = _rnd.Random(1)
+    sample = rng.sample(panel, min(100, len(panel)))
+    for cm in sample:
+        cust = by_id.get(cm["customer_id"])
+        assert cust is not None
+        expected = bool(
+            cust.get("churned")
+            and cust.get("last_order_month") is not None
+            and cm["month"] >= cust["last_order_month"]
+        )
+        actual = bool(cm.get("churned_in_3_months"))
+        assert actual == expected, (
+            f"label mismatch for {cm['customer_month_id']}: "
+            f"expected {expected}, got {actual}"
+        )

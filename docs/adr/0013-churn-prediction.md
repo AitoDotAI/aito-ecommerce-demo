@@ -8,21 +8,27 @@
 
 E-commerce churn is the single most economically-relevant
 prediction a retailer can make. Identify who's about to stop
-buying and you can retarget; identify the drivers (segment,
-region, tenure, basket size) and you can build retention
-strategy. Most shops do this with rule-of-thumb tables ("anyone
-who hasn't ordered in 90 days is at risk") and a CSV export to
-the email tool.
+buying and you can retarget; identify the drivers and you can
+build retention strategy. Most shops do this with rule-of-thumb
+tables ("anyone who hasn't ordered in 90 days is at risk") and
+a CSV export to the email tool.
 
-This view runs the actual classifier: given a customer's
-features (segment, pet_size, region, tenure_months,
-total_orders, total_spent_eur), Aito's `_predict churned`
-returns P(churned=true) — without using the timestamp the label
-was derived from.
+This view runs the actual classifier. The training shape is a
+**panel** — one row per customer per month they were a customer
+— with this-month aggregates (visits, purchases, spent_eur),
+denormalised profile features (segment, pet_size, region,
+tenure-at-this-month), the latest review snapshot (rating,
+sentiment, category), and the **forward-looking** target
+`churned_in_3_months`.
 
-This is the **killer feature** of the Understand section. The
-narrative: "Aito ranks your customers by churn risk in one
-query, surfaces the drivers, and tells you its accuracy honestly."
+Aito's `_predict churned_in_3_months` over the latest
+customer_month row of each active customer returns P(this
+customer will be churned 3 months from now). That's the actually-
+useful business question — not "are they churned right now"
+(trivially answerable from `last_order_month`) but "are they
+*becoming* churned".
+
+This is the **killer feature** of the Understand section.
 
 ## Aito usage
 
@@ -35,73 +41,94 @@ Four query types, in order:
 { "from": "customers", "where": { "churned": true }, "limit": 0 }
 ```
 
-**2. At-risk leaderboard** — N parallel `_predict` calls. For
-each active customer:
+**2. At-risk leaderboard** — N parallel `_predict` calls over
+the customer_months panel. Pull every active customer's latest
+row, score each:
 
 ```json
 {
-  "from": "customers",
+  "from": "customer_months",
   "where": {
     "segment": "small_animal_owner",
     "region": "oulu",
-    "tenure_months": 24,
-    "total_orders": 2,
-    "total_spent_eur": 47.5
+    "visits": 4,
+    "purchases": 0,
+    "spent_eur": 0,
+    "tenure_months_at_month": 18,
+    "latest_rating": 2,
+    "latest_sentiment": "negative",
+    "latest_category": "shipping"
   },
-  "predict": "churned"
+  "predict": "churned_in_3_months"
 }
 ```
 
-The `where` carries only the **feature** columns — deliberately
-no `last_order_month`. With the timestamp included, Aito reads
-the label directly off the same column the label was derived
-from and "predicts" at 100% accuracy. The narrative is "predict
-churn from who they are, not from when they last ordered."
+The `where` carries the row's feature columns — time-series
+(visits, purchases, spent_eur), profile (segment, region,
+pet_size, tenure-at-this-month), and latest-review snapshot
+(rating, sentiment, category).
 
-**3. Drivers** — three parallel `_relate` calls, one per discrete
-feature:
+The active-customer pre-filter is one `_search`:
 
 ```json
 {
-  "from": "customers",
-  "where": { "churned": true },
+  "from": "customer_months",
+  "where": { "month": "2026-04", "churned_in_3_months": false },
+  "limit": 120
+}
+```
+
+This returns every active customer's row at the cutoff month
+(`DEMO_TODAY_YYYYMM`).
+
+**3. Drivers** — five parallel `_relate` calls over the panel,
+one per discrete feature (segment / region / pet_size /
+latest_category / latest_sentiment):
+
+```json
+{
+  "from": "customer_months",
+  "where": { "churned_in_3_months": true },
   "relate": "segment"
 }
 ```
 
-Same body with `relate: "region"` and `relate: "pet_size"`.
-Returns lift per value of that field — "small_animal_owner segment
-→ 2.3× churn lift".
+Same shape with `relate` swapped out. Returns lift per value
+of that field — "small_animal_owner segment → 1.8× lift in the
+churned subset". The latest-review fields surface the feedback↔
+churn correlation: "latest_sentiment=negative → 2.4× lift".
 
-**4. Accuracy** — one `_evaluate` over a 200-row sample:
+**4. Accuracy** — one `_evaluate` over a 300-row sample of
+customer_months:
 
 ```json
 {
-  "testSource": { "from": "customers", "limit": 200 },
+  "testSource": { "from": "customer_months", "limit": 300 },
   "evaluate": {
-    "from": "customers",
+    "from": "customer_months",
     "where": {
-      "segment":        { "$get": "segment" },
-      "region":         { "$get": "region" },
-      "tenure_months":  { "$get": "tenure_months" },
-      "total_orders":   { "$get": "total_orders" },
-      "total_spent_eur": { "$get": "total_spent_eur" }
+      "segment":                { "$get": "segment" },
+      "region":                 { "$get": "region" },
+      "tenure_months_at_month": { "$get": "tenure_months_at_month" },
+      "visits":                 { "$get": "visits" },
+      "purchases":              { "$get": "purchases" },
+      "spent_eur":              { "$get": "spent_eur" }
     },
-    "predict": "churned"
+    "predict": "churned_in_3_months"
   },
   "select": ["accuracy", "baseAccuracy", "n"]
 }
 ```
 
 `$get` reads each held-out row's value — without it `_evaluate`
-would predict the same fixed input 200 times.
+would predict the same fixed input 300 times.
 
 ## Decision
 
-### Schema additions to `customers`
+### Schema additions
 
-Four new columns, backfilled at fixture-gen time from the order
-history:
+**`customers` (4 backfilled columns)** — kept for the
+point-in-time KPI strip (`_search where {churned: true}` counts):
 
 | Column | Type | Notes |
 |---|---|---|
@@ -109,6 +136,61 @@ history:
 | `total_spent_eur` | Decimal | Sum of order totals |
 | `last_order_month` | String, nullable | YYYY-MM of most recent order |
 | `churned` | Boolean | `last_order_month ≤ 2026-01` (3 months before frozen demo today) |
+
+**`customer_months` (new table)** — panel data, one row per
+customer per month they were a customer:
+
+| Column | Type | Notes |
+|---|---|---|
+| `customer_month_id` | String, PK | `CUST-00001-2025-03` |
+| `customer_id` | String, link → customers | |
+| `month` | String | YYYY-MM |
+| `visits` | Int | Synthesised per-month sessions, decay-before-churn applied |
+| `purchases` | Int | Orders in this month |
+| `spent_eur` | Decimal | Sum of orders this month |
+| `segment` / `pet_size` / `region` | String | Denormalised profile (Aito single-hop) |
+| `tenure_months_at_month` | Int | Months since first order |
+| `latest_rating` | Int, nullable | Most-recent review rating in this month |
+| `latest_sentiment` | String, nullable | Sentiment of that review |
+| `latest_category` | String, nullable | Category of that review |
+| `churned_in_3_months` | Boolean | **TARGET** — see "Forward labels" below |
+
+Volume: ~26,500 rows (3,000 customers × ~9 months average).
+
+**`reviews` (one new column)** — the same forward-looking label,
+per review:
+
+| Column | Type | Notes |
+|---|---|---|
+| `churn_within_90d` | Boolean | True iff reviewer has no orders in 3 months after review |
+
+Powers the Feedback view's 4th `_predict` — churn risk straight
+from the review text.
+
+### Forward labels
+
+For a customer_months row at month M:
+
+```
+churned_in_3_months[M] = customer.churned  AND  M ≥ customer.last_order_month
+```
+
+- Active customer (not currently churned): every row's label is
+  False. The features are stable; Aito learns "active customer
+  features → not churning".
+- Churned customer (last order at L, L ≤ 2026-01): rows for
+  M < L have False (they were still active then), rows for M ≥ L
+  have True (they had stopped by then). The transition rows
+  (M = L) are where Aito learns the leading-indicator pattern.
+
+For a review created at month R by customer C:
+
+```
+churn_within_90d[R, C] = C.churned  AND  R ≥ C.last_order_month
+```
+
+Same structure. Reviews written near the customer's last activity
+have True; reviews written during active periods have False.
 
 ### Churn signal engineered into the order distribution
 
@@ -142,20 +224,42 @@ boundary.
 Personas (Maija / Olli / Saara) are never churned — they drive
 the For You demo and have to stay active.
 
+### Visit-decay synthesis
+
+`visits` is generated per customer per month from a segment base
+rate × decay factor + Gaussian noise. The decay applies only to
+churning customers, over the 2-3 months before their last order:
+
+| Offset from last_order | Multiplier |
+|---|---|
+| ≤ −3 months | 1.0 (normal activity) |
+| −2 | 0.75 |
+| −1 | 0.50 |
+| 0 (last order month) | 0.30 |
+| +1 | 0.10 |
+| ≥ +2 | 0.04 |
+
+For active customers, multiplier = 1.0 across all months. The
+resulting "active vs churned latest-month visits" gap is ~10 vs
+~0.5 — Aito's strongest learnable feature.
+
 ### Frontend layout
 
 `/churn` route, four blocks:
 
-1. **KPI strip** — total / active / churned / churn-rate cards.
+1. **KPI strip** — total / active / churned / churn-rate cards
+   from the customers table (point-in-time totals).
 2. **At-risk leaderboard** (left, 60% width) — top 20 active
-   customers ranked by P(churned). Risk chip color-coded by
-   confidence band (red ≥ 0.70, yellow 0.45-0.70, grey < 0.45).
-3. **Drivers** (right, top) — list of feature → value rows with
-   lift chips. Up-arrow + red for `lift > 1` (drives churn),
-   down-arrow + green for `lift < 1` (protective).
+   customers ranked by P(churned_in_3_months). Table columns
+   surface the *features that drive the score*: visits this
+   month, spend this month, latest rating, plus segment+region.
+   Risk chip color-coded by band.
+3. **Drivers** (right, top) — list of feature → value rows
+   sorted by |lift - 1|. Includes the latest-review fields —
+   "latest_sentiment=negative → 2.4× lift" makes the
+   feedback↔churn connection visible.
 4. **Evaluation** (right, bottom) — accuracy + baseline + gain
-   pp, with the "timestamp held out" caveat called out in the
-   subtitle.
+   pp, with the "300-row held-out sample" caveat.
 
 ## Acceptance criteria
 

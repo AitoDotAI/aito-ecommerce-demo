@@ -1,26 +1,24 @@
-"""Churn — the killer feature of the Understand section.
+"""Churn — time-series prediction over the customer_months panel.
 
-A customer counts as **churned** when their last order is in or
-before `2026-01` (90 days before frozen demo today = 2026-04). The
-label is deterministic at fixture-gen time; this service surfaces
-Aito's *prediction* of that label off feature-only conditioning
-(segment, pet_size, region, tenure, total_orders, total_spent_eur)
-— i.e. predicting churn *without* using the timestamp.
+The training shape is a panel: one row per customer per month they
+were a customer. Each row carries this-month aggregates (visits,
+purchases, spent_eur), denormalised profile features (segment,
+pet_size, region), tenure-at-this-month, the latest review snapshot
+(rating, sentiment, category) and the **forward-looking** target
+`churned_in_3_months` — True iff the customer has no orders in the
+3 months after this row's month.
 
 Four blocks per request, all live against Aito:
 
-  1. KPI strip      — `_search limit=0` for total / churned / active
-  2. At-risk        — `_predict churned` in parallel for a sample of
-                       active customers, ranked by P(churned=true)
-  3. Drivers        — three parallel `_relate` calls (segment /
-                       region / pet_size) where `churned=true`,
-                       returning lift per value
-  4. Accuracy       — one `_evaluate churned` over a 200-row sample
+  1. KPI strip       — current totals from the customers table
+  2. At-risk         — `_predict churned_in_3_months` per active
+                       customer's *latest* customer_month row
+  3. Drivers         — parallel `_relate` calls on customer_months
+                       filtered to `churned_in_3_months=true`
+  4. Accuracy        — one `_evaluate churned_in_3_months` over
+                       the panel with the full feature set
 
-Cached for 30 minutes — the predict fan-out is the load-bearing
-cost, ~2 s warm.
-
-See ADR 0013 for the design rationale + feature-set choice.
+See ADR 0013 for the panel-data + forward-label design rationale.
 """
 
 from __future__ import annotations
@@ -34,13 +32,33 @@ from src.aito_client import AitoClient
 from src import cache
 
 
-# Features Aito sees for the churn prediction. Deliberately excludes
-# `last_order_month` — that would let Aito read the timestamp and
-# perfectly predict the deterministic label. The demo's narrative is
-# "predict churn from who they are, not from when they last ordered".
+# The cutoff month for "latest customer_month row per customer".
+# Matches `DEMO_TODAY_YYYYMM` from the fixture generator — every
+# customer has a row at this month.
+LATEST_MONTH: str = "2026-04"
+
+
+# Feature columns Aito conditions on when predicting churn. Mix of
+# time-series (visits, purchases, spent_eur), profile (segment,
+# region, pet_size, tenure_months_at_month), and latest-review
+# (latest_rating, latest_sentiment, latest_category). `month` is
+# deliberately excluded — predicting "is this customer about to
+# churn" shouldn't read the calendar.
 _PREDICT_FEATURES: list[str] = [
     "segment", "pet_size", "region",
-    "tenure_months", "total_orders", "total_spent_eur",
+    "tenure_months_at_month",
+    "visits", "purchases", "spent_eur",
+    "latest_rating", "latest_sentiment", "latest_category",
+]
+
+
+# Discrete features `_relate` can naturally surface drivers for.
+# Continuous columns (visits, spent_eur) would need binning;
+# `_relate` over those returns per-value rows that don't read as
+# "drivers". Discrete profile / review fields work cleanly.
+_DRIVER_RELATE_FIELDS: list[str] = [
+    "segment", "region", "pet_size",
+    "latest_category", "latest_sentiment",
 ]
 
 
@@ -61,22 +79,24 @@ class AtRiskCustomer:
     segment: str
     pet_size: str | None
     region: str
-    tenure_months: int
-    total_orders: int
-    total_spent_eur: float
-    last_order_month: str | None
-    risk_score: float          # P(churned=true) from Aito
+    tenure_months: int         # row's tenure_months_at_month
+    visits: int                # this month's visits
+    purchases: int             # this month's purchases
+    spent_eur: float           # this month's spend
+    latest_rating: int | None
+    latest_sentiment: str | None
+    risk_score: float          # P(churned_in_3_months) from Aito
     confidence_band: str       # "high" | "medium" | "low"
 
 
 @dataclass(frozen=True)
 class DriverRow:
-    field: str                 # "segment", "region", "pet_size"
-    value: str                 # the specific value, e.g. "small_animal_owner"
-    lift: float                # lift of P(churned | this value) vs baseline
-    support_f: int             # number of churned customers with this value
-    p_churn: float             # P(churned | this value)
-    p_overall: float           # P(churned) across all customers
+    field: str                 # "segment", "region", "latest_category", ...
+    value: str
+    lift: float
+    support_f: int
+    p_churn: float
+    p_overall: float
 
 
 @dataclass(frozen=True)
@@ -117,8 +137,6 @@ _FIRST_NAMES = [
 
 
 def _short_customer_name(customer_id: str) -> str:
-    """Mirror of `overview_service._short_customer_name` so the
-    recent-orders + at-risk lists share the same anonymous labels."""
     h = sum(ord(c) for c in customer_id)
     first = _FIRST_NAMES[h % len(_FIRST_NAMES)]
     initial = chr(ord("A") + ((h // 7) % 26))
@@ -133,37 +151,30 @@ def _confidence_band(p: float) -> str:
     return "low"
 
 
-def _build_where(customer: dict) -> dict:
-    """The `where` for one customer's churn prediction.
+def _build_where(row: dict) -> dict:
+    """The `where` body for one customer_months row's churn prediction.
 
-    Uses only the feature columns (`_PREDICT_FEATURES`). `pet_size`
-    is conditionally included because it's nullable — cat-owner /
-    aquarium-owner rows don't have one and Aito errors on
-    `None`-valued where keys.
+    Nullable columns (`pet_size`, `latest_*`) are conditionally
+    included — Aito errors on `where: {col: null}`.
     """
     where: dict[str, Any] = {}
     for f in _PREDICT_FEATURES:
-        if f == "pet_size":
-            if customer.get("pet_size"):
-                where["pet_size"] = customer["pet_size"]
+        v = row.get(f)
+        if v is None:
             continue
-        where[f] = customer[f]
+        where[f] = v
     return where
 
 
 # ── Live calls ─────────────────────────────────────────────────────
 
 
-def _predict_churn_for(client: AitoClient, customer: dict) -> float:
-    """Per-customer churn probability via `_predict churned`.
-
-    Returns P(churned=true). Aito returns hits ranked by `$p`;
-    we read the hit whose `feature` is `True`.
-    """
+def _predict_churn_for(client: AitoClient, row: dict) -> float:
+    """P(churned_in_3_months = true) for one customer_months row."""
     res = client.predict(
-        table="customers",
-        where=_build_where(customer),
-        predict_field="churned",
+        table="customer_months",
+        where=_build_where(row),
+        predict_field="churned_in_3_months",
         limit=2,
     )
     for hit in res.get("hits", []):
@@ -172,87 +183,94 @@ def _predict_churn_for(client: AitoClient, customer: dict) -> float:
     return 0.0
 
 
-def _kpi_counts(client: AitoClient) -> tuple[list[Kpi], int]:
-    total    = client.search("customers", limit=0)["total"]
-    churned  = client.search("customers", where={"churned": True}, limit=0)["total"]
-    active   = total - churned
+def _kpi_counts(client: AitoClient) -> list[Kpi]:
+    """Point-in-time totals from the customers table.
+
+    The KPI strip reports current state (how many customers, how
+    many are churned right now). The forward-looking prediction
+    lives on the at-risk leaderboard below.
+    """
+    total = client.search("customers", limit=0)["total"]
+    churned = client.search("customers", where={"churned": True}, limit=0)["total"]
+    active = total - churned
     rate_pct = round((churned / total) * 100, 1) if total else 0.0
-    kpis = [
-        Kpi(label="Total customers",   value=total,   sub="cohort size"),
-        Kpi(label="Active",            value=active,  sub="ordered in last 90 d"),
-        Kpi(label="Churned",           value=churned, sub="no order in 90 d"),
-        Kpi(label="Churn rate",        value=rate_pct, sub="of total cohort"),
+    return [
+        Kpi(label="Total customers", value=total,    sub="cohort size"),
+        Kpi(label="Active",          value=active,   sub="ordered in last 90 d"),
+        Kpi(label="Churned",         value=churned,  sub="no order in 90 d"),
+        Kpi(label="Churn rate",      value=rate_pct, sub="of total cohort"),
     ]
-    return kpis, active
 
 
 def _at_risk_leaderboard(client: AitoClient, top_n: int) -> list[AtRiskCustomer]:
-    """Sample active customers, score each, return the top-N by risk.
+    """Score active customers' latest customer_month row by P(churn
+    in 3 months) and return the top-N.
 
-    Samples ~5× top_n customers so the leaderboard reads the *real*
-    top of the distribution, not just the first few sampled. Predict
-    calls run in a thread pool capped at 8 — `_predict` is ~50 ms each
-    and Aito tolerates the small concurrency without complaint.
+    `_search where {month: LATEST_MONTH, churned_in_3_months: false}`
+    pulls exactly the rows we want to predict on — every active
+    customer has a row at the cutoff month with `churned_in_3_months
+    = False`. Then N parallel `_predict` calls score each row.
     """
-    sample_size = top_n * 5
     sample = client.search(
-        "customers",
-        where={"churned": False},
-        limit=sample_size,
+        "customer_months",
+        where={"month": LATEST_MONTH, "churned_in_3_months": False},
+        limit=top_n * 6,
     ).get("hits", [])
-
     if not sample:
         return []
 
-    def score(cust: dict) -> tuple[dict, float]:
-        return cust, _predict_churn_for(client, cust)
+    def score(row: dict) -> tuple[dict, float]:
+        return row, _predict_churn_for(client, row)
 
     with ThreadPoolExecutor(max_workers=8) as pool:
         scored = list(pool.map(score, sample))
 
     scored.sort(key=lambda x: -x[1])
     top = scored[:top_n]
+
     return [
         AtRiskCustomer(
-            customer_id=c["customer_id"],
-            customer_short=_short_customer_name(c["customer_id"]),
-            segment=c["segment"],
-            pet_size=c.get("pet_size"),
-            region=c["region"],
-            tenure_months=int(c["tenure_months"]),
-            total_orders=int(c["total_orders"]),
-            total_spent_eur=round(float(c["total_spent_eur"]), 2),
-            last_order_month=c.get("last_order_month"),
+            customer_id=row["customer_id"],
+            customer_short=_short_customer_name(row["customer_id"]),
+            segment=row["segment"],
+            pet_size=row.get("pet_size"),
+            region=row["region"],
+            tenure_months=int(row.get("tenure_months_at_month", 0)),
+            visits=int(row.get("visits", 0)),
+            purchases=int(row.get("purchases", 0)),
+            spent_eur=round(float(row.get("spent_eur", 0) or 0), 2),
+            latest_rating=row.get("latest_rating"),
+            latest_sentiment=row.get("latest_sentiment"),
             risk_score=round(p, 4),
             confidence_band=_confidence_band(p),
         )
-        for c, p in top
+        for row, p in top
     ]
 
 
 def _drivers(client: AitoClient) -> list[DriverRow]:
-    """Three parallel `_relate` calls — one per discrete feature.
+    """Parallel `_relate` calls — one per discrete feature — over
+    the churned-row subset of customer_months.
 
-    Each returns lift of P(churned | field=value) vs baseline. We
-    merge the three result sets, drop neutral lifts, sort by lift
-    descending, take the top 8.
+    Each returns lift per value of that field; we merge, drop
+    neutral lifts (|lift-1| < 0.15), sort by |lift-1| descending,
+    take top 10.
     """
-    relate_fields = ["segment", "region", "pet_size"]
 
     def fetch(field: str) -> tuple[str, dict]:
         try:
             res = client.relate(
-                table="customers",
-                where={"churned": True},
+                table="customer_months",
+                where={"churned_in_3_months": True},
                 relate_field=field,
-                limit=10,
+                limit=12,
             )
         except Exception:
             return field, {}
         return field, res
 
-    with ThreadPoolExecutor(max_workers=len(relate_fields)) as pool:
-        results = list(pool.map(fetch, relate_fields))
+    with ThreadPoolExecutor(max_workers=len(_DRIVER_RELATE_FIELDS)) as pool:
+        results = list(pool.map(fetch, _DRIVER_RELATE_FIELDS))
 
     rows: list[DriverRow] = []
     for field, res in results:
@@ -263,7 +281,7 @@ def _drivers(client: AitoClient) -> list[DriverRow]:
                 continue
             lift = float(hit.get("lift", 0))
             if abs(lift - 1.0) < 0.15:
-                continue   # neutral — not a driver
+                continue
             ps = hit.get("ps", {}) or {}
             fs = hit.get("fs", {}) or {}
             rows.append(DriverRow(
@@ -275,29 +293,29 @@ def _drivers(client: AitoClient) -> list[DriverRow]:
                 p_overall=round(float(ps.get("p", 0)), 4),
             ))
 
-    rows.sort(key=lambda r: -r.lift)
-    return rows[:8]
+    rows.sort(key=lambda r: abs(r.lift - 1.0), reverse=True)
+    return rows[:10]
 
 
 def _evaluate_churn(client: AitoClient) -> EvalSummary:
-    """One `_evaluate churned` over a 200-row sample.
+    """One `_evaluate churned_in_3_months` over the panel.
 
-    The `where` reads each held-out row's features via `$get`. We
-    exclude `last_order_month` for the same reason the prediction
-    does — otherwise the timestamp leaks the deterministic label.
+    `$get` reads each held-out row's value at evaluation time.
+    Same feature set as the leaderboard's `_predict`.
     """
     where = {
-        "segment":        {"$get": "segment"},
-        "region":         {"$get": "region"},
-        "tenure_months":  {"$get": "tenure_months"},
-        "total_orders":   {"$get": "total_orders"},
-        "total_spent_eur": {"$get": "total_spent_eur"},
+        "segment":                {"$get": "segment"},
+        "region":                 {"$get": "region"},
+        "tenure_months_at_month": {"$get": "tenure_months_at_month"},
+        "visits":                 {"$get": "visits"},
+        "purchases":              {"$get": "purchases"},
+        "spent_eur":              {"$get": "spent_eur"},
     }
     res = client.evaluate(
-        table="customers",
+        table="customer_months",
         where=where,
-        predict_field="churned",
-        test_limit=200,
+        predict_field="churned_in_3_months",
+        test_limit=300,
     )
     accuracy = float(res.get("accuracy", 0) or 0)
     base = float(res.get("baseAccuracy", 0) or 0)
@@ -319,29 +337,25 @@ def get_churn(
     top_n: int = 20,
 ) -> ChurnResponse:
     """Compose the full Churn payload. Cached for 30 minutes."""
-    cache_key = f"churn:{top_n}"
+    cache_key = f"churn:panel:{top_n}"
     cached = cache.get(cache_key)
     if cached:
         return _from_dict(cached)
 
     started = time.perf_counter()
-    kpis, _active = _kpi_counts(client)
+    kpis = _kpi_counts(client)
     at_risk = _at_risk_leaderboard(client, top_n)
     drivers = _drivers(client)
     evaluation = _evaluate_churn(client)
     elapsed = int((time.perf_counter() - started) * 1000)
 
-    # The "last query" shown in the Aito panel is the per-customer
+    # The "last query" surfaced in the Aito panel is the per-row
     # predict body — it's the load-bearing query and the one a
-    # reviewer wants to inspect. The drivers + evaluate are
-    # secondary.
+    # reviewer should inspect.
     sample_body = {
-        "from": "customers",
-        "where": {
-            f: "<from customer row>"
-            for f in _PREDICT_FEATURES
-        },
-        "predict": "churned",
+        "from": "customer_months",
+        "where": {f: f"<from {f}>" for f in _PREDICT_FEATURES},
+        "predict": "churned_in_3_months",
     }
 
     resp = ChurnResponse(

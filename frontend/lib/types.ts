@@ -366,6 +366,7 @@ export interface FeedbackReviewSummary {
   actual_category: string;
   actual_sentiment: string;
   actual_assigned_to: string;
+  actual_churn_within_90d: boolean;
 }
 
 export interface FeedbackResponse {
@@ -391,9 +392,11 @@ export interface ChurnAtRiskCustomer {
   pet_size: string | null;
   region: string;
   tenure_months: number;
-  total_orders: number;
-  total_spent_eur: number;
-  last_order_month: string | null;
+  visits: number;
+  purchases: number;
+  spent_eur: number;
+  latest_rating: number | null;
+  latest_sentiment: string | null;
   risk_score: number;
   confidence_band: "high" | "medium" | "low";
 }

@@ -2,11 +2,10 @@
 
 ![Feedback](../../screenshots/09-feedback.png)
 
-*Free-text review in, three structured fields out. Aito predicts
-category, sentiment, and the suggested support-team assignee in
-one round-trip via three parallel `_predict` calls — same fanout
-pattern as Product Filling, applied to a Text column instead of
-structured product attributes.*
+*Free-text review in, four structured fields out. Aito predicts
+category, sentiment, the suggested support-team assignee, AND a
+forward-looking 90-day churn risk — all from the review's text
+alone, in one round-trip via four parallel `_predict` calls.*
 
 ## Overview
 
@@ -24,19 +23,20 @@ confidence chips and the option to override.
 
 ## How it works
 
-### Three parallel `_predict` calls
+### Four parallel `_predict` calls
 
 ```python
 # src/feedback_service.py — get_feedback()
 where = {"text": review["text"]}
 
-with ThreadPoolExecutor(max_workers=3) as pool:
+with ThreadPoolExecutor(max_workers=4) as pool:
     futures = [
         pool.submit(_predict_field, client, where, predict_field, label)
         for predict_field, label in [
-            ("category",    "Issue category"),
-            ("sentiment",   "Sentiment"),
-            ("assigned_to", "Suggested assignee"),
+            ("category",         "Issue category"),
+            ("sentiment",        "Sentiment"),
+            ("assigned_to",      "Suggested assignee"),
+            ("churn_within_90d", "Churn risk (90 d)"),
         ]
     ]
     fields = [f.result() for f in futures]
@@ -120,6 +120,22 @@ WhyTooltip with the top contributing tokens — e.g. for
 "text token 'arrived': lift 2.8×".
 Auditable predictions, not a black box.
 
+### 4. Churn risk from text alone
+
+The 4th predict `churn_within_90d` is the demo's connection from
+feedback to retention. Given just the review's text, Aito returns
+P(this reviewer churns within 90 days). High-risk reviews
+(complaints about shipping, repeated quality issues) light up red
+at 60-80%; positive reviews stay green near 8-15%.
+
+The label is set per review at fixture-gen time:
+`churn_within_90d` = True iff the reviewer has no orders in
+the 3 months after the review's `created_at`. Reviews written
+near a churning customer's last order have True labels; reviews
+written during active periods have False. Aito learns "these
+text patterns predict the reviewer is on their way out" without
+ever seeing the customer's order history.
+
 ## Data schema
 
 ```json
@@ -127,15 +143,16 @@ Auditable predictions, not a black box.
   "reviews": {
     "type": "table",
     "columns": {
-      "review_id":   { "type": "String" },
-      "customer_id": { "type": "String", "link": "customers.customer_id" },
-      "product_sku": { "type": "String", "link": "products.sku" },
-      "rating":      { "type": "Int" },
-      "text":        { "type": "Text", "analyzer": "whitespace" },
-      "category":    { "type": "String" },
-      "sentiment":   { "type": "String" },
-      "assigned_to": { "type": "String" },
-      "created_at":  { "type": "String" }
+      "review_id":       { "type": "String" },
+      "customer_id":     { "type": "String", "link": "customers.customer_id" },
+      "product_sku":     { "type": "String", "link": "products.sku" },
+      "rating":          { "type": "Int" },
+      "text":            { "type": "Text", "analyzer": "whitespace" },
+      "category":        { "type": "String" },
+      "sentiment":       { "type": "String" },
+      "assigned_to":     { "type": "String" },
+      "created_at":      { "type": "String" },
+      "churn_within_90d": { "type": "Boolean" }
     }
   }
 }

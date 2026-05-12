@@ -2,11 +2,13 @@
 
 ![Churn](../../screenshots/10-churn.png)
 
-*N parallel `_predict churned` calls rank active customers by
-risk. Three parallel `_relate` calls surface the drivers. One
-`_evaluate` reports honest held-out accuracy — with the timestamp
-held out so Aito predicts churn from who they are, not from when
-they last ordered.*
+*Time-series prediction over a panel of customer-months. Each
+active customer's latest row — carrying this-month visits,
+purchases, spend, denormalised profile, and the latest review
+snapshot — gets scored by `_predict churned_in_3_months`.
+Parallel `_relate` calls surface the drivers (segment, region,
+latest review category / sentiment). `_evaluate` reports
+held-out accuracy.*
 
 ## Overview
 
@@ -43,22 +45,36 @@ across the top. Cheap — ~30 ms total.
 
 ### Block 2: At-risk leaderboard
 
-For each of N active customers (sample of 100), one `_predict
-churned`:
+First, pull every active customer's *latest* customer_month row
+at the cutoff month:
 
 ```python
-# src/churn_service.py — _predict_churn_for()
+# src/churn_service.py — _at_risk_leaderboard()
+sample = client.search(
+    "customer_months",
+    where={"month": "2026-04", "churned_in_3_months": False},
+    limit=120,
+)["hits"]
+```
+
+Then, one `_predict` per row:
+
+```python
 res = client.predict(
-    table="customers",
+    table="customer_months",
     where={
-        "segment":        customer["segment"],
-        "pet_size":       customer.get("pet_size"),   # nullable
-        "region":         customer["region"],
-        "tenure_months":  customer["tenure_months"],
-        "total_orders":   customer["total_orders"],
-        "total_spent_eur": customer["total_spent_eur"],
+        "segment":                row["segment"],
+        "region":                 row["region"],
+        "pet_size":               row.get("pet_size"),    # nullable
+        "tenure_months_at_month": row["tenure_months_at_month"],
+        "visits":                 row["visits"],
+        "purchases":              row["purchases"],
+        "spent_eur":              row["spent_eur"],
+        "latest_rating":          row.get("latest_rating"),
+        "latest_sentiment":       row.get("latest_sentiment"),
+        "latest_category":        row.get("latest_category"),
     },
-    predict_field="churned",
+    predict_field="churned_in_3_months",
     limit=2,
 )
 for hit in res.get("hits", []):
@@ -66,71 +82,86 @@ for hit in res.get("hits", []):
         return float(hit.get("$p", 0))
 ```
 
-The 100 calls run in a thread pool (8 workers). Sort by
-P(churned=true) descending, take the top 20.
+100 calls run in a thread pool (8 workers). Sort by
+P(churned_in_3_months=true) descending, take the top 20.
 
-**Critical**: `last_order_month` is *not* in the `where`. The
-churn label is deterministically derived from that column —
-including it would leak the answer and Aito would "predict"
-at 100% accuracy.
+**Why the panel shape**: the features Aito conditions on are
+*this month's behaviour* — visits, purchases, spend, latest
+review — not aggregates over the customer's lifetime. That's the
+difference between a calendar-style rule ("hasn't ordered in 90
+d") and a real classifier ("visits dropped 60%, last review was
+a 2-star shipping complaint, segment is small_animal_owner — 78%
+churn risk").
 
-### Block 3: Drivers — three parallel `_relate` calls
+### Block 3: Drivers — five parallel `_relate` calls
 
 ```python
 # src/churn_service.py — _drivers()
-relate_fields = ["segment", "region", "pet_size"]
+relate_fields = [
+    "segment", "region", "pet_size",
+    "latest_category", "latest_sentiment",
+]
 
 def fetch(field):
     return field, client.relate(
-        table="customers",
-        where={"churned": True},
+        table="customer_months",
+        where={"churned_in_3_months": True},
         relate_field=field,
-        limit=10,
+        limit=12,
     )
 
-with ThreadPoolExecutor(max_workers=3) as pool:
+with ThreadPoolExecutor(max_workers=5) as pool:
     results = list(pool.map(fetch, relate_fields))
 ```
 
-Each `_relate` returns lift per value of that field. For example:
+Each `_relate` returns lift per value of that field over the
+churned-row subset. For example:
 
 ```
-segment=small_animal_owner → lift 2.3× (32% churn vs 14% baseline, 78 customers)
-region=oulu                → lift 1.8× (25% churn vs 14% baseline, 184 customers)
-pet_size=large             → lift 0.65× (9% churn vs 14% baseline, 612 customers)
+segment=small_animal_owner   → lift 1.7× (drives churn)
+region=oulu                  → lift 1.5×
+latest_sentiment=negative    → lift 2.4× (feedback↔churn signal)
+latest_category=shipping     → lift 1.9×
+pet_size=large               → lift 0.7× (mild protective)
 ```
 
-The page filters out neutral lifts (`|lift - 1| < 0.15`) and
-shows the top 8 by absolute lift. Red chips for `lift > 1`
-("drives churn"), green for `lift < 1` ("protective").
+The two `latest_*` rows are the key new signal — they connect
+feedback to churn. A customer whose last review was negative is
+~2.4× more likely to be in the churned subset.
+
+Filtered to |lift - 1| ≥ 0.15, sorted by |lift - 1| descending,
+top 10. Red chips for `lift > 1`, green for `lift < 1`.
 
 ### Block 4: Honest accuracy via `_evaluate`
 
 ```python
 # src/churn_service.py — _evaluate_churn()
 where = {
-    "segment":         {"$get": "segment"},
-    "region":          {"$get": "region"},
-    "tenure_months":   {"$get": "tenure_months"},
-    "total_orders":    {"$get": "total_orders"},
-    "total_spent_eur": {"$get": "total_spent_eur"},
+    "segment":                {"$get": "segment"},
+    "region":                 {"$get": "region"},
+    "tenure_months_at_month": {"$get": "tenure_months_at_month"},
+    "visits":                 {"$get": "visits"},
+    "purchases":              {"$get": "purchases"},
+    "spent_eur":              {"$get": "spent_eur"},
 }
 client.evaluate(
-    table="customers",
+    table="customer_months",
     where=where,
-    predict_field="churned",
-    test_limit=200,
+    predict_field="churned_in_3_months",
+    test_limit=300,
 )
 ```
 
-`$get` reads each held-out customer's value at evaluation time —
-without it `_evaluate` would predict the same fixed input 200
+`$get` reads each held-out row's value at evaluation time —
+without it `_evaluate` would predict the same fixed input 300
 times. Returns accuracy + baseAccuracy + n; the view computes
 `accuracy_gain_pp = (accuracy - baseAccuracy) × 100` and
 renders pass/fail.
 
-Same `where` shape as the per-customer predict (no
-`last_order_month` for the same reason).
+Sample size is 300 rows — bigger than the 200 used by the
+Evaluation view because the panel has 26,500 rows total (vs
+3,000 customers), so the held-out sample needs to be larger to
+read a stable accuracy.
 
 ## Key features
 
@@ -169,38 +200,51 @@ at X% accuracy, and the dominant features are these.*
 
 ## Data schema
 
-Four new columns on `customers`:
+The view reads from two tables: `customers` (for KPI counts) and
+`customer_months` (for the per-row prediction).
 
 ```json
 {
-  "customers": {
+  "customer_months": {
     "type": "table",
     "columns": {
-      "customer_id":      { "type": "String" },
-      "segment":          { "type": "String" },
-      "pet_size":         { "type": "String", "nullable": true },
-      "region":           { "type": "String" },
-      "tenure_months":    { "type": "Int" },
-      "total_orders":     { "type": "Int" },
-      "total_spent_eur":  { "type": "Decimal" },
-      "last_order_month": { "type": "String", "nullable": true },
-      "churned":          { "type": "Boolean" }
+      "customer_month_id":      { "type": "String" },
+      "customer_id":            { "type": "String", "link": "customers.customer_id" },
+      "month":                  { "type": "String" },
+      "visits":                 { "type": "Int" },
+      "purchases":              { "type": "Int" },
+      "spent_eur":              { "type": "Decimal" },
+      "segment":                { "type": "String" },
+      "pet_size":               { "type": "String", "nullable": true },
+      "region":                 { "type": "String" },
+      "tenure_months_at_month": { "type": "Int" },
+      "latest_rating":          { "type": "Int",    "nullable": true },
+      "latest_sentiment":       { "type": "String", "nullable": true },
+      "latest_category":        { "type": "String", "nullable": true },
+      "churned_in_3_months":    { "type": "Boolean" }
     }
   }
 }
 ```
 
-`total_orders`, `total_spent_eur`, `last_order_month` are
-backfilled by `data/generate_fixtures.py` from the orders fixture
-in a post-pass. `churned` is the deterministic label:
-`last_order_month ≤ 2026-01`.
+~26,500 rows (3,000 customers × ~9 months avg). The
+`churned_in_3_months` label is **forward-looking**: True iff the
+customer is currently churned AND the row's month is at or after
+their last order month. For active customers, every row is False;
+for churned customers, the label flips True at the last-order
+month. Aito learns the transition pattern.
 
-The churn signal is engineered into the order-month distribution
-at fixture-gen time, with `_churn_propensity(customer, n_orders)`
-giving each non-persona customer a feature-driven probability of
-being "churning" (=  having no orders in the last 5 months).
-Personas are never churned — they drive the For You demo and
-have to stay active.
+`visits` is synthesized — base rate per segment × decay factor
+for churning customers + Gaussian noise. The decay drops visits
+to ~30% in the last-order month and ~4% thereafter, giving Aito
+a strong leading-indicator signal.
+
+The churn signal originates in `data/generate_fixtures.py` with
+`_churn_propensity(customer, n_orders)` — segment + region +
+tenure + low-orders weights — keyed on a sub-RNG seeded from
+`customer_id` so the existing demo signals (dog-food→dental
+lift, persona overlaps) stay byte-identical. Personas are never
+churned.
 
 ## Tradeoffs and gotchas
 

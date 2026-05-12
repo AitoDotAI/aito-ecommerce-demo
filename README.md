@@ -17,7 +17,8 @@ demos [`aito-accounting-demo`](https://github.com/AitoDotAI/aito-accounting-demo
 [`aito-erp-demo`](https://github.com/AitoDotAI/aito-erp-demo)
 (*Predictive ERP*). PetNord is the dataset — a Nordic-flavoured
 online pet store with ~700 SKUs, 3,000 customers, 12,000 orders,
-39,000 order lines, and 2,000 customer reviews.
+39,000 order lines, 2,000 customer reviews, and ~26,500
+customer-month panel rows.
 
 ![Predictive E-commerce — 8 views, one predictive database](assets/teaser.png)
 
@@ -61,7 +62,7 @@ Each is in its own view, each builds on the previous:
 | 3 | Bought Together 2.72× — dog dry-food → dental treats, live | [Bought Together](#4-bought-together--co-purchase-lift) | `_relate` |
 | 4 | Product Filling 5 fields — multi-`_predict` in ~480 ms | [Product Filling](#9-product-filling--catalog-enrichment) | `_predict` × 5 |
 | 5 | Evaluation honest failure — Return Risk +0.0 pp gain | [Evaluation](#10-evaluation--honest-passfail) | `_evaluate` × 4 |
-| 6 | **Churn ranking** — 100 customers scored by P(churn) in 2 s; drivers + held-out accuracy on one page | [Churn](#8-churn--the-killer-understand-view) | `_predict` × N + `_relate` × 3 + `_evaluate` |
+| 6 | **Churn ranking** — 100 active customers scored by P(churn in 3 mo) from the time-series panel; drivers + held-out accuracy on one page | [Churn](#8-churn--time-series-prediction-over-the-panel) | `_predict` × N + `_relate` × 5 + `_evaluate` |
 
 The two-minute narrated walkthrough is in
 [`docs/demo-script.md`](docs/demo-script.md).
@@ -198,7 +199,7 @@ side of the equation, plus richer fields per row (lift, support
 counts, p_given vs. p_overall).
 [→ Implementation](src/pattern_service.py) | [Use case guide](docs/use-cases/06-pattern-explorer.md) | [ADR](docs/adr/0011-analytics-and-patterns.md)
 
-### 7. 💬 Feedback — review triage via multi-field `_predict`
+### 7. 💬 Feedback — review triage + churn risk from text
 
 ![Feedback](screenshots/09-feedback.png)
 
@@ -206,41 +207,44 @@ counts, p_given vs. p_overall).
 {
   "from": "reviews",
   "where": { "text": "Package arrived late. The seal was broken." },
-  "predict": "category"
+  "predict": "churn_within_90d"
 }
 ```
 
-Three parallel `_predict` calls over the review's `text` Text
-column return **category**, **sentiment**, and the suggested
-**assigned_to** agent in one round-trip. Same fanout shape as
-Product Filling, applied to free-form text instead of structured
-attributes — the Aito panel cycles through the three predict
-bodies as you flip reviews.
+Four parallel `_predict` calls over the review's `text` Text
+column return **category**, **sentiment**, the suggested
+**assigned_to** agent, AND a forward-looking **churn risk** —
+all from the text alone, in one round-trip. The 4th predict
+connects feedback to retention: a complaint about late delivery
+lights up a red risk chip; positive praise stays green.
 [→ Implementation](src/feedback_service.py) | [Use case guide](docs/use-cases/09-feedback.md) | [ADR](docs/adr/0012-feedback-multi-predict.md)
 
-### 8. 📉 Churn — the killer Understand view
+### 8. 📉 Churn — time-series prediction over the panel
 
 ![Churn](screenshots/10-churn.png)
 
 ```json
 {
-  "from": "customers",
+  "from": "customer_months",
   "where": {
     "segment": "small_animal_owner",
     "region": "oulu",
-    "tenure_months": 24,
-    "total_orders": 2,
-    "total_spent_eur": 47.5
+    "visits": 4,
+    "purchases": 0,
+    "spent_eur": 0,
+    "latest_rating": 2,
+    "latest_category": "shipping"
   },
-  "predict": "churned"
+  "predict": "churned_in_3_months"
 }
 ```
 
-KPI strip + at-risk leaderboard (per-customer `_predict churned`
-× 100 in parallel) + drivers (`_relate` × 3 over the churned
-subset) + honest accuracy (`_evaluate` with the timestamp held
-out). Predict who's about to stop buying — from who they are,
-not from when they last ordered.
+Panel-data churn prediction: one row per customer per month with
+visits, purchases, spend, profile, and the latest review snapshot.
+Each active customer's *latest row* scored with `_predict
+churned_in_3_months`; drivers via `_relate` × 5 (incl. latest
+review fields); held-out accuracy via `_evaluate`. The killer
+feature of the Understand section.
 [→ Implementation](src/churn_service.py) | [Use case guide](docs/use-cases/10-churn.md) | [ADR](docs/adr/0013-churn-prediction.md)
 
 ### 9. ⚡ Product Filling — catalog enrichment
@@ -399,7 +403,8 @@ frontend/           Next.js 16 (App Router)
 
 data/               Deterministic JSON fixtures (seed = 42)
   generate_fixtures.py          single source of truth — re-runs idempotent
-  products.json · customers.json · orders.json · order_lines.json · reviews.json
+  products.json · customers.json · orders.json · order_lines.json
+  reviews.json · customer_months.json
 
 tests/              pytest — fixture signal checks + AitoClient body shape
 screenshots/        Canonical per-view screenshots (the inspect/ subfolder is the workshop)

@@ -29,11 +29,15 @@ from src import cache
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
 
-# Fields the demo predicts, in display order.
+# Fields the demo predicts, in display order. Three classifications
+# (category / sentiment / assigned_to) plus the forward-looking
+# `churn_within_90d` — Aito predicts churn risk straight from the
+# review text. See ADR 0012 §"Forward labels" + ADR 0013.
 PREDICT_FIELDS: list[tuple[str, str]] = [
-    ("category",    "Issue category"),
-    ("sentiment",   "Sentiment"),
-    ("assigned_to", "Suggested assignee"),
+    ("category",          "Issue category"),
+    ("sentiment",         "Sentiment"),
+    ("assigned_to",       "Suggested assignee"),
+    ("churn_within_90d",  "Churn risk (90 d)"),
 ]
 
 
@@ -79,6 +83,7 @@ class ReviewSummary:
     actual_category: str
     actual_sentiment: str
     actual_assigned_to: str
+    actual_churn_within_90d: bool
 
 
 @dataclass
@@ -280,6 +285,7 @@ def get_feedback(
             actual_category=review["category"],
             actual_sentiment=review["sentiment"],
             actual_assigned_to=review["assigned_to"],
+            actual_churn_within_90d=bool(review.get("churn_within_90d", False)),
         ),
         fields=fields,
         candidate_reviews=candidate_reviews,

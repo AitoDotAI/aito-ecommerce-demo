@@ -10,10 +10,11 @@ import type { ChurnResponse, ChurnAtRiskCustomer, ChurnDriverRow } from "@/lib/t
 
 
 /**
- * Churn — the killer feature of the Understand section. KPI strip
- * over `_search`-counted totals, at-risk leaderboard from N parallel
- * `_predict churned` calls, drivers from three parallel `_relate`
- * calls, honest accuracy from one `_evaluate`. See
+ * Churn — time-series prediction over the customer_months panel.
+ * KPI strip from `_search` totals on customers; at-risk leaderboard
+ * scores each active customer's latest customer_month row with
+ * `_predict churned_in_3_months`; drivers via parallel `_relate`;
+ * honest accuracy via `_evaluate`. See
  * `docs/adr/0013-churn-prediction.md`.
  */
 export default function ChurnPage() {
@@ -60,9 +61,10 @@ export default function ChurnPage() {
       <div className="page-header">
         <div className="page-title">Churn</div>
         <div className="page-desc">
-          Active customers ranked by P(churned). Drivers from
-          <code> _relate churned=true</code>. Honest accuracy from
-          <code> _evaluate</code> with the timestamp held out.
+          Active customers' latest customer_month row scored with
+          <code> _predict churned_in_3_months</code>. Drivers from
+          parallel <code>_relate</code> on the churned subset. Honest
+          accuracy via <code>_evaluate</code> over the panel.
         </div>
       </div>
 
@@ -121,10 +123,10 @@ export default function ChurnPage() {
                   <thead>
                     <tr>
                       <th style={{ textAlign: "left" }}>Customer</th>
-                      <th style={{ textAlign: "left" }}>Segment</th>
-                      <th style={{ textAlign: "left" }}>Region</th>
-                      <th style={{ textAlign: "right" }}>Orders</th>
-                      <th style={{ textAlign: "right" }}>LTV</th>
+                      <th style={{ textAlign: "left" }}>Segment · region</th>
+                      <th style={{ textAlign: "right" }}>Visits<br/><span style={{ fontSize: 10, fontWeight: 400 }}>this mo.</span></th>
+                      <th style={{ textAlign: "right" }}>Spend<br/><span style={{ fontSize: 10, fontWeight: 400 }}>this mo.</span></th>
+                      <th style={{ textAlign: "right" }}>Latest<br/><span style={{ fontSize: 10, fontWeight: 400 }}>rating</span></th>
                       <th style={{ textAlign: "right" }}>Risk</th>
                     </tr>
                   </thead>
@@ -213,19 +215,32 @@ function AtRiskRow({ c }: { c: ChurnAtRiskCustomer }) {
     <tr>
       <td>
         <strong>{c.customer_short}</strong>
-        {c.last_order_month && (
-          <span style={{ marginLeft: 6, color: "var(--text-muted)", fontSize: 11 }}>
-            last: {c.last_order_month}
-          </span>
-        )}
+        <div style={{ color: "var(--text-muted)", fontSize: 11 }}>
+          {c.tenure_months}-month tenure
+        </div>
       </td>
       <td>
         <span style={{ color: "var(--text-muted)" }}>{c.segment.replace("_", " ")}</span>
         {c.pet_size && <span style={{ marginLeft: 4, fontSize: 11 }}>· {c.pet_size}</span>}
+        <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{c.region}</div>
       </td>
-      <td>{c.region}</td>
-      <td style={{ textAlign: "right" }}>{c.total_orders}</td>
-      <td style={{ textAlign: "right" }}>{fmtEur(c.total_spent_eur)}</td>
+      <td style={{ textAlign: "right" }}>
+        <span style={{ fontWeight: 700 }}>{c.visits}</span>
+        <div style={{ fontSize: 11, color: "var(--text-muted)" }}>
+          {c.purchases > 0 ? `${c.purchases} order${c.purchases > 1 ? "s" : ""}` : "no orders"}
+        </div>
+      </td>
+      <td style={{ textAlign: "right" }}>{fmtEur(c.spent_eur)}</td>
+      <td style={{ textAlign: "right" }}>
+        {c.latest_rating != null ? (
+          <span style={{ color: "var(--cta)", letterSpacing: 1 }}>
+            {"★".repeat(c.latest_rating)}
+            <span style={{ color: "var(--border)" }}>{"★".repeat(5 - c.latest_rating)}</span>
+          </span>
+        ) : (
+          <span style={{ color: "var(--text-muted)", fontSize: 11 }}>—</span>
+        )}
+      </td>
       <td style={{ textAlign: "right" }}>
         <span
           className="pill"
