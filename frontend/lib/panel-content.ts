@@ -191,6 +191,61 @@ export function productFillingPanel(): AitoPanelConfig {
 }
 
 
+export function feedbackPanel(): AitoPanelConfig {
+  return {
+    operation: "Feedback",
+    endpoints: ["_predict"],
+    description:
+      `Four parallel <code style="color:var(--aito-teal);">_predict</code> calls ` +
+      `condition on both <code style="color:var(--aito-teal);">text</code> + ` +
+      `<code style="color:var(--aito-teal);">rating</code> and return ` +
+      `<strong>category</strong>, <strong>sentiment</strong>, ` +
+      `<strong>assigned_to</strong>, and <strong>P(churn within 90 d)</strong> ` +
+      `in one round-trip. The popover surfaces each feature's lift contribution.`,
+    query:
+`${k('"predict"')}: {
+  ${n('"from"')}: ${s('"reviews"')},
+  ${n('"where"')}: {
+    ${n('"text"')}: ${s('"Package arrived late. The seal was broken."')},
+    ${n('"rating"')}: 2
+  },
+  ${n('"predict"')}: ${s('"churn_within_90d"')}
+}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
+export function churnPanel(): AitoPanelConfig {
+  return {
+    operation: "Churn",
+    endpoints: ["_predict", "_relate", "_evaluate"],
+    description:
+      `Time-series prediction over the <code style="color:var(--aito-teal);">customer_months</code> ` +
+      `panel — one row per customer per month with visits, purchases, ` +
+      `spend, latest review snapshot. <code style="color:var(--aito-teal);">_predict ` +
+      `churned_in_3_months</code> ranks active customers by risk. Drivers via ` +
+      `parallel <code style="color:var(--aito-teal);">_relate</code>. Accuracy via ` +
+      `<code style="color:var(--aito-teal);">_evaluate</code>.`,
+    query:
+`${k('"predict"')}: {
+  ${n('"from"')}: ${s('"customer_months"')},
+  ${n('"where"')}: {
+    ${n('"segment"')}: ${s('"small_animal_owner"')},
+    ${n('"region"')}: ${s('"oulu"')},
+    ${n('"visits"')}: 4,
+    ${n('"purchases"')}: 0,
+    ${n('"spent_eur"')}: 0,
+    ${n('"latest_rating"')}: 2,
+    ${n('"latest_category"')}: ${s('"shipping"')}
+  },
+  ${n('"predict"')}: ${s('"churned_in_3_months"')}
+}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
 export function evaluationPanel(): AitoPanelConfig {
   return {
     operation: "Evaluation",

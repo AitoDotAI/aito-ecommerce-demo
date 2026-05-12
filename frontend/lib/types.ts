@@ -51,6 +51,25 @@ export interface WhyExplanation {
   context_fields: string[];
 }
 
+/** Flattened `$why` decomposition produced by `src/why_processor.py`.
+ *  Drives the `WhyPopover` component. Sibling to the legacy
+ *  `WhyExplanation` type above (which carries highlight HTML
+ *  payloads for the old token-highlight design). */
+export interface WhyExplanationPayload {
+  base_p: number;
+  predicted_value: string;
+  lifts: Array<{
+    lift: number;
+    propositions: Array<{ field: string; value: string; negate?: boolean }>;
+    /** Optional per-factor highlight from Aito. Present when the
+     *  factor matched on a Text-typed column; `marked_text` is the
+     *  full source string with `«…»` sentinels around the matched
+     *  tokens. Frontend splits on the sentinels — never raw HTML. */
+    highlight?: { field: string; marked_text: string } | null;
+  }>;
+  final_p: number | null;
+}
+
 /** Legacy shape kept for backwards compatibility — older endpoints
  *  still return this. New code should prefer `WhyExplanation`. */
 export interface WhyFactor {
@@ -172,6 +191,7 @@ export interface FillingFieldOut {
   confidence: number;
   alternatives: Array<{ value: string; confidence: number }>;
   why_factors: Array<{ field: string; value: string; lift: number }>;
+  why_explanation: WhyExplanationPayload | null;
   hidden_for_demo: boolean;
 }
 
@@ -339,6 +359,91 @@ export interface DashboardResponse {
   segments: DashboardSegment[];
   insight: DashboardInsight;
   recent_orders: DashboardRecentOrder[];
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  last_response_ms: number;
+}
+
+/* ─── Feedback (/api/feedback) ─── */
+
+export interface FeedbackPredictedField {
+  field: string;
+  label: string;
+  predicted_value: string | boolean | null;
+  confidence: number;
+  alternatives: Array<{ value: string; confidence: number }>;
+  why_factors: Array<{ field: string; value: string; lift: number }>;
+  why_explanation: WhyExplanationPayload | null;
+}
+
+export interface FeedbackReviewSummary {
+  review_id: string;
+  customer_id: string;
+  customer_short: string;
+  product_sku: string;
+  product_name: string;
+  rating: number;
+  text: string;
+  created_at: string;
+  actual_category: string;
+  actual_sentiment: string;
+  actual_assigned_to: string;
+  actual_churn_within_90d: boolean;
+}
+
+export interface FeedbackResponse {
+  review: FeedbackReviewSummary;
+  fields: FeedbackPredictedField[];
+  candidate_reviews: Array<{ review_id: string; rating: number; text_short: string }>;
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  last_response_ms: number;
+}
+
+/* ─── Churn (/api/churn) ─── */
+
+export interface ChurnKpi {
+  label: string;
+  value: number;
+  sub: string;
+}
+
+export interface ChurnAtRiskCustomer {
+  customer_id: string;
+  customer_short: string;
+  segment: string;
+  pet_size: string | null;
+  region: string;
+  tenure_months: number;
+  visits: number;
+  purchases: number;
+  spent_eur: number;
+  latest_rating: number | null;
+  latest_sentiment: string | null;
+  risk_score: number;
+  confidence_band: "high" | "medium" | "low";
+  why_explanation: WhyExplanationPayload | null;
+}
+
+export interface ChurnDriverRow {
+  field: string;
+  value: string;
+  lift: number;
+  support_f: number;
+  p_churn: number;
+  p_overall: number;
+}
+
+export interface ChurnEvalSummary {
+  accuracy: number;
+  base_accuracy: number;
+  accuracy_gain_pp: number;
+  n: number;
+}
+
+export interface ChurnResponse {
+  kpis: ChurnKpi[];
+  at_risk: ChurnAtRiskCustomer[];
+  drivers: ChurnDriverRow[];
+  evaluation: ChurnEvalSummary;
   last_query: { endpoint: string; body: Record<string, unknown> };
   last_response_ms: number;
 }

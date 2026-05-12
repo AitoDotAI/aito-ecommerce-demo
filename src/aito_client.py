@@ -164,9 +164,15 @@ class AitoClient:
                     "$why": {
                         "highlight": {
                             # Sentinel tags — frontend splits and renders
-                            # without dangerouslySetInnerHTML.
-                            "posPreTag": "«",
+                            # without dangerouslySetInnerHTML. Both
+                            # positive (lift > 1) AND negative (lift < 1)
+                            # sentinels are set so the frontend never has
+                            # to parse Aito's default `<font color>` HTML.
+                            # See `docs/aito-cheatsheet.md` §Highlight.
+                            "posPreTag":  "«",
                             "posPostTag": "»",
+                            "negPreTag":  "‹",
+                            "negPostTag": "›",
                         }
                     }
                 },

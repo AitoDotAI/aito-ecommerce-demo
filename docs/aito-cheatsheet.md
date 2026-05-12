@@ -268,6 +268,71 @@ token = f"{product.pet_type}_{clean_cat}"
 
 ---
 
+## `$why` highlight — full sentence with marked tokens
+
+To surface **which tokens of a Text column drove the prediction**,
+add a `highlight` block to `$why` in the `_predict` select. Aito
+returns the **full source string** with sentinel tags around the
+matched spans — drop straight into the WhyPopover as "the sentence,
+with the predicting feature emphasised":
+
+```python
+# src/aito_client.py — `predict()` sets all four sentinels
+"select": [
+    "$p", "feature",
+    {"$why": {
+        "highlight": {
+            "posPreTag":  "«",   # lift > 1 spans  (drives prediction)
+            "posPostTag": "»",
+            "negPreTag":  "‹",   # lift < 1 spans  (protective)
+            "negPostTag": "›",
+        }
+    }},
+]
+```
+
+The response carries highlights **per factor** (one entry per
+`relatedPropositionLift` node), not in a top-level `highlights`
+array:
+
+```json
+{
+  "type": "relatedPropositionLift",
+  "proposition": { "$and": [
+    {"text": {"$has": "Package"}}, {"text": {"$has": "arrived"}}
+  ]},
+  "value": 5.28,
+  "highlight": [
+    {
+      "score": 4.80,
+      "field": "$context.text",
+      "highlight": "«Package» «arrived» late. The seal was broken."
+    }
+  ]
+}
+```
+
+Rendering rules (mirrors `aito-accounting-demo`'s
+`04-why-highlight-shape.md`):
+
+- Strip the `$context.` prefix when displaying the field name.
+- The `highlight` string is **the full source text** with the
+  matched tokens wrapped — render it verbatim with the sentinels
+  split into emphasised spans (`renderMarkedText` in
+  `WhyPopover.tsx`).
+- Highlights are per-field; for compound `$and` propositions the
+  list may contain one entry per matched column. Pick the
+  top-`score` entry.
+- Numeric / String / Decimal columns have **no highlight** —
+  fall back to "When field is value" rendering.
+
+**Gotcha**: `highlight` is expensive — Aito has to mark every
+candidate. With `limit: 20` and long text it can run > 30 s.
+Keep `limit ≤ 5` for highlighted predicts unless you're behind a
+cache.
+
+---
+
 ## `AitoClient` method ↔ endpoint cheat reference
 
 | Method | Endpoint | First view that uses it |

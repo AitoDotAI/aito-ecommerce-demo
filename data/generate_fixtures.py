@@ -219,6 +219,66 @@ class Customer:
     pet_size: str | None
     region: str
     tenure_months: int
+    # Backfilled from orders in a post-pass. These columns power the
+    # Churn view's `_predict churned` and the Dashboard's loyalty KPIs.
+    # Stored on the customers table so Aito can condition on them
+    # without a join. See ADR 0013.
+    total_orders: int = 0
+    total_spent_eur: float = 0.0
+    last_order_month: str | None = None
+    churned: bool = False
+
+
+@dataclass
+class Review:
+    """Customer review of a product. Drives the Feedback view's
+    multi-field `_predict` over the `text` Text column — category +
+    sentiment + assigned_to + churn_within_90d from the review's
+    text. See ADR 0012."""
+    review_id: str
+    customer_id: str
+    product_sku: str
+    rating: int        # 1-5
+    text: str          # Text column, whitespace-analyzed
+    category: str      # shipping / quality / fit / praise / question
+    sentiment: str     # positive / negative / neutral
+    assigned_to: str   # support-team member
+    created_at: str    # YYYY-MM
+    # Forward-looking label: True iff the customer has no orders in
+    # the 3 months after this review. Backfilled in a post-pass once
+    # we know each customer's last_order_month. Gives the Feedback
+    # view a 4th `_predict` — "churn risk from text" — alongside
+    # category / sentiment / assigned_to. See ADR 0013 §"Forward
+    # labels".
+    churn_within_90d: bool = False
+
+
+@dataclass
+class CustomerMonth:
+    """Panel-data row: one per customer per month they were active.
+
+    The training shape for proper time-series churn prediction —
+    visits decay, latest review snapshot, this month's purchases +
+    spend, profile features denormalised. The target column
+    `churned_in_3_months` is the demo's forward-looking label: True
+    iff the customer's last order is in or before this row's month.
+
+    See ADR 0013 §"Panel data" for the design rationale.
+    """
+    customer_month_id: str          # "CUST-00001-2025-03"
+    customer_id: str                # link → customers
+    month: str                      # YYYY-MM
+    visits: int                     # synthetic per-month site visits
+    purchases: int                  # orders this month
+    spent_eur: float                # sum of order totals this month
+    segment: str                    # denormalised
+    pet_size: str | None            # denormalised, nullable
+    region: str                     # denormalised
+    tenure_months_at_month: int     # months since first order at this row's month
+    latest_rating: int | None       # most-recent review rating in this month
+    latest_sentiment: str | None    # sentiment of that review
+    latest_category: str | None     # category of that review
+    churned_in_3_months: bool       # the forward target
 
 
 @dataclass
@@ -634,6 +694,115 @@ _MONTH_WINDOW: list[str] = [
     if (y, m) >= (2024, 5) and (y, m) <= (2026, 4)
 ]
 
+# Frozen "today" — every recency calculation reads from this anchor
+# so the demo's numbers (churn rate, "active in last 90 days") stay
+# stable across reloads. Mirrors `aito-accounting-demo`'s
+# `date_window.py` pattern.
+DEMO_TODAY_YYYYMM = "2026-04"
+
+# A customer counts as churned if their last order is in or before
+# this month. 90 days = 3 months at month resolution; cutoff =
+# 2026-01 ⇒ "no orders in Feb / Mar / Apr 2026". ADR 0013 §"Window".
+CHURN_CUTOFF_YYYYMM = "2026-01"
+
+# Where churning customers' orders cluster — 5+ months before today,
+# unambiguously past the cutoff. The two-month gap between
+# CHURN_WINDOW_MAX and CHURN_CUTOFF_YYYYMM stops random month picks
+# from straddling the boundary.
+CHURN_WINDOW_MAX = "2025-11"
+
+
+def _churn_propensity(customer: "Customer", n_orders: int) -> float:
+    """P(this customer is churning), driven by feature contributions.
+
+    The "drivers" in this function are what the Churn view's `_relate
+    churned=true` query surfaces — short tenure brushed off as "too
+    new to churn", long tenure as "had time to drift", segment +
+    region effects. Tuned so the overall churn rate lands in the
+    20-30 % band: high enough that the demo has a meaningful at-risk
+    cohort, low enough that the headline is "most customers stay".
+    """
+    p = 0.04                                    # base rate
+    if customer.tenure_months > 18:    p += 0.04
+    if customer.tenure_months < 4:     p -= 0.02
+    if n_orders <= 3:                  p += 0.04
+    # Segment + region contributions are deliberately strong so
+    # `_relate churned=true relate {segment, region}` surfaces clear
+    # drivers (≥ 1.3× lift on the top values). Without these the
+    # effects wash out under the dominant tenure / low-orders bump.
+    if customer.segment == "small_animal_owner":  p += 0.28
+    if customer.segment == "aquarium_owner":      p += 0.22
+    if customer.segment == "cat_owner":           p -= 0.06
+    if customer.region == "oulu":                 p += 0.22
+    if customer.region == "jyvaskyla":            p += 0.10
+    if customer.region == "helsinki":             p -= 0.06
+    if customer.region == "turku":                p -= 0.04
+    return max(0.01, min(0.60, p))
+
+
+# Per-segment baseline visit rate (sessions per month) for an active
+# customer. Higher for multi-pet households (more "exploring"), lower
+# for aquarium owners (single niche). Synthesized — not from a real
+# analytics source. Drives the customer_months `visits` column.
+_BASE_VISITS_BY_SEGMENT: dict[str, int] = {
+    "dog_owner":          12,
+    "cat_owner":           9,
+    "multi_pet":          14,
+    "small_animal_owner":  6,
+    "aquarium_owner":      5,
+}
+
+
+def _months_between(start_yyyymm: str, end_yyyymm: str) -> int:
+    """Number of full months from start to end (end - start)."""
+    sy, sm = (int(x) for x in start_yyyymm.split("-"))
+    ey, em = (int(x) for x in end_yyyymm.split("-"))
+    return (ey - sy) * 12 + (em - sm)
+
+
+def _add_months(yyyymm: str, n: int) -> str:
+    """`yyyymm + n` at month resolution."""
+    y, m = (int(x) for x in yyyymm.split("-"))
+    total = y * 12 + (m - 1) + n
+    ny, nm = divmod(total, 12)
+    return f"{ny:04d}-{nm + 1:02d}"
+
+
+def _decay_factor(is_churning: bool, month: str, last_order_month: str | None) -> float:
+    """Visit-rate multiplier for churning customers near their last
+    order month.
+
+    Active (non-churning) customers don't decay — they're not
+    stopping, just at their current cadence. Churning customers'
+    visits taper over the 2 months before their last order and drop
+    to near-zero after.
+    """
+    if not is_churning or last_order_month is None:
+        return 1.0
+    offset = _months_between(last_order_month, month)
+    if offset <= -3: return 1.0      # still in normal-activity period
+    if offset == -2: return 0.75
+    if offset == -1: return 0.50
+    if offset == 0:  return 0.30     # the last-order month itself
+    if offset == 1:  return 0.10
+    return 0.04                      # long after stopped
+
+
+def _is_churning(customer: "Customer", n_orders: int) -> bool:
+    """Deterministic churn-disposition decision per customer.
+
+    Uses a sub-RNG seeded from the customer_id so the call doesn't
+    perturb the main fixture RNG sequence — keeps the dog-food→
+    dental lift, persona overlaps, and other engineered signals
+    byte-identical across re-runs. Personas are never churned (they
+    drive the For You demo and have to stay active).
+    """
+    if customer.customer_id in {p.customer_id for p in PERSONAS}:
+        return False
+    seed = sum(ord(c) for c in customer.customer_id)
+    sub_rng = random.Random(seed)
+    return sub_rng.random() < _churn_propensity(customer, n_orders)
+
 
 def gen_orders_and_lines(
     rng: random.Random,
@@ -683,10 +852,25 @@ def gen_orders_and_lines(
             pet_type_weights = _segment_pet_type_weights(customer.segment, customer.pet_size)
         cat_bias = _category_bias(customer.segment, customer.pet_size)
 
+        # Pick the month window for this customer's orders. Churning
+        # customers' orders cluster in months ≤ CHURN_WINDOW_MAX so
+        # their `last_order_month` falls before the 90-day cutoff. The
+        # decision is keyed off `customer.customer_id` (sub-RNG) so it
+        # doesn't perturb the main RNG sequence — the persona overlaps,
+        # dog-food→dental lift, etc. all stay byte-identical.
+        eligible_months = _MONTH_WINDOW[-(customer.tenure_months + 1):]
+        if _is_churning(customer, n_orders):
+            churn_eligible = [m for m in eligible_months if m <= CHURN_WINDOW_MAX]
+            # If a customer is too new for the churn window to overlap
+            # their tenure-bounded month range, fall back to active —
+            # they're literally too new to have churned.
+            if churn_eligible:
+                eligible_months = churn_eligible
+
         for _ in range(n_orders):
             order_id = f"ORD-{order_counter:05d}"
             order_counter += 1
-            month = rng.choice(_MONTH_WINDOW[-(customer.tenure_months + 1):])
+            month = rng.choice(eligible_months)
 
             # 1-6 lines, mode at 2-3.
             n_lines = rng.choices(
@@ -798,6 +982,392 @@ def _sku_to_product(products: list[Product], sku: str) -> Product:
     raise KeyError(sku)
 
 
+# ── Customer aggregates (post-pass after orders) ────────────────────
+
+
+def backfill_customer_aggregates(
+    customers: list[Customer],
+    orders: list[Order],
+) -> None:
+    """Populate total_orders, total_spent_eur, last_order_month, churned.
+
+    Aito needs these as customer-level columns so `_predict churned`
+    and `_relate churned=true` can condition on them without a join.
+    Computed in a single pass over orders after they're generated —
+    the values are derived data, not engineered noise.
+
+    `churned` is the deterministic label: last_order_month ≤
+    CHURN_CUTOFF_YYYYMM. The `_is_churning` decision earlier already
+    biased the month distribution; this pass converts that into the
+    column the schema exposes.
+    """
+    totals: dict[str, int] = {}
+    spent: dict[str, float] = {}
+    last_month: dict[str, str] = {}
+    for o in orders:
+        cid = o.customer_id
+        totals[cid] = totals.get(cid, 0) + 1
+        spent[cid] = spent.get(cid, 0.0) + o.total_eur
+        prev = last_month.get(cid)
+        if prev is None or o.month > prev:
+            last_month[cid] = o.month
+    for c in customers:
+        c.total_orders = totals.get(c.customer_id, 0)
+        c.total_spent_eur = _round_eur(spent.get(c.customer_id, 0.0))
+        c.last_order_month = last_month.get(c.customer_id)
+        c.churned = bool(
+            c.last_order_month is not None
+            and c.last_order_month <= CHURN_CUTOFF_YYYYMM
+        )
+
+
+# ── Reviews ────────────────────────────────────────────────────────
+
+
+# Five problem/feedback categories. Each maps 1:1 to a support
+# team-member assignment so Aito's `_predict assigned_to` has a strong
+# learnable signal off `category` (and indirectly off `text`).
+REVIEW_CATEGORIES: list[str] = ["shipping", "quality", "fit", "praise", "question"]
+REVIEW_CATEGORY_TO_AGENT: dict[str, str] = {
+    "shipping": "Anna",    # logistics
+    "quality":  "Petri",   # product team
+    "fit":      "Maria",   # returns / exchanges
+    "praise":   "Joonas",  # marketing / social
+    "question": "Sari",    # customer support
+}
+
+# Per-category template bank. Slot keys are filled from the vocab map
+# below; each template fills exactly one or two slots. Templates are
+# distinct enough that token overlap across categories is rare —
+# Aito's `_predict category` from `text` hits 80–90 % accuracy on the
+# generated data.
+_REVIEW_TEMPLATES: dict[str, list[str]] = {
+    "shipping": [
+        "Package arrived {timing}. {detail}.",
+        "Delivery took {timing} — {detail}.",
+        "Shipping was {timing}, packaging {pack_quality}.",
+        "Order shipped {timing}; box {pack_quality}.",
+        "Took {timing} for delivery. {detail}.",
+        "{detail}. Shipping was {timing}.",
+    ],
+    "quality": [
+        "The {product_noun} smells {scent} and my {pet} {reaction}.",
+        "Quality is {quality_adj}. {detail}.",
+        "Looks {quality_adj} compared to the listing photo.",
+        "{detail}. Would {action} again.",
+        "Contents are {quality_adj}. {detail}.",
+        "Material feels {quality_adj}. {detail}.",
+    ],
+    "fit": [
+        "Bought size {size} but it runs {fit_adj}.",
+        "Sizing chart is {accuracy_adj}. {detail}.",
+        "Size {size} fits my {pet} {fit_adj}.",
+        "Returned for a different size — {detail}.",
+        "The {size} is {fit_adj} for my {pet}.",
+    ],
+    "praise": [
+        "{pet} loves it. {detail}.",
+        "Best {product_noun} we have tried. {detail}.",
+        "Great {feature}. {detail}.",
+        "{pet} cannot get enough of these.",
+        "Five stars — {detail}.",
+        "{pet} approves. {detail}.",
+    ],
+    "question": [
+        "Does this {question_clause}?",
+        "Is the {product_noun} suitable for {pet}s with {condition}?",
+        "Can I {question_clause}?",
+        "Wondering if {question_clause}?",
+        "Question — {question_clause}?",
+    ],
+}
+
+_REVIEW_VOCAB: dict[str, list[str]] = {
+    "timing":         ["quickly", "fast", "slowly", "late", "on time", "two days late"],
+    "pack_quality":   ["intact", "dented", "torn", "sealed properly", "damaged"],
+    "detail": [
+        "no issues", "the seal was broken", "tracking was helpful",
+        "the box arrived crushed", "everything was as described",
+        "very satisfied", "minor packaging damage", "label was unreadable",
+    ],
+    "product_noun":   ["bag", "treat", "kibble", "food", "litter", "toy"],
+    "scent":          ["fresh", "off", "neutral", "fishy", "pleasant"],
+    "pet":            ["dog", "cat", "puppy", "kitten", "rabbit"],
+    "reaction":       ["loved it", "would not eat it", "tried one piece then walked away",
+                       "ate the whole thing", "got upset stomach"],
+    "quality_adj":    ["excellent", "poor", "decent", "great", "below expectations", "premium"],
+    "action":         ["buy", "recommend", "order", "skip"],
+    "size":           ["S", "M", "L", "XL"],
+    "fit_adj":        ["too small", "too large", "perfectly", "snug", "loose"],
+    "accuracy_adj":   ["accurate", "off by one size", "confusing", "spot-on"],
+    "feature":        ["flavour", "smell", "packaging", "texture", "ingredients", "value"],
+    "question_clause": [
+        "work for senior dogs",
+        "be safe for puppies",
+        "contain grain",
+        "fit a large breed",
+        "be used in an aquarium with shrimp",
+        "be combined with wet food",
+    ],
+    "condition":      ["allergies", "sensitive stomach", "diabetes", "joint issues", "anxiety"],
+}
+
+# Category share — slightly praise-heavy to mirror real review
+# distributions (most reviews are positive), with enough shipping +
+# quality complaints to give the support team real triage volume.
+_REVIEW_CATEGORY_WEIGHTS: dict[str, float] = {
+    "praise":   0.40,
+    "quality":  0.22,
+    "shipping": 0.18,
+    "fit":      0.10,
+    "question": 0.10,
+}
+
+_RATING_BY_CATEGORY: dict[str, dict[int, float]] = {
+    "praise":   {5: 0.65, 4: 0.30, 3: 0.05},
+    "quality":  {1: 0.20, 2: 0.30, 3: 0.30, 4: 0.15, 5: 0.05},
+    "shipping": {1: 0.25, 2: 0.35, 3: 0.30, 4: 0.08, 5: 0.02},
+    "fit":      {1: 0.15, 2: 0.30, 3: 0.35, 4: 0.15, 5: 0.05},
+    "question": {3: 0.50, 4: 0.30, 5: 0.10, 2: 0.07, 1: 0.03},
+}
+
+
+def _sentiment_for(rating: int) -> str:
+    if rating >= 4: return "positive"
+    if rating <= 2: return "negative"
+    return "neutral"
+
+
+def gen_reviews(
+    rng: random.Random,
+    products: list[Product],
+    customers: list[Customer],
+    orders: list[Order],
+    lines: list[OrderLine],
+) -> list[Review]:
+    """Generate ~6000 customer reviews tied to actual order lines.
+
+    Every review is anchored on a real `(customer_id, product_sku)`
+    pair from the line history — so the Aito panel can show "this
+    review is from a real customer about a real product" without
+    inventing relationships.
+
+    Volume rationale: 6000 reviews across ~30 templates lands at
+    ~200 supporting cases per template, which is what makes the
+    Feedback view's `$why` factors tight — Aito's lift values
+    stabilise once each pattern has hundreds of supporting cases.
+    Fewer reviews = noisier `$why`, less authoritative explanations.
+
+    Category distribution roughly matches real e-commerce review
+    distributions (~40 % praise, 30-40 % product/shipping complaints,
+    10-15 % questions). Rating distribution is conditioned on
+    category so positive categories cluster on 4-5★ and complaint
+    categories cluster on 1-3★ — gives the demo's `_predict
+    sentiment` query a learnable signal that *isn't* just keyword
+    matching on the text.
+    """
+    reviews: list[Review] = []
+    sku_to_pet: dict[str, str] = {p.sku: p.pet_type for p in products}
+    sku_to_cat: dict[str, str] = {p.sku: p.category for p in products}
+    order_to_customer: dict[str, str] = {o.order_id: o.customer_id for o in orders}
+    order_to_month: dict[str, str] = {o.order_id: o.month for o in orders}
+
+    # Pick ~6000 (customer, product) pairs from the line history.
+    # Each line has a moderate probability of producing a review; the
+    # per-customer cap stops one heavy buyer from monopolising the
+    # set (we want pattern diversity, not 50 reviews from one person).
+    per_customer: dict[str, int] = {}
+    target = 6000
+    review_counter = 1
+    rng.shuffle(lines)  # shuffle so we don't bias toward early customers
+    for ln in lines:
+        if len(reviews) >= target:
+            break
+        cust = order_to_customer.get(ln.order_id)
+        if cust is None or per_customer.get(cust, 0) >= 5:
+            continue
+        if rng.random() > 0.22:   # ~22 % of lines get a review
+            continue
+
+        pet = sku_to_pet.get(ln.product_sku, "pet")
+        category = rng.choices(
+            REVIEW_CATEGORIES,
+            weights=[_REVIEW_CATEGORY_WEIGHTS[c] for c in REVIEW_CATEGORIES],
+        )[0]
+        rating_dist = _RATING_BY_CATEGORY[category]
+        rating = rng.choices(
+            list(rating_dist.keys()),
+            weights=list(rating_dist.values()),
+        )[0]
+
+        # Pick a template and fill its slots from the vocab map. Some
+        # slots (like {pet}) draw from the actual product context;
+        # others draw randomly.
+        template = rng.choice(_REVIEW_TEMPLATES[category])
+        text = template
+        for slot in ("timing", "pack_quality", "detail", "product_noun",
+                     "scent", "reaction", "quality_adj", "action", "size",
+                     "fit_adj", "accuracy_adj", "feature", "question_clause",
+                     "condition"):
+            placeholder = "{" + slot + "}"
+            if placeholder in text:
+                text = text.replace(placeholder, rng.choice(_REVIEW_VOCAB[slot]))
+        if "{pet}" in text:
+            text = text.replace("{pet}", pet)
+
+        review_id = f"REV-{review_counter:05d}"
+        review_counter += 1
+        reviews.append(Review(
+            review_id=review_id,
+            customer_id=cust,
+            product_sku=ln.product_sku,
+            rating=rating,
+            text=text,
+            category=category,
+            sentiment=_sentiment_for(rating),
+            assigned_to=REVIEW_CATEGORY_TO_AGENT[category],
+            created_at=order_to_month.get(ln.order_id, DEMO_TODAY_YYYYMM),
+        ))
+        per_customer[cust] = per_customer.get(cust, 0) + 1
+
+    return reviews
+
+
+# ── Customer-months panel + review churn label ─────────────────────
+
+
+def backfill_review_churn_label(
+    reviews: list[Review],
+    customers: list[Customer],
+) -> None:
+    """Set `review.churn_within_90d` from the customer's overall churn
+    status + the review's month.
+
+    True iff the customer is churned overall (`customer.churned`) AND
+    the review's month is at or after the customer's last order month
+    — i.e., the review was written at the tail end of their activity,
+    not when they were still buying afterwards.
+
+    The text-to-churn signal Aito learns from this label is the
+    Feedback view's "4th predict" — given a review's text, predict
+    P(this reviewer is on their way out).
+    """
+    by_id = {c.customer_id: c for c in customers}
+    for r in reviews:
+        c = by_id.get(r.customer_id)
+        if c is None or not c.churned or c.last_order_month is None:
+            r.churn_within_90d = False
+            continue
+        r.churn_within_90d = r.created_at >= c.last_order_month
+
+
+def gen_customer_months(
+    rng: random.Random,
+    customers: list[Customer],
+    orders: list[Order],
+    reviews: list[Review],
+    *,
+    cutoff_month: str = DEMO_TODAY_YYYYMM,
+) -> list[CustomerMonth]:
+    """Panel data — one row per customer per month from first order
+    through `cutoff_month`.
+
+    Synthesizes:
+      - `visits` per month, with churning-customer decay over the
+        2-3 months before their last order
+      - `purchases` + `spent_eur` from this month's actual orders
+      - latest review snapshot in this month (if any)
+      - `tenure_months_at_month` from first-order distance
+      - `churned_in_3_months` forward-looking label
+
+    Volumes: ~3000 customers × ~12 months avg ≈ 35-40k rows.
+    """
+    # Index orders by (customer_id, month) for fast per-month aggregates.
+    orders_by_cm: dict[tuple[str, str], list[Order]] = {}
+    first_order_month: dict[str, str] = {}
+    for o in orders:
+        orders_by_cm.setdefault((o.customer_id, o.month), []).append(o)
+        prev = first_order_month.get(o.customer_id)
+        if prev is None or o.month < prev:
+            first_order_month[o.customer_id] = o.month
+
+    # Index reviews by (customer_id, month) — keep the latest by id if
+    # multiple in the same month.
+    review_by_cm: dict[tuple[str, str], Review] = {}
+    for r in reviews:
+        key = (r.customer_id, r.created_at)
+        prev_r = review_by_cm.get(key)
+        if prev_r is None or r.review_id > prev_r.review_id:
+            review_by_cm[key] = r
+
+    persona_ids = {p.customer_id for p in PERSONAS}
+    out: list[CustomerMonth] = []
+    cm_counter = 1
+
+    for c in customers:
+        first_m = first_order_month.get(c.customer_id)
+        if first_m is None:
+            # No orders → no panel rows. Rare edge case (every customer
+            # gets ≥ 1 order in `_orders_per_customer`).
+            continue
+
+        # Iterate from first order month through cutoff (frozen today).
+        n_months = _months_between(first_m, cutoff_month) + 1
+        if n_months <= 0:
+            continue
+
+        # Disposition + base visits per customer (computed once).
+        is_churning_customer = c.churned
+        base_visits = _BASE_VISITS_BY_SEGMENT.get(c.segment, 8)
+        # Personas are bumped up a touch so their at-risk score is
+        # unambiguously low — they drive the For You / Smart Search
+        # demos and should never surface in the at-risk list.
+        if c.customer_id in persona_ids:
+            base_visits = int(base_visits * 1.3)
+
+        for i in range(n_months):
+            m = _add_months(first_m, i)
+            decay = _decay_factor(is_churning_customer, m, c.last_order_month)
+            # Visit count: base × decay + gaussian noise. Floor at 0.
+            visits = max(0, int(base_visits * decay + rng.gauss(0, 1.5)))
+
+            month_orders = orders_by_cm.get((c.customer_id, m), [])
+            n_purchases = len(month_orders)
+            spent = sum(o.total_eur for o in month_orders)
+
+            review = review_by_cm.get((c.customer_id, m))
+
+            # Forward label: customer is overall churned AND row's
+            # month is at or after their last order. For active
+            # customers (not churned), every row is False. See ADR
+            # 0013 for the rationale.
+            label = bool(
+                c.churned
+                and c.last_order_month is not None
+                and m >= c.last_order_month
+            )
+
+            out.append(CustomerMonth(
+                customer_month_id=f"{c.customer_id}-{m}",
+                customer_id=c.customer_id,
+                month=m,
+                visits=visits,
+                purchases=n_purchases,
+                spent_eur=_round_eur(spent),
+                segment=c.segment,
+                pet_size=c.pet_size,
+                region=c.region,
+                tenure_months_at_month=i,
+                latest_rating=review.rating if review is not None else None,
+                latest_sentiment=review.sentiment if review is not None else None,
+                latest_category=review.category if review is not None else None,
+                churned_in_3_months=label,
+            ))
+            cm_counter += 1
+
+    return out
+
+
 # ── Output ──────────────────────────────────────────────────────────
 
 def _to_json_dict(obj) -> dict:
@@ -822,16 +1392,40 @@ def main() -> None:
     customers = gen_customers(rng)
     orders, lines = gen_orders_and_lines(rng, customers, products)
 
+    # Post-pass: derive customer-level aggregates from the order
+    # history (total_orders, total_spent_eur, last_order_month,
+    # churned). Powers the Churn view's `_predict` features.
+    backfill_customer_aggregates(customers, orders)
+
+    # Reviews come last — they consume a few RNG draws but no
+    # earlier signal depends on them. The RNG state at this point is
+    # deterministic given the seed; reviews land byte-identical
+    # across runs.
+    reviews = gen_reviews(rng, products, customers, orders, lines)
+
+    # Forward-looking churn label per review, derived from each
+    # customer's overall churn status + the review's month.
+    backfill_review_churn_label(reviews, customers)
+
+    # Customer-month panel — the training shape for time-series churn
+    # prediction. Drives the Churn view's at-risk leaderboard + the
+    # `_evaluate` accuracy band. See ADR 0013.
+    customer_months = gen_customer_months(rng, customers, orders, reviews)
+
     write_json(DATA_DIR / "products.json", products)
     write_json(DATA_DIR / "customers.json", customers)
     write_json(DATA_DIR / "orders.json", orders)
     write_json(DATA_DIR / "order_lines.json", lines)
+    write_json(DATA_DIR / "reviews.json", reviews)
+    write_json(DATA_DIR / "customer_months.json", customer_months)
 
     # ── Summary print ───────────────────────────────────────────────
-    print(f"  products    {len(products):>6}")
-    print(f"  customers   {len(customers):>6}")
-    print(f"  orders      {len(orders):>6}")
-    print(f"  order_lines {len(lines):>6}")
+    print(f"  products        {len(products):>6}")
+    print(f"  customers       {len(customers):>6}")
+    print(f"  orders          {len(orders):>6}")
+    print(f"  order_lines     {len(lines):>6}")
+    print(f"  reviews         {len(reviews):>6}")
+    print(f"  customer_months {len(customer_months):>6}")
 
     # Spot-check the engineered-signal numbers so a regen makes the
     # numbers visible in the console (the *test* is `tests/test_fixtures.py`,
@@ -840,12 +1434,52 @@ def main() -> None:
     lift = _dog_food_dental_lift(customers, products, orders, lines)
     nulled_pct = _fillable_null_share(products) * 100
     return_pct = sum(1 for ln in lines if ln.returned) / len(lines) * 100
+    churn_rate = sum(1 for c in customers if c.churned) / len(customers) * 100
+    cat_share_by_assigned_to = Counter(r.assigned_to for r in reviews)
 
     print()
     print(f"  Signal #1 — large-breed cat share : {cat_share:.2%}    (target < 1%)")
     print(f"  Signal #2 — dog-food→dental lift  : {lift:.2f}×        (target ≥ 2.5×)")
     print(f"  Signal #4 — products w/ ≥2 nulls  : {nulled_pct:.1f}%  (target 4–6%)")
     print(f"  Signal #5 — returned share        : {return_pct:.2f}%  (target 2.5–3.5%)")
+    print(f"  Signal #6 — churn rate            : {churn_rate:.1f}%  (target 25–35%)")
+    print(f"  Signal #7 — reviews per agent     : "
+          f"{dict(cat_share_by_assigned_to)}")
+
+    # Panel-data sanity: forward churn label rate + last-month visit
+    # decay for churning vs active customers.
+    n_panel = len(customer_months)
+    n_panel_pos = sum(1 for cm in customer_months if cm.churned_in_3_months)
+    panel_rate = (n_panel_pos / n_panel * 100) if n_panel else 0.0
+    # Visits at the most recent month per customer — comparing
+    # active vs churned-customer rows.
+    latest_per_cust: dict[str, CustomerMonth] = {}
+    for cm in customer_months:
+        prev = latest_per_cust.get(cm.customer_id)
+        if prev is None or cm.month > prev.month:
+            latest_per_cust[cm.customer_id] = cm
+    active_visits = [
+        cm.visits for cm in latest_per_cust.values()
+        if not cm.churned_in_3_months
+    ]
+    churned_visits = [
+        cm.visits for cm in latest_per_cust.values()
+        if cm.churned_in_3_months
+    ]
+    avg_active = sum(active_visits) / len(active_visits) if active_visits else 0.0
+    avg_churned = sum(churned_visits) / len(churned_visits) if churned_visits else 0.0
+    # Review churn-label share — drives the Feedback view's 4th predict.
+    rev_churn_share = (
+        sum(1 for r in reviews if r.churn_within_90d) / len(reviews) * 100
+        if reviews else 0.0
+    )
+    print(f"  Signal #8 — panel churn label     : {panel_rate:.1f}% of rows  "
+          f"(target 18–32%)")
+    print(f"  Signal #9 — latest-month visits   : "
+          f"active {avg_active:.1f}  vs churned {avg_churned:.1f}  "
+          f"(churned should be < 50% of active)")
+    print(f"  Signal #10 — review churn share   : {rev_churn_share:.1f}%  "
+          f"(target 8–18%)")
 
     print()
     print("  Persona top-5 (pet_type, category) pairs:")

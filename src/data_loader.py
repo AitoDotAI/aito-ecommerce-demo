@@ -72,6 +72,14 @@ SCHEMAS: dict[str, dict] = {
             "pet_size":      {"type": "String", "nullable": True},
             "region":        {"type": "String", "nullable": False},
             "tenure_months": {"type": "Int",    "nullable": False},
+            # Order-history aggregates backfilled by the fixture
+            # generator. Stored on customers so the Churn view's
+            # `_predict churned` can condition on them without a
+            # join. See ADR 0013.
+            "total_orders":     {"type": "Int",     "nullable": False},
+            "total_spent_eur":  {"type": "Decimal", "nullable": False},
+            "last_order_month": {"type": "String",  "nullable": True},
+            "churned":          {"type": "Boolean", "nullable": False},
         },
     },
     # 3. orders — links to customers.
@@ -115,6 +123,67 @@ SCHEMAS: dict[str, dict] = {
             # customer-context biasing. See ADR 0006.
             "customer_segment":  {"type": "String", "nullable": False},
             "customer_pet_size": {"type": "String", "nullable": True},
+        },
+    },
+    # 5. reviews — links to customers AND products. Powers the
+    # Feedback view's multi-field `_predict` over review text.
+    # Loaded after customers + products so the link writes succeed.
+    "reviews": {
+        "type": "table",
+        "columns": {
+            "review_id":   {"type": "String",  "nullable": False},
+            "customer_id": {"type": "String",  "nullable": False,
+                            "link": "customers.customer_id"},
+            "product_sku": {"type": "String",  "nullable": False,
+                            "link": "products.sku"},
+            "rating":      {"type": "Int",     "nullable": False},
+            # Text so `_predict` over `{text: ...}` tokenises on
+            # whitespace — drives the Feedback view's category /
+            # sentiment / assigned_to / churn_within_90d predictions
+            # from a single free-form text input. See ADR 0012.
+            "text":        {"type": "Text",    "nullable": False,
+                            "analyzer": "whitespace"},
+            "category":    {"type": "String",  "nullable": False},
+            "sentiment":   {"type": "String",  "nullable": False},
+            "assigned_to": {"type": "String",  "nullable": False},
+            "created_at":  {"type": "String",  "nullable": False},
+            # Forward-looking label: True iff the reviewer has no
+            # orders in the 3 months after this review. Drives the
+            # Feedback view's "churn risk from text" 4th predict —
+            # see ADR 0013 §"Forward labels".
+            "churn_within_90d": {"type": "Boolean", "nullable": False},
+        },
+    },
+    # 6. customer_months — panel data, one row per customer per month.
+    # Drives the Churn view's time-series prediction. Loaded last
+    # because it links to customers.
+    "customer_months": {
+        "type": "table",
+        "columns": {
+            "customer_month_id": {"type": "String", "nullable": False},
+            "customer_id":       {"type": "String", "nullable": False,
+                                  "link": "customers.customer_id"},
+            "month":             {"type": "String", "nullable": False},
+            "visits":            {"type": "Int",    "nullable": False},
+            "purchases":         {"type": "Int",    "nullable": False},
+            "spent_eur":         {"type": "Decimal", "nullable": False},
+            # Profile features denormalised onto each row so `_predict`
+            # over customer_months sees them directly (Aito's
+            # single-hop link-traversal limit).
+            "segment":           {"type": "String", "nullable": False},
+            "pet_size":          {"type": "String", "nullable": True},
+            "region":            {"type": "String", "nullable": False},
+            "tenure_months_at_month": {"type": "Int", "nullable": False},
+            # Latest-review snapshot in this month (if the customer
+            # wrote one). Connects feedback to churn prediction —
+            # negative ratings near the end of life predict drop-off.
+            "latest_rating":     {"type": "Int",    "nullable": True},
+            "latest_sentiment":  {"type": "String", "nullable": True},
+            "latest_category":   {"type": "String", "nullable": True},
+            # The forward-looking target. See ADR 0013 §"Forward
+            # labels" for the customer.churned ∧ month ≥ last_order
+            # rule.
+            "churned_in_3_months": {"type": "Boolean", "nullable": False},
         },
     },
 }

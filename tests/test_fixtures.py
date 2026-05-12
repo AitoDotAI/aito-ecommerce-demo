@@ -249,3 +249,228 @@ def test_products_have_full_food_attributes_outside_filling_pile(products):
         "less than 85 % of fillable products carry all three attributes; "
         "Filling demo's 'most are populated, a few aren't' framing breaks"
     )
+
+
+# ── Signal #6: Churn rate + driver presence ─────────────────────────
+
+
+def test_signal_6_churn_rate_in_band(customers):
+    """Overall churn rate should land in the 25-35% band.
+
+    Outside that range the Churn view either looks empty (too low,
+    the at-risk leaderboard runs out of unambiguously-risky candidates)
+    or alarming (too high, the demo's "most customers stay" framing
+    breaks). See ADR 0013."""
+    n = len(customers)
+    churned = sum(1 for c in customers if c.get("churned") is True)
+    rate = churned / n
+    assert 0.20 <= rate <= 0.38, (
+        f"churn rate {rate:.1%} outside the 20-38 % demo band; "
+        f"Churn view's narrative numbers won't land"
+    )
+
+
+def test_signal_6_personas_are_not_churned(customers):
+    """The three persona customers (Maija / Olli / Saara) must stay
+    active — they drive the For You demo and the Smart Search rank
+    flip. If any persona is churned, those views lose their default
+    state."""
+    by_id = {c["customer_id"]: c for c in customers}
+    for p in PERSONAS:
+        c = by_id.get(p.customer_id)
+        assert c is not None, f"persona {p.name_hint} missing"
+        assert c.get("churned") is False, (
+            f"persona {p.name_hint} ({p.customer_id}) is churned; "
+            f"For You / Smart Search default state breaks"
+        )
+
+
+def test_signal_6_churn_drivers_are_learnable(customers):
+    """At least one segment AND one region should have churn rate
+    ≥ 1.3× baseline. The Churn view's drivers section filters at
+    |lift - 1| ≥ 0.15, so 1.3× clears that comfortably. Without
+    these driver values, the demo's "Aito surfaces the drivers"
+    punchline doesn't land."""
+    by_segment: dict[str, list[bool]] = {}
+    by_region: dict[str, list[bool]] = {}
+    for c in customers:
+        by_segment.setdefault(c["segment"], []).append(c.get("churned") is True)
+        by_region.setdefault(c["region"], []).append(c.get("churned") is True)
+    baseline = sum(c.get("churned") is True for c in customers) / len(customers)
+
+    def has_strong_driver(buckets: dict[str, list[bool]]) -> bool:
+        for values in buckets.values():
+            if len(values) < 30:
+                continue   # too small a sample to count as a driver
+            rate = sum(values) / len(values)
+            if rate / baseline >= 1.3:
+                return True
+        return False
+
+    assert has_strong_driver(by_segment), (
+        "no segment has churn rate ≥ 1.3× baseline — Churn drivers will be empty"
+    )
+    assert has_strong_driver(by_region), (
+        "no region has churn rate ≥ 1.3× baseline — Churn drivers will be empty"
+    )
+
+
+# ── Signal #7: Reviews fixture structure ────────────────────────────
+
+
+def test_reviews_count_supports_explanations(customers, products):
+    """Reviews fixture should land in the 5k-7k range so each
+    template pattern accumulates ~150-250 supporting cases. Below
+    that, Aito's `$why` lift values are noisy and the explanations
+    in the Feedback popover read as one-off rather than authoritative.
+    See ADR 0012 §"Volume rationale"."""
+    reviews = _load("reviews.json")
+    assert 5000 <= len(reviews) <= 7000, (
+        f"review count {len(reviews)} outside the 5k-7k band — "
+        f"`$why` explanations will be noisy"
+    )
+
+
+def test_reviews_link_to_real_customers_and_products(customers, products):
+    """Every review's customer_id and product_sku must resolve. This
+    is a hard requirement for Aito link writes — a dangling link
+    fails the loader."""
+    reviews = _load("reviews.json")
+    customer_ids = {c["customer_id"] for c in customers}
+    skus = {p["sku"] for p in products}
+    bad_cust = [r for r in reviews if r["customer_id"] not in customer_ids]
+    bad_sku = [r for r in reviews if r["product_sku"] not in skus]
+    assert not bad_cust, f"{len(bad_cust)} reviews have unknown customer_id"
+    assert not bad_sku, f"{len(bad_sku)} reviews have unknown product_sku"
+
+
+def test_reviews_categories_and_assignees_match(customers):
+    """Every review must have one of the five valid categories, and
+    the assigned_to must match the deterministic category→agent map.
+    The Feedback view's confidence chips assume the mapping holds."""
+    reviews = _load("reviews.json")
+    valid_categories = {"shipping", "quality", "fit", "praise", "question"}
+    expected_assignee = {
+        "shipping": "Anna", "quality": "Petri", "fit": "Maria",
+        "praise": "Joonas", "question": "Sari",
+    }
+    for r in reviews:
+        assert r["category"] in valid_categories, r
+        assert r["assigned_to"] == expected_assignee[r["category"]], r
+        assert r["sentiment"] in {"positive", "negative", "neutral"}, r
+        assert 1 <= r["rating"] <= 5, r
+
+
+# ── Signal #8: Reviews carry forward churn label ────────────────────
+
+
+def test_review_churn_within_90d_share_in_band():
+    """`churn_within_90d` share across all reviews should land in
+    8-18 %. Below that, the Feedback view's 4th predict has nothing
+    to learn from; above that, the label correlates too strongly
+    with category and the demo's "predict from text alone" framing
+    weakens. See ADR 0013 §"Forward labels"."""
+    reviews = _load("reviews.json")
+    n_pos = sum(1 for r in reviews if r.get("churn_within_90d") is True)
+    rate = n_pos / len(reviews) if reviews else 0
+    assert 0.06 <= rate <= 0.20, (
+        f"review churn_within_90d share {rate:.1%} outside the "
+        f"6-20 % band — Feedback view's 4th predict won't read clean"
+    )
+
+
+def test_review_churn_label_correlates_with_customer_churn(customers):
+    """Every review with `churn_within_90d=True` must belong to a
+    customer who is themselves `churned=True`. The forward-looking
+    label is a SUBSET of the customer's overall churn status —
+    a review can be True only if the customer eventually stopped."""
+    reviews = _load("reviews.json")
+    by_id = {c["customer_id"]: c for c in customers}
+    for r in reviews:
+        if not r.get("churn_within_90d"):
+            continue
+        cust = by_id.get(r["customer_id"])
+        assert cust is not None
+        assert cust.get("churned") is True, (
+            f"review {r['review_id']} has churn_within_90d=True but "
+            f"customer {r['customer_id']} is not churned"
+        )
+
+
+# ── Signal #9: customer_months panel ────────────────────────────────
+
+
+def test_customer_months_panel_volume(customers):
+    """One row per customer per month they were a customer. Volume
+    should land in 20k-35k for the 3000-customer fixture."""
+    panel = _load("customer_months.json")
+    assert 20000 <= len(panel) <= 35000, (
+        f"customer_months count {len(panel)} outside 20k-35k band"
+    )
+
+
+def test_customer_months_every_customer_has_latest_row(customers):
+    """Every customer must have a row at the cutoff month
+    (2026-04). The Churn view's at-risk leaderboard filters on
+    `month = 2026-04` and expects every active customer to appear."""
+    panel = _load("customer_months.json")
+    customers_in_panel_at_cutoff = {
+        cm["customer_id"] for cm in panel if cm["month"] == "2026-04"
+    }
+    customers_with_orders = {
+        c["customer_id"] for c in customers if c.get("total_orders", 0) > 0
+    }
+    missing = customers_with_orders - customers_in_panel_at_cutoff
+    assert not missing, (
+        f"{len(missing)} customers missing their 2026-04 row "
+        f"(first 3: {list(missing)[:3]})"
+    )
+
+
+def test_customer_months_visit_decay_for_churned():
+    """At the cutoff month (2026-04), active customers' visits
+    should be substantially higher than churned customers'. The
+    Churn view's at-risk predict relies on this gap as the
+    strongest leading-indicator feature."""
+    panel = _load("customer_months.json")
+    cutoff_rows = [cm for cm in panel if cm["month"] == "2026-04"]
+    active_visits = [
+        cm["visits"] for cm in cutoff_rows
+        if cm.get("churned_in_3_months") is False
+    ]
+    churned_visits = [
+        cm["visits"] for cm in cutoff_rows
+        if cm.get("churned_in_3_months") is True
+    ]
+    assert active_visits and churned_visits
+    avg_active = sum(active_visits) / len(active_visits)
+    avg_churned = sum(churned_visits) / len(churned_visits)
+    assert avg_churned < avg_active * 0.5, (
+        f"churned-customer visits {avg_churned:.1f} not low enough "
+        f"vs active {avg_active:.1f} — visit-decay signal weak"
+    )
+
+
+def test_customer_months_label_consistent_with_customer_churn(customers):
+    """For each customer, their customer_months rows' labels must
+    match the rule: True iff customer.churned AND row.month ≥
+    customer.last_order_month."""
+    panel = _load("customer_months.json")
+    by_id = {c["customer_id"]: c for c in customers}
+    # Spot-check 100 random rows
+    import random as _rnd
+    rng = _rnd.Random(1)
+    sample = rng.sample(panel, min(100, len(panel)))
+    for cm in sample:
+        cust = by_id.get(cm["customer_id"])
+        assert cust is not None
+        expected = bool(
+            cust.get("churned")
+            and cust.get("last_order_month") is not None
+            and cm["month"] >= cust["last_order_month"]
+        )
+        actual = bool(cm.get("churned_in_3_months"))
+        assert actual == expected, (
+            f"label mismatch for {cm['customer_month_id']}: "
+            f"expected {expected}, got {actual}"
+        )

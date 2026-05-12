@@ -81,7 +81,7 @@ on every reload.
 
 ---
 
-## 5. The eight views
+## 5. The ten views
 
 ```
 Overview        →  Dashboard          (KPIs, top patterns, segments, recent orders)
@@ -90,6 +90,8 @@ Assist          →  Smart Search       (predictive re-ranking)
                 →  Bought Together    (cross-sell with lift scores)
 Analyze         →  Purchase Analytics (month bars, top products, AOV by segment)
                 →  Pattern Explorer   (ad-hoc _relate query builder)
+Understand      →  Feedback           (multi-field _predict over review text)
+                →  Churn              (P(churn) per customer + drivers + accuracy)
 Automate        →  Product Filling    (multi-field _predict for catalog enrichment)
                 →  Evaluation         (pass/fail rows; honest failures allowed)
 ```
