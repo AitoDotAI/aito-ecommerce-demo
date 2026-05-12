@@ -197,16 +197,17 @@ export function feedbackPanel(): AitoPanelConfig {
     endpoints: ["_predict"],
     description:
       `Four parallel <code style="color:var(--aito-teal);">_predict</code> calls ` +
-      `over the review's <code style="color:var(--aito-teal);">text</code> column ` +
-      `return <strong>category</strong>, <strong>sentiment</strong>, ` +
+      `condition on both <code style="color:var(--aito-teal);">text</code> + ` +
+      `<code style="color:var(--aito-teal);">rating</code> and return ` +
+      `<strong>category</strong>, <strong>sentiment</strong>, ` +
       `<strong>assigned_to</strong>, and <strong>P(churn within 90 d)</strong> ` +
-      `in one round-trip. The churn predict reads churn risk straight from the ` +
-      `review's text — connecting feedback to retention.`,
+      `in one round-trip. The popover surfaces each feature's lift contribution.`,
     query:
 `${k('"predict"')}: {
   ${n('"from"')}: ${s('"reviews"')},
   ${n('"where"')}: {
-    ${n('"text"')}: ${s('"Package arrived late. The seal was broken."')}
+    ${n('"text"')}: ${s('"Package arrived late. The seal was broken."')},
+    ${n('"rating"')}: 2
   },
   ${n('"predict"')}: ${s('"churn_within_90d"')}
 }`,

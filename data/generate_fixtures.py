@@ -1145,12 +1145,18 @@ def gen_reviews(
     orders: list[Order],
     lines: list[OrderLine],
 ) -> list[Review]:
-    """Generate ~2000 customer reviews tied to actual order lines.
+    """Generate ~6000 customer reviews tied to actual order lines.
 
     Every review is anchored on a real `(customer_id, product_sku)`
     pair from the line history — so the Aito panel can show "this
     review is from a real customer about a real product" without
     inventing relationships.
+
+    Volume rationale: 6000 reviews across ~30 templates lands at
+    ~200 supporting cases per template, which is what makes the
+    Feedback view's `$why` factors tight — Aito's lift values
+    stabilise once each pattern has hundreds of supporting cases.
+    Fewer reviews = noisier `$why`, less authoritative explanations.
 
     Category distribution roughly matches real e-commerce review
     distributions (~40 % praise, 30-40 % product/shipping complaints,
@@ -1166,20 +1172,21 @@ def gen_reviews(
     order_to_customer: dict[str, str] = {o.order_id: o.customer_id for o in orders}
     order_to_month: dict[str, str] = {o.order_id: o.month for o in orders}
 
-    # Pick ~2000 (customer, product) pairs from the line history.
-    # Each line has a small probability of producing a review; we cap
-    # per-customer reviews at 3 so a heavy buyer doesn't dominate.
+    # Pick ~6000 (customer, product) pairs from the line history.
+    # Each line has a moderate probability of producing a review; the
+    # per-customer cap stops one heavy buyer from monopolising the
+    # set (we want pattern diversity, not 50 reviews from one person).
     per_customer: dict[str, int] = {}
-    target = 2000
+    target = 6000
     review_counter = 1
     rng.shuffle(lines)  # shuffle so we don't bias toward early customers
     for ln in lines:
         if len(reviews) >= target:
             break
         cust = order_to_customer.get(ln.order_id)
-        if cust is None or per_customer.get(cust, 0) >= 3:
+        if cust is None or per_customer.get(cust, 0) >= 5:
             continue
-        if rng.random() > 0.08:   # ~8 % of lines get a review
+        if rng.random() > 0.22:   # ~22 % of lines get a review
             continue
 
         pet = sku_to_pet.get(ln.product_sku, "pet")

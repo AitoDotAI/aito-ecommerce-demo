@@ -318,6 +318,19 @@ def test_signal_6_churn_drivers_are_learnable(customers):
 # ── Signal #7: Reviews fixture structure ────────────────────────────
 
 
+def test_reviews_count_supports_explanations(customers, products):
+    """Reviews fixture should land in the 5k-7k range so each
+    template pattern accumulates ~150-250 supporting cases. Below
+    that, Aito's `$why` lift values are noisy and the explanations
+    in the Feedback popover read as one-off rather than authoritative.
+    See ADR 0012 §"Volume rationale"."""
+    reviews = _load("reviews.json")
+    assert 5000 <= len(reviews) <= 7000, (
+        f"review count {len(reviews)} outside the 5k-7k band — "
+        f"`$why` explanations will be noisy"
+    )
+
+
 def test_reviews_link_to_real_customers_and_products(customers, products):
     """Every review's customer_id and product_sku must resolve. This
     is a hard requirement for Aito link writes — a dangling link

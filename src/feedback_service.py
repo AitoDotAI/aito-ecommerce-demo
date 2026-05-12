@@ -244,7 +244,15 @@ def get_feedback(
     if review is None:
         review = by_id.get(_DEFAULT_REVIEW_ID) or reviews[0]
 
-    where = {"text": review["text"]}
+    # Both `text` AND `rating` are predictors. The text drives
+    # category / assigned_to (tokens decide which support team takes
+    # it); rating drives sentiment + churn_within_90d (a 1★ review is
+    # a stronger churn signal than the words alone). Including both
+    # surfaces the contribution of each in the popover's `$why`.
+    where = {
+        "text":   review["text"],
+        "rating": int(review["rating"]),
+    }
 
     body = {
         "from": "reviews",
