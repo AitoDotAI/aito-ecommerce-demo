@@ -15,7 +15,7 @@ next-env.d.ts
 .env.local
 .env.*.local
 
-screenshots/
+screenshots/inspect/
 docs/verification/screenshots/
 
 .DS_Store

@@ -1,52 +1,37 @@
-# Predictive E-commerce — Aito demo
+# Predictive E-commerce — Aito.ai demo
+
+> What an online store looks like when predictions are native to
+> every screen: search, recommendations, cross-sell, catalog
+> enrichment, evaluation. **No model training. No retraining
+> schedule. No MLOps.** Powered by [Aito.ai](https://aito.ai)'s
+> predictive database. Eight views, all live against the same
+> Aito DB.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Powered by Aito.ai](https://img.shields.io/badge/Powered%20by-Aito.ai-orange)](https://aito.ai)
+[![Companion demos](https://img.shields.io/badge/Companion-aito--erp--demo%20%C2%B7%20aito--accounting--demo-lightgrey)](#companion-demos)
 
-This is what an e-commerce platform looks like when predictions are
-native — search, recommendations, catalog enrichment, pattern
-discovery, evaluation. **No model training. No retraining schedule.
-No MLOps.** The Aito side panel makes the prediction layer visible on
-every screen.
-
-Powered by [Aito.ai](https://aito.ai)'s predictive database. Sister
-demos: [accounting.aito.ai](https://accounting.aito.ai) ·
-[erp.aito.ai](https://erp.aito.ai). This one runs at
-**[ecommerce.aito.ai](https://ecommerce.aito.ai)** and lives on
-GitHub as
-[aito-ecommerce-demo](https://github.com/AitoDotAI/aito-ecommerce-demo).
+Family-line brand: **Predictive E-commerce** · matches the sibling
+demos [`aito-accounting-demo`](https://github.com/AitoDotAI/aito-accounting-demo)
+(*Predictive Ledger*) and
+[`aito-erp-demo`](https://github.com/AitoDotAI/aito-erp-demo)
+(*Predictive ERP*). PetNord is the dataset — a Nordic-flavoured
+online pet store with ~700 SKUs, 3,000 customers, 14,000 orders,
+36,000 order lines.
 
 ![Predictive E-commerce — 8 views, one predictive database](assets/teaser.png)
 
 ---
 
-## See it in action
-
-Eight views, all live against the same Aito DB. Run `./do dev` and
-open <http://localhost:8500>. The screenshots in
-[`screenshots/`](screenshots/) are produced by
-`frontend/scripts/inspect-views.cjs` (gitignored — regenerate
-locally; the teaser image above is built from them via
-`./do teaser`).
-
-The two-minute narrated walkthrough is in
-[`docs/demo-script.md`](docs/demo-script.md); the five demo moments
-in order are Smart Search → For You → Bought Together → Product
-Filling → Evaluation.
-
-For a print-ready overview, the
-[product sheet](docs/product-sheet/product-sheet.pdf)
-(`./do product-sheet`) collects the same content as an 11-page PDF
-with each view's spotlight.
-
----
-
 ## Try it now
 
-The cheatsheet (`docs/aito-cheatsheet.md`) carries verified live
-query bodies for every endpoint. A one-line probe against the live
-PetNord DB (read-only API key in `.env.example`):
+The cheatsheet ([`docs/aito-cheatsheet.md`](docs/aito-cheatsheet.md))
+carries verified live query bodies for every endpoint. A one-line
+probe against the live PetNord DB:
 
 ```bash
+# Lift query — "what's bought with dog dry-food?" — same body the
+# Bought Together view runs on every anchor change.
 curl -X POST https://shared.aito.ai/db/aito-ecommerce-demo/api/v1/_relate \
   -H "x-api-key: $AITO_API_KEY" \
   -H "content-type: application/json" \
@@ -59,8 +44,205 @@ curl -X POST https://shared.aito.ai/db/aito-ecommerce-demo/api/v1/_relate \
 # → dog_dentaltreats lift 2.72×, dog_wetfood 1.54×, dog_treats 1.53×, …
 ```
 
-Same query body the **Bought Together** view runs on every
-anchor change.
+Returns in ~200 ms. Same query the Dashboard's top-patterns row
+runs in parallel × 6 anchors.
+
+---
+
+## The five demo moments
+
+Five visible, quotable predictions form the demo's narrative.
+Each is in its own view, each builds on the previous:
+
+| # | Moment | View | Aito |
+|---|---|---|---|
+| 1 | Smart Search rank flip — cat food drops from rank 1 to rank 6 for a dog-owner persona | [Smart Search](#2-smart-search--predictive-re-ranking) | `_search` + `_recommend` |
+| 2 | For You persona switch — grid re-ranks in <300 ms on pill click | [For You](#3-for-you--personalised-tile-grid) | `_recommend` |
+| 3 | Bought Together 2.72× — dog dry-food → dental treats, live | [Bought Together](#4-bought-together--co-purchase-lift) | `_relate` |
+| 4 | Product Filling 5 fields — multi-`_predict` in ~480 ms | [Product Filling](#7-product-filling--catalog-enrichment) | `_predict` × 5 |
+| 5 | Evaluation honest failure — Return Risk +0.0 pp gain | [Evaluation](#8-evaluation--honest-passfail) | `_evaluate` × 4 |
+
+The two-minute narrated walkthrough is in
+[`docs/demo-script.md`](docs/demo-script.md).
+
+---
+
+## What's inside
+
+Eight views grouped under four sidebar sections, all reading from
+a single Aito DB. Click any guide for the full implementation,
+data-schema excerpts, and tradeoffs.
+
+### 1. 📊 Dashboard — KPIs, top patterns, segments, live insight
+
+![Dashboard](screenshots/01-dashboard.png)
+
+```json
+{
+  "from": "orders",
+  "where": { "line_categories": { "$match": "dog_dryfood" } },
+  "relate": "line_categories",
+  "limit": 20
+}
+```
+
+KPI grid + top-patterns bars (six parallel `_relate` calls) +
+segment cards (`_search` per segment) + recent orders. Same query
+body Bought Together runs per anchor — same 2.72× lift surfaces
+in both views.
+[→ Implementation](src/overview_service.py) | [Use case guide](docs/use-cases/01-dashboard.md) | [ADR](docs/adr/0005-dashboard.md)
+
+### 2. 🔍 Smart Search — predictive re-ranking
+
+![Smart Search](screenshots/02-smart-search.png)
+
+```json
+{
+  "from": "order_lines",
+  "where": {
+    "product_sku.name": { "$match": "food" },
+    "customer_pet_size": "large"
+  },
+  "recommend": "product_sku",
+  "goal": { "customer_segment": "dog_owner" },
+  "limit": 10
+}
+```
+
+Side-by-side standard `_search` vs. predictive `_recommend`. Same
+query string, different `where` + `goal` per persona — the right
+column flips entirely when you click the Maija / Olli / Saara
+pills. **Demo moment #1.**
+[→ Implementation](src/search_service.py) | [Use case guide](docs/use-cases/02-smart-search.md) | [ADR](docs/adr/0006-smart-search.md)
+
+### 3. ✨ For You — personalised tile grid
+
+![For You](screenshots/03-for-you.png)
+
+```json
+{
+  "from": "order_lines",
+  "where": { "customer_pet_size": "large" },
+  "recommend": "product_sku",
+  "goal": { "customer_segment": "dog_owner" },
+  "limit": 12
+}
+```
+
+Same `_recommend` shape as Smart Search minus the `name $match`.
+The whole catalog re-ranks per persona; Maija (cat owner) sees
+cat food + litter at the top, Saara (large breed dog) sees dog
+dry-food + dental treats. **Demo moment #2.**
+[→ Implementation](src/recommend_service.py) | [Use case guide](docs/use-cases/03-for-you.md) | [ADR](docs/adr/0007-for-you.md)
+
+### 4. 🛒 Bought Together — co-purchase lift
+
+![Bought Together](screenshots/04-bought-together.png)
+
+```json
+{
+  "from": "orders",
+  "where": { "line_categories": { "$match": "dog_dryfood" } },
+  "relate": "line_categories",
+  "limit": 12
+}
+```
+
+Anchor product + 4 cross-sell tiles with live lift scores. Order-
+level co-occurrence via the denormalised `orders.line_categories`
+Text column — Aito's `_relate` operating on a single-hop within-
+row shape. **Demo moment #3** — dog dry-food → dental treats at
+2.72× baseline.
+[→ Implementation](src/bought_together_service.py) | [Use case guide](docs/use-cases/04-bought-together.md) | [ADR](docs/adr/0008-bought-together.md)
+
+### 5. 📈 Purchase Analytics — the data behind the predictions
+
+![Purchase Analytics](screenshots/05-purchase-analytics.png)
+
+```python
+# Page through the table, aggregate locally — Aito doesn't expose
+# GROUP BY in _search.
+while True:
+    res = client.search("orders", limit=5000, offset=offset)
+    for o in res["hits"]:
+        monthly_counts[o["month"]] += 1
+        monthly_revenue[o["month"]] += float(o["total_eur"])
+    if len(res["hits"]) < 5000: break
+    offset += 5000
+```
+
+Monthly orders + revenue (24 months), top-10 SKUs by line count,
+per-segment KPIs, per-segment category mix. `_search` with
+`offset` pagination + Python aggregation — no new Aito mechanics,
+the "show me the numbers" companion to the predictive views.
+[→ Implementation](src/analytics_service.py) | [Use case guide](docs/use-cases/05-purchase-analytics.md) | [ADR](docs/adr/0011-analytics-and-patterns.md)
+
+### 6. 🔗 Pattern Explorer — the full lift band
+
+![Pattern Explorer](screenshots/06-pattern-explorer.png)
+
+```json
+{
+  "from": "orders",
+  "where": { "line_categories": { "$match": "dog_dryfood" } },
+  "relate": "line_categories",
+  "limit": 30
+}
+```
+
+Same `_relate` body Bought Together uses, no lift filter. Surfaces
+the **full band** — positive (green, lift ≥ 1.5), neutral (grey),
+protective (red, lift < 0.7). The "what's NOT bought together"
+side of the equation, plus richer fields per row (lift, support
+counts, p_given vs. p_overall).
+[→ Implementation](src/pattern_service.py) | [Use case guide](docs/use-cases/06-pattern-explorer.md) | [ADR](docs/adr/0011-analytics-and-patterns.md)
+
+### 7. ⚡ Product Filling — catalog enrichment
+
+![Product Filling](screenshots/07-product-filling.png)
+
+```python
+# 5 _predict calls in parallel, one per field, same `where`
+where = {"name": "Hill's Sensitive Adult Dog Turkey 2kg",
+         "brand": "Hill's Science Plan"}
+for predict_field in ["pet_type", "category", "weight_kg", "dietary", "tax_class"]:
+    client.predict("products", where=where,
+                   predict_field=predict_field, limit=5)
+```
+
+Five product attributes — pet_type, category, weight_kg, dietary,
+tax_class — predicted in parallel from a single product's name +
+brand. Each field renders with confidence chip + top-3
+alternatives + `$why` factor tooltip. **Demo moment #4** — all
+five at ≥ 0.87 in ~480 ms.
+[→ Implementation](src/filling_service.py) | [Use case guide](docs/use-cases/07-product-filling.md) | [ADR](docs/adr/0009-product-filling.md)
+
+### 8. 🧪 Evaluation — honest pass/fail
+
+![Evaluation](screenshots/08-evaluation.png)
+
+```json
+{
+  "testSource": { "from": "order_lines", "limit": 200 },
+  "evaluate": {
+    "from": "order_lines",
+    "where": {
+      "product_sku.category": { "$get": "product_sku.category" },
+      "product_sku.pet_type": { "$get": "product_sku.pet_type" },
+      "customer_segment":     { "$get": "customer_segment" }
+    },
+    "predict": "returned"
+  },
+  "select": ["accuracy", "baseAccuracy", "n"]
+}
+```
+
+Four `_evaluate` calls in parallel, three pass, **one honest
+failure**. The "Return Risk" model deliberately fails its 10 pp
+threshold — the 3% returned rate has no signal Aito can beat the
+baseline on, and the view renders that as a red row. **Demo
+moment #5.**
+[→ Implementation](src/eval_service.py) | [Use case guide](docs/use-cases/08-evaluation.md) | [ADR](docs/adr/0010-evaluation.md)
 
 ---
 
@@ -90,33 +272,6 @@ $EDITOR .env
 
 ---
 
-## What's inside
-
-Eight views grouped under four sidebar sections, all reading from a
-single Aito DB:
-
-| Section | View | Endpoint | What it shows |
-|---|---|---|---|
-| Overview | **Dashboard** | `_search` + Python aggregation + `_relate`-derived insight | KPIs, lift bars, segment cards, recent orders |
-| Assist customers | **Smart Search** | `_search` + `_recommend` | Side-by-side standard vs predictive results — the **rank-flip moment** |
-| Assist customers | **For You** | `_recommend` | Personalised tile grid per customer pill |
-| Assist customers | **Bought Together** | `_relate` | Anchor → 4 cross-sells with live lift |
-| Analyze | **Purchase Analytics** | `_search` + Python aggregation | MoM bars, top SKUs, per-segment KPIs |
-| Analyze | **Pattern Explorer** | `_relate` | Full lift band (positive · neutral · protective) |
-| Automate | **Product Filling** | `_predict` × 5 parallel | Five fields filled from product name + brand |
-| Automate | **Evaluation** | `_evaluate` × 4 parallel | Pass/fail with one engineered honest-failure |
-
-The five **demo moments** from `TASK.md` are now all live, each
-described in [`docs/demo-script.md`](docs/demo-script.md):
-
-1. **Smart Search rank flip** — same query, totally different list per persona
-2. **For You persona switcher** — grid re-ranks in < 300 ms on pill click
-3. **Bought Together 2.72×** — dog dry-food → dental treats, live
-4. **Product Filling 5 fields** — multi-`_predict` in ~480 ms
-5. **Evaluation honest failure** — Return Risk +0.0 pp gain
-
----
-
 ## How it works
 
 ```
@@ -135,18 +290,36 @@ Browser → Next.js (port 8500) → fetch("/api/...") → FastAPI (port 8501)
   calls `AitoClient`, and translates the response to a DTO the
   frontend renders.
 - **Frontend** — Next.js 16 (App Router) + TypeScript. One page per
-  view in `frontend/app/<view>/page.tsx`. The locked Aito side panel
-  reads its config from `frontend/lib/panel-content.ts` and updates
-  its `query` block with the actual body that ran.
+  view in `frontend/app/<view>/page.tsx`. The locked Aito side
+  panel reads its config from `frontend/lib/panel-content.ts` and
+  updates its `query` block with the actual body that ran.
 - **Schema** — Four tables (`products`, `customers`, `orders`,
-  `order_lines`) with link declarations chained so
-  `_recommend` and `_relate` traverse one hop without manual joins.
-  Two denormalised columns for cases where Aito only supports
-  single-hop traversal: `order_lines.customer_segment` /
-  `customer_pet_size` and `orders.line_categories`.
+  `order_lines`) with link declarations chained so `_recommend`
+  and `_relate` traverse one hop without manual joins. Two
+  denormalised columns for cases where Aito only supports
+  single-hop traversal: `order_lines.{customer_segment,
+  customer_pet_size}` and `orders.line_categories`.
 - **Cache** — Two layers: in-memory LRU per process + Aito-backed
   `prediction_cache` table that survives restarts. Read-only API
   keys disable the persistent layer cleanly.
+
+---
+
+## Aito operators used
+
+| Operator | What it does | Used in |
+|---|---|---|
+| `_search` | Retrieve rows / count via `limit=0` | Dashboard KPIs, Smart Search baseline, Purchase Analytics, Bought Together sample SKUs |
+| `_match` (via `$match`) | Token match on Text columns | Smart Search, Bought Together (`line_categories`), Pattern Explorer |
+| `_recommend` | Rank rows by `P(goal | row)` | Smart Search predictive column, For You |
+| `_relate` | Co-occurrence with lift / support / `pOnCondition` | Dashboard top patterns, Bought Together, Pattern Explorer |
+| `_predict` | Predict a field with `$p` + `$why` factor tree | Product Filling × 5 parallel |
+| `_evaluate` | Cross-validation accuracy + baseline + per-row results | Evaluation × 4 parallel |
+
+Verified query bodies + Aito-API gotchas (multi-field `goal`
+semantics, hyphen tokenisation, single-hop link traversal, the
+`_evaluate` body shape) are captured in
+[`docs/aito-cheatsheet.md`](docs/aito-cheatsheet.md).
 
 ---
 
@@ -181,15 +354,34 @@ data/               Deterministic JSON fixtures (seed = 42)
   products.json · customers.json · orders.json · order_lines.json
 
 tests/              pytest — fixture signal checks + AitoClient body shape
+screenshots/        Canonical per-view screenshots (the inspect/ subfolder is the workshop)
 docs/
+  use-cases/                    8 per-view implementation guides
   adr/                          11 Architecture Decision Records — read these first
   aito-cheatsheet.md            verified query patterns + Aito gotchas we hit
   demo-script.md                two-minute walkthrough
+  product-sheet/                outreach PDF
   sessions/                     session logs (the working notebook)
 do                              task runner — `./do help`
 ```
 
 Ports: Next.js on **8500**, FastAPI on **8501**.
+
+---
+
+## Deep dive
+
+- **[Use case guides](docs/use-cases/)** — 8 per-view
+  implementation guides with code, schema, and tradeoffs
+- **[Architecture Decision Records](docs/adr/)** — 11 ADRs walking
+  the design rationale top-to-bottom
+- **[Aito cheatsheet](docs/aito-cheatsheet.md)** — verified live
+  query bodies + the Aito-API gotchas we hit during the build
+- **[Demo script](docs/demo-script.md)** — two-minute narrated
+  walkthrough; five demo moments in narrative order
+- **[Cross-demo framework](aito-demo-framework.md)** — the
+  conventions shared across the family of Aito vertical demos
+- **[TASK.md](TASK.md)** — the working brief that drove the build
 
 ---
 
@@ -211,12 +403,6 @@ Read top-to-bottom and you have the demo's full design rationale.
 | 0010 | [Evaluation — honest pass/fail](docs/adr/0010-evaluation.md) | Accepted |
 | 0011 | [Purchase Analytics + Pattern Explorer](docs/adr/0011-analytics-and-patterns.md) | Accepted |
 
-The cheatsheet ([`docs/aito-cheatsheet.md`](docs/aito-cheatsheet.md))
-records every verified live query body, response shape, and the
-Aito-API gotchas we hit during the build (multi-field `goal`
-semantics, hyphen tokenisation, single-hop link traversal, the
-`_evaluate` body shape, and more).
-
 ---
 
 ## EU hosted · No PII stored
@@ -228,14 +414,24 @@ write side of the cache so a read-only API key is sufficient.
 
 ---
 
-## Learn more
+## Companion demos
 
-- [Aito.ai docs](https://aito.ai/docs/)
-- [Cross-demo framework reference](aito-demo-framework.md)
-- Sister-demo source:
-  [aito-accounting-demo](https://github.com/AitoDotAI/aito-accounting-demo)
-  ·
-  [aito-erp-demo](https://github.com/AitoDotAI/aito-erp-demo)
-  ·
-  [aito-demo](https://github.com/AitoDotAI/aito-demo) (the original
-  grocery reference).
+The Aito predictive-database family of OSS vertical demos:
+
+- **[aito-accounting-demo](https://github.com/AitoDotAI/aito-accounting-demo)** —
+  *Predictive Ledger*. Multi-tenant AP automation: GL coding,
+  approver routing, payment matching, anomaly detection. 255
+  customers, 128K invoices, one shared Aito instance.
+- **[aito-erp-demo](https://github.com/AitoDotAI/aito-erp-demo)** —
+  *Predictive ERP*. Procurement-to-pay workflow loop: PO routing,
+  smart entry, approval routing, inventory replenishment. Three
+  industry profiles (industrial maintenance / retail / services).
+- **[aito-demo](https://github.com/AitoDotAI/aito-demo)** — the
+  original grocery e-commerce reference; the `ContextPanel`
+  design here is the canonical Aito-panel pattern the vertical
+  demos import.
+
+---
+
+*Apache 2.0 licensed. Open issues, send PRs, fork into your own
+e-commerce vertical.*
