@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { apiFetch, confClass, fmtEur } from "@/lib/api";
 import { productFillingPanel } from "@/lib/panel-content";
 import { usePagePanel, useShell } from "@/components/shell/ShellState";
-import WhyTooltip from "@/components/prediction/WhyTooltip";
+import WhyPopover from "@/components/prediction/WhyPopover";
 import ErrorState from "@/components/shell/ErrorState";
 import type { FillingResponse, FillingFieldOut } from "@/lib/types";
 
@@ -151,13 +151,10 @@ export default function ProductFillingPage() {
                 <div className="fill-field-val" style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ fontWeight: 600 }}>{formatValue(f.predicted_value)}</span>
                   <ConfChip p={f.confidence} />
-                  {f.why_factors.length > 0 && (
-                    <WhyTooltip
-                      factors={f.why_factors.map((w) => ({
-                        field: w.field || "name",
-                        value: w.value,
-                        lift: w.lift,
-                      }))}
+                  {f.why_explanation && (
+                    <WhyPopover
+                      why={f.why_explanation}
+                      title={`${f.label.toLowerCase()} = ${formatValue(f.predicted_value)}`}
                     />
                   )}
                 </div>

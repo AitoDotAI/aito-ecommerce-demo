@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { apiFetch, confClass } from "@/lib/api";
 import { feedbackPanel } from "@/lib/panel-content";
 import { usePagePanel, useShell } from "@/components/shell/ShellState";
-import WhyTooltip from "@/components/prediction/WhyTooltip";
+import WhyPopover from "@/components/prediction/WhyPopover";
 import ErrorState from "@/components/shell/ErrorState";
 import type { FeedbackResponse } from "@/lib/types";
 
@@ -192,13 +192,10 @@ export default function FeedbackPage() {
                         {correct ? "✓ matches stored" : `≠ ${actualValue}`}
                       </span>
                     )}
-                    {f.why_factors.length > 0 && (
-                      <WhyTooltip
-                        factors={f.why_factors.map((w) => ({
-                          field: w.field || "text",
-                          value: w.value,
-                          lift: w.lift,
-                        }))}
+                    {f.why_explanation && (
+                      <WhyPopover
+                        why={f.why_explanation}
+                        title={`${f.label.toLowerCase()} = ${String(f.predicted_value)}`}
                       />
                     )}
                   </div>
@@ -217,7 +214,13 @@ function ChurnRiskField({
   f,
   actualTrue,
 }: {
-  f: { predicted_value: unknown; confidence: number; why_factors: Array<{ field: string; value: string; lift: number }>; label: string };
+  f: {
+    predicted_value: unknown;
+    confidence: number;
+    why_factors: Array<{ field: string; value: string; lift: number }>;
+    why_explanation: import("@/lib/types").WhyExplanationPayload | null;
+    label: string;
+  };
   actualTrue: boolean;
 }) {
   // For boolean predicts, the top-hit's $p is P(predicted_value).
@@ -261,13 +264,10 @@ function ChurnRiskField({
         >
           {correct ? "✓ matches stored" : `≠ actual: ${actualTrue ? "did churn" : "stayed"}`}
         </span>
-        {f.why_factors.length > 0 && (
-          <WhyTooltip
-            factors={f.why_factors.map((w) => ({
-              field: w.field || "text",
-              value: w.value,
-              lift: w.lift,
-            }))}
+        {f.why_explanation && (
+          <WhyPopover
+            why={f.why_explanation}
+            title={`churn risk = ${pct}%`}
           />
         )}
       </div>

@@ -6,6 +6,7 @@ import { apiFetch, fmtEur } from "@/lib/api";
 import { churnPanel } from "@/lib/panel-content";
 import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
+import WhyPopover from "@/components/prediction/WhyPopover";
 import type { ChurnResponse, ChurnAtRiskCustomer, ChurnDriverRow } from "@/lib/types";
 
 
@@ -242,16 +243,24 @@ function AtRiskRow({ c }: { c: ChurnAtRiskCustomer }) {
         )}
       </td>
       <td style={{ textAlign: "right" }}>
-        <span
-          className="pill"
-          style={{
-            background: bg, color: fg, fontWeight: 700, fontSize: 11.5,
-            padding: "3px 8px", borderRadius: 6,
-          }}
-          title={`Confidence band: ${c.confidence_band}`}
-        >
-          {Math.round(c.risk_score * 100)}%
-        </span>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <span
+            className="pill"
+            style={{
+              background: bg, color: fg, fontWeight: 700, fontSize: 11.5,
+              padding: "3px 8px", borderRadius: 6,
+            }}
+            title={`Confidence band: ${c.confidence_band}`}
+          >
+            {Math.round(c.risk_score * 100)}%
+          </span>
+          {c.why_explanation && (
+            <WhyPopover
+              why={c.why_explanation}
+              title={`${c.customer_short} at risk`}
+            />
+          )}
+        </div>
       </td>
     </tr>
   );

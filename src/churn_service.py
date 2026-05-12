@@ -30,6 +30,7 @@ from typing import Any
 
 from src.aito_client import AitoClient
 from src import cache
+from src.why_processor import process_why
 
 
 # The cutoff month for "latest customer_month row per customer".
@@ -87,6 +88,9 @@ class AtRiskCustomer:
     latest_sentiment: str | None
     risk_score: float          # P(churned_in_3_months) from Aito
     confidence_band: str       # "high" | "medium" | "low"
+    # Processed `$why` for the WhyPopover. None if the row's
+    # predict didn't return a $why tree.
+    why_explanation: dict | None = None
 
 
 @dataclass(frozen=True)
@@ -169,18 +173,28 @@ def _build_where(row: dict) -> dict:
 # ── Live calls ─────────────────────────────────────────────────────
 
 
-def _predict_churn_for(client: AitoClient, row: dict) -> float:
-    """P(churned_in_3_months = true) for one customer_months row."""
+def _predict_churn_for(client: AitoClient, row: dict) -> tuple[float, dict | None]:
+    """P(churned_in_3_months = true) + `$why` decomposition.
+
+    Returns `(score, why_explanation)`. `why_explanation` is the
+    processed `$why` tree for the True-class hit (i.e. "why this
+    customer might churn"), or None if Aito didn't return a $why.
+    """
     res = client.predict(
         table="customer_months",
         where=_build_where(row),
         predict_field="churned_in_3_months",
         limit=2,
     )
+    score = 0.0
+    why = None
     for hit in res.get("hits", []):
-        if hit.get("feature") is True or hit.get("feature") == "true":
-            return float(hit.get("$p", 0))
-    return 0.0
+        feature = hit.get("feature")
+        if feature is True or feature == "true":
+            score = float(hit.get("$p", 0))
+            why = process_why(hit.get("$why"), True, actual_p=score)
+            break
+    return score, why
 
 
 def _kpi_counts(client: AitoClient) -> list[Kpi]:
@@ -219,8 +233,9 @@ def _at_risk_leaderboard(client: AitoClient, top_n: int) -> list[AtRiskCustomer]
     if not sample:
         return []
 
-    def score(row: dict) -> tuple[dict, float]:
-        return row, _predict_churn_for(client, row)
+    def score(row: dict) -> tuple[dict, float, dict | None]:
+        p, why = _predict_churn_for(client, row)
+        return row, p, why
 
     with ThreadPoolExecutor(max_workers=8) as pool:
         scored = list(pool.map(score, sample))
@@ -243,8 +258,9 @@ def _at_risk_leaderboard(client: AitoClient, top_n: int) -> list[AtRiskCustomer]
             latest_sentiment=row.get("latest_sentiment"),
             risk_score=round(p, 4),
             confidence_band=_confidence_band(p),
+            why_explanation=why,
         )
-        for row, p in top
+        for row, p, why in top
     ]
 
 

@@ -51,6 +51,20 @@ export interface WhyExplanation {
   context_fields: string[];
 }
 
+/** Flattened `$why` decomposition produced by `src/why_processor.py`.
+ *  Drives the `WhyPopover` component. Sibling to the legacy
+ *  `WhyExplanation` type above (which carries highlight HTML
+ *  payloads for the old token-highlight design). */
+export interface WhyExplanationPayload {
+  base_p: number;
+  predicted_value: string;
+  lifts: Array<{
+    lift: number;
+    propositions: Array<{ field: string; value: string; negate?: boolean }>;
+  }>;
+  final_p: number | null;
+}
+
 /** Legacy shape kept for backwards compatibility — older endpoints
  *  still return this. New code should prefer `WhyExplanation`. */
 export interface WhyFactor {
@@ -172,6 +186,7 @@ export interface FillingFieldOut {
   confidence: number;
   alternatives: Array<{ value: string; confidence: number }>;
   why_factors: Array<{ field: string; value: string; lift: number }>;
+  why_explanation: WhyExplanationPayload | null;
   hidden_for_demo: boolean;
 }
 
@@ -348,10 +363,11 @@ export interface DashboardResponse {
 export interface FeedbackPredictedField {
   field: string;
   label: string;
-  predicted_value: string | null;
+  predicted_value: string | boolean | null;
   confidence: number;
   alternatives: Array<{ value: string; confidence: number }>;
   why_factors: Array<{ field: string; value: string; lift: number }>;
+  why_explanation: WhyExplanationPayload | null;
 }
 
 export interface FeedbackReviewSummary {
@@ -399,6 +415,7 @@ export interface ChurnAtRiskCustomer {
   latest_sentiment: string | null;
   risk_score: number;
   confidence_band: "high" | "medium" | "low";
+  why_explanation: WhyExplanationPayload | null;
 }
 
 export interface ChurnDriverRow {

@@ -24,6 +24,7 @@ from typing import Any
 
 from src.aito_client import AitoClient
 from src import cache
+from src.why_processor import process_why
 
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -65,6 +66,7 @@ class PredictedField:
     confidence: float
     alternatives: list[Alternative]
     why_factors: list[WhyFactor]
+    why_explanation: dict | None
 
 
 @dataclass(frozen=True)
@@ -104,6 +106,7 @@ class FeedbackResponse:
                 "confidence":      f.confidence,
                 "alternatives":    [asdict(a) for a in f.alternatives],
                 "why_factors":     [asdict(w) for w in f.why_factors],
+                "why_explanation": f.why_explanation,
             } for f in self.fields],
             "candidate_reviews": self.candidate_reviews,
             "last_query":        self.last_query,
@@ -200,7 +203,7 @@ def _predict_field(
         return PredictedField(
             field=predict_field, label=label,
             predicted_value=None, confidence=0.0,
-            alternatives=[], why_factors=[],
+            alternatives=[], why_factors=[], why_explanation=None,
         )
     top = hits[0]
     predicted_value = top.get("feature")
@@ -210,12 +213,14 @@ def _predict_field(
         for h in hits[1:4]
     ]
     why_factors = _parse_why(top.get("$why"))
+    why_explanation = process_why(top.get("$why"), predicted_value, actual_p=confidence)
     return PredictedField(
         field=predict_field, label=label,
         predicted_value=predicted_value,
         confidence=confidence,
         alternatives=alternatives,
         why_factors=why_factors,
+        why_explanation=why_explanation,
     )
 
 
@@ -310,6 +315,7 @@ def _from_dict(d: dict) -> FeedbackResponse:
                 confidence=f["confidence"],
                 alternatives=[Alternative(**a) for a in f["alternatives"]],
                 why_factors=[WhyFactor(**w) for w in f["why_factors"]],
+                why_explanation=f.get("why_explanation"),
             )
             for f in d["fields"]
         ],

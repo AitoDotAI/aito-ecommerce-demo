@@ -18,6 +18,7 @@ from typing import Any
 
 from src.aito_client import AitoClient
 from src import cache
+from src.why_processor import process_why
 
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -66,6 +67,7 @@ class FillingField:
     confidence: float
     alternatives: list[Alternative]
     why_factors: list[WhyFactor]
+    why_explanation: dict | None
     hidden_for_demo: bool
 
 
@@ -87,6 +89,7 @@ class FillingResponse:
                 "confidence":       f.confidence,
                 "alternatives":     [asdict(a) for a in f.alternatives],
                 "why_factors":      [asdict(w) for w in f.why_factors],
+                "why_explanation":  f.why_explanation,
                 "hidden_for_demo":  f.hidden_for_demo,
             } for f in self.fields],
             "candidate_skus":   self.candidate_skus,
@@ -187,6 +190,7 @@ def _predict_field(
             confidence=0.0,
             alternatives=[],
             why_factors=[],
+            why_explanation=None,
             hidden_for_demo=hidden_for_demo,
         )
     top = hits[0]
@@ -197,6 +201,7 @@ def _predict_field(
         for h in hits[1:4]
     ]
     why_factors = _parse_why(top.get("$why"))
+    why_explanation = process_why(top.get("$why"), predicted_value, actual_p=confidence)
     return FillingField(
         field=predict_field,
         label=label,
@@ -204,6 +209,7 @@ def _predict_field(
         confidence=confidence,
         alternatives=alternatives,
         why_factors=why_factors,
+        why_explanation=why_explanation,
         hidden_for_demo=hidden_for_demo,
     )
 
@@ -296,6 +302,7 @@ def _from_dict(d: dict) -> FillingResponse:
                 confidence=f["confidence"],
                 alternatives=[Alternative(**a) for a in f["alternatives"]],
                 why_factors=[WhyFactor(**w) for w in f["why_factors"]],
+                why_explanation=f.get("why_explanation"),
                 hidden_for_demo=f["hidden_for_demo"],
             )
             for f in d["fields"]
