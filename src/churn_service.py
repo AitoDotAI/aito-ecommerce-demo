@@ -276,7 +276,10 @@ def _drivers(client: AitoClient) -> list[DriverRow]:
     for field, res in results:
         for hit in res.get("hits", []):
             rel = hit.get("related", {}).get(field, {})
-            value = rel.get("$is") if isinstance(rel, dict) else None
+            # `_relate` returns the matched value under `$has` (same
+            # key Bought Together + Pattern Explorer read). `$is` is
+            # the wrong key — it returns None and the row gets dropped.
+            value = rel.get("$has") if isinstance(rel, dict) else None
             if value is None:
                 continue
             lift = float(hit.get("lift", 0))
