@@ -61,6 +61,11 @@ export interface WhyExplanationPayload {
   lifts: Array<{
     lift: number;
     propositions: Array<{ field: string; value: string; negate?: boolean }>;
+    /** Optional per-factor highlight from Aito. Present when the
+     *  factor matched on a Text-typed column; `marked_text` is the
+     *  full source string with `«…»` sentinels around the matched
+     *  tokens. Frontend splits on the sentinels — never raw HTML. */
+    highlight?: { field: string; marked_text: string } | null;
   }>;
   final_p: number | null;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 
@@ -10,9 +10,15 @@ export interface WhyProposition {
   negate?: boolean;
 }
 
+export interface WhyHighlight {
+  field: string;
+  marked_text: string;
+}
+
 export interface WhyLiftEntry {
   lift: number;
   propositions: WhyProposition[];
+  highlight?: WhyHighlight | null;
 }
 
 export interface WhyExplanationPayload {
@@ -207,6 +213,15 @@ export default function WhyPopover({ why, title }: WhyPopoverProps) {
 
 function PatternMatchCard({ entry }: { entry: WhyLiftEntry }) {
   const up = entry.lift >= 1;
+  // Use the highlighted-sentence rendering only when the source field
+  // has *surrounding text* — i.e., it's a Text-typed column where the
+  // marked tokens are embedded in a longer string. Numeric / String /
+  // Boolean columns produce highlights like `«3»` with nothing
+  // outside the sentinels; for those the structured "When X is Y"
+  // rendering reads better.
+  const highlight = entry.highlight && _hasSurroundingText(entry.highlight.marked_text)
+    ? entry.highlight
+    : null;
   return (
     <div style={{
       background: up ? "rgba(245,166,35,0.10)" : "rgba(82,183,136,0.08)",
@@ -228,30 +243,50 @@ function PatternMatchCard({ entry }: { entry: WhyLiftEntry }) {
           color: "var(--text-muted)",
           marginBottom: 4,
         }}>
-          Pattern match
-        </div>
-        <div style={{ fontSize: 12, color: "var(--text)" }}>
-          When{" "}
-          {entry.propositions.map((p, i) => (
-            <span key={i}>
-              {i > 0 && <span style={{ color: "var(--text-muted)" }}> and </span>}
-              <code style={{ fontFamily: "var(--mono)", color: "var(--text-2)" }}>
-                {p.field}
+          Pattern match{highlight && (
+            <>
+              {" · "}<code style={{ fontFamily: "var(--mono)", textTransform: "none" }}>
+                {highlight.field}
               </code>
-              <span style={{ color: "var(--text-muted)" }}>
-                {" "}{p.negate ? "is not " : "is "}
-              </span>
-              <span style={{
-                background: up ? "rgba(245,166,35,0.30)" : "rgba(82,183,136,0.22)",
-                padding: "1px 5px",
-                borderRadius: 3,
-                fontWeight: 600,
-              }}>
-                {p.value}
-              </span>
-            </span>
-          ))}
+            </>
+          )}
         </div>
+        {highlight ? (
+          // Highlighted-sentence rendering — Text-column matches surface
+          // the full source string with the matched tokens emphasised.
+          // Sentinel-split is safe; no innerHTML.
+          <div style={{
+            fontSize: 12.5,
+            color: "var(--text)",
+            fontStyle: "italic",
+            lineHeight: 1.55,
+          }}>
+            {renderMarkedText(highlight.marked_text, up)}
+          </div>
+        ) : (
+          <div style={{ fontSize: 12, color: "var(--text)" }}>
+            When{" "}
+            {entry.propositions.map((p, i) => (
+              <span key={i}>
+                {i > 0 && <span style={{ color: "var(--text-muted)" }}> and </span>}
+                <code style={{ fontFamily: "var(--mono)", color: "var(--text-2)" }}>
+                  {p.field}
+                </code>
+                <span style={{ color: "var(--text-muted)" }}>
+                  {" "}{p.negate ? "is not " : "is "}
+                </span>
+                <span style={{
+                  background: up ? "rgba(245,166,35,0.30)" : "rgba(82,183,136,0.22)",
+                  padding: "1px 5px",
+                  borderRadius: 3,
+                  fontWeight: 600,
+                }}>
+                  {p.value}
+                </span>
+              </span>
+            ))}
+          </div>
+        )}
       </div>
       <div style={{
         fontFamily: "var(--mono)",
@@ -264,6 +299,67 @@ function PatternMatchCard({ entry }: { entry: WhyLiftEntry }) {
       </div>
     </div>
   );
+}
+
+
+/**
+ * Split Aito's highlight string on the sentinel marks and render
+ * the full sentence with the matched spans wrapped in `<mark>`.
+ *
+ *  - «word» → positive-evidence span  (was `posPreTag` / `posPostTag`)
+ *  - ‹word› → negative-evidence span  (was `negPreTag` / `negPostTag`)
+ *
+ * No innerHTML; we parse the sentinels into React fragments so the
+ * source string is treated as text + the marks as structural spans.
+ * That's the project's safety convention (CLAUDE.md prime
+ * directive #2 — never silently inject).
+ */
+function renderMarkedText(text: string, positive: boolean): React.ReactNode {
+  // Match either «...» or ‹...› spans; capture them so .split keeps them.
+  const parts = text.split(/(«[^»]*»|‹[^›]*›)/);
+  return parts.map((part, i) => {
+    if (part.startsWith("«") && part.endsWith("»")) {
+      return (
+        <mark key={i} style={{
+          background: positive
+            ? "rgba(245,166,35,0.45)"
+            : "rgba(245,166,35,0.30)",
+          color: "inherit",
+          padding: "0 2px",
+          borderRadius: 2,
+          fontWeight: 700,
+          fontStyle: "normal",
+        }}>{part.slice(1, -1)}</mark>
+      );
+    }
+    if (part.startsWith("‹") && part.endsWith("›")) {
+      return (
+        <mark key={i} style={{
+          background: "rgba(231,76,60,0.18)",
+          color: "var(--red)",
+          padding: "0 2px",
+          borderRadius: 2,
+          fontWeight: 700,
+          fontStyle: "normal",
+        }}>{part.slice(1, -1)}</mark>
+      );
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
+
+
+function _hasSurroundingText(s: string): boolean {
+  // Strip the marked spans; what's left is the surrounding sentence.
+  // For Int/String/Boolean highlights this is empty — fall back to
+  // the "When X is Y" structured rendering. For Text highlights
+  // ("Package arrived late. The seal was broken.") this is non-empty
+  // — render the full sentence with marks.
+  const stripped = s
+    .replace(/«[^»]*»/g, "")
+    .replace(/‹[^›]*›/g, "")
+    .trim();
+  return stripped.length > 0;
 }
 
 

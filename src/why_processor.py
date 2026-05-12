@@ -78,6 +78,13 @@ def process_why(
                 lifts.append({
                     "lift": round(float(v), 3),
                     "propositions": _flatten_proposition(prop),
+                    # `highlight` is per-factor on `_predict` responses
+                    # (despite what some Aito guides say about a
+                    # `$why.highlights` array — that shape is the older
+                    # response form). When present it's a list of
+                    # `{score, field, highlight}` — we surface the
+                    # top-scoring entry for the popover to render.
+                    "highlight": _pick_highlight(node.get("highlight")),
                 })
             return
         # Recurse into product / sum / etc.
@@ -143,6 +150,30 @@ def _flatten_proposition(prop: Any) -> list[dict]:
             "value": _stringify(value),
         })
     return items
+
+
+def _pick_highlight(raw: Any) -> dict | None:
+    """Pick the top-scoring highlight from Aito's per-factor `highlight`
+    list. Returns `{field, marked_text}` or None.
+
+    Aito returns one entry per matched field; for compound propositions
+    (`{$and: [...]}`) the list may have one entry per field. We sort by
+    `score` descending and keep the first — that's the field with the
+    strongest token match.
+
+    `field` is `$context.<column>` in Aito's response; the prefix is
+    stripped here so the frontend sees just the column name.
+    """
+    if not isinstance(raw, list) or not raw:
+        return None
+    best = max(raw, key=lambda h: float(h.get("score", 0) or 0))
+    field = str(best.get("field", ""))
+    if field.startswith("$context."):
+        field = field[len("$context."):]
+    marked = best.get("highlight")
+    if not isinstance(marked, str) or not marked:
+        return None
+    return {"field": field, "marked_text": marked}
 
 
 def _stringify(v: Any) -> str:
