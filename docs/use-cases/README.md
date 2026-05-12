@@ -16,6 +16,8 @@ the demo abstracts away.
 | 6 | [Pattern Explorer](06-pattern-explorer.md) | Same `_relate` body as Bought Together, no lift filter, three-band rendering |
 | 7 | [Product Filling](07-product-filling.md) | `_predict` × 5 parallel for catalog enrichment, `$why` per field |
 | 8 | [Evaluation](08-evaluation.md) | `_evaluate` × 4 parallel with `testSource` + `$get` substitution, honest failure |
+| 9 | [Feedback](09-feedback.md) | `_predict` × 3 parallel over review `text` — category, sentiment, assigned_to |
+| 10 | [Churn](10-churn.md) | `_predict` × N parallel for at-risk leaderboard, `_relate` × 3 for drivers, `_evaluate` for honest accuracy |
 
 Each guide is self-contained — read in any order. Prerequisites
 (running demo, loaded data) are listed in the project
@@ -30,8 +32,7 @@ Evaluation honest failure) and the Aito patterns behind each.
 The guides also capture the gotchas that surfaced during the
 build — full set in [`../aito-cheatsheet.md`](../aito-cheatsheet.md).
 
-The demo's eight views exercise six Aito endpoints:
-`_search`, `_match` (via `$match`), `_recommend`, `_relate`,
-`_predict`, and `_evaluate`. Every endpoint shows up in at
-least one of the eight guides — read top-to-bottom for a tour of
-Aito's predictive surface.
+The demo's ten views exercise six Aito endpoints: `_search`,
+`_match` (via `$match`), `_recommend`, `_relate`, `_predict`,
+and `_evaluate`. Every endpoint shows up in at least one guide
+— read top-to-bottom for a tour of Aito's predictive surface.

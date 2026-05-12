@@ -31,6 +31,8 @@ from src.filling_service import get_filling
 from src.eval_service import run_evaluation
 from src.analytics_service import get_analytics
 from src.pattern_service import get_patterns
+from src.feedback_service import get_feedback
+from src.churn_service import get_churn
 
 
 config = load_config()
@@ -266,6 +268,34 @@ def pattern_explorer_endpoint(anchor: str = "dog_dryfood"):
         return get_patterns(aito, anchor_id=anchor).to_dict()
     except ValueError as exc:
         return JSONResponse(status_code=400, content={"error": str(exc)})
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/feedback")
+def feedback_endpoint(review: str | None = None):
+    """Multi-field `_predict` over a review's text — three parallel
+    predicts return category, sentiment, and the suggested assignee.
+    See ADR 0012."""
+    try:
+        return get_feedback(aito, review_id=review).to_dict()
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/churn")
+def churn_endpoint():
+    """KPI strip + at-risk leaderboard (per-customer `_predict
+    churned`) + drivers (`_relate` × 3) + honest accuracy
+    (`_evaluate`). See ADR 0013."""
+    try:
+        return get_churn(aito).to_dict()
     except AitoError as exc:
         return JSONResponse(
             status_code=502,

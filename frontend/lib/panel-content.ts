@@ -191,6 +191,56 @@ export function productFillingPanel(): AitoPanelConfig {
 }
 
 
+export function feedbackPanel(): AitoPanelConfig {
+  return {
+    operation: "Feedback",
+    endpoints: ["_predict"],
+    description:
+      `Three parallel <code style="color:var(--aito-teal);">_predict</code> calls ` +
+      `over the review's <code style="color:var(--aito-teal);">text</code> column ` +
+      `return <strong>category</strong>, <strong>sentiment</strong>, and the ` +
+      `suggested <strong>assigned_to</strong> agent in one round-trip. Same ` +
+      `fanout shape as Product Filling, applied to free-form text.`,
+    query:
+`${k('"predict"')}: {
+  ${n('"from"')}: ${s('"reviews"')},
+  ${n('"where"')}: {
+    ${n('"text"')}: ${s('"Package arrived late. The seal was broken."')}
+  },
+  ${n('"predict"')}: ${s('"category"')}
+}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
+export function churnPanel(): AitoPanelConfig {
+  return {
+    operation: "Churn",
+    endpoints: ["_predict", "_relate", "_evaluate"],
+    description:
+      `Per-customer <code style="color:var(--aito-teal);">_predict churned</code> ` +
+      `ranks active customers by risk. Drivers come from three parallel ` +
+      `<code style="color:var(--aito-teal);">_relate</code> calls over the churned ` +
+      `subset; honest accuracy from one <code style="color:var(--aito-teal);">_evaluate</code> ` +
+      `with timestamp held out.`,
+    query:
+`${k('"predict"')}: {
+  ${n('"from"')}: ${s('"customers"')},
+  ${n('"where"')}: {
+    ${n('"segment"')}: ${s('"small_animal_owner"')},
+    ${n('"region"')}: ${s('"oulu"')},
+    ${n('"tenure_months"')}: 24,
+    ${n('"total_orders"')}: 2,
+    ${n('"total_spent_eur"')}: 47.5
+  },
+  ${n('"predict"')}: ${s('"churned"')}
+}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
 export function evaluationPanel(): AitoPanelConfig {
   return {
     operation: "Evaluation",

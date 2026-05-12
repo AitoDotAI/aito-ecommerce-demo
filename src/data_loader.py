@@ -72,6 +72,14 @@ SCHEMAS: dict[str, dict] = {
             "pet_size":      {"type": "String", "nullable": True},
             "region":        {"type": "String", "nullable": False},
             "tenure_months": {"type": "Int",    "nullable": False},
+            # Order-history aggregates backfilled by the fixture
+            # generator. Stored on customers so the Churn view's
+            # `_predict churned` can condition on them without a
+            # join. See ADR 0013.
+            "total_orders":     {"type": "Int",     "nullable": False},
+            "total_spent_eur":  {"type": "Decimal", "nullable": False},
+            "last_order_month": {"type": "String",  "nullable": True},
+            "churned":          {"type": "Boolean", "nullable": False},
         },
     },
     # 3. orders — links to customers.
@@ -115,6 +123,30 @@ SCHEMAS: dict[str, dict] = {
             # customer-context biasing. See ADR 0006.
             "customer_segment":  {"type": "String", "nullable": False},
             "customer_pet_size": {"type": "String", "nullable": True},
+        },
+    },
+    # 5. reviews — links to customers AND products. Powers the
+    # Feedback view's multi-field `_predict` over review text.
+    # Loaded after customers + products so the link writes succeed.
+    "reviews": {
+        "type": "table",
+        "columns": {
+            "review_id":   {"type": "String",  "nullable": False},
+            "customer_id": {"type": "String",  "nullable": False,
+                            "link": "customers.customer_id"},
+            "product_sku": {"type": "String",  "nullable": False,
+                            "link": "products.sku"},
+            "rating":      {"type": "Int",     "nullable": False},
+            # Text so `_predict` over `{text: ...}` tokenises on
+            # whitespace — drives the Feedback view's category /
+            # sentiment / assigned_to predictions from a single
+            # free-form text input. See ADR 0012.
+            "text":        {"type": "Text",    "nullable": False,
+                            "analyzer": "whitespace"},
+            "category":    {"type": "String",  "nullable": False},
+            "sentiment":   {"type": "String",  "nullable": False},
+            "assigned_to": {"type": "String",  "nullable": False},
+            "created_at":  {"type": "String",  "nullable": False},
         },
     },
 }

@@ -249,3 +249,100 @@ def test_products_have_full_food_attributes_outside_filling_pile(products):
         "less than 85 % of fillable products carry all three attributes; "
         "Filling demo's 'most are populated, a few aren't' framing breaks"
     )
+
+
+# ── Signal #6: Churn rate + driver presence ─────────────────────────
+
+
+def test_signal_6_churn_rate_in_band(customers):
+    """Overall churn rate should land in the 25-35% band.
+
+    Outside that range the Churn view either looks empty (too low,
+    the at-risk leaderboard runs out of unambiguously-risky candidates)
+    or alarming (too high, the demo's "most customers stay" framing
+    breaks). See ADR 0013."""
+    n = len(customers)
+    churned = sum(1 for c in customers if c.get("churned") is True)
+    rate = churned / n
+    assert 0.20 <= rate <= 0.38, (
+        f"churn rate {rate:.1%} outside the 20-38 % demo band; "
+        f"Churn view's narrative numbers won't land"
+    )
+
+
+def test_signal_6_personas_are_not_churned(customers):
+    """The three persona customers (Maija / Olli / Saara) must stay
+    active — they drive the For You demo and the Smart Search rank
+    flip. If any persona is churned, those views lose their default
+    state."""
+    by_id = {c["customer_id"]: c for c in customers}
+    for p in PERSONAS:
+        c = by_id.get(p.customer_id)
+        assert c is not None, f"persona {p.name_hint} missing"
+        assert c.get("churned") is False, (
+            f"persona {p.name_hint} ({p.customer_id}) is churned; "
+            f"For You / Smart Search default state breaks"
+        )
+
+
+def test_signal_6_churn_drivers_are_learnable(customers):
+    """At least one segment AND one region should have churn rate
+    ≥ 1.3× baseline. The Churn view's drivers section filters at
+    |lift - 1| ≥ 0.15, so 1.3× clears that comfortably. Without
+    these driver values, the demo's "Aito surfaces the drivers"
+    punchline doesn't land."""
+    by_segment: dict[str, list[bool]] = {}
+    by_region: dict[str, list[bool]] = {}
+    for c in customers:
+        by_segment.setdefault(c["segment"], []).append(c.get("churned") is True)
+        by_region.setdefault(c["region"], []).append(c.get("churned") is True)
+    baseline = sum(c.get("churned") is True for c in customers) / len(customers)
+
+    def has_strong_driver(buckets: dict[str, list[bool]]) -> bool:
+        for values in buckets.values():
+            if len(values) < 30:
+                continue   # too small a sample to count as a driver
+            rate = sum(values) / len(values)
+            if rate / baseline >= 1.3:
+                return True
+        return False
+
+    assert has_strong_driver(by_segment), (
+        "no segment has churn rate ≥ 1.3× baseline — Churn drivers will be empty"
+    )
+    assert has_strong_driver(by_region), (
+        "no region has churn rate ≥ 1.3× baseline — Churn drivers will be empty"
+    )
+
+
+# ── Signal #7: Reviews fixture structure ────────────────────────────
+
+
+def test_reviews_link_to_real_customers_and_products(customers, products):
+    """Every review's customer_id and product_sku must resolve. This
+    is a hard requirement for Aito link writes — a dangling link
+    fails the loader."""
+    reviews = _load("reviews.json")
+    customer_ids = {c["customer_id"] for c in customers}
+    skus = {p["sku"] for p in products}
+    bad_cust = [r for r in reviews if r["customer_id"] not in customer_ids]
+    bad_sku = [r for r in reviews if r["product_sku"] not in skus]
+    assert not bad_cust, f"{len(bad_cust)} reviews have unknown customer_id"
+    assert not bad_sku, f"{len(bad_sku)} reviews have unknown product_sku"
+
+
+def test_reviews_categories_and_assignees_match(customers):
+    """Every review must have one of the five valid categories, and
+    the assigned_to must match the deterministic category→agent map.
+    The Feedback view's confidence chips assume the mapping holds."""
+    reviews = _load("reviews.json")
+    valid_categories = {"shipping", "quality", "fit", "praise", "question"}
+    expected_assignee = {
+        "shipping": "Anna", "quality": "Petri", "fit": "Maria",
+        "praise": "Joonas", "question": "Sari",
+    }
+    for r in reviews:
+        assert r["category"] in valid_categories, r
+        assert r["assigned_to"] == expected_assignee[r["category"]], r
+        assert r["sentiment"] in {"positive", "negative", "neutral"}, r
+        assert 1 <= r["rating"] <= 5, r

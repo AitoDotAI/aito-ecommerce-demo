@@ -2,10 +2,10 @@
 
 > What an online store looks like when predictions are native to
 > every screen: search, recommendations, cross-sell, catalog
-> enrichment, evaluation. **No model training. No retraining
-> schedule. No MLOps.** Powered by [Aito.ai](https://aito.ai)'s
-> predictive database. Eight views, all live against the same
-> Aito DB.
+> enrichment, customer-feedback triage, churn prediction. **No
+> model training. No retraining schedule. No MLOps.** Powered by
+> [Aito.ai](https://aito.ai)'s predictive database. Ten views,
+> all live against the same Aito DB.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Powered by Aito.ai](https://img.shields.io/badge/Powered%20by-Aito.ai-orange)](https://aito.ai)
@@ -16,8 +16,8 @@ demos [`aito-accounting-demo`](https://github.com/AitoDotAI/aito-accounting-demo
 (*Predictive Ledger*) and
 [`aito-erp-demo`](https://github.com/AitoDotAI/aito-erp-demo)
 (*Predictive ERP*). PetNord is the dataset — a Nordic-flavoured
-online pet store with ~700 SKUs, 3,000 customers, 14,000 orders,
-36,000 order lines.
+online pet store with ~700 SKUs, 3,000 customers, 12,000 orders,
+39,000 order lines, and 2,000 customer reviews.
 
 ![Predictive E-commerce — 8 views, one predictive database](assets/teaser.png)
 
@@ -49,9 +49,9 @@ runs in parallel × 6 anchors.
 
 ---
 
-## The five demo moments
+## The six demo moments
 
-Five visible, quotable predictions form the demo's narrative.
+Six visible, quotable predictions form the demo's narrative.
 Each is in its own view, each builds on the previous:
 
 | # | Moment | View | Aito |
@@ -59,8 +59,9 @@ Each is in its own view, each builds on the previous:
 | 1 | Smart Search rank flip — cat food drops from rank 1 to rank 6 for a dog-owner persona | [Smart Search](#2-smart-search--predictive-re-ranking) | `_search` + `_recommend` |
 | 2 | For You persona switch — grid re-ranks in <300 ms on pill click | [For You](#3-for-you--personalised-tile-grid) | `_recommend` |
 | 3 | Bought Together 2.72× — dog dry-food → dental treats, live | [Bought Together](#4-bought-together--co-purchase-lift) | `_relate` |
-| 4 | Product Filling 5 fields — multi-`_predict` in ~480 ms | [Product Filling](#7-product-filling--catalog-enrichment) | `_predict` × 5 |
-| 5 | Evaluation honest failure — Return Risk +0.0 pp gain | [Evaluation](#8-evaluation--honest-passfail) | `_evaluate` × 4 |
+| 4 | Product Filling 5 fields — multi-`_predict` in ~480 ms | [Product Filling](#9-product-filling--catalog-enrichment) | `_predict` × 5 |
+| 5 | Evaluation honest failure — Return Risk +0.0 pp gain | [Evaluation](#10-evaluation--honest-passfail) | `_evaluate` × 4 |
+| 6 | **Churn ranking** — 100 customers scored by P(churn) in 2 s; drivers + held-out accuracy on one page | [Churn](#8-churn--the-killer-understand-view) | `_predict` × N + `_relate` × 3 + `_evaluate` |
 
 The two-minute narrated walkthrough is in
 [`docs/demo-script.md`](docs/demo-script.md).
@@ -69,7 +70,7 @@ The two-minute narrated walkthrough is in
 
 ## What's inside
 
-Eight views grouped under four sidebar sections, all reading from
+Ten views grouped under five sidebar sections, all reading from
 a single Aito DB. Click any guide for the full implementation,
 data-schema excerpts, and tradeoffs.
 
@@ -197,7 +198,52 @@ side of the equation, plus richer fields per row (lift, support
 counts, p_given vs. p_overall).
 [→ Implementation](src/pattern_service.py) | [Use case guide](docs/use-cases/06-pattern-explorer.md) | [ADR](docs/adr/0011-analytics-and-patterns.md)
 
-### 7. ⚡ Product Filling — catalog enrichment
+### 7. 💬 Feedback — review triage via multi-field `_predict`
+
+![Feedback](screenshots/09-feedback.png)
+
+```json
+{
+  "from": "reviews",
+  "where": { "text": "Package arrived late. The seal was broken." },
+  "predict": "category"
+}
+```
+
+Three parallel `_predict` calls over the review's `text` Text
+column return **category**, **sentiment**, and the suggested
+**assigned_to** agent in one round-trip. Same fanout shape as
+Product Filling, applied to free-form text instead of structured
+attributes — the Aito panel cycles through the three predict
+bodies as you flip reviews.
+[→ Implementation](src/feedback_service.py) | [Use case guide](docs/use-cases/09-feedback.md) | [ADR](docs/adr/0012-feedback-multi-predict.md)
+
+### 8. 📉 Churn — the killer Understand view
+
+![Churn](screenshots/10-churn.png)
+
+```json
+{
+  "from": "customers",
+  "where": {
+    "segment": "small_animal_owner",
+    "region": "oulu",
+    "tenure_months": 24,
+    "total_orders": 2,
+    "total_spent_eur": 47.5
+  },
+  "predict": "churned"
+}
+```
+
+KPI strip + at-risk leaderboard (per-customer `_predict churned`
+× 100 in parallel) + drivers (`_relate` × 3 over the churned
+subset) + honest accuracy (`_evaluate` with the timestamp held
+out). Predict who's about to stop buying — from who they are,
+not from when they last ordered.
+[→ Implementation](src/churn_service.py) | [Use case guide](docs/use-cases/10-churn.md) | [ADR](docs/adr/0013-churn-prediction.md)
+
+### 9. ⚡ Product Filling — catalog enrichment
 
 ![Product Filling](screenshots/07-product-filling.png)
 
@@ -217,7 +263,7 @@ alternatives + `$why` factor tooltip. **Demo moment #4** — all
 five at ≥ 0.87 in ~480 ms.
 [→ Implementation](src/filling_service.py) | [Use case guide](docs/use-cases/07-product-filling.md) | [ADR](docs/adr/0009-product-filling.md)
 
-### 8. 🧪 Evaluation — honest pass/fail
+### 10. 🧪 Evaluation — honest pass/fail
 
 ![Evaluation](screenshots/08-evaluation.png)
 
@@ -312,9 +358,9 @@ Browser → Next.js (port 8500) → fetch("/api/...") → FastAPI (port 8501)
 | `_search` | Retrieve rows / count via `limit=0` | Dashboard KPIs, Smart Search baseline, Purchase Analytics, Bought Together sample SKUs |
 | `_match` (via `$match`) | Token match on Text columns | Smart Search, Bought Together (`line_categories`), Pattern Explorer |
 | `_recommend` | Rank rows by `P(goal | row)` | Smart Search predictive column, For You |
-| `_relate` | Co-occurrence with lift / support / `pOnCondition` | Dashboard top patterns, Bought Together, Pattern Explorer |
-| `_predict` | Predict a field with `$p` + `$why` factor tree | Product Filling × 5 parallel |
-| `_evaluate` | Cross-validation accuracy + baseline + per-row results | Evaluation × 4 parallel |
+| `_relate` | Co-occurrence with lift / support / `pOnCondition` | Dashboard top patterns, Bought Together, Pattern Explorer, Churn drivers × 3 parallel |
+| `_predict` | Predict a field with `$p` + `$why` factor tree | Product Filling × 5 parallel, Feedback × 3 parallel, Churn at-risk × N parallel |
+| `_evaluate` | Cross-validation accuracy + baseline + per-row results | Evaluation × 4 parallel, Churn × 1 |
 
 Verified query bodies + Aito-API gotchas (multi-field `goal`
 semantics, hyphen tokenisation, single-hop link traversal, the
@@ -338,6 +384,8 @@ src/                Python FastAPI backend
   bought_together_service.py
   pattern_service.py
   analytics_service.py
+  feedback_service.py
+  churn_service.py
   filling_service.py
   eval_service.py
 
@@ -351,7 +399,7 @@ frontend/           Next.js 16 (App Router)
 
 data/               Deterministic JSON fixtures (seed = 42)
   generate_fixtures.py          single source of truth — re-runs idempotent
-  products.json · customers.json · orders.json · order_lines.json
+  products.json · customers.json · orders.json · order_lines.json · reviews.json
 
 tests/              pytest — fixture signal checks + AitoClient body shape
 screenshots/        Canonical per-view screenshots (the inspect/ subfolder is the workshop)
@@ -402,6 +450,8 @@ Read top-to-bottom and you have the demo's full design rationale.
 | 0009 | [Product Filling — multi-field `_predict`](docs/adr/0009-product-filling.md) | Accepted |
 | 0010 | [Evaluation — honest pass/fail](docs/adr/0010-evaluation.md) | Accepted |
 | 0011 | [Purchase Analytics + Pattern Explorer](docs/adr/0011-analytics-and-patterns.md) | Accepted |
+| 0012 | [Feedback — multi-field `_predict` over review text](docs/adr/0012-feedback-multi-predict.md) | Accepted |
+| 0013 | [Churn — the killer Understand view](docs/adr/0013-churn-prediction.md) | Accepted |
 
 ---
 

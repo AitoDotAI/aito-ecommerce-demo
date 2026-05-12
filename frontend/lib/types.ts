@@ -342,3 +342,83 @@ export interface DashboardResponse {
   last_query: { endpoint: string; body: Record<string, unknown> };
   last_response_ms: number;
 }
+
+/* ─── Feedback (/api/feedback) ─── */
+
+export interface FeedbackPredictedField {
+  field: string;
+  label: string;
+  predicted_value: string | null;
+  confidence: number;
+  alternatives: Array<{ value: string; confidence: number }>;
+  why_factors: Array<{ field: string; value: string; lift: number }>;
+}
+
+export interface FeedbackReviewSummary {
+  review_id: string;
+  customer_id: string;
+  customer_short: string;
+  product_sku: string;
+  product_name: string;
+  rating: number;
+  text: string;
+  created_at: string;
+  actual_category: string;
+  actual_sentiment: string;
+  actual_assigned_to: string;
+}
+
+export interface FeedbackResponse {
+  review: FeedbackReviewSummary;
+  fields: FeedbackPredictedField[];
+  candidate_reviews: Array<{ review_id: string; rating: number; text_short: string }>;
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  last_response_ms: number;
+}
+
+/* ─── Churn (/api/churn) ─── */
+
+export interface ChurnKpi {
+  label: string;
+  value: number;
+  sub: string;
+}
+
+export interface ChurnAtRiskCustomer {
+  customer_id: string;
+  customer_short: string;
+  segment: string;
+  pet_size: string | null;
+  region: string;
+  tenure_months: number;
+  total_orders: number;
+  total_spent_eur: number;
+  last_order_month: string | null;
+  risk_score: number;
+  confidence_band: "high" | "medium" | "low";
+}
+
+export interface ChurnDriverRow {
+  field: string;
+  value: string;
+  lift: number;
+  support_f: number;
+  p_churn: number;
+  p_overall: number;
+}
+
+export interface ChurnEvalSummary {
+  accuracy: number;
+  base_accuracy: number;
+  accuracy_gain_pp: number;
+  n: number;
+}
+
+export interface ChurnResponse {
+  kpis: ChurnKpi[];
+  at_risk: ChurnAtRiskCustomer[];
+  drivers: ChurnDriverRow[];
+  evaluation: ChurnEvalSummary;
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  last_response_ms: number;
+}

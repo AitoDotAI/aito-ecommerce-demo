@@ -47,6 +47,13 @@ const SECTIONS: NavSection[] = [
     ],
   },
   {
+    label: "Understand",
+    items: [
+      { href: "/feedback", label: "Feedback", icon: "💬" },
+      { href: "/churn",    label: "Churn",    icon: "📉", badge: { text: "New" } },
+    ],
+  },
+  {
     label: "Automate",
     items: [
       { href: "/product-filling", label: "Product Filling", icon: "⚡", badge: { text: "98%", tone: "green" } },
