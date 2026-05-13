@@ -1163,14 +1163,25 @@ _REVIEW_VOCAB: dict[str, list[str]] = {
     "condition":      ["allergies", "sensitive stomach", "diabetes", "joint issues", "anxiety"],
 }
 
-# Category share — slightly praise-heavy to mirror real review
-# distributions (most reviews are positive), with enough shipping +
-# quality complaints to give the support team real triage volume.
-_REVIEW_CATEGORY_WEIGHTS: dict[str, float] = {
-    "praise":   0.40,
-    "quality":  0.22,
-    "shipping": 0.18,
-    "fit":      0.10,
+# Category share is conditioned on **customer.churned** so the
+# rating column becomes a meaningful predictor of churn:
+# unhappy/churning customers cluster in shipping/quality/fit
+# (low ratings); active customers cluster in praise (high
+# ratings). The weighted average across the customer population
+# preserves the original net share (~40 % praise / 22 % quality /
+# 18 % shipping / 10 % fit / 10 % question).
+_REVIEW_CATEGORY_WEIGHTS_ACTIVE: dict[str, float] = {
+    "praise":   0.55,
+    "quality":  0.16,
+    "shipping": 0.12,
+    "fit":      0.07,
+    "question": 0.10,
+}
+_REVIEW_CATEGORY_WEIGHTS_CHURNED: dict[str, float] = {
+    "praise":   0.12,
+    "quality":  0.34,
+    "shipping": 0.28,
+    "fit":      0.16,
     "question": 0.10,
 }
 
@@ -1222,6 +1233,9 @@ def gen_reviews(
     sku_to_cat: dict[str, str] = {p.sku: p.category for p in products}
     order_to_customer: dict[str, str] = {o.order_id: o.customer_id for o in orders}
     order_to_month: dict[str, str] = {o.order_id: o.month for o in orders}
+    # Customer churn lookup — drives the conditional category weights
+    # so 1-star reviews preferentially come from churning customers.
+    customer_churned: dict[str, bool] = {c.customer_id: c.churned for c in customers}
 
     # Pick ~6000 (customer, product) pairs from the line history.
     # Each line has a moderate probability of producing a review; the
@@ -1241,9 +1255,19 @@ def gen_reviews(
             continue
 
         pet = sku_to_pet.get(ln.product_sku, "pet")
+        # Pick category weights conditional on this customer's overall
+        # churn status. Churning customers' reviews skew toward
+        # complaint categories (low ratings); active customers' skew
+        # toward praise. Aito then learns "rating=1 ⇒ elevated
+        # P(churn)" from the conditional rate gap.
+        cat_weights = (
+            _REVIEW_CATEGORY_WEIGHTS_CHURNED
+            if customer_churned.get(cust, False)
+            else _REVIEW_CATEGORY_WEIGHTS_ACTIVE
+        )
         category = rng.choices(
             REVIEW_CATEGORIES,
-            weights=[_REVIEW_CATEGORY_WEIGHTS[c] for c in REVIEW_CATEGORIES],
+            weights=[cat_weights[c] for c in REVIEW_CATEGORIES],
         )[0]
         rating_dist = _RATING_BY_CATEGORY[category]
         rating = rng.choices(

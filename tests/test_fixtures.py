@@ -379,6 +379,32 @@ def test_review_churn_within_90d_share_in_band():
     )
 
 
+def test_review_rating_predicts_churn(customers):
+    """1-star reviews must over-index for churn_within_90d=True vs
+    5-star reviews. Without this conditional bias in the fixture,
+    Aito's `_predict churn_within_90d from {text, rating}` falls
+    back to the text signal alone and the Feedback view's "1★ →
+    high churn risk" narrative doesn't land.
+
+    Target: P(churn | rating=1) ≥ 1.6 × P(churn | rating=5).
+    """
+    reviews = _load("reviews.json")
+    by_rating: dict[int, list[bool]] = {}
+    for r in reviews:
+        by_rating.setdefault(int(r["rating"]), []).append(
+            r.get("churn_within_90d") is True
+        )
+    p1 = (sum(by_rating.get(1, [False])) / len(by_rating.get(1, [True])))
+    p5 = (sum(by_rating.get(5, [False])) / len(by_rating.get(5, [True])))
+    assert p5 > 0, "no 5-star reviews — generator regression"
+    ratio = p1 / p5
+    assert ratio >= 1.6, (
+        f"P(churn|1★)/P(churn|5★) = {ratio:.2f} (target ≥ 1.6) — "
+        f"1-star reviews don't preferentially come from churning "
+        f"customers, so Aito won't surface rating as a churn driver"
+    )
+
+
 def test_review_churn_label_correlates_with_customer_churn(customers):
     """Every review with `churn_within_90d=True` must belong to a
     customer who is themselves `churned=True`. The forward-looking
