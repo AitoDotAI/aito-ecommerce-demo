@@ -52,9 +52,9 @@ export interface WhyExplanation {
 }
 
 /** Flattened `$why` decomposition produced by `src/why_processor.py`.
- *  Drives the `WhyPopover` component. Sibling to the legacy
- *  `WhyExplanation` type above (which carries highlight HTML
- *  payloads for the old token-highlight design). */
+ *  Drives the `WhyPopover` component for `_predict` results. The
+ *  sibling `WhyEstimatePayload` (below) covers `_estimate` results
+ *  which have a different shape. */
 export interface WhyExplanationPayload {
   base_p: number;
   predicted_value: string;
@@ -69,6 +69,25 @@ export interface WhyExplanationPayload {
   }>;
   final_p: number | null;
 }
+
+/** Estimate-variant explanation from `src/why_processor.py`'s
+ *  `process_estimate_why`. K-NN / regression-coefficient
+ *  decomposition for `_estimate` queries (Demand / Inventory /
+ *  Price). Each component's `value` is on the log scale Aito uses
+ *  internally — the popover converts to %-lift for display. */
+export interface WhyEstimatePayload {
+  kind: "estimate";
+  estimate: number | null;
+  field_label: string;
+  components: Array<{
+    name: string;
+    value: number;
+    type: "regression" | "residual" | "mean" | string;
+  }>;
+}
+
+/** Either-shape why payload — services return one or the other. */
+export type AnyWhyPayload = WhyExplanationPayload | WhyEstimatePayload;
 
 /** Legacy shape kept for backwards compatibility — older endpoints
  *  still return this. New code should prefer `WhyExplanation`. */
@@ -459,7 +478,7 @@ export interface DemandTopMover {
   last_month_units: number;
   forecast_units: number;
   forecast_p: number;
-  why_explanation: WhyExplanationPayload | null;
+  why_explanation: AnyWhyPayload | null;
 }
 
 export interface DemandSeasonRow {
@@ -511,7 +530,7 @@ export interface InventoryReorderRow {
   revenue_at_risk_eur: number;
   supplier: string;
   lead_time_days: number;
-  why_explanation: WhyExplanationPayload | null;
+  why_explanation: AnyWhyPayload | null;
 }
 
 export interface InventoryOverstockRow {

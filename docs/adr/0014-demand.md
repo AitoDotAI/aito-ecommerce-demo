@@ -18,6 +18,14 @@ sweet-spot patterns over the same panel).
 
 ## Aito usage
 
+**`_estimate`** (not `_predict`) for the forecast — `units_sold`
+is continuous-style Int data and what we want is the *expected
+value*, not the most-probable specific integer. `_predict` on
+`units_sold` returns ranked discrete values each with low `$p`
+(top hit "1 unit at 17 %"); `_estimate` returns a single mean
+(3.76 units) — the natural fit. See `docs/aito-cheatsheet.md`
+§`_estimate vs _predict`.
+
 ```json
 {
   "from": "monthly_sales",
@@ -29,9 +37,15 @@ sweet-spot patterns over the same panel).
     "brand": "Royal Canin",
     "season": "spring"
   },
-  "predict": "units_sold"
+  "estimate": "units_sold",
+  "select": ["estimate", "why"]
 }
 ```
+
+The `why` is a K-NN `weightedAverage` of `neighborContext`
+nodes. `process_estimate_why` flattens **only the top-weighted
+neighbor's subtree** — 20+ neighbors × per-feature regressions
+would be too noisy for the popover.
 
 Plus, in parallel:
 

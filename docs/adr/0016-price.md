@@ -20,15 +20,38 @@ synthesised observation panel.
 
 ## Aito usage
 
-### Fair-band: pure `_search` aggregation
+### Fair-band: bulk `_search` + Python aggregation, with one
+### `_aggregate` for per-SKU drilldown
+
+Catalog-wide outlier scan needs stats for every SKU. Two paths:
+
+1. **Page-fetch all rows once, aggregate in Python** — one
+   `_search` call (paged), ~11k rows. Cheap, no rate-limit risk.
+2. **N parallel `_aggregate` calls** (one per SKU) — Aito-side
+   stats, but 658 parallel calls trip Aito's rate limiter at
+   429 Too Many Requests.
+
+We chose (1) for the bulk scan and added a single targeted
+`_aggregate` call for the top-displayed SKU's drilldown — that's
+the body surfaced in the Aito side panel, so the endpoint is
+still visible in the demo. See `docs/aito-cheatsheet.md`
+§`_aggregate` for the per-SKU shape.
 
 ```json
-{"from": "price_history", "limit": 5000}
+{
+  "from": "price_history",
+  "where": {"product_sku": "SKU-PT-0042"},
+  "aggregate": [
+    "price_eur.$mean",
+    "price_eur.$min",
+    "price_eur.$max"
+  ]
+}
 ```
 
-Per-SKU stats (mean / std / min / max / count) are aggregated
-client-side over the fetched rows. SKUs whose current list price
-falls outside `mean ± 1.5σ` are flagged as outliers.
+Note: `price_eur.$mean` automatically returns
+`mean.standardDeviation` and `mean.variance` in the same
+response — there's no separate `$standardDeviation` keyword.
 
 ### Sweet-spot: three parallel `_relate` calls
 

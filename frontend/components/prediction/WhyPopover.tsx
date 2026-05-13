@@ -28,9 +28,24 @@ export interface WhyExplanationPayload {
   final_p: number | null;
 }
 
+/** `_estimate` returns a continuous expected value with a regression-
+ *  /-K-NN-style breakdown — different shape from `_predict`'s
+ *  $why tree. The popover renders this as base + per-feature deltas
+ *  on the log scale, with each component shown as a `% lift` chip. */
+export interface WhyEstimatePayload {
+  kind: "estimate";
+  estimate: number | null;
+  field_label: string;
+  components: Array<{
+    name: string;
+    value: number;
+    type: "regression" | "residual" | "mean" | string;
+  }>;
+}
+
 
 interface WhyPopoverProps {
-  why: WhyExplanationPayload;
+  why: WhyExplanationPayload | WhyEstimatePayload;
   /** Optional one-line summary shown as the title — "Why {title}?" */
   title?: string;
 }
@@ -136,77 +151,197 @@ export default function WhyPopover({ why, title }: WhyPopoverProps) {
             </div>
           )}
 
-          {/* Base probability card */}
-          <div style={{
-            background: "var(--bg)",
-            padding: "10px 12px",
-            borderRadius: 6,
-            marginBottom: 10,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}>
-            <div>
-              <div style={{
-                fontSize: 9,
-                fontWeight: 700,
-                textTransform: "uppercase",
-                letterSpacing: 0.6,
-                color: "var(--text-muted)",
-              }}>
-                Base probability
-              </div>
-              <div style={{ fontSize: 11, color: "var(--text-2)", marginTop: 2 }}>
-                Prior rate of <strong>{why.predicted_value}</strong>
-              </div>
-            </div>
-            <div style={{ fontWeight: 800, fontSize: 18 }}>
-              {pctOf(why.base_p)}%
-            </div>
-          </div>
-
-          {/* Pattern match cards */}
-          {why.lifts.map((entry, i) => (
-            <PatternMatchCard key={i} entry={entry} />
-          ))}
-
-          {/* Multiplicative chain */}
-          {why.final_p !== null && (
-            <div style={{
-              textAlign: "center",
-              padding: "10px 0 6px",
-              fontFamily: "var(--mono)",
-              fontSize: 13,
-              color: "var(--text-2)",
-            }}>
-              {pctOf(why.base_p)}%
-              {why.lifts.map((entry, i) => (
-                <span key={i}> × {entry.lift.toFixed(1)}</span>
-              ))}
-              {" = "}
-              <strong style={{ color: "var(--text)", fontSize: 14 }}>
-                {pctOf(why.final_p)}%
-              </strong>
-            </div>
-          )}
-
-          {/* Footer */}
-          <div style={{
-            marginTop: 8,
-            paddingTop: 10,
-            borderTop: "1px solid var(--border-light)",
-            fontSize: 11,
-            color: "var(--text-muted)",
-            lineHeight: 1.5,
-          }}>
-            <strong>Lift &gt; 1</strong> means this feature makes the
-            prediction more likely; <strong>base P</strong> is the prior
-            probability of the predicted value.
-          </div>
+          {isEstimatePayload(why)
+            ? renderEstimateBody(why)
+            : renderPredictBody(why)}
         </div>,
         document.body,
       )}
     </>
+  );
+}
+
+
+function isEstimatePayload(
+  why: WhyExplanationPayload | WhyEstimatePayload,
+): why is WhyEstimatePayload {
+  return (why as WhyEstimatePayload).kind === "estimate";
+}
+
+
+function renderPredictBody(why: WhyExplanationPayload): React.ReactNode {
+  return (
+    <>
+      {/* Base probability card */}
+      <div style={{
+        background: "var(--bg)",
+        padding: "10px 12px",
+        borderRadius: 6,
+        marginBottom: 10,
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}>
+        <div>
+          <div style={{
+            fontSize: 9, fontWeight: 700, textTransform: "uppercase",
+            letterSpacing: 0.6, color: "var(--text-muted)",
+          }}>
+            Base probability
+          </div>
+          <div style={{ fontSize: 11, color: "var(--text-2)", marginTop: 2 }}>
+            Prior rate of <strong>{why.predicted_value}</strong>
+          </div>
+        </div>
+        <div style={{ fontWeight: 800, fontSize: 18 }}>
+          {pctOf(why.base_p)}%
+        </div>
+      </div>
+
+      {/* Pattern match cards */}
+      {why.lifts.map((entry, i) => (
+        <PatternMatchCard key={i} entry={entry} />
+      ))}
+
+      {/* Multiplicative chain */}
+      {why.final_p !== null && (
+        <div style={{
+          textAlign: "center", padding: "10px 0 6px",
+          fontFamily: "var(--mono)", fontSize: 13,
+          color: "var(--text-2)",
+        }}>
+          {pctOf(why.base_p)}%
+          {why.lifts.map((entry, i) => (
+            <span key={i}> × {entry.lift.toFixed(1)}</span>
+          ))}
+          {" = "}
+          <strong style={{ color: "var(--text)", fontSize: 14 }}>
+            {pctOf(why.final_p)}%
+          </strong>
+        </div>
+      )}
+
+      {/* Footer */}
+      <div style={{
+        marginTop: 8, paddingTop: 10,
+        borderTop: "1px solid var(--border-light)",
+        fontSize: 11, color: "var(--text-muted)", lineHeight: 1.5,
+      }}>
+        <strong>Lift &gt; 1</strong> means this feature makes the
+        prediction more likely; <strong>base P</strong> is the prior
+        probability of the predicted value.
+      </div>
+    </>
+  );
+}
+
+
+function renderEstimateBody(why: WhyEstimatePayload): React.ReactNode {
+  return (
+    <>
+      {/* Expected value card */}
+      <div style={{
+        background: "var(--bg)",
+        padding: "10px 12px",
+        borderRadius: 6,
+        marginBottom: 10,
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}>
+        <div>
+          <div style={{
+            fontSize: 9, fontWeight: 700, textTransform: "uppercase",
+            letterSpacing: 0.6, color: "var(--text-muted)",
+          }}>
+            Expected value
+          </div>
+          <div style={{ fontSize: 11, color: "var(--text-2)", marginTop: 2 }}>
+            Aito&apos;s estimate of <strong>{why.field_label}</strong>
+          </div>
+        </div>
+        <div style={{ fontWeight: 800, fontSize: 18, fontFamily: "var(--mono)" }}>
+          {why.estimate !== null ? why.estimate.toFixed(2) : "—"}
+        </div>
+      </div>
+
+      {/* Per-feature contributions on the log scale */}
+      {why.components.length === 0 ? (
+        <div style={{ fontSize: 12, color: "var(--text-muted)", padding: "6px 0" }}>
+          No feature contributions surfaced.
+        </div>
+      ) : (
+        why.components.map((c, i) => (
+          <EstimateComponentCard key={i} c={c} />
+        ))
+      )}
+
+      {/* Footer */}
+      <div style={{
+        marginTop: 8, paddingTop: 10,
+        borderTop: "1px solid var(--border-light)",
+        fontSize: 11, color: "var(--text-muted)", lineHeight: 1.5,
+      }}>
+        Aito&apos;s <strong>_estimate</strong> uses a K-NN /
+        regression model. Contributions are on the log scale —
+        positive Δ shifts the estimate up, negative Δ shifts it down.
+      </div>
+    </>
+  );
+}
+
+
+function EstimateComponentCard({
+  c,
+}: {
+  c: WhyEstimatePayload["components"][number];
+}) {
+  const up = c.value >= 0;
+  // Convert log-scale Δ to a rough percentage lift (e^Δ - 1) for
+  // display intuition. Keep the raw log value in a small mono pill
+  // so the math stays auditable.
+  const pctLift = (Math.exp(c.value) - 1) * 100;
+  const label =
+    c.type === "regression" ? "Feature shift" :
+    c.type === "residual"   ? "Neighbor residual" :
+    c.type === "mean"       ? "Column mean" :
+                              c.type;
+  return (
+    <div style={{
+      background: up ? "rgba(245,166,35,0.10)" : "rgba(82,183,136,0.08)",
+      borderLeft: `3px solid ${up ? "var(--cta)" : "var(--green)"}`,
+      padding: "8px 12px",
+      borderRadius: 4,
+      marginBottom: 8,
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      gap: 10,
+    }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
+          fontSize: 9, fontWeight: 700, textTransform: "uppercase",
+          letterSpacing: 0.6, color: "var(--text-muted)", marginBottom: 4,
+        }}>
+          {label}
+        </div>
+        <div style={{ fontSize: 12, color: "var(--text)" }}>
+          <code style={{ fontFamily: "var(--mono)", color: "var(--text-2)" }}>
+            {c.name}
+          </code>
+        </div>
+      </div>
+      <div style={{
+        fontFamily: "var(--mono)", fontWeight: 700, fontSize: 13,
+        color: up ? "var(--cta)" : "var(--green)",
+        flexShrink: 0, textAlign: "right",
+      }}>
+        <div>{up ? "↑" : "↓"} {Math.abs(pctLift).toFixed(0)}%</div>
+        <div style={{ fontSize: 9, color: "var(--text-muted)", fontWeight: 500 }}>
+          Δlog {c.value >= 0 ? "+" : ""}{c.value.toFixed(2)}
+        </div>
+      </div>
+    </div>
   );
 }
 

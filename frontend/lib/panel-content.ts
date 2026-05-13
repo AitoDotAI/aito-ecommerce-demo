@@ -249,15 +249,15 @@ export function churnPanel(): AitoPanelConfig {
 export function demandPanel(): AitoPanelConfig {
   return {
     operation: "Demand Forecast",
-    endpoints: ["_predict", "_relate", "_evaluate"],
+    endpoints: ["_estimate", "_relate", "_evaluate"],
     description:
-      `Per-SKU <code style="color:var(--aito-teal);">_predict units_sold</code> ` +
-      `from the <code style="color:var(--aito-teal);">monthly_sales</code> panel ` +
-      `(SKU × month aggregates with denormalised pet_type / category / brand / ` +
-      `season). Seasonality via parallel <code style="color:var(--aito-teal);">_relate</code> ` +
-      `over (season, category). Honest accuracy via <code style="color:var(--aito-teal);">_evaluate</code>.`,
+      `Per-SKU <code style="color:var(--aito-teal);">_estimate units_sold</code> ` +
+      `from the <code style="color:var(--aito-teal);">monthly_sales</code> panel — ` +
+      `expected-value regression (K-NN under the hood), not most-probable-integer ` +
+      `prediction. Seasonality via parallel <code style="color:var(--aito-teal);">_relate</code> ` +
+      `over (season, category). Held-out accuracy via <code style="color:var(--aito-teal);">_evaluate</code>.`,
     query:
-`${k('"predict"')}: {
+`${k('"estimate"')}: {
   ${n('"from"')}: ${s('"monthly_sales"')},
   ${n('"where"')}: {
     ${n('"product_sku"')}: ${s('"SKU-PT-0001"')},
@@ -266,7 +266,7 @@ export function demandPanel(): AitoPanelConfig {
     ${n('"category"')}: ${s('"dry-food"')},
     ${n('"season"')}: ${s('"spring"')}
   },
-  ${n('"predict"')}: ${s('"units_sold"')}
+  ${n('"estimate"')}: ${s('"units_sold"')}
 }`,
     links: LEARN_MORE_LINKS,
   };
@@ -276,15 +276,15 @@ export function demandPanel(): AitoPanelConfig {
 export function inventoryPanel(): AitoPanelConfig {
   return {
     operation: "Inventory",
-    endpoints: ["_predict", "_search"],
+    endpoints: ["_estimate", "_search"],
     description:
       `Stock + lead-time arithmetic for every SKU, with Aito's ` +
-      `<code style="color:var(--aito-teal);">_predict units_sold</code> ` +
-      `surfacing next-month demand for the critical SKUs. Reorder workflow ` +
-      `sorts by <strong>revenue at risk</strong> (forecast shortfall × retail) ` +
-      `— the cash a stockout would cost.`,
+      `<code style="color:var(--aito-teal);">_estimate units_sold</code> ` +
+      `surfacing expected next-month demand for the critical SKUs. Reorder ` +
+      `workflow sorts by <strong>revenue at risk</strong> (forecast shortfall ` +
+      `× retail) — the cash a stockout would cost.`,
     query:
-`${k('"predict"')}: {
+`${k('"estimate"')}: {
   ${n('"from"')}: ${s('"monthly_sales"')},
   ${n('"where"')}: {
     ${n('"product_sku"')}: ${s('"SKU-PT-0042"')},
@@ -292,7 +292,7 @@ export function inventoryPanel(): AitoPanelConfig {
     ${n('"category"')}: ${s('"dry-food"')},
     ${n('"season"')}: ${s('"spring"')}
   },
-  ${n('"predict"')}: ${s('"units_sold"')}
+  ${n('"estimate"')}: ${s('"units_sold"')}
 }`,
     links: LEARN_MORE_LINKS,
   };
@@ -302,19 +302,21 @@ export function inventoryPanel(): AitoPanelConfig {
 export function pricePanel(): AitoPanelConfig {
   return {
     operation: "Price",
-    endpoints: ["_relate", "_search"],
+    endpoints: ["_aggregate", "_relate"],
     description:
-      `Per-SKU fair-band stats from <code style="color:var(--aito-teal);">price_history</code> ` +
-      `(mean ± 1.5σ over 12-17 observations) plus a sweet-spot ` +
-      `<code style="color:var(--aito-teal);">_relate</code> over discount band ` +
-      `↔ category — "promo-priced toys sell 2.4× more units than list-priced toys".`,
+      `Per-SKU price stats from Aito's <code style="color:var(--aito-teal);">_aggregate</code> ` +
+      `(mean / std / min / max computed server-side, one call per SKU). ` +
+      `Sweet-spot <code style="color:var(--aito-teal);">_relate</code> over ` +
+      `discount band ↔ category surfaces "promo-priced toys lift 2.4×".`,
     query:
-`${k('"relate"')}: {
+`${k('"aggregate"')}: {
   ${n('"from"')}: ${s('"price_history"')},
-  ${n('"where"')}: {
-    ${n('"discount_pct"')}: { ${n('"$gt"')}: 15.0 }
-  },
-  ${n('"relate"')}: ${s('"product_sku.category"')}
+  ${n('"where"')}: { ${n('"product_sku"')}: ${s('"SKU-PT-0001"')} },
+  ${n('"aggregate"')}: [
+    ${s('"price_eur.$mean"')},
+    ${s('"price_eur.$min"')},
+    ${s('"price_eur.$max"')}
+  ]
 }`,
     links: LEARN_MORE_LINKS,
   };

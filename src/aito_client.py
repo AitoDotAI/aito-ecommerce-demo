@@ -318,6 +318,86 @@ class AitoClient:
             body["select"] = select
         return self._request("POST", "/_match", json=body)
 
+    def estimate(
+        self,
+        table: str,
+        where: dict,
+        estimate_field: str,
+        *,
+        model: str | None = None,
+        with_why: bool = True,
+    ) -> dict:
+        """Run an `_estimate` query — expected-value regression.
+
+        Where `_predict` returns ranked discrete hits with `$p`,
+        `_estimate` returns the **expected value** of a numeric
+        field given the `where` context. Natural fit for continuous
+        regression (units sold, price, revenue) — `_predict` on
+        Int columns picks one specific integer; `_estimate` returns
+        the mean.
+
+        K-NN under the hood by default. Set ``model="regression"``
+        to use a linear-regression model with cleaner per-field
+        contribution explanations in the response's `why` tree.
+
+        Example (Demand Forecast):
+            client.estimate(
+                table="monthly_sales",
+                where={"product_sku": "SKU-PT-0042",
+                       "month": "2026-05", "season": "spring"},
+                estimate_field="units_sold",
+            )
+            # → {"estimate": 3.76, "why": {...weightedAverage tree...}}
+
+        Returns ``{"estimate": float, "why": {...}}`` when
+        ``with_why=True``; just ``{"estimate": float}`` otherwise.
+        Setting ``with_why=False`` is cheaper — Aito skips the
+        neighbor / coefficient computation.
+        """
+        body: dict = {
+            "from": table,
+            "where": where,
+            "estimate": estimate_field,
+            "select": ["estimate", "why"] if with_why else ["estimate"],
+        }
+        if model is not None:
+            body["model"] = model
+        return self._request("POST", "/_estimate", json=body)
+
+    def aggregate(
+        self,
+        table: str,
+        where: dict | None,
+        aggregate_fields: list[str],
+    ) -> dict:
+        """Run an `_aggregate` query — server-side stats per column.
+
+        Each entry in ``aggregate_fields`` is ``"<column>.<stat>"``
+        where stat is one of ``$mean``, ``$min``, ``$max``,
+        ``$variance``, ``$standardDeviation``. Aito computes them
+        in one pass — much cheaper than fetching all rows and
+        aggregating client-side.
+
+        Example (Price Intelligence fair band):
+            client.aggregate(
+                table="price_history",
+                where={"product_sku": "SKU-PT-0001"},
+                aggregate_fields=[
+                    "price_eur.$mean", "price_eur.$min",
+                    "price_eur.$max", "price_eur.$standardDeviation",
+                ],
+            )
+            # → {"mean": 5.92, "min": 4.48, "max": 6.61,
+            #    "standardDeviation": 0.70, ...}
+        """
+        body: dict = {
+            "from": table,
+            "aggregate": aggregate_fields,
+        }
+        if where is not None:
+            body["where"] = where
+        return self._request("POST", "/_aggregate", json=body)
+
     def evaluate(
         self,
         table: str,

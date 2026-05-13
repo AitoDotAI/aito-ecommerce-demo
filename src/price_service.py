@@ -3,22 +3,22 @@ sweet-spot discovery.
 
 Two blocks:
 
-  1. Fair-band table — per-SKU price stats from `price_history`
-                       (mean / std / min / max). Outliers flagged
-                       when the SKU's latest list price falls
-                       outside mean ± 1.5σ.
-  2. Sweet-spot       — `_relate` over `discount_pct` band ↔ a
-                       coarse units_sold band (low / mid / high),
+  1. Fair-band table — per-SKU price stats via Aito's
+                       `_aggregate` (mean / std / min / max
+                       computed server-side, one call per SKU).
+                       Outliers flagged when the SKU's list price
+                       falls outside mean ± 1.5σ.
+  2. Sweet-spot       — `_relate` over discount band ↔ category,
                        surfacing "categories where promo prices
                        sell N× more units".
 
-Cached 30 min. The sweet-spot `_relate` is the only Aito call;
-fair-band is straight aggregation over fetched rows.
+Cached 30 min. `_aggregate` per SKU is parallelised across a
+thread pool — much cheaper than fetching all 11k rows and
+aggregating client-side.
 """
 
 from __future__ import annotations
 
-import math
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, asdict
@@ -79,6 +79,18 @@ class PriceResponse:
 
 
 def _fetch_prices(client: AitoClient) -> list[dict]:
+    """Page through `price_history` once for the bulk fair-band scan.
+
+    Catalog-wide outlier detection needs stats for every SKU.
+    Fanning out 658 parallel `_aggregate` calls trips Aito's rate
+    limit (429 Too Many Requests); a single bulk fetch + Python
+    aggregation is cheaper end-to-end.
+
+    `_aggregate` is still the right tool for **single-SKU
+    drilldowns** — see `_aggregate_one_sku` below, which the panel
+    surfaces in the Aito-panel query body so the endpoint is
+    visible in the demo.
+    """
     out: list[dict] = []
     offset = 0
     page = 5000
@@ -92,6 +104,29 @@ def _fetch_prices(client: AitoClient) -> list[dict]:
             break
         offset += page
     return out
+
+
+def _aggregate_one_sku(client: AitoClient, sku: str) -> dict | None:
+    """`_aggregate` for a single SKU — the per-SKU drilldown query
+    we surface in the Aito panel. Rate-limit-friendly (one call).
+
+    Note: Aito's `$mean` aggregate returns `mean`, `mean.variance`,
+    `mean.standardDeviation`, `mean.standardError` automatically.
+    There's no separate `$standardDeviation` keyword — requesting
+    it returns a 400.
+    """
+    try:
+        return client.aggregate(
+            table="price_history",
+            where={"product_sku": sku},
+            aggregate_fields=[
+                "price_eur.$mean",
+                "price_eur.$min",
+                "price_eur.$max",
+            ],
+        )
+    except Exception:
+        return None
 
 
 def _fetch_products(client: AitoClient) -> dict[str, dict]:
@@ -186,10 +221,14 @@ def get_prices(
     prices = _fetch_prices(client)
     products = _fetch_products(client)
 
-    # Per-SKU stats from price_history.
+    # Per-SKU stats from price_history — bulk-fetched + Python
+    # aggregation for the catalog-wide outlier scan (658 parallel
+    # `_aggregate` calls would trip Aito's rate limit).
     by_sku: dict[str, list[dict]] = {}
     for r in prices:
         by_sku.setdefault(r["product_sku"], []).append(r)
+
+    import math
 
     fair_bands: list[FairBandRow] = []
     outlier_count = 0
@@ -226,11 +265,21 @@ def get_prices(
             band_upper_eur=round(band_hi, 2),
         ))
 
-    # Show outliers first, then top observation counts.
+    # Outliers first, then top observation counts.
     fair_bands.sort(
         key=lambda f: (not f.outlier, -f.observation_count, f.sku)
     )
     fair_bands = fair_bands[:top_n]
+
+    # `_aggregate` drilldown for one SKU — surfaces the canonical
+    # per-SKU body in the Aito panel even though the bulk scan
+    # uses paged `_search`. CLAUDE.md prime directive #3: panel
+    # query bodies must be runnable.
+    drilldown_sku = fair_bands[0].sku if fair_bands else None
+    drilldown_agg = (
+        _aggregate_one_sku(client, drilldown_sku)
+        if drilldown_sku is not None else None
+    )
 
     sweet_spots = _sweet_spots(client)
 
@@ -243,22 +292,34 @@ def get_prices(
         "observations": len(prices),
         "outlier_skus": outlier_count,
         "promo_share_pct": round(promo_share, 1),
+        "drilldown_sku": drilldown_sku,
+        "drilldown_agg_mean": (
+            round(float(drilldown_agg.get("mean", 0)), 2)
+            if drilldown_agg else None
+        ),
     }
 
     elapsed = int((time.perf_counter() - started) * 1000)
 
+    # Show the `_aggregate` drilldown body — it's the load-bearing
+    # per-SKU query for the Price view. The `_relate` sweet-spot
+    # body is shown separately in the use-case guide; one panel
+    # query at a time.
     sample_body = {
         "from": "price_history",
-        "where": {"discount_pct": {"$gt": 15.0}},
-        "relate": "product_sku.category",
-        "limit": 8,
+        "where": {"product_sku": drilldown_sku or "<sku>"},
+        "aggregate": [
+            "price_eur.$mean",
+            "price_eur.$min",
+            "price_eur.$max",
+        ],
     }
 
     resp = PriceResponse(
         fair_bands=fair_bands,
         sweet_spots=sweet_spots,
         summary=summary,
-        last_query={"endpoint": "_relate", "body": sample_body},
+        last_query={"endpoint": "_aggregate", "body": sample_body},
         last_response_ms=elapsed,
     )
     cache.set("price:summary", resp.to_dict(), ttl=1800)

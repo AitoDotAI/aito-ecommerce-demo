@@ -32,7 +32,7 @@ from typing import Any
 
 from src.aito_client import AitoClient
 from src import cache
-from src.why_processor import process_why
+from src.why_processor import process_estimate_why
 
 
 # Frozen "today" — every demand forecast is for the NEXT month
@@ -176,11 +176,12 @@ def _fetch_recent_sales(client: AitoClient) -> dict[str, list[dict]]:
 
 
 def _predict_demand(client: AitoClient, sku: str, sales_history: list[dict]) -> tuple[int, dict | None]:
-    """Predict next-month units_sold for one SKU.
+    """Estimate next-month units_sold for one SKU via `_estimate`.
 
-    The where carries the SKU's denormalised features (pet_type,
-    category, brand, season) + the forecast month. Aito picks the
-    most-probable unit count from history.
+    Uses `_estimate` (expected-value regression) rather than
+    `_predict` because we want the *mean* of next-month units, not
+    the most-probable specific integer. Same shape as Demand
+    Forecast's `_estimate_units`. See ADR 0015 §"_estimate switch".
     """
     if not sales_history:
         return 0, None
@@ -201,17 +202,18 @@ def _predict_demand(client: AitoClient, sku: str, sales_history: list[dict]) -> 
         "season":      season_map[forecast_month_int],
     }
     try:
-        res = client.predict("monthly_sales", where=where,
-                             predict_field="units_sold", limit=3)
+        res = client.estimate("monthly_sales", where=where,
+                              estimate_field="units_sold")
     except Exception:
         return 0, None
-    hits = res.get("hits", [])
-    if not hits:
+    estimate = res.get("estimate")
+    if estimate is None:
         return 0, None
-    top = hits[0]
-    units = int(top.get("feature", 0) or 0)
-    why = process_why(top.get("$why"), top.get("feature"),
-                      actual_p=float(top.get("$p", 0) or 0))
+    units = max(0, int(round(float(estimate))))
+    why = process_estimate_why(
+        res.get("why"), float(estimate),
+        field_label="units_sold",
+    )
     return units, why
 
 
@@ -344,14 +346,15 @@ def get_inventory(
             "brand":       "<from product>",
             "season":      "spring",
         },
-        "predict": "units_sold",
+        "estimate": "units_sold",
+        "select":   ["estimate", "why"],
     }
 
     resp = InventoryResponse(
         kpis=kpis,
         reorder_queue=reorder_rows,
         overstock=overstock_rows,
-        last_query={"endpoint": "_predict", "body": sample_body},
+        last_query={"endpoint": "_estimate", "body": sample_body},
         last_response_ms=elapsed,
     )
     cache.set("inventory:summary", resp.to_dict(), ttl=1800)

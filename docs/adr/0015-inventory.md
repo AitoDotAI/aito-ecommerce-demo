@@ -21,7 +21,12 @@ forecast that drove the recommendation.
 
 ## Aito usage
 
-For each critical SKU (stock < reorder_point), one `_predict`:
+For each critical SKU (stock < reorder_point), one `_estimate`
+— same shape as Demand's per-SKU forecast (ADR 0014). We use
+`_estimate` (not `_predict`) because we want the *expected*
+units, not the most-probable specific integer; otherwise the
+revenue-at-risk calculation reads as "10 % chance we'll sell 3
+units" rather than "we expect 3-4 units on average".
 
 ```json
 {
@@ -34,7 +39,8 @@ For each critical SKU (stock < reorder_point), one `_predict`:
     "brand": "Royal Canin",
     "season": "spring"
   },
-  "predict": "units_sold"
+  "estimate": "units_sold",
+  "select": ["estimate", "why"]
 }
 ```
 

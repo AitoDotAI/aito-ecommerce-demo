@@ -25,7 +25,7 @@ from dataclasses import dataclass, asdict
 
 from src.aito_client import AitoClient
 from src import cache
-from src.why_processor import process_why
+from src.why_processor import process_estimate_why
 
 
 FORECAST_MONTH = "2026-05"   # the month we predict for
@@ -130,9 +130,20 @@ def _fetch_products(client: AitoClient) -> dict[str, dict]:
     return out
 
 
-def _predict_units(client: AitoClient, sku: str, recent: dict, month: str) -> tuple[int, float, dict | None]:
-    """`_predict units_sold` for one SKU + month. Returns (units,
-    p, why)."""
+def _estimate_units(client: AitoClient, sku: str, recent: dict, month: str) -> tuple[int, dict | None]:
+    """`_estimate units_sold` for one SKU + month. Returns the
+    expected units (rounded) and the popover-shaped why payload.
+
+    Switched from `_predict` to `_estimate` because the question is
+    "what's the expected number of units" (continuous regression),
+    not "what's the most-probable integer count" (discrete
+    classification). `_estimate` returns a single mean; `_predict`
+    on an Int column returns ranked specific values with low per-
+    value probabilities.
+
+    See aito-demo's `src/12-price-estimation.js` for the canonical
+    `_estimate` pattern this mirrors.
+    """
     month_int = int(month.split("-")[1])
     where = {
         "product_sku": sku,
@@ -143,18 +154,19 @@ def _predict_units(client: AitoClient, sku: str, recent: dict, month: str) -> tu
         "season":      _SEASON_BY_MONTH[month_int],
     }
     try:
-        res = client.predict("monthly_sales", where=where,
-                             predict_field="units_sold", limit=3)
+        res = client.estimate("monthly_sales", where=where,
+                              estimate_field="units_sold")
     except Exception:
-        return 0, 0.0, None
-    hits = res.get("hits", [])
-    if not hits:
-        return 0, 0.0, None
-    top = hits[0]
-    units = int(top.get("feature", 0) or 0)
-    p = float(top.get("$p", 0) or 0)
-    why = process_why(top.get("$why"), top.get("feature"), actual_p=p)
-    return units, p, why
+        return 0, None
+    estimate = res.get("estimate")
+    if estimate is None:
+        return 0, None
+    units = max(0, int(round(float(estimate))))
+    why = process_estimate_why(
+        res.get("why"), float(estimate),
+        field_label="units_sold",
+    )
+    return units, why
 
 
 def _seasonality(client: AitoClient) -> list[SeasonRow]:
@@ -265,17 +277,17 @@ def get_demand(
     sku_stats.sort(key=lambda t: -t[1])
     sku_stats = sku_stats[:top_n]
 
-    # Parallel _predict for next month per SKU.
-    def predict_one(t):
+    # Parallel _estimate for next month per SKU.
+    def estimate_one(t):
         sku, avg, last_units, latest = t
-        units, p, why = _predict_units(client, sku, latest, FORECAST_MONTH)
-        return sku, avg, last_units, latest, units, p, why
+        units, why = _estimate_units(client, sku, latest, FORECAST_MONTH)
+        return sku, avg, last_units, latest, units, why
 
     with ThreadPoolExecutor(max_workers=8) as pool:
-        scored = list(pool.map(predict_one, sku_stats))
+        scored = list(pool.map(estimate_one, sku_stats))
 
     top_movers: list[TopMover] = []
-    for sku, avg, last_units, latest, forecast_units, p, why in scored:
+    for sku, avg, last_units, latest, forecast_units, why in scored:
         prod = products.get(sku, {})
         top_movers.append(TopMover(
             sku=sku,
@@ -285,7 +297,7 @@ def get_demand(
             avg_monthly_units=int(round(avg)),
             last_month_units=last_units,
             forecast_units=int(forecast_units),
-            forecast_p=round(p, 4),
+            forecast_p=0.0,   # _estimate returns expected value, not a probability
             why_explanation=why,
         ))
 
@@ -304,7 +316,8 @@ def get_demand(
             "brand":       "<from monthly_sales row>",
             "season":      "spring",
         },
-        "predict": "units_sold",
+        "estimate": "units_sold",
+        "select":   ["estimate", "why"],
     }
 
     resp = DemandResponse(
@@ -312,7 +325,7 @@ def get_demand(
         top_movers=top_movers,
         seasonality=seasonality,
         evaluation=evaluation,
-        last_query={"endpoint": "_predict", "body": sample_body},
+        last_query={"endpoint": "_estimate", "body": sample_body},
         last_response_ms=elapsed,
     )
     cache.set(f"demand:{top_n}:{FORECAST_MONTH}", resp.to_dict(), ttl=1800)

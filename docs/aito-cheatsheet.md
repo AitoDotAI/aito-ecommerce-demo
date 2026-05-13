@@ -333,6 +333,113 @@ cache.
 
 ---
 
+## `_estimate` vs `_predict` — when to use which
+
+`_predict` returns ranked discrete hits with `$p` per hit — right
+for classification or "what's the most-probable specific value".
+`_estimate` returns the **expected value** of a numeric field
+given the `where` context — right for continuous regression
+("what's the mean / typical units, price, revenue").
+
+For `units_sold` on the `monthly_sales` panel:
+
+```json
+{
+  "from": "monthly_sales",
+  "where": {
+    "product_sku": "SKU-PT-0042",
+    "month": "2026-05",
+    "pet_type": "dog",
+    "category": "dry-food",
+    "season": "spring"
+  },
+  "estimate": "units_sold",
+  "select": ["estimate", "why"]
+}
+```
+
+Response:
+
+```json
+{
+  "estimate": 3.76,
+  "why": {
+    "type": "weightedAverage",
+    "components": [
+      { "weight": 1.0, "value": { ...neighborContext tree... } }
+    ]
+  }
+}
+```
+
+**Key shape differences vs `_predict`:**
+- No `hits` list, no `$p` per hit — `estimate` is a single number.
+- `why` is a `weightedAverage` of `neighborContext` nodes (K-NN);
+  each neighbor has its own per-feature `regression` shifts +
+  `mean centering` + `input.residual`. ~20-30 neighbors typical.
+- For popover rendering, **walk only the top-weighted neighbor's
+  subtree** — otherwise the popover collects N × leaves and reads
+  noisy. See `src/why_processor.py:process_estimate_why`.
+
+**`model: "regression"` variant** swaps K-NN for a linear-
+regression model with cleaner per-field contribution explanations
+(no nested per-neighbor scaffold). Less neighbor-style "this is
+like that case", more "field X shifts the estimate by Y%".
+
+**Caching is important** — K-NN `_estimate` scans the whole table
+per call. For our Demand view (25 SKUs × ~80 ms each warm =
+~2 s) the 30-min cache is essential. Cold-load batches without
+caching would saturate Aito's rate limit fast.
+
+---
+
+## `_aggregate` — server-side mean / min / max / std
+
+For per-row stats (e.g., price band per SKU) Aito has
+`_aggregate` — same `from / where` body but with an `aggregate`
+list of `<field>.<stat>` keywords.
+
+```json
+{
+  "from": "price_history",
+  "where": {"product_sku": "SKU-PT-0001"},
+  "aggregate": [
+    "price_eur.$mean",
+    "price_eur.$min",
+    "price_eur.$max"
+  ]
+}
+```
+
+Response:
+
+```json
+{
+  "mean": 5.92,
+  "min":  4.48,
+  "max":  6.61,
+  "mean.samples":           19,
+  "mean.variance":          0.49,
+  "mean.standardDeviation": 0.70,
+  "mean.standardError":     0.16
+}
+```
+
+**Gotcha**: `$standardDeviation` is **not** a separate keyword —
+requesting `"price_eur.$standardDeviation"` returns a 400. Aito's
+`$mean` already returns `mean.variance` and `mean.standardDeviation`
+in the same response. Same for `$min` / `$max` (no `samples`,
+just the value).
+
+**Rate-limit caveat**: fan-out of N parallel `_aggregate` calls
+(one per SKU) trips Aito's rate limiter at high N. For the
+Price Intelligence view we settled on a hybrid: bulk
+`_search` fetch + Python aggregation for the catalog-wide
+outlier scan, plus one `_aggregate` call for the per-SKU
+drilldown displayed in the Aito panel. See ADR 0016.
+
+---
+
 ## `AitoClient` method ↔ endpoint cheat reference
 
 | Method | Endpoint | First view that uses it |
@@ -343,6 +450,8 @@ cache.
 | `search(table, where, …)` | `POST /_search` | _(Smart Search)_ |
 | `match(table, where, match_field)` | `POST /_match` | _(may not earn its line count; see ADR 0003)_ |
 | `evaluate(table, where, predict_field)` | `POST /_evaluate` | _(Evaluation)_ |
+| `estimate(table, where, estimate_field)` | `POST /_estimate` | _(Demand / Inventory — continuous regression)_ |
+| `aggregate(table, where, aggregate_fields)` | `POST /_aggregate` | _(Price — per-SKU stats)_ |
 
 Each method's body shape is asserted offline in
 `tests/test_aito_methods.py`. The first time a view consumes a
