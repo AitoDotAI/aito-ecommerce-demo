@@ -18,6 +18,9 @@ the demo abstracts away.
 | 8 | [Evaluation](08-evaluation.md) | `_evaluate` × 4 parallel with `testSource` + `$get` substitution, honest failure |
 | 9 | [Feedback](09-feedback.md) | `_predict` × 4 parallel over review `text` — category, sentiment, assigned_to, churn_within_90d |
 | 10 | [Churn](10-churn.md) | `_predict` × N parallel over customer_months panel for at-risk leaderboard, `_relate` × 5 for drivers (incl. latest review fields), `_evaluate` for accuracy |
+| 11 | [Demand Forecast](11-demand-forecast.md) | `_predict units_sold` per top-mover SKU over the `monthly_sales` panel + 4 parallel `_relate` for seasonality + `_evaluate` |
+| 12 | [Inventory Intelligence](12-inventory-intelligence.md) | `_predict units_sold` per critical SKU + days-of-supply arithmetic; reorder queue ranked by revenue at risk in € |
+| 13 | [Price Intelligence](13-price.md) | Per-SKU fair-band from `price_history` + 3 parallel `_relate` over discount band ↔ `product_sku.category` |
 
 Each guide is self-contained — read in any order. Prerequisites
 (running demo, loaded data) are listed in the project
@@ -32,7 +35,7 @@ Evaluation honest failure) and the Aito patterns behind each.
 The guides also capture the gotchas that surfaced during the
 build — full set in [`../aito-cheatsheet.md`](../aito-cheatsheet.md).
 
-The demo's ten views exercise six Aito endpoints: `_search`,
+The demo's thirteen views exercise six Aito endpoints: `_search`,
 `_match` (via `$match`), `_recommend`, `_relate`, `_predict`,
 and `_evaluate`. Every endpoint shows up in at least one guide
 — read top-to-bottom for a tour of Aito's predictive surface.

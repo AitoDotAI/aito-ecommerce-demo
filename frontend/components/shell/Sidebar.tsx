@@ -50,7 +50,15 @@ const SECTIONS: NavSection[] = [
     label: "Understand",
     items: [
       { href: "/feedback", label: "Feedback", icon: "💬" },
-      { href: "/churn",    label: "Churn",    icon: "📉", badge: { text: "New" } },
+      { href: "/churn",    label: "Churn",    icon: "📉" },
+    ],
+  },
+  {
+    label: "Operate",
+    items: [
+      { href: "/demand",    label: "Demand Forecast", icon: "📦" },
+      { href: "/inventory", label: "Inventory",       icon: "🏷️", badge: { text: "New" } },
+      { href: "/price",     label: "Price",           icon: "💶" },
     ],
   },
   {

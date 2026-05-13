@@ -33,6 +33,9 @@ from src.analytics_service import get_analytics
 from src.pattern_service import get_patterns
 from src.feedback_service import get_feedback
 from src.churn_service import get_churn
+from src.demand_service import get_demand
+from src.inventory_service import get_inventory
+from src.price_service import get_prices
 
 
 config = load_config()
@@ -100,6 +103,7 @@ def _warm_cache() -> None:
             ("purchase-analytics", lambda: get_analytics(aito)),
             ("product-filling",  lambda: get_filling(aito)),
             ("feedback",         lambda: get_feedback(aito)),
+            ("price",            lambda: get_prices(aito)),
         ]
         # Warm cheap ones serially — most of them parallelise internally
         # and stacking them concurrently only fights the Aito worker
@@ -108,12 +112,14 @@ def _warm_cache() -> None:
             warm_or_skip(name, fn)
         # The two slow ones in parallel — they don't share keys and Aito
         # tolerates the concurrency.
-        with ThreadPoolExecutor(max_workers=2) as pool:
+        with ThreadPoolExecutor(max_workers=4) as pool:
             list(pool.map(
                 lambda nf: warm_or_skip(*nf),
                 [
                     ("churn",      lambda: get_churn(aito)),
                     ("evaluation", lambda: run_evaluation(aito)),
+                    ("demand",     lambda: get_demand(aito)),
+                    ("inventory",  lambda: get_inventory(aito)),
                 ],
             ))
         print("Cache warm.")
@@ -371,6 +377,46 @@ def churn_endpoint():
     (`_evaluate`). See ADR 0013."""
     try:
         return get_churn(aito).to_dict()
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/demand")
+def demand_endpoint():
+    """Per-SKU next-month units forecast + seasonality drivers +
+    held-out accuracy. See ADR 0014."""
+    try:
+        return get_demand(aito).to_dict()
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/inventory")
+def inventory_endpoint():
+    """KPI strip + reorder queue (critical SKUs with `_predict
+    units_sold` next month) + overstock list with tied-capital €.
+    See ADR 0015."""
+    try:
+        return get_inventory(aito).to_dict()
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/price")
+def price_endpoint():
+    """Per-SKU fair-band stats + sweet-spot `_relate` over
+    discount band ↔ category. See ADR 0016."""
+    try:
+        return get_prices(aito).to_dict()
     except AitoError as exc:
         return JSONResponse(
             status_code=502,

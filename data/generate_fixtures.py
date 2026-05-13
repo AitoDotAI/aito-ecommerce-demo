@@ -282,6 +282,57 @@ class CustomerMonth:
 
 
 @dataclass
+class MonthlySale:
+    """Per-SKU per-month sales aggregate. Powers the Demand
+    Forecast view's `_predict units_sold` and the Inventory view's
+    days-of-supply arithmetic. Denormalised pet_type + category +
+    brand + season so Aito conditions in one hop without traversal
+    back to products. See ADR 0014."""
+    monthly_sale_id: str       # "SKU-PT-0001-2025-03"
+    product_sku: str           # link → products.sku
+    month: str                 # YYYY-MM
+    units_sold: int
+    revenue_eur: float
+    unique_customers: int
+    pet_type: str              # denormalised
+    category: str              # denormalised
+    brand: str                 # denormalised
+    season: str                # "spring" | "summer" | "autumn" | "winter"
+
+
+@dataclass
+class InventoryRow:
+    """Per-SKU stock snapshot at the frozen demo today (2026-04).
+    Powers the Inventory Intelligence view's reorder workflow with
+    cash-impact figures. Stock values are synthesised — not from a
+    real WMS — but the arithmetic (days-of-supply, reorder triggers,
+    tied capital, revenue at risk) matches a real merchandising
+    operation. See ADR 0015."""
+    sku: str                       # link → products.sku
+    current_stock: int
+    unit_cost_eur: float           # ≈ 60 % of retail price
+    lead_time_days: int            # 7-28 by category
+    reorder_point: int             # lead-time demand + safety stock
+    safety_stock: int              # ~1 week buffer
+    supplier: str                  # "S-01" … "S-12"
+    last_received_month: str       # most recent restock month
+
+
+@dataclass
+class PriceObservation:
+    """Per-SKU per-month price snapshot. Powers the Price
+    Intelligence view's fair-band computation + Aito's `_relate`
+    over price-band ↔ units_sold sweet spots. Synthesised from
+    list price with occasional promotional drops. See ADR 0016."""
+    price_observation_id: str      # "SKU-PT-0001-2025-03"
+    product_sku: str               # link → products.sku
+    month: str
+    price_eur: float
+    list_price_eur: float          # the SKU's current retail price
+    discount_pct: float            # (list_price - price) / list_price × 100
+
+
+@dataclass
 class Order:
     order_id: str
     customer_id: str
@@ -1368,6 +1419,203 @@ def gen_customer_months(
     return out
 
 
+# ── Operate section: monthly_sales + inventory + price_history ─────
+
+
+_SEASON_BY_MONTH: dict[int, str] = {
+    1: "winter", 2: "winter", 3: "spring",
+    4: "spring", 5: "spring", 6: "summer",
+    7: "summer", 8: "summer", 9: "autumn",
+    10: "autumn", 11: "autumn", 12: "winter",
+}
+
+
+# Per-category lead times (days) used by Inventory. Food → faster
+# turn, accessories / aquarium → longer. Tuned so the reorder
+# workflow surfaces a meaningful spread of "critical" SKUs (food)
+# vs "overstock" risk (aquarium accessories).
+_LEAD_TIME_BY_CATEGORY: dict[str, int] = {
+    "dry-food":       7,
+    "wet-food":      10,
+    "treats":        14,
+    "dental-treats": 14,
+    "litter":        10,
+    "accessories":   21,
+    "toys":          21,
+    "grooming":      14,
+    "health":        14,
+    "aquarium":      28,
+}
+
+
+def gen_monthly_sales(
+    products: list[Product],
+    orders: list[Order],
+    lines: list[OrderLine],
+) -> list[MonthlySale]:
+    """Roll `order_lines` into per-SKU per-month aggregates.
+
+    Each emitted row is one `(sku, month)` with units_sold,
+    revenue_eur, unique_customers + denormalised profile. Only
+    months with at least one sale are emitted — empty months
+    carry no conditioning signal for `_predict`.
+
+    The denormalised `pet_type / category / brand / season`
+    columns let Aito's `_predict units_sold` condition without
+    traversing back through `products` (single-hop only).
+    """
+    sku_to_product = {p.sku: p for p in products}
+    order_to_month = {o.order_id: o.month for o in orders}
+    order_to_customer = {o.order_id: o.customer_id for o in orders}
+
+    agg: dict[tuple[str, str], dict] = {}
+    for ln in lines:
+        month = order_to_month.get(ln.order_id)
+        if month is None:
+            continue
+        key = (ln.product_sku, month)
+        bucket = agg.setdefault(
+            key, {"units": 0, "revenue": 0.0, "customers": set()}
+        )
+        bucket["units"] += ln.qty
+        prod = sku_to_product.get(ln.product_sku)
+        if prod is not None:
+            bucket["revenue"] += prod.price_eur * ln.qty
+        cust = order_to_customer.get(ln.order_id)
+        if cust:
+            bucket["customers"].add(cust)
+
+    out: list[MonthlySale] = []
+    for (sku, month), data in sorted(agg.items()):
+        prod = sku_to_product.get(sku)
+        if prod is None or data["units"] == 0:
+            continue
+        month_int = int(month.split("-")[1])
+        out.append(MonthlySale(
+            monthly_sale_id=f"{sku}-{month}",
+            product_sku=sku,
+            month=month,
+            units_sold=int(data["units"]),
+            revenue_eur=_round_eur(data["revenue"]),
+            unique_customers=len(data["customers"]),
+            pet_type=prod.pet_type,
+            category=prod.category,
+            brand=prod.brand,
+            season=_SEASON_BY_MONTH[month_int],
+        ))
+    return out
+
+
+def gen_inventory(
+    rng: random.Random,
+    products: list[Product],
+    monthly_sales: list[MonthlySale],
+) -> list[InventoryRow]:
+    """Synthesise stock + lead-time + reorder thresholds per SKU.
+
+    Engineered band distribution (drives the Inventory view's
+    cash-impact narrative):
+
+      ~10 %  critical     stock <  reorder_point
+      ~25 %  low          stock <  reorder_point × 1.5
+      ~50 %  ok
+      ~15 %  overstock    stock >  reorder_point × 5
+
+    Reorder point = lead-time × daily demand + safety stock.
+    Daily demand is computed from the SKU's average monthly sales
+    in `monthly_sales`.
+    """
+    sku_demand: dict[str, list[int]] = {}
+    for ms in monthly_sales:
+        sku_demand.setdefault(ms.product_sku, []).append(ms.units_sold)
+
+    out: list[InventoryRow] = []
+    for p in products:
+        sales = sku_demand.get(p.sku, [])
+        avg_monthly = (sum(sales) / len(sales)) if sales else 1
+        avg_monthly = max(1, int(round(avg_monthly)))
+        daily_demand = avg_monthly / 30.0
+        lead_time = _LEAD_TIME_BY_CATEGORY.get(p.category, 14)
+        safety_stock = max(2, int(daily_demand * 7))   # ~1 week buffer
+        reorder_point = max(
+            safety_stock + 1,
+            int(daily_demand * lead_time) + safety_stock,
+        )
+
+        roll = rng.random()
+        if roll < 0.10:
+            # Critical: under reorder point
+            current_stock = max(0, int(reorder_point * rng.uniform(0.05, 0.7)))
+        elif roll < 0.35:
+            # Low: just above reorder point (never dips below — that's
+            # the critical band's job; non-overlapping ranges keep the
+            # band counts predictable).
+            current_stock = int(reorder_point * rng.uniform(1.05, 1.4))
+        elif roll < 0.85:
+            # OK: healthy band
+            current_stock = int(reorder_point * rng.uniform(1.5, 3.5))
+        else:
+            # Overstock: tied capital warning territory
+            current_stock = int(reorder_point * rng.uniform(5.0, 12.0))
+
+        unit_cost = _round_eur(p.price_eur * 0.6)   # ≈ 60 % of retail
+        supplier_idx = (int(p.sku.split("-")[-1]) % 12) + 1
+        supplier = f"S-{supplier_idx:02d}"
+        last_received = f"2026-{rng.choice([1, 2, 3, 4]):02d}"
+        out.append(InventoryRow(
+            sku=p.sku,
+            current_stock=current_stock,
+            unit_cost_eur=unit_cost,
+            lead_time_days=lead_time,
+            reorder_point=reorder_point,
+            safety_stock=safety_stock,
+            supplier=supplier,
+            last_received_month=last_received,
+        ))
+    return out
+
+
+def gen_price_history(
+    rng: random.Random,
+    products: list[Product],
+    monthly_sales: list[MonthlySale],
+) -> list[PriceObservation]:
+    """Synthesise per-SKU per-month price snapshots.
+
+    Most months: price ≈ list ± 5 %. ~15 % of months: promotional
+    drop of 15-30 % off list. ~15 %: mild discount of 5-15 %.
+    Aito's `_relate` over price-band ↔ units_sold then surfaces
+    sweet-spot patterns: "category X sells 2.3× more in the
+    promo band than at list price".
+    """
+    by_sku: dict[str, list[str]] = {}
+    for ms in monthly_sales:
+        by_sku.setdefault(ms.product_sku, []).append(ms.month)
+
+    out: list[PriceObservation] = []
+    for p in products:
+        months = by_sku.get(p.sku, [])
+        list_price = p.price_eur
+        for month in months:
+            roll = rng.random()
+            if roll < 0.15:
+                discount = rng.uniform(0.15, 0.30)     # promo
+            elif roll < 0.30:
+                discount = rng.uniform(0.05, 0.15)     # mild
+            else:
+                discount = rng.uniform(-0.05, 0.05)    # near list
+            price = _round_eur(list_price * (1.0 - discount))
+            out.append(PriceObservation(
+                price_observation_id=f"{p.sku}-{month}",
+                product_sku=p.sku,
+                month=month,
+                price_eur=price,
+                list_price_eur=_round_eur(list_price),
+                discount_pct=round(discount * 100, 1),
+            ))
+    return out
+
+
 # ── Output ──────────────────────────────────────────────────────────
 
 def _to_json_dict(obj) -> dict:
@@ -1412,12 +1660,24 @@ def main() -> None:
     # `_evaluate` accuracy band. See ADR 0013.
     customer_months = gen_customer_months(rng, customers, orders, reviews)
 
+    # Operate-section tables: SKU × month sales aggregate (drives the
+    # Demand Forecast view + feeds Inventory's daily-demand), per-SKU
+    # stock snapshot (Inventory's reorder workflow), and price-history
+    # observations (Price Intelligence's fair-band + sweet-spot
+    # `_relate`). See ADRs 0014 / 0015 / 0016.
+    monthly_sales = gen_monthly_sales(products, orders, lines)
+    inventory = gen_inventory(rng, products, monthly_sales)
+    price_history = gen_price_history(rng, products, monthly_sales)
+
     write_json(DATA_DIR / "products.json", products)
     write_json(DATA_DIR / "customers.json", customers)
     write_json(DATA_DIR / "orders.json", orders)
     write_json(DATA_DIR / "order_lines.json", lines)
     write_json(DATA_DIR / "reviews.json", reviews)
     write_json(DATA_DIR / "customer_months.json", customer_months)
+    write_json(DATA_DIR / "monthly_sales.json", monthly_sales)
+    write_json(DATA_DIR / "inventory.json", inventory)
+    write_json(DATA_DIR / "price_history.json", price_history)
 
     # ── Summary print ───────────────────────────────────────────────
     print(f"  products        {len(products):>6}")
@@ -1426,6 +1686,9 @@ def main() -> None:
     print(f"  order_lines     {len(lines):>6}")
     print(f"  reviews         {len(reviews):>6}")
     print(f"  customer_months {len(customer_months):>6}")
+    print(f"  monthly_sales   {len(monthly_sales):>6}")
+    print(f"  inventory       {len(inventory):>6}")
+    print(f"  price_history   {len(price_history):>6}")
 
     # Spot-check the engineered-signal numbers so a regen makes the
     # numbers visible in the console (the *test* is `tests/test_fixtures.py`,
@@ -1480,6 +1743,31 @@ def main() -> None:
           f"(churned should be < 50% of active)")
     print(f"  Signal #10 — review churn share   : {rev_churn_share:.1f}%  "
           f"(target 8–18%)")
+
+    # Operate-section signals — inventory band distribution + monthly-
+    # sales coverage. Together they drive the Demand / Inventory /
+    # Price views' headline numbers.
+    inv_critical = sum(1 for inv in inventory if inv.current_stock < inv.reorder_point)
+    inv_overstock = sum(
+        1 for inv in inventory
+        if inv.current_stock > inv.reorder_point * 5
+    )
+    inv_critical_pct = inv_critical / len(inventory) * 100 if inventory else 0
+    inv_overstock_pct = inv_overstock / len(inventory) * 100 if inventory else 0
+    tied_capital = sum(
+        max(0, (inv.current_stock - inv.reorder_point * 2)) * inv.unit_cost_eur
+        for inv in inventory
+    )
+    print(f"  Signal #11 — inventory critical   : {inv_critical_pct:.1f}%  "
+          f"(target 8-14%)")
+    print(f"  Signal #11 — inventory overstock  : {inv_overstock_pct:.1f}%  "
+          f"(target 12-20%)")
+    print(f"  Signal #11 — tied capital         : "
+          f"€{tied_capital:,.0f}  (overstock × unit_cost)")
+    ms_skus = {ms.product_sku for ms in monthly_sales}
+    ms_coverage = len(ms_skus) / len(products) * 100 if products else 0
+    print(f"  Signal #12 — monthly_sales SKUs   : "
+          f"{len(ms_skus)}/{len(products)} ({ms_coverage:.1f}%)")
 
     print()
     print("  Persona top-5 (pet_type, category) pairs:")

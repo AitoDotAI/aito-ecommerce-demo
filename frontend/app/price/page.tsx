@@ -1,0 +1,241 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+
+import { apiFetch, fmtEur } from "@/lib/api";
+import { pricePanel } from "@/lib/panel-content";
+import { usePagePanel, useShell } from "@/components/shell/ShellState";
+import ErrorState from "@/components/shell/ErrorState";
+import type { PriceResponse, PriceFairBandRow, PriceSweetSpotRow } from "@/lib/types";
+
+
+/**
+ * Price Intelligence — per-SKU fair-band stats from price_history
+ * + sweet-spot `_relate` over discount band ↔ category. See
+ * `docs/adr/0016-price.md`.
+ */
+export default function PricePage() {
+  usePagePanel(pricePanel(), {
+    title: "Price",
+    description:
+      "Per-SKU fair-price band from history + `_relate` over " +
+      "discount band ↔ category for sweet-spot discovery.",
+    breadcrumb: "Price",
+  });
+
+  const { setPanel } = useShell();
+  const [data, setData] = useState<PriceResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    setData(null);
+    try {
+      const res = await apiFetch<PriceResponse>("/api/price");
+      setData(res);
+      setPanel({
+        ...pricePanel(),
+        query: highlightQuery(res.last_query.body),
+      });
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      setLoading(false);
+    }
+  }, [setPanel]);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
+
+  return (
+    <div className="fade-in">
+      <div className="page-header">
+        <div className="page-title">Price</div>
+        <div className="page-desc">
+          Per-SKU fair-price band (mean ± 1.5σ over price_history)
+          with outliers flagged, plus Aito's <code>_relate</code>
+          for "categories that over-index at each discount band".
+        </div>
+      </div>
+
+      {error && (
+        <ErrorState
+          title="Couldn't load Price"
+          message={`Aito returned an error. ${error}`}
+          command="./do load-data"
+        />
+      )}
+
+      {data && (
+        <div className="kpi-grid" style={{ marginBottom: 20 }}>
+          <div className="card kpi-card">
+            <div className="kpi-label">SKUs tracked</div>
+            <div className="kpi-val">{data.summary.total_skus.toLocaleString()}</div>
+            <div className="kpi-sub">with ≥ 1 price observation</div>
+          </div>
+          <div className="card kpi-card">
+            <div className="kpi-label">Observations</div>
+            <div className="kpi-val">{data.summary.observations.toLocaleString()}</div>
+            <div className="kpi-sub">price_history rows</div>
+          </div>
+          <div className="card kpi-card">
+            <div className="kpi-label">Outlier SKUs</div>
+            <div className="kpi-val">{data.summary.outlier_skus}</div>
+            <div className="kpi-sub">list price outside band</div>
+          </div>
+          <div className="card kpi-card">
+            <div className="kpi-label">Promo share</div>
+            <div className="kpi-val">{data.summary.promo_share_pct}%</div>
+            <div className="kpi-sub">of observations &gt; 15% off</div>
+          </div>
+        </div>
+      )}
+
+      {!error && (
+        <div className="two-col">
+          <div className="card">
+            <div className="card-sub" style={{ marginBottom: 6 }}>
+              Fair-band table · outliers first
+            </div>
+            <div className="page-title" style={{ fontSize: 17, margin: "4px 0 12px" }}>
+              Price stats per SKU
+            </div>
+            {(loading || !data) && (
+              <div style={{ height: 480, background: "var(--border-light)", borderRadius: 4 }} />
+            )}
+            {!loading && data && (
+              <div style={{ overflowX: "auto" }}>
+                <table className="recent-table" style={{ width: "100%", fontSize: 12 }}>
+                  <thead>
+                    <tr>
+                      <th style={{ textAlign: "left" }}>SKU</th>
+                      <th style={{ textAlign: "right" }}>List</th>
+                      <th style={{ textAlign: "right" }}>Fair band</th>
+                      <th style={{ textAlign: "right" }}>Range</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.fair_bands.map((f) => (
+                      <FairBandRowView key={f.sku} f={f} />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          <div className="card" style={{ borderTop: "3px solid var(--cta)" }}>
+            <div className="card-sub" style={{ marginBottom: 6 }}>
+              Sweet spots · `_relate` per discount band
+            </div>
+            <div className="page-title" style={{ fontSize: 17, margin: "4px 0 12px" }}>
+              Which categories over-index at which price
+            </div>
+            {(loading || !data) && (
+              <div style={{ height: 400, background: "var(--border-light)", borderRadius: 4 }} />
+            )}
+            {!loading && data?.sweet_spots.map((s, i) => (
+              <SweetSpotChip key={`${s.discount_band}-${s.category}-${i}`} s={s} />
+            ))}
+            {!loading && data && data.sweet_spots.length === 0 && (
+              <div className="card-sub">No strong sweet-spot patterns detected.</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+function FairBandRowView({ f }: { f: PriceFairBandRow }) {
+  return (
+    <tr style={f.outlier ? { background: "rgba(231,76,60,0.04)" } : undefined}>
+      <td>
+        <div style={{ fontWeight: 700, fontSize: 12 }}>{f.name}</div>
+        <div style={{ color: "var(--text-muted)", fontSize: 10.5 }}>
+          {f.pet_type} · {f.category} · n={f.observation_count}
+        </div>
+      </td>
+      <td style={{ textAlign: "right" }}>
+        <span style={{ fontWeight: 700, color: f.outlier ? "var(--red)" : "inherit" }}>
+          {fmtEur(f.list_price_eur)}
+        </span>
+        {f.outlier && (
+          <div style={{ fontSize: 10, color: "var(--red)" }}>OUTLIER</div>
+        )}
+      </td>
+      <td style={{ textAlign: "right", fontSize: 11 }}>
+        {fmtEur(f.band_lower_eur)}–{fmtEur(f.band_upper_eur)}
+      </td>
+      <td style={{ textAlign: "right", fontSize: 11, color: "var(--text-muted)" }}>
+        {fmtEur(f.min_price_eur)} … {fmtEur(f.max_price_eur)}
+      </td>
+    </tr>
+  );
+}
+
+
+function SweetSpotChip({ s }: { s: PriceSweetSpotRow }) {
+  const up = s.lift >= 1;
+  const bg = up ? "var(--red-bg)" : "var(--green-bg)";
+  const fg = up ? "var(--red)" : "var(--green)";
+  const bandLabel: Record<string, string> = {
+    list:  "list price (≤ 5% off)",
+    mild:  "mild discount (5-15% off)",
+    promo: "promo (> 15% off)",
+  };
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      gap: 12, padding: "8px 12px", marginBottom: 6,
+      background: bg, borderRadius: 6,
+    }}>
+      <div>
+        <div style={{ fontWeight: 700, fontSize: 12.5 }}>
+          <span style={{ color: "var(--text-muted)", fontWeight: 500 }}>
+            {bandLabel[s.discount_band] ?? s.discount_band}
+          </span>
+        </div>
+        <div style={{ fontSize: 11, marginTop: 2 }}>
+          <strong>{s.category}</strong> · {s.f_on_condition} obs ·
+          {Math.round(s.p_on_condition * 100)}% in band vs {Math.round(s.p_overall * 100)}% baseline
+        </div>
+      </div>
+      <div style={{ fontWeight: 700, fontSize: 13, color: fg }}>
+        {up ? "↑" : "↓"} {s.lift.toFixed(2)}×
+      </div>
+    </div>
+  );
+}
+
+
+function highlightQuery(body: Record<string, unknown>): string {
+  function fmt(value: unknown, indent: number): string {
+    const pad = "  ".repeat(indent);
+    if (value === null) return `<span class="s">null</span>`;
+    if (typeof value === "string") return `<span class="s">"${escape(value)}"</span>`;
+    if (typeof value === "boolean") return `<span class="n">${value}</span>`;
+    if (typeof value === "number") return `<span class="n">${value}</span>`;
+    if (Array.isArray(value)) {
+      if (value.length === 0) return "[]";
+      const inner = value.map((v) => `${pad}  ${fmt(v, indent + 1)}`).join(",\n");
+      return `[\n${inner}\n${pad}]`;
+    }
+    if (typeof value === "object") {
+      const entries = Object.entries(value as Record<string, unknown>);
+      if (entries.length === 0) return "{}";
+      const inner = entries
+        .map(([k, v]) => `${pad}  <span class="k">"${escape(k)}"</span>: ${fmt(v, indent + 1)}`)
+        .join(",\n");
+      return `{\n${inner}\n${pad}}`;
+    }
+    return String(value);
+  }
+  return fmt(body, 0);
+}
+
+function escape(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}

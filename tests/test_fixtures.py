@@ -451,6 +451,89 @@ def test_customer_months_visit_decay_for_churned():
     )
 
 
+# ── Signal #11/12: Operate-section fixtures ──────────────────────────
+
+
+def test_monthly_sales_coverage(products):
+    """Every SKU should have at least one monthly_sales row — empty
+    SKUs surface gaps in the order_lines fixture."""
+    sales = _load("monthly_sales.json")
+    skus_in_sales = {ms["product_sku"] for ms in sales}
+    skus_total = {p["sku"] for p in products}
+    coverage = len(skus_in_sales) / len(skus_total)
+    assert coverage >= 0.95, (
+        f"monthly_sales covers {coverage:.1%} of SKUs — Demand / "
+        f"Inventory views will have blind spots"
+    )
+
+
+def test_monthly_sales_units_positive():
+    """Every row must have units_sold ≥ 1. Empty months aren't
+    emitted; if any zero-unit row sneaks in it'd dilute Aito's
+    conditioning."""
+    sales = _load("monthly_sales.json")
+    for ms in sales:
+        assert int(ms.get("units_sold", 0)) >= 1, ms
+
+
+def test_inventory_band_distribution():
+    """Inventory snapshot must land in the engineered band ranges so
+    the reorder workflow has visible critical SKUs and the overstock
+    list has visible tied capital."""
+    inv = _load("inventory.json")
+    n = len(inv)
+    critical = sum(
+        1 for r in inv
+        if int(r["current_stock"]) < int(r["reorder_point"])
+    )
+    overstock = sum(
+        1 for r in inv
+        if int(r["current_stock"]) > int(r["reorder_point"]) * 5
+    )
+    critical_pct = critical / n
+    overstock_pct = overstock / n
+    assert 0.06 <= critical_pct <= 0.18, (
+        f"critical share {critical_pct:.1%} outside 6-18% — Inventory "
+        f"reorder workflow won't have meaningful traffic"
+    )
+    assert 0.10 <= overstock_pct <= 0.22, (
+        f"overstock share {overstock_pct:.1%} outside 10-22% — tied "
+        f"capital figure won't read substantive"
+    )
+
+
+def test_inventory_links_to_real_skus(products):
+    """Every inventory row's sku must resolve. Aito's link writes
+    fail otherwise."""
+    inv = _load("inventory.json")
+    skus = {p["sku"] for p in products}
+    bad = [r for r in inv if r["sku"] not in skus]
+    assert not bad, f"{len(bad)} inventory rows reference unknown skus"
+
+
+def test_price_history_discount_distribution():
+    """Price history's discount_pct distribution must land in roughly
+    the engineered shape: 60-80% near list, 10-20% mild, 10-20%
+    promo. The sweet-spot `_relate` needs each band to have enough
+    observations to surface lifts."""
+    prices = _load("price_history.json")
+    n = len(prices)
+    near_list = sum(1 for r in prices if abs(float(r["discount_pct"])) <= 5.0)
+    mild = sum(1 for r in prices if 5.0 < float(r["discount_pct"]) <= 15.0)
+    promo = sum(1 for r in prices if float(r["discount_pct"]) > 15.0)
+    assert 0.55 <= near_list / n <= 0.80, f"near-list share {near_list/n:.1%}"
+    assert 0.08 <= mild / n <= 0.22, f"mild share {mild/n:.1%}"
+    assert 0.08 <= promo / n <= 0.22, f"promo share {promo/n:.1%}"
+
+
+def test_price_history_links_to_real_skus(products):
+    """Every price_observation must resolve to a real SKU."""
+    prices = _load("price_history.json")
+    skus = {p["sku"] for p in products}
+    bad = [r for r in prices if r["product_sku"] not in skus]
+    assert not bad, f"{len(bad)} price_history rows reference unknown skus"
+
+
 def test_customer_months_label_consistent_with_customer_churn(customers):
     """For each customer, their customer_months rows' labels must
     match the rule: True iff customer.churned AND row.month ≥
