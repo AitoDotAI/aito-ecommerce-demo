@@ -1479,6 +1479,29 @@ _LEAD_TIME_BY_CATEGORY: dict[str, int] = {
 }
 
 
+# Per-category cost-of-goods as a fraction of retail price.
+# Real pet-store margins vary widely: food categories run thin
+# (high cost ratio), accessories / toys / grooming carry fat
+# margins (low cost ratio), health + aquarium hardware in
+# between. With a flat 0.6 ratio every SKU's profit curve points
+# "lower price = more profit" because demand grows faster than
+# margin in our engineered data; with category-varying ratios
+# the optima shift — some SKUs maximise profit at +5 / +10 % of
+# list, others at the discount end.
+_COST_RATIO_BY_CATEGORY: dict[str, float] = {
+    "dry-food":       0.72,   # tight margins, supplier-dictated
+    "wet-food":       0.68,
+    "treats":         0.55,
+    "dental-treats":  0.50,
+    "litter":         0.70,
+    "accessories":    0.32,   # fat margin
+    "toys":           0.30,
+    "grooming":       0.40,
+    "health":         0.55,
+    "aquarium":       0.50,
+}
+
+
 def gen_monthly_sales(
     products: list[Product],
     orders: list[Order],
@@ -1593,7 +1616,14 @@ def gen_inventory(
             # Overstock: tied capital warning territory
             current_stock = int(reorder_point * rng.uniform(5.0, 12.0))
 
-        unit_cost = _round_eur(p.price_eur * 0.6)   # ≈ 60 % of retail
+        # Category-dependent cost ratio — food categories carry
+        # tight margins (cost ≈ 70 % of retail), accessories /
+        # toys / grooming carry fat margins (cost ≈ 30-40 %).
+        # Without this variation every profit-curve maximises at
+        # the lowest tested price; with it, accessories'/toys'
+        # optima shift to the +5/+10 % side.
+        cost_ratio = _COST_RATIO_BY_CATEGORY.get(p.category, 0.55)
+        unit_cost = _round_eur(p.price_eur * cost_ratio)
         supplier_idx = (int(p.sku.split("-")[-1]) % 12) + 1
         supplier = f"S-{supplier_idx:02d}"
         last_received = f"2026-{rng.choice([1, 2, 3, 4]):02d}"
