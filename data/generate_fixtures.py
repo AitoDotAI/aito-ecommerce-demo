@@ -1645,40 +1645,92 @@ def gen_price_history(
     products: list[Product],
     monthly_sales: list[MonthlySale],
 ) -> list[PriceObservation]:
-    """Synthesise per-SKU per-month price snapshots.
+    """Synthesise per-SKU per-month price snapshots with engineered
+    price ↔ demand correlation.
 
-    Most months: price ≈ list ± 5 %. ~15 % of months: promotional
-    drop of 15-30 % off list. ~15 %: mild discount of 5-15 %.
-    Aito's `_relate` over price-band ↔ units_sold then surfaces
-    sweet-spot patterns: "category X sells 2.3× more in the
-    promo band than at list price".
+    For Aito's `_estimate units_sold` (the Price view's demand
+    curve) to surface a believable elasticity, monthly_sales must
+    show low-price months selling more than high-price months.
+    The previous approach assigned prices independently from
+    demand — Aito's K-NN saw zero correlation and extrapolated
+    nonsense at the edges.
+
+    The fix inverts the causality: prices are assigned based on
+    each month's actual demand rank within that SKU's history.
+
+      units > median × 1.5  →  deep promo (15-25 % off list)
+      units > median × 1.10 →  mild discount (5-15 % off)
+      units < median × 0.7  →  premium (+5 to +15 % over list)
+      else                  →  near list (±5 %)
+
+    Implied elasticity: a 30 % price swing (promo to premium)
+    produces ~2× the units. Realistic for retail (point-elasticity
+    around -2 to -3). Aito's `_estimate` then learns a clean
+    downward demand curve from real correlation in the data.
     """
-    by_sku: dict[str, list[str]] = {}
+    # Group monthly_sales by SKU to compute per-SKU median units.
+    by_sku: dict[str, list[MonthlySale]] = {}
     for ms in monthly_sales:
-        by_sku.setdefault(ms.product_sku, []).append(ms.month)
+        by_sku.setdefault(ms.product_sku, []).append(ms)
 
     out: list[PriceObservation] = []
     for p in products:
-        months = by_sku.get(p.sku, [])
+        sku_months = by_sku.get(p.sku, [])
+        if not sku_months:
+            continue
+        units_series = sorted(ms.units_sold for ms in sku_months)
+        median_units = units_series[len(units_series) // 2]
         list_price = p.price_eur
-        for month in months:
-            roll = rng.random()
-            if roll < 0.15:
-                discount = rng.uniform(0.15, 0.30)     # promo
-            elif roll < 0.30:
-                discount = rng.uniform(0.05, 0.15)     # mild
+        for ms in sku_months:
+            u = ms.units_sold
+            # Band selection by demand rank vs median.
+            if u >= median_units * 1.5:
+                discount = rng.uniform(0.15, 0.25)     # deep promo
+            elif u >= median_units * 1.10:
+                discount = rng.uniform(0.05, 0.15)     # mild discount
+            elif u < median_units * 0.7 and median_units > 0:
+                discount = -rng.uniform(0.05, 0.15)    # premium
             else:
                 discount = rng.uniform(-0.05, 0.05)    # near list
             price = _round_eur(list_price * (1.0 - discount))
             out.append(PriceObservation(
-                price_observation_id=f"{p.sku}-{month}",
+                price_observation_id=f"{p.sku}-{ms.month}",
                 product_sku=p.sku,
-                month=month,
+                month=ms.month,
                 price_eur=price,
                 list_price_eur=_round_eur(list_price),
                 discount_pct=round(discount * 100, 1),
             ))
     return out
+
+
+def backfill_monthly_sales_prices(
+    monthly_sales: list[MonthlySale],
+    price_history: list[PriceObservation],
+) -> None:
+    """Overwrite `monthly_sales.price_eur` with the realised price
+    from `price_history`, recompute `revenue_eur = price × units`.
+
+    `gen_monthly_sales` initially sets `price_eur = list price`
+    (a placeholder). After `gen_price_history` assigns discounts /
+    premiums based on demand rank, this pass writes the realised
+    price back so monthly_sales reflects the same price Aito's
+    `_estimate` will be conditioned on.
+
+    Required for the price-demand correlation to surface in
+    `_estimate units_sold` — without this backfill, monthly_sales
+    keeps the list price and price_history sits parallel with
+    no signal between them.
+    """
+    price_by_key: dict[tuple[str, str], PriceObservation] = {
+        (po.product_sku, po.month): po for po in price_history
+    }
+    for ms in monthly_sales:
+        po = price_by_key.get((ms.product_sku, ms.month))
+        if po is None:
+            continue
+        ms.price_eur = po.price_eur
+        ms.revenue_eur = _round_eur(po.price_eur * ms.units_sold)
 
 
 # ── Output ──────────────────────────────────────────────────────────
@@ -1733,6 +1785,11 @@ def main() -> None:
     monthly_sales = gen_monthly_sales(products, orders, lines)
     inventory = gen_inventory(rng, products, monthly_sales)
     price_history = gen_price_history(rng, products, monthly_sales)
+    # Now that prices reflect demand-rank discounts/premiums, write
+    # the realised price back onto monthly_sales so Aito's
+    # `_estimate units_sold` conditions on the same price column.
+    # See ADR 0016 §"Price ↔ demand scatter chart".
+    backfill_monthly_sales_prices(monthly_sales, price_history)
 
     write_json(DATA_DIR / "products.json", products)
     write_json(DATA_DIR / "customers.json", customers)
