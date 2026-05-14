@@ -172,6 +172,10 @@ SCHEMAS: dict[str, dict] = {
             "category":         {"type": "String",  "nullable": False},
             "brand":            {"type": "String",  "nullable": False},
             "season":           {"type": "String",  "nullable": False},
+            # Realised price (revenue / units) — drives the Price
+            # view's demand curve via `_estimate units_sold` with
+            # `price_eur` in the where clause.
+            "price_eur":        {"type": "Decimal", "nullable": False},
         },
     },
     # 8. inventory — per-SKU stock snapshot. Drives the Inventory

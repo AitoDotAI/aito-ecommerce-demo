@@ -6,7 +6,10 @@ import { apiFetch, fmtEur } from "@/lib/api";
 import { pricePanel } from "@/lib/panel-content";
 import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
-import type { PriceResponse, PriceFairBandRow, PriceSweetSpotRow } from "@/lib/types";
+import PriceScatterChart from "@/components/prediction/PriceScatterChart";
+import type {
+  PriceResponse, PriceFairBandRow, PriceSweetSpotRow, PriceDetail,
+} from "@/lib/types";
 
 
 /**
@@ -27,6 +30,9 @@ export default function PricePage() {
   const [data, setData] = useState<PriceResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [detail, setDetail] = useState<PriceDetail | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [selectedSku, setSelectedSku] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -39,14 +45,42 @@ export default function PricePage() {
         ...pricePanel(),
         query: highlightQuery(res.last_query.body),
       });
+      // Default the chart to the first fair-band row (typically a
+      // surfaced outlier).
+      if (res.fair_bands.length > 0 && !selectedSku) {
+        setSelectedSku(res.fair_bands[0].sku);
+      }
     } catch (e) {
       setError(String(e));
     } finally {
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setPanel]);
+
+  const fetchDetail = useCallback(async (sku: string) => {
+    setDetailLoading(true);
+    try {
+      const res = await apiFetch<PriceDetail>(
+        `/api/price/detail?sku=${encodeURIComponent(sku)}`,
+      );
+      setDetail(res);
+      // Surface the chart's `_estimate` query body in the Aito panel.
+      setPanel({
+        ...pricePanel(),
+        query: highlightQuery(res.last_query.body),
+      });
+    } catch {
+      setDetail(null);
+    } finally {
+      setDetailLoading(false);
+    }
   }, [setPanel]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    if (selectedSku) fetchDetail(selectedSku);
+  }, [selectedSku, fetchDetail]);
 
   return (
     <div className="fade-in">
@@ -92,11 +126,31 @@ export default function PricePage() {
         </div>
       )}
 
+      {/* Price ↔ Demand / Profit scatter chart for the selected SKU.
+          Driven by `_estimate units_sold` at +/-15 % adjusted prices
+          (7-point curve) over the SKU's historical monthly_sales. */}
+      {!error && (
+        <div className="card" style={{ marginBottom: 20, borderTop: "3px solid var(--cta)" }}>
+          <div className="card-sub" style={{ marginBottom: 8 }}>
+            Demand curve · `_estimate units_sold` × 7 price adjustments
+          </div>
+          {detailLoading && !detail && (
+            <div style={{ height: 360, background: "var(--border-light)", borderRadius: 4 }} />
+          )}
+          {!detailLoading && !detail && (
+            <div style={{ height: 360, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
+              Click a SKU in the fair-band table to load its demand curve.
+            </div>
+          )}
+          {detail && <PriceScatterChart detail={detail} />}
+        </div>
+      )}
+
       {!error && (
         <div className="two-col">
           <div className="card">
             <div className="card-sub" style={{ marginBottom: 6 }}>
-              Fair-band table · outliers first
+              Fair-band table · click a row to chart it
             </div>
             <div className="page-title" style={{ fontSize: 17, margin: "4px 0 12px" }}>
               Price stats per SKU
@@ -117,7 +171,12 @@ export default function PricePage() {
                   </thead>
                   <tbody>
                     {data.fair_bands.map((f) => (
-                      <FairBandRowView key={f.sku} f={f} />
+                      <FairBandRowView
+                        key={f.sku}
+                        f={f}
+                        selected={f.sku === selectedSku}
+                        onSelect={() => setSelectedSku(f.sku)}
+                      />
                     ))}
                   </tbody>
                 </table>
@@ -149,9 +208,27 @@ export default function PricePage() {
 }
 
 
-function FairBandRowView({ f }: { f: PriceFairBandRow }) {
+function FairBandRowView({
+  f, selected, onSelect,
+}: {
+  f: PriceFairBandRow;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const bg = selected
+    ? "rgba(245,166,35,0.12)"
+    : f.outlier
+      ? "rgba(231,76,60,0.04)"
+      : undefined;
   return (
-    <tr style={f.outlier ? { background: "rgba(231,76,60,0.04)" } : undefined}>
+    <tr
+      onClick={onSelect}
+      style={{
+        background: bg,
+        cursor: "pointer",
+        borderLeft: selected ? "3px solid var(--cta)" : "3px solid transparent",
+      }}
+    >
       <td>
         <div style={{ fontWeight: 700, fontSize: 12 }}>{f.name}</div>
         <div style={{ color: "var(--text-muted)", fontSize: 10.5 }}>

@@ -284,10 +284,16 @@ class CustomerMonth:
 @dataclass
 class MonthlySale:
     """Per-SKU per-month sales aggregate. Powers the Demand
-    Forecast view's `_predict units_sold` and the Inventory view's
+    Forecast view's `_estimate units_sold` and the Inventory view's
     days-of-supply arithmetic. Denormalised pet_type + category +
-    brand + season so Aito conditions in one hop without traversal
-    back to products. See ADR 0014."""
+    brand + season + price_eur so Aito conditions in one hop
+    without traversal back to products. See ADR 0014.
+
+    `price_eur` is the actual realised price for this SKU in this
+    month (revenue / units). Powers the Price view's interactive
+    demand curve — Aito's `_estimate units_sold` with `price_eur`
+    in the where lets us walk the curve at +/-15 % shifts.
+    """
     monthly_sale_id: str       # "SKU-PT-0001-2025-03"
     product_sku: str           # link → products.sku
     month: str                 # YYYY-MM
@@ -298,6 +304,7 @@ class MonthlySale:
     category: str              # denormalised
     brand: str                 # denormalised
     season: str                # "spring" | "summer" | "autumn" | "winter"
+    price_eur: float           # realised price (revenue / units) — drives demand-curve _estimate
 
 
 @dataclass
@@ -1515,17 +1522,21 @@ def gen_monthly_sales(
         if prod is None or data["units"] == 0:
             continue
         month_int = int(month.split("-")[1])
+        units = int(data["units"])
+        revenue = _round_eur(data["revenue"])
+        price = _round_eur(revenue / units) if units > 0 else _round_eur(prod.price_eur)
         out.append(MonthlySale(
             monthly_sale_id=f"{sku}-{month}",
             product_sku=sku,
             month=month,
-            units_sold=int(data["units"]),
-            revenue_eur=_round_eur(data["revenue"]),
+            units_sold=units,
+            revenue_eur=revenue,
             unique_customers=len(data["customers"]),
             pet_type=prod.pet_type,
             category=prod.category,
             brand=prod.brand,
             season=_SEASON_BY_MONTH[month_int],
+            price_eur=price,
         ))
     return out
 

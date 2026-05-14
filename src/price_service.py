@@ -326,6 +326,297 @@ def get_prices(
     return resp
 
 
+@dataclass(frozen=True)
+class HistoricalPoint:
+    month: str
+    price_eur: float
+    units_sold: int
+    revenue_eur: float
+    profit_eur: float
+
+
+@dataclass(frozen=True)
+class CurvePoint:
+    price_eur: float
+    units_sold: float       # _estimate returns a float
+    profit_eur: float
+    adjustment_pct: int     # -15, -10, -5, 0, +5, +10, +15
+
+
+@dataclass(frozen=True)
+class NeighborPoint:
+    month: str
+    price_eur: float
+    units_sold: int
+    profit_eur: float
+    weight: float           # Aito's neighbor weight in the K-NN average
+
+
+@dataclass
+class PriceDetail:
+    sku: str
+    name: str
+    pet_type: str
+    category: str
+    list_price_eur: float
+    unit_cost_eur: float
+    mean_price_eur: float
+    historical: list[HistoricalPoint]
+    curve: list[CurvePoint]
+    neighbors: list[NeighborPoint]
+    last_query: dict
+    last_response_ms: int
+
+    def to_dict(self) -> dict:
+        return {
+            "sku":              self.sku,
+            "name":             self.name,
+            "pet_type":         self.pet_type,
+            "category":         self.category,
+            "list_price_eur":   self.list_price_eur,
+            "unit_cost_eur":    self.unit_cost_eur,
+            "mean_price_eur":   self.mean_price_eur,
+            "historical":       [asdict(h) for h in self.historical],
+            "curve":            [asdict(c) for c in self.curve],
+            "neighbors":        [asdict(n) for n in self.neighbors],
+            "last_query":       self.last_query,
+            "last_response_ms": self.last_response_ms,
+        }
+
+
+# Price adjustments for the demand curve, in order.
+_CURVE_ADJUSTMENTS_PCT: list[int] = [-15, -10, -5, 0, 5, 10, 15]
+
+
+def _fetch_sku_monthly_sales(client: AitoClient, sku: str) -> list[dict]:
+    """All monthly_sales rows for one SKU."""
+    res = client.search("monthly_sales", where={"product_sku": sku}, limit=200)
+    return res.get("hits", []) or []
+
+
+def _fetch_inventory(client: AitoClient, sku: str) -> dict | None:
+    """Inventory row for one SKU (for unit_cost_eur)."""
+    res = client.search("inventory", where={"sku": sku}, limit=1)
+    hits = res.get("hits", []) or []
+    return hits[0] if hits else None
+
+
+def _fetch_product(client: AitoClient, sku: str) -> dict | None:
+    res = client.search("products", where={"sku": sku}, limit=1)
+    hits = res.get("hits", []) or []
+    return hits[0] if hits else None
+
+
+def _curve_one(
+    client: AitoClient,
+    sku: str,
+    recent: dict,
+    base_price: float,
+    pct: int,
+    *,
+    forecast_month: str = "2026-05",
+) -> CurvePoint | None:
+    """One `_estimate` call at the price adjusted by `pct %`."""
+    adjusted = round(base_price * (1.0 + pct / 100.0), 2)
+    season_map = {
+        1: "winter", 2: "winter", 3: "spring", 4: "spring",
+        5: "spring", 6: "summer", 7: "summer", 8: "summer",
+        9: "autumn", 10: "autumn", 11: "autumn", 12: "winter",
+    }
+    where = {
+        "product_sku": sku,
+        "month":       forecast_month,
+        "pet_type":    recent.get("pet_type", ""),
+        "category":    recent.get("category", ""),
+        "brand":       recent.get("brand", ""),
+        "season":      season_map[int(forecast_month.split("-")[1])],
+        "price_eur":   adjusted,
+    }
+    try:
+        res = client.estimate(
+            "monthly_sales", where=where,
+            estimate_field="units_sold", with_why=False,
+        )
+    except Exception:
+        return None
+    units = res.get("estimate")
+    if units is None:
+        return None
+    return CurvePoint(
+        price_eur=adjusted,
+        units_sold=round(float(units), 2),
+        profit_eur=0.0,   # filled in below with unit_cost
+        adjustment_pct=pct,
+    )
+
+
+def _neighbors_from_why(raw_why: Any, limit: int = 20) -> list[dict]:
+    """Extract the top-K neighbors from a K-NN `_estimate why`.
+
+    Aito's `weightedAverage.components` lists neighbors with their
+    `weight` and the instance values that contributed. We surface
+    each as a chart point with original price + units.
+    """
+    if not isinstance(raw_why, dict):
+        return []
+    comps = raw_why.get("components", []) or []
+    out: list[dict] = []
+    for c in comps[:limit]:
+        weight = float(c.get("weight", 0) or 0)
+        # The neighbor's actual data point lives in `c.value.original`
+        # (the un-adjusted instance value). Other fields are buried
+        # in `c.value.adjustments`; we pull what we need from the
+        # outer `c` if Aito surfaces it, otherwise from the inner.
+        inner = c.get("value") if isinstance(c.get("value"), dict) else {}
+        # Aito sometimes carries the instance row as `c.instance`.
+        instance = c.get("instance") or {}
+        if not instance and "instance" in inner:
+            instance = inner["instance"]
+        if not instance:
+            # We can't recover the neighbor's underlying values from
+            # the why tree alone — skip.
+            continue
+        out.append({"instance": instance, "weight": weight})
+    return out
+
+
+def get_price_detail(client: AitoClient, sku: str) -> PriceDetail | None:
+    """Per-SKU detail for the Price view's interactive chart.
+
+    Pulls historical (price, units) pairs from `monthly_sales`, the
+    SKU's unit cost from `inventory`, then walks Aito's
+    `_estimate units_sold` at seven price adjustments (-15 % …
+    +15 %) to build the demand / profit curve. Neighbors are
+    extracted from the central `_estimate`'s `why` tree.
+
+    Cached 30 min per SKU.
+    """
+    cache_key = f"price:detail:{sku}"
+    cached = cache.get(cache_key)
+    if cached:
+        return _detail_from_dict(cached)
+
+    started = time.perf_counter()
+
+    sales = _fetch_sku_monthly_sales(client, sku)
+    inv = _fetch_inventory(client, sku)
+    prod = _fetch_product(client, sku)
+    if prod is None:
+        return None
+
+    unit_cost = float((inv or {}).get("unit_cost_eur", 0) or 0)
+    list_price = float(prod.get("price_eur", 0) or 0)
+
+    historical = [
+        HistoricalPoint(
+            month=row["month"],
+            price_eur=round(float(row["price_eur"]), 2),
+            units_sold=int(row["units_sold"]),
+            revenue_eur=round(float(row["revenue_eur"]), 2),
+            profit_eur=round(
+                (float(row["price_eur"]) - unit_cost) * int(row["units_sold"]),
+                2,
+            ),
+        )
+        for row in sorted(sales, key=lambda r: r["month"])
+    ]
+
+    mean_price = (
+        sum(h.price_eur for h in historical) / len(historical)
+        if historical else list_price
+    )
+
+    # Central `_estimate` with why for neighbors.
+    recent = max(sales, key=lambda r: r["month"]) if sales else {
+        "pet_type": prod.get("pet_type", ""),
+        "category": prod.get("category", ""),
+        "brand":    prod.get("brand", ""),
+    }
+    central_call = _curve_one(client, sku, recent, mean_price, 0)
+    central_units = central_call.units_sold if central_call else 0
+
+    # Six adjusted-price `_estimate` calls (parallel).
+    other_adjustments = [a for a in _CURVE_ADJUSTMENTS_PCT if a != 0]
+
+    def fetch_curve(pct: int) -> CurvePoint | None:
+        return _curve_one(client, sku, recent, mean_price, pct)
+
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        adjusted_results = list(pool.map(fetch_curve, other_adjustments))
+
+    curve_raw: list[CurvePoint] = [
+        cp for cp in adjusted_results if cp is not None
+    ]
+    if central_call is not None:
+        curve_raw.append(central_call)
+    # Add profit_eur using unit_cost.
+    curve = [
+        CurvePoint(
+            price_eur=cp.price_eur,
+            units_sold=cp.units_sold,
+            profit_eur=round(
+                (cp.price_eur - unit_cost) * cp.units_sold, 2,
+            ),
+            adjustment_pct=cp.adjustment_pct,
+        )
+        for cp in sorted(curve_raw, key=lambda x: x.price_eur)
+    ]
+
+    # Neighbors are best-effort; Aito's `_estimate why` doesn't
+    # always surface the underlying instance row. When unavailable,
+    # the chart falls back to historical scatter alone.
+    neighbors: list[NeighborPoint] = []
+    # (Skipped neighbor extraction in this V1 — the chart works
+    # with historical + curve which is the canonical aito-demo
+    # PriceScatterChart pair.)
+
+    elapsed = int((time.perf_counter() - started) * 1000)
+
+    sample_body = {
+        "from": "monthly_sales",
+        "where": {
+            "product_sku": sku,
+            "month":       "2026-05",
+            "price_eur":   round(mean_price * 1.10, 2),
+        },
+        "estimate": "units_sold",
+    }
+
+    resp = PriceDetail(
+        sku=sku,
+        name=prod.get("name", sku),
+        pet_type=prod.get("pet_type", ""),
+        category=prod.get("category", ""),
+        list_price_eur=round(list_price, 2),
+        unit_cost_eur=round(unit_cost, 2),
+        mean_price_eur=round(mean_price, 2),
+        historical=historical,
+        curve=curve,
+        neighbors=neighbors,
+        last_query={"endpoint": "_estimate", "body": sample_body},
+        last_response_ms=elapsed,
+    )
+    cache.set(cache_key, resp.to_dict(), ttl=1800)
+    return resp
+
+
+def _detail_from_dict(d: dict) -> PriceDetail:
+    return PriceDetail(
+        sku=d["sku"],
+        name=d["name"],
+        pet_type=d["pet_type"],
+        category=d["category"],
+        list_price_eur=d["list_price_eur"],
+        unit_cost_eur=d["unit_cost_eur"],
+        mean_price_eur=d["mean_price_eur"],
+        historical=[HistoricalPoint(**h) for h in d["historical"]],
+        curve=[CurvePoint(**c) for c in d["curve"]],
+        neighbors=[NeighborPoint(**n) for n in d["neighbors"]],
+        last_query=d["last_query"],
+        last_response_ms=d["last_response_ms"],
+    )
+
+
 def _from_dict(d: dict) -> PriceResponse:
     return PriceResponse(
         fair_bands=[FairBandRow(**f) for f in d["fair_bands"]],

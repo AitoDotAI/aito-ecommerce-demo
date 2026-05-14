@@ -35,7 +35,7 @@ from src.feedback_service import get_feedback
 from src.churn_service import get_churn
 from src.demand_service import get_demand
 from src.inventory_service import get_inventory
-from src.price_service import get_prices
+from src.price_service import get_prices, get_price_detail
 
 
 config = load_config()
@@ -417,6 +417,26 @@ def price_endpoint():
     discount band ↔ category. See ADR 0016."""
     try:
         return get_prices(aito).to_dict()
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/price/detail")
+def price_detail_endpoint(sku: str):
+    """Per-SKU detail for the Price scatter chart — historical
+    (price, units, profit) pairs + 7-point demand curve via
+    parallel `_estimate units_sold` at price adjustments."""
+    try:
+        detail = get_price_detail(aito, sku)
+        if detail is None:
+            return JSONResponse(
+                status_code=404,
+                content={"error": f"sku not found: {sku}"},
+            )
+        return detail.to_dict()
     except AitoError as exc:
         return JSONResponse(
             status_code=502,

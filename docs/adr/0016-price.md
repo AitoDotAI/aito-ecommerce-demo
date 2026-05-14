@@ -74,6 +74,31 @@ example: "promo-priced (> 15 % off) toys lift 2.1× over baseline
 — customers respond to deep discounts on toys more than on
 food".
 
+### Price ↔ demand scatter chart
+
+Mirrors `aito-demo`'s `PricingPage` scatter — historical
+`(price, units)` pairs as light blue dots, Aito's `_estimate
+units_sold` at +/-15 % adjusted prices as the orange curve,
+current list price as a star.
+
+`/api/price/detail?sku=…` returns:
+- **historical** — per-month `(price, units, revenue, profit)`
+  from `monthly_sales` (joined with `inventory.unit_cost_eur` for
+  the profit calc)
+- **curve** — 7 parallel `_estimate units_sold` calls at
+  adjustments `[-15, -10, -5, 0, +5, +10, +15] %`. The 0 % call
+  also pulls the `why` neighbor tree for the popover (future
+  follow-up).
+
+The Y-axis toggles between **Demand** (units) and **Profit** (€).
+Max-profit point on the curve gets a yellow ring in profit mode
+— typically NOT at the lowest price; the unit-cost floor moves
+the optimum.
+
+For the demand-curve to be Aito-driven, `monthly_sales` carries
+a `price_eur` column (realised revenue / units per row). Without
+it `_estimate units_sold` couldn't condition on price.
+
 ## Decision
 
 ### New `price_history` table

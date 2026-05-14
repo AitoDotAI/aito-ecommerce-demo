@@ -143,6 +143,33 @@ category onto `price_history` (extra ~11k denormalised values).
 - **Margin floor enforcement** (price ≥ cost × markup)
 - **Competitor scraping / price-match rules**
 
+## Price ↔ Demand / Profit scatter
+
+Click any row in the fair-band table to load that SKU's
+interactive chart. Y-axis toggle switches between **Demand**
+(units sold) and **Profit** (€ per month).
+
+```
+sku → _search monthly_sales where {product_sku: sku}    → historical
+   → _search inventory where {sku}                        → unit_cost
+   → _estimate units_sold × 7 parallel:
+       price_eur = mean_price × [0.85, 0.90, 0.95, 1.00, 1.05, 1.10, 1.15]
+                                                          → demand curve
+```
+
+The 7-point curve is Aito's `_estimate units_sold` over
+`monthly_sales` with `price_eur` in the where — this is why
+`monthly_sales` carries a `price_eur` column (= revenue / units
+per row). Without it Aito couldn't condition on price.
+
+Profit at each curve point = `(price - unit_cost) × units`.
+The max-profit point (yellow ring in profit mode) is the
+margin × demand sweet spot — usually NOT the cheapest price
+because the unit-cost floor truncates the margin.
+
+Mirrors `aito-demo`'s `PricingPage` scatter, adapted to our
+two-table layout (monthly_sales + inventory).
+
 ## Try it live
 
 [**Open Price**](http://localhost:8500/price/). Cold load ~1 s

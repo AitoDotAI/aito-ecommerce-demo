@@ -588,7 +588,49 @@ export interface PriceResponse {
     observations: number;
     outlier_skus: number;
     promo_share_pct: number;
+    drilldown_sku?: string;
+    drilldown_agg_mean?: number;
   };
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  last_response_ms: number;
+}
+
+/* ─── Price detail (/api/price/detail?sku=…) ─── */
+
+export interface PriceHistoricalPoint {
+  month: string;
+  price_eur: number;
+  units_sold: number;
+  revenue_eur: number;
+  profit_eur: number;
+}
+
+export interface PriceCurvePoint {
+  price_eur: number;
+  units_sold: number;
+  profit_eur: number;
+  adjustment_pct: number;
+}
+
+export interface PriceNeighborPoint {
+  month: string;
+  price_eur: number;
+  units_sold: number;
+  profit_eur: number;
+  weight: number;
+}
+
+export interface PriceDetail {
+  sku: string;
+  name: string;
+  pet_type: string;
+  category: string;
+  list_price_eur: number;
+  unit_cost_eur: number;
+  mean_price_eur: number;
+  historical: PriceHistoricalPoint[];
+  curve: PriceCurvePoint[];
+  neighbors: PriceNeighborPoint[];
   last_query: { endpoint: string; body: Record<string, unknown> };
   last_response_ms: number;
 }
