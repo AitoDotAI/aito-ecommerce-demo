@@ -44,6 +44,7 @@ Quality
   aito-check        Sanity-check Aito queries against the loaded data
   verify <feature>  Run the adversary Playwright agent for one feature
   verify-demo       End-to-end demo-path check
+  verify-mobile     Mobile-viewport screenshot sweep of every sidebar view
   check             Pre-merge gate (test + fmt + aito-check)
   fmt               Format code
 
@@ -251,6 +252,19 @@ cmd_verify_demo() {
   exit 1
 }
 
+cmd_verify_mobile() {
+  # Mobile layout sanity-check — runs `frontend/scripts/inspect-mobile.cjs`
+  # against the already-running dev server (./do dev). Captures every
+  # sidebar view at 414 × 900 into `screenshots/inspect-mobile/` for
+  # visual review. The output dir is gitignored.
+  if ! curl -s -o /dev/null -w "%{http_code}" "http://localhost:8500/" | grep -q "^2"; then
+    echo "Dev server doesn't seem to be at http://localhost:8500. Start it with: ./do dev"
+    exit 1
+  fi
+  cd "$SCRIPT_DIR"
+  node frontend/scripts/inspect-mobile.cjs
+}
+
 cmd_check() {
   cmd_test
   cmd_fmt
@@ -388,6 +402,7 @@ case "${1:-help}" in
   aito-check)        cmd_aito_check ;;
   verify)            shift; cmd_verify "$@" ;;
   verify-demo)       cmd_verify_demo ;;
+  verify-mobile)     cmd_verify_mobile ;;
   check)             cmd_check ;;
   fmt)               cmd_fmt ;;
   npm-install)       cmd_npm_install ;;
