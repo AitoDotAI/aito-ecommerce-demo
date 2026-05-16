@@ -252,26 +252,73 @@ runs each, server-side response time via `x-aitoai-response-time`):
 | `["pet_type", "brand", "dietary"]`            | 139 ms             |
 | `["pet_type", "brand", "dietary", "category"]`| 138 ms             |
 
-Curating to four categorical features that carry segment signal
-drops latency 13 % vs the all-features default. The top-50 ranking
-output happens to be byte-identical across these variants on this
-dataset because the segment goal dominates; in setups with weaker
-goals or wider candidate pools the curated set also reduces ranking
-noise (per the Aito core team).
+Curating to four categorical features carrying segment signal drops
+latency 13 % vs the all-features default. The priors are running
+either way — `basedOn` just restricts which features the prior
+computation visits.
 
-**Picking what goes in `basedOn`**: list the columns whose values
-correlate with the goal. Drop columns that don't (numerics, tax
-class, etc.) and high-cardinality text columns whose token model
-adds inference cost without paying off.
+### When do priors actually move the ranking?
 
-For the smart-search demo, the fixture engineers segment ↔ brand
-and segment ↔ dietary correlations within pet_type (see
-`BRAND_AFFINITY_BY_SEGMENT` / `DIETARY_AFFINITY_BY_SEGMENT` in
-`data/generate_fixtures.py`) — without that engineering, pet_type
-is already implied by `customer_pet_size` in the where, brand was
-pet_type-determined (Whiskas = cat-only, JBL = aquarium-only), and
-dietary was nearly uniform across segments. Then `basedOn` priors
-would have nothing useful to score.
+On this demo's broad personas (`maija = cat_owner`,
+`saara = dog_owner + large`), the top-50 SKUs come back **byte-
+identical** across `basedOn` variants — but that's a property of
+**slice density**, not of Aito ignoring the parameter. Direct
+`P(customer_segment | product_sku=X)` already has dense signal
+across 600 SKUs × ~37 k order lines, so a coarser-grained prior
+(category / brand / pet_type) is informationally redundant — it's a
+rolled-up summary of the same signal already in the candidate
+identity.
+
+Priors *do* contribute when the direct lookup is sparse or noisy.
+That happens in two situations:
+
+- **Cold candidates** — a new SKU with few or zero rows in
+  `order_lines`. Direct `P(seg | sku)` collapses to baseP; the
+  category / brand prior is the only thing differentiating that SKU
+  from any other unobserved one. This is the canonical "let's
+  showcase priors" demo shape: stage a brand-new product, query for
+  it, compare ranking with vs without `basedOn:[category, brand]`.
+- **Rare context slices** — segments of the conditioning space with
+  few examples. **Olli/food is exactly this case**: `dog_owner +
+  customer_pet_size=small` is a thin slice. Within it, direct
+  `P(seg | sku, pet_size=small)` is noisy and priors carry real
+  weight. The `$why` lifts on olli/food (`tax_class:food-reduced
+  0.585, name:food 0.599, pet_type:dog 0.695`) sit sub-1 only
+  because those features correlate *negatively* with the goal on
+  that thin slice — on Maija's or Saara's thicker slices the same
+  features would have lift ≈ 1.
+
+**Generalising to other Aito workloads**: "does `basedOn` matter for
+my recommend?" collapses to "is the direct candidate-identity signal
+sparse?". Long-tail catalogs (millions of SKUs, most rarely sold) ⇒
+priors are important. Curated catalog with broad sales (600 SKUs ×
+broad order coverage, like ours) ⇒ mostly redundant for thick
+personas, decisive for thin slices and cold SKUs. Worth keeping that
+lens when explaining `basedOn` to users.
+
+### When updating fixtures or adding personas — re-validate
+
+The 4-of-5 empirical equivalence between `basedOn` variants here
+depends on slice depth. If you refresh the fixture or add a thin-
+slice persona, the equivalence may break for that persona. Recipe
+to re-check:
+
+```python
+# For each (persona, query), fetch top-N with and without basedOn:
+# - basedOn = the curated set
+# - basedOn = None (Aito default)
+# Compare top-50 SKU lists + their $p. If they diverge for a new
+# persona, that persona lives on a thin slice and the priors are
+# moving the ranking.
+```
+
+The fixture also engineers segment ↔ brand and segment ↔ dietary
+correlations within pet_type (see `BRAND_AFFINITY_BY_SEGMENT` /
+`DIETARY_AFFINITY_BY_SEGMENT` in `data/generate_fixtures.py`).
+That's there so when a thin-slice query *does* lean on priors, the
+priors point in a sensible direction (premium brands for `dog_owner`,
+mass brands for `multi_pet`). On the thick personas the priors are
+still redundant, but the engineering doesn't hurt anything.
 
 ### Two query-shape gotchas around `_evaluate basedOn`
 

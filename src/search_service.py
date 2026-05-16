@@ -146,24 +146,26 @@ def _predictive_recommend(
     goal = {"customer_segment": persona.segment}
 
     # `basedOn` curates which product features feed Aito's prior-
-    # feature inference. Aito's default uses every product feature
-    # — including numerics (price_eur, weight_kg) and high-cardinality
-    # text (name tokens) that mostly add noise for a customer_segment
-    # goal. Curating to the four categorical features that actually
-    # carry segment signal — pet_type, brand, dietary, category —
-    # drops the median server time from ~158 ms to ~138 ms (-13 %).
+    # feature inference. The default uses *every* product feature —
+    # including numerics (price_eur, weight_kg) and high-cardinality
+    # text (name tokens) that add inference cost without helping a
+    # `customer_segment` goal. Curating to the four categorical
+    # features that correlate with segment drops median server time
+    # 158 → 138 ms (-13 %).
     #
     # Field paths are relative to the recommend target. For
     # `recommend: "product_sku"`, write `["brand"]` — NOT
     # `["product_sku.brand"]` (Aito prepends the target column and
     # 400s on the doubled path).
     #
-    # The fixture's segment ↔ {brand, dietary} affinity (see
-    # `BRAND_AFFINITY_BY_SEGMENT` / `DIETARY_AFFINITY_BY_SEGMENT` in
-    # `data/generate_fixtures.py`) is what makes these priors carry
-    # real signal — pet_type → segment is already implied by
-    # customer_pet_size in the where, and brand was previously
-    # pet_type-determined.
+    # Note on quality impact: on this dataset's *thick* personas
+    # (Maija = cat_owner, Saara = dog_owner + large), the top-50
+    # comes back byte-identical across `basedOn` variants because
+    # direct `P(seg | sku)` already has dense signal — priors are
+    # informationally redundant there. On *thin* slices (Olli =
+    # dog_owner + small) the priors do move the ranking. See
+    # `docs/aito-cheatsheet.md` §"When do priors actually move
+    # the ranking?" for the full breakdown.
     based_on: list[str] = ["pet_type", "brand", "dietary", "category"]
 
     body = {
