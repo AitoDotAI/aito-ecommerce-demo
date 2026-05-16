@@ -33,8 +33,11 @@ from src.pattern_service import get_patterns
 from src.feedback_service import get_feedback
 from src.churn_service import get_churn
 from src.demand_service import get_demand
+from src.cart_completion_service import get_cart_completion
 from src.inventory_service import get_inventory
+from src.markdown_service import get_markdowns
 from src.price_service import get_prices
+from src.winback_service import get_winback
 
 
 def warm_all(client: AitoClient, *, verbose: bool = True) -> None:
@@ -91,12 +94,15 @@ def warm_all(client: AitoClient, *, verbose: bool = True) -> None:
         ("product-filling",    lambda: get_filling(client)),
         ("feedback",           lambda: get_feedback(client)),
         ("price",              lambda: get_prices(client)),
+        ("cart-completion",    lambda: get_cart_completion(client)),
         # Slow ones — each fans out ~20 parallel Aito calls
         # internally, so run them sequentially to stay under
         # Aito's per-instance inFlightWeight ceiling.
         ("churn",      lambda: get_churn(client)),
         ("demand",     lambda: get_demand(client)),
         ("inventory",  lambda: get_inventory(client)),
+        ("markdown",   lambda: get_markdowns(client)),
+        ("winback",    lambda: get_winback(client)),
         ("evaluation", lambda: run_evaluation(client)),
     ]
     for name, fn in endpoints:

@@ -554,6 +554,36 @@ class PriceObservation:
 
 
 @dataclass
+class WinbackCampaign:
+    """Historical email re-engagement campaign — sent to a customer
+    who had been inactive for `recency_bucket` days at send time.
+    The `responded` outcome label is what Aito learns from to predict
+    response rates for currently-churned customers. See ADR 0020.
+    """
+    campaign_id: str               # "WB-NNNNN"
+    customer_id: str               # link → customers.customer_id
+    product_sku: str               # link → products.sku (the SKU emailed)
+    sent_month: str                # YYYY-MM
+    # Days since the customer's last order at send time, bucketed
+    # for Aito's K-NN to read cleanly. Strong predictor of response.
+    recency_bucket: str            # "0-90d" | "90-180d" | "180d+"
+    # Denormalised customer profile so Aito conditions in one hop.
+    customer_segment: str
+    customer_pet_size: str | None  # nullable
+    customer_lifestyle: str
+    customer_health_focus: str
+    # Denormalised product attributes for the same reason.
+    product_pet_type: str
+    product_category: str
+    product_brand: str
+    # Outcome label — what Aito's `_predict responded` learns.
+    responded: bool
+    # Order value if the customer responded (0 if not). Powers the
+    # revenue-impact roll-up in the Win-back view.
+    order_value_eur: float
+
+
+@dataclass
 class Order:
     order_id: str
     customer_id: str
@@ -2341,6 +2371,165 @@ def backfill_monthly_sales_prices(
         ms.revenue_eur = _round_eur(po.price_eur * ms.units_sold)
 
 
+def gen_winback_campaigns(
+    rng: random.Random,
+    customers: list[Customer],
+    products: list[Product],
+) -> list[WinbackCampaign]:
+    """Synthesise ~3000 historical re-engagement email campaigns
+    sent to customers who had been inactive at send time. Drives the
+    Win-back view's `_predict responded` and recoverable-revenue
+    roll-up. See ADR 0020.
+
+    Engineered correlations the view surfaces:
+
+      - `lifestyle = premium` responds 4× more often than `budget`
+      - Recency `0-90d` responds ~3× more than `180d+`
+      - Product matching the customer's segment pet_type responds
+        ~3× more than off-segment (cat product for dog_owner = poor)
+
+    Sample shape: pick (customer, product, send_month) triples
+    uniformly, weight by engineered response probability, sample
+    the outcome. Personas excluded — their stories are
+    hand-curated and don't fit the "churned at some point" frame.
+    """
+    persona_ids = {p.customer_id for p in PERSONAS}
+
+    # Customers eligible for win-back history: anyone with at least
+    # one order and a tenure window that allows a gap. Excludes
+    # personas and very-new customers.
+    eligible = [
+        c for c in customers
+        if c.customer_id not in persona_ids
+        and c.tenure_months >= 4
+        and c.total_orders >= 1
+    ]
+    if not eligible:
+        return []
+
+    # Segment → preferred pet_types for the "product matches segment"
+    # lift. Mirrors SEGMENT_PET_TYPE_WEIGHTS but as a coarser binary.
+    segment_to_pets: dict[str, set[str]] = {
+        "dog_owner":          {"dog"},
+        "multi_pet":          {"dog", "cat"},
+        "cat_owner":          {"cat"},
+        "aquarium_owner":     {"aquarium"},
+        "small_animal_owner": {"small_animal", "bird"},
+    }
+
+    # Send a campaign with this probability per (customer, eligible
+    # product) candidate pair; tuned so the total campaign count
+    # lands in the ~3000-5000 band (enough for `_predict` to be
+    # well-estimated).
+    SEND_RATE = 0.0035
+
+    # 24-month send window mirroring _MONTH_WINDOW. Most campaigns
+    # cluster in the more-recent half (re-engagement programmes
+    # ramp up over time).
+    months = _MONTH_WINDOW
+    month_weights = [i + 1 for i in range(len(months))]   # linear ramp
+
+    campaigns: list[WinbackCampaign] = []
+    counter = 1
+    for customer in eligible:
+        # How many campaigns to send to this customer. Most get 0-2;
+        # heavy-tailed for the marketing-engaged segment.
+        n_sends = rng.choices(
+            [0, 1, 2, 3, 4],
+            weights=[0.55, 0.25, 0.12, 0.05, 0.03],
+        )[0]
+        if n_sends == 0:
+            continue
+
+        preferred_pets = segment_to_pets.get(customer.segment, set())
+        for _ in range(n_sends):
+            sent_month = rng.choices(months, weights=month_weights)[0]
+
+            # Pick a product to email. Bias slightly toward the
+            # customer's preferred pet_type so the engineered
+            # "matching products respond better" pattern has enough
+            # matched samples to learn from. Off-segment products
+            # still occur (failed-campaign realism).
+            if preferred_pets and rng.random() < 0.7:
+                pool = [p for p in products if p.pet_type in preferred_pets]
+            else:
+                pool = products
+            if not pool:
+                continue
+            product = rng.choice(pool)
+
+            # Compute recency from a synthetic "days since last
+            # order at send time". Engineered to spread across the
+            # three buckets with skew toward the medium bucket.
+            recency_days = rng.choices(
+                [45, 135, 270],   # bucket midpoints
+                weights=[0.35, 0.40, 0.25],
+            )[0]
+            if recency_days <= 90:
+                recency_bucket = "0-90d"
+            elif recency_days <= 180:
+                recency_bucket = "90-180d"
+            else:
+                recency_bucket = "180d+"
+
+            # Engineered response probability — the load-bearing
+            # signal Aito learns from. Multipliers compound; final
+            # clipped to [0.005, 0.25] so the rates surface within
+            # real-world re-engagement campaign ranges (top
+            # email-marketing programmes hit ~20 % open, ~5 % click;
+            # we represent the open-equivalent here).
+            p = 0.05
+            # Lifestyle ↔ premium customers re-engage more.
+            p *= {"premium": 2.4, "mid": 1.0, "budget": 0.50}.get(
+                customer.lifestyle, 1.0,
+            )
+            # Recency ↔ recent churners respond more.
+            p *= {"0-90d": 1.6, "90-180d": 1.0, "180d+": 0.40}[recency_bucket]
+            # Product fit ↔ matching pet_type lifts response.
+            matched = bool(preferred_pets) and product.pet_type in preferred_pets
+            p *= 3.0 if matched else 0.35
+            # Health-focus customers respond to wellness-tagged
+            # products specifically.
+            if customer.health_focus == "high" and product.dietary in {
+                "grain-free", "sensitive", "senior", "weight-control",
+            }:
+                p *= 1.5
+            p = max(0.005, min(0.25, p))
+
+            responded = rng.random() < p
+            # Order value if responded — modulated by lifestyle and
+            # the product's list price. Naive: ~1-3× product price
+            # because customers often add a couple more items.
+            order_value = 0.0
+            if responded:
+                basket_multiplier = {
+                    "premium": rng.uniform(1.8, 3.5),
+                    "mid":     rng.uniform(1.3, 2.4),
+                    "budget":  rng.uniform(1.0, 1.8),
+                }.get(customer.lifestyle, 1.5)
+                order_value = _round_eur(product.price_eur * basket_multiplier)
+
+            campaigns.append(WinbackCampaign(
+                campaign_id=f"WB-{counter:05d}",
+                customer_id=customer.customer_id,
+                product_sku=product.sku,
+                sent_month=sent_month,
+                recency_bucket=recency_bucket,
+                customer_segment=customer.segment,
+                customer_pet_size=customer.pet_size,
+                customer_lifestyle=customer.lifestyle,
+                customer_health_focus=customer.health_focus,
+                product_pet_type=product.pet_type,
+                product_category=product.category,
+                product_brand=product.brand,
+                responded=responded,
+                order_value_eur=order_value,
+            ))
+            counter += 1
+
+    return campaigns
+
+
 # ── Output ──────────────────────────────────────────────────────────
 
 def _to_json_dict(obj) -> dict:
@@ -2405,6 +2594,10 @@ def main() -> None:
     # `_estimate units_sold` conditions on the same price column.
     # See ADR 0016 §"Price ↔ demand scatter chart".
     backfill_monthly_sales_prices(monthly_sales, price_history)
+    # Historical re-engagement campaigns — drives the Win-back
+    # view's `_predict responded` per current-churned customer.
+    # See ADR 0020.
+    winback_campaigns = gen_winback_campaigns(rng, customers, products)
 
     write_json(DATA_DIR / "products.json", products)
     write_json(DATA_DIR / "customers.json", customers)
@@ -2415,6 +2608,7 @@ def main() -> None:
     write_json(DATA_DIR / "monthly_sales.json", monthly_sales)
     write_json(DATA_DIR / "inventory.json", inventory)
     write_json(DATA_DIR / "price_history.json", price_history)
+    write_json(DATA_DIR / "winback_campaigns.json", winback_campaigns)
 
     # ── Summary print ───────────────────────────────────────────────
     print(f"  products        {len(products):>6}")
@@ -2425,6 +2619,7 @@ def main() -> None:
     print(f"  customer_months {len(customer_months):>6}")
     print(f"  monthly_sales   {len(monthly_sales):>6}")
     print(f"  inventory       {len(inventory):>6}")
+    print(f"  winback         {len(winback_campaigns):>6}")
     print(f"  price_history   {len(price_history):>6}")
 
     # Spot-check the engineered-signal numbers so a regen makes the

@@ -553,6 +553,116 @@ export interface InventoryResponse {
   last_response_ms: number;
 }
 
+/* ─── Markdown Decision (/api/markdown) ─── */
+
+export interface MarkdownCurvePoint {
+  discount_pct: number;
+  price_eur: number;
+  monthly_units: number;
+  weeks_to_clear: number;
+  margin_per_unit_eur: number;
+  recoverable_revenue_eur: number;
+}
+
+export interface MarkdownProposal {
+  sku: string;
+  name: string;
+  pet_type: string;
+  category: string;
+  current_stock: number;
+  reorder_point: number;
+  list_price_eur: number;
+  unit_cost_eur: number;
+  excess_units: number;
+  tied_capital_eur: number;
+  proposed_discount_pct: number;
+  proposed_price_eur: number;
+  proposed_weeks_to_clear: number;
+  proposed_recoverable_revenue_eur: number;
+  proposed_margin_lost_eur: number;
+  curve: MarkdownCurvePoint[];
+}
+
+export interface MarkdownResponse {
+  kpis: InventoryKpi[];
+  proposals: MarkdownProposal[];
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  last_response_ms: number;
+}
+
+/* ─── Cart Completion (/api/cart-completion) ─── */
+
+export interface CartItem {
+  sku: string;
+  name: string;
+  category: string;
+  price_eur: number;
+}
+
+export interface AddOnSuggestion {
+  sku: string;
+  name: string;
+  pet_type: string;
+  category: string;
+  brand: string;
+  price_eur: number;
+  attach_p: number;
+  rank: number;
+  expected_uplift_eur: number;
+}
+
+export interface CartScenarioResult {
+  scenario_id: string;
+  label: string;
+  description: string;
+  items: CartItem[];
+  cart_value_eur: number;
+  suggestions: AddOnSuggestion[];
+}
+
+export interface CartCompletionResponse {
+  scenarios: CartScenarioResult[];
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  last_response_ms: number;
+}
+
+/* ─── Win-back Campaigns (/api/winback) ─── */
+
+export interface WinbackProductSuggestion {
+  sku: string;
+  name: string;
+  pet_type: string;
+  category: string;
+  brand: string;
+  price_eur: number;
+  response_p: number;
+  predicted_aov_eur: number;
+  expected_revenue_eur: number;
+  rank: number;
+}
+
+export interface WinbackTarget {
+  customer_id: string;
+  customer_name: string;
+  segment: string;
+  pet_size: string | null;
+  lifestyle: string;
+  health_focus: string;
+  recency_bucket: string;
+  last_order_month: string;
+  total_spent_eur: number;
+  total_orders: number;
+  suggestions: WinbackProductSuggestion[];
+  expected_recovered_eur: number;
+}
+
+export interface WinbackResponse {
+  kpis: InventoryKpi[];
+  targets: WinbackTarget[];
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  last_response_ms: number;
+}
+
 /* ─── Price Intelligence (/api/price) ─── */
 
 export interface PriceFairBandRow {
