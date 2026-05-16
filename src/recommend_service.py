@@ -36,11 +36,11 @@ class Persona:
 # small dog" per TASK.md; the Aito panel shows the live goal body.
 # See `docs/adr/0007-for-you.md` for the rationale.
 PERSONAS: dict[str, Persona] = {
-    "maija": Persona("maija", "CUST-00001", "Maija — cat owner",
+    "maija": Persona("maija", "CUST-00001", "Maija Lehtonen — cat owner",
                      segment="cat_owner", pet_size=None),
-    "olli":  Persona("olli",  "CUST-00002", "Olli — multi-pet (small dog)",
+    "olli":  Persona("olli",  "CUST-00002", "Olli Mäkelä — multi-pet (small dog)",
                      segment="dog_owner", pet_size="small"),
-    "saara": Persona("saara", "CUST-00003", "Saara — large breed dog owner",
+    "saara": Persona("saara", "CUST-00003", "Saara Virtanen — large breed dog owner",
                      segment="dog_owner", pet_size="large"),
 }
 

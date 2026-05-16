@@ -150,7 +150,8 @@ export default function PriceScatterChart({ detail }: { detail: PriceDetail }) {
             wrapperStyle={{ fontSize: 12, fontWeight: 500 }}
           />
 
-          {/* Historical scatter (light blue, small) */}
+          {/* Historical scatter (light blue, small) — drawn first
+              so the curve and emphasis dots sit on top. */}
           <Scatter
             name="Historical months"
             data={historical}
@@ -158,7 +159,7 @@ export default function PriceScatterChart({ detail }: { detail: PriceDetail }) {
             opacity={0.65}
           />
 
-          {/* Aito curve (orange line + dots) */}
+          {/* Aito curve (orange line + dots). */}
           {curve.length > 0 && (
             <Line
               name={yMode === "demand" ? "Aito demand curve" : "Aito profit curve"}
@@ -172,24 +173,40 @@ export default function PriceScatterChart({ detail }: { detail: PriceDetail }) {
             />
           )}
 
-          {/* Max-profit (in profit mode) — yellow ring */}
+          {/* Max-profit (only in profit mode) — bright yellow disc with
+              a dark border so it pops against the orange curve. Rendered
+              before the current-price point so when both fall on the
+              same price the current-price marker still sits on top. */}
           {maxProfitPoint.length > 0 && (
             <Scatter
               name={`Max profit @ ${maxProfit?.adjustment_pct ?? 0 > 0 ? "+" : ""}${maxProfit?.adjustment_pct ?? 0}%`}
               data={maxProfitPoint}
-              fill="#FFD23F"
-              shape="circle"
-              r={9}
+              fill="#FFC700"
+              shape={(props: { cx?: number; cy?: number }) => (
+                <g>
+                  <circle cx={props.cx} cy={props.cy} r={13}
+                          fill="#FFC700" stroke="#7a5d00" strokeWidth={2} />
+                  <circle cx={props.cx} cy={props.cy} r={3} fill="#7a5d00" />
+                </g>
+              )}
             />
           )}
 
-          {/* Current list price — star */}
+          {/* Current list price — vivid red disc with white border so
+              it never gets lost on the orange curve. Drawn LAST so it
+              sits on top of every other layer. */}
           {currentPoint.length > 0 && (
             <Scatter
               name="Current list price"
               data={currentPoint}
-              fill="var(--cta)"
-              shape="star"
+              fill="#e3243d"
+              shape={(props: { cx?: number; cy?: number }) => (
+                <g>
+                  <circle cx={props.cx} cy={props.cy} r={12}
+                          fill="#e3243d" stroke="#fff" strokeWidth={2.5} />
+                  <circle cx={props.cx} cy={props.cy} r={3.5} fill="#fff" />
+                </g>
+              )}
             />
           )}
         </ComposedChart>

@@ -384,8 +384,14 @@ class PriceDetail:
         }
 
 
-# Price adjustments for the demand curve, in order.
-_CURVE_ADJUSTMENTS_PCT: list[int] = [-15, -10, -5, 0, 5, 10, 15]
+# Price adjustments for the demand curve, in order. Constrained to
+# ±10 % because the fixture's price observations span ±18 % at most
+# — probing beyond that range pushes Aito's K-NN into extrapolation
+# territory where the regression slope is steepest and least
+# reliable. The narrower range also keeps the chart honest: a 10 %
+# move is the kind of pricing decision a retail manager would
+# actually consider.
+_CURVE_ADJUSTMENTS_PCT: list[int] = [-10, -7, -3, 0, 3, 7, 10]
 
 
 def _fetch_sku_monthly_sales(client: AitoClient, sku: str) -> list[dict]:

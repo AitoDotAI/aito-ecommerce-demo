@@ -47,11 +47,11 @@ class PersonaContext:
 # dog" per TASK.md, the Aito panel shows the live goal honestly.
 # See `docs/adr/0007-for-you.md` §"Olli divergence".
 PERSONAS: dict[str, PersonaContext] = {
-    "maija": PersonaContext("maija", "CUST-00001", "Maija — cat owner",
+    "maija": PersonaContext("maija", "CUST-00001", "Maija Lehtonen — cat owner",
                             segment="cat_owner", pet_size=None),
-    "olli":  PersonaContext("olli",  "CUST-00002", "Olli — multi-pet (small dog)",
+    "olli":  PersonaContext("olli",  "CUST-00002", "Olli Mäkelä — multi-pet (small dog)",
                             segment="dog_owner", pet_size="small"),
-    "saara": PersonaContext("saara", "CUST-00003", "Saara — dog owner (large breed)",
+    "saara": PersonaContext("saara", "CUST-00003", "Saara Virtanen — dog owner (large breed)",
                             segment="dog_owner", pet_size="large"),
 }
 

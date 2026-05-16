@@ -246,7 +246,7 @@ def _at_risk_leaderboard(client: AitoClient, top_n: int) -> list[AtRiskCustomer]
     return [
         AtRiskCustomer(
             customer_id=row["customer_id"],
-            customer_short=_short_customer_name(row["customer_id"]),
+            customer_short=row.get("customer_name") or _short_customer_name(row["customer_id"]),
             segment=row["segment"],
             pet_size=row.get("pet_size"),
             region=row["region"],
