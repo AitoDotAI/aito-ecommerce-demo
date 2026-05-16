@@ -145,18 +145,26 @@ def _predictive_recommend(
 
     goal = {"customer_segment": persona.segment}
 
-    # `basedOn: []` skips prior-feature inference. The `where`
-    # already narrows candidates to "products whose name matches q
-    # AND whose buyers have the persona's pet size", so the ranking
-    # we want is simply P(customer_segment = persona.segment |
-    # product_sku = X) over that pool — no implicit price/brand/
-    # category priors. Tells a cleaner demo story too: "predicting
-    # which products fit this segment", not "products that fit this
-    # segment *and* look statistically similar to the dataset".
-    # Empirically: identical top-10 for narrow queries (toy, collar,
-    # treat), a benign top-3 reshuffle for `food` (Jaccard 0.54),
-    # and ~10-30% faster on cold requests.
-    based_on: list[str] = []
+    # `basedOn` curates which product features feed Aito's prior-
+    # feature inference. Aito's default uses every product feature
+    # — including numerics (price_eur, weight_kg) and high-cardinality
+    # text (name tokens) that mostly add noise for a customer_segment
+    # goal. Curating to the four categorical features that actually
+    # carry segment signal — pet_type, brand, dietary, category —
+    # drops the median server time from ~158 ms to ~138 ms (-13 %).
+    #
+    # Field paths are relative to the recommend target. For
+    # `recommend: "product_sku"`, write `["brand"]` — NOT
+    # `["product_sku.brand"]` (Aito prepends the target column and
+    # 400s on the doubled path).
+    #
+    # The fixture's segment ↔ {brand, dietary} affinity (see
+    # `BRAND_AFFINITY_BY_SEGMENT` / `DIETARY_AFFINITY_BY_SEGMENT` in
+    # `data/generate_fixtures.py`) is what makes these priors carry
+    # real signal — pet_type → segment is already implied by
+    # customer_pet_size in the where, and brand was previously
+    # pet_type-determined.
+    based_on: list[str] = ["pet_type", "brand", "dietary", "category"]
 
     body = {
         "from": "order_lines",

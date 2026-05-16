@@ -92,6 +92,49 @@ DIETARIES: list[str] = [
     "sensitive", "indoor", "weight-control",
 ]
 
+
+# ── Segment-level affinity (within-pet_type signal) ───────────────
+#
+# These tables drive `_apply_segment_affinity` (see below). They
+# inject within-pet_type, between-segment differentiation in brand
+# and dietary so `_recommend` over `goal: customer_segment` with
+# `basedOn: [brand, dietary, pet_type]` actually has signal to rank
+# on. Without this, pet_type is already implied by the where clause
+# (customer_pet_size correlates ~98 % with pet_type), and brand is
+# largely pet_type-determined (Whiskas = cat, JBL = aquarium etc.),
+# so `basedOn` rounds to no-op. Cf. `docs/aito-cheatsheet.md`
+# §"Does `basedOn: []` cost accuracy?".
+#
+# Affinity is applied via a per-customer-per-line sub-RNG, so the
+# existing demo signals (large-breed cat share, dog-food→dental
+# lift, persona top-5 overlaps) stay byte-identical.
+
+# Each segment's "preferred" brands inside its dominant pet_type.
+# Picked from the BRAND_CATEGORIES table above so we don't bias
+# toward brands that don't sell in those segments anyway.
+BRAND_AFFINITY_BY_SEGMENT: dict[str, set[str]] = {
+    "dog_owner":   {"Royal Canin", "Hill's Science Plan", "Acana", "Orijen"},
+    "multi_pet":   {"PetNord", "Eukanuba", "Whimzees", "Kong", "Trixie"},
+    "cat_owner":   {"Royal Canin", "Hill's Science Plan", "Acana", "Sheba"},
+    # aquarium_owner / small_animal_owner already concentrate on a
+    # small brand set (JBL/Tetra, Trixie/Beaphar respectively); no
+    # additional affinity needed.
+}
+
+# Dietary tags each segment over-indexes on. Subset of DIETARIES.
+DIETARY_AFFINITY_BY_SEGMENT: dict[str, set[str]] = {
+    "dog_owner":   {"large-breed", "grain-free"},
+    "multi_pet":   {"sensitive", "senior"},
+    "cat_owner":   {"indoor", "weight-control"},
+}
+
+# Probability that a given line gets substituted with an affinity-
+# aligned product from the same (pet_type, category) slice. Tuned
+# to lift segment ↔ brand and segment ↔ dietary correlations into
+# `_recommend basedOn` territory without distorting category
+# distributions (substitution stays in the same category).
+SEGMENT_AFFINITY_SUB_RATE: float = 0.50
+
 # Plausible dietary tags per (pet_type, category). Most foods carry
 # a dietary; treats and accessories often do not.
 DIETARY_BY_PET_CATEGORY: dict[tuple[str, str], list[str]] = {
@@ -676,6 +719,57 @@ def _pick_product(
     return rng.choices(pool, weights=weights, k=1)[0]
 
 
+def _apply_segment_affinity(
+    chosen: Product,
+    products_by_pet_cat: dict[tuple[str, str], list[Product]],
+    customer: Customer,
+    persona_ids: set[str],
+    line_counter: int,
+) -> Product:
+    """Maybe swap `chosen` for a same-(pet_type, category) product
+    whose brand and/or dietary aligns with the customer's segment.
+
+    Uses a sub-RNG seeded from `(customer_id, line_counter)` so the
+    main fixture RNG sequence is unchanged — engineered signals from
+    `_pick_product` (pet_type weights, category bias, persona overlaps,
+    dog-food→dental lift) stay byte-identical. Persona customers are
+    skipped entirely; their orders are hand-curated.
+
+    The substitution lifts segment ↔ brand and segment ↔ dietary
+    correlations enough that `_recommend goal: customer_segment` with
+    `basedOn: [brand, dietary, pet_type]` can score candidates by
+    within-pet_type segment preference. Without it, those features
+    are either redundant with `customer_pet_size` (pet_type) or
+    pet_type-determined (brand mostly), so `basedOn` is a no-op.
+    """
+    if customer.customer_id in persona_ids:
+        return chosen
+    brand_prefs = BRAND_AFFINITY_BY_SEGMENT.get(customer.segment)
+    dietary_prefs = DIETARY_AFFINITY_BY_SEGMENT.get(customer.segment)
+    if not brand_prefs and not dietary_prefs:
+        return chosen
+
+    seed = sum(ord(c) for c in customer.customer_id) * 1009 + line_counter
+    sub_rng = random.Random(seed)
+    if sub_rng.random() > SEGMENT_AFFINITY_SUB_RATE:
+        return chosen
+
+    same_slice = products_by_pet_cat.get((chosen.pet_type, chosen.category), [])
+
+    def score(p: Product) -> int:
+        s = 0
+        if brand_prefs and p.brand in brand_prefs:
+            s += 2
+        if dietary_prefs and p.dietary in dietary_prefs:
+            s += 1
+        return s
+
+    candidates = [p for p in same_slice if score(p) > 0]
+    if not candidates:
+        return chosen
+    return sub_rng.choice(candidates)
+
+
 def _category_bias(segment: str, pet_size: str | None) -> dict[str, float]:
     """Per-segment category preference, with a large-breed twist
     pushing small/indoor products down."""
@@ -893,9 +987,16 @@ def gen_orders_and_lines(
     for p in products:
         products_by_pet[p.pet_type].append(p)
 
+    # (pet_type, category) → products. Lookup for the segment-affinity
+    # substitution that runs after `_pick_product`. Built once.
+    products_by_pet_cat: dict[tuple[str, str], list[Product]] = {}
+    for p in products:
+        products_by_pet_cat.setdefault((p.pet_type, p.category), []).append(p)
+
     # Persona orders first so they get the lowest ids (CUST-00001's
     # orders are ORD-00001..). Nice for debugging in the JSON.
     persona_ids = {p.customer_id: p for p in PERSONAS}
+    persona_id_set = set(persona_ids)
 
     for customer in customers:
         persona = persona_ids.get(customer.customer_id)
@@ -949,6 +1050,12 @@ def gen_orders_and_lines(
                 if not products_by_pet[pet_type]:
                     pet_type = rng.choice(list(products_by_pet.keys()))
                 product = _pick_product(rng, products_by_pet, pet_type, cat_bias)
+                # Segment-affinity substitution within (pet_type, category).
+                # Uses a sub-RNG; main RNG state untouched.
+                product = _apply_segment_affinity(
+                    product, products_by_pet_cat, customer,
+                    persona_id_set, line_counter,
+                )
                 if product.sku in order_skus:
                     continue
                 order_skus.add(product.sku)
