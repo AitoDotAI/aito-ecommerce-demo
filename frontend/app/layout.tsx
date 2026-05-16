@@ -1,5 +1,12 @@
 import "./globals.css";
+import Script from "next/script";
 import AppShell from "@/components/shell/AppShell";
+import Analytics from "@/components/shell/Analytics";
+
+// Shared with `aito-erp-demo` and `aito-accounting-demo` — events
+// land in the same GA4 property so cohorts can be split across
+// demos via the `surface` Segment property.
+const GA_MEASUREMENT_ID = "G-FDTBRCMZWJ";
 
 export const metadata = {
   title: "Predictive E-commerce — by Aito",
@@ -28,6 +35,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <AppShell>{children}</AppShell>
+        <Analytics />
+        {/* GA4 + Segment land production telemetry. Both are no-op
+            on localhost — `lib/analytics.ts:isProductionHost`
+            short-circuits Segment, and GA's `config` only emits
+            after the scripts load on a real host. */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="ga-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}', {
+              anonymize_ip: true,
+              cookie_expires: 0,
+            });
+          `}
+        </Script>
       </body>
     </html>
   );
