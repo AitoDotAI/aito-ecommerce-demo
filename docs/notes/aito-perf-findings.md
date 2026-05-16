@@ -14,6 +14,7 @@ the same fixes.
 | 2 | First call against a slice (`food` × `pet_size=small`) costs ~5 s | Olli persona pays 5 s on first food query after idle | Startup warmup pre-touches the slice |
 | 3 | `basedOn` is not accepted on `EvaluateRecommend` / `EvaluateGroupedQuery` | Can't A/B-test the parameter via `_evaluate`; have to roll a Python hit-rate test | See `docs/aito-cheatsheet.md` §"Does `basedOn: []` cost accuracy?" |
 | 4 | `basedOn` field names are *relative to the recommend target*, not the from-table | `["product_sku.category"]` → 400 `field 'product_sku.product_sku.category' not found` | Use `["category"]` when recommending `product_sku` |
+| 5 | `basedOn` priors are redundant on broad personas (thick slices), decisive on cold SKUs / thin slices | Top-50 byte-identical across `basedOn` variants for Maija/Saara; only Olli (dog_owner ∩ small) shows reordering | Curate to features carrying segment signal — saves 13 % server time AND preserves the priors for thin-slice personas |
 
 ---
 
@@ -240,6 +241,79 @@ resolves them against the `products` table via the link.
 
 The error message could say: "Did you mean 'category'? `basedOn`
 field paths are relative to the recommend target (`product_sku`)."
+
+---
+
+## 5. `basedOn` priors are redundant on broad personas, decisive on thin slices
+
+### Symptom
+
+After engineering segment ↔ {brand, dietary} affinity into the fixture
+(per `BRAND_AFFINITY_BY_SEGMENT` / `DIETARY_AFFINITY_BY_SEGMENT`), I
+expected `basedOn: ["pet_type", "brand", "dietary", "category"]` to
+visibly reorder smart-search results for the demo's three personas.
+Top-50 came back **byte-identical** to no-basedOn / `basedOn: []`
+across every variant tested. Initial conclusion (wrong): "basedOn is
+being ignored on `_recommend`".
+
+### Diagnosis (from the Aito core team)
+
+The parameter works fine. The byte-identity is a property of **slice
+density**, not of Aito skipping the parameter:
+
+- Direct `P(customer_segment | product_sku=X)` is dense on this
+  dataset (600 SKUs × ~37 k order lines, broad sales).
+- Coarser-grained priors from category / brand / pet_type are
+  rolled-up summaries of the same purchasing signal already carried
+  by the candidate identity itself. Informationally redundant on
+  thick personas.
+- The `$why` for olli/food (`tax_class:food-reduced 0.585,
+  name:food 0.599, pet_type:dog 0.695`) shows the lifts sub-1 only
+  because olli's slice is thin (dog_owner ∩ pet_size=small) and
+  those features correlate negatively with the goal there. On
+  Maija's or Saara's thicker slices the same features have lift
+  ≈ 1 and the prior contribution normalises out.
+
+Priors actually contribute when the direct lookup is sparse or
+noisy. That's two situations the dataset's current shape mostly
+avoids:
+
+- **Cold candidates** — a brand-new SKU with no order_lines rows.
+  Direct `P(seg | sku)` collapses to baseP; the prior is the only
+  ranking signal.
+- **Rare context slices** — segments of the conditioning space with
+  few examples. Olli (dog_owner + pet_size=small) is the example
+  in our dataset.
+
+### Workaround
+
+Curating `basedOn` to the four categorical features that correlate
+with the segment goal is still the right move, for a different
+reason than the affinity engineering was originally framed: it
+cuts the prior computation from "all product features including
+text-token and numeric columns" down to four. Measured
+158 → 138 ms median server-time (-13 %) on smart-search's
+`_recommend` call. The priors are running either way — `basedOn`
+just restricts which features the prior computation visits.
+
+### What we'd hope from core
+
+Nothing on the engine — `basedOn` does what the docs say. A
+sentence in the user-facing docs would help generalise the lesson:
+**"`basedOn` matters when your direct candidate-identity signal is
+sparse — cold SKUs, thin context slices, long-tail catalogs. On a
+curated catalog with broad sales coverage, priors are mostly
+redundant for thick personas but still contribute for thin
+slices."** That's the lens we needed.
+
+### How to validate when fixtures or personas change
+
+The 4-of-5 empirical equivalence between `basedOn` variants on this
+dataset depends on slice depth. Refresh the fixture or add a thin-
+slice persona ⇒ equivalence may break for that persona. Recipe:
+fetch top-50 with and without `basedOn` for each `(persona, query)`;
+if they diverge, that persona lives on a thin slice and the priors
+are moving the ranking — keep `basedOn` curated.
 
 ---
 
