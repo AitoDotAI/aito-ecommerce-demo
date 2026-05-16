@@ -44,6 +44,12 @@ class AitoClient:
             "x-api-key": config.aito_api_key,
             "content-type": "application/json",
         }
+        # Pooled `httpx.Client` — keeps the TCP+TLS connection alive
+        # across requests. Without this each call pays a ~150 ms TLS
+        # handshake (measured: 200-300 ms net vs 57 ms net with the
+        # pool warm) which dominates server-side query latency. See
+        # docs/notes/aito-perf-findings.md.
+        self._client = httpx.Client(headers=self._headers, timeout=90.0)
 
     def _url(self, path: str) -> str:
         return f"{self._base_url}/api/v1{path}"
@@ -66,17 +72,11 @@ class AitoClient:
         """
         start = time.perf_counter()
         try:
-            # 90 s window — `_evaluate` against `order_lines` (37 k rows,
-            # 200 held-out cases) routinely takes 20-60 s. Other endpoints
-            # are well under a second; the wider timeout costs nothing on
-            # the fast paths.
-            response = httpx.request(
-                method,
-                self._url(path),
-                headers=self._headers,
-                json=json,
-                timeout=90.0,
-            )
+            # 90 s timeout is set once on the pooled client (see
+            # __init__). `_evaluate` against `order_lines` (37 k rows,
+            # 200 held-out cases) routinely takes 20-60 s; other
+            # endpoints are well under a second.
+            response = self._client.request(method, self._url(path), json=json)
         except httpx.HTTPError as exc:
             timing.record_call(path, (time.perf_counter() - start) * 1000)
             raise AitoError(

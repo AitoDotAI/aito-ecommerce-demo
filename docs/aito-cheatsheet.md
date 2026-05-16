@@ -9,6 +9,12 @@ confirmed.
 When a pattern is also documented in the cross-demo cheatsheets in
 `aito-accounting-demo` and `aito-erp-demo`, link rather than duplicate.
 
+**Performance and operational gotchas** — TLS handshake costs,
+working-set eviction on the shared instance, `basedOn` schema
+constraints, and other things that surfaced while making the demo
+fast — live in `docs/notes/aito-perf-findings.md`. The query-shape
+patterns below remain the same regardless.
+
 ---
 
 ## Index
