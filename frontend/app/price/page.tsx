@@ -59,6 +59,10 @@ export default function PricePage() {
   }, [setPanel]);
 
   const fetchDetail = useCallback(async (sku: string) => {
+    // Clear the previous SKU's chart so the placeholder shows
+    // immediately on click instead of the stale chart lingering
+    // until the new _estimate returns.
+    setDetail(null);
     setDetailLoading(true);
     try {
       const res = await apiFetch<PriceDetail>(
@@ -128,23 +132,56 @@ export default function PricePage() {
 
       {/* Price ↔ Demand / Profit scatter chart for the selected SKU.
           Driven by `_estimate units_sold` at +/-15 % adjusted prices
-          (7-point curve) over the SKU's historical monthly_sales. */}
-      {!error && (
-        <div className="card" style={{ marginBottom: 20, borderTop: "3px solid var(--cta)" }}>
-          <div className="card-sub" style={{ marginBottom: 8 }}>
-            Demand curve · `_estimate units_sold` × 7 price adjustments
-          </div>
-          {detailLoading && !detail && (
-            <div style={{ height: 360, background: "var(--border-light)", borderRadius: 4 }} />
-          )}
-          {!detailLoading && !detail && (
-            <div style={{ height: 360, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
-              Click a SKU in the fair-band table to load its demand curve.
+          (7-point curve) over the SKU's historical monthly_sales.
+
+          Two-stage render so the title swap on click feels instant:
+          the header is driven by the fair-band row (already on the
+          client), the chart body waits for `_estimate`. */}
+      {!error && (() => {
+        const selectedFair = data?.fair_bands.find((f) => f.sku === selectedSku) ?? null;
+        const detailMatches = !!detail && detail.sku === selectedSku;
+        return (
+          <div className="card" style={{ marginBottom: 20, borderTop: "3px solid var(--cta)" }}>
+            <div className="card-sub" style={{ marginBottom: 8 }}>
+              Demand curve · `_estimate units_sold` × 7 price adjustments
             </div>
-          )}
-          {detail && <PriceScatterChart detail={detail} />}
-        </div>
-      )}
+            {selectedFair && (
+              <div style={{ marginBottom: 10 }}>
+                <div style={{ fontWeight: 700, fontSize: 16 }}>{selectedFair.name}</div>
+                <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>
+                  list €{selectedFair.list_price_eur.toFixed(2)}
+                  {detailMatches && ` · cost €${detail.unit_cost_eur.toFixed(2)}`}
+                  {" · "}
+                  {detailMatches ? detail.historical.length : selectedFair.observation_count} historical months
+                </div>
+              </div>
+            )}
+            {!selectedFair && (
+              <div style={{ height: 360, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
+                Click a SKU in the fair-band table to load its demand curve.
+              </div>
+            )}
+            {selectedFair && !detailMatches && (
+              <div
+                aria-busy="true"
+                style={{
+                  height: 360,
+                  background: "var(--border-light)",
+                  borderRadius: 4,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "var(--text-muted)",
+                  fontSize: 13,
+                }}
+              >
+                Estimating demand curve…
+              </div>
+            )}
+            {selectedFair && detailMatches && <PriceScatterChart detail={detail} />}
+          </div>
+        );
+      })()}
 
       {!error && (
         <div className="two-col">

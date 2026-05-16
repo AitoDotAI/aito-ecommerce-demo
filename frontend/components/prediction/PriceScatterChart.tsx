@@ -84,34 +84,27 @@ export default function PriceScatterChart({ detail }: { detail: PriceDetail }) {
 
   return (
     <div>
-      {/* Header: SKU name + Y-mode toggle */}
+      {/* Y-mode toggle. The SKU name + meta header lives on the
+          parent page so it can swap immediately on row-click, before
+          the `_estimate` call resolves. */}
       <div style={{
-        display: "flex", justifyContent: "space-between",
-        alignItems: "baseline", marginBottom: 4,
+        display: "flex", justifyContent: "flex-end", gap: 6,
+        marginBottom: 4,
       }}>
-        <div>
-          <div style={{ fontWeight: 700, fontSize: 16 }}>{detail.name}</div>
-          <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>
-            list €{detail.list_price_eur.toFixed(2)} · cost €{detail.unit_cost_eur.toFixed(2)}
-            {" · "}{detail.historical.length} historical months
-          </div>
-        </div>
-        <div style={{ display: "flex", gap: 6 }}>
-          <button
-            type="button"
-            onClick={() => setYMode("demand")}
-            style={toggleBtnStyle(yMode === "demand")}
-          >
-            Demand
-          </button>
-          <button
-            type="button"
-            onClick={() => setYMode("profit")}
-            style={toggleBtnStyle(yMode === "profit")}
-          >
-            Profit €
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => setYMode("demand")}
+          style={toggleBtnStyle(yMode === "demand")}
+        >
+          Demand
+        </button>
+        <button
+          type="button"
+          onClick={() => setYMode("profit")}
+          style={toggleBtnStyle(yMode === "profit")}
+        >
+          Profit €
+        </button>
       </div>
 
       <ResponsiveContainer width="100%" height={360}>
