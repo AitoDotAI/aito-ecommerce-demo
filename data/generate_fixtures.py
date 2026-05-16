@@ -2474,9 +2474,11 @@ def gen_winback_campaigns(
 
             # Engineered response probability — the load-bearing
             # signal Aito learns from. Multipliers compound; final
-            # clipped to [0.01, 0.65] so even strong cases stay
-            # short of certainty.
-            p = 0.10
+            # clipped to [0.005, 0.25] so the rates surface within
+            # real-world re-engagement campaign ranges (top
+            # email-marketing programmes hit ~20 % open, ~5 % click;
+            # we represent the open-equivalent here).
+            p = 0.05
             # Lifestyle ↔ premium customers re-engage more.
             p *= {"premium": 2.4, "mid": 1.0, "budget": 0.50}.get(
                 customer.lifestyle, 1.0,
@@ -2492,7 +2494,7 @@ def gen_winback_campaigns(
                 "grain-free", "sensitive", "senior", "weight-control",
             }:
                 p *= 1.5
-            p = max(0.01, min(0.65, p))
+            p = max(0.005, min(0.25, p))
 
             responded = rng.random() < p
             # Order value if responded — modulated by lifestyle and

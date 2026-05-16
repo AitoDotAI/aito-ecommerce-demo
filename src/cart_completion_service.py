@@ -227,24 +227,25 @@ def _popular_in_category(
     exclude_skus: set[str],
     limit: int = 3,
 ) -> list[dict]:
-    """Top-N popular products in a (pet_type, category). Popularity
-    is a rough proxy here — we sort the SKUs by their list price
-    descending because the fixture has no `total_units_sold` column
-    on products. Real production code would join `monthly_sales`.
+    """Top-N popular products in a (pet_type, category). We fetch a
+    wide window and pick the highest-priced eligible products as a
+    proxy for "premium upsell". Without a `total_units_sold` column
+    on `products`, this is the closest signal that keeps the
+    suggested €-uplift in a meaningful range (low-price products
+    would make the per-suggestion € figure read trivial in a demo
+    that needs to make the upsell story tangible).
     """
     res = client.search(
         "products",
         where={"pet_type": pet_type, "category": category},
-        limit=limit + len(exclude_skus) + 2,   # over-fetch in case of overlap
+        limit=50,   # wide window for the price sort to bite
     )
-    out: list[dict] = []
-    for p in res.get("hits", []):
-        if p["sku"] in exclude_skus:
-            continue
-        out.append(p)
-        if len(out) >= limit:
-            break
-    return out
+    eligible = [
+        p for p in res.get("hits", [])
+        if p["sku"] not in exclude_skus
+    ]
+    eligible.sort(key=lambda p: -float(p.get("price_eur", 0) or 0))
+    return eligible[:limit]
 
 
 def _build_scenario_result_from_relate(

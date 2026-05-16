@@ -339,26 +339,9 @@ def get_markdowns(client: AitoClient) -> MarkdownResponse:
     rows.sort(key=lambda r: -r.proposed_recoverable_revenue_eur)
 
     # KPI roll-up across the proposed markdown set.
-    # Capital freed = cost × cleared units (cash flowing back from
-    # inventory into the bank). The contrast with `tied_capital`
-    # tells the merchandiser how much of the stuck capital they
-    # rescue with the proposed markdowns.
     total_tied = round(sum(r.tied_capital_eur for r in rows), 2)
     total_margin_earned = round(
         sum(r.proposed_recoverable_revenue_eur for r in rows), 2,
-    )
-    cleared_units_per_row: list[tuple[float, float]] = [
-        (
-            min(r.excess_units,
-                (r.curve[next(i for i, c in enumerate(r.curve)
-                              if c.discount_pct == r.proposed_discount_pct)]
-                 .monthly_units / 4.33) * CLEAR_HORIZON_MONTHS * 4.33),
-            r.unit_cost_eur,
-        )
-        for r in rows
-    ]
-    total_capital_freed = round(
-        sum(u * c for u, c in cleared_units_per_row), 2,
     )
     total_excess_units = sum(r.excess_units for r in rows)
 
@@ -366,10 +349,8 @@ def get_markdowns(client: AitoClient) -> MarkdownResponse:
         Kpi("Overstock targeted", float(len(rows)),
             f"{total_excess_units} excess units"),
         Kpi("Tied capital", total_tied, "stuck in excess inventory today"),
-        Kpi("Capital freed", total_capital_freed,
-            "cost basis of units cleared by proposed markdowns"),
-        Kpi("Margin earned", total_margin_earned,
-            "(price − cost) × cleared units at proposed markdowns"),
+        Kpi("Margin recoverable", total_margin_earned,
+            "(price − cost) × units cleared at proposed markdowns"),
     ]
 
     elapsed = int((time.perf_counter() - started) * 1000)
