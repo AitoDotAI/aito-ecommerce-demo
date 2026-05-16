@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import json
 import time
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, asdict
 from typing import Iterable
 
@@ -144,11 +145,25 @@ def _predictive_recommend(
 
     goal = {"customer_segment": persona.segment}
 
+    # `basedOn: []` skips prior-feature inference. The `where`
+    # already narrows candidates to "products whose name matches q
+    # AND whose buyers have the persona's pet size", so the ranking
+    # we want is simply P(customer_segment = persona.segment |
+    # product_sku = X) over that pool — no implicit price/brand/
+    # category priors. Tells a cleaner demo story too: "predicting
+    # which products fit this segment", not "products that fit this
+    # segment *and* look statistically similar to the dataset".
+    # Empirically: identical top-10 for narrow queries (toy, collar,
+    # treat), a benign top-3 reshuffle for `food` (Jaccard 0.54),
+    # and ~10-30% faster on cold requests.
+    based_on: list[str] = []
+
     body = {
         "from": "order_lines",
         "where": where,
         "recommend": "product_sku",
         "goal": goal,
+        "basedOn": based_on,
         "limit": limit,
     }
     res = client.recommend(
@@ -156,6 +171,7 @@ def _predictive_recommend(
         where=where,
         recommend_field="product_sku",
         goal=goal,
+        based_on=based_on,
         limit=limit,
     )
     return [_to_hit(h, idx) for idx, h in enumerate(res.get("hits", []), 1)], body
@@ -214,8 +230,18 @@ def smart_search(
         return _from_dict(cached)
 
     started = time.perf_counter()
-    baseline = _baseline_search(client, query, limit)
-    predictive_hits, last_body = _predictive_recommend(client, query, persona, limit)
+    # The two Aito calls are independent — run them in parallel so
+    # cold wall-clock is max(baseline, recommend) rather than the
+    # sum. Recommend dominates for broad queries like "food"
+    # (~2-4 s cold), baseline is consistently ~300 ms, so this
+    # saves the baseline cost on every cache miss.
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        baseline_fut = pool.submit(_baseline_search, client, query, limit)
+        predictive_fut = pool.submit(
+            _predictive_recommend, client, query, persona, limit
+        )
+        baseline = baseline_fut.result()
+        predictive_hits, last_body = predictive_fut.result()
     predictive = _annotate_with_delta(predictive_hits, baseline)
     elapsed = int((time.perf_counter() - started) * 1000)
 

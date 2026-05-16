@@ -189,6 +189,7 @@ class AitoClient:
         goal: dict,
         *,
         select: list | None = None,
+        based_on: list[str] | None = None,
         limit: int = 8,
     ) -> dict:
         """Run a `_recommend` query — goal-driven ranking.
@@ -201,6 +202,15 @@ class AitoClient:
         ``select`` already returns every column of the linked table
         — so the typical caller leaves ``select=None`` and reads
         ``hit["name"]``, ``hit["category"]``, etc. straight off.
+
+        ``based_on`` lets the caller restrict (or skip) the
+        prior-feature inference Aito applies on top of the goal
+        probability. Field names are *relative to the recommend
+        target*, e.g. ``["category", "brand"]`` when recommending
+        ``product_sku``. Pass ``based_on=[]`` to skip prior-feature
+        inference entirely — useful when the ``where`` clause
+        already narrows the candidate pool tightly and you want the
+        ranking to come purely from ``P(goal | candidate)``.
 
         Example (For You):
             client.recommend(
@@ -220,6 +230,8 @@ class AitoClient:
         }
         if select is not None:
             body["select"] = select
+        if based_on is not None:
+            body["basedOn"] = based_on
         return self._request("POST", "/_recommend", json=body)
 
     def relate(

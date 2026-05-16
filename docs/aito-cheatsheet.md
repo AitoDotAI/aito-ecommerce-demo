@@ -205,6 +205,162 @@ multi-pet+small cat-heavy pool.
 | Saara (dog_owner+large) | dog × dry-food × 3 | p ≈ 0.51 — narrow pet_size constraint reduces absolute p |
 | Aquarium owner       | cat × dry-food × 3   | p ≈ 0.05 — aquarium customers rarely buy "food"-named products; ranking is noise |
 
+### `basedOn: []` — skip prior-feature inference
+
+By default `_recommend` ranks candidates by
+`P(goal | candidate) × prior` where `prior` factors in every feature
+of the recommend-target table. When the `where` clause already
+narrows the candidate pool tightly, that prior is noise we don't
+want — it muddies the ranking *and* makes the request slower.
+
+Pass `basedOn: []` to skip prior-feature inference entirely:
+
+```json
+POST /api/v1/_recommend
+{
+  "from": "order_lines",
+  "where": { "product_sku.name": { "$match": "food" }, "customer_pet_size": "small" },
+  "recommend": "product_sku",
+  "goal":     { "customer_segment": "dog_owner" },
+  "basedOn":  [],
+  "limit":    10
+}
+```
+
+**Field names in `basedOn` are relative to the recommend target.**
+For `recommend: "product_sku"`, write `["category", "brand"]` — not
+`["product_sku.category"]`. The latter expands to
+`product_sku.product_sku.category` and 400s.
+
+When to use:
+- The `where` already restricts the candidate pool meaningfully
+  (a `$match` on a name column, a category equality, etc.).
+- The story you're telling is "rank by `P(goal | candidate)`" and
+  not "rank by `P(goal | candidate)` weighted by how typical the
+  candidate is in the dataset".
+
+When *not* to use: For-You style queries where the prior is the
+product itself ("things people like you bought that didn't get
+returned") — there the implicit feature priors *are* the signal.
+
+Empirical impact on Smart Search (3 runs per cell, median):
+- Top-10 hit-set Jaccard vs the no-`basedOn` baseline:
+  1.00 for narrow queries (toy/collar/treat), 0.54 for `food/olli`
+  (a benign top-3 reshuffle).
+- Cold latency: 10–30 % faster, larger swing on a cold Aito.
+
+### Does `basedOn: []` cost accuracy? Two evaluation shapes
+
+A reasonable concern: if `basedOn: []` were strictly free, the
+default would already be `[]`. Empirically, it isn't costing us
+accuracy — but verifying that takes two different shapes because
+**Aito's `_evaluate` does not accept `basedOn` on
+`_recommend`**.
+
+`EvaluateRecommend` properties (per `coreapi.yaml`):
+`from, where, recommend, goal, select, offset, limit`. No
+`basedOn`. Same at the outer `EvaluateGroupedQuery` level. So
+the comparison has to happen by another route.
+
+**Path 1 — `_evaluate predict` as a proxy.** `_evaluate predict`
+*does* accept `basedOn`, and predicting `product_sku` from the
+same `where` columns exercises the same conditional probability
+machinery `_recommend` uses internally:
+
+```json
+{
+  "testSource": {"from": "order_lines", "limit": 500},
+  "evaluate": {
+    "from": "order_lines",
+    "where": {
+      "product_sku.name":  {"$match": {"$get": "product_sku.name"}},
+      "customer_pet_size": {"$get": "customer_pet_size"}
+    },
+    "predict": "product_sku",
+    "basedOn": []
+  }
+}
+```
+
+Live numbers (`shared.aito.ai/db/aito-ecommerce-demo`, n=500):
+
+| variant            | accuracy | baseAcc | gain    | meanRank | rankGain | latency |
+|---|---|---|---|---|---|---|
+| no-basedOn         | 0.7920   | 0.0000  | +0.7920 | 0.25     | 623.79   | 31 s    |
+| basedOn: []        | 0.7920   | 0.0000  | +0.7920 | 0.25     | 623.79   | 23 s    |
+| basedOn: [cat,pet] | 0.0060*  | 0.0000  | +0.0060 | 596.57   | 27.46    | 52 s    |
+
+*\*Without `$match` — included to show that naming features in
+`basedOn` can actively hurt when they aren't the strongest signal.*
+
+**Path 2 — direct hit-rate on `_recommend`.** Because `_evaluate`
+can't toggle `basedOn` on the actual recommend shape, run it
+client-side: sample held-out lines, run both variants of
+`_recommend`, count how often the truth lands in top-K.
+
+```python
+sample = client._request("POST", "/_search", json={
+    "from": "order_lines",
+    "where": {"$index": {"$mod": [40, 0]}},
+    "select": ["product_sku", "product_sku.name",
+               "customer_pet_size", "customer_segment"],
+    "limit": 150,
+}).get("hits", [])
+
+def rank_of_actual(based_on, row):
+    body = {
+        "from": "order_lines",
+        "where": {
+            "product_sku.name": {"$match": row["product_sku.name"]},
+            "customer_pet_size": row["customer_pet_size"],
+        },
+        "recommend": "product_sku",
+        "goal": {"customer_segment": row["customer_segment"]},
+        "limit": 50,
+    }
+    if based_on is not None:
+        body["basedOn"] = based_on
+    res = client._request("POST", "/_recommend", json=body)
+    for i, h in enumerate(res.get("hits", [])):
+        if h.get("sku") == row["product_sku"]:
+            return i + 1
+    return None
+```
+
+Live numbers (n=150, recommend limit=50):
+
+| variant      | hit@1  | hit@5  | hit@10 | median rank | mean rank | total time |
+|---|---|---|---|---|---|---|
+| no-basedOn   | 0.840  | 1.000  | 1.000  | 1.0         | 1.19      | 15.0 s     |
+| basedOn: []  | 0.833  | 1.000  | 1.000  | 1.0         | 1.20      | 13.3 s     |
+
+The 0.7 pp difference on hit@1 is one row out of 150 — a single
+tie-break flipping at rank 1 vs 2. Hit@5, hit@10, and mean rank
+are indistinguishable. Both evaluation paths agree: on this
+dataset, `basedOn: []` is genuinely free.
+
+If the smart-search query shape changes (different `where`
+columns, looser candidate pool, different goal), re-run both
+paths — `_evaluate predict` to check the conditional machinery,
+and the client-side hit-rate to verify the actual `_recommend`
+ranking quality.
+
+**Two query-shape gotchas surfaced along the way:**
+
+- `$get` inside `$match`. For columns with `$match`, the
+  `$get` reference goes *inside* the operator:
+  `"name": {"$match": {"$get": "name"}}` — not
+  `"name": {"$get": "name"}` (returns 400). Plain equality `where`
+  columns use the unwrapped form.
+
+- `_evaluate recommend` requires `group`. The body is an
+  `EvaluateGroupedQuery`, which has `group` as a required field
+  alongside `evaluate`. Without it, you get 400
+  `"field 'evaluate' must be of type 'EvaluateOperation'"`
+  even though the inner body looks valid — because Aito is
+  falling back to the non-grouped `EvaluateQuery` shape, which
+  rejects `recommend`.
+
 ---
 
 ## Order-level co-occurrence — denormalised Text + `_relate`
