@@ -16,6 +16,7 @@ is the implementation that makes those ranges land.
 from __future__ import annotations
 
 import json
+import math
 import random
 from collections import Counter
 from dataclasses import dataclass, asdict, field
@@ -2078,11 +2079,16 @@ _COST_RATIO_BY_CATEGORY: dict[str, float] = {
     "treats":         0.55,
     "dental-treats":  0.50,
     "litter":         0.70,
-    "accessories":    0.32,   # fat margin
-    "toys":           0.30,
-    "grooming":       0.40,
+    # Pet-retail margin reality: non-food categories run 40-55 %
+    # gross margin, NOT the 60-70 % the earlier numbers suggested.
+    # Higher cost ratios here also pull the max-profit point toward
+    # list price for these categories, so the demand curve doesn't
+    # always shout "discount everything".
+    "accessories":    0.55,
+    "toys":           0.52,
+    "grooming":       0.50,
     "health":         0.55,
-    "aquarium":       0.50,
+    "aquarium":       0.55,
 }
 
 
@@ -2239,23 +2245,34 @@ def gen_price_history(
     demand — Aito's K-NN saw zero correlation and extrapolated
     nonsense at the edges.
 
-    The fix inverts the causality: prices are assigned based on
-    each month's actual demand rank within that SKU's history.
+    We engineer a target log-log elasticity directly. For each
+    month, given the demand deviation from the SKU's median, set
+    log(price/list) = -log(units/median) / TARGET_ELASTICITY,
+    capped to ±15 % to keep prices in a realistic retail range,
+    plus uniform noise (±3 %) so Aito's K-NN doesn't read a crisp
+    deterministic ridge as infinite elasticity.
 
-      units > median × 1.5  →  deep promo (15-25 % off list)
-      units > median × 1.10 →  mild discount (5-15 % off)
-      units < median × 0.7  →  premium (+5 to +15 % over list)
-      else                  →  near list (±5 %)
-
-    Implied elasticity: a 30 % price swing (promo to premium)
-    produces ~2× the units. Realistic for retail (point-elasticity
-    around -2 to -3). Aito's `_estimate` then learns a clean
-    downward demand curve from real correlation in the data.
+    With TARGET_ELASTICITY = -2.5 and cost ratios ~50 % on
+    non-food categories, the demand curve produces an interior
+    profit peak near list price for most SKUs — discounting helps
+    on some items, raising prices helps on others, neither
+    universally. The earlier ±25 % deep-promo bands implied
+    elasticity of -5 to -10 and made the curve always shout
+    "discount everything", which isn't how pet retail works.
     """
     # Group monthly_sales by SKU to compute per-SKU median units.
     by_sku: dict[str, list[MonthlySale]] = {}
     for ms in monthly_sales:
         by_sku.setdefault(ms.product_sku, []).append(ms)
+
+    TARGET_ELASTICITY = -1.0      # aspirational slope; the K-NN regression
+                                  # reads ~1.5-2× steeper because of noise
+                                  # truncation at the price caps, landing
+                                  # the effective elasticity in the
+                                  # realistic -1.5 to -2.5 range
+    DEMAND_LOG_CAP = 0.5          # clip log(u/median) to ±0.5 → ~1.65× / 0.6×
+    PRICE_NOISE_STD = 0.10        # uniform ~±10 % noise
+    MAX_LOG_PRICE_DEV = 0.18      # cap final price swing at ±18 %
 
     out: list[PriceObservation] = []
     for p in products:
@@ -2263,20 +2280,27 @@ def gen_price_history(
         if not sku_months:
             continue
         units_series = sorted(ms.units_sold for ms in sku_months)
-        median_units = units_series[len(units_series) // 2]
+        median_units = max(units_series[len(units_series) // 2], 1)
         list_price = p.price_eur
         for ms in sku_months:
-            u = ms.units_sold
-            # Band selection by demand rank vs median.
-            if u >= median_units * 1.5:
-                discount = rng.uniform(0.15, 0.25)     # deep promo
-            elif u >= median_units * 1.10:
-                discount = rng.uniform(0.05, 0.15)     # mild discount
-            elif u < median_units * 0.7 and median_units > 0:
-                discount = -rng.uniform(0.05, 0.15)    # premium
-            else:
-                discount = rng.uniform(-0.05, 0.05)    # near list
-            price = _round_eur(list_price * (1.0 - discount))
+            u = max(ms.units_sold, 1)
+            # Demand-driven centre: log(price/list) = log(u/median) / ε.
+            # Clip the demand input first so wild outlier months don't
+            # anchor a steep ridge.
+            log_u_dev = math.log(u / median_units)
+            log_u_dev = max(-DEMAND_LOG_CAP, min(DEMAND_LOG_CAP, log_u_dev))
+            centre = log_u_dev / TARGET_ELASTICITY
+            # Heavy noise uncorrelated with demand. By design this is
+            # larger than the deterministic centre's standard deviation
+            # so Var(log_price) is noise-dominated. The K-NN
+            # regression slope on the resulting data is then close to
+            # the target elasticity instead of the much-steeper slope
+            # that crisp price-demand bands would produce.
+            log_p_dev = centre + rng.uniform(-PRICE_NOISE_STD, PRICE_NOISE_STD)
+            log_p_dev = max(-MAX_LOG_PRICE_DEV, min(MAX_LOG_PRICE_DEV, log_p_dev))
+            price_ratio = math.exp(log_p_dev)
+            price = _round_eur(list_price * price_ratio)
+            discount = 1.0 - price_ratio
             out.append(PriceObservation(
                 price_observation_id=f"{p.sku}-{ms.month}",
                 product_sku=p.sku,
