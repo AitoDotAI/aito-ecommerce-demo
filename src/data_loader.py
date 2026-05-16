@@ -238,7 +238,35 @@ SCHEMAS: dict[str, dict] = {
             "discount_pct":         {"type": "Decimal", "nullable": False},
         },
     },
-    # 6. customer_months — panel data, one row per customer per month.
+    # 6b. winback_campaigns — historical re-engagement emails sent to
+    # then-inactive customers. Drives the Win-back view's `_predict
+    # responded` per currently-churned customer. See ADR 0020.
+    "winback_campaigns": {
+        "type": "table",
+        "columns": {
+            "campaign_id":   {"type": "String",  "nullable": False},
+            "customer_id":   {"type": "String",  "nullable": False,
+                              "link": "customers.customer_id"},
+            "product_sku":   {"type": "String",  "nullable": False,
+                              "link": "products.sku"},
+            "sent_month":    {"type": "String",  "nullable": False},
+            # Days since the customer's last order at send time,
+            # bucketed for K-NN. Strong predictor of response.
+            "recency_bucket": {"type": "String", "nullable": False},
+            # Denormalised so Aito conditions in one hop.
+            "customer_segment":     {"type": "String", "nullable": False},
+            "customer_pet_size":    {"type": "String", "nullable": True},
+            "customer_lifestyle":   {"type": "String", "nullable": False},
+            "customer_health_focus":{"type": "String", "nullable": False},
+            "product_pet_type":     {"type": "String", "nullable": False},
+            "product_category":     {"type": "String", "nullable": False},
+            "product_brand":        {"type": "String", "nullable": False},
+            # Outcome label Aito learns from.
+            "responded":      {"type": "Boolean", "nullable": False},
+            "order_value_eur":{"type": "Decimal", "nullable": False},
+        },
+    },
+    # 7. customer_months — panel data, one row per customer per month.
     # Drives the Churn view's time-series prediction. Loaded last
     # because it links to customers.
     "customer_months": {

@@ -34,8 +34,11 @@ from src.pattern_service import get_patterns
 from src.feedback_service import get_feedback
 from src.churn_service import get_churn
 from src.demand_service import get_demand
+from src.cart_completion_service import get_cart_completion
 from src.inventory_service import get_inventory
+from src.markdown_service import get_markdowns
 from src.price_service import get_prices, get_price_detail
+from src.winback_service import get_winback
 
 
 config = load_config()
@@ -349,6 +352,48 @@ def inventory_endpoint():
     See ADR 0015."""
     try:
         return get_inventory(aito).to_dict()
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/winback")
+def winback_endpoint():
+    """Win-back campaign view — for each churned customer, top-3
+    product recommendations + predicted response rate + expected
+    revenue. Empirical impact from `winback_campaigns` historical
+    table. See ADR 0020."""
+    try:
+        return get_winback(aito).to_dict()
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/cart-completion")
+def cart_completion_endpoint():
+    """4 preset checkout scenarios × `_recommend product_sku`
+    conditioned on cart's line_categories. See ADR 0019."""
+    try:
+        return get_cart_completion(aito).to_dict()
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/markdown")
+def markdown_endpoint():
+    """Markdown decision view — overstock SKUs + proposed discount
+    levels driven by Aito's `_estimate units_sold` at multiple price
+    points + clearance-revenue math. See ADR 0018."""
+    try:
+        return get_markdowns(aito).to_dict()
     except AitoError as exc:
         return JSONResponse(
             status_code=502,

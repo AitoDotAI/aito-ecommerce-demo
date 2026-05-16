@@ -299,6 +299,83 @@ export function inventoryPanel(): AitoPanelConfig {
 }
 
 
+export function winbackPanel(): AitoPanelConfig {
+  return {
+    operation: "Win-back",
+    endpoints: ["_recommend", "_estimate"],
+    description:
+      `For each currently-churned customer, Aito's ` +
+      `<code style="color:var(--aito-teal);">_recommend product_sku</code> over the ` +
+      `<code style="color:var(--aito-teal);">winback_campaigns</code> historical table — ` +
+      `goal <code style="color:var(--aito-teal);">{responded: true}</code> — ranks products ` +
+      `by predicted response rate. Plus per-product ` +
+      `<code style="color:var(--aito-teal);">_estimate order_value_eur</code> to turn ` +
+      `response rate into € recoverable revenue.`,
+    query:
+`${k('"from"')}: ${s('"winback_campaigns"')},
+${k('"where"')}: {
+  ${n('"customer_lifestyle"')}: ${s('"premium"')},
+  ${n('"customer_segment"')}: ${s('"dog_owner"')},
+  ${n('"recency_bucket"')}: ${s('"0-90d"')}
+},
+${k('"recommend"')}: ${s('"product_sku"')},
+${k('"goal"')}: { ${n('"responded"')}: ${n('true')} },
+${k('"basedOn"')}: [${s('"pet_type"')}, ${s('"category"')}, ${s('"brand"')}],
+${k('"limit"')}: ${n('8')}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
+export function cartCompletionPanel(): AitoPanelConfig {
+  return {
+    operation: "Cart Completion",
+    endpoints: ["_relate"],
+    description:
+      `Given items already in cart, Aito's <code style="color:var(--aito-teal);">_relate</code> ` +
+      `over <code style="color:var(--aito-teal);">orders.line_categories</code> ranks the ` +
+      `categories that co-occur most strongly. Each related category contributes one popular ` +
+      `product as a suggested add-on. Same predictive engine as Bought Together, surfaced at ` +
+      `the checkout funnel.`,
+    query:
+`${k('"from"')}: ${s('"orders"')},
+${k('"where"')}: {
+  ${n('"line_categories"')}: { ${n('"$match"')}: ${s('"dog_dryfood"')} }
+},
+${k('"relate"')}: ${s('"line_categories"')},
+${k('"limit"')}: ${n('10')}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
+export function markdownPanel(): AitoPanelConfig {
+  return {
+    operation: "Markdown",
+    endpoints: ["_estimate"],
+    description:
+      `For each overstock SKU, Aito's <code style="color:var(--aito-teal);">_estimate units_sold</code> ` +
+      `runs at five price points (-20 % … 0 %). Picks the markdown depth that ` +
+      `clears the excess in 3 months at the highest recoverable revenue ` +
+      `<strong>(price − cost) × cleared units</strong>. Ties Inventory + Price + Demand ` +
+      `into one decision.`,
+    query:
+`${k('"estimate"')}: {
+  ${n('"from"')}: ${s('"monthly_sales"')},
+  ${n('"where"')}: {
+    ${n('"product_sku"')}: ${s('"SKU-PT-0042"')},
+    ${n('"month"')}: ${s('"2026-05"')},
+    ${n('"price_eur"')}: ${n('72.20')},
+    ${n('"category"')}: ${s('"dry-food"')},
+    ${n('"season"')}: ${s('"spring"')}
+  },
+  ${n('"estimate"')}: ${s('"units_sold"')}
+}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
 export function pricePanel(): AitoPanelConfig {
   return {
     operation: "Price",
