@@ -2,10 +2,11 @@
 
 > What an online store looks like when predictions are native to
 > every screen: search, recommendations, cross-sell, catalog
-> enrichment, customer-feedback triage, churn prediction. **No
-> model training. No retraining schedule. No MLOps.** Powered by
-> [Aito.ai](https://aito.ai)'s predictive database. Ten views,
-> all live against the same Aito DB.
+> enrichment, customer-feedback triage, churn prediction, demand
+> forecast, inventory reorder, price intelligence. **No model
+> training. No retraining schedule. No MLOps.** Powered by
+> [Aito.ai](https://aito.ai)'s predictive database. Thirteen
+> views, all live against the same Aito DB.
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Powered by Aito.ai](https://img.shields.io/badge/Powered%20by-Aito.ai-orange)](https://aito.ai)
@@ -17,8 +18,9 @@ demos [`aito-accounting-demo`](https://github.com/AitoDotAI/aito-accounting-demo
 [`aito-erp-demo`](https://github.com/AitoDotAI/aito-erp-demo)
 (*Predictive ERP*). PetNord is the dataset — a Nordic-flavoured
 online pet store with ~700 SKUs, 3,000 customers, 12,000 orders,
-39,000 order lines, 2,000 customer reviews, and ~26,500
-customer-month panel rows.
+39,000 order lines, 6,000 reviews, ~26,500 customer-month panel
+rows, ~11,100 SKU-month sales aggregates, 658 inventory snapshots,
+and ~11,100 price observations.
 
 ![Predictive E-commerce — 8 views, one predictive database](assets/teaser.png)
 
@@ -50,9 +52,9 @@ runs in parallel × 6 anchors.
 
 ---
 
-## The six demo moments
+## The seven demo moments
 
-Six visible, quotable predictions form the demo's narrative.
+Seven visible, quotable predictions form the demo's narrative.
 Each is in its own view, each builds on the previous:
 
 | # | Moment | View | Aito |
@@ -60,9 +62,10 @@ Each is in its own view, each builds on the previous:
 | 1 | Smart Search rank flip — cat food drops from rank 1 to rank 6 for a dog-owner persona | [Smart Search](#2-smart-search--predictive-re-ranking) | `_search` + `_recommend` |
 | 2 | For You persona switch — grid re-ranks in <300 ms on pill click | [For You](#3-for-you--personalised-tile-grid) | `_recommend` |
 | 3 | Bought Together 2.72× — dog dry-food → dental treats, live | [Bought Together](#4-bought-together--co-purchase-lift) | `_relate` |
-| 4 | Product Filling 5 fields — multi-`_predict` in ~480 ms | [Product Filling](#9-product-filling--catalog-enrichment) | `_predict` × 5 |
-| 5 | Evaluation honest failure — Return Risk +0.0 pp gain | [Evaluation](#10-evaluation--honest-passfail) | `_evaluate` × 4 |
-| 6 | **Churn ranking** — 100 active customers scored by P(churn in 3 mo) from the time-series panel; drivers + held-out accuracy on one page | [Churn](#8-churn--time-series-prediction-over-the-panel) | `_predict` × N + `_relate` × 5 + `_evaluate` |
+| 4 | Product Filling 5 fields — multi-`_predict` in ~480 ms | [Product Filling](#12-product-filling--catalog-enrichment) | `_predict` × 5 |
+| 5 | Evaluation honest failure — Return Risk +0.0 pp gain | [Evaluation](#13-evaluation--honest-passfail) | `_evaluate` × 4 |
+| 6 | Churn ranking — 100 active customers scored by P(churn in 3 mo) from the time-series panel | [Churn](#8-churn--time-series-prediction-over-the-panel) | `_predict` × N + `_relate` × 5 + `_evaluate` |
+| 7 | **Inventory reorder workflow** — critical SKUs ranked by revenue at risk in €, per-row `$why` decomposing the demand forecast | [Inventory](#10-inventory--the-killer-operate-view) | `_predict` × 25 + `_search` |
 
 The two-minute narrated walkthrough is in
 [`docs/demo-script.md`](docs/demo-script.md).
@@ -71,9 +74,9 @@ The two-minute narrated walkthrough is in
 
 ## What's inside
 
-Ten views grouped under five sidebar sections, all reading from
-a single Aito DB. Click any guide for the full implementation,
-data-schema excerpts, and tradeoffs.
+Thirteen views grouped under six sidebar sections, all reading
+from a single Aito DB. Click any guide for the full
+implementation, data-schema excerpts, and tradeoffs.
 
 ### 1. 📊 Dashboard — KPIs, top patterns, segments, live insight
 
@@ -247,7 +250,76 @@ review fields); held-out accuracy via `_evaluate`. The killer
 feature of the Understand section.
 [→ Implementation](src/churn_service.py) | [Use case guide](docs/use-cases/10-churn.md) | [ADR](docs/adr/0013-churn-prediction.md)
 
-### 9. ⚡ Product Filling — catalog enrichment
+### 9. 📦 Demand Forecast — `_predict units_sold` on a panel
+
+![Demand](screenshots/11-demand.png)
+
+```json
+{
+  "from": "monthly_sales",
+  "where": {
+    "product_sku": "SKU-PT-0042",
+    "month": "2026-05",
+    "pet_type": "dog",
+    "category": "dry-food",
+    "brand": "Royal Canin",
+    "season": "spring"
+  },
+  "predict": "units_sold"
+}
+```
+
+Per-SKU next-month units forecast via 25 parallel `_predict`
+calls over the `monthly_sales` panel. Seasonality drivers
+surfaced via four parallel `_relate` (one per season). Honest
+accuracy via `_evaluate` on a held-out 300-row sample. Forecasts
+feed the Inventory view's reorder workflow directly.
+[→ Implementation](src/demand_service.py) | [Use case guide](docs/use-cases/11-demand-forecast.md) | [ADR](docs/adr/0014-demand.md)
+
+### 10. 🏷️ Inventory — the killer Operate view
+
+![Inventory](screenshots/12-inventory.png)
+
+```json
+{
+  "from": "monthly_sales",
+  "where": {
+    "product_sku": "SKU-PT-0042",
+    "month": "2026-05",
+    "category": "dry-food",
+    "season": "spring"
+  },
+  "predict": "units_sold"
+}
+```
+
+KPI strip with **revenue at risk** in €, reorder queue ranked by
+forecast shortfall × retail price, per-row `?` opens the demand
+forecast's `$why`. Plus an overstock list with tied-capital
+figures. The merchandiser's daily dashboard, with Aito doing the
+prediction underneath.
+[→ Implementation](src/inventory_service.py) | [Use case guide](docs/use-cases/12-inventory-intelligence.md) | [ADR](docs/adr/0015-inventory.md)
+
+### 11. 💶 Price Intelligence — fair-band + sweet-spot `_relate`
+
+![Price](screenshots/13-price.png)
+
+```json
+{
+  "from": "price_history",
+  "where": { "discount_pct": { "$gt": 15.0 } },
+  "relate": "product_sku.category"
+}
+```
+
+Per-SKU fair-band stats from `price_history` (mean ± 1.5σ, outliers
+flagged). Three parallel `_relate` calls over discount bands ↔
+category surface sweet-spot patterns — "promo-priced toys lift
+2.4× vs list price". The continuous-feature `_relate`-via-banding
+pattern transfers to any banded analysis.
+[→ Implementation](src/price_service.py) | [Use case guide](docs/use-cases/13-price.md) | [ADR](docs/adr/0016-price.md)
+
+### 12. ⚡ Product Filling — catalog enrichment
 
 ![Product Filling](screenshots/07-product-filling.png)
 
@@ -267,7 +339,7 @@ alternatives + `$why` factor tooltip. **Demo moment #4** — all
 five at ≥ 0.87 in ~480 ms.
 [→ Implementation](src/filling_service.py) | [Use case guide](docs/use-cases/07-product-filling.md) | [ADR](docs/adr/0009-product-filling.md)
 
-### 10. 🧪 Evaluation — honest pass/fail
+### 13. 🧪 Evaluation — honest pass/fail
 
 ![Evaluation](screenshots/08-evaluation.png)
 
@@ -359,12 +431,12 @@ Browser → Next.js (port 8500) → fetch("/api/...") → FastAPI (port 8501)
 
 | Operator | What it does | Used in |
 |---|---|---|
-| `_search` | Retrieve rows / count via `limit=0` | Dashboard KPIs, Smart Search baseline, Purchase Analytics, Bought Together sample SKUs |
+| `_search` | Retrieve rows / count via `limit=0` | Dashboard KPIs, Smart Search baseline, Purchase Analytics, Bought Together sample SKUs, Price aggregation, Inventory snapshot |
 | `_match` (via `$match`) | Token match on Text columns | Smart Search, Bought Together (`line_categories`), Pattern Explorer |
 | `_recommend` | Rank rows by `P(goal | row)` | Smart Search predictive column, For You |
-| `_relate` | Co-occurrence with lift / support / `pOnCondition` | Dashboard top patterns, Bought Together, Pattern Explorer, Churn drivers × 3 parallel |
-| `_predict` | Predict a field with `$p` + `$why` factor tree | Product Filling × 5 parallel, Feedback × 3 parallel, Churn at-risk × N parallel |
-| `_evaluate` | Cross-validation accuracy + baseline + per-row results | Evaluation × 4 parallel, Churn × 1 |
+| `_relate` | Co-occurrence with lift / support / `pOnCondition` | Dashboard top patterns, Bought Together, Pattern Explorer, Churn drivers × 5 parallel, Demand seasonality × 4 parallel, Price sweet-spot × 3 parallel |
+| `_predict` | Predict a field with `$p` + `$why` factor tree | Product Filling × 5 parallel, Feedback × 4 parallel, Churn at-risk × N parallel, Demand × 25 parallel, Inventory × 25 parallel |
+| `_evaluate` | Cross-validation accuracy + baseline + per-row results | Evaluation × 4 parallel, Churn × 1, Demand × 1 |
 
 Verified query bodies + Aito-API gotchas (multi-field `goal`
 semantics, hyphen tokenisation, single-hop link traversal, the
@@ -390,6 +462,9 @@ src/                Python FastAPI backend
   analytics_service.py
   feedback_service.py
   churn_service.py
+  demand_service.py
+  inventory_service.py
+  price_service.py
   filling_service.py
   eval_service.py
 
@@ -405,6 +480,7 @@ data/               Deterministic JSON fixtures (seed = 42)
   generate_fixtures.py          single source of truth — re-runs idempotent
   products.json · customers.json · orders.json · order_lines.json
   reviews.json · customer_months.json
+  monthly_sales.json · inventory.json · price_history.json
 
 tests/              pytest — fixture signal checks + AitoClient body shape
 screenshots/        Canonical per-view screenshots (the inspect/ subfolder is the workshop)
@@ -457,6 +533,9 @@ Read top-to-bottom and you have the demo's full design rationale.
 | 0011 | [Purchase Analytics + Pattern Explorer](docs/adr/0011-analytics-and-patterns.md) | Accepted |
 | 0012 | [Feedback — multi-field `_predict` over review text](docs/adr/0012-feedback-multi-predict.md) | Accepted |
 | 0013 | [Churn — the killer Understand view](docs/adr/0013-churn-prediction.md) | Accepted |
+| 0014 | [Demand Forecast — `_predict units_sold` over a monthly_sales panel](docs/adr/0014-demand.md) | Accepted |
+| 0015 | [Inventory Intelligence — the killer Operate view](docs/adr/0015-inventory.md) | Accepted |
+| 0016 | [Price Intelligence — fair-band + sweet-spot `_relate`](docs/adr/0016-price.md) | Accepted |
 
 ---
 

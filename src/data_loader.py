@@ -154,6 +154,61 @@ SCHEMAS: dict[str, dict] = {
             "churn_within_90d": {"type": "Boolean", "nullable": False},
         },
     },
+    # 7. monthly_sales — SKU × month sales aggregate. Drives the
+    # Demand Forecast view's `_predict units_sold` and the Inventory
+    # view's daily-demand arithmetic. Denormalised pet_type / category
+    # / brand / season so Aito conditions in one hop.
+    "monthly_sales": {
+        "type": "table",
+        "columns": {
+            "monthly_sale_id":  {"type": "String",  "nullable": False},
+            "product_sku":      {"type": "String",  "nullable": False,
+                                 "link": "products.sku"},
+            "month":            {"type": "String",  "nullable": False},
+            "units_sold":       {"type": "Int",     "nullable": False},
+            "revenue_eur":      {"type": "Decimal", "nullable": False},
+            "unique_customers": {"type": "Int",     "nullable": False},
+            "pet_type":         {"type": "String",  "nullable": False},
+            "category":         {"type": "String",  "nullable": False},
+            "brand":            {"type": "String",  "nullable": False},
+            "season":           {"type": "String",  "nullable": False},
+            # Realised price (revenue / units) — drives the Price
+            # view's demand curve via `_estimate units_sold` with
+            # `price_eur` in the where clause.
+            "price_eur":        {"type": "Decimal", "nullable": False},
+        },
+    },
+    # 8. inventory — per-SKU stock snapshot. Drives the Inventory
+    # Intelligence view's reorder workflow + cash-impact figures.
+    "inventory": {
+        "type": "table",
+        "columns": {
+            "sku":                 {"type": "String",  "nullable": False,
+                                    "link": "products.sku"},
+            "current_stock":       {"type": "Int",     "nullable": False},
+            "unit_cost_eur":       {"type": "Decimal", "nullable": False},
+            "lead_time_days":      {"type": "Int",     "nullable": False},
+            "reorder_point":       {"type": "Int",     "nullable": False},
+            "safety_stock":        {"type": "Int",     "nullable": False},
+            "supplier":            {"type": "String",  "nullable": False},
+            "last_received_month": {"type": "String",  "nullable": False},
+        },
+    },
+    # 9. price_history — per-SKU per-month price snapshots. Drives
+    # the Price Intelligence view's fair-band display + `_relate`
+    # for price-band ↔ units_sold sweet spots.
+    "price_history": {
+        "type": "table",
+        "columns": {
+            "price_observation_id": {"type": "String",  "nullable": False},
+            "product_sku":          {"type": "String",  "nullable": False,
+                                     "link": "products.sku"},
+            "month":                {"type": "String",  "nullable": False},
+            "price_eur":            {"type": "Decimal", "nullable": False},
+            "list_price_eur":       {"type": "Decimal", "nullable": False},
+            "discount_pct":         {"type": "Decimal", "nullable": False},
+        },
+    },
     # 6. customer_months — panel data, one row per customer per month.
     # Drives the Churn view's time-series prediction. Loaded last
     # because it links to customers.

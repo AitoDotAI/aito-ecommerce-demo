@@ -379,6 +379,32 @@ def test_review_churn_within_90d_share_in_band():
     )
 
 
+def test_review_rating_predicts_churn(customers):
+    """1-star reviews must over-index for churn_within_90d=True vs
+    5-star reviews. Without this conditional bias in the fixture,
+    Aito's `_predict churn_within_90d from {text, rating}` falls
+    back to the text signal alone and the Feedback view's "1★ →
+    high churn risk" narrative doesn't land.
+
+    Target: P(churn | rating=1) ≥ 1.6 × P(churn | rating=5).
+    """
+    reviews = _load("reviews.json")
+    by_rating: dict[int, list[bool]] = {}
+    for r in reviews:
+        by_rating.setdefault(int(r["rating"]), []).append(
+            r.get("churn_within_90d") is True
+        )
+    p1 = (sum(by_rating.get(1, [False])) / len(by_rating.get(1, [True])))
+    p5 = (sum(by_rating.get(5, [False])) / len(by_rating.get(5, [True])))
+    assert p5 > 0, "no 5-star reviews — generator regression"
+    ratio = p1 / p5
+    assert ratio >= 1.6, (
+        f"P(churn|1★)/P(churn|5★) = {ratio:.2f} (target ≥ 1.6) — "
+        f"1-star reviews don't preferentially come from churning "
+        f"customers, so Aito won't surface rating as a churn driver"
+    )
+
+
 def test_review_churn_label_correlates_with_customer_churn(customers):
     """Every review with `churn_within_90d=True` must belong to a
     customer who is themselves `churned=True`. The forward-looking
@@ -449,6 +475,93 @@ def test_customer_months_visit_decay_for_churned():
         f"churned-customer visits {avg_churned:.1f} not low enough "
         f"vs active {avg_active:.1f} — visit-decay signal weak"
     )
+
+
+# ── Signal #11/12: Operate-section fixtures ──────────────────────────
+
+
+def test_monthly_sales_coverage(products):
+    """Every SKU should have at least one monthly_sales row — empty
+    SKUs surface gaps in the order_lines fixture."""
+    sales = _load("monthly_sales.json")
+    skus_in_sales = {ms["product_sku"] for ms in sales}
+    skus_total = {p["sku"] for p in products}
+    coverage = len(skus_in_sales) / len(skus_total)
+    assert coverage >= 0.95, (
+        f"monthly_sales covers {coverage:.1%} of SKUs — Demand / "
+        f"Inventory views will have blind spots"
+    )
+
+
+def test_monthly_sales_units_positive():
+    """Every row must have units_sold ≥ 1. Empty months aren't
+    emitted; if any zero-unit row sneaks in it'd dilute Aito's
+    conditioning."""
+    sales = _load("monthly_sales.json")
+    for ms in sales:
+        assert int(ms.get("units_sold", 0)) >= 1, ms
+
+
+def test_inventory_band_distribution():
+    """Inventory snapshot must land in the engineered band ranges so
+    the reorder workflow has visible critical SKUs and the overstock
+    list has visible tied capital."""
+    inv = _load("inventory.json")
+    n = len(inv)
+    critical = sum(
+        1 for r in inv
+        if int(r["current_stock"]) < int(r["reorder_point"])
+    )
+    overstock = sum(
+        1 for r in inv
+        if int(r["current_stock"]) > int(r["reorder_point"]) * 5
+    )
+    critical_pct = critical / n
+    overstock_pct = overstock / n
+    assert 0.06 <= critical_pct <= 0.18, (
+        f"critical share {critical_pct:.1%} outside 6-18% — Inventory "
+        f"reorder workflow won't have meaningful traffic"
+    )
+    assert 0.10 <= overstock_pct <= 0.22, (
+        f"overstock share {overstock_pct:.1%} outside 10-22% — tied "
+        f"capital figure won't read substantive"
+    )
+
+
+def test_inventory_links_to_real_skus(products):
+    """Every inventory row's sku must resolve. Aito's link writes
+    fail otherwise."""
+    inv = _load("inventory.json")
+    skus = {p["sku"] for p in products}
+    bad = [r for r in inv if r["sku"] not in skus]
+    assert not bad, f"{len(bad)} inventory rows reference unknown skus"
+
+
+def test_price_history_discount_distribution():
+    """Each discount band must hold enough observations for the
+    sweet-spot `_relate` to surface category lifts cleanly.
+
+    Prices in this fixture are demand-correlated (each month's
+    price is assigned by demand rank in `gen_price_history`), so
+    the natural distribution has prices both above and below list.
+    The asserts below are floors — each of the three discount-side
+    bands needs enough share that per-category lifts stay stable."""
+    prices = _load("price_history.json")
+    n = len(prices)
+    near_list = sum(1 for r in prices if abs(float(r["discount_pct"])) <= 5.0)
+    mild = sum(1 for r in prices if 5.0 < float(r["discount_pct"]) <= 15.0)
+    promo = sum(1 for r in prices if float(r["discount_pct"]) > 15.0)
+    assert near_list / n >= 0.10, f"near-list share {near_list/n:.1%}"
+    assert mild / n >= 0.05, f"mild share {mild/n:.1%}"
+    assert promo / n >= 0.10, f"promo share {promo/n:.1%}"
+
+
+def test_price_history_links_to_real_skus(products):
+    """Every price_observation must resolve to a real SKU."""
+    prices = _load("price_history.json")
+    skus = {p["sku"] for p in products}
+    bad = [r for r in prices if r["product_sku"] not in skus]
+    assert not bad, f"{len(bad)} price_history rows reference unknown skus"
 
 
 def test_customer_months_label_consistent_with_customer_churn(customers):

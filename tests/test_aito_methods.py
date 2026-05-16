@@ -137,6 +137,89 @@ def test_evaluate_wraps_body_in_evaluate_key(client, httpx_mock: HTTPXMock):
     assert body["evaluate"]["where"] == {"category": {"$get": "category"}}
 
 
+def test_estimate_emits_expected_body(client, httpx_mock: HTTPXMock):
+    httpx_mock.add_response(
+        url="https://example.aito.app/api/v1/_estimate",
+        method="POST",
+        json={"estimate": 3.76},
+    )
+    client.estimate(
+        table="monthly_sales",
+        where={"product_sku": "SKU-PT-0042", "month": "2026-05"},
+        estimate_field="units_sold",
+    )
+    body = _last_body(httpx_mock)
+    assert body["from"] == "monthly_sales"
+    assert body["where"] == {"product_sku": "SKU-PT-0042", "month": "2026-05"}
+    assert body["estimate"] == "units_sold"
+    assert body["select"] == ["estimate", "why"]
+    assert "model" not in body   # K-NN is the default
+
+
+def test_estimate_carries_model_when_set(client, httpx_mock: HTTPXMock):
+    httpx_mock.add_response(
+        url="https://example.aito.app/api/v1/_estimate",
+        method="POST",
+        json={"estimate": 5.0},
+    )
+    client.estimate(
+        table="price_history",
+        where={"product_sku": "SKU-PT-0001"},
+        estimate_field="price_eur",
+        model="regression",
+    )
+    body = _last_body(httpx_mock)
+    assert body["model"] == "regression"
+
+
+def test_estimate_drops_why_when_unwanted(client, httpx_mock: HTTPXMock):
+    httpx_mock.add_response(
+        url="https://example.aito.app/api/v1/_estimate",
+        method="POST",
+        json={"estimate": 3.76},
+    )
+    client.estimate(
+        table="monthly_sales",
+        where={},
+        estimate_field="units_sold",
+        with_why=False,
+    )
+    body = _last_body(httpx_mock)
+    assert body["select"] == ["estimate"]
+
+
+def test_aggregate_emits_expected_body(client, httpx_mock: HTTPXMock):
+    httpx_mock.add_response(
+        url="https://example.aito.app/api/v1/_aggregate",
+        method="POST",
+        json={"mean": 5.9, "min": 4.5, "max": 6.6},
+    )
+    client.aggregate(
+        table="price_history",
+        where={"product_sku": "SKU-PT-0001"},
+        aggregate_fields=["price_eur.$mean", "price_eur.$min"],
+    )
+    body = _last_body(httpx_mock)
+    assert body["from"] == "price_history"
+    assert body["where"] == {"product_sku": "SKU-PT-0001"}
+    assert body["aggregate"] == ["price_eur.$mean", "price_eur.$min"]
+
+
+def test_aggregate_omits_where_when_none(client, httpx_mock: HTTPXMock):
+    httpx_mock.add_response(
+        url="https://example.aito.app/api/v1/_aggregate",
+        method="POST",
+        json={"mean": 1.0},
+    )
+    client.aggregate(
+        table="monthly_sales",
+        where=None,
+        aggregate_fields=["units_sold.$mean"],
+    )
+    body = _last_body(httpx_mock)
+    assert "where" not in body
+
+
 def test_non_2xx_raises_aito_error(client, httpx_mock: HTTPXMock):
     httpx_mock.add_response(
         url="https://example.aito.app/api/v1/_predict",

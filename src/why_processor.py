@@ -176,6 +176,125 @@ def _pick_highlight(raw: Any) -> dict | None:
     return {"field": field, "marked_text": marked}
 
 
+def process_estimate_why(
+    raw_why: Any,
+    estimate_value: float | None,
+    *,
+    field_label: str = "value",
+) -> dict | None:
+    """Flatten Aito's `_estimate why` tree into the popover shape.
+
+    Aito's `_estimate` returns a `weightedAverage` of
+    `neighborContext` nodes, each with an `adjustments` tree that
+    decomposes into:
+
+      - `input.residual`  — k-NN neighbor residual (data-driven)
+      - `regression`       — per-feature shift (additive on log scale)
+      - `mean centering`   — column-mean baseline
+
+    The K-NN math walks a tree of `sum` / `exponent` / `constant`
+    nodes. For the popover we collapse this into a flat list of
+    contribution rows:
+
+        {
+          "kind": "estimate",
+          "estimate": float,
+          "field_label": str,
+          "components": [
+            {"name": "season=spring", "value": 0.07, "type": "regression"},
+            {"name": "neighbor residual", "value": -0.41, "type": "residual"},
+            {"name": "column mean (log)", "value": 0.39, "type": "mean"},
+            ...
+          ]
+        }
+
+    The popover renders these as "Expected X · base + Δ₁ + Δ₂…".
+    Values are on the log scale Aito works in internally; the
+    popover converts to "+12 %", "-8 %" deltas for display.
+    """
+    if not isinstance(raw_why, dict):
+        return None
+
+    components: list[dict] = []
+
+    def walk_neighbor_subtree(node: Any) -> None:
+        """Walk one neighbor's adjustments tree and collect leaves.
+
+        K-NN `_estimate` returns a `weightedAverage` of ~20-30
+        neighbors; each neighbor has its own per-feature regression
+        terms and column-mean baseline. Walking the full tree
+        collects N × (1 residual + N_features regressions + 1 mean)
+        leaves — too noisy for a popover.
+
+        Instead we walk only the TOP-weighted neighbor's subtree:
+        one representative residual + per-feature shifts + the
+        column mean. The reader sees the math for a single
+        comparable case, not the K-NN ensemble.
+        """
+        if not isinstance(node, dict):
+            return
+        t = node.get("type")
+        if t == "regression":
+            prop = node.get("proposition", {})
+            value = float(node.get("value", 0) or 0)
+            if abs(value) < 1e-10:
+                return
+            field, val = next(iter(prop.items())) if prop else ("", "")
+            components.append({
+                "name": f"{field}={_stringify(val)}",
+                "value": round(value, 4),
+                "type": "regression",
+            })
+            return
+        if t == "mean centering":
+            value = float(node.get("value", 0) or 0)
+            components.append({
+                "name": "column mean (log)",
+                "value": round(value, 4),
+                "type": "mean",
+            })
+            return
+        if t == "input" and node.get("name") == "residual":
+            value = float(node.get("value", 0) or 0)
+            if abs(value) >= 1e-10:
+                components.append({
+                    "name": "neighbor residual",
+                    "value": round(value, 4),
+                    "type": "residual",
+                })
+            return
+        for child_key in ("terms", "factors"):
+            for child in node.get(child_key, []) or []:
+                walk_neighbor_subtree(child)
+        for k in ("value", "base", "power", "adjustments"):
+            v = node.get(k)
+            if isinstance(v, dict):
+                walk_neighbor_subtree(v)
+
+    # Find the top-weighted neighbor under `weightedAverage.components`
+    # and walk only its subtree.
+    if raw_why.get("type") == "weightedAverage":
+        neighbor_components = raw_why.get("components", []) or []
+        # Pick the highest-weight neighbor.
+        if neighbor_components:
+            top = max(neighbor_components, key=lambda c: float(c.get("weight", 0) or 0))
+            walk_neighbor_subtree(top.get("value") or top)
+    else:
+        # Fallback: full walk (handles other `_estimate` model shapes).
+        walk_neighbor_subtree(raw_why)
+
+    if estimate_value is None and isinstance(raw_why.get("value"), (int, float)):
+        estimate_value = float(raw_why["value"])
+
+    components.sort(key=lambda c: -abs(c["value"]))
+    return {
+        "kind": "estimate",
+        "estimate": round(float(estimate_value), 3) if estimate_value is not None else None,
+        "field_label": field_label,
+        "components": components[:8],   # top-8 by magnitude
+    }
+
+
 def _stringify(v: Any) -> str:
     """Aito's `$has` values come back as bool / int / float / str.
     The popover renders strings — normalise once here."""

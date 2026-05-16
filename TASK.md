@@ -81,7 +81,7 @@ on every reload.
 
 ---
 
-## 5. The ten views
+## 5. The thirteen views
 
 ```
 Overview        →  Dashboard          (KPIs, top patterns, segments, recent orders)
@@ -92,6 +92,9 @@ Analyze         →  Purchase Analytics (month bars, top products, AOV by segmen
                 →  Pattern Explorer   (ad-hoc _relate query builder)
 Understand      →  Feedback           (multi-field _predict over review text)
                 →  Churn              (P(churn) per customer + drivers + accuracy)
+Operate         →  Demand Forecast    (_predict units_sold per top SKU + seasonality)
+                →  Inventory          (reorder workflow with revenue at risk in €)
+                →  Price              (fair-band per SKU + sweet-spot _relate)
 Automate        →  Product Filling    (multi-field _predict for catalog enrichment)
                 →  Evaluation         (pass/fail rows; honest failures allowed)
 ```

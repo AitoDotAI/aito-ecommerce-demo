@@ -52,9 +52,9 @@ export interface WhyExplanation {
 }
 
 /** Flattened `$why` decomposition produced by `src/why_processor.py`.
- *  Drives the `WhyPopover` component. Sibling to the legacy
- *  `WhyExplanation` type above (which carries highlight HTML
- *  payloads for the old token-highlight design). */
+ *  Drives the `WhyPopover` component for `_predict` results. The
+ *  sibling `WhyEstimatePayload` (below) covers `_estimate` results
+ *  which have a different shape. */
 export interface WhyExplanationPayload {
   base_p: number;
   predicted_value: string;
@@ -69,6 +69,25 @@ export interface WhyExplanationPayload {
   }>;
   final_p: number | null;
 }
+
+/** Estimate-variant explanation from `src/why_processor.py`'s
+ *  `process_estimate_why`. K-NN / regression-coefficient
+ *  decomposition for `_estimate` queries (Demand / Inventory /
+ *  Price). Each component's `value` is on the log scale Aito uses
+ *  internally — the popover converts to %-lift for display. */
+export interface WhyEstimatePayload {
+  kind: "estimate";
+  estimate: number | null;
+  field_label: string;
+  components: Array<{
+    name: string;
+    value: number;
+    type: "regression" | "residual" | "mean" | string;
+  }>;
+}
+
+/** Either-shape why payload — services return one or the other. */
+export type AnyWhyPayload = WhyExplanationPayload | WhyEstimatePayload;
 
 /** Legacy shape kept for backwards compatibility — older endpoints
  *  still return this. New code should prefer `WhyExplanation`. */
@@ -444,6 +463,174 @@ export interface ChurnResponse {
   at_risk: ChurnAtRiskCustomer[];
   drivers: ChurnDriverRow[];
   evaluation: ChurnEvalSummary;
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  last_response_ms: number;
+}
+
+/* ─── Demand Forecast (/api/demand) ─── */
+
+export interface DemandTopMover {
+  sku: string;
+  name: string;
+  pet_type: string;
+  category: string;
+  avg_monthly_units: number;
+  last_month_units: number;
+  forecast_units: number;
+  forecast_p: number;
+  why_explanation: AnyWhyPayload | null;
+}
+
+export interface DemandSeasonRow {
+  season: string;
+  pet_type: string;
+  category: string;
+  lift: number;
+  f_on_condition: number;
+  p_on_condition: number;
+  p_overall: number;
+}
+
+export interface DemandEvalSummary {
+  accuracy: number;
+  base_accuracy: number;
+  accuracy_gain_pp: number;
+  n: number;
+}
+
+export interface DemandResponse {
+  forecast_month: string;
+  top_movers: DemandTopMover[];
+  seasonality: DemandSeasonRow[];
+  evaluation: DemandEvalSummary;
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  last_response_ms: number;
+}
+
+/* ─── Inventory Intelligence (/api/inventory) ─── */
+
+export interface InventoryKpi {
+  label: string;
+  value: number;
+  sub: string;
+}
+
+export interface InventoryReorderRow {
+  sku: string;
+  name: string;
+  pet_type: string;
+  category: string;
+  current_stock: number;
+  reorder_point: number;
+  days_of_supply: number;
+  avg_monthly_units: number;
+  forecast_units: number;
+  suggested_reorder_qty: number;
+  unit_cost_eur: number;
+  revenue_at_risk_eur: number;
+  supplier: string;
+  lead_time_days: number;
+  why_explanation: AnyWhyPayload | null;
+}
+
+export interface InventoryOverstockRow {
+  sku: string;
+  name: string;
+  pet_type: string;
+  category: string;
+  current_stock: number;
+  reorder_point: number;
+  months_of_supply: number;
+  tied_capital_eur: number;
+  unit_cost_eur: number;
+}
+
+export interface InventoryResponse {
+  kpis: InventoryKpi[];
+  reorder_queue: InventoryReorderRow[];
+  overstock: InventoryOverstockRow[];
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  last_response_ms: number;
+}
+
+/* ─── Price Intelligence (/api/price) ─── */
+
+export interface PriceFairBandRow {
+  sku: string;
+  name: string;
+  pet_type: string;
+  category: string;
+  list_price_eur: number;
+  mean_price_eur: number;
+  min_price_eur: number;
+  max_price_eur: number;
+  std_dev_eur: number;
+  observation_count: number;
+  outlier: boolean;
+  band_lower_eur: number;
+  band_upper_eur: number;
+}
+
+export interface PriceSweetSpotRow {
+  discount_band: "list" | "mild" | "promo";
+  category: string;
+  lift: number;
+  f_on_condition: number;
+  p_on_condition: number;
+  p_overall: number;
+}
+
+export interface PriceResponse {
+  fair_bands: PriceFairBandRow[];
+  sweet_spots: PriceSweetSpotRow[];
+  summary: {
+    total_skus: number;
+    observations: number;
+    outlier_skus: number;
+    promo_share_pct: number;
+    drilldown_sku?: string;
+    drilldown_agg_mean?: number;
+  };
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  last_response_ms: number;
+}
+
+/* ─── Price detail (/api/price/detail?sku=…) ─── */
+
+export interface PriceHistoricalPoint {
+  month: string;
+  price_eur: number;
+  units_sold: number;
+  revenue_eur: number;
+  profit_eur: number;
+}
+
+export interface PriceCurvePoint {
+  price_eur: number;
+  units_sold: number;
+  profit_eur: number;
+  adjustment_pct: number;
+}
+
+export interface PriceNeighborPoint {
+  month: string;
+  price_eur: number;
+  units_sold: number;
+  profit_eur: number;
+  weight: number;
+}
+
+export interface PriceDetail {
+  sku: string;
+  name: string;
+  pet_type: string;
+  category: string;
+  list_price_eur: number;
+  unit_cost_eur: number;
+  mean_price_eur: number;
+  historical: PriceHistoricalPoint[];
+  curve: PriceCurvePoint[];
+  neighbors: PriceNeighborPoint[];
   last_query: { endpoint: string; body: Record<string, unknown> };
   last_response_ms: number;
 }

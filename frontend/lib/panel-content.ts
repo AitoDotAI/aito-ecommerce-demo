@@ -246,6 +246,83 @@ export function churnPanel(): AitoPanelConfig {
 }
 
 
+export function demandPanel(): AitoPanelConfig {
+  return {
+    operation: "Demand Forecast",
+    endpoints: ["_estimate", "_relate", "_evaluate"],
+    description:
+      `Per-SKU <code style="color:var(--aito-teal);">_estimate units_sold</code> ` +
+      `from the <code style="color:var(--aito-teal);">monthly_sales</code> panel — ` +
+      `expected-value regression (K-NN under the hood), not most-probable-integer ` +
+      `prediction. Seasonality via parallel <code style="color:var(--aito-teal);">_relate</code> ` +
+      `over (season, category). Held-out accuracy via <code style="color:var(--aito-teal);">_evaluate</code>.`,
+    query:
+`${k('"estimate"')}: {
+  ${n('"from"')}: ${s('"monthly_sales"')},
+  ${n('"where"')}: {
+    ${n('"product_sku"')}: ${s('"SKU-PT-0001"')},
+    ${n('"month"')}: ${s('"2026-05"')},
+    ${n('"pet_type"')}: ${s('"dog"')},
+    ${n('"category"')}: ${s('"dry-food"')},
+    ${n('"season"')}: ${s('"spring"')}
+  },
+  ${n('"estimate"')}: ${s('"units_sold"')}
+}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
+export function inventoryPanel(): AitoPanelConfig {
+  return {
+    operation: "Inventory",
+    endpoints: ["_estimate", "_search"],
+    description:
+      `Stock + lead-time arithmetic for every SKU, with Aito's ` +
+      `<code style="color:var(--aito-teal);">_estimate units_sold</code> ` +
+      `surfacing expected next-month demand for the critical SKUs. Reorder ` +
+      `workflow sorts by <strong>revenue at risk</strong> (forecast shortfall ` +
+      `× retail) — the cash a stockout would cost.`,
+    query:
+`${k('"estimate"')}: {
+  ${n('"from"')}: ${s('"monthly_sales"')},
+  ${n('"where"')}: {
+    ${n('"product_sku"')}: ${s('"SKU-PT-0042"')},
+    ${n('"month"')}: ${s('"2026-05"')},
+    ${n('"category"')}: ${s('"dry-food"')},
+    ${n('"season"')}: ${s('"spring"')}
+  },
+  ${n('"estimate"')}: ${s('"units_sold"')}
+}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
+export function pricePanel(): AitoPanelConfig {
+  return {
+    operation: "Price",
+    endpoints: ["_aggregate", "_relate"],
+    description:
+      `Per-SKU price stats from Aito's <code style="color:var(--aito-teal);">_aggregate</code> ` +
+      `(mean / std / min / max computed server-side, one call per SKU). ` +
+      `Sweet-spot <code style="color:var(--aito-teal);">_relate</code> over ` +
+      `discount band ↔ category surfaces "promo-priced toys lift 2.4×".`,
+    query:
+`${k('"aggregate"')}: {
+  ${n('"from"')}: ${s('"price_history"')},
+  ${n('"where"')}: { ${n('"product_sku"')}: ${s('"SKU-PT-0001"')} },
+  ${n('"aggregate"')}: [
+    ${s('"price_eur.$mean"')},
+    ${s('"price_eur.$min"')},
+    ${s('"price_eur.$max"')}
+  ]
+}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
 export function evaluationPanel(): AitoPanelConfig {
   return {
     operation: "Evaluation",
