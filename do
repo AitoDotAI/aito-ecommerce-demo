@@ -35,8 +35,9 @@ Common
 Data
   generate-fixtures (Re)run data/generate_fixtures.py
   load-data         Upload schema + fixtures to Aito
-  reset-data        Drop and reload all Aito tables
+  reset-data        Drop and reload all Aito tables + warm the cache
   clear-cache       Clear in-memory + Aito persistent prediction cache
+  warm-cache        Pre-compute every cacheable endpoint once
 
 Quality
   test              Run pytest
@@ -172,6 +173,22 @@ cmd_reset_data() {
     exit 1
   fi
   uv run python -m src.data_loader --reset "$@"
+  echo
+  # Warm the prediction_cache table so the next ./do dev boot is
+  # fast on the first request. Without this, Churn / Inventory /
+  # Demand pay their full cold cost (up to 22 s) on the first
+  # user click after a reset. See src/cache_warmup.py.
+  uv run python -c "
+from src.config import load_config
+from src.aito_client import AitoClient
+from src import cache
+from src.cache_warmup import warm_all
+
+config = load_config()
+client = AitoClient(config)
+cache.init_persistent_cache(client)
+warm_all(client, verbose=True)
+"
 }
 
 cmd_clear_cache() {
@@ -185,7 +202,22 @@ cfg = load_config()
 client = AitoClient(cfg)
 cache_mod.init_persistent_cache(client)
 cache_mod.clear_all()
-print('Done. Restart ./do dev to recompute predictions.')
+print('Done. Run ./do warm-cache to pre-populate, or ./do dev (warmup starts on boot).')
+"
+}
+
+cmd_warm_cache() {
+  echo "Warming all cacheable endpoints..."
+  cd "$SCRIPT_DIR"
+  uv run python -c "
+from src.config import load_config
+from src.aito_client import AitoClient
+from src import cache as cache_mod
+from src.cache_warmup import warm_all
+cfg = load_config()
+client = AitoClient(cfg)
+cache_mod.init_persistent_cache(client)
+warm_all(client, verbose=True)
 "
 }
 
@@ -351,6 +383,7 @@ case "${1:-help}" in
   load-data)         shift; cmd_load_data "$@" ;;
   reset-data)        shift; cmd_reset_data "$@" ;;
   clear-cache)       cmd_clear_cache ;;
+  warm-cache)        cmd_warm_cache ;;
   test)              cmd_test ;;
   aito-check)        cmd_aito_check ;;
   verify)            shift; cmd_verify "$@" ;;
