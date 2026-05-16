@@ -227,12 +227,12 @@ def test_signal_5_returned_share_in_band(order_lines):
 def test_personas_exist_with_stable_ids(customers):
     by_id = {c["customer_id"]: c for c in customers}
     for p in PERSONAS:
-        assert p.customer_id in by_id, f"persona {p.name_hint} ({p.customer_id}) missing"
+        assert p.customer_id in by_id, f"persona {p.name} ({p.customer_id}) missing"
         actual = by_id[p.customer_id]
-        assert actual["segment"] == p.segment, p.name_hint
+        assert actual["segment"] == p.segment, p.name
         # `pet_size` is omitted from the JSON when None (the generator
         # strips Nones), so compare carefully.
-        assert actual.get("pet_size") == p.pet_size, p.name_hint
+        assert actual.get("pet_size") == p.pet_size, p.name
 
 
 def test_products_have_full_food_attributes_outside_filling_pile(products):
@@ -278,9 +278,9 @@ def test_signal_6_personas_are_not_churned(customers):
     by_id = {c["customer_id"]: c for c in customers}
     for p in PERSONAS:
         c = by_id.get(p.customer_id)
-        assert c is not None, f"persona {p.name_hint} missing"
+        assert c is not None, f"persona {p.name} missing"
         assert c.get("churned") is False, (
-            f"persona {p.name_hint} ({p.customer_id}) is churned; "
+            f"persona {p.name} ({p.customer_id}) is churned; "
             f"For You / Smart Search default state breaks"
         )
 
@@ -587,3 +587,106 @@ def test_customer_months_label_consistent_with_customer_churn(customers):
             f"label mismatch for {cm['customer_month_id']}: "
             f"expected {expected}, got {actual}"
         )
+
+
+# ── Customer-profile traits (ADR 0017) ─────────────────────────────
+
+
+def test_customer_profile_traits_present_and_valid(customers):
+    """Every customer carries the four latent profile traits with
+    enumerated values. Personas keep their hand-curated values."""
+    valid = {
+        "lifestyle":      {"premium", "mid", "budget"},
+        "health_focus":   {"high", "medium", "low"},
+        "treat_affinity": {"high", "medium", "low"},
+        "brand_loyalty":  {"loyal", "flexible"},
+    }
+    for c in customers:
+        for col, allowed in valid.items():
+            v = c.get(col)
+            assert v in allowed, f"{c['customer_id']}.{col} = {v!r}"
+    # Persona spot-check
+    by_id = {c["customer_id"]: c for c in customers}
+    assert by_id["CUST-00001"]["lifestyle"] == "premium"
+    assert by_id["CUST-00002"]["treat_affinity"] == "high"
+    assert by_id["CUST-00003"]["brand_loyalty"] == "loyal"
+
+
+def test_customer_names_are_unique_and_nonempty(customers):
+    """Display names should be unique across the 3000-customer set so
+    the UI can identify a customer by name in any spot it appears."""
+    names = [c["name"] for c in customers]
+    assert all(names), "some customer name is empty/missing"
+    assert len(set(names)) == len(names), (
+        f"duplicate names: {len(names) - len(set(names))} collisions"
+    )
+    # Persona spot-check
+    by_id = {c["customer_id"]: c for c in customers}
+    assert by_id["CUST-00001"]["name"] == "Maija Lehtonen"
+    assert by_id["CUST-00002"]["name"] == "Olli Mäkelä"
+    assert by_id["CUST-00003"]["name"] == "Saara Virtanen"
+
+
+def test_products_have_tags(products):
+    """Every product has a non-empty tags string with at least two
+    tokens. Tags power `_recommend basedOn: ['tags']` and
+    `_search { tags: $match }` patterns."""
+    for p in products:
+        tags = (p.get("tags") or "").split()
+        assert len(tags) >= 2, f"{p['sku']} has too few tags: {tags!r}"
+
+
+def test_lifestyle_correlates_with_brand_tier(customers, products, orders, order_lines):
+    """Engineered correlation: premium customers buy meaningfully more
+    premium-branded products than budget customers within the same
+    dominant pet_type (dog). Verifies the lifestyle ↔ brand-tier
+    signal that `_recommend basedOn` and Pattern Explorer rely on."""
+    PREMIUM = {"Royal Canin", "Hill's Science Plan", "Acana", "Orijen"}
+    sku_brand = {p["sku"]: p["brand"] for p in products}
+    sku_pet = {p["sku"]: p["pet_type"] for p in products}
+    order_to_cust = {o["order_id"]: o["customer_id"] for o in orders}
+    cust_lifestyle = {c["customer_id"]: c["lifestyle"] for c in customers}
+    PERSONA = {"CUST-00001", "CUST-00002", "CUST-00003"}
+
+    premium_share: dict[str, list[int]] = {"premium": [0, 0], "budget": [0, 0]}
+    for ln in order_lines:
+        cid = order_to_cust[ln["order_id"]]
+        if cid in PERSONA: continue
+        if sku_pet[ln["product_sku"]] != "dog": continue
+        ls = cust_lifestyle[cid]
+        if ls not in ("premium", "budget"): continue
+        premium_share[ls][1] += 1
+        if sku_brand[ln["product_sku"]] in PREMIUM:
+            premium_share[ls][0] += 1
+
+    p_pct = premium_share["premium"][0] / premium_share["premium"][1]
+    b_pct = premium_share["budget"][0]  / premium_share["budget"][1]
+    assert p_pct - b_pct >= 0.15, (
+        f"lifestyle ↔ brand-tier lift too weak: premium {p_pct:.1%} - budget {b_pct:.1%}"
+    )
+
+
+def test_treat_affinity_correlates_with_treats_share(customers, products, orders, order_lines):
+    """Engineered correlation: high-treat customers' lines are markedly
+    more often in treats / dental-treats categories than low-treat
+    customers'."""
+    sku_cat = {p["sku"]: p["category"] for p in products}
+    order_to_cust = {o["order_id"]: o["customer_id"] for o in orders}
+    cust_treat = {c["customer_id"]: c["treat_affinity"] for c in customers}
+    PERSONA = {"CUST-00001", "CUST-00002", "CUST-00003"}
+
+    share: dict[str, list[int]] = {"high": [0, 0], "low": [0, 0]}
+    for ln in order_lines:
+        cid = order_to_cust[ln["order_id"]]
+        if cid in PERSONA: continue
+        ta = cust_treat[cid]
+        if ta not in ("high", "low"): continue
+        share[ta][1] += 1
+        if sku_cat[ln["product_sku"]] in ("treats", "dental-treats"):
+            share[ta][0] += 1
+
+    h_pct = share["high"][0] / share["high"][1]
+    l_pct = share["low"][0]  / share["low"][1]
+    assert h_pct >= 2 * l_pct, (
+        f"treat_affinity lift too weak: high {h_pct:.1%} vs low {l_pct:.1%}"
+    )

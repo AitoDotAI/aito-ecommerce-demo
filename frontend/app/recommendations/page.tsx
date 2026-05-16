@@ -10,9 +10,9 @@ import type { ForYouResponse, ForYouTile } from "@/lib/types";
 
 
 const PERSONAS = [
-  { id: "maija", emoji: "🐈", label: "Maija — cat owner" },
-  { id: "olli",  emoji: "🐾", label: "Olli — multi-pet (small dog)" },
-  { id: "saara", emoji: "🐕", label: "Saara — large breed dog owner" },
+  { id: "maija", emoji: "🐈", label: "Maija Lehtonen — cat owner" },
+  { id: "olli",  emoji: "🐾", label: "Olli Mäkelä — multi-pet (small dog)" },
+  { id: "saara", emoji: "🐕", label: "Saara Virtanen — large breed dog owner" },
 ];
 
 

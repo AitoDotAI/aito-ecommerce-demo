@@ -13,9 +13,9 @@ import type {
 } from "@/lib/types";
 
 const PERSONAS: Array<{ id: string; emoji: string; label: string; segment: string; pet_size?: string }> = [
-  { id: "maija", emoji: "🐈", label: "Maija — cat owner",            segment: "cat_owner" },
-  { id: "olli",  emoji: "🐾", label: "Olli — multi-pet (small dog)",  segment: "multi_pet", pet_size: "small" },
-  { id: "saara", emoji: "🐕", label: "Saara — dog owner (large breed)", segment: "dog_owner", pet_size: "large" },
+  { id: "maija", emoji: "🐈", label: "Maija Lehtonen — cat owner",            segment: "cat_owner" },
+  { id: "olli",  emoji: "🐾", label: "Olli Mäkelä — multi-pet (small dog)",   segment: "multi_pet", pet_size: "small" },
+  { id: "saara", emoji: "🐕", label: "Saara Virtanen — dog owner (large breed)", segment: "dog_owner", pet_size: "large" },
 ];
 
 

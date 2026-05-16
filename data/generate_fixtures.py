@@ -135,6 +135,121 @@ DIETARY_AFFINITY_BY_SEGMENT: dict[str, set[str]] = {
 # distributions (substitution stays in the same category).
 SEGMENT_AFFINITY_SUB_RATE: float = 0.50
 
+
+# ── Brand tier ────────────────────────────────────────────────────
+#
+# Drives the lifestyle ↔ brand correlation. Premium customers
+# over-index on premium brands (~70 % of brand picks); budget
+# customers on mass brands (~70 %). Brands not in either tier are
+# tier-neutral (Sheba, Felix, Whimzees) and contribute mid.
+PREMIUM_BRANDS: set[str] = {
+    "Royal Canin", "Hill's Science Plan", "Acana", "Orijen",
+}
+MASS_BRANDS: set[str] = {
+    "PetNord", "Eukanuba", "Whiskas", "Kong", "Trixie",
+    "JBL", "Tetra", "Beaphar",
+}
+
+
+# ── Tag taxonomy ──────────────────────────────────────────────────
+#
+# Products get 4-8 tags synthesised from brand-tier + dietary +
+# category. Tags add a dense, segment-correlated feature for Aito's
+# `_recommend basedOn`. Crucially they're DIFFERENT axes than the
+# existing categorical columns — `category` says "what kind of
+# item", tags say "what lifestyle / use-case / consumer signal".
+
+# Category → list of lifestyle markers. Each product picks a
+# deterministic subset based on its name + price.
+CATEGORY_TAGS: dict[str, list[str]] = {
+    "dry-food":      ["complete", "kibble"],
+    "wet-food":      ["complete", "pouch"],
+    "treats":        ["indulgent", "training"],
+    "dental-treats": ["dental", "training", "preventive"],
+    "toys":          ["interactive", "chew"],
+    "accessories":   ["everyday", "outdoor"],
+    "litter":        ["clumping", "absorbent"],
+    "health":        ["supplement", "preventive"],
+    "grooming":      ["spa", "everyday"],
+    "aquarium":      ["tank", "filter"],
+}
+
+# Dietary tag → lifestyle marker. Most map 1:1 but the wording
+# leans toward consumer-facing copy.
+DIETARY_TAG: dict[str, str] = {
+    "grain-free":      "natural",
+    "senior":          "senior-care",
+    "puppy":           "puppy-stage",
+    "large-breed":     "large-breed",
+    "sensitive":       "hypoallergenic",
+    "indoor":          "indoor-cat",
+    "weight-control":  "diet",
+}
+
+
+# ── Customer profile distributions ─────────────────────────────────
+#
+# Each customer is sampled at creation with these latent traits.
+# Marginal distributions are deliberately balanced (25 / 50 / 25)
+# so each archetype lands on hundreds of customers and analytics
+# views surface clean within-segment patterns. See ADR 0017.
+
+LIFESTYLE_WEIGHTS:       tuple[float, float, float] = (0.25, 0.50, 0.25)
+HEALTH_FOCUS_WEIGHTS:    tuple[float, float, float] = (0.25, 0.50, 0.25)
+TREAT_AFFINITY_WEIGHTS:  tuple[float, float, float] = (0.25, 0.50, 0.25)
+BRAND_LOYALTY_WEIGHTS:   tuple[float, float]         = (0.30, 0.70)
+
+# Per-segment override of lifestyle base rates — segment ↔ lifestyle
+# is engineered to be partially correlated so analytics can surface
+# "aquarium owners skew premium" / "small-animal owners skew budget"
+# style insights without being deterministic.
+LIFESTYLE_BIAS_BY_SEGMENT: dict[str, tuple[float, float, float]] = {
+    "dog_owner":          (0.30, 0.50, 0.20),  # premium-leaning
+    "cat_owner":          (0.30, 0.50, 0.20),  # premium-leaning
+    "multi_pet":          (0.15, 0.55, 0.30),  # budget-leaning (bigger basket needs)
+    "aquarium_owner":     (0.35, 0.50, 0.15),  # hobbyist premium
+    "small_animal_owner": (0.10, 0.45, 0.45),  # budget-skew (kids' pets)
+}
+
+
+# ── Finnish name pool ─────────────────────────────────────────────
+#
+# Hand-curated so the demo's customer list reads like a real Finnish
+# pet-shop database (PetNord is Finnish-positioned per ADR 0001).
+# Roughly 60 first names × 50 last names ⇒ 3000 unique combos for
+# our 2997 generic customers without collisions. Personas keep their
+# hand-curated names: Maija Lehtonen / Olli Mäkelä / Saara Virtanen.
+
+FINNISH_FIRST_NAMES: list[str] = [
+    # Female
+    "Aino", "Anna", "Anneli", "Eeva", "Elina", "Emilia", "Hanna",
+    "Helena", "Helmi", "Iida", "Inkeri", "Jenni", "Kaisa", "Katja",
+    "Kirsti", "Laura", "Leena", "Liisa", "Lotta", "Marja", "Mervi",
+    "Minna", "Nelli", "Niina", "Pirkko", "Päivi", "Raija", "Riitta",
+    "Sanna", "Satu", "Sirpa", "Sofia", "Suvi", "Taina", "Tiina",
+    "Tuula", "Ulla", "Venla", "Virpi",
+    # Male
+    "Aleksi", "Antero", "Antti", "Eemil", "Eero", "Esa", "Hannu",
+    "Heikki", "Ilkka", "Ismo", "Jaakko", "Janne", "Jari", "Jouko",
+    "Juha", "Juhani", "Jukka", "Kalle", "Kari", "Lauri", "Markku",
+    "Matti", "Mika", "Niko", "Onni", "Pasi", "Pekka", "Petri",
+    "Sami", "Seppo", "Tapio", "Teemu", "Timo", "Toivo", "Tuomas",
+    "Vesa", "Väinö",
+]
+
+FINNISH_LAST_NAMES: list[str] = [
+    "Korhonen", "Virtanen", "Mäkinen", "Nieminen", "Mäkelä",
+    "Hämäläinen", "Laine", "Heikkinen", "Koskinen", "Järvinen",
+    "Lehtonen", "Lehtinen", "Saarinen", "Salminen", "Heinonen",
+    "Niemi", "Heikkilä", "Kinnunen", "Salonen", "Turunen",
+    "Salo", "Laitinen", "Tuominen", "Rantanen", "Karjalainen",
+    "Jokinen", "Mattila", "Savolainen", "Lahtinen", "Ahonen",
+    "Ojala", "Leppänen", "Kallio", "Hiltunen", "Anttila",
+    "Pitkänen", "Manninen", "Koivisto", "Hakala", "Aaltonen",
+    "Niemelä", "Kauppinen", "Toivonen", "Lampinen", "Sinkkonen",
+    "Mikkonen", "Kuusisto", "Rinne", "Vuori", "Nurmi",
+]
+
 # Plausible dietary tags per (pet_type, category). Most foods carry
 # a dietary; treats and accessories often do not.
 DIETARY_BY_PET_CATEGORY: dict[tuple[str, str], list[str]] = {
@@ -213,7 +328,7 @@ LARGE_BREED_PET_TYPE_WEIGHTS: dict[str, float] = {
 @dataclass(frozen=True)
 class Persona:
     customer_id: str
-    name_hint: str       # for friendly logging only — not stored in fixture
+    name: str            # full display name — surfaced in UI
     segment: str
     pet_size: str | None
     region: str
@@ -224,19 +339,34 @@ class Persona:
     # multi_pet so his top-5 (pet_type, category) pairs stay disjoint
     # from Maija's — see ADR 0002 §Engineered signal #3.
     pet_type_weights: dict[str, float] | None = None
+    # Hand-curated latent traits — match the persona's narrative.
+    # Maija: cat owner, premium, health-conscious, low treat, loyal.
+    # Olli: multi-pet, mid lifestyle, low health focus, treat-loving,
+    # flexible (tries new brands). Saara: large-dog owner, premium,
+    # health-conscious, mid treats, loyal.
+    lifestyle: str = "mid"
+    health_focus: str = "medium"
+    treat_affinity: str = "medium"
+    brand_loyalty: str = "flexible"
 
 
 PERSONAS: list[Persona] = [
-    Persona("CUST-00001", "Maija",  "cat_owner",
-            None,    "helsinki", tenure_months=18, target_orders=12),
-    Persona("CUST-00002", "Olli",   "multi_pet",
+    Persona("CUST-00001", "Maija Lehtonen",  "cat_owner",
+            None,    "helsinki", tenure_months=18, target_orders=12,
+            lifestyle="premium", health_focus="high",
+            treat_affinity="low", brand_loyalty="loyal"),
+    Persona("CUST-00002", "Olli Mäkelä",     "multi_pet",
             "small", "tampere",  tenure_months=9,  target_orders=10,
             # Heavily dog-leaning multi_pet. Keeps Maija ∩ Olli top-5
             # ≤ 1 shared pair while preserving the multi_pet flavour
             # (Olli still buys cat products occasionally).
-            pet_type_weights={"dog": 0.85, "cat": 0.15}),
-    Persona("CUST-00003", "Saara",  "dog_owner",
-            "large", "espoo",    tenure_months=26, target_orders=14),
+            pet_type_weights={"dog": 0.85, "cat": 0.15},
+            lifestyle="mid", health_focus="low",
+            treat_affinity="high", brand_loyalty="flexible"),
+    Persona("CUST-00003", "Saara Virtanen",  "dog_owner",
+            "large", "espoo",    tenure_months=26, target_orders=14,
+            lifestyle="premium", health_focus="high",
+            treat_affinity="medium", brand_loyalty="loyal"),
 ]
 
 
@@ -253,15 +383,45 @@ class Product:
     weight_kg: float | None = None
     dietary: str | None = None
     tax_class: str | None = None
+    # Space-separated lifestyle markers synthesised from existing
+    # attributes: brand-tier ("premium"/"mass"), dietary translated to
+    # tag form (grain-free → "natural", senior → "senior-care", etc.),
+    # and category-specific markers ("complete"/"indulgent"/"dental"/
+    # "interactive"/...). Stored as a Text column so Aito's `_predict`
+    # and `_recommend basedOn: ["tags"]` can use token-level priors,
+    # and so `_search where {tags: {$match: "premium"}}` works without
+    # extra schema. See ADR 0017.
+    tags: str = ""
 
 
 @dataclass
 class Customer:
     customer_id: str
+    # Display name — "Aino Korhonen". Deterministic per customer_id
+    # so the UI can pretend this is a real Finnish pet store. Personas
+    # keep their hand-curated names (Maija Lehtonen / Olli Mäkelä /
+    # Saara Virtanen) to preserve the demo script. See ADR 0017.
+    name: str
     segment: str
     pet_size: str | None
     region: str
     tenure_months: int
+    # ── Latent profile traits, sampled at creation with per-segment
+    # base rates and per-customer noise. Stable across the customer's
+    # purchase history. Drive product-level preferences via
+    # `_customer_product_score` (brand tier, dietary affinity, brand
+    # loyalty) and category-level via `_category_bias_for_customer`
+    # (treat affinity). Denormalised onto `order_lines` so Aito can
+    # condition `_recommend` / `_predict` on them in one hop. See
+    # ADR 0017.
+    lifestyle: str = "mid"            # premium | mid | budget
+    health_focus: str = "medium"      # high | medium | low
+    treat_affinity: str = "medium"    # high | medium | low
+    brand_loyalty: str = "flexible"   # loyal | flexible
+    # 1-3 brands this customer over-indexes on (relevant when
+    # brand_loyalty == "loyal"). Excluded from JSON output but kept
+    # in-memory during generation so the order loop can use them.
+    favorite_brands: tuple[str, ...] = ()
     # Backfilled from orders in a post-pass. These columns power the
     # Churn view's `_predict churned` and the Dashboard's loyalty KPIs.
     # Stored on the customers table so Aito can condition on them
@@ -310,6 +470,7 @@ class CustomerMonth:
     """
     customer_month_id: str          # "CUST-00001-2025-03"
     customer_id: str                # link → customers
+    customer_name: str              # denormalised — drives Churn UI labels
     month: str                      # YYYY-MM
     visits: int                     # synthetic per-month site visits
     purchases: int                  # orders this month
@@ -317,6 +478,15 @@ class CustomerMonth:
     segment: str                    # denormalised
     pet_size: str | None            # denormalised, nullable
     region: str                     # denormalised
+    # Latent profile traits — give the Churn view's `_predict
+    # churned_in_3_months` access to lifestyle / health / treat /
+    # loyalty as features. Engineered correlation with churn
+    # (budget+flexible customers churn at higher rate) gives the
+    # model real signal to weight. See ADR 0017.
+    lifestyle: str                  # premium | mid | budget
+    health_focus: str               # high | medium | low
+    treat_affinity: str             # high | medium | low
+    brand_loyalty: str              # loyal | flexible
     tenure_months_at_month: int     # months since first order at this row's month
     latest_rating: int | None       # most-recent review rating in this month
     latest_sentiment: str | None    # sentiment of that review
@@ -414,6 +584,15 @@ class OrderLine:
     # client-side join. See ADR 0006.
     customer_segment: str
     customer_pet_size: str | None = None
+    # Latent customer-profile traits, denormalised for the same
+    # single-hop reason as `customer_segment` / `customer_pet_size`.
+    # Power Aito's `_recommend basedOn` and Pattern Explorer / Bought
+    # Together / Purchase Analytics within-segment patterns. See
+    # ADR 0017.
+    customer_lifestyle: str = "mid"
+    customer_health_focus: str = "medium"
+    customer_treat_affinity: str = "medium"
+    customer_brand_loyalty: str = "flexible"
 
 
 # ── Generation ──────────────────────────────────────────────────────
@@ -526,6 +705,7 @@ def gen_products(rng: random.Random) -> list[Product]:
                         weight_kg=weight,
                         dietary=dietary,
                         tax_class=tax_class,
+                        tags=_synthesize_tags(brand, category, dietary, price),
                     ))
 
     # ── Signal #4: Product Filling input pile ──────────────────────
@@ -656,20 +836,125 @@ def _base_price(category: str, weight_kg: float | None) -> float:
     return 9.9
 
 
+def _name_deck(rng: random.Random, exclude: set[str]) -> list[str]:
+    """Pre-shuffled deck of full Finnish names, with `exclude` (the
+    persona-reserved names) removed. ~76 first × 50 last = 3800
+    combinations — enough headroom for our 2997 generic customers
+    without collisions or fallback gymnastics."""
+    deck = [
+        f"{first} {last}"
+        for first in FINNISH_FIRST_NAMES
+        for last in FINNISH_LAST_NAMES
+        if f"{first} {last}" not in exclude
+    ]
+    rng.shuffle(deck)
+    return deck
+
+
+def _sample_customer_traits(
+    rng: random.Random,
+    segment: str,
+) -> tuple[str, str, str, str]:
+    """Sample (lifestyle, health_focus, treat_affinity, brand_loyalty)
+    for a generic (non-persona) customer.
+
+    `lifestyle` uses a per-segment bias (aquarium hobbyists skew
+    premium, small-animal owners skew budget) — see
+    `LIFESTYLE_BIAS_BY_SEGMENT`. The other three traits use marginal
+    distributions: 25/50/25 for ternary, 30/70 for binary. Distinct
+    sub-RNG draws keep traits independent so the joint space (3 × 3 ×
+    3 × 2 = 54 archetypes) is broadly populated.
+    """
+    lifestyle_weights = LIFESTYLE_BIAS_BY_SEGMENT.get(segment, LIFESTYLE_WEIGHTS)
+    lifestyle = rng.choices(("premium", "mid", "budget"), weights=lifestyle_weights)[0]
+    health_focus = rng.choices(("high", "medium", "low"), weights=HEALTH_FOCUS_WEIGHTS)[0]
+    treat_affinity = rng.choices(("high", "medium", "low"), weights=TREAT_AFFINITY_WEIGHTS)[0]
+    brand_loyalty = rng.choices(("loyal", "flexible"), weights=BRAND_LOYALTY_WEIGHTS)[0]
+    return lifestyle, health_focus, treat_affinity, brand_loyalty
+
+
+def _pick_favorite_brands(
+    rng: random.Random,
+    segment: str,
+    lifestyle: str,
+    brand_loyalty: str,
+) -> tuple[str, ...]:
+    """For loyal customers, pick 1-2 brands they over-index on.
+    Constrained to brands compatible with the segment's dominant
+    pet_type AND consistent with their lifestyle tier (premium
+    customers loyal to premium brands, etc.). Returns empty tuple
+    for flexible customers.
+    """
+    if brand_loyalty != "loyal":
+        return ()
+    # Which brands are realistic for this segment?
+    segment_to_pet = {
+        "dog_owner":          "dog",
+        "multi_pet":          "dog",
+        "cat_owner":          "cat",
+        "aquarium_owner":     "aquarium",
+        "small_animal_owner": "small_animal",
+    }
+    pet = segment_to_pet.get(segment, "dog")
+    eligible = [
+        b for b, pet_cats in BRAND_CATEGORIES.items()
+        if pet in pet_cats
+    ]
+    if lifestyle == "premium":
+        pool = [b for b in eligible if b in PREMIUM_BRANDS] or eligible
+    elif lifestyle == "budget":
+        pool = [b for b in eligible if b in MASS_BRANDS] or eligible
+    else:
+        pool = eligible
+    if not pool:
+        return ()
+    k = min(2, len(pool))
+    return tuple(rng.sample(pool, k=k))
+
+
 def gen_customers(rng: random.Random) -> list[Customer]:
     """Generate ~3000 customers. The three named personas (Maija /
     Olli / Saara) get fixed ids `CUST-00001..3` so the For You
     customer-switcher in the UI hits stable rows.
+
+    Each customer gets a Finnish display name (unique within the
+    dataset) and four latent profile traits sampled at creation —
+    `lifestyle` / `health_focus` / `treat_affinity` / `brand_loyalty`.
+    These are stable across the customer's entire purchase history,
+    so a customer's tag pattern becomes inferable from a handful of
+    orders. See ADR 0017.
+
+    Name + trait + favorite-brand draws use a SEPARATE RNG instance
+    seeded deterministically from the main seed. That way the main
+    fixture RNG sequence is unchanged — existing demo signals (large-
+    breed cat share, dog-food → dental lift, persona top-5 overlaps,
+    persona last_order_month → churn cutoff) stay byte-identical.
     """
     customers: list[Customer] = []
+    # Dedicated RNG for the new profile / name draws so the main
+    # `rng` state is untouched after gen_customers. Seeded from
+    # RNG_SEED so re-runs reproduce the same names + traits.
+    profile_rng = random.Random(RNG_SEED + 17)
+    # Reserve persona names from the deck.
+    persona_names = {p.name for p in PERSONAS}
+    name_deck = _name_deck(profile_rng, persona_names)
 
     for p in PERSONAS:
+        favorites = _pick_favorite_brands(
+            profile_rng, p.segment, p.lifestyle, p.brand_loyalty,
+        )
         customers.append(Customer(
             customer_id=p.customer_id,
+            name=p.name,
             segment=p.segment,
             pet_size=p.pet_size,
             region=p.region,
             tenure_months=p.tenure_months,
+            lifestyle=p.lifestyle,
+            health_focus=p.health_focus,
+            treat_affinity=p.treat_affinity,
+            brand_loyalty=p.brand_loyalty,
+            favorite_brands=favorites,
         ))
 
     # Algorithmic crowd — 3000 - len(personas) more.
@@ -687,9 +972,148 @@ def gen_customers(rng: random.Random) -> list[Customer]:
         # Tenure log-skewed — most customers acquired in the last year.
         tenure = int(rng.expovariate(1 / 11)) + 1
         tenure = min(tenure, 28)
-        customers.append(Customer(cid, segment, pet_size, region, tenure))
+        # The next draws (name pop, 4 trait samples, favorites) come
+        # from the dedicated `profile_rng` so they don't perturb the
+        # main `rng` state. Name comes from the pre-shuffled deck.
+        name = name_deck.pop()
+        lifestyle, health_focus, treat_affinity, brand_loyalty = _sample_customer_traits(profile_rng, segment)
+        favorites = _pick_favorite_brands(profile_rng, segment, lifestyle, brand_loyalty)
+        customers.append(Customer(
+            customer_id=cid,
+            name=name,
+            segment=segment,
+            pet_size=pet_size,
+            region=region,
+            tenure_months=tenure,
+            lifestyle=lifestyle,
+            health_focus=health_focus,
+            treat_affinity=treat_affinity,
+            brand_loyalty=brand_loyalty,
+            favorite_brands=favorites,
+        ))
 
     return customers
+
+
+def _synthesize_tags(
+    brand: str,
+    category: str,
+    dietary: str | None,
+    price_eur: float,
+) -> str:
+    """Build a product's space-separated tag string.
+
+    Tags come from three axes orthogonal to the existing categorical
+    columns:
+
+      - Brand-tier marker: `"premium"` or `"mass"` (or neither for
+        tier-neutral brands like Sheba / Felix / Whimzees).
+      - Dietary translated to consumer-facing wording via
+        `DIETARY_TAG` (grain-free → `"natural"`, senior →
+        `"senior-care"`, ...). Skipped when `dietary is None`.
+      - Category lifestyle markers via `CATEGORY_TAGS`
+        (dry-food → `"complete kibble"`, dental-treats →
+        `"dental training preventive"`, ...).
+
+    Price >= 30 EUR also adds the `"value-bundle"` tag for the
+    "bulk-size" lifestyle marker — picked up by Pattern Explorer
+    and the basedOn priors for budget customers.
+    """
+    parts: list[str] = []
+    if brand in PREMIUM_BRANDS:
+        parts.append("premium")
+    elif brand in MASS_BRANDS:
+        parts.append("mass")
+    if dietary and dietary in DIETARY_TAG:
+        parts.append(DIETARY_TAG[dietary])
+    parts.extend(CATEGORY_TAGS.get(category, []))
+    if price_eur >= 30:
+        parts.append("value-bundle")
+    return " ".join(parts)
+
+
+# Health-focus drives preference for "wellness" dietary tags
+# specifically — the food catalog is ~95 % dietary-tagged overall, so
+# "any dietary" can't differentiate. Pointing high-health customers
+# at the wellness sub-set (and low-health at lifestage tags + no-tag)
+# creates a measurable within-pet_type signal.
+WELLNESS_DIETARIES: set[str] = {"grain-free", "sensitive", "senior", "weight-control"}
+LIFESTAGE_DIETARIES: set[str] = {"puppy", "large-breed", "indoor"}
+
+
+def _customer_product_score(
+    product: Product,
+    customer: Customer,
+) -> float:
+    """Multiplier applied to a product's base pick weight when this
+    customer is the buyer. Returns 1.0 when no trait modifies the
+    product's odds — i.e. mid lifestyle, medium health, flexible
+    loyalty, customer's favorite brands don't apply.
+
+    The same `_pick_product` infrastructure runs first (pet_type
+    filter + segment-level category bias); this score layers on
+    top to inject within-segment customer preference. Keeps the
+    existing engineered signals intact while making per-customer
+    tag patterns inferable from 3-4 purchases.
+    """
+    score = 1.0
+
+    # Lifestyle ↔ brand tier
+    if customer.lifestyle == "premium":
+        if product.brand in PREMIUM_BRANDS:
+            score *= 2.6
+        elif product.brand in MASS_BRANDS:
+            score *= 0.55
+    elif customer.lifestyle == "budget":
+        if product.brand in MASS_BRANDS:
+            score *= 2.2
+        elif product.brand in PREMIUM_BRANDS:
+            score *= 0.50
+
+    # Health focus ↔ specific dietary tag families. Pointing at
+    # value-sets rather than "any dietary" lets the signal survive
+    # in a catalog that's already ~95 % dietary-tagged on food.
+    if customer.health_focus == "high":
+        if product.dietary in WELLNESS_DIETARIES:
+            score *= 2.4
+        elif product.dietary in LIFESTAGE_DIETARIES:
+            score *= 0.65
+    elif customer.health_focus == "low":
+        if product.dietary in WELLNESS_DIETARIES:
+            score *= 0.55
+        elif product.dietary in LIFESTAGE_DIETARIES:
+            score *= 1.3
+
+    # Brand loyalty ↔ favorite brands. Stronger boost than the
+    # other traits because the demo's "loyal customer" story needs
+    # a visibly concentrated brand mix in their purchase history.
+    if customer.brand_loyalty == "loyal" and product.brand in customer.favorite_brands:
+        score *= 6.0
+
+    return score
+
+
+def _category_bias_for_customer(
+    base_bias: dict[str, float] | None,
+    customer: Customer,
+) -> dict[str, float] | None:
+    """Layer customer treat_affinity onto the segment-level category
+    bias. High-treat customers see ~3× weight on (dental-)treats;
+    low-treat customers see ~0.4× weight. Mid customers unchanged.
+
+    Returning None when base_bias is None preserves the uniform-pick
+    fallback path in `_pick_product`.
+    """
+    if base_bias is None:
+        return None
+    bias = dict(base_bias)
+    if customer.treat_affinity == "high":
+        for cat in ("treats", "dental-treats"):
+            bias[cat] = bias.get(cat, 0.05) * 2.7
+    elif customer.treat_affinity == "low":
+        for cat in ("treats", "dental-treats"):
+            bias[cat] = bias.get(cat, 0.05) * 0.40
+    return bias
 
 
 def _candidate_products(
@@ -719,7 +1143,7 @@ def _pick_product(
     return rng.choices(pool, weights=weights, k=1)[0]
 
 
-def _apply_segment_affinity(
+def _customer_preference_substitute(
     chosen: Product,
     products_by_pet_cat: dict[tuple[str, str], list[Product]],
     customer: Customer,
@@ -727,47 +1151,61 @@ def _apply_segment_affinity(
     line_counter: int,
 ) -> Product:
     """Maybe swap `chosen` for a same-(pet_type, category) product
-    whose brand and/or dietary aligns with the customer's segment.
+    whose brand / dietary / tier matches the customer's *personal*
+    trait profile (lifestyle, health_focus, brand_loyalty + favorite
+    brands).
 
     Uses a sub-RNG seeded from `(customer_id, line_counter)` so the
     main fixture RNG sequence is unchanged — engineered signals from
     `_pick_product` (pet_type weights, category bias, persona overlaps,
-    dog-food→dental lift) stay byte-identical. Persona customers are
-    skipped entirely; their orders are hand-curated.
+    dog-food → dental lift) stay byte-identical. Persona customers
+    are skipped entirely; their orders are hand-curated.
 
-    The substitution lifts segment ↔ brand and segment ↔ dietary
-    correlations enough that `_recommend goal: customer_segment` with
-    `basedOn: [brand, dietary, pet_type]` can score candidates by
-    within-pet_type segment preference. Without it, those features
-    are either redundant with `customer_pet_size` (pet_type) or
-    pet_type-determined (brand mostly), so `basedOn` is a no-op.
+    The substitution is what makes Aito's `_recommend` see customer-
+    level preference patterns from just 3-4 purchases — premium
+    customers' baskets are dominated by premium brands across all
+    their orders, health-focused customers' baskets carry dietary
+    tags consistently, loyal customers concentrate on their 1-2
+    favorite brands. Different from earlier `_apply_segment_affinity`
+    which used segment-level preferences only — segment is already
+    captured by where + goal in smart-search, so customer-level
+    preference is what priors actually need to add value.
     """
     if customer.customer_id in persona_ids:
-        return chosen
-    brand_prefs = BRAND_AFFINITY_BY_SEGMENT.get(customer.segment)
-    dietary_prefs = DIETARY_AFFINITY_BY_SEGMENT.get(customer.segment)
-    if not brand_prefs and not dietary_prefs:
         return chosen
 
     seed = sum(ord(c) for c in customer.customer_id) * 1009 + line_counter
     sub_rng = random.Random(seed)
-    if sub_rng.random() > SEGMENT_AFFINITY_SUB_RATE:
-        return chosen
 
     same_slice = products_by_pet_cat.get((chosen.pet_type, chosen.category), [])
-
-    def score(p: Product) -> int:
-        s = 0
-        if brand_prefs and p.brand in brand_prefs:
-            s += 2
-        if dietary_prefs and p.dietary in dietary_prefs:
-            s += 1
-        return s
-
-    candidates = [p for p in same_slice if score(p) > 0]
-    if not candidates:
+    if not same_slice:
         return chosen
-    return sub_rng.choice(candidates)
+
+    # Loyal customers' favorite brands: if one of the customer's
+    # favorites is available in the same (pet_type, category) slice,
+    # snap to a favorite-branded product 85 % of the time. This is
+    # what gives the brand_loyalty trait its visible signal (top-2
+    # brand share gap between loyal and flexible customers).
+    if customer.brand_loyalty == "loyal" and customer.favorite_brands:
+        favorite_in_slice = [p for p in same_slice if p.brand in customer.favorite_brands]
+        if favorite_in_slice and sub_rng.random() < 0.85:
+            return sub_rng.choice(favorite_in_slice)
+
+    # General customer-preference substitution. Higher base rate
+    # than the prior segment-level affinity (0.50) — customer-level
+    # traits are stable across the customer's entire purchase
+    # history, so the substitution should be the dominant signal.
+    if sub_rng.random() > 0.65:
+        return chosen
+
+    # Weight every same-slice candidate by the customer's score; pick
+    # via cumulative weighted choice. Empty / all-zero weights ⇒
+    # keep the original.
+    weights = [max(_customer_product_score(p, customer), 0.01) for p in same_slice]
+    total = sum(weights)
+    if total <= 0:
+        return chosen
+    return sub_rng.choices(same_slice, weights=weights, k=1)[0]
 
 
 def _category_bias(segment: str, pet_size: str | None) -> dict[str, float]:
@@ -889,6 +1327,15 @@ def _churn_propensity(customer: "Customer", n_orders: int) -> float:
     if customer.region == "jyvaskyla":            p += 0.10
     if customer.region == "helsinki":             p -= 0.06
     if customer.region == "turku":                p -= 0.04
+    # Latent profile contributes too — engineered so that Pattern
+    # Explorer / Churn _relate surface lifestyle and brand_loyalty
+    # as meaningful drivers. Budget customers are price-sensitive
+    # and churn more readily; loyal customers stick around. See
+    # ADR 0017 §"Engineered cross-trait correlations".
+    if customer.lifestyle == "budget":             p += 0.08
+    if customer.lifestyle == "premium":            p -= 0.04
+    if customer.brand_loyalty == "flexible":       p += 0.04
+    if customer.brand_loyalty == "loyal":          p -= 0.04
     return max(0.01, min(0.60, p))
 
 
@@ -1010,6 +1457,12 @@ def gen_orders_and_lines(
         else:
             pet_type_weights = _segment_pet_type_weights(customer.segment, customer.pet_size)
         cat_bias = _category_bias(customer.segment, customer.pet_size)
+        # Layer treat_affinity onto cat_bias for generic customers only.
+        # Personas keep their segment-level cat_bias untouched so their
+        # hand-curated top-5 (pet_type, category) overlap signal stays
+        # byte-identical.
+        if persona is None:
+            cat_bias = _category_bias_for_customer(cat_bias, customer)
 
         # Pick the month window for this customer's orders. Churning
         # customers' orders cluster in months ≤ CHURN_WINDOW_MAX so
@@ -1050,9 +1503,15 @@ def gen_orders_and_lines(
                 if not products_by_pet[pet_type]:
                     pet_type = rng.choice(list(products_by_pet.keys()))
                 product = _pick_product(rng, products_by_pet, pet_type, cat_bias)
-                # Segment-affinity substitution within (pet_type, category).
-                # Uses a sub-RNG; main RNG state untouched.
-                product = _apply_segment_affinity(
+                # Customer-preference substitution within (pet_type,
+                # category) using a sub-RNG keyed on
+                # (customer_id, line_counter). Main RNG state is
+                # untouched so existing engineered signals — large-
+                # breed cat share, persona top-5 overlaps, dog-food →
+                # dental lift, returned share — stay byte-identical
+                # for personas (skipped entirely) and identical-in-
+                # distribution for the generic crowd.
+                product = _customer_preference_substitute(
                     product, products_by_pet_cat, customer,
                     persona_id_set, line_counter,
                 )
@@ -1060,7 +1519,12 @@ def gen_orders_and_lines(
                     continue
                 order_skus.add(product.sku)
                 qty = rng.choices([1, 2, 3], weights=[0.78, 0.18, 0.04])[0]
-                returned = rng.random() < 0.03
+                # Returned rate modulated by lifestyle — budget customers
+                # return more (price-sensitive, less satisfied), premium
+                # return less. Overall share stays in the 2.5-3.5 % band
+                # that signal-test #5 asserts.
+                returned_rate = {"premium": 0.018, "mid": 0.030, "budget": 0.042}[customer.lifestyle]
+                returned = rng.random() < returned_rate
                 line = OrderLine(
                     line_id=f"LN-{line_counter:06d}",
                     order_id=order_id,
@@ -1069,6 +1533,10 @@ def gen_orders_and_lines(
                     returned=returned,
                     customer_segment=customer.segment,
                     customer_pet_size=customer.pet_size,
+                    customer_lifestyle=customer.lifestyle,
+                    customer_health_focus=customer.health_focus,
+                    customer_treat_affinity=customer.treat_affinity,
+                    customer_brand_loyalty=customer.brand_loyalty,
                 )
                 line_counter += 1
                 this_orders_lines.append(line)
@@ -1103,6 +1571,10 @@ def gen_orders_and_lines(
                             returned=returned,
                             customer_segment=customer.segment,
                             customer_pet_size=customer.pet_size,
+                            customer_lifestyle=customer.lifestyle,
+                            customer_health_focus=customer.health_focus,
+                            customer_treat_affinity=customer.treat_affinity,
+                            customer_brand_loyalty=customer.brand_loyalty,
                         )
                         line_counter += 1
                         this_orders_lines.append(line)
@@ -1539,6 +2011,7 @@ def gen_customer_months(
             out.append(CustomerMonth(
                 customer_month_id=f"{c.customer_id}-{m}",
                 customer_id=c.customer_id,
+                customer_name=c.name,
                 month=m,
                 visits=visits,
                 purchases=n_purchases,
@@ -1546,6 +2019,10 @@ def gen_customer_months(
                 segment=c.segment,
                 pet_size=c.pet_size,
                 region=c.region,
+                lifestyle=c.lifestyle,
+                health_focus=c.health_focus,
+                treat_affinity=c.treat_affinity,
+                brand_loyalty=c.brand_loyalty,
                 tenure_months_at_month=i,
                 latest_rating=review.rating if review is not None else None,
                 latest_sentiment=review.sentiment if review is not None else None,
@@ -1844,8 +2321,15 @@ def backfill_monthly_sales_prices(
 
 def _to_json_dict(obj) -> dict:
     """Strip None values from output. Aito treats absent and null-typed
-    differently for nullable columns — we send absent for nulls."""
+    differently for nullable columns — we send absent for nulls.
+
+    Also drops the in-memory-only `favorite_brands` field from
+    `Customer` — it powers the order-generation loop but isn't part
+    of the public dataset (and isn't a meaningful column for Aito's
+    inference machinery — it's a derived view of brand_loyalty).
+    """
     raw = asdict(obj)
+    raw.pop("favorite_brands", None)
     return {k: v for k, v in raw.items() if v is not None}
 
 
@@ -2003,7 +2487,7 @@ def main() -> None:
     for persona in PERSONAS:
         pairs = _persona_top_pairs(persona.customer_id, products, orders, lines)
         formatted = ", ".join(f"({pt},{cat})" for pt, cat in pairs)
-        print(f"    {persona.name_hint:6s} {persona.customer_id}  {formatted}")
+        print(f"    {persona.name.split()[0]:6s} {persona.customer_id}  {formatted}")
     overlaps = _persona_overlap_summary(products, orders, lines)
     print()
     print("  Signal #3 — persona top-5 pair overlap:")
@@ -2112,7 +2596,7 @@ def _persona_overlap_summary(
     """For each unordered pair of personas, return the intersection
     of their top-5 (pet_type, category) pairs."""
     pair_lists = {
-        p.name_hint: set(_persona_top_pairs(p.customer_id, products, orders, lines))
+        p.name.split()[0]: set(_persona_top_pairs(p.customer_id, products, orders, lines))
         for p in PERSONAS
     }
     out: dict[tuple[str, str], set[tuple[str, str]]] = {}

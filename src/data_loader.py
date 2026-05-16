@@ -58,6 +58,12 @@ SCHEMAS: dict[str, dict] = {
             "weight_kg": {"type": "Decimal", "nullable": True},
             "dietary":   {"type": "String",  "nullable": True},
             "tax_class": {"type": "String",  "nullable": True},
+            # Lifestyle / use-case markers synthesised from brand-tier
+            # + dietary + category. Text so `_search { tags: $match }`
+            # works and `_recommend basedOn: ["tags"]` can use the
+            # token-level priors. ~5-8 tags per product. See ADR 0017.
+            "tags":      {"type": "Text",    "nullable": False,
+                          "analyzer": "whitespace"},
         },
     },
     # 2. customers — link target for orders.customer_id.
@@ -65,6 +71,9 @@ SCHEMAS: dict[str, dict] = {
         "type": "table",
         "columns": {
             "customer_id":   {"type": "String", "nullable": False},
+            # Finnish display name so the UI feels like a real shop.
+            # Stable per customer_id.
+            "name":          {"type": "String", "nullable": False},
             "segment":       {"type": "String", "nullable": False},
             # `pet_size` is set only for dog_owner / multi_pet rows;
             # nullable so the segments that don't have one don't
@@ -72,6 +81,17 @@ SCHEMAS: dict[str, dict] = {
             "pet_size":      {"type": "String", "nullable": True},
             "region":        {"type": "String", "nullable": False},
             "tenure_months": {"type": "Int",    "nullable": False},
+            # Latent profile traits sampled at customer creation,
+            # stable across purchase history. Drive within-segment
+            # product preference (lifestyle ↔ brand tier, health
+            # focus ↔ dietary, treat affinity ↔ category, brand
+            # loyalty ↔ favorite brands). Give Aito's `_recommend
+            # basedOn` real signal on thin-history customers. See
+            # ADR 0017.
+            "lifestyle":      {"type": "String", "nullable": False},
+            "health_focus":   {"type": "String", "nullable": False},
+            "treat_affinity": {"type": "String", "nullable": False},
+            "brand_loyalty":  {"type": "String", "nullable": False},
             # Order-history aggregates backfilled by the fixture
             # generator. Stored on customers so the Churn view's
             # `_predict churned` can condition on them without a
@@ -123,6 +143,15 @@ SCHEMAS: dict[str, dict] = {
             # customer-context biasing. See ADR 0006.
             "customer_segment":  {"type": "String", "nullable": False},
             "customer_pet_size": {"type": "String", "nullable": True},
+            # Latent profile traits denormalised onto the line (same
+            # single-hop rationale as `customer_segment` /
+            # `customer_pet_size`). Drive within-segment patterns
+            # surfaced by Pattern Explorer / Bought Together /
+            # Purchase Analytics. See ADR 0017.
+            "customer_lifestyle":      {"type": "String", "nullable": False},
+            "customer_health_focus":   {"type": "String", "nullable": False},
+            "customer_treat_affinity": {"type": "String", "nullable": False},
+            "customer_brand_loyalty":  {"type": "String", "nullable": False},
         },
     },
     # 5. reviews — links to customers AND products. Powers the
@@ -218,6 +247,7 @@ SCHEMAS: dict[str, dict] = {
             "customer_month_id": {"type": "String", "nullable": False},
             "customer_id":       {"type": "String", "nullable": False,
                                   "link": "customers.customer_id"},
+            "customer_name":     {"type": "String", "nullable": False},
             "month":             {"type": "String", "nullable": False},
             "visits":            {"type": "Int",    "nullable": False},
             "purchases":         {"type": "Int",    "nullable": False},
@@ -228,6 +258,14 @@ SCHEMAS: dict[str, dict] = {
             "segment":           {"type": "String", "nullable": False},
             "pet_size":          {"type": "String", "nullable": True},
             "region":            {"type": "String", "nullable": False},
+            # Latent profile traits denormalised so Churn's `_predict
+            # churned_in_3_months` can condition on them. Engineered
+            # correlation: budget+flexible customers churn ~12 pp
+            # higher than premium+loyal. See ADR 0017.
+            "lifestyle":         {"type": "String", "nullable": False},
+            "health_focus":      {"type": "String", "nullable": False},
+            "treat_affinity":    {"type": "String", "nullable": False},
+            "brand_loyalty":     {"type": "String", "nullable": False},
             "tenure_months_at_month": {"type": "Int", "nullable": False},
             # Latest-review snapshot in this month (if the customer
             # wrote one). Connects feedback to churn prediction —
