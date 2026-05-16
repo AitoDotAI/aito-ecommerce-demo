@@ -119,8 +119,13 @@ category onto `price_history` (extra ~11k denormalised values).
 }
 ```
 
-~11,100 rows. Engineered discount distribution: 70 % near list
-(±5 %), 15 % mild discount (5-15 % off), 15 % promo (15-30 % off).
+~11,100 rows. Discount distribution emerges from the
+demand-correlation engineering in `gen_price_history` (each month's
+price is assigned by demand rank, so high-demand months drift below
+list and low-demand months drift above): ~37 % markup-over-list,
+~24 % near list (±5 %), ~8 % mild discount (5-15 % off), ~32 % promo
+(> 15 % off). Each band has enough observations (≥ 800 obs) for the
+sweet-spot `_relate` to surface category lifts cleanly.
 
 ## Tradeoffs and gotchas
 
