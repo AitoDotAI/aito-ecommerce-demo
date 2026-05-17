@@ -15,9 +15,12 @@ Lifecycle:
 
 import os
 
+from pathlib import Path
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from src.aito_client import AitoClient, AitoError
 from src import cache, timing
@@ -432,3 +435,16 @@ def price_detail_endpoint(sku: str):
             status_code=502,
             content={"error": str(exc), "status_code": exc.status_code},
         )
+
+
+# ── Static files ─────────────────────────────────────────────────
+#
+# In production, FastAPI serves the Next.js static export from a
+# single port (matches `aito-accounting-demo` + `aito-erp-demo`).
+# When `frontend/out/` doesn't exist (typical local dev), this is
+# a no-op and the Next dev server on 8500 proxies API calls back
+# to this backend on 8501 instead.
+
+_frontend_dir = Path(__file__).resolve().parent.parent / "frontend" / "out"
+if _frontend_dir.exists():
+    app.mount("/", StaticFiles(directory=str(_frontend_dir), html=True), name="frontend")
