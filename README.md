@@ -52,9 +52,9 @@ runs in parallel × 6 anchors.
 
 ---
 
-## The seven demo moments
+## The nine demo moments
 
-Seven visible, quotable predictions form the demo's narrative.
+Nine visible, quotable predictions form the demo's narrative.
 Each is in its own view, each builds on the previous:
 
 | # | Moment | View | Aito |
@@ -62,10 +62,12 @@ Each is in its own view, each builds on the previous:
 | 1 | Smart Search rank flip — cat food drops from rank 1 to rank 6 for a dog-owner persona | [Smart Search](#2-smart-search--predictive-re-ranking) | `_search` + `_recommend` |
 | 2 | For You persona switch — grid re-ranks in <300 ms on pill click | [For You](#3-for-you--personalised-tile-grid) | `_recommend` |
 | 3 | Bought Together 2.72× — dog dry-food → dental treats, live | [Bought Together](#4-bought-together--co-purchase-lift) | `_relate` |
-| 4 | Product Filling 5 fields — multi-`_predict` in ~480 ms | [Product Filling](#12-product-filling--catalog-enrichment) | `_predict` × 5 |
-| 5 | Evaluation honest failure — Return Risk +0.0 pp gain | [Evaluation](#13-evaluation--honest-passfail) | `_evaluate` × 4 |
+| 4 | Product Filling 5 fields — multi-`_predict` in ~480 ms | [Product Filling](#15-product-filling--catalog-enrichment) | `_predict` × 5 |
+| 5 | Evaluation honest failure — Return Risk +0.0 pp gain | [Evaluation](#16-evaluation--honest-passfail) | `_evaluate` × 4 |
 | 6 | Churn ranking — 100 active customers scored by P(churn in 3 mo) from the time-series panel | [Churn](#8-churn--time-series-prediction-over-the-panel) | `_predict` × N + `_relate` × 5 + `_evaluate` |
 | 7 | **Inventory reorder workflow** — critical SKUs ranked by revenue at risk in €, per-row `$why` decomposing the demand forecast | [Inventory](#10-inventory--the-killer-operate-view) | `_predict` × 25 + `_search` |
+| 8 | **Markdown decision** — for 15 overstock SKUs, the discount that clears in 3 months at highest recoverable margin | [Markdown](#12-markdown--inventory--demand--price-one-workflow) | `_estimate` × 5 per SKU |
+| 9 | **Win-back recoverable revenue** — €1,354 across 20 churned customers at €30 send cost (45× ROI) | [Win-back](#14-winback--empirical-revenue-impact-per-send) | `_recommend` + `_estimate` |
 
 The two-minute narrated walkthrough is in
 [`docs/demo-script.md`](docs/demo-script.md).
@@ -74,7 +76,7 @@ The two-minute narrated walkthrough is in
 
 ## What's inside
 
-Thirteen views grouped under six sidebar sections, all reading
+Sixteen views grouped under six sidebar sections, all reading
 from a single Aito DB. Click any guide for the full
 implementation, data-schema excerpts, and tradeoffs.
 
@@ -319,7 +321,80 @@ category surface sweet-spot patterns — "promo-priced toys lift
 pattern transfers to any banded analysis.
 [→ Implementation](src/price_service.py) | [Use case guide](docs/use-cases/13-price.md) | [ADR](docs/adr/0016-price.md)
 
-### 12. ⚡ Product Filling — catalog enrichment
+### 12. ✂️ Markdown — Inventory + Demand + Price, one workflow
+
+![Markdown](screenshots/inspect/14-markdown-default.png)
+
+```json
+{
+  "from": "monthly_sales",
+  "where": {
+    "product_sku": "SKU-PT-0042",
+    "month":       "2026-05",
+    "price_eur":   72.20,
+    "category":    "dry-food",
+    "season":      "spring"
+  },
+  "estimate": "units_sold"
+}
+```
+
+For each overstock SKU, `_estimate units_sold` runs at five
+markdown levels (0/5/10/15/20 %). View picks the markdown that
+maximises recoverable revenue while clearing the excess within
+3 months. If no markdown ≤ 20 % clears in horizon, the row is
+flagged "won't clear in horizon" — honest signal.
+**Demo moment #8.**
+[→ Implementation](src/markdown_service.py) | [Use case guide](docs/use-cases/14-markdown.md) | [ADR](docs/adr/0018-markdown.md)
+
+### 13. 🛒 Cart Completion — checkout-funnel personalisation
+
+![Cart Completion](screenshots/inspect/15-cart-completion-default.png)
+
+```json
+{
+  "from":   "orders",
+  "where":  { "line_categories": { "$match": "dog_dryfood" } },
+  "relate": "line_categories",
+  "limit":  10
+}
+```
+
+Four preset checkout carts × `_relate` over
+`orders.line_categories` = top add-on suggestion per scenario
+with confidence + expected uplift €. Same engine as Bought
+Together, surfaced at the checkout funnel.
+[→ Implementation](src/cart_completion_service.py) | [Use case guide](docs/use-cases/15-cart-completion.md) | [ADR](docs/adr/0019-cart-completion.md)
+
+### 14. ↩️ Win-back — empirical revenue impact per send
+
+![Win-back](screenshots/inspect/16-winback-default.png)
+
+```json
+{
+  "from": "winback_campaigns",
+  "where": {
+    "customer_lifestyle":  "premium",
+    "customer_segment":    "dog_owner",
+    "recency_bucket":      "0-90d"
+  },
+  "recommend": "product_sku",
+  "goal":      { "responded": true },
+  "basedOn":   ["pet_type", "category", "brand"],
+  "limit":     8
+}
+```
+
+For each currently-churned customer (top-20 by lifetime €),
+Aito's `_recommend product_sku from winback_campaigns goal
+{responded: true}` ranks products by predicted email response
+rate; `_estimate order_value_eur` per suggestion gives the AOV
+forecast. **Headline: €1,354 recoverable from 20 targets at €30
+send cost — 45× ROI. Demo moment #9.** Ports the Netigate
+action+impact pattern.
+[→ Implementation](src/winback_service.py) | [Use case guide](docs/use-cases/16-winback.md) | [ADR](docs/adr/0020-winback.md)
+
+### 15. ⚡ Product Filling — catalog enrichment
 
 ![Product Filling](screenshots/07-product-filling.png)
 
@@ -339,7 +414,7 @@ alternatives + `$why` factor tooltip. **Demo moment #4** — all
 five at ≥ 0.87 in ~480 ms.
 [→ Implementation](src/filling_service.py) | [Use case guide](docs/use-cases/07-product-filling.md) | [ADR](docs/adr/0009-product-filling.md)
 
-### 13. 🧪 Evaluation — honest pass/fail
+### 16. 🧪 Evaluation — honest pass/fail
 
 ![Evaluation](screenshots/08-evaluation.png)
 

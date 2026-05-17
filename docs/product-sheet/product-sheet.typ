@@ -313,6 +313,57 @@ and the one Aito refuses to let you ship by labelling it FAIL.
 #pagebreak()
 
 // ────────────────────────────────────────────────────────────
+// Operate
+// ────────────────────────────────────────────────────────────
+
+= Operate — Merchandiser & Marketer Workflow
+
+Six views in the Operate section turn the predictive engine into
+finance-language decisions: euros of capital, euros recoverable,
+weeks to clear, expected campaign revenue.
+
+#v(0.3cm)
+
+#grid(
+  columns: (1fr, 1fr),
+  gutter: 12pt,
+  [
+    *Inventory* — Reorder queue ranked by *revenue at risk in €*,
+    each row scored by `_predict units_sold` next month. Tied
+    capital + revenue at risk surface in the KPI strip. The
+    headline merchandiser workflow.
+
+    *Markdown* — For each overstock SKU, `_estimate units_sold`
+    runs at 5 markdown levels. The view picks the discount that
+    clears the excess in 3 months at highest recoverable margin.
+    Not a "discount everything" button.
+
+    *Price Intelligence* — Per-SKU fair-band stats over price
+    history plus interactive demand/profit curves at +/-10 %
+    around list. The current-price marker sits on the curve so
+    the merchandiser sees where they are vs the profit max.
+  ],
+  [
+    *Demand Forecast* — Top movers scored by `_estimate units_sold`
+    on the `monthly_sales` panel; seasonality `_relate` per pet
+    type. Same K-NN regression as Markdown — different surface.
+
+    *Cart Completion* — Four preset checkout carts. `_relate` over
+    `orders.line_categories` finds co-occurring categories; the
+    view picks the highest-priced popular product per related
+    category as the upsell suggestion.
+
+    *Win-back* — For each currently-churned customer, `_recommend
+    product_sku from winback_campaigns goal {responded: true}`
+    ranks products by predicted email response rate; `_estimate
+    order_value_eur` per suggestion gives the AOV forecast.
+    *€1,354 recoverable from 20 targets at €30 send cost — 45× ROI.*
+  ],
+)
+
+#pagebreak()
+
+// ────────────────────────────────────────────────────────────
 // How It Works
 // ────────────────────────────────────────────────────────────
 
@@ -415,9 +466,10 @@ production would add — are documented openly. A non-exhaustive list:
     it'd surface the evaluation outcome to the merchandising team and
     return to feature engineering.
 
-    *Inventory / supply chain* — explicitly out of scope; the ERP demo
-    (`aito-erp-demo`) covers that surface. Two demos, two predictive
-    perimeters.
+    *Real-time event ingestion* — the demo's writes are batch
+    fixtures, not a session event stream. Cart Completion uses
+    preset carts; production wires the same `_relate` shape into
+    the live checkout funnel with hourly background refresh.
   ],
 )
 
@@ -427,7 +479,7 @@ production would add — are documented openly. A non-exhaustive list:
   Owning the gaps is more credible than papering over them. Each row
   above is a real objection raised by e-commerce CTOs reviewing the
   demo. Production checklist + scaling guidance lives in the ADRs
-  (`docs/adr/`) — 11 architecture decision records documenting every
+  (`docs/adr/`) — 22 architecture decision records documenting every
   load-bearing choice.
 ]
 

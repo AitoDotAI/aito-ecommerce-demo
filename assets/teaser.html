@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Predictive E-commerce · Aito.ai — 8 views, one predictive database</title>
+<title>Predictive E-commerce · Aito.ai — 16 views, one predictive database</title>
 <style>
   /* ── Tokens — zooplus-inspired chrome + locked Aito panel ─────── */
   :root {
@@ -240,18 +240,20 @@
     </div>
     <h1>
       <span class="leading">The e-commerce that learns —</span><br>
-      <span class="title">8 views, <em>one predictive database.</em></span>
+      <span class="title">16 views, <em>one predictive database.</em></span>
     </h1>
     <div class="sub">No model training · No retraining schedule · One pet-store persona (PetNord)</div>
     <p>
-      Smart search, recommendations, basket analysis, catalog enrichment, evaluation — every view
-      in this open-source reference is built on Aito's
+      Smart search, recommendations, basket analysis, catalog enrichment, demand forecasting,
+      inventory + markdown decisions, win-back campaigns, honest evaluation — every view in
+      this open-source reference is built on Aito's
       <code>_predict</code>,
       <code>_recommend</code>,
       <code>_relate</code>,
+      <code>_estimate</code>,
       <code>_search</code>, and
       <code>_evaluate</code>
-      operators against a single 53k-row dataset.
+      operators against a single 110k-row dataset.
     </p>
   </header>
 
@@ -338,10 +340,64 @@
       </div>
     </section>
 
-    <!-- 4. Automate the catalog ─────────────────────────────────── -->
+    <!-- 4. Operate the store ─────────────────────────────────────── -->
     <section class="cat">
       <div class="cat-hdr">
-        <div class="icon">⚡</div>
+        <div class="icon green">🏷️</div>
+        <h2>Operate the Store</h2>
+      </div>
+      <p class="cat-tag">Demand × cost × inventory = decisions in €. The merchandiser's daily dashboard.</p>
+      <div class="cards">
+        <article class="card">
+          <div class="thumb" style="background-image:url('../screenshots/12-inventory.png')"></div>
+          <div class="body">
+            <h3>Inventory</h3>
+            <p>Reorder queue ranked by <strong>revenue at risk in €</strong>, each row scored by <code>_predict units_sold</code> next month with per-row <code>$why</code>.</p>
+            <a class="link" href="../docs/adr/0015-inventory.md">VIEW ADR →</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="thumb" style="background-image:url('../screenshots/inspect/14-markdown-default.png')"></div>
+          <div class="body">
+            <h3>Markdown</h3>
+            <p>For each overstock SKU, <code>_estimate units_sold</code> at 5 markdown levels picks the discount that clears the excess in 3 months at the highest recoverable margin.</p>
+            <a class="link" href="../docs/adr/0018-markdown.md">VIEW ADR →</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 5. Marketer workflow ─────────────────────────────────────── -->
+    <section class="cat">
+      <div class="cat-hdr">
+        <div class="icon teal">↩️</div>
+        <h2>Marketer Workflow</h2>
+      </div>
+      <p class="cat-tag">Personalisation at the checkout funnel + win-back the churned customer.</p>
+      <div class="cards">
+        <article class="card">
+          <div class="thumb" style="background-image:url('../screenshots/inspect/15-cart-completion-default.png')"></div>
+          <div class="body">
+            <h3>Cart Completion</h3>
+            <p>Four preset checkout carts × <code>_relate</code> over <code>orders.line_categories</code>. Top add-on suggestion per scenario with confidence + expected uplift €.</p>
+            <a class="link" href="../docs/adr/0019-cart-completion.md">VIEW ADR →</a>
+          </div>
+        </article>
+        <article class="card">
+          <div class="thumb" style="background-image:url('../screenshots/inspect/16-winback-default.png')"></div>
+          <div class="body">
+            <h3>Win-back</h3>
+            <p>Per churned customer, <code>_recommend product_sku goal: {responded: true}</code> on a historical campaigns table. <strong>€1,354 recoverable / €30 send cost = 45× ROI.</strong></p>
+            <a class="link" href="../docs/adr/0020-winback.md">VIEW ADR →</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 6. Automate the catalog ─────────────────────────────────── -->
+    <section class="cat">
+      <div class="cat-hdr">
+        <div class="icon purple">⚡</div>
         <h2>Automate the Catalog</h2>
       </div>
       <p class="cat-tag">Multi-field fill + honest evaluation. The model knows when it doesn't know.</p>

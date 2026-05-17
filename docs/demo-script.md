@@ -160,18 +160,71 @@ Tap on the failed row to show the Aito panel updating.
 
 ---
 
-## Beat 7 — close (10 s)
+## Beat 7 — Markdown decision (15 s) — demo moment #8
 
-> "Eight views. Four `_predict`, three `_recommend`, two
-> `_relate`, one `_evaluate`. One Aito DB. No retraining, no
-> MLOps, no models to operationalise. The same JSON body that
-> runs in the panel is the call your frontend would make. EU
-> hosted, no PII stored."
+Click **Markdown** in the Operate section.
+
+> "We have €14k of tied capital across 15 overstock SKUs. For
+> each one, Aito ran `_estimate units_sold` at five price points
+> — list price, minus 5, 10, 15, 20 percent. The view picks the
+> markdown that clears the excess in three months at the highest
+> recoverable margin."
+
+Point at a row where the proposed discount is 0 %.
+
+> "Notice this row — Aito says 'no discount needed; existing
+> demand clears the excess'. It's not a 'discount everything'
+> button. It's 'discount exactly what needs discounting'. Real
+> merchandiser thinking, automated."
+
+Click into the row to expand the curve.
+
+> "Five `_estimate` probes per SKU, chosen row highlighted.
+> Whole sweep takes 18 seconds cold across the 15 overstock
+> SKUs. Cached for 30 minutes after."
+
+---
+
+## Beat 8 — Win-back campaign (20 s) — demo moment #9
+
+Click **Win-back** in the Operate section.
+
+> "Churn told us who's at risk. Win-back answers what to do
+> about the customers who already left. Top 20 churned
+> customers by lifetime value. For each one, Aito's
+> `_recommend` runs against a historical campaigns table —
+> goal: `responded = true`. Returns the products with highest
+> predicted email response rate."
+
+Point at the KPI strip.
+
+> "€1,354 in predicted recoverable revenue across 20 emails
+> costing €30 to send. That's a 45× ROI. Average response rate
+> 58% — strong because we're picking the top-ranked products
+> per customer, not blasting everyone with the same offer."
+
+Click into a row to expand.
+
+> "Three product cards per customer, each with response
+> probability, predicted AOV, and the resulting expected €.
+> This is exactly the action-and-impact pattern our accounting
+> demo uses for support escalations — same Aito shape, e-com
+> outcome label."
+
+---
+
+## Beat 9 — close (10 s)
+
+> "Sixteen views. Six `_predict`, four `_recommend`, three
+> `_relate`, two `_estimate`, one `_evaluate`. One Aito DB. No
+> retraining, no MLOps, no models to operationalise. The same
+> JSON body that runs in the panel is the call your frontend
+> would make. EU hosted, no PII stored."
 
 Pause. Look at audience.
 
-> "Predictive e-commerce in roughly six hundred lines of
-> Python and a thousand lines of TypeScript. Source is on
+> "Predictive e-commerce in roughly fifteen hundred lines of
+> Python and three thousand lines of TypeScript. Source is on
 > GitHub — every panel has a link."
 
 ---
