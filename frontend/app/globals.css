@@ -310,6 +310,11 @@ a { color: inherit; text-decoration: none; }
   .topbar-brand-collapse { display: none; }
   .store-sub  { display: none; }
   .btn-ghost  { display: none; }
+  /* Topbar-actions on mobile are pruned to just the essentials —
+     the rightmost area becomes the breadcrumb's home and the
+     Aito FAB (bottom-right) carries the CTA path. */
+  .pill.latency-badge { display: none; }   /* "aito 80ms" badge */
+  .topbar-actions .btn-primary { display: none; }  /* "Live Demo" link */
 }
 
 /* ── Mobile Aito FAB ─────────────────────────────────────────────
