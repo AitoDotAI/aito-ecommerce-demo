@@ -52,7 +52,7 @@ export default function LatencyBadge() {
   if (state.cached) {
     return (
       <span
-        className="pill pill-grey"
+        className="pill pill-grey latency-badge"
         style={{ fontFamily: "var(--mono)", fontSize: 11 }}
         title="Cache hit — no Aito round-trip on this request"
       >
@@ -64,7 +64,7 @@ export default function LatencyBadge() {
 
   return (
     <span
-      className="pill pill-green"
+      className="pill pill-green latency-badge"
       style={{ fontFamily: "var(--mono)", fontSize: 11 }}
       title={`Aito round-trip time across ${state.count} call${state.count === 1 ? "" : "s"}`}
     >
