@@ -64,9 +64,10 @@
   #v(0.4cm)
 
   #text(size: 11pt, fill: luma(80))[
-    8 production-ready e-commerce features built on a single predictive
+    16 production-ready e-commerce features built on a single predictive
     database. Predictive search · personalised recommendations · co-purchase
-    intelligence · catalog enrichment · evaluation — all from one query API.
+    intelligence · demand forecast · inventory · markdown · churn · win-back ·
+    catalog enrichment · evaluation — all from one query API.
   ]
 
   #v(0.8cm)
@@ -379,7 +380,7 @@ weeks to clear, expected campaign revenue.
   ),
   feature(
     "2. Query for predictions",
-    "Five operators cover all 8 use cases:\n• _predict: catalog fill\n• _recommend: search + For You\n• _relate: co-occurrence\n• _search: KPIs + analytics\n• _evaluate: honest pass/fail",
+    "Six operators cover all 16 use cases:\n• _predict: catalog fill, churn, demand\n• _recommend: search + For You + win-back\n• _relate: co-occurrence, drivers, seasonality\n• _estimate: markdown levels, AOV per send\n• _search: KPIs + analytics\n• _evaluate: honest pass/fail",
     icon: "🔮",
   ),
   feature(
@@ -403,7 +404,7 @@ weeks to clear, expected campaign revenue.
     #text(size: 10pt, fill: luma(60))[
       *Backend* — Python FastAPI · one service module per view (`overview_service`, `search_service`, `recommend_service`, …) \
       *Frontend* — Next.js 16 (App Router) · TypeScript strict · locked Aito side panel on every route \
-      *Aito* — REST API · `_predict` / `_recommend` / `_relate` / `_search` / `_evaluate` \
+      *Aito* — REST API · `_predict` / `_recommend` / `_relate` / `_estimate` / `_search` / `_evaluate` \
       *Cache* — Two-layer (in-memory + Aito-backed `prediction_cache`); no-op in `PUBLIC_DEMO=1` mode \
       *Schema* — 4 tables; chained-link denormalisation
       (`order_lines.customer_segment` / `customer_pet_size`,
@@ -479,7 +480,7 @@ production would add — are documented openly. A non-exhaustive list:
   Owning the gaps is more credible than papering over them. Each row
   above is a real objection raised by e-commerce CTOs reviewing the
   demo. Production checklist + scaling guidance lives in the ADRs
-  (`docs/adr/`) — 22 architecture decision records documenting every
+  (`docs/adr/`) — 20 architecture decision records documenting every
   load-bearing choice.
 ]
 
@@ -498,7 +499,7 @@ production would add — are documented openly. A non-exhaustive list:
   gutter: 12pt,
   feature(
     "Read the code",
-    "Apache 2.0 on GitHub. 11 ADRs. ~5k lines Python + TS. Production-quality reference — fork it for your vertical.",
+    "Apache 2.0 on GitHub. 20 ADRs. ~5k lines Python + TS. Production-quality reference — fork it for your vertical.",
     icon: "📖"
   ),
   feature(
@@ -527,7 +528,7 @@ production would add — are documented openly. A non-exhaustive list:
       #v(0.3cm)
 
       Aito.ai is a predictive database. Upload orders, query for
-      predictions, ship features. The 8 capabilities in this demo are
+      predictions, ship features. The 16 capabilities in this demo are
       the same query API you'd use in production — sub-100 ms
       `_predict` calls, full `$why` explanations, and honest
       `_evaluate` built in.
