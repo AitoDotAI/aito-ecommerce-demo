@@ -296,6 +296,11 @@ a { color: inherit; text-decoration: none; }
 .pane-overlay.visible { display: block; }
 
 @media (max-width: 900px) {
+  /* Topbar runs full-width on mobile — the desktop rule reserves a
+     280 px gutter on the right for the Aito panel, but on mobile
+     the panel is an off-canvas drawer (not a permanent rail). */
+  .topbar { right: 0 !important; }
+
   .main { margin-left: 0 !important; margin-right: 0 !important; padding: 20px 16px 60px; }
   .sidebar { transform: translateX(calc(-1 * var(--sidebar-w))); z-index: 160; }
   .sidebar.mobile-open { transform: translateX(0); }
@@ -305,6 +310,38 @@ a { color: inherit; text-decoration: none; }
   .topbar-brand-collapse { display: none; }
   .store-sub  { display: none; }
   .btn-ghost  { display: none; }
+}
+
+/* ── Mobile Aito FAB ─────────────────────────────────────────────
+   Floating Aito-logo button in the bottom-right. Opens the Aito
+   panel as an off-canvas drawer on mobile. Hidden on desktop —
+   there the mid-edge `.aito-panel-toggle` does this job. */
+.aito-mobile-fab {
+  display: none;
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--aito-bg);
+  border: 1px solid rgba(93, 80, 255, 0.3);
+  cursor: pointer;
+  z-index: 220;
+  box-shadow: 0 4px 14px rgba(12, 15, 65, 0.45);
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: transform 0.15s ease, background-color 0.15s;
+}
+.aito-mobile-fab:hover { transform: scale(1.05); background: #37336B; }
+.aito-mobile-fab-icon { width: 28px; height: 28px; display: block; }
+@media (max-width: 900px) {
+  .aito-mobile-fab { display: flex; }
+  /* When the panel is open as a drawer, hide the FAB so it doesn't
+     overlap the panel header. The "×" close button inside the panel
+     handles dismissal. */
+  .aito-panel.mobile-open ~ .aito-mobile-fab { display: none; }
 }
 
 /* ── Aito panel — LOCKED structure (cross-demo) ────────────────── */

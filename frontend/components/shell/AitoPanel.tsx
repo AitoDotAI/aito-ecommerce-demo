@@ -50,6 +50,20 @@ export default function AitoPanel() {
       {aitoCollapsed ? "‹" : "›"}
     </button>
 
+    {/* Mobile FAB — Aito-logo bubble in the bottom-right that opens
+        the panel as an off-canvas drawer. Mirrors the
+        accounting-demo's mobile pattern; CSS hides it on desktop. */}
+    <button
+      type="button"
+      className="aito-mobile-fab"
+      onClick={toggleAito}
+      aria-label={mobileOpen === "aito" ? "Close Aito panel" : "Open Aito panel"}
+      aria-expanded={mobileOpen === "aito"}
+      title="Aito prediction context"
+    >
+      <img src="/aito-logo.svg" alt="" className="aito-mobile-fab-icon" />
+    </button>
+
     <aside className={classes} aria-label="Aito prediction context panel">
       <div className="aito-panel-header">
         <img src="/aito-logo.svg" alt="Aito.ai" className="aito-logo-img" />
