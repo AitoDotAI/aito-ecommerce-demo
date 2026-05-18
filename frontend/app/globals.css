@@ -306,7 +306,23 @@ a { color: inherit; text-decoration: none; }
   .sidebar.mobile-open { transform: translateX(0); }
   .aito-panel { transform: translateX(var(--aito-w)); z-index: 160; }
   .aito-panel.mobile-open { transform: translateX(0); }
-  .topbar-brand { width: auto; padding: 0 12px; }
+  /* On mobile the sidebar is off-canvas, so the dark-green `.topbar-brand`
+     slab has nothing to anchor to — the desktop L-shape (slab above the
+     dark sidebar) collapses into an arbitrary green/white seam. Flip the
+     brand block to the same white as `.topbar-content` so the topbar
+     reads as a single surface; the orange logo pill remains the brand
+     focal point. */
+  .topbar-brand {
+    width: auto; padding: 0 12px;
+    background: var(--white);
+  }
+  .topbar-brand .store-name { color: var(--text); }
+  .topbar-brand .toggle-btn {
+    background: var(--white);
+    border-color: var(--border);
+    color: var(--text-2);
+  }
+  .topbar-brand .toggle-btn:hover { background: var(--bg); }
   .topbar-brand-collapse { display: none; }
   .store-sub  { display: none; }
   .btn-ghost  { display: none; }
