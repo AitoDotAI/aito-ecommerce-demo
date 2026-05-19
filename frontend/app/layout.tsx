@@ -3,10 +3,11 @@ import Script from "next/script";
 import AppShell from "@/components/shell/AppShell";
 import Analytics from "@/components/shell/Analytics";
 
-// Shared with `aito-erp-demo` and `aito-accounting-demo` — events
-// land in the same GA4 property so cohorts can be split across
-// demos via the `surface` Segment property.
-const GA_MEASUREMENT_ID = "G-FDTBRCMZWJ";
+// GA4 measurement ID is provisioned at build time via
+// aito-demo-server's env_secrets (Azure Key Vault). Same GA4
+// property as the other Aito demos so cohorts can be split across
+// demos via the `surface` Amplitude property.
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
 
 export const metadata = {
   title: "Predictive E-commerce — by Aito",
@@ -36,25 +37,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <AppShell>{children}</AppShell>
         <Analytics />
-        {/* GA4 + Segment land production telemetry. Both are no-op
+        {/* GA4 + Amplitude carry production telemetry. Both are no-op
             on localhost — `lib/analytics.ts:isProductionHost`
-            short-circuits Segment, and GA's `config` only emits
+            short-circuits Amplitude, and GA's `config` only emits
             after the scripts load on a real host. */}
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-          strategy="afterInteractive"
-        />
-        <Script id="ga-init" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${GA_MEASUREMENT_ID}', {
-              anonymize_ip: true,
-              cookie_expires: 0,
-            });
-          `}
-        </Script>
+        {GA_MEASUREMENT_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga-init" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA_MEASUREMENT_ID}', {
+                  anonymize_ip: true,
+                  cookie_expires: 0,
+                });
+              `}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   );
