@@ -3,11 +3,11 @@ import Script from "next/script";
 import AppShell from "@/components/shell/AppShell";
 import Analytics from "@/components/shell/Analytics";
 
-// GA4 measurement ID is provisioned at build time via
-// aito-demo-server's env_secrets (Azure Key Vault). Same GA4
-// property as the other Aito demos so cohorts can be split across
-// demos via the `surface` Amplitude property.
-const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
+// Same GA4 property as the other Aito demos so cohorts can be split
+// across demos via the `surface` Amplitude property. Hardcoded literal
+// — measurement ID is public anyway (visible in the deployed bundle
+// since GA4 was launched).
+const GA_MEASUREMENT_ID = "G-FDTBRCMZWJ";
 
 export const metadata = {
   title: "Predictive E-commerce — by Aito",
@@ -41,25 +41,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             on localhost — `lib/analytics.ts:isProductionHost`
             short-circuits Amplitude, and GA's `config` only emits
             after the scripts load on a real host. */}
-        {GA_MEASUREMENT_ID && (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-              strategy="afterInteractive"
-            />
-            <Script id="ga-init" strategy="afterInteractive">
-              {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${GA_MEASUREMENT_ID}', {
-                  anonymize_ip: true,
-                  cookie_expires: 0,
-                });
-              `}
-            </Script>
-          </>
-        )}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="ga-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}', {
+              anonymize_ip: true,
+              cookie_expires: 0,
+            });
+          `}
+        </Script>
       </body>
     </html>
   );
