@@ -1,45 +1,30 @@
 /**
- * Segment analytics for the Predictive E-commerce demo.
+ * Amplitude + GA4 analytics for the Predictive E-commerce demo.
  *
- * Mirrors `aito-erp-demo` and `aito-accounting-demo` so events land
- * in the same Segment workspace for unified tracking across all
- * Aito demo properties. Pageviews are tagged with `surface:
- * "ecommerce-demo"` so cohorts can be split per demo.
+ * SURFACE identifies which Aito surface emitted the event so the
+ * shared Amplitude workspace can slice cross-surface funnels
+ * (landing → demo → console).
  *
- * Loaded only on production hosts (anything not localhost / 127.* /
- * .local). On dev servers `initAnalytics` is a no-op and the
- * exported helpers are silent guards.
+ * API key and GA4 measurement ID are provisioned at build time via
+ * aito-demo-server's `env_secrets` (sourced from Azure Key Vault);
+ * they reach this bundle as `NEXT_PUBLIC_*` env vars baked in by
+ * `next build`. Never read or commit literals here.
  */
 
-const SEGMENT_WRITE_KEY = "xSGtwFjgKl3m5ZMGaVB3SENT0oUHPwJq";
+import * as amplitude from "@amplitude/analytics-browser";
+
 const SURFACE = "ecommerce-demo";
 
-type AnalyticsCall =
-  | [method: "page", name?: string, properties?: Record<string, unknown>]
-  | [method: "track", event: string, properties?: Record<string, unknown>]
-  | [method: "identify", userId: string, traits?: Record<string, unknown>]
-  | [method: string, ...args: unknown[]];
-
-interface SegmentAnalytics {
-  invoked?: boolean;
-  initialize?: boolean;
-  methods?: string[];
-  factory?: (method: string) => (...args: unknown[]) => SegmentAnalytics;
-  load?: (key: string, options?: Record<string, unknown>) => void;
-  push: (call: AnalyticsCall) => void;
-  page?: (name?: string, properties?: Record<string, unknown>) => void;
-  track?: (event: string, properties?: Record<string, unknown>) => void;
-  identify?: (userId: string, traits?: Record<string, unknown>) => void;
-  _writeKey?: string;
-  SNIPPET_VERSION?: string;
-  _loadOptions?: unknown;
-}
+type Props = Record<string, unknown>;
+type Traits = Record<string, unknown>;
 
 declare global {
   interface Window {
-    analytics?: SegmentAnalytics;
+    gtag?: (...args: unknown[]) => void;
   }
 }
+
+let initialized = false;
 
 function isProductionHost(): boolean {
   if (typeof window === "undefined") return false;
@@ -47,62 +32,70 @@ function isProductionHost(): boolean {
   return host !== "localhost" && host !== "127.0.0.1" && !host.endsWith(".local");
 }
 
-export function initAnalytics(): void {
-  if (typeof window === "undefined") return;
-  if (window.analytics?.invoked) return;
-  if (!isProductionHost()) return;
+function isBotUserAgent(): boolean {
+  if (typeof navigator === "undefined") return false;
+  return /bot|crawler|spider|crawling|preview|headless/i.test(navigator.userAgent);
+}
 
-  const analytics: SegmentAnalytics = (window.analytics =
-    window.analytics || ({ push: () => {} } as SegmentAnalytics));
-  if (analytics.initialize) return;
-  if (analytics.invoked) {
-    console.error("Segment snippet included twice.");
+function gtagSafe(...args: unknown[]): void {
+  if (typeof window !== "undefined" && window.gtag) {
+    window.gtag(...args);
+  }
+}
+
+/** Initialize Amplitude. Idempotent — safe to call from multiple
+ *  components or React strict-mode double effects. */
+export function initAnalytics(): void {
+  if (initialized) return;
+  if (typeof window === "undefined") return;
+  if (!isProductionHost()) return;
+  if (isBotUserAgent()) return;
+
+  const amplitudeKey = process.env.NEXT_PUBLIC_AMPLITUDE_KEY;
+  if (!amplitudeKey) {
+    console.warn("[analytics] NEXT_PUBLIC_AMPLITUDE_KEY not set; Amplitude disabled.");
+    initialized = true;
     return;
   }
-  analytics.invoked = true;
-  analytics.methods = [
-    "trackSubmit", "trackClick", "trackLink", "trackForm", "pageview",
-    "identify", "reset", "group", "track", "ready", "alias", "debug",
-    "page", "once", "off", "on", "addSourceMiddleware",
-    "addIntegrationMiddleware", "setAnonymousId", "addDestinationMiddleware",
-  ];
-  analytics.factory = (method) => {
-    return function (...args: unknown[]) {
-      args.unshift(method);
-      analytics.push(args as AnalyticsCall);
-      return analytics;
-    };
-  };
-  for (const method of analytics.methods) {
-    (analytics as unknown as Record<string, unknown>)[method] = analytics.factory(method);
-  }
-  analytics.load = function (key, options) {
-    const script = document.createElement("script");
-    script.type = "text/javascript";
-    script.async = true;
-    script.src = `https://cdn.segment.com/analytics.js/v1/${key}/analytics.min.js`;
-    const first = document.getElementsByTagName("script")[0];
-    first.parentNode?.insertBefore(script, first);
-    analytics._loadOptions = options;
-  };
-  analytics._writeKey = SEGMENT_WRITE_KEY;
-  analytics.SNIPPET_VERSION = "4.15.3";
-  analytics.load(SEGMENT_WRITE_KEY, {
-    cookie: { domain: ".aito.ai", secure: true, sameSite: "Lax" },
+
+  amplitude.init(amplitudeKey, {
+    serverZone: "EU",
+    cookieOptions: { domain: ".aito.ai" },
+    defaultTracking: {
+      // Disabled — `trackPage()` is the source of truth for page views
+      // (App Router soft navigations don't fire history events reliably,
+      // and defaultTracking would produce a second event under a
+      // different name `[Amplitude] Page Viewed`).
+      pageViews: false,
+      sessions: true,
+      formInteractions: false,
+      fileDownloads: false,
+    },
   });
+
+  initialized = true;
 }
 
-export function trackPage(pageName: string, properties: Record<string, unknown> = {}): void {
-  if (typeof window === "undefined" || !window.analytics?.page) return;
-  window.analytics.page(pageName, { ...properties, surface: SURFACE });
+export function trackPage(pageName: string, properties: Props = {}): void {
+  if (typeof window === "undefined") return;
+  const withSurface = { ...properties, surface: SURFACE };
+  amplitude.track(`Page View: ${pageName}`, withSurface);
+  gtagSafe("event", "page_view", { page_title: pageName, ...withSurface });
 }
 
-export function trackEvent(event: string, properties: Record<string, unknown> = {}): void {
-  if (typeof window === "undefined" || !window.analytics?.track) return;
-  window.analytics.track(event, { ...properties, surface: SURFACE });
+export function trackEvent(event: string, properties: Props = {}): void {
+  if (typeof window === "undefined") return;
+  const withSurface = { ...properties, surface: SURFACE };
+  amplitude.track(event, withSurface);
+  gtagSafe("event", event, withSurface);
 }
 
-export function identifyUser(userId: string, traits: Record<string, unknown> = {}): void {
-  if (typeof window === "undefined" || !window.analytics?.identify) return;
-  window.analytics.identify(userId, { ...traits, surface: SURFACE });
+export function identifyUser(userId: string, traits: Traits = {}): void {
+  if (!userId) return;
+  if (typeof window === "undefined") return;
+  amplitude.setUserId(userId);
+  const id = new amplitude.Identify();
+  Object.entries(traits).forEach(([k, v]) => id.set(k, v as never));
+  amplitude.identify(id);
+  gtagSafe("set", { user_id: userId, ...traits });
 }

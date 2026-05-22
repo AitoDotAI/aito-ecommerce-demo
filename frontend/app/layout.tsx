@@ -3,9 +3,10 @@ import Script from "next/script";
 import AppShell from "@/components/shell/AppShell";
 import Analytics from "@/components/shell/Analytics";
 
-// Shared with `aito-erp-demo` and `aito-accounting-demo` — events
-// land in the same GA4 property so cohorts can be split across
-// demos via the `surface` Segment property.
+// Same GA4 property as the other Aito demos so cohorts can be split
+// across demos via the `surface` Amplitude property. Hardcoded literal
+// — measurement ID is public anyway (visible in the deployed bundle
+// since GA4 was launched).
 const GA_MEASUREMENT_ID = "G-FDTBRCMZWJ";
 
 export const metadata = {
@@ -36,9 +37,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <AppShell>{children}</AppShell>
         <Analytics />
-        {/* GA4 + Segment land production telemetry. Both are no-op
+        {/* GA4 + Amplitude carry production telemetry. Both are no-op
             on localhost — `lib/analytics.ts:isProductionHost`
-            short-circuits Segment, and GA's `config` only emits
+            short-circuits Amplitude, and GA's `config` only emits
             after the scripts load on a real host. */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
