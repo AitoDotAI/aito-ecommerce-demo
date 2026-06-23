@@ -10,7 +10,7 @@
           "title": "What this workbook is",
           "size": "full",
           "config": {
-            "content": "# PetNord — Aito Predictive E-commerce Tour\n\nPetNord is a fictional pet-supplies retailer. This workbook walks through the Aito queries that power its demo app — each one is **runnable**: hit *Run* on any query widget, then edit the query and run again to explore.\n\nThe data is a single denormalised e-commerce dataset:\n\n| Table | Rows about |\n|---|---|\n| `products` | catalog (sku, brand, category, pet_type, price) |\n| `customers` / `customer_months` | customer profiles + monthly snapshots |\n| `orders` / `order_lines` | transactions (line-level, with denormalised customer context) |\n| `monthly_sales` / `price_history` | demand & pricing time series |\n| `reviews` | review text + sentiment + churn label |\n\nNo model training, no feature engineering — Aito predicts directly from the rows already in the database.\n\n**Tour stops:** Explore the data → Predictive re-ranking → Bought Together → Churn prediction → Product Filling → Price Intelligence."
+            "content": "# PetNord — Aito Predictive E-commerce Tour\n\nPetNord is a fictional pet-supplies retailer. This workbook walks through the Aito queries that power its demo app — each one is **runnable**: hit *Run* on any query widget, then edit the query and run again to explore.\n\nThe data is a single denormalised e-commerce dataset:\n\n| Table | Rows about |\n|---|---|\n| `products` | catalog (sku, brand, category, pet_type, price) |\n| `customers` / `customer_months` | customer profiles + monthly snapshots |\n| `orders` / `order_lines` | transactions (line-level, with denormalised customer context) |\n| `monthly_sales` / `price_history` | demand & pricing time series |\n| `reviews` | review text + sentiment + churn label |\n\nNo model training, no feature engineering — Aito predicts directly from the rows already in the database.\n\n**Tour stops:** Explore the data → Predictive re-ranking → Bought Together → Churn prediction → Product Filling → Price Intelligence → Winback (conversion KPI)."
           }
         },
         {
@@ -75,7 +75,7 @@
           "title": "How it works",
           "size": "full",
           "config": {
-            "content": "A plain text search for `food` returns hundreds of matches in no useful order. Aito re-ranks them for *this customer* using `_recommend`:\n\n- `where` filters the order lines (products whose name matches `food`, for a small-pet household)\n- `recommend: \"product_sku\"` asks Aito to rank candidate SKUs\n- `goal: { customer_segment: \"dog_owner\" }` ranks by **P(dog_owner | this product)** — products dog owners actually buy rise to the top\n- `basedOn` curates which product features feed the prior, trimming ~13% off latency\n\nChange `customer_segment` to `cat_owner` and re-run — the ranking flips to cat products."
+            "content": "A plain text search for `food` returns hundreds of matches in no useful order. Aito re-ranks them for *this customer* using `_recommend`:\n\n- `where` filters the order lines (products whose name matches `food`, for a small-pet household)\n- `recommend: \"product_sku\"` asks Aito to rank candidate SKUs\n- `goal: { customer_segment: \"dog_owner\" }` ranks by **P(dog_owner | this product)** — products dog owners actually buy rise to the top\n- `basedOn` curates which product features feed the prior, trimming ~13% off latency\n\nChange `customer_segment` to `cat_owner` and re-run — the ranking flips to cat products.\n\n**Why segment, not a purchase/click KPI?** `order_lines` records only purchases — there's no negative class to learn a `P(purchase)` from, and its one outcome field (`returned`) is uniform at ~3%, so a `goal: { returned: false }` collapses to baseline. Here, segment affinity *is* the purchase-propensity signal: by Bayes, `P(dog_owner | product)` is highest for the products dog owners disproportionately buy. For a recommendation conditioned on a true conversion KPI, see the **Winback** section below — it has a real `responded` outcome to rank on."
           }
         },
         {
@@ -248,6 +248,65 @@
               "aggregate": ["price_eur.$mean", "price_eur.$min", "price_eur.$max"]
             },
             "endpoint": "aggregate",
+            "displayMode": "playground",
+            "outputFormat": "table",
+            "runPolicy": "manual"
+          }
+        }
+      ]
+    },
+    {
+      "title": "7 · Winback — recommend by conversion probability",
+      "description": "The textbook recommendation shape: rank products by the probability the customer actually converts.",
+      "widgets": [
+        {
+          "type": "text",
+          "title": "How it works",
+          "size": "full",
+          "config": {
+            "content": "Unlike `order_lines`, the `winback_campaigns` table records a real **outcome**: each row is a campaign send with `responded: true|false`. That gives Aito a conversion KPI to optimise directly.\n\n- `recommend: \"product_sku\"` over `winback_campaigns`\n- `goal: { responded: true }` ranks candidates by **P(responded = true | this product, this customer's context)**\n- `where` pins the customer's profile (segment, lifestyle, recency since last order)\n\nThe app's Winback view then multiplies this response probability by a predicted `order_value_eur` to estimate €-recoverable revenue per send. The `_predict` widget below reads the *absolute* response probability for one product context (`_recommend`'s `$p` is normalised against goal-positives, so use `_predict` when you need the calibrated number)."
+          }
+        },
+        {
+          "type": "query",
+          "title": "Best winback products for a lapsed premium dog-owner",
+          "size": "full",
+          "config": {
+            "query": {
+              "from": "winback_campaigns",
+              "where": {
+                "customer_segment": "dog_owner",
+                "customer_lifestyle": "premium",
+                "recency_bucket": "90-180d"
+              },
+              "recommend": "product_sku",
+              "goal": { "responded": true },
+              "basedOn": ["pet_type", "category", "brand"],
+              "limit": 8
+            },
+            "endpoint": "recommend",
+            "displayMode": "playground",
+            "outputFormat": "table",
+            "runPolicy": "manual"
+          }
+        },
+        {
+          "type": "query",
+          "title": "Calibrated response probability for one product context",
+          "size": "full",
+          "config": {
+            "query": {
+              "from": "winback_campaigns",
+              "where": {
+                "customer_segment": "dog_owner",
+                "customer_lifestyle": "premium",
+                "recency_bucket": "90-180d",
+                "product_category": "dry-food"
+              },
+              "predict": "responded",
+              "limit": 2
+            },
+            "endpoint": "predict",
             "displayMode": "playground",
             "outputFormat": "table",
             "runPolicy": "manual"
