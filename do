@@ -38,6 +38,7 @@ Data
   reset-data        Drop and reload all Aito tables + warm the cache
   clear-cache       Clear in-memory + Aito persistent prediction cache
   warm-cache        Pre-compute every cacheable endpoint once
+  workbook          (Re)create the console workbook from docs/aito-workbook-ecommerce-demo.json
 
 Quality
   test              Run pytest
@@ -222,6 +223,48 @@ warm_all(client, verbose=True)
 "
 }
 
+# ── Workbook ────────────────────────────────────────────────────────
+
+# (Re)create the Aito console workbook from its JSON definition. The
+# workbook API lives on the *console*, not the Aito instance — auth is
+# the same AITO_API_KEY (.env) sent as x-api-key. Idempotent: any
+# existing workbook with the same name is deleted first, so re-running
+# always yields exactly one copy. See
+# docs/aito-workbook-instructions-aito-ecommerce-demo.md.
+cmd_workbook() {
+  cd "$SCRIPT_DIR"
+  local def="docs/aito-workbook-ecommerce-demo.json"
+  local console_url="${AITO_CONSOLE_URL:-https://console.aito.ai}"
+  local api="${console_url}/api/workbooks/api-key/workbooks"
+
+  if [[ -z "${AITO_API_KEY:-}" ]]; then
+    echo "AITO_API_KEY not set (expected in .env)." >&2
+    exit 1
+  fi
+  if [[ ! -f "$def" ]]; then
+    echo "Workbook definition not found: $def" >&2
+    exit 1
+  fi
+
+  local name
+  name=$(python3 -c "import json,sys; print(json.load(open('$def'))['name'])")
+
+  # Delete any existing workbook(s) with the same name so re-runs don't pile up.
+  curl -s "$api" -H "x-api-key: ${AITO_API_KEY}" \
+    | python3 -c "import json,sys; [print(w['id']) for w in json.load(sys.stdin) if w['name']==sys.argv[1]]" "$name" \
+    | while read -r id; do
+        echo "Deleting existing workbook $id ($name)"
+        curl -s -X DELETE "$api/$id" -H "x-api-key: ${AITO_API_KEY}" >/dev/null
+      done
+
+  echo "Creating workbook \"$name\" on ${console_url}..."
+  curl -s -X POST "$api/from-definition" \
+    -H "Content-Type: application/json" \
+    -H "x-api-key: ${AITO_API_KEY}" \
+    -d @"$def" \
+    | python3 -c "import json,sys; w=json.load(sys.stdin)['workbook']; print(f'  ✓ {w[\"id\"]} — {len(w[\"sections\"])} sections')"
+}
+
 # ── Quality ─────────────────────────────────────────────────────────
 
 cmd_test() {
@@ -398,6 +441,7 @@ case "${1:-help}" in
   reset-data)        shift; cmd_reset_data "$@" ;;
   clear-cache)       cmd_clear_cache ;;
   warm-cache)        cmd_warm_cache ;;
+  workbook)          cmd_workbook ;;
   test)              cmd_test ;;
   aito-check)        cmd_aito_check ;;
   verify)            shift; cmd_verify "$@" ;;
