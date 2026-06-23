@@ -1,8 +1,13 @@
 # ADR 0021 — Impressions table and a real recommendation KPI
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-06-23
 **Deciders:** Antti
+
+> **Resolved at acceptance:** (1) Re-point Smart Search and For You in
+> place onto `goal: { purchased: true }`, re-validating the persona
+> flips. (2) `position` is descriptive only — never fed to recommend
+> `basedOn`. (3) Target ~150 k impressions.
 
 ## Context
 

@@ -52,8 +52,11 @@ Click the **Maija** pill.
 > — Whiskas, Acana cat lines, Orijen indoor cat. Every row in
 > the predictive column has a gold ★ — none of those products
 > are in the baseline top 10. The Aito panel shows the live
-> `_recommend` body: same `name $match food` filter, plus
-> `goal: {customer_segment: cat_owner}`."
+> `_recommend` body, over the `impressions` funnel: context is
+> `where {search_query $match food, customer_segment: cat_owner}`
+> and the goal is the real conversion KPI — `goal: {purchased:
+> true}`. It's ranking by *how likely this shopper is to buy*,
+> not by a hand-tuned rule."
 
 Click **Saara** (large-breed dog).
 
@@ -86,8 +89,18 @@ it as instant).
 
 > "Three crisply different shoppers from one underlying query
 > shape. The Aito panel on the right shows the exact
-> `_recommend` body that ran for each — the `goal` field
-> changes per persona; nothing else does."
+> `_recommend` body that ran for each — only `where.
+> customer_segment` changes per persona; the `goal: {purchased:
+> true}` is identical. Aito ranks each grid by purchase
+> probability."
+
+**Optional aside — rank for revenue, not clicks:** flip the goal
+from `{purchased: true}` to `{clicked: true}` and the grid
+reorders toward cheap, fun, attention-grabbing items (toys,
+treats) that get clicked but convert less. Same table, same
+context — you choose which funnel stage to optimise. Most
+recommenders can't separate the two; Aito reads them off the
+same `impressions` data.
 
 ---
 

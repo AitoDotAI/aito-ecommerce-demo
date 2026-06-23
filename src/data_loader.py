@@ -154,6 +154,48 @@ SCHEMAS: dict[str, dict] = {
             "customer_brand_loyalty":  {"type": "String", "nullable": False},
         },
     },
+    # 4b. impressions — one product shown to a customer in a browsing
+    # context, with the funnel outcome (clicked / added_to_cart /
+    # purchased). This is the table that gives the recommendation
+    # surfaces a real conversion KPI: `_recommend product_sku
+    # goal: {purchased: true}`. Links to customers + products, so it
+    # loads after both. Largest table — generated, not committed
+    # (gitignored). See ADR 0021.
+    "impressions": {
+        "type": "table",
+        "columns": {
+            "impression_id": {"type": "String", "nullable": False},
+            "session_id":    {"type": "String", "nullable": False},
+            "customer_id":   {"type": "String", "nullable": False,
+                              "link": "customers.customer_id"},
+            "product_sku":   {"type": "String", "nullable": False,
+                              "link": "products.sku"},
+            "surface":       {"type": "String", "nullable": False},
+            "month":         {"type": "String", "nullable": False},
+            # Descriptive only — never fed to recommend `basedOn`, so
+            # Aito ranks on content, not "position predicts click".
+            "position":      {"type": "Int",    "nullable": False},
+            # The query string for surface == "search". Text so
+            # `where {search_query: {$match: "food"}}` token-matches.
+            "search_query":  {"type": "Text",   "nullable": True,
+                              "analyzer": "whitespace"},
+            # Denormalised customer profile — single-hop conditioning.
+            "customer_segment":      {"type": "String", "nullable": False},
+            "customer_pet_size":     {"type": "String", "nullable": True},
+            "customer_lifestyle":    {"type": "String", "nullable": False},
+            "customer_health_focus": {"type": "String", "nullable": False},
+            "customer_treat_affinity":{"type": "String", "nullable": False},
+            "customer_brand_loyalty":{"type": "String", "nullable": False},
+            # Denormalised product attributes for `basedOn` priors.
+            "product_pet_type": {"type": "String", "nullable": False},
+            "product_category": {"type": "String", "nullable": False},
+            "product_brand":    {"type": "String", "nullable": False},
+            # Funnel outcome labels (monotone: purchased ⇒ cart ⇒ click).
+            "clicked":       {"type": "Boolean", "nullable": False},
+            "added_to_cart": {"type": "Boolean", "nullable": False},
+            "purchased":     {"type": "Boolean", "nullable": False},
+        },
+    },
     # 5. reviews — links to customers AND products. Powers the
     # Feedback view's multi-field `_predict` over review text.
     # Loaded after customers + products so the link writes succeed.

@@ -584,6 +584,48 @@ class WinbackCampaign:
 
 
 @dataclass
+class Impression:
+    """One product shown to a customer in a browsing context, with the
+    funnel outcome recorded. A *view* is implicit (every row is a view);
+    the three booleans capture the funnel beyond it. This is the table
+    that gives recommendations a real conversion KPI to rank on —
+    `_recommend product_sku goal: {purchased: true}`. See ADR 0021.
+
+    Funnel monotonicity invariant: purchased ⇒ added_to_cart ⇒ clicked.
+    Enforced at generation; asserted by `./do aito-check`.
+    """
+    impression_id: str             # "IMP-NNNNNNN"
+    session_id: str                # groups impressions shown together
+    customer_id: str               # link → customers.customer_id
+    product_sku: str               # link → products.sku
+    # Where the product was shown. Lets a query scope to one surface
+    # (e.g. only search impressions for the Smart Search re-rank).
+    surface: str                   # search | for_you | category | bought_together
+    month: str                     # YYYY-MM (categorical, like orders.month)
+    position: int                  # 0-based rank in the shown list (descriptive
+                                   # only — never fed to recommend basedOn, ADR 0021)
+    # The query string for surface == "search"; None (absent) otherwise.
+    # Text so `where {search_query: {$match: "food"}}` token-matches.
+    search_query: str | None = None
+    # Denormalised customer profile — single-hop conditioning, same
+    # rationale as order_lines (ADR 0006/0017).
+    customer_segment: str = "dog_owner"
+    customer_pet_size: str | None = None
+    customer_lifestyle: str = "mid"
+    customer_health_focus: str = "medium"
+    customer_treat_affinity: str = "medium"
+    customer_brand_loyalty: str = "flexible"
+    # Denormalised product attributes for `basedOn` priors.
+    product_pet_type: str = "dog"
+    product_category: str = "dry-food"
+    product_brand: str = "PetNord"
+    # Funnel outcome labels — what Aito's _recommend / _predict learn.
+    clicked: bool = False
+    added_to_cart: bool = False
+    purchased: bool = False
+
+
+@dataclass
 class Order:
     order_id: str
     customer_id: str
@@ -631,6 +673,11 @@ class OrderLine:
 def _round_eur(x: float) -> float:
     """Two-decimal rounding so JSON output is stable across runs."""
     return round(x, 2)
+
+
+def _clip(x: float, lo: float, hi: float) -> float:
+    """Clamp x to [lo, hi]."""
+    return max(lo, min(hi, x))
 
 
 def gen_products(rng: random.Random) -> list[Product]:
@@ -2530,6 +2577,218 @@ def gen_winback_campaigns(
     return campaigns
 
 
+# ── Impressions (recommendation KPI) ────────────────────────────────
+
+# Search-surface vocabulary: query token → catalogue categories it
+# pulls from. The token is stored verbatim in `search_query` (a Text
+# column) so `where {search_query: {$match: "food"}}` matches it. Kept
+# to real category words so the Smart Search re-rank reads naturally.
+_SEARCH_TERMS: dict[str, list[str]] = {
+    "food":        ["dry-food", "wet-food"],
+    "treats":      ["treats", "dental-treats"],
+    "toys":        ["toys"],
+    "litter":      ["litter"],
+    "grooming":    ["grooming"],
+    "health":      ["health"],
+    "accessories": ["accessories"],
+}
+
+# How browsing sessions distribute across surfaces.
+_SURFACE_WEIGHTS: dict[str, float] = {
+    "search": 0.40, "for_you": 0.30, "category": 0.20, "bought_together": 0.10,
+}
+
+
+def _impression_funnel(
+    rng: random.Random,
+    product: Product,
+    customer: Customer,
+    pet_type_weights: dict[str, float],
+    cat_bias: dict[str, float] | None,
+) -> tuple[bool, bool, bool]:
+    """Draw (clicked, added_to_cart, purchased) for one shown product.
+
+    Two deliberately *different* signals, so ranking by clicks differs
+    visibly from ranking by purchases (the ADR 0021 demo beat):
+
+      - **Click** is attention-driven — cheap / fun items (toys,
+        treats, low price) over-click regardless of fit. Pet relevance
+        matters only mildly.
+      - **Cart → Purchase** is affinity-driven — pet-type match,
+        per-segment category bias, and the customer's brand/dietary/
+        loyalty score (`_customer_product_score`) gate it hard, so a
+        cat owner essentially never *buys* a dog product even if a
+        stray impression shows one.
+
+    Monotone by construction: purchase requires cart requires click.
+    """
+    pt = pet_type_weights.get(product.pet_type, 0.003)          # 0..~1
+    cat = cat_bias.get(product.category, 0.05) if cat_bias else 0.10
+    score = _customer_product_score(product, customer)          # ~0.3..6
+    life = {"premium": 1.2, "mid": 1.0, "budget": 0.85}[customer.lifestyle]
+
+    # CLICK — attention. Mild pet gate so wrong-pet items still draw
+    # the odd curious click, but cheap/fun categories dominate.
+    attention = 1.0
+    if product.category in ("toys", "treats", "dental-treats"):
+        attention *= 1.5
+    if product.price_eur < 8:
+        attention *= 1.3
+    elif product.price_eur > 30:
+        attention *= 0.7
+    click_p = _clip(0.16 * attention * (0.6 + 0.7 * pt), 0.02, 0.85)
+
+    # CART | CLICK — affinity starts to bite.
+    pet_factor = 0.15 + 1.4 * pt                                # 0.15..1.55
+    cat_factor = 0.5 + 5.0 * cat                                # ~0.75..2.0
+    brand_factor = _clip(score, 0.4, 3.0)
+    cart_p = _clip(0.45 * pet_factor * (0.7 + 0.3 * cat_factor) * brand_factor ** 0.4,
+                   0.05, 0.92)
+
+    # PURCHASE | CART — strongest affinity gate + lifestyle.
+    purchase_p = _clip(0.55 * pet_factor * cat_factor * brand_factor ** 0.5 * life / 2.0,
+                       0.05, 0.95)
+
+    clicked = rng.random() < click_p
+    added = clicked and rng.random() < cart_p
+    purchased = added and rng.random() < purchase_p
+    return clicked, added, purchased
+
+
+def _sessions_for(rng: random.Random, customer: Customer) -> int:
+    """How many browsing sessions this customer has. Loosely scaled by
+    purchase activity (more orders ⇒ more browsing) with noise, so the
+    impressions table mirrors the order distribution without copying it.
+    Personas browse more — they carry the For You / Smart Search demo.
+    """
+    base = 1 + customer.total_orders // 2 + rng.randint(0, 3)
+    return max(1, min(base, 16))
+
+
+def gen_impressions(
+    rng: random.Random,
+    customers: list[Customer],
+    products: list[Product],
+) -> list[Impression]:
+    """Product impressions with the funnel outcome baked in.
+
+    Reuses the order-generation affinity machinery
+    (`_segment_pet_type_weights`, `_category_bias[_for_customer]`,
+    `_customer_product_score`) so the products a customer *buys* in
+    impressions line up with what they buy in `order_lines` — one
+    coherent story across both tables. See ADR 0021.
+
+    Each session shows a mix of affinity-relevant and filler products
+    so `goal: {purchased: true}` has both a positive and a negative
+    class to rank on: relevant items convert, filler mostly doesn't.
+    """
+    impressions: list[Impression] = []
+    imp_counter = 1
+    session_counter = 1
+
+    products_by_cat: dict[str, list[Product]] = {}
+    for p in products:
+        products_by_cat.setdefault(p.category, []).append(p)
+    persona_id_set = {p.customer_id for p in PERSONAS}
+    persona_by_id = {p.customer_id: p for p in PERSONAS}
+
+    for customer in customers:
+        persona = persona_by_id.get(customer.customer_id)
+        if persona is not None and persona.pet_type_weights is not None:
+            pet_type_weights = persona.pet_type_weights
+        else:
+            pet_type_weights = _segment_pet_type_weights(customer.segment, customer.pet_size)
+        cat_bias = _category_bias(customer.segment, customer.pet_size)
+        if customer.customer_id not in persona_id_set:
+            cat_bias = _category_bias_for_customer(cat_bias, customer)
+
+        eligible_months = _MONTH_WINDOW[-(customer.tenure_months + 1):]
+        n_sessions = _sessions_for(rng, customer)
+        if persona is not None:
+            n_sessions = max(n_sessions, 14)  # personas anchor the demo views
+
+        for _ in range(n_sessions):
+            session_id = f"SESS-{session_counter:06d}"
+            session_counter += 1
+            month = rng.choice(eligible_months)
+            surface = rng.choices(
+                list(_SURFACE_WEIGHTS.keys()),
+                weights=list(_SURFACE_WEIGHTS.values()),
+            )[0]
+
+            # Build the candidate pool for this session + the query.
+            query: str | None = None
+            if surface == "search":
+                query = rng.choice(list(_SEARCH_TERMS.keys()))
+                pool = [p for c in _SEARCH_TERMS[query] for p in products_by_cat.get(c, [])]
+            elif surface == "category":
+                # One category the customer leans toward, across pet types.
+                cat = _pick_product(rng, {"x": products}, "x", cat_bias).category \
+                    if cat_bias else rng.choice(list(products_by_cat))
+                pool = list(products_by_cat.get(cat, []))
+            else:
+                # for_you / bought_together — personalised: the whole
+                # catalogue, sampled affinity-weighted below.
+                pool = list(products)
+            if not pool:
+                pool = list(products)
+
+            # Show 6-14 distinct products: ~65% affinity-weighted (what a
+            # good recommender would surface) + ~35% uniform filler (so
+            # there's a negative class). Weighting blends pet-type pref,
+            # category bias, and the customer's product score.
+            n_shown = min(rng.randint(6, 14), len(pool))
+            weights = []
+            for p in pool:
+                pt = pet_type_weights.get(p.pet_type, 0.003)
+                cb = cat_bias.get(p.category, 0.05) if cat_bias else 0.1
+                weights.append(max(pt * (0.5 + 5 * cb) * _customer_product_score(p, customer), 1e-4))
+
+            shown: list[Product] = []
+            seen: set[str] = set()
+            guard = 0
+            while len(shown) < n_shown and guard < n_shown * 8:
+                guard += 1
+                if rng.random() < 0.65:
+                    pick = rng.choices(pool, weights=weights, k=1)[0]
+                else:
+                    pick = rng.choice(pool)
+                if pick.sku in seen:
+                    continue
+                seen.add(pick.sku)
+                shown.append(pick)
+
+            for position, product in enumerate(shown):
+                clicked, added, purchased = _impression_funnel(
+                    rng, product, customer, pet_type_weights, cat_bias,
+                )
+                impressions.append(Impression(
+                    impression_id=f"IMP-{imp_counter:07d}",
+                    session_id=session_id,
+                    customer_id=customer.customer_id,
+                    product_sku=product.sku,
+                    surface=surface,
+                    month=month,
+                    position=position,
+                    search_query=query,
+                    customer_segment=customer.segment,
+                    customer_pet_size=customer.pet_size,
+                    customer_lifestyle=customer.lifestyle,
+                    customer_health_focus=customer.health_focus,
+                    customer_treat_affinity=customer.treat_affinity,
+                    customer_brand_loyalty=customer.brand_loyalty,
+                    product_pet_type=product.pet_type,
+                    product_category=product.category,
+                    product_brand=product.brand,
+                    clicked=clicked,
+                    added_to_cart=added,
+                    purchased=purchased,
+                ))
+                imp_counter += 1
+
+    return impressions
+
+
 # ── Output ──────────────────────────────────────────────────────────
 
 def _to_json_dict(obj) -> dict:
@@ -2551,6 +2810,25 @@ def write_json(path: Path, items: Iterable) -> None:
     with path.open("w", encoding="utf-8") as fh:
         json.dump(payload, fh, ensure_ascii=False, indent=2)
         fh.write("\n")
+
+
+def _print_impression_funnel(impressions: list[Impression]) -> None:
+    """Print funnel rates and assert the monotonicity invariant
+    (purchased ⇒ added_to_cart ⇒ clicked) holds for every row."""
+    n = len(impressions) or 1
+    clicks = sum(1 for i in impressions if i.clicked)
+    carts = sum(1 for i in impressions if i.added_to_cart)
+    buys = sum(1 for i in impressions if i.purchased)
+    # Invariant: the generator must never emit cart-without-click or
+    # purchase-without-cart. Fail loudly here rather than ship bad data.
+    broken = [i.impression_id for i in impressions
+              if (i.added_to_cart and not i.clicked)
+              or (i.purchased and not i.added_to_cart)]
+    assert not broken, f"funnel monotonicity violated: {broken[:5]}"
+    print()
+    print(f"  Impression funnel — click {clicks / n:.1%} → "
+          f"cart {carts / n:.1%} → purchase {buys / n:.1%}  "
+          f"(target purchase ~12-15%)")
 
 
 def main() -> None:
@@ -2599,6 +2877,13 @@ def main() -> None:
     # See ADR 0020.
     winback_campaigns = gen_winback_campaigns(rng, customers, products)
 
+    # Product impressions with the funnel outcome — gives the
+    # recommendation surfaces a real conversion KPI to rank on
+    # (`_recommend goal: {purchased: true}`). Generated after the
+    # customer-aggregate backfill so `_sessions_for` can scale session
+    # count by purchase activity. See ADR 0021.
+    impressions = gen_impressions(rng, customers, products)
+
     write_json(DATA_DIR / "products.json", products)
     write_json(DATA_DIR / "customers.json", customers)
     write_json(DATA_DIR / "orders.json", orders)
@@ -2609,6 +2894,7 @@ def main() -> None:
     write_json(DATA_DIR / "inventory.json", inventory)
     write_json(DATA_DIR / "price_history.json", price_history)
     write_json(DATA_DIR / "winback_campaigns.json", winback_campaigns)
+    write_json(DATA_DIR / "impressions.json", impressions)
 
     # ── Summary print ───────────────────────────────────────────────
     print(f"  products        {len(products):>6}")
@@ -2621,6 +2907,8 @@ def main() -> None:
     print(f"  inventory       {len(inventory):>6}")
     print(f"  winback         {len(winback_campaigns):>6}")
     print(f"  price_history   {len(price_history):>6}")
+    print(f"  impressions     {len(impressions):>6}")
+    _print_impression_funnel(impressions)
 
     # Spot-check the engineered-signal numbers so a regen makes the
     # numbers visible in the console (the *test* is `tests/test_fixtures.py`,

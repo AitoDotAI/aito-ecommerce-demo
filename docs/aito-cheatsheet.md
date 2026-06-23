@@ -579,6 +579,91 @@ drilldown displayed in the Aito panel. See ADR 0016.
 
 ---
 
+## Recommendation by conversion KPI — `_recommend` over `impressions`
+
+**Verified live, 2026-06-23.** The recommendation backbone (Smart
+Search, For You). See ADR 0021.
+
+The `impressions` table records one product shown to a customer in a
+browsing context, with the funnel outcome (`clicked` → `added_to_cart`
+→ `purchased`). That gives `_recommend` a real conversion KPI to rank
+on, instead of the segment-affinity proxy the views used before:
+
+```json
+POST /api/v1/_recommend
+{
+  "from": "impressions",
+  "where": {
+    "search_query": { "$match": "food" },
+    "customer_segment": "cat_owner"
+  },
+  "recommend": "product_sku",
+  "goal":      { "purchased": true },
+  "basedOn":   ["pet_type", "brand", "dietary", "category"],
+  "limit":     10
+}
+```
+
+Ranks products by **P(purchased = true | this customer searched this
+query)**. The persona signal lives in `where` (context to condition
+on), the KPI in `goal`. Live top-3 (pet × category × $p):
+
+| Persona | Query | Top-3 | Note |
+|---|---|---|---|
+| Maija (cat_owner) | food | cat × wet-food × 3, p ≈ 0.61 | flips to cat |
+| Saara (dog_owner + large) | food | dog × wet/dry-food × 3, p ≈ 0.46 | flips to dog |
+
+**For You** drops the `search_query` constraint and conditions on the
+persona profile alone (`where: {customer_segment, [customer_pet_size]}`),
+same `goal: {purchased: true}`.
+
+### Goal flip — engagement vs conversion
+
+Swapping the goal field re-ranks by a different funnel stage. On
+`where: {customer_segment: "cat_owner"}`:
+
+- `goal: {purchased: true}` → cat treats + wet-food mix
+- `goal: {clicked: true}`   → cat treats dominate (attention-bait:
+  cheap / fun categories over-click but convert less)
+
+The two rankings are **not** identical — that divergence is its own
+demo beat (rank for revenue, not clicks).
+
+### Calibrated rate — `_predict` the funnel field
+
+`_recommend`'s `$p` is normalised against goal-positives; for the
+absolute funnel rate use `_predict`:
+
+```json
+POST /api/v1/_predict
+{
+  "from": "impressions",
+  "where": { "customer_segment": "cat_owner",
+             "product_pet_type": "cat", "product_category": "wet-food" },
+  "predict": "purchased"
+}
+```
+
+Returns both classes — `false ≈ 0.784`, `true ≈ 0.216` — summing to 1.
+
+### Gotchas
+
+- **`where` conditions, it does not restrict the candidate set.** A
+  `where: {search_query: {$match: "food"}}` makes "the customer searched
+  food" the *context*; `_recommend` still ranks the whole `product_sku`
+  domain, surfacing cold candidates (SKUs with no food-search rows) via
+  the `basedOn` priors. Counting impressions with that filter returns a
+  different set than the recommend candidates — by design.
+- **`search_query` is `Text`, nullable.** Token-match with
+  `{"$match": "food"}`; it's absent (null) on non-search surfaces.
+- **`position` is descriptive only** — never put it in `basedOn`, or
+  Aito learns "position predicts click" over content.
+- **Funnel monotonicity** (`purchased ⇒ added_to_cart ⇒ clicked`) is a
+  generation invariant, asserted in `./do aito-check`. Live counts:
+  clicked 25 375 → cart 16 254 → purchased 10 761 (of 125 935 rows).
+
+---
+
 ## `AitoClient` method ↔ endpoint cheat reference
 
 | Method | Endpoint | First view that uses it |

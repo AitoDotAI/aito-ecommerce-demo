@@ -7,9 +7,14 @@ the denormalisation rationale.
 
 Two live Aito calls per request:
   1. `_search where {name: {$match: q}}`            — baseline
-  2. `_recommend product_sku from order_lines
-       where {product_sku.name: {$match: q}}
-       goal {customer_segment, customer_pet_size}`  — predictive
+  2. `_recommend product_sku from impressions
+       where {search_query: {$match: q}, customer_segment, [pet_size]}
+       goal {purchased: true}`                      — predictive
+
+The predictive call ranks by a real conversion KPI — P(the customer
+buys | they searched this query) — learned from the `impressions`
+table's funnel outcomes, rather than the segment-affinity proxy the
+view used before. See `docs/adr/0021-impressions-and-recommendation-kpi.md`.
 
 Cached per `(query, customer_id)` for 5 minutes through the
 two-layer cache.
@@ -124,52 +129,52 @@ def _predictive_recommend(
     persona: PersonaContext,
     limit: int,
 ) -> tuple[list[Hit], dict]:
-    """Predictive ranking via `_recommend product_sku`.
+    """Predictive ranking via `_recommend product_sku from impressions`.
 
-    The constraint split:
-      - `where` filters rows to matching name tokens AND the
-        persona's `customer_pet_size` (when set).
-      - `goal` ranks by P(`customer_segment` = persona's segment |
-        product = X).
+    Ranks candidate products by P(`purchased` = true | this customer
+    searched this query), the textbook conversion-KPI recommend:
+      - `where` sets the context — impressions where the customer
+        searched `query`, narrowed to the persona's `customer_segment`
+        (and `customer_pet_size` when set).
+      - `goal` is the real outcome label `{purchased: true}`.
 
-    Multi-field `goal` (`{segment, pet_size}`) has surprising
-    semantics for `pet_size=small` — small is shared between small
-    dog owners and small multi-pet households (which lean cat),
-    and Aito's combined-goal ranking collapses to the cat-heavy
-    side. Splitting `pet_size` into `where` lets `goal=segment`
-    do its job cleanly. See `docs/aito-cheatsheet.md`.
+    The persona signal lives in `where` (context to condition on), not
+    in `goal` (which is now the conversion KPI). This is what makes the
+    per-persona flip honest: cat owners' searches convert on cat
+    products, dog owners' on dog products — learned from the funnel,
+    not asserted. See ADR 0021.
     """
-    where: dict[str, object] = {"product_sku.name": {"$match": query}}
+    where: dict[str, object] = {
+        "search_query": {"$match": query},
+        "customer_segment": persona.segment,
+    }
     if persona.pet_size is not None:
         where["customer_pet_size"] = persona.pet_size
 
-    goal = {"customer_segment": persona.segment}
+    goal = {"purchased": True}
 
     # `basedOn` curates which product features feed Aito's prior-
     # feature inference. The default uses *every* product feature —
     # including numerics (price_eur, weight_kg) and high-cardinality
     # text (name tokens) that add inference cost without helping a
-    # `customer_segment` goal. Curating to the four categorical
-    # features that correlate with segment drops median server time
-    # 158 → 138 ms (-13 %).
+    # `purchased` goal. Curating to the four categorical features that
+    # carry the conversion signal trims inference cost.
     #
-    # Field paths are relative to the recommend target. For
-    # `recommend: "product_sku"`, write `["brand"]` — NOT
-    # `["product_sku.brand"]` (Aito prepends the target column and
+    # Field paths are relative to the recommend target — the
+    # `product_sku` link resolves to `products`, so write `["brand"]`,
+    # NOT `["product_sku.brand"]` (Aito prepends the target column and
     # 400s on the doubled path).
     #
-    # Note on quality impact: on this dataset's *thick* personas
-    # (Maija = cat_owner, Saara = dog_owner + large), the top-50
-    # comes back byte-identical across `basedOn` variants because
-    # direct `P(seg | sku)` already has dense signal — priors are
-    # informationally redundant there. On *thin* slices (Olli =
-    # dog_owner + small) the priors do move the ranking. See
-    # `docs/aito-cheatsheet.md` §"When do priors actually move
-    # the ranking?" for the full breakdown.
+    # Priors matter most for cold candidates (SKUs with few/no
+    # impressions in this context slice) and thin context slices
+    # (e.g. Olli = dog_owner + small): there the direct
+    # P(purchased | sku, context) is sparse and the category / brand
+    # prior carries the ranking. See `docs/aito-cheatsheet.md`
+    # §"When do priors actually move the ranking?".
     based_on: list[str] = ["pet_type", "brand", "dietary", "category"]
 
     body = {
-        "from": "order_lines",
+        "from": "impressions",
         "where": where,
         "recommend": "product_sku",
         "goal": goal,
@@ -177,7 +182,7 @@ def _predictive_recommend(
         "limit": limit,
     }
     res = client.recommend(
-        table="order_lines",
+        table="impressions",
         where=where,
         recommend_field="product_sku",
         goal=goal,

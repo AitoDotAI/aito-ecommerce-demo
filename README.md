@@ -105,22 +105,26 @@ in both views.
 
 ```json
 {
-  "from": "order_lines",
+  "from": "impressions",
   "where": {
-    "product_sku.name": { "$match": "food" },
+    "search_query": { "$match": "food" },
+    "customer_segment": "dog_owner",
     "customer_pet_size": "large"
   },
   "recommend": "product_sku",
-  "goal": { "customer_segment": "dog_owner" },
+  "goal": { "purchased": true },
+  "basedOn": ["pet_type", "brand", "dietary", "category"],
   "limit": 10
 }
 ```
 
-Side-by-side standard `_search` vs. predictive `_recommend`. Same
-query string, different `where` + `goal` per persona — the right
-column flips entirely when you click the Maija / Olli / Saara
-pills. **Demo moment #1.**
-[→ Implementation](src/search_service.py) | [Use case guide](docs/use-cases/02-smart-search.md) | [ADR](docs/adr/0006-smart-search.md)
+Side-by-side standard `_search` vs. predictive `_recommend`. The
+predictive column ranks by a real conversion KPI — P(this shopper
+buys | they searched this query) — learned from the `impressions`
+funnel. Same query string, different `where` context per persona,
+and the right column flips entirely when you click the Maija /
+Olli / Saara pills. **Demo moment #1.**
+[→ Implementation](src/search_service.py) | [Use case guide](docs/use-cases/02-smart-search.md) | [ADR](docs/adr/0021-impressions-and-recommendation-kpi.md)
 
 ### 3. ✨ For You — personalised tile grid
 
@@ -128,18 +132,24 @@ pills. **Demo moment #1.**
 
 ```json
 {
-  "from": "order_lines",
-  "where": { "customer_pet_size": "large" },
+  "from": "impressions",
+  "where": {
+    "customer_segment": "dog_owner",
+    "customer_pet_size": "large"
+  },
   "recommend": "product_sku",
-  "goal": { "customer_segment": "dog_owner" },
+  "goal": { "purchased": true },
   "limit": 12
 }
 ```
 
-Same `_recommend` shape as Smart Search minus the `name $match`.
-The whole catalog re-ranks per persona; Maija (cat owner) sees
-cat food + litter at the top, Saara (large breed dog) sees dog
-dry-food + dental treats. **Demo moment #2.**
+Same conversion-KPI `_recommend` shape as Smart Search minus the
+`search_query` filter. The whole catalog re-ranks per persona by
+purchase probability; Maija (cat owner) sees cat food + treats at
+the top, Saara (large breed dog) sees dog food + treats. Flip the
+goal to `{ clicked: true }` and the grid reorders toward
+attention-grabbing items — rank for revenue or for engagement,
+your choice. **Demo moment #2.**
 [→ Implementation](src/recommend_service.py) | [Use case guide](docs/use-cases/03-for-you.md) | [ADR](docs/adr/0007-for-you.md)
 
 ### 4. 🛒 Bought Together — co-purchase lift

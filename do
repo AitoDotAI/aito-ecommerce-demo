@@ -158,12 +158,23 @@ cmd_generate_fixtures() {
   uv run python data/generate_fixtures.py
 }
 
+# The impressions fixture is gitignored (too large to commit, see
+# ADR 0021). Regenerate the whole deterministic fixture set if it's
+# absent — a no-op for the committed tables (seed=42 ⇒ byte-identical).
+_ensure_impressions() {
+  if [[ ! -f "$SCRIPT_DIR/data/impressions.json" ]]; then
+    echo "data/impressions.json missing (gitignored) — regenerating fixtures..."
+    cmd_generate_fixtures
+  fi
+}
+
 cmd_load_data() {
   cd "$SCRIPT_DIR"
   if [[ ! -f src/data_loader.py ]]; then
     echo "src/data_loader.py not implemented yet (build-order step 3)."
     exit 1
   fi
+  _ensure_impressions
   uv run python -m src.data_loader "$@"
 }
 
@@ -173,6 +184,7 @@ cmd_reset_data() {
     echo "src/data_loader.py not implemented yet (build-order step 3)."
     exit 1
   fi
+  _ensure_impressions
   uv run python -m src.data_loader --reset "$@"
   echo
   # Warm the prediction_cache table so the next ./do dev boot is
