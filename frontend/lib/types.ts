@@ -268,6 +268,25 @@ export interface BoughtTogetherResponse {
   last_response_ms: number;
 }
 
+/* ─── Basket Rules (/api/basket-rules) ─── */
+
+export interface BasketRule {
+  antecedent: string;       // "Dog dry-food"
+  consequent: string;       // "Dog dental-treats"
+  confidence: number;       // P(consequent | antecedent), 0..1
+  lift: number;
+  support_orders: number;   // # orders the rule holds in
+  support_pct: number;      // support_orders / total_orders, 0..1
+}
+
+export interface BasketRulesResponse {
+  rules: BasketRule[];
+  anchors_mined: number;
+  total_orders: number;
+  last_query: { endpoint: string; body: Record<string, unknown> };
+  last_response_ms: number;
+}
+
 /* ─── For You (/api/for-you) ─── */
 
 export interface ForYouTile {
