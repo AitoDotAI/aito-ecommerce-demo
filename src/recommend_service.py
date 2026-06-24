@@ -1,10 +1,11 @@
 """For You — personalised tile grid via `_recommend`.
 
-Reuses Smart Search's query shape (ADR 0006) without the
-`name $match` filter, so the result spans every category the
-persona-segment buys. Persona definitions here override the
-underlying customer record's segment for Olli — see
-ADR 0007 §"Olli divergence" for the why.
+Reuses Smart Search's conversion-KPI shape (ADR 0021) without the
+`search_query` filter, so the result spans every category the
+persona converts on: `_recommend product_sku from impressions
+where {customer_segment, [pet_size]} goal {purchased: true}`.
+Persona definitions here override the underlying customer record's
+segment for Olli — see ADR 0007 §"Olli divergence" for the why.
 """
 
 from __future__ import annotations
@@ -24,8 +25,8 @@ class Persona:
     persona_id: str        # short id used by the frontend
     customer_id: str       # the underlying CUST-NNNNN
     label: str             # display name (kept aligned with TASK.md)
-    segment: str           # the `goal.customer_segment` used at query time
-    pet_size: str | None   # optional `goal.customer_pet_size`
+    segment: str           # the `where.customer_segment` context at query time
+    pet_size: str | None   # optional `where.customer_pet_size`
 
 
 # Olli's segment in the *customer record* is `multi_pet` (ADR 0002 persona),
@@ -94,25 +95,24 @@ def get_for_you(
     if cached:
         return _from_dict(cached)
 
-    # The right shape, found after probing:
+    # Conversion-KPI recommend over the impressions funnel:
     #
-    #   where:  filters rows to size=<persona.pet_size> (when set)
-    #   goal:   ranks by P(segment=<persona.segment> | product=X)
+    #   where:  the context — this persona's segment (+ pet_size when
+    #           set). The persona signal conditions the probability.
+    #   goal:   the real outcome label `{purchased: true}`.
     #
-    # Multi-field `goal` like `{segment, pet_size}` doesn't behave
-    # the way the API docs suggest — for Olli (dog_owner+small) it
-    # returns the same cat-heavy result as `goal: {pet_size: small}`
-    # alone, because `pet_size=small` is shared between small dog
-    # owners and small multi-pet households (which lean cat in our
-    # fixture). Splitting the constraints — pet_size in `where`,
-    # segment in `goal` — produces the clean per-persona flip.
-    where: dict[str, str] = {}
+    # Ranks products by P(purchased | this customer's context), the
+    # textbook personalised recommend. The per-persona flip is learned
+    # from the funnel (cat owners convert on cat products, dog owners
+    # on dog) rather than asserted via a segment-affinity proxy. See
+    # ADR 0021.
+    where: dict[str, str] = {"customer_segment": persona.segment}
     if persona.pet_size is not None:
         where["customer_pet_size"] = persona.pet_size
-    goal = {"customer_segment": persona.segment}
+    goal = {"purchased": True}
 
     body = {
-        "from": "order_lines",
+        "from": "impressions",
         "where": where,
         "recommend": "product_sku",
         "goal": goal,
@@ -121,7 +121,7 @@ def get_for_you(
 
     started = time.perf_counter()
     res = client.recommend(
-        table="order_lines",
+        table="impressions",
         where=where,
         recommend_field="product_sku",
         goal=goal,
