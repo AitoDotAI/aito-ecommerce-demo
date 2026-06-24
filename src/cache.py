@@ -83,6 +83,10 @@ CACHE_SCHEMA = {
         "endpoint": {"type": "String", "nullable": False},
         "response_json": {"type": "String", "nullable": False},
         "created_at": {"type": "String", "nullable": False},
+        # ISO-8601 UTC instant after which the row is stale. `get()`
+        # honors this so a reload (`./do reset-data`) or a TTL lapse
+        # can't serve outdated predictions indefinitely.
+        "expires_at": {"type": "String", "nullable": False},
     },
 }
 
@@ -103,9 +107,16 @@ def init_persistent_cache(client: AitoClient) -> None:
 
     try:
         schema = client.get_schema()
-        if CACHE_TABLE not in schema.get("schema", {}):
+        existing = schema.get("schema", {}).get(CACHE_TABLE)
+        if existing is None:
             client._request("PUT", f"/schema/{CACHE_TABLE}", json=CACHE_SCHEMA)
             print(f"  Created {CACHE_TABLE} table.")
+        elif "expires_at" not in existing.get("columns", {}):
+            # Pre-TTL cache table — recreate with the expiry column.
+            # Safe to drop: it's a cache, so this just forces recompute.
+            client._request("DELETE", f"/schema/{CACHE_TABLE}")
+            client._request("PUT", f"/schema/{CACHE_TABLE}", json=CACHE_SCHEMA)
+            print(f"  Migrated {CACHE_TABLE} table (added expires_at).")
     except AitoError as e:
         print(f"  Could not create cache table: {e}")
 
@@ -135,13 +146,53 @@ def get(key: str) -> Any | None:
             )
             hits = result.get("hits", [])
             if hits:
-                value = json.loads(hits[0]["response_json"])
-                _cache[key] = (time.monotonic() + DEFAULT_TTL, value)
+                row = hits[0]
+                expires_at = datetime.datetime.fromisoformat(row["expires_at"])
+                now = datetime.datetime.now(datetime.timezone.utc)
+                # Honor the stored expiry — a stale persisted row is a
+                # miss, not a hit. Without this, entries written under a
+                # short TTL (or before a data reload) live forever.
+                if expires_at <= now:
+                    return None
+                value = json.loads(row["response_json"])
+                # Re-seed L1 with the *remaining* lifetime, not a fresh
+                # DEFAULT_TTL, so both layers agree on when this expires.
+                remaining = (expires_at - now).total_seconds()
+                _cache[key] = (time.monotonic() + remaining, value)
                 return value
-        except (AitoError, json.JSONDecodeError, KeyError):
+        except (AitoError, json.JSONDecodeError, KeyError, ValueError):
             pass
 
     return None
+
+
+def _persist(client: AitoClient, key: str, value: Any, ttl: int) -> None:
+    """Upsert one cache row: drop any prior rows for this key, then
+    insert the fresh one. `set()` runs this in a background thread;
+    tests call it directly.
+
+    Upsert (not append) keeps the table at one row per key — the old
+    `POST /data` accumulated a new row on every write, so `get()`'s
+    `limit: 1` returned an arbitrary stale duplicate.
+    """
+    now = datetime.datetime.now(datetime.timezone.utc)
+    record = {
+        "cache_key": _key_hash(key),
+        "endpoint": key.split(":", 1)[0],
+        "response_json": json.dumps(value, default=str),
+        "created_at": now.isoformat(),
+        "expires_at": (now + datetime.timedelta(seconds=ttl)).isoformat(),
+    }
+    try:
+        # Delete-by-query then insert. `/data/_delete` takes {from, where}
+        # (Aito DeleteOperation); a no-match delete is a harmless no-op.
+        client._request(
+            "POST", "/data/_delete",
+            json={"from": CACHE_TABLE, "where": {"cache_key": record["cache_key"]}},
+        )
+        client._request("POST", f"/data/{CACHE_TABLE}", json=record)
+    except AitoError:
+        pass
 
 
 def set(key: str, value: Any, ttl: int = DEFAULT_TTL) -> None:
@@ -150,20 +201,9 @@ def set(key: str, value: Any, ttl: int = DEFAULT_TTL) -> None:
 
     if _aito_client is not None:
         client = _aito_client
-
-        def persist():
-            try:
-                record = {
-                    "cache_key": _key_hash(key),
-                    "endpoint": key.split(":", 1)[0],
-                    "response_json": json.dumps(value, default=str),
-                    "created_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-                }
-                client._request("POST", f"/data/{CACHE_TABLE}", json=record)
-            except AitoError:
-                pass
-
-        threading.Thread(target=persist, daemon=True).start()
+        threading.Thread(
+            target=_persist, args=(client, key, value, ttl), daemon=True
+        ).start()
 
 
 def clear() -> None:
