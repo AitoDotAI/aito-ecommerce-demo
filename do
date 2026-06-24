@@ -3,12 +3,32 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# Source .env if present
+# Source .env if present, then .env.local as an override layer.
+# .env holds the shared defaults (prod instance); .env.local (gitignored)
+# lets you point AITO_API_URL/AITO_API_KEY at a personal dev instance for
+# R&D without editing tracked files or touching prod. See README
+# "R&D environment". Sourcing .env.local last means its values win.
 if [[ -f "$SCRIPT_DIR/.env" ]]; then
   set -a
   source "$SCRIPT_DIR/.env"
   set +a
 fi
+if [[ -f "$SCRIPT_DIR/.env.local" ]]; then
+  set -a
+  source "$SCRIPT_DIR/.env.local"
+  set +a
+fi
+
+# Print the Aito instance a data command is about to touch, so you never
+# load/clear the wrong environment. Loud when it's the shared prod DB.
+_show_target() {
+  local url="${AITO_API_URL:-<unset>}"
+  if [[ "$url" == *"/aito-ecommerce-demo" ]]; then
+    echo "⚠️  Target Aito: $url  (SHARED / prod)"
+  else
+    echo "Target Aito: $url"
+  fi
+}
 
 # Ports: frontend on 8500 (user-facing), backend on 8501 (internal).
 # Allocated by the cross-demo framework doc — see
@@ -165,6 +185,7 @@ cmd_load_data() {
     echo "src/data_loader.py not implemented yet (build-order step 3)."
     exit 1
   fi
+  _show_target
   uv run python -m src.data_loader "$@"
 }
 
@@ -174,6 +195,7 @@ cmd_reset_data() {
     echo "src/data_loader.py not implemented yet (build-order step 3)."
     exit 1
   fi
+  _show_target
   uv run python -m src.data_loader --reset "$@"
   echo
   # Warm the prediction_cache table so the next ./do dev boot is
@@ -196,6 +218,7 @@ warm_all(client, verbose=True)
 cmd_clear_cache() {
   echo "Clearing caches..."
   cd "$SCRIPT_DIR"
+  _show_target
   uv run python -c "
 from src.config import load_config
 from src.aito_client import AitoClient
@@ -211,6 +234,7 @@ print('Done. Run ./do warm-cache to pre-populate, or ./do dev (warmup starts on 
 cmd_warm_cache() {
   echo "Warming all cacheable endpoints..."
   cd "$SCRIPT_DIR"
+  _show_target
   uv run python -c "
 from src.config import load_config
 from src.aito_client import AitoClient
