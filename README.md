@@ -477,6 +477,35 @@ $EDITOR .env
 
 `./do help` lists every verb.
 
+### R&D environment (don't experiment on the shared DB)
+
+`AITO_API_URL` in `.env` points at a **shared** instance — the deployed
+demo and every local checkout use the same Aito DB, and the Layer-2
+prediction cache is a table *on that instance*. So running experimental
+code against it (re-pointed queries, new tables) writes cache rows the
+deployed app then serves, cross-contaminating prod.
+
+Keep R&D isolated by overriding the connection in **`.env.local`**
+(gitignored; `./do` sources it after `.env`, so it wins):
+
+```bash
+# .env.local — your personal dev instance
+AITO_API_URL=https://shared.aito.ai/db/aito-ecommerce-dev
+AITO_API_KEY=your-dev-instance-key
+```
+
+```bash
+./do reset-data    # rebuilds the dev instance from fixtures (seed=42)
+                   # — an exact, mutable copy of prod
+```
+
+Because the dataset is fully code-defined (schema in `data_loader.py`,
+data in `generate_fixtures.py`, deterministic), a dev instance *is* a
+copy of prod — no server-side clone needed. The cache lives on whichever
+instance you target, so prod is never touched. The `load-data` /
+`reset-data` / `clear-cache` / `warm-cache` verbs print the target
+instance (and flag the shared one) so you always know which you hit.
+
 ---
 
 ## How it works
