@@ -1,6 +1,6 @@
 # ADR 0022 — Basket rule mining (association rules as a live query)
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-06-24
 **Deciders:** Antti
 
@@ -29,52 +29,55 @@ job, no precomputed rule table.
 (or its attributes) on the line, relate to the *order's* category bag
 reached through the `order_id` link. Verified live, 2026-06-24:
 
+**Order-level co-occurrence relate over the denormalised category-token
+bag** — the Bought Together shape (ADR 0008), swept per anchor.
+Verified live, 2026-06-24:
+
 ```json
 POST /api/v1/_relate
 {
-  "from": "order_lines",
-  "where": { "product_sku.pet_type": "dog", "product_sku.category": "dry-food" },
-  "relate": "order_id.line_categories",
-  "limit": 12
+  "from": "orders",
+  "where":  { "line_categories": { "$match": "dog_dryfood" } },
+  "relate": "line_categories",
+  "limit":  12
 }
 ```
 
-`order_id.line_categories` reads through `order_lines.order_id →
-orders.line_categories` (the denormalised `<pet>_<category>` token bag,
-ADR 0008). Both `where` and `relate` are single-hop forward link
-traversals — the only direction Aito allows from `order_lines` (reverse
-`orders → order_lines` 400s; see the cheatsheet).
-
-Each hit carries the rule's statistics directly:
+Conditions on orders containing token A, relates the other tokens in
+those orders. Each hit carries the rule's statistics directly:
 
 | Field | Meaning | Rule metric |
 |---|---|---|
-| `related.order_id.line_categories.$has` | the consequent token (B) | rule RHS |
-| `fs.fCondition` | # anchor (A) occurrences | denominator |
-| `fs.fOnCondition` | # where B also present | numerator |
+| `related.line_categories.$has` | the consequent token (B) | rule RHS |
+| `fs.fCondition` | # orders containing A | denominator |
+| `fs.fOnCondition` | # of those that also contain B | numerator |
+| `fs.n` | total orders (12 215) | support base |
 | `lift` | co-occurrence vs chance | rule lift |
 
-- **Confidence** = `fOnCondition / fCondition` = P(B in the order | A on the line).
-- **Lift** = the returned `lift` (> 1 positive, < 1 protective).
-- **Support** ≈ `fOnCondition / total_orders` (12 215 orders). Caveat:
-  the relate counts at **line** granularity, so an order with two
-  dog-dry-food lines counts twice — implementation must decide
-  line-vs-order support and document it.
+- **Confidence** = `fOnCondition / fCondition` = P(B in order | A in order).
+- **Support** = `fOnCondition / fs.n` — **order-granular, always ≤ 1**.
+- **Lift** = `lift` (> 1 positive, < 1 protective).
 
-Verified live numbers:
+Verified live numbers (note the directional asymmetry — the point of
+*rules* over symmetric co-occurrence):
 
-| Anchor | Rule | conf | lift | n (`fOnCondition`) |
-|---|---|---|---|---|
-| product_sku.category = dog dry-food | → dog dental-treats | 61% | 1.74 | 12 439 |
-| product_sku = SKU-PT-0001 (a dog dry-food) | → dog dental-treats | 68% | 1.96 | 3 265 |
-| (either) | → cat_* | — | < 0.3 | protective, dropped |
+| Rule | conf | lift | support |
+|---|---|---|---|
+| Dog dry-food → Dog dental-treats | 72% | 2.67 | 25% |
+| Dog dental-treats → Dog dry-food | 94% | 2.63 | 24% |
+| Cat litter → Cat wet-food | 67% | 2.17 | 2% |
 
-**Anchoring on a single SKU expands the condition** into that SKU's
-full feature conjunction (`$and` of pet_type, category, name tokens,
-tags, tax_class) — the relate treats the SKU as the set of its
-features. Anchor on attribute tokens (`product_sku.category` etc.) for
-clean, interpretable rule LHSs; anchor on a SKU when you want
-"this exact product's basket".
+### Gotcha — link traversal does NOT condition the stats per anchor
+
+The first design tried `from order_lines where {product_sku.category:…}
+relate "order_id.line_categories"`. It returns hits, but the `fs` are
+**identical across different anchors** (e.g. cat-litter and cat-treats
+both report `fCondition: 12886, n: 38013`) — the stats are the related
+token's *global, line-granular* frequencies, not P(B | this anchor).
+`n` is the order-**lines** count, which is also why support came out
+> 100%. The order-bag relate above is the correct, anchor-conditioned,
+order-granular shape. (Reserve the link-traversal form for the
+SKU-anchored follow-up, which needs a token bag of SKUs anyway.)
 
 ## Decision
 
@@ -82,18 +85,18 @@ A **Basket Rules** view that mines and ranks association rules live.
 
 1. **Anchor set** — the top-N category/attribute combinations (and,
    optionally, top SKUs by line volume) that clear a minimum support.
-2. **Mine** — one link-traversal `_relate` per anchor (parallelised,
+2. **Mine** — one order-level `_relate` per anchor (parallelised,
    like the Dashboard's 6-way relate fan-out).
-3. **Score** — confidence = `fOnCondition/fCondition`, keep `lift`,
-   support from the counts.
+3. **Score** — confidence = `fOnCondition/fCondition`, support =
+   `fOnCondition/fs.n` (order-granular), keep `lift`.
 4. **Filter** — emit a rule only when **`lift > 1` AND `fOnCondition ≥
    50` AND confidence ≥ 0.3**. The absolute-count gate is load-bearing:
    a thin anchor (e.g. dog litter — **0 lines** in this fixture) yields
    no rule rather than a spurious 100%-confidence/n=2 artefact (the
    accounting guide's pitfall).
 5. **Render** — a ranked rule table: `dog dry-food → dog dental-treats
-   · conf 61% · lift 1.74 · n=12 439`, with the live `_relate` body in
-   the Aito panel.
+   · conf 72% · lift 2.67 · support 25%`, with the live `_relate` body
+   in the Aito panel.
 
 Cached 10 min (same TTL as Bought Together / Dashboard relate).
 
@@ -104,10 +107,10 @@ Cached 10 min (same TTL as Bought Together / Dashboard relate).
   lift, and support count.
 - [ ] Only rules passing the lift + absolute-count + confidence gate
   appear; thin/empty anchors produce no rows (no n<50 artefacts).
-- [ ] Each rule's row, when selected, shows the live link-traversal
-  `_relate` body that produced it in the Aito panel.
-- [ ] `./do aito-check` asserts: the link-traversal relate returns
-  hits for a known-good anchor, all `lift ≥ 0`, and confidence ∈ [0,1].
+- [ ] Each rule's row, when selected, shows the live `_relate` body
+  that produced it in the Aito panel.
+- [ ] `./do aito-check` asserts: the order-level relate returns hits
+  for a known-good anchor, all `lift ≥ 0`, and confidence ∈ [0,1].
 
 ## Demo impact
 
@@ -140,8 +143,6 @@ Cached 10 min (same TTL as Bought Together / Dashboard relate).
   category-level view.
 
 **Bad:**
-- Line-granularity counting makes support an approximation until the
-  implementation pins line-vs-order semantics.
 - SKU→SKU (the merchandiser's real want) needs the `line_skus` fixture
   change — this view is a category-level first cut.
 - Anchor-by-anchor mining isn't exhaustive itemset mining; we surface
