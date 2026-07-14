@@ -664,6 +664,49 @@ Returns both classes — `false ≈ 0.784`, `true ≈ 0.216` — summing to 1.
 
 ---
 
+## Association-rule mining — sweep `_relate` per anchor
+
+**Verified live, 2026-06-24.** The Basket Rules view (ADR 0022). Mines
+`A → B` rules with support/confidence/lift by running the order-level
+co-occurrence `_relate` (same shape as Bought Together) once per anchor
+token, then ranking by lift.
+
+```json
+POST /api/v1/_relate
+{
+  "from": "orders",
+  "where":  { "line_categories": { "$match": "dog_dryfood" } },
+  "relate": "line_categories",
+  "limit":  12
+}
+```
+
+Read the rule metrics straight off each hit's `fs`:
+
+- **confidence** = `fOnCondition / fCondition` = P(B in order | A in order)
+- **support**    = `fOnCondition / fs.n`  (`fs.n` = total orders, 12 215)
+- **lift**       = `lift`
+
+Filter to **`lift > 1` AND `confidence ≥ 0.3` AND `fOnCondition ≥ 50`**.
+The absolute-count gate is load-bearing — a thin anchor otherwise emits
+spurious 100%-confidence/n=2 "rules". Rules are **directional**:
+`dog dry-food → dental-treats` is 72% confident, but
+`dental-treats → dog dry-food` is 94% — same lift (~2.6), different
+confidence.
+
+### Gotcha — link-traversal `_relate` does NOT condition per anchor
+
+The tempting shape `from order_lines where {product_sku.category: …}
+relate "order_id.line_categories"` returns hits, but its `fs` are
+**identical across different anchors** (cat-litter and cat-treats both
+report `fCondition: 12886, n: 38013`): the stats are the related
+token's *global, line-granular* frequencies, not P(B | this anchor).
+`n` is the order-**lines** count, so support comes out > 100%. Use the
+order-bag relate above for category↔category rules; reserve link
+traversal for a SKU-token bag (`orders.line_skus`, a future field).
+
+---
+
 ## `AitoClient` method ↔ endpoint cheat reference
 
 | Method | Endpoint | First view that uses it |
