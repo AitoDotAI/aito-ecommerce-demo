@@ -577,6 +577,60 @@ Price Intelligence view we settled on a hybrid: bulk
 outlier scan, plus one `_aggregate` call for the per-SKU
 drilldown displayed in the Aito panel. See ADR 0016.
 
+**Response keys mirror the field spec.** The result key is the full
+`"<column>.<stat>"` string you asked for, plus sub-stats — e.g.
+`"total_eur.$mean"`, `"total_eur.$mean.samples"` (the row count),
+`"total_eur.$mean.variance"`, `"total_eur.$mean.standardDeviation"`.
+There is **no** bare `mean` key. `$mean.samples` doubles as a free row
+count for the filtered set.
+
+**Aggregate on the table that owns the column — a link filter is a
+per-row join.** `_aggregate` accepts single-hop link paths in `where`
+(`{from: orders, where: {customer_id.segment: "dog_owner"},
+aggregate: ["total_eur.$mean"]}` works), but Aito joins `orders →
+customers` for every row: **~2.9 s** server-side here. When the same
+answer can be read off a table that carries the column natively, do
+that instead. The dashboard's per-segment average basket is
+`mean(total_spent_eur) / mean(total_orders)` aggregated on `customers`
+(which has `segment` directly) — algebraically identical (`Σspend /
+Σorders`), **~20 ms** vs 2.9 s. See ADR 0024.
+
+---
+
+## `_batch` — many queries, one round-trip
+
+`POST /_batch` takes a **JSON array of query bodies** and returns an
+array of results **in the same order**. The win is network latency, not
+server time: on the shared instance a small query is ~2 ms of work but
+~100 ms on the wire, so a sequential fan-out of N reads costs N × RTT.
+Collapse them:
+
+```json
+POST /_batch
+[
+  {"from": "customers", "where": {"segment": "dog_owner"}, "limit": 0},
+  {"from": "customers", "where": {"segment": "cat_owner"}, "limit": 0}
+]
+// → [{"total": 1263}, {"total": 894}]   (search items return full
+//    {offset, total, hits}; count items via limit:0 carry total)
+```
+
+**Gotcha — batch items are the unified query grammar, not endpoint
+bodies.** A batch item accepts `from / where / search / get / predict /
+recommend / relate / goal / basedOn / orderBy / select / limit / …` but
+**not** `aggregate` — `{... "aggregate": [...]}` in a batch returns
+`400 unexpected field 'aggregate'`. Keep `_aggregate` calls separate;
+batch the plain reads (`_search`, `_relate`, `_predict`, …).
+
+**Don't batch what's already parallel.** `_batch` runs its queries
+**in order, server-side**, so batching 6 independent `_relate` calls is
+*slower* than firing them through a `ThreadPoolExecutor`. Use `_batch`
+to replace *sequential* round-trips (an N+1 loop), not an existing
+parallel fan-out.
+
+This killed the dashboard's two N+1 loops (per-segment counts;
+per-recent-order line lookups). See ADR 0024.
+
 ---
 
 ## Recommendation by conversion KPI — `_recommend` over `impressions`

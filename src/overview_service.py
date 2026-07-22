@@ -297,39 +297,52 @@ def _month_minus(yyyymm: str, months: int) -> str:
 
 
 def _segment_cards(client: AitoClient, *, total_customers: int) -> list[SegmentCard]:
+    """One card per customer segment: population share + average basket.
+
+    Two Aito shapes, both server-side — no per-row fan-out:
+
+      1. **Customer counts** for every segment in a single `_batch`
+         (one round-trip for all five `_search limit=0` counts).
+      2. **Average basket** per segment via one `_aggregate` on the
+         `customers` table, which carries `segment` natively (no link
+         traversal) plus per-customer `total_spent_eur` / `total_orders`.
+         `mean(total_spent_eur) / mean(total_orders)` is algebraically
+         the exact order-weighted mean basket for the segment
+         (`Σspend / Σorders`), and — because `segment` needs no join and
+         `customers` is small — it costs ~20 ms server-side vs ~2.9 s for
+         the equivalent link-filtered aggregate over `orders`.
+
+    This replaced an N+1 anti-pattern (sample 60 customers × one
+    `_search` each for their orders = ~300 sequential round-trips). The
+    round-trips, not Aito's ~2 ms/query, were the dashboard's whole cold
+    cost. See ADR 0024.
+    """
+    seg_ids = list(_SEGMENT_META.keys())
+
+    # 1) All per-segment customer counts in one request.
+    counts = client.batch([
+        {"from": "customers", "where": {"segment": seg_id}, "limit": 0}
+        for seg_id in seg_ids
+    ])
+
     cards: list[SegmentCard] = []
-    for seg_id, meta in _SEGMENT_META.items():
-        count_res = client.search("customers", where={"segment": seg_id}, limit=0)
+    for seg_id, count_res in zip(seg_ids, counts):
         seg_total = count_res["total"]
         if seg_total == 0:
             continue
 
-        # Average basket per segment: small sample of orders whose
-        # customer is in this segment. We pull customers, then orders
-        # for those customers, then average — same pattern as the KPI
-        # avg. Two round-trips, cached for the dashboard window.
-        cust_sample = client.search(
-            "customers",
+        # 2) Exact mean basket, aggregated on `customers` (segment is a
+        #    native column — no `orders` join).
+        agg = client.aggregate(
+            table="customers",
             where={"segment": seg_id},
-            limit=200,
-        ).get("hits", [])
-        customer_ids = [c["customer_id"] for c in cust_sample]
-        avg_basket = 0.0
-        if customer_ids:
-            order_hits: list[dict] = []
-            for cid in customer_ids[:60]:  # keep round-trips bounded
-                hits = client.search(
-                    "orders",
-                    where={"customer_id": cid},
-                    limit=12,
-                ).get("hits", [])
-                order_hits.extend(hits)
-            if order_hits:
-                avg_basket = round(
-                    sum(o.get("total_eur", 0) for o in order_hits) / len(order_hits),
-                    2,
-                )
+            aggregate_fields=["total_spent_eur.$mean", "total_orders.$mean"],
+        )
+        mean_spent = agg.get("total_spent_eur.$mean") or 0.0
+        mean_orders = agg.get("total_orders.$mean") or 0.0
+        avg_basket = round(mean_spent / mean_orders, 2) if mean_orders else 0.0
 
+        meta = _SEGMENT_META[seg_id]
         share_pct = round(seg_total / max(1, total_customers) * 100, 1)
         cards.append(SegmentCard(
             id=seg_id,
@@ -375,14 +388,16 @@ def _recent_orders(client: AitoClient, products: list[dict], limit: int = 6) -> 
         limit=limit,
     ).get("hits", [])
 
+    # Pull every order's lines in one `_batch` instead of one `_search`
+    # per order — the same round-trip collapse as the segment counts.
+    line_results = client.batch([
+        {"from": "order_lines", "where": {"order_id": o["order_id"]}, "limit": 10}
+        for o in orders
+    ]) if orders else []
+
     out: list[RecentOrder] = []
-    for o in orders:
-        # Pull the lines for this order so we can summarise the basket.
-        lines = client.search(
-            "order_lines",
-            where={"order_id": o["order_id"]},
-            limit=10,
-        ).get("hits", [])
+    for o, lines_res in zip(orders, line_results):
+        lines = lines_res.get("hits", [])
         names = [
             sku_to_name.get(ln["product_sku"], ln["product_sku"])
             for ln in lines

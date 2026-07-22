@@ -1065,12 +1065,12 @@
         "limit": 8
       }
     },
-    "last_response_ms": 7112
+    "last_response_ms": 7213
   },
   "timings": [
     [
       "_search",
-      10.2
+      9.14
     ]
   ]
 }

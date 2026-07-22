@@ -200,15 +200,19 @@ intact.
   visitor loads, so its cold cost is felt before anything else.
   Precompute snapshotting also surfaced *why* it stalled: `get_dashboard`
   runs **~321 sequential `_search` calls** (~93 s cold), almost all from
-  `_segment_cards`, which loops five segments × up to 60 customers doing
-  one search per customer for the average-basket figure. So the "light"
-  landing page was in fact the heaviest cold page in the demo. It now
-  serves in ~0.17 s from the snapshot. The underlying per-customer
-  fan-out is a separate inefficiency worth collapsing into an
-  `_aggregate` — tracked as a follow-up, not blocking this change. Its
-  pill aggregates to a single "321 calls · ~6.8 s" figure in
-  `LatencyBadge` (it sums + counts, not one chip per call), consistent
-  with what the live dashboard already emitted.
+  `_segment_cards`, which looped five segments × up to 60 customers
+  doing one search per customer for the average-basket figure. So the
+  "light" landing page was in fact the heaviest cold page in the demo.
+  **That N+1 is now fixed** (same change set): the per-segment customer
+  counts collapse into one `_batch`, and the average basket is one
+  `_aggregate` on `customers` — `mean(total_spent_eur)/mean(total_orders)`,
+  which reads `segment` natively (no `orders` join, ~20 ms vs ~2.9 s for
+  the link-filtered form). `_recent_orders`' per-order line lookups were
+  the same shape and got the same `_batch` treatment. Dashboard: **321
+  Aito calls → 12**, and `./do precompute` for it dropped from ~93 s to
+  ~10 s (the residual is `_compute_top_patterns`' six parallel `_relate`
+  calls, inherent association-mining cost). New Aito patterns (`_batch`,
+  aggregate-on-native-column) are documented in `docs/aito-cheatsheet.md`.
 - Open question: should `./do precompute` run inside `./do reset-data`
   automatically (one command to reload + snapshot), or stay a separate
   step? Leaning toward chaining it into `reset-data` so the snapshot

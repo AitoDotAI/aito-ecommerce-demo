@@ -54,7 +54,7 @@ class AitoClient:
     def _url(self, path: str) -> str:
         return f"{self._base_url}/api/v1{path}"
 
-    def _request(self, method: str, path: str, json: dict | None = None) -> Any:
+    def _request(self, method: str, path: str, json: dict | list | None = None) -> Any:
         """Make an HTTP request to Aito and return the parsed JSON response.
 
         Per-call timing is recorded onto the per-request timing context
@@ -399,8 +399,11 @@ class AitoClient:
                     "price_eur.$max", "price_eur.$standardDeviation",
                 ],
             )
-            # → {"mean": 5.92, "min": 4.48, "max": 6.61,
-            #    "standardDeviation": 0.70, ...}
+            # Response keys mirror the requested field spec exactly:
+            # → {"price_eur.$mean": 5.92, "price_eur.$min": 4.48,
+            #    "price_eur.$max": 6.61,
+            #    "price_eur.$mean.samples": 19,
+            #    "price_eur.$mean.standardDeviation": 0.70, ...}
         """
         body: dict = {
             "from": table,
@@ -409,6 +412,33 @@ class AitoClient:
         if where is not None:
             body["where"] = where
         return self._request("POST", "/_aggregate", json=body)
+
+    def batch(self, queries: list[dict]) -> list:
+        """Run several queries in one HTTP request via `_batch`.
+
+        ``queries`` is a list of query bodies — the same shapes the
+        single-endpoint methods send, minus the endpoint routing
+        (``from`` / ``where`` / ``search`` / ``predict`` / ``recommend``
+        / ``relate`` / ``get`` / ``limit`` / …). Aito runs them in order
+        and returns a list of results in the same order.
+
+        Use it to collapse a sequential fan-out of independent reads into
+        one round-trip. The win is network latency, not server time: on
+        the shared instance a small query is ~2 ms of work but ~100 ms on
+        the wire, so N sequential reads otherwise cost N × RTT.
+
+        Note: `_aggregate` is a *separate* endpoint — its ``aggregate``
+        field is not a valid batch item (Aito 400s it). Keep aggregates
+        as their own `aggregate()` calls; batch the plain reads.
+
+        Example (five per-segment customer counts in one call):
+            client.batch([
+                {"from": "customers", "where": {"segment": s}, "limit": 0}
+                for s in segments
+            ])
+            # → [{"total": 1263}, {"total": 894}, ...]
+        """
+        return self._request("POST", "/_batch", json=queries)
 
     def evaluate(
         self,
