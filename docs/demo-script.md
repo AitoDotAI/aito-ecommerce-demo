@@ -122,6 +122,16 @@ Pick another anchor — say cat litter — to show the picker live.
 > food in the same basket. Real co-occurrence, no rules, no
 > manual tagging."
 
+**Optional follow-on — Basket Rules (Analyze section):** where Bought
+Together drills into one anchor, **Basket Rules** mines the whole
+catalogue at once.
+
+> "Same `_relate`, swept across every anchor and ranked by lift —
+> a live association-rule table. `Dog dry-food → dental treats` at
+> 72% confidence; flip it and `dental treats → dog dry-food` is 94%.
+> That asymmetry is the rule. This is market-basket analysis with no
+> Apriori batch job — the database *is* the miner."
+
 ---
 
 ## Beat 5 — Product Filling (15 s) — demo moment #4

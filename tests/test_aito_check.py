@@ -111,3 +111,24 @@ def test_impression_funnel_is_monotone(client):
     # generation bug — assert the impossible rows are truly absent.
     assert _count(client, {"clicked": False, "added_to_cart": True}) == 0
     assert _count(client, {"added_to_cart": False, "purchased": True}) == 0
+
+
+# ── Basket rule mining — order-level _relate sweep (ADR 0022) ─────────
+
+
+def test_basket_rules_mines_well_formed_association_rules(client):
+    """The Basket Rules sweep returns non-empty, well-formed rules:
+    confidence in [0,1], support in [0,1] (order-granular — never the
+    >100% the line-granular link-traversal shape produced), lift > 1,
+    and the canonical dog dry-food → dental-treats rule is present."""
+    from src.basket_rules_service import get_basket_rules
+
+    resp = get_basket_rules(client)
+    assert resp.rules, "no basket rules mined"
+    for r in resp.rules:
+        assert 0.0 <= r.confidence <= 1.0, r
+        assert 0.0 <= r.support_pct <= 1.0, r           # order-granular, never >1
+        assert r.lift > 1.0, r                          # positive association only
+        assert r.support_orders >= 50, r                # absolute-count gate held
+    pairs = {(r.antecedent, r.consequent) for r in resp.rules}
+    assert ("Dog dry-food", "Dog dental-treats") in pairs, sorted(pairs)

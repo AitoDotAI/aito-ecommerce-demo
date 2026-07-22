@@ -124,6 +124,31 @@ export function boughtTogetherPanel(): AitoPanelConfig {
 }
 
 
+export function basketRulesPanel(): AitoPanelConfig {
+  return {
+    operation: "Basket Rules",
+    endpoints: ["_relate"],
+    description:
+      `Association-rule mining as a live query: one <code>_relate</code> ` +
+      `per anchor, ranked by lift. Each rule's confidence = ` +
+      `<code>fOnCondition/fCondition</code>, support = ` +
+      `<code>fOnCondition/n</code> — no Apriori batch job. Rules are ` +
+      `directional: dog dry-food → dental treats is <strong ` +
+      `style="color:var(--aito-teal);">72%</strong>, the reverse <strong ` +
+      `style="color:var(--aito-teal);">94%</strong>.`,
+    query:
+`${k('"relate"')}: {
+  ${n('"from"')}: ${s('"orders"')},
+  ${n('"where"')}: {
+    ${n('"line_categories"')}: { ${n('"$match"')}: ${s('"dog_dryfood"')} }
+  },
+  ${n('"relate"')}: ${s('"line_categories"')}
+}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
 export function purchaseAnalyticsPanel(): AitoPanelConfig {
   return {
     operation: "Purchase Analytics",
