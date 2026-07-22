@@ -1,0 +1,1076 @@
+{
+  "data": {
+    "kpis": [
+      {
+        "label": "Targets identified",
+        "value": 20.0,
+        "sub": "churned customers worth re-engaging"
+      },
+      {
+        "label": "Predicted recoverable revenue",
+        "value": 1411.67,
+        "sub": "sum of response_p × AOV − €0.50/email across 60 sends"
+      },
+      {
+        "label": "Average response rate",
+        "value": 0.592,
+        "sub": "across all proposed (customer × product) sends"
+      },
+      {
+        "label": "Campaign cost",
+        "value": 30.0,
+        "sub": "€0.50 × 60 emails"
+      }
+    ],
+    "targets": [
+      {
+        "customer_id": "CUST-00039",
+        "customer_name": "Eeva Kinnunen",
+        "segment": "dog_owner",
+        "pet_size": "large",
+        "lifestyle": "premium",
+        "health_focus": "low",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-11",
+        "total_spent_eur": 757.15,
+        "total_orders": 10,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0131",
+            "name": "Hill's Science Plan Grain Free Lamb Dog Food 400g",
+            "pet_type": "dog",
+            "category": "wet-food",
+            "brand": "Hill's Science Plan",
+            "price_eur": 4.54,
+            "response_p": 0.658,
+            "predicted_aov_eur": 38.7,
+            "expected_revenue_eur": 24.97,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0007",
+            "name": "Royal Canin Lamb Dog Food 2kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Royal Canin",
+            "price_eur": 12.84,
+            "response_p": 0.643,
+            "predicted_aov_eur": 64.51,
+            "expected_revenue_eur": 40.98,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0062",
+            "name": "Acana Large Breed Lamb Dog Food 2kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Acana",
+            "price_eur": 13.21,
+            "response_p": 0.643,
+            "predicted_aov_eur": 61.09,
+            "expected_revenue_eur": 38.78,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 104.73
+      },
+      {
+        "customer_id": "CUST-00136",
+        "customer_name": "Teemu Leppänen",
+        "segment": "small_animal_owner",
+        "pet_size": null,
+        "lifestyle": "premium",
+        "health_focus": "medium",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-10",
+        "total_spent_eur": 674.24,
+        "total_orders": 7,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0585",
+            "name": "PetNord Canary Seed Food 4kg",
+            "pet_type": "bird",
+            "category": "dry-food",
+            "brand": "PetNord",
+            "price_eur": 24.75,
+            "response_p": 0.557,
+            "predicted_aov_eur": 81.7,
+            "expected_revenue_eur": 45.02,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0007",
+            "name": "Royal Canin Lamb Dog Food 2kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Royal Canin",
+            "price_eur": 12.84,
+            "response_p": 0.474,
+            "predicted_aov_eur": 56.62,
+            "expected_revenue_eur": 26.36,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0062",
+            "name": "Acana Large Breed Lamb Dog Food 2kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Acana",
+            "price_eur": 13.21,
+            "response_p": 0.474,
+            "predicted_aov_eur": 53.78,
+            "expected_revenue_eur": 25.02,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 96.4
+      },
+      {
+        "customer_id": "CUST-00081",
+        "customer_name": "Päivi Mäkelä",
+        "segment": "aquarium_owner",
+        "pet_size": null,
+        "lifestyle": "mid",
+        "health_focus": "medium",
+        "recency_bucket": "0-90d",
+        "last_order_month": "2026-01",
+        "total_spent_eur": 749.55,
+        "total_orders": 10,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0652",
+            "name": "PetNord Air Pump",
+            "pet_type": "aquarium",
+            "category": "aquarium",
+            "brand": "PetNord",
+            "price_eur": 23.54,
+            "response_p": 0.758,
+            "predicted_aov_eur": 47.97,
+            "expected_revenue_eur": 35.86,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0624",
+            "name": "JBL Air Pump",
+            "pet_type": "aquarium",
+            "category": "aquarium",
+            "brand": "JBL",
+            "price_eur": 25.03,
+            "response_p": 0.558,
+            "predicted_aov_eur": 66.47,
+            "expected_revenue_eur": 36.57,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0620",
+            "name": "JBL Algae Wafers",
+            "pet_type": "aquarium",
+            "category": "aquarium",
+            "brand": "JBL",
+            "price_eur": 24.63,
+            "response_p": 0.451,
+            "predicted_aov_eur": 45.05,
+            "expected_revenue_eur": 19.82,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 92.25
+      },
+      {
+        "customer_id": "CUST-00014",
+        "customer_name": "Jukka Anttila",
+        "segment": "small_animal_owner",
+        "pet_size": null,
+        "lifestyle": "mid",
+        "health_focus": "high",
+        "recency_bucket": "180d+",
+        "last_order_month": "2025-08",
+        "total_spent_eur": 283.97,
+        "total_orders": 1,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0584",
+            "name": "PetNord Canary Seed Food 15kg",
+            "pet_type": "bird",
+            "category": "dry-food",
+            "brand": "PetNord",
+            "price_eur": 92.01,
+            "response_p": 0.701,
+            "predicted_aov_eur": 60.75,
+            "expected_revenue_eur": 42.09,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0585",
+            "name": "PetNord Canary Seed Food 4kg",
+            "pet_type": "bird",
+            "category": "dry-food",
+            "brand": "PetNord",
+            "price_eur": 24.75,
+            "response_p": 0.567,
+            "predicted_aov_eur": 69.34,
+            "expected_revenue_eur": 38.81,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0193",
+            "name": "PetNord Grain Free Daily Dental Dental Treats 120g",
+            "pet_type": "dog",
+            "category": "dental-treats",
+            "brand": "PetNord",
+            "price_eur": 2.64,
+            "response_p": 0.487,
+            "predicted_aov_eur": 21.74,
+            "expected_revenue_eur": 10.09,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 90.99
+      },
+      {
+        "customer_id": "CUST-00082",
+        "customer_name": "Ismo Manninen",
+        "segment": "multi_pet",
+        "pet_size": "medium",
+        "lifestyle": "premium",
+        "health_focus": "medium",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-11",
+        "total_spent_eur": 481.32,
+        "total_orders": 8,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0007",
+            "name": "Royal Canin Lamb Dog Food 2kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Royal Canin",
+            "price_eur": 12.84,
+            "response_p": 0.532,
+            "predicted_aov_eur": 56.95,
+            "expected_revenue_eur": 29.79,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0062",
+            "name": "Acana Large Breed Lamb Dog Food 2kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Acana",
+            "price_eur": 13.21,
+            "response_p": 0.532,
+            "predicted_aov_eur": 53.53,
+            "expected_revenue_eur": 27.96,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0249",
+            "name": "PetNord Shampoo",
+            "pet_type": "dog",
+            "category": "grooming",
+            "brand": "PetNord",
+            "price_eur": 14.66,
+            "response_p": 0.521,
+            "predicted_aov_eur": 55.02,
+            "expected_revenue_eur": 28.17,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 85.92
+      },
+      {
+        "customer_id": "CUST-00144",
+        "customer_name": "Aleksi Saarinen",
+        "segment": "small_animal_owner",
+        "pet_size": null,
+        "lifestyle": "budget",
+        "health_focus": "medium",
+        "recency_bucket": "180d+",
+        "last_order_month": "2025-08",
+        "total_spent_eur": 604.95,
+        "total_orders": 3,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0584",
+            "name": "PetNord Canary Seed Food 15kg",
+            "pet_type": "bird",
+            "category": "dry-food",
+            "brand": "PetNord",
+            "price_eur": 92.01,
+            "response_p": 0.703,
+            "predicted_aov_eur": 63.27,
+            "expected_revenue_eur": 43.98,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0585",
+            "name": "PetNord Canary Seed Food 4kg",
+            "pet_type": "bird",
+            "category": "dry-food",
+            "brand": "PetNord",
+            "price_eur": 24.75,
+            "response_p": 0.572,
+            "predicted_aov_eur": 61.45,
+            "expected_revenue_eur": 34.63,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0193",
+            "name": "PetNord Grain Free Daily Dental Dental Treats 120g",
+            "pet_type": "dog",
+            "category": "dental-treats",
+            "brand": "PetNord",
+            "price_eur": 2.64,
+            "response_p": 0.491,
+            "predicted_aov_eur": 13.74,
+            "expected_revenue_eur": 6.25,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 84.86
+      },
+      {
+        "customer_id": "CUST-00052",
+        "customer_name": "Pirkko Tuominen",
+        "segment": "dog_owner",
+        "pet_size": "medium",
+        "lifestyle": "mid",
+        "health_focus": "medium",
+        "recency_bucket": "180d+",
+        "last_order_month": "2025-02",
+        "total_spent_eur": 320.66,
+        "total_orders": 3,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0193",
+            "name": "PetNord Grain Free Daily Dental Dental Treats 120g",
+            "pet_type": "dog",
+            "category": "dental-treats",
+            "brand": "PetNord",
+            "price_eur": 2.64,
+            "response_p": 0.554,
+            "predicted_aov_eur": 32.89,
+            "expected_revenue_eur": 17.71,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0007",
+            "name": "Royal Canin Lamb Dog Food 2kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Royal Canin",
+            "price_eur": 12.84,
+            "response_p": 0.548,
+            "predicted_aov_eur": 59.14,
+            "expected_revenue_eur": 31.9,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0062",
+            "name": "Acana Large Breed Lamb Dog Food 2kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Acana",
+            "price_eur": 13.21,
+            "response_p": 0.548,
+            "predicted_aov_eur": 55.72,
+            "expected_revenue_eur": 30.02,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 79.63
+      },
+      {
+        "customer_id": "CUST-00098",
+        "customer_name": "Matti Tuominen",
+        "segment": "dog_owner",
+        "pet_size": "medium",
+        "lifestyle": "premium",
+        "health_focus": "medium",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-11",
+        "total_spent_eur": 657.47,
+        "total_orders": 9,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0007",
+            "name": "Royal Canin Lamb Dog Food 2kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Royal Canin",
+            "price_eur": 12.84,
+            "response_p": 0.541,
+            "predicted_aov_eur": 48.54,
+            "expected_revenue_eur": 25.76,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0062",
+            "name": "Acana Large Breed Lamb Dog Food 2kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Acana",
+            "price_eur": 13.21,
+            "response_p": 0.541,
+            "predicted_aov_eur": 46.8,
+            "expected_revenue_eur": 24.82,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0249",
+            "name": "PetNord Shampoo",
+            "pet_type": "dog",
+            "category": "grooming",
+            "brand": "PetNord",
+            "price_eur": 14.66,
+            "response_p": 0.53,
+            "predicted_aov_eur": 47.24,
+            "expected_revenue_eur": 24.54,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 75.12
+      },
+      {
+        "customer_id": "CUST-00099",
+        "customer_name": "Mervi Niemelä",
+        "segment": "small_animal_owner",
+        "pet_size": null,
+        "lifestyle": "budget",
+        "health_focus": "medium",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-11",
+        "total_spent_eur": 926.24,
+        "total_orders": 9,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0585",
+            "name": "PetNord Canary Seed Food 4kg",
+            "pet_type": "bird",
+            "category": "dry-food",
+            "brand": "PetNord",
+            "price_eur": 24.75,
+            "response_p": 0.567,
+            "predicted_aov_eur": 64.38,
+            "expected_revenue_eur": 35.99,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0007",
+            "name": "Royal Canin Lamb Dog Food 2kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Royal Canin",
+            "price_eur": 12.84,
+            "response_p": 0.481,
+            "predicted_aov_eur": 38.48,
+            "expected_revenue_eur": 18.02,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0062",
+            "name": "Acana Large Breed Lamb Dog Food 2kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Acana",
+            "price_eur": 13.21,
+            "response_p": 0.481,
+            "predicted_aov_eur": 35.08,
+            "expected_revenue_eur": 16.38,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 70.39
+      },
+      {
+        "customer_id": "CUST-00153",
+        "customer_name": "Matti Niemi",
+        "segment": "dog_owner",
+        "pet_size": "medium",
+        "lifestyle": "mid",
+        "health_focus": "high",
+        "recency_bucket": "0-90d",
+        "last_order_month": "2026-01",
+        "total_spent_eur": 339.85,
+        "total_orders": 4,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0007",
+            "name": "Royal Canin Lamb Dog Food 2kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Royal Canin",
+            "price_eur": 12.84,
+            "response_p": 0.57,
+            "predicted_aov_eur": 47.43,
+            "expected_revenue_eur": 26.52,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0062",
+            "name": "Acana Large Breed Lamb Dog Food 2kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Acana",
+            "price_eur": 13.21,
+            "response_p": 0.57,
+            "predicted_aov_eur": 46.04,
+            "expected_revenue_eur": 25.72,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0071",
+            "name": "Acana Beef Dog Food 1kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Acana",
+            "price_eur": 6.29,
+            "response_p": 0.554,
+            "predicted_aov_eur": 32.83,
+            "expected_revenue_eur": 17.68,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 69.92
+      },
+      {
+        "customer_id": "CUST-00063",
+        "customer_name": "Riitta Aaltonen",
+        "segment": "cat_owner",
+        "pet_size": null,
+        "lifestyle": "premium",
+        "health_focus": "medium",
+        "recency_bucket": "0-90d",
+        "last_order_month": "2026-01",
+        "total_spent_eur": 411.31,
+        "total_orders": 4,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0372",
+            "name": "Royal Canin Indoor Beef Cat Food 400g",
+            "pet_type": "cat",
+            "category": "wet-food",
+            "brand": "Royal Canin",
+            "price_eur": 4.81,
+            "response_p": 0.74,
+            "predicted_aov_eur": 31.87,
+            "expected_revenue_eur": 23.09,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0281",
+            "name": "Hill's Science Plan Senior Chicken Cat Food 2kg",
+            "pet_type": "cat",
+            "category": "dry-food",
+            "brand": "Hill's Science Plan",
+            "price_eur": 13.59,
+            "response_p": 0.654,
+            "predicted_aov_eur": 39.18,
+            "expected_revenue_eur": 25.13,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0347",
+            "name": "Whiskas Chicken Cat Food 1kg",
+            "pet_type": "cat",
+            "category": "dry-food",
+            "brand": "Whiskas",
+            "price_eur": 6.18,
+            "response_p": 0.646,
+            "predicted_aov_eur": 31.56,
+            "expected_revenue_eur": 19.88,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 68.1
+      },
+      {
+        "customer_id": "CUST-00114",
+        "customer_name": "Marja Järvinen",
+        "segment": "cat_owner",
+        "pet_size": null,
+        "lifestyle": "premium",
+        "health_focus": "medium",
+        "recency_bucket": "0-90d",
+        "last_order_month": "2026-01",
+        "total_spent_eur": 231.27,
+        "total_orders": 3,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0372",
+            "name": "Royal Canin Indoor Beef Cat Food 400g",
+            "pet_type": "cat",
+            "category": "wet-food",
+            "brand": "Royal Canin",
+            "price_eur": 4.81,
+            "response_p": 0.74,
+            "predicted_aov_eur": 31.87,
+            "expected_revenue_eur": 23.09,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0281",
+            "name": "Hill's Science Plan Senior Chicken Cat Food 2kg",
+            "pet_type": "cat",
+            "category": "dry-food",
+            "brand": "Hill's Science Plan",
+            "price_eur": 13.59,
+            "response_p": 0.654,
+            "predicted_aov_eur": 39.18,
+            "expected_revenue_eur": 25.13,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0347",
+            "name": "Whiskas Chicken Cat Food 1kg",
+            "pet_type": "cat",
+            "category": "dry-food",
+            "brand": "Whiskas",
+            "price_eur": 6.18,
+            "response_p": 0.646,
+            "predicted_aov_eur": 31.56,
+            "expected_revenue_eur": 19.88,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 68.1
+      },
+      {
+        "customer_id": "CUST-00128",
+        "customer_name": "Ismo Rantanen",
+        "segment": "cat_owner",
+        "pet_size": null,
+        "lifestyle": "mid",
+        "health_focus": "low",
+        "recency_bucket": "180d+",
+        "last_order_month": "2025-09",
+        "total_spent_eur": 380.78,
+        "total_orders": 8,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0494",
+            "name": "PetNord Scratching Post",
+            "pet_type": "cat",
+            "category": "accessories",
+            "brand": "PetNord",
+            "price_eur": 21.55,
+            "response_p": 0.656,
+            "predicted_aov_eur": 45.94,
+            "expected_revenue_eur": 29.62,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0372",
+            "name": "Royal Canin Indoor Beef Cat Food 400g",
+            "pet_type": "cat",
+            "category": "wet-food",
+            "brand": "Royal Canin",
+            "price_eur": 4.81,
+            "response_p": 0.64,
+            "predicted_aov_eur": 28.67,
+            "expected_revenue_eur": 17.84,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0429",
+            "name": "Felix Grain Free Beef Cat Food 400g",
+            "pet_type": "cat",
+            "category": "wet-food",
+            "brand": "Felix",
+            "price_eur": 4.39,
+            "response_p": 0.64,
+            "predicted_aov_eur": 28.19,
+            "expected_revenue_eur": 17.53,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 64.99
+      },
+      {
+        "customer_id": "CUST-00169",
+        "customer_name": "Jaakko Hakala",
+        "segment": "multi_pet",
+        "pet_size": "small",
+        "lifestyle": "mid",
+        "health_focus": "low",
+        "recency_bucket": "180d+",
+        "last_order_month": "2025-09",
+        "total_spent_eur": 950.88,
+        "total_orders": 12,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0007",
+            "name": "Royal Canin Lamb Dog Food 2kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Royal Canin",
+            "price_eur": 12.84,
+            "response_p": 0.651,
+            "predicted_aov_eur": 41.98,
+            "expected_revenue_eur": 26.81,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0494",
+            "name": "PetNord Scratching Post",
+            "pet_type": "cat",
+            "category": "accessories",
+            "brand": "PetNord",
+            "price_eur": 21.55,
+            "response_p": 0.559,
+            "predicted_aov_eur": 48.4,
+            "expected_revenue_eur": 26.56,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0193",
+            "name": "PetNord Grain Free Daily Dental Dental Treats 120g",
+            "pet_type": "dog",
+            "category": "dental-treats",
+            "brand": "PetNord",
+            "price_eur": 2.64,
+            "response_p": 0.545,
+            "predicted_aov_eur": 19.86,
+            "expected_revenue_eur": 10.32,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 63.69
+      },
+      {
+        "customer_id": "CUST-00084",
+        "customer_name": "Inkeri Ojala",
+        "segment": "cat_owner",
+        "pet_size": null,
+        "lifestyle": "mid",
+        "health_focus": "high",
+        "recency_bucket": "180d+",
+        "last_order_month": "2025-07",
+        "total_spent_eur": 384.18,
+        "total_orders": 5,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0372",
+            "name": "Royal Canin Indoor Beef Cat Food 400g",
+            "pet_type": "cat",
+            "category": "wet-food",
+            "brand": "Royal Canin",
+            "price_eur": 4.81,
+            "response_p": 0.64,
+            "predicted_aov_eur": 28.67,
+            "expected_revenue_eur": 17.84,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0429",
+            "name": "Felix Grain Free Beef Cat Food 400g",
+            "pet_type": "cat",
+            "category": "wet-food",
+            "brand": "Felix",
+            "price_eur": 4.39,
+            "response_p": 0.64,
+            "predicted_aov_eur": 28.19,
+            "expected_revenue_eur": 17.53,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0281",
+            "name": "Hill's Science Plan Senior Chicken Cat Food 2kg",
+            "pet_type": "cat",
+            "category": "dry-food",
+            "brand": "Hill's Science Plan",
+            "price_eur": 13.59,
+            "response_p": 0.632,
+            "predicted_aov_eur": 34.97,
+            "expected_revenue_eur": 21.6,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 56.97
+      },
+      {
+        "customer_id": "CUST-00147",
+        "customer_name": "Markku Kauppinen",
+        "segment": "dog_owner",
+        "pet_size": "medium",
+        "lifestyle": "mid",
+        "health_focus": "medium",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-11",
+        "total_spent_eur": 419.45,
+        "total_orders": 6,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0007",
+            "name": "Royal Canin Lamb Dog Food 2kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Royal Canin",
+            "price_eur": 12.84,
+            "response_p": 0.544,
+            "predicted_aov_eur": 36.57,
+            "expected_revenue_eur": 19.4,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0062",
+            "name": "Acana Large Breed Lamb Dog Food 2kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Acana",
+            "price_eur": 13.21,
+            "response_p": 0.544,
+            "predicted_aov_eur": 33.14,
+            "expected_revenue_eur": 17.54,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0249",
+            "name": "PetNord Shampoo",
+            "pet_type": "dog",
+            "category": "grooming",
+            "brand": "PetNord",
+            "price_eur": 14.66,
+            "response_p": 0.532,
+            "predicted_aov_eur": 37.61,
+            "expected_revenue_eur": 19.52,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 56.46
+      },
+      {
+        "customer_id": "CUST-00139",
+        "customer_name": "Heikki Lehtinen",
+        "segment": "dog_owner",
+        "pet_size": "large",
+        "lifestyle": "mid",
+        "health_focus": "high",
+        "recency_bucket": "180d+",
+        "last_order_month": "2024-11",
+        "total_spent_eur": 232.99,
+        "total_orders": 1,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0131",
+            "name": "Hill's Science Plan Grain Free Lamb Dog Food 400g",
+            "pet_type": "dog",
+            "category": "wet-food",
+            "brand": "Hill's Science Plan",
+            "price_eur": 4.54,
+            "response_p": 0.662,
+            "predicted_aov_eur": 20.73,
+            "expected_revenue_eur": 13.23,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0193",
+            "name": "PetNord Grain Free Daily Dental Dental Treats 120g",
+            "pet_type": "dog",
+            "category": "dental-treats",
+            "brand": "PetNord",
+            "price_eur": 2.64,
+            "response_p": 0.655,
+            "predicted_aov_eur": 21.6,
+            "expected_revenue_eur": 13.64,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0007",
+            "name": "Royal Canin Lamb Dog Food 2kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Royal Canin",
+            "price_eur": 12.84,
+            "response_p": 0.649,
+            "predicted_aov_eur": 43.02,
+            "expected_revenue_eur": 27.44,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 54.31
+      },
+      {
+        "customer_id": "CUST-00156",
+        "customer_name": "Niina Koivisto",
+        "segment": "dog_owner",
+        "pet_size": "small",
+        "lifestyle": "mid",
+        "health_focus": "high",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-11",
+        "total_spent_eur": 901.55,
+        "total_orders": 5,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0007",
+            "name": "Royal Canin Lamb Dog Food 2kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Royal Canin",
+            "price_eur": 12.84,
+            "response_p": 0.544,
+            "predicted_aov_eur": 50.18,
+            "expected_revenue_eur": 26.78,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0139",
+            "name": "Hill's Science Plan Puppy Beef Dog Food 150g",
+            "pet_type": "dog",
+            "category": "wet-food",
+            "brand": "Hill's Science Plan",
+            "price_eur": 1.62,
+            "response_p": 0.544,
+            "predicted_aov_eur": 24.81,
+            "expected_revenue_eur": 12.99,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0109",
+            "name": "Royal Canin Beef Dog Food 150g",
+            "pet_type": "dog",
+            "category": "wet-food",
+            "brand": "Royal Canin",
+            "price_eur": 1.62,
+            "response_p": 0.532,
+            "predicted_aov_eur": 21.27,
+            "expected_revenue_eur": 10.81,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 50.58
+      },
+      {
+        "customer_id": "CUST-00012",
+        "customer_name": "Lauri Mattila",
+        "segment": "cat_owner",
+        "pet_size": null,
+        "lifestyle": "budget",
+        "health_focus": "low",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-12",
+        "total_spent_eur": 381.33,
+        "total_orders": 5,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0494",
+            "name": "PetNord Scratching Post",
+            "pet_type": "cat",
+            "category": "accessories",
+            "brand": "PetNord",
+            "price_eur": 21.55,
+            "response_p": 0.656,
+            "predicted_aov_eur": 37.28,
+            "expected_revenue_eur": 23.94,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0372",
+            "name": "Royal Canin Indoor Beef Cat Food 400g",
+            "pet_type": "cat",
+            "category": "wet-food",
+            "brand": "Royal Canin",
+            "price_eur": 4.81,
+            "response_p": 0.639,
+            "predicted_aov_eur": 18.66,
+            "expected_revenue_eur": 11.43,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0429",
+            "name": "Felix Grain Free Beef Cat Food 400g",
+            "pet_type": "cat",
+            "category": "wet-food",
+            "brand": "Felix",
+            "price_eur": 4.39,
+            "response_p": 0.639,
+            "predicted_aov_eur": 18.18,
+            "expected_revenue_eur": 11.12,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 46.49
+      },
+      {
+        "customer_id": "CUST-00056",
+        "customer_name": "Toivo Ahonen",
+        "segment": "cat_owner",
+        "pet_size": null,
+        "lifestyle": "mid",
+        "health_focus": "high",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-11",
+        "total_spent_eur": 409.04,
+        "total_orders": 6,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0372",
+            "name": "Royal Canin Indoor Beef Cat Food 400g",
+            "pet_type": "cat",
+            "category": "wet-food",
+            "brand": "Royal Canin",
+            "price_eur": 4.81,
+            "response_p": 0.637,
+            "predicted_aov_eur": 14.57,
+            "expected_revenue_eur": 8.78,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0429",
+            "name": "Felix Grain Free Beef Cat Food 400g",
+            "pet_type": "cat",
+            "category": "wet-food",
+            "brand": "Felix",
+            "price_eur": 4.39,
+            "response_p": 0.637,
+            "predicted_aov_eur": 14.16,
+            "expected_revenue_eur": 8.52,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0281",
+            "name": "Hill's Science Plan Senior Chicken Cat Food 2kg",
+            "pet_type": "cat",
+            "category": "dry-food",
+            "brand": "Hill's Science Plan",
+            "price_eur": 13.59,
+            "response_p": 0.63,
+            "predicted_aov_eur": 23.75,
+            "expected_revenue_eur": 14.47,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 31.77
+      }
+    ],
+    "last_query": {
+      "endpoint": "_recommend",
+      "body": {
+        "from": "winback_campaigns",
+        "where": {
+          "customer_lifestyle": "premium",
+          "customer_segment": "dog_owner",
+          "recency_bucket": "0-90d"
+        },
+        "recommend": "product_sku",
+        "goal": {
+          "responded": true
+        },
+        "basedOn": [
+          "pet_type",
+          "category",
+          "brand"
+        ],
+        "limit": 8
+      }
+    },
+    "last_response_ms": 8234
+  },
+  "timings": [
+    [
+      "_search",
+      17.82
+    ]
+  ]
+}

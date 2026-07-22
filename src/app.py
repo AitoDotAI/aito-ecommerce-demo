@@ -23,7 +23,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from src.aito_client import AitoClient, AitoError
-from src import cache, timing
+from src import cache, timing, precompute_store
 from src.config import load_config
 from src.rate_limit import check_rate_limit
 from src.overview_service import get_dashboard
@@ -51,6 +51,10 @@ aito = AitoClient(config)
 # PUBLIC_DEMO=1 so the demo runs against a read-only API key.
 if aito.check_connectivity():
     cache.init_persistent_cache(aito)
+    # Register the read-only precompute-and-serve store for the six
+    # heavy endpoints (ADR 0024). Reads only — populated by
+    # `./do precompute`, never written at request time.
+    precompute_store.init(aito)
 else:
     # Don't fail startup — the public-demo container may be racing the
     # Aito DNS record, and the health endpoint will surface the state
@@ -283,7 +287,7 @@ def evaluation_endpoint():
     """Run four `_evaluate` models in parallel and return pass/fail
     per the +10 pp accuracy-gain threshold. See ADR 0010."""
     try:
-        return run_evaluation(aito).to_dict()
+        return precompute_store.serve("evaluation", lambda: run_evaluation(aito).to_dict())
     except AitoError as exc:
         return JSONResponse(
             status_code=502,
@@ -338,7 +342,7 @@ def churn_endpoint():
     churned`) + drivers (`_relate` × 3) + honest accuracy
     (`_evaluate`). See ADR 0013."""
     try:
-        return get_churn(aito).to_dict()
+        return precompute_store.serve("churn", lambda: get_churn(aito).to_dict())
     except AitoError as exc:
         return JSONResponse(
             status_code=502,
@@ -351,7 +355,7 @@ def demand_endpoint():
     """Per-SKU next-month units forecast + seasonality drivers +
     held-out accuracy. See ADR 0014."""
     try:
-        return get_demand(aito).to_dict()
+        return precompute_store.serve("demand", lambda: get_demand(aito).to_dict())
     except AitoError as exc:
         return JSONResponse(
             status_code=502,
@@ -365,7 +369,7 @@ def inventory_endpoint():
     units_sold` next month) + overstock list with tied-capital €.
     See ADR 0015."""
     try:
-        return get_inventory(aito).to_dict()
+        return precompute_store.serve("inventory", lambda: get_inventory(aito).to_dict())
     except AitoError as exc:
         return JSONResponse(
             status_code=502,
@@ -380,7 +384,7 @@ def winback_endpoint():
     revenue. Empirical impact from `winback_campaigns` historical
     table. See ADR 0020."""
     try:
-        return get_winback(aito).to_dict()
+        return precompute_store.serve("winback", lambda: get_winback(aito).to_dict())
     except AitoError as exc:
         return JSONResponse(
             status_code=502,
@@ -407,7 +411,7 @@ def markdown_endpoint():
     levels driven by Aito's `_estimate units_sold` at multiple price
     points + clearance-revenue math. See ADR 0018."""
     try:
-        return get_markdowns(aito).to_dict()
+        return precompute_store.serve("markdown", lambda: get_markdowns(aito).to_dict())
     except AitoError as exc:
         return JSONResponse(
             status_code=502,

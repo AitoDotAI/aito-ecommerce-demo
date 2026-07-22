@@ -1,0 +1,193 @@
+{
+  "data": {
+    "models": [
+      {
+        "id": "pet_type_from_name",
+        "label": "Pet type from product name",
+        "table": "products",
+        "predict": "pet_type",
+        "features": [
+          "name",
+          "brand"
+        ],
+        "accuracy": 0.975,
+        "base_accuracy": 0.0,
+        "accuracy_gain": 0.975,
+        "n": 200,
+        "threshold_pp": 10.0,
+        "verdict": "pass",
+        "last_query": {
+          "endpoint": "_evaluate",
+          "body": {
+            "testSource": {
+              "from": "products",
+              "limit": 200
+            },
+            "evaluate": {
+              "from": "products",
+              "where": {
+                "name": {
+                  "$get": "name"
+                },
+                "brand": {
+                  "$get": "brand"
+                }
+              },
+              "predict": "pet_type"
+            },
+            "select": [
+              "accuracy",
+              "baseAccuracy",
+              "n"
+            ]
+          }
+        },
+        "error": null
+      },
+      {
+        "id": "dietary_from_name",
+        "label": "Dietary tag from product attributes",
+        "table": "products",
+        "predict": "dietary",
+        "features": [
+          "name",
+          "brand",
+          "category",
+          "pet_type"
+        ],
+        "accuracy": 0.635,
+        "base_accuracy": 0.245,
+        "accuracy_gain": 0.39,
+        "n": 200,
+        "threshold_pp": 10.0,
+        "verdict": "pass",
+        "last_query": {
+          "endpoint": "_evaluate",
+          "body": {
+            "testSource": {
+              "from": "products",
+              "limit": 200
+            },
+            "evaluate": {
+              "from": "products",
+              "where": {
+                "name": {
+                  "$get": "name"
+                },
+                "brand": {
+                  "$get": "brand"
+                },
+                "category": {
+                  "$get": "category"
+                },
+                "pet_type": {
+                  "$get": "pet_type"
+                }
+              },
+              "predict": "dietary"
+            },
+            "select": [
+              "accuracy",
+              "baseAccuracy",
+              "n"
+            ]
+          }
+        },
+        "error": null
+      },
+      {
+        "id": "segment_from_product",
+        "label": "Customer segment from product attributes",
+        "table": "order_lines",
+        "predict": "customer_segment",
+        "features": [
+          "product.pet_type",
+          "product.category"
+        ],
+        "accuracy": 0.805,
+        "base_accuracy": 0.475,
+        "accuracy_gain": 0.33,
+        "n": 200,
+        "threshold_pp": 10.0,
+        "verdict": "pass",
+        "last_query": {
+          "endpoint": "_evaluate",
+          "body": {
+            "testSource": {
+              "from": "order_lines",
+              "limit": 200
+            },
+            "evaluate": {
+              "from": "order_lines",
+              "where": {
+                "product_sku.pet_type": {
+                  "$get": "product_sku.pet_type"
+                },
+                "product_sku.category": {
+                  "$get": "product_sku.category"
+                }
+              },
+              "predict": "customer_segment"
+            },
+            "select": [
+              "accuracy",
+              "baseAccuracy",
+              "n"
+            ]
+          }
+        },
+        "error": null
+      },
+      {
+        "id": "return_risk",
+        "label": "Return risk (deliberate honest-failure case)",
+        "table": "order_lines",
+        "predict": "returned",
+        "features": [
+          "product.category",
+          "product.pet_type",
+          "customer_segment"
+        ],
+        "accuracy": 0.975,
+        "base_accuracy": 0.975,
+        "accuracy_gain": 0.0,
+        "n": 200,
+        "threshold_pp": 10.0,
+        "verdict": "fail",
+        "last_query": {
+          "endpoint": "_evaluate",
+          "body": {
+            "testSource": {
+              "from": "order_lines",
+              "limit": 200
+            },
+            "evaluate": {
+              "from": "order_lines",
+              "where": {
+                "product_sku.category": {
+                  "$get": "product_sku.category"
+                },
+                "product_sku.pet_type": {
+                  "$get": "product_sku.pet_type"
+                },
+                "customer_segment": {
+                  "$get": "customer_segment"
+                }
+              },
+              "predict": "returned"
+            },
+            "select": [
+              "accuracy",
+              "baseAccuracy",
+              "n"
+            ]
+          }
+        },
+        "error": null
+      }
+    ],
+    "last_run": "2026-07-22T05:57:42+00:00",
+    "total_response_ms": 27416
+  },
+  "timings": []
+}
