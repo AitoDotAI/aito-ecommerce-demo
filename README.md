@@ -541,10 +541,12 @@ Browser → Next.js (port 8500) → fetch("/api/...") → FastAPI (port 8501)
   Aito-backed `prediction_cache` table that survives restarts, computed
   on first hit (read-only keys disable the persistent layer cleanly).
   The six *heavy* views (churn, demand, evaluation, inventory, markdown,
-  win-back) are **precompute-and-served** (`precompute_store.py`, ADR
-  0024): `./do precompute` runs their `_evaluate` / large fan-out work
-  offline and snapshots each result into an Aito `precompute_entries`
-  table plus a git-committed JSON bootstrap, so the app only ever reads.
+  win-back) — plus the **dashboard** landing page, which looks light but
+  runs ~321 sequential `_search` calls (~93 s cold, the heaviest cold
+  page) — are **precompute-and-served** (`precompute_store.py`, ADR
+  0024): `./do precompute` runs that work offline and snapshots each
+  result into an Aito `precompute_entries` table plus a git-committed
+  JSON bootstrap, so the app only ever reads.
   Reads need just a read key, so the read-only public deploy opens those
   pages in well under a second even on a cold container.
 

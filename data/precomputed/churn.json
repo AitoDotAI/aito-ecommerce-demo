@@ -1397,24 +1397,24 @@
         "predict": "churned_in_3_months"
       }
     },
-    "last_response_ms": 24448
+    "last_response_ms": 27143
   },
   "timings": [
     [
       "_search",
-      6.42
+      2.95
     ],
     [
       "_search",
-      12.56
+      3.49
     ],
     [
       "_search",
-      663.28
+      523.89
     ],
     [
       "_evaluate",
-      10974.62
+      9386.23
     ]
   ]
 }

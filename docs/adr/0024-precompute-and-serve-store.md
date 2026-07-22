@@ -19,9 +19,17 @@ inventory, markdown, and winback. Measured live against the deployment
 | markdown | ~18 s | 75× `_estimate` |
 | winback | fan-out per churned customer | `_recommend` + `_estimate` × N |
 
-The other views (dashboard, for-you, smart-search, bought-together,
-purchase-analytics, filling, feedback, price, cart-completion) already
-answer in sub-second or from cache and are **not** in scope.
+The other views (for-you, smart-search, bought-together,
+purchase-analytics, filling, feedback, price, cart-completion) answer
+in sub-second once warm and are **not** in scope — they are either
+light or parameterised (per persona / query), so they can't reduce to a
+single snapshot.
+
+The **dashboard** is precomputed too, added after the initial six (see
+Notes → "Dashboard is the seventh precomputed view"). It reads as
+"light", but it's the landing view *and* it turned out to make ~321
+sequential `_search` calls (~93 s cold) — the heaviest cold page of all
+— so a cold-start visitor felt it first and worst.
 
 Why the cold cost keeps biting in production specifically: the public
 deploy runs with `PUBLIC_DEMO=1` against a **read-only** API key. Our
@@ -135,7 +143,9 @@ intact.
 
 ## Out of scope
 
-- The nine light endpoints — they stay on the lazy `cache.py`.
+- The remaining light / parameterised views (for-you, smart-search,
+  bought-together, purchase-analytics, filling, feedback, price,
+  cart-completion) — they stay on the lazy `cache.py`.
 - Personalized / parameter-swept variants beyond each heavy endpoint's
   single canonical result (heavy pages take no user params today).
 - Removing or refactoring `cache.py`.
@@ -185,6 +195,20 @@ intact.
 - Verified read path: a cold process serves `churn` from the store in
   ~116 ms (vs ~32 s recompute) with the pill showing the real
   `_evaluate:10974.6`.
+- **Dashboard is the seventh precomputed view.** Added after the
+  initial six because it's the *landing* page — the first thing every
+  visitor loads, so its cold cost is felt before anything else.
+  Precompute snapshotting also surfaced *why* it stalled: `get_dashboard`
+  runs **~321 sequential `_search` calls** (~93 s cold), almost all from
+  `_segment_cards`, which loops five segments × up to 60 customers doing
+  one search per customer for the average-basket figure. So the "light"
+  landing page was in fact the heaviest cold page in the demo. It now
+  serves in ~0.17 s from the snapshot. The underlying per-customer
+  fan-out is a separate inefficiency worth collapsing into an
+  `_aggregate` — tracked as a follow-up, not blocking this change. Its
+  pill aggregates to a single "321 calls · ~6.8 s" figure in
+  `LatencyBadge` (it sums + counts, not one chip per call), consistent
+  with what the live dashboard already emitted.
 - Open question: should `./do precompute` run inside `./do reset-data`
   automatically (one command to reload + snapshot), or stay a separate
   step? Leaning toward chaining it into `reset-data` so the snapshot

@@ -17,6 +17,7 @@ Cold wall time, measured against the same shared Aito instance.
 
 | Endpoint | Before (live, cold) | After (store read) | After (warm L1) |
 |----------|--------------------:|-------------------:|----------------:|
+| dashboard | ~93 s (321 `_search`) | 0.17 s | 0.004 s |
 | churn | 32.7 s | 0.30 s | 0.007 s |
 | demand | 32.9 s | 0.11 s | 0.005 s |
 | evaluation | 31.8 s | 0.12 s | 0.003 s |
@@ -25,6 +26,13 @@ Cold wall time, measured against the same shared Aito instance.
 | winback | (fan-out) | 0.12 s | 0.003 s |
 
 ✅ **AC:** cold-container heavy pages return < 1 s.
+
+The **dashboard** was added to the precompute set after the initial six:
+it's the landing page, and snapshotting surfaced that `get_dashboard`
+runs ~321 sequential `_search` calls (~93 s cold) — the heaviest cold
+page of all, felt first by every visitor. Its pill aggregates to a
+single "321 calls · ~6.8 s" figure (`LatencyBadge` sums + counts), and
+the `X-Aito-Calls` header is ~3.9 KB — well within limits.
 
 ## Latency pill — real query cost preserved
 

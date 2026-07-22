@@ -15,11 +15,15 @@ Without the latter, the first boot after `reset-data` hits cold
 light endpoints. With it, every light endpoint is warm before the
 dev server even starts.
 
-Scope: this warms the nine *light* endpoints only. The six heavy
-ones (churn, demand, evaluation, inventory, markdown, winback) are
-precompute-and-served via `./do precompute` (ADR 0024), not lazily
-cached here — that is what removes their 14–32 s cold cost on the
-read-only public deploy, where this lazy L2 layer is disabled.
+Scope: this warms the remaining light, parameterised views (For You /
+Smart Search per persona, plus the small ad-hoc ones). The six heavy
+endpoints (churn, demand, evaluation, inventory, markdown, winback)
+AND the dashboard landing page are precompute-and-served via
+`./do precompute` (ADR 0024), not lazily cached here — that is what
+removes their cold cost on the read-only public deploy, where this
+lazy L2 layer is disabled. The dashboard is precomputed despite being
+light because it is the entry view: its cold cost is the first thing
+every visitor would feel.
 """
 
 from __future__ import annotations
@@ -27,7 +31,6 @@ from __future__ import annotations
 import time
 
 from src.aito_client import AitoClient
-from src.overview_service import get_dashboard
 from src.search_service import smart_search
 from src.recommend_service import get_for_you
 from src.bought_together_service import get_bought_together
@@ -77,7 +80,7 @@ def warm_all(client: AitoClient, *, verbose: bool = True) -> None:
         print("Warming cache…")
 
     endpoints = [
-        ("dashboard",        lambda: get_dashboard(client)),
+        # dashboard is precompute-served (ADR 0024), not warmed here.
         ("for-you maija",    lambda: get_for_you(client, persona_id="maija")),
         ("for-you olli",     lambda: get_for_you(client, persona_id="olli")),
         ("for-you saara",    lambda: get_for_you(client, persona_id="saara")),

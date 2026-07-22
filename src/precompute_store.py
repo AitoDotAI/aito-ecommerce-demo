@@ -1,8 +1,14 @@
-"""Precompute-and-serve store for the six heavy read endpoints.
+"""Precompute-and-serve store for the demo's parameterless views.
 
-The heavy views (churn, demand, evaluation, inventory, markdown,
-winback) each run an `_evaluate` and/or a large `_predict` / `_estimate`
-fan-out. Live, that is 14–32 s on a cold container. Worse, the public
+Seven views are served from offline snapshots: the six heavy ones
+(churn, demand, evaluation, inventory, markdown, winback) plus the
+dashboard landing page (light-looking, but ~321 sequential `_search`
+calls / ~93 s cold — the heaviest cold page, and the first one every
+visitor loads; see ADR 0024).
+
+The heavy views each run an `_evaluate` and/or a large `_predict` /
+`_estimate` fan-out. Live, that is 14–32 s on a cold container. Worse,
+the public
 deploy runs a **read-only** API key, so `src/cache.py`'s write-through
 L2 layer is disabled there — every restart starts cold and the startup
 warmup has to recompute all six.

@@ -916,28 +916,28 @@
         "estimate": "units_sold"
       }
     },
-    "last_response_ms": 17687
+    "last_response_ms": 17652
   },
   "timings": [
     [
       "_search",
-      55.1
+      55.29
     ],
     [
       "_search",
-      51.64
+      51.72
     ],
     [
       "_search",
-      399.63
+      521.57
     ],
     [
       "_search",
-      402.82
+      460.47
     ],
     [
       "_search",
-      92.85
+      88.35
     ]
   ]
 }

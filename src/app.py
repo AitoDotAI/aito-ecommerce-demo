@@ -51,9 +51,10 @@ aito = AitoClient(config)
 # PUBLIC_DEMO=1 so the demo runs against a read-only API key.
 if aito.check_connectivity():
     cache.init_persistent_cache(aito)
-    # Register the read-only precompute-and-serve store for the six
-    # heavy endpoints (ADR 0024). Reads only — populated by
-    # `./do precompute`, never written at request time.
+    # Register the read-only precompute-and-serve store for the seven
+    # precomputed views — the six heavy endpoints plus the dashboard
+    # landing page (ADR 0024). Reads only — populated by `./do precompute`,
+    # never written at request time.
     precompute_store.init(aito)
 else:
     # Don't fail startup — the public-demo container may be racing the
@@ -216,7 +217,7 @@ def dashboard():
     Cached for 10 minutes per `overview_service.get_dashboard`.
     """
     try:
-        return get_dashboard(aito).to_dict()
+        return precompute_store.serve("dashboard", lambda: get_dashboard(aito).to_dict())
     except AitoError as exc:
         return JSONResponse(
             status_code=502,

@@ -247,7 +247,9 @@ Pause. Look at audience.
 
 The six heaviest views (Churn, Demand, Evaluation, Inventory, Markdown,
 Win-back) each run an `_evaluate` and/or a large fan-out — 14–32 s of
-real work. They are **precompute-and-served** (ADR 0024): `./do precompute`
+real work — plus the **Dashboard** landing page (deceptively light: ~321
+sequential `_search` calls, ~93 s cold). They are **precompute-and-served**
+(ADR 0024): `./do precompute`
 runs that work offline and snapshots each result into an Aito table plus
 a git-committed JSON bootstrap, and the app only reads. So every one of
 them opens in well under a second, cold container included, and the pill
