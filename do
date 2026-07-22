@@ -58,6 +58,7 @@ Data
   reset-data        Drop and reload all Aito tables + warm the cache
   clear-cache       Clear in-memory + Aito persistent prediction cache
   warm-cache        Pre-compute every cacheable endpoint once
+  precompute        Snapshot the six heavy endpoints to Aito + git JSON (ADR 0024)
   workbook          (Re)create the console workbook from docs/aito-workbook-ecommerce-demo.json
 
 Quality
@@ -219,11 +220,16 @@ from src.config import load_config
 from src.aito_client import AitoClient
 from src import cache
 from src.cache_warmup import warm_all
+from src.precompute import precompute_all
 
 config = load_config()
 client = AitoClient(config)
 cache.init_persistent_cache(client)
+# Light endpoints: lazy L2 warm. Heavy endpoints: offline snapshot into
+# the precompute store (ADR 0024). Chained here so the snapshot can
+# never drift behind a data reload.
 warm_all(client, verbose=True)
+precompute_all(client, verbose=True)
 "
 }
 
@@ -256,6 +262,27 @@ cfg = load_config()
 client = AitoClient(cfg)
 cache_mod.init_persistent_cache(client)
 warm_all(client, verbose=True)
+"
+}
+
+cmd_precompute() {
+  # Snapshot the six heavy endpoints (churn, demand, evaluation,
+  # inventory, markdown, winback) into the Aito precompute_entries
+  # table + the git-committed JSON bootstrap. See ADR 0024. Runs the
+  # heavy _evaluate / fan-out work OFFLINE so the running container
+  # (and the read-only public deploy) only ever reads. Deliberately
+  # does NOT init the lazy persistent cache, so each endpoint computes
+  # live and its real per-call timings are captured for the pill.
+  echo "Precomputing heavy endpoints (churn, demand, evaluation, inventory, markdown, winback)..."
+  cd "$SCRIPT_DIR"
+  _show_target
+  uv run python -c "
+from src.config import load_config
+from src.aito_client import AitoClient
+from src.precompute import precompute_all
+cfg = load_config()
+client = AitoClient(cfg)
+precompute_all(client, verbose=True)
 "
 }
 
@@ -477,6 +504,7 @@ case "${1:-help}" in
   reset-data)        shift; cmd_reset_data "$@" ;;
   clear-cache)       cmd_clear_cache ;;
   warm-cache)        cmd_warm_cache ;;
+  precompute)        cmd_precompute ;;
   workbook)          cmd_workbook ;;
   test)              cmd_test ;;
   aito-check)        cmd_aito_check ;;

@@ -1,0 +1,943 @@
+{
+  "data": {
+    "kpis": [
+      {
+        "label": "Overstock targeted",
+        "value": 15.0,
+        "sub": "318 excess units"
+      },
+      {
+        "label": "Tied capital",
+        "value": 14804.68,
+        "sub": "stuck in excess inventory today"
+      },
+      {
+        "label": "Margin recoverable",
+        "value": 1587.42,
+        "sub": "(price − cost) × units cleared at proposed markdowns"
+      }
+    ],
+    "proposals": [
+      {
+        "sku": "SKU-PT-0037",
+        "name": "Hill's Science Plan Senior Turkey Dog Food 15kg",
+        "pet_type": "dog",
+        "category": "dry-food",
+        "current_stock": 16,
+        "reorder_point": 3,
+        "list_price_eur": 92.68,
+        "unit_cost_eur": 66.73,
+        "excess_units": 10,
+        "tied_capital_eur": 667.3,
+        "proposed_discount_pct": 0,
+        "proposed_price_eur": 92.68,
+        "proposed_weeks_to_clear": 11.8,
+        "proposed_recoverable_revenue_eur": 259.5,
+        "proposed_margin_lost_eur": 0.0,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 92.68,
+            "monthly_units": 3.67,
+            "weeks_to_clear": 11.8,
+            "margin_per_unit_eur": 25.95,
+            "recoverable_revenue_eur": 259.5
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 88.05,
+            "monthly_units": 4.44,
+            "weeks_to_clear": 9.8,
+            "margin_per_unit_eur": 21.32,
+            "recoverable_revenue_eur": 213.2
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 83.41,
+            "monthly_units": 5.42,
+            "weeks_to_clear": 8.0,
+            "margin_per_unit_eur": 16.68,
+            "recoverable_revenue_eur": 166.8
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 78.78,
+            "monthly_units": 6.7,
+            "weeks_to_clear": 6.5,
+            "margin_per_unit_eur": 12.05,
+            "recoverable_revenue_eur": 120.5
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 74.14,
+            "monthly_units": 8.4,
+            "weeks_to_clear": 5.2,
+            "margin_per_unit_eur": 7.41,
+            "recoverable_revenue_eur": 74.1
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0074",
+        "name": "Acana Sensitive Beef Dog Food 15kg",
+        "pet_type": "dog",
+        "category": "dry-food",
+        "current_stock": 28,
+        "reorder_point": 3,
+        "list_price_eur": 95.87,
+        "unit_cost_eur": 69.03,
+        "excess_units": 22,
+        "tied_capital_eur": 1518.66,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 76.7,
+        "proposed_weeks_to_clear": 12.5,
+        "proposed_recoverable_revenue_eur": 168.74,
+        "proposed_margin_lost_eur": 421.74,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 95.87,
+            "monthly_units": 3.32,
+            "weeks_to_clear": 28.7,
+            "margin_per_unit_eur": 26.84,
+            "recoverable_revenue_eur": 267.66
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 91.08,
+            "monthly_units": 4.02,
+            "weeks_to_clear": 23.7,
+            "margin_per_unit_eur": 22.05,
+            "recoverable_revenue_eur": 266.0
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 86.28,
+            "monthly_units": 4.92,
+            "weeks_to_clear": 19.4,
+            "margin_per_unit_eur": 17.25,
+            "recoverable_revenue_eur": 254.44
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 81.49,
+            "monthly_units": 6.08,
+            "weeks_to_clear": 15.7,
+            "margin_per_unit_eur": 12.46,
+            "recoverable_revenue_eur": 227.21
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 76.7,
+            "monthly_units": 7.61,
+            "weeks_to_clear": 12.5,
+            "margin_per_unit_eur": 7.67,
+            "recoverable_revenue_eur": 168.74
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0532",
+        "name": "PetNord Senior Rabbit Pellets Food 12kg",
+        "pet_type": "small_animal",
+        "category": "dry-food",
+        "current_stock": 29,
+        "reorder_point": 3,
+        "list_price_eur": 87.33,
+        "unit_cost_eur": 62.88,
+        "excess_units": 23,
+        "tied_capital_eur": 1446.24,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 69.86,
+        "proposed_weeks_to_clear": 11.8,
+        "proposed_recoverable_revenue_eur": 160.54,
+        "proposed_margin_lost_eur": 401.81,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 87.33,
+            "monthly_units": 3.67,
+            "weeks_to_clear": 27.1,
+            "margin_per_unit_eur": 24.45,
+            "recoverable_revenue_eur": 269.5
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 82.96,
+            "monthly_units": 4.45,
+            "weeks_to_clear": 22.4,
+            "margin_per_unit_eur": 20.08,
+            "recoverable_revenue_eur": 267.82
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 78.6,
+            "monthly_units": 5.43,
+            "weeks_to_clear": 18.3,
+            "margin_per_unit_eur": 15.72,
+            "recoverable_revenue_eur": 256.22
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 74.23,
+            "monthly_units": 6.72,
+            "weeks_to_clear": 14.8,
+            "margin_per_unit_eur": 11.35,
+            "recoverable_revenue_eur": 228.78
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 69.86,
+            "monthly_units": 8.42,
+            "weeks_to_clear": 11.8,
+            "margin_per_unit_eur": 6.98,
+            "recoverable_revenue_eur": 160.54
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0012",
+        "name": "Royal Canin Salmon Dog Food 12kg",
+        "pet_type": "dog",
+        "category": "dry-food",
+        "current_stock": 20,
+        "reorder_point": 3,
+        "list_price_eur": 77.4,
+        "unit_cost_eur": 55.73,
+        "excess_units": 14,
+        "tied_capital_eur": 780.22,
+        "proposed_discount_pct": 15,
+        "proposed_price_eur": 65.79,
+        "proposed_weeks_to_clear": 11.3,
+        "proposed_recoverable_revenue_eur": 140.84,
+        "proposed_margin_lost_eur": 162.54,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 77.4,
+            "monthly_units": 2.93,
+            "weeks_to_clear": 20.7,
+            "margin_per_unit_eur": 21.67,
+            "recoverable_revenue_eur": 190.41
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 73.53,
+            "monthly_units": 3.54,
+            "weeks_to_clear": 17.1,
+            "margin_per_unit_eur": 17.8,
+            "recoverable_revenue_eur": 189.22
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 69.66,
+            "monthly_units": 4.33,
+            "weeks_to_clear": 14.0,
+            "margin_per_unit_eur": 13.93,
+            "recoverable_revenue_eur": 181.01
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 65.79,
+            "monthly_units": 5.36,
+            "weeks_to_clear": 11.3,
+            "margin_per_unit_eur": 10.06,
+            "recoverable_revenue_eur": 140.84
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 61.92,
+            "monthly_units": 6.71,
+            "weeks_to_clear": 9.0,
+            "margin_per_unit_eur": 6.19,
+            "recoverable_revenue_eur": 86.66
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0348",
+        "name": "Whiskas Grain Free Chicken Cat Food 12kg",
+        "pet_type": "cat",
+        "category": "dry-food",
+        "current_stock": 34,
+        "reorder_point": 3,
+        "list_price_eur": 76.0,
+        "unit_cost_eur": 54.72,
+        "excess_units": 28,
+        "tied_capital_eur": 1532.16,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 60.8,
+        "proposed_weeks_to_clear": 18.7,
+        "proposed_recoverable_revenue_eur": 118.44,
+        "proposed_margin_lost_eur": 295.94,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 76.0,
+            "monthly_units": 2.84,
+            "weeks_to_clear": 42.8,
+            "margin_per_unit_eur": 21.28,
+            "recoverable_revenue_eur": 181.0
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 72.2,
+            "monthly_units": 3.43,
+            "weeks_to_clear": 35.3,
+            "margin_per_unit_eur": 17.48,
+            "recoverable_revenue_eur": 179.87
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 68.4,
+            "monthly_units": 4.19,
+            "weeks_to_clear": 28.9,
+            "margin_per_unit_eur": 13.68,
+            "recoverable_revenue_eur": 172.07
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 64.6,
+            "monthly_units": 5.18,
+            "weeks_to_clear": 23.4,
+            "margin_per_unit_eur": 9.88,
+            "recoverable_revenue_eur": 153.67
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 60.8,
+            "monthly_units": 6.49,
+            "weeks_to_clear": 18.7,
+            "margin_per_unit_eur": 6.08,
+            "recoverable_revenue_eur": 118.44
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0296",
+        "name": "Acana Weight Control Salmon Cat Food 12kg",
+        "pet_type": "cat",
+        "category": "dry-food",
+        "current_stock": 34,
+        "reorder_point": 3,
+        "list_price_eur": 75.21,
+        "unit_cost_eur": 54.15,
+        "excess_units": 28,
+        "tied_capital_eur": 1516.2,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 60.17,
+        "proposed_weeks_to_clear": 19.6,
+        "proposed_recoverable_revenue_eur": 111.79,
+        "proposed_margin_lost_eur": 279.29,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 75.21,
+            "monthly_units": 2.7,
+            "weeks_to_clear": 44.9,
+            "margin_per_unit_eur": 21.06,
+            "recoverable_revenue_eur": 170.5
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 71.45,
+            "monthly_units": 3.27,
+            "weeks_to_clear": 37.1,
+            "margin_per_unit_eur": 17.3,
+            "recoverable_revenue_eur": 169.71
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 67.69,
+            "monthly_units": 4.0,
+            "weeks_to_clear": 30.3,
+            "margin_per_unit_eur": 13.54,
+            "recoverable_revenue_eur": 162.36
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 63.93,
+            "monthly_units": 4.94,
+            "weeks_to_clear": 24.5,
+            "margin_per_unit_eur": 9.78,
+            "recoverable_revenue_eur": 145.0
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 60.17,
+            "monthly_units": 6.19,
+            "weeks_to_clear": 19.6,
+            "margin_per_unit_eur": 6.02,
+            "recoverable_revenue_eur": 111.79
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0317",
+        "name": "Orijen Grain Free Salmon Cat Food 12kg",
+        "pet_type": "cat",
+        "category": "dry-food",
+        "current_stock": 35,
+        "reorder_point": 3,
+        "list_price_eur": 79.19,
+        "unit_cost_eur": 57.02,
+        "excess_units": 29,
+        "tied_capital_eur": 1653.58,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 63.35,
+        "proposed_weeks_to_clear": 25.2,
+        "proposed_recoverable_revenue_eur": 94.63,
+        "proposed_margin_lost_eur": 236.65,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 79.19,
+            "monthly_units": 2.18,
+            "weeks_to_clear": 57.7,
+            "margin_per_unit_eur": 22.17,
+            "recoverable_revenue_eur": 144.68
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 75.23,
+            "monthly_units": 2.63,
+            "weeks_to_clear": 47.7,
+            "margin_per_unit_eur": 18.21,
+            "recoverable_revenue_eur": 143.78
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 71.27,
+            "monthly_units": 3.22,
+            "weeks_to_clear": 39.0,
+            "margin_per_unit_eur": 14.25,
+            "recoverable_revenue_eur": 137.54
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 67.31,
+            "monthly_units": 3.98,
+            "weeks_to_clear": 31.6,
+            "margin_per_unit_eur": 10.29,
+            "recoverable_revenue_eur": 122.81
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 63.35,
+            "monthly_units": 4.98,
+            "weeks_to_clear": 25.2,
+            "margin_per_unit_eur": 6.33,
+            "recoverable_revenue_eur": 94.63
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0584",
+        "name": "PetNord Canary Seed Food 15kg",
+        "pet_type": "bird",
+        "category": "dry-food",
+        "current_stock": 19,
+        "reorder_point": 3,
+        "list_price_eur": 92.01,
+        "unit_cost_eur": 66.25,
+        "excess_units": 13,
+        "tied_capital_eur": 861.25,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 73.61,
+        "proposed_weeks_to_clear": 13.5,
+        "proposed_recoverable_revenue_eur": 91.75,
+        "proposed_margin_lost_eur": 229.63,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 92.01,
+            "monthly_units": 1.81,
+            "weeks_to_clear": 31.0,
+            "margin_per_unit_eur": 25.76,
+            "recoverable_revenue_eur": 140.22
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 87.41,
+            "monthly_units": 2.2,
+            "weeks_to_clear": 25.6,
+            "margin_per_unit_eur": 21.16,
+            "recoverable_revenue_eur": 139.35
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 82.81,
+            "monthly_units": 2.7,
+            "weeks_to_clear": 20.9,
+            "margin_per_unit_eur": 16.56,
+            "recoverable_revenue_eur": 133.93
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 78.21,
+            "monthly_units": 3.32,
+            "weeks_to_clear": 17.0,
+            "margin_per_unit_eur": 11.96,
+            "recoverable_revenue_eur": 119.04
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 73.61,
+            "monthly_units": 4.16,
+            "weeks_to_clear": 13.5,
+            "margin_per_unit_eur": 7.36,
+            "recoverable_revenue_eur": 91.75
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0308",
+        "name": "Acana Turkey Cat Food 12kg",
+        "pet_type": "cat",
+        "category": "dry-food",
+        "current_stock": 21,
+        "reorder_point": 3,
+        "list_price_eur": 72.55,
+        "unit_cost_eur": 52.24,
+        "excess_units": 15,
+        "tied_capital_eur": 783.6,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 58.04,
+        "proposed_weeks_to_clear": 9.9,
+        "proposed_recoverable_revenue_eur": 87.0,
+        "proposed_margin_lost_eur": 217.65,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 72.55,
+            "monthly_units": 2.85,
+            "weeks_to_clear": 22.8,
+            "margin_per_unit_eur": 20.31,
+            "recoverable_revenue_eur": 173.9
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 68.92,
+            "monthly_units": 3.45,
+            "weeks_to_clear": 18.8,
+            "margin_per_unit_eur": 16.68,
+            "recoverable_revenue_eur": 172.82
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 65.3,
+            "monthly_units": 4.22,
+            "weeks_to_clear": 15.4,
+            "margin_per_unit_eur": 13.06,
+            "recoverable_revenue_eur": 165.33
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 61.67,
+            "monthly_units": 5.22,
+            "weeks_to_clear": 12.4,
+            "margin_per_unit_eur": 9.43,
+            "recoverable_revenue_eur": 141.45
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 58.04,
+            "monthly_units": 6.54,
+            "weeks_to_clear": 9.9,
+            "margin_per_unit_eur": 5.8,
+            "recoverable_revenue_eur": 87.0
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0039",
+        "name": "Hill's Science Plan Grain Free Turkey Dog Food 12kg",
+        "pet_type": "dog",
+        "category": "dry-food",
+        "current_stock": 19,
+        "reorder_point": 3,
+        "list_price_eur": 73.51,
+        "unit_cost_eur": 52.93,
+        "excess_units": 13,
+        "tied_capital_eur": 688.09,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 58.81,
+        "proposed_weeks_to_clear": 10.1,
+        "proposed_recoverable_revenue_eur": 76.44,
+        "proposed_margin_lost_eur": 191.1,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 73.51,
+            "monthly_units": 2.45,
+            "weeks_to_clear": 23.0,
+            "margin_per_unit_eur": 20.58,
+            "recoverable_revenue_eur": 150.98
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 69.83,
+            "monthly_units": 2.96,
+            "weeks_to_clear": 19.0,
+            "margin_per_unit_eur": 16.9,
+            "recoverable_revenue_eur": 150.04
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 66.16,
+            "monthly_units": 3.62,
+            "weeks_to_clear": 15.6,
+            "margin_per_unit_eur": 13.23,
+            "recoverable_revenue_eur": 143.53
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 62.48,
+            "monthly_units": 4.47,
+            "weeks_to_clear": 12.6,
+            "margin_per_unit_eur": 9.55,
+            "recoverable_revenue_eur": 124.15
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 58.81,
+            "monthly_units": 5.6,
+            "weeks_to_clear": 10.1,
+            "margin_per_unit_eur": 5.88,
+            "recoverable_revenue_eur": 76.44
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0063",
+        "name": "Acana Lamb Dog Food 7kg",
+        "pet_type": "dog",
+        "category": "dry-food",
+        "current_stock": 25,
+        "reorder_point": 3,
+        "list_price_eur": 43.36,
+        "unit_cost_eur": 31.22,
+        "excess_units": 19,
+        "tied_capital_eur": 593.18,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 34.69,
+        "proposed_weeks_to_clear": 10.9,
+        "proposed_recoverable_revenue_eur": 65.93,
+        "proposed_margin_lost_eur": 164.73,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 43.36,
+            "monthly_units": 3.29,
+            "weeks_to_clear": 25.0,
+            "margin_per_unit_eur": 12.14,
+            "recoverable_revenue_eur": 119.78
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 41.19,
+            "monthly_units": 3.98,
+            "weeks_to_clear": 20.7,
+            "margin_per_unit_eur": 9.97,
+            "recoverable_revenue_eur": 119.04
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 39.02,
+            "monthly_units": 5.08,
+            "weeks_to_clear": 16.2,
+            "margin_per_unit_eur": 7.8,
+            "recoverable_revenue_eur": 118.88
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 36.86,
+            "monthly_units": 6.01,
+            "weeks_to_clear": 13.7,
+            "margin_per_unit_eur": 5.64,
+            "recoverable_revenue_eur": 101.72
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 34.69,
+            "monthly_units": 7.53,
+            "weeks_to_clear": 10.9,
+            "margin_per_unit_eur": 3.47,
+            "recoverable_revenue_eur": 65.93
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0298",
+        "name": "Acana Grain Free Tuna Cat Food 7kg",
+        "pet_type": "cat",
+        "category": "dry-food",
+        "current_stock": 30,
+        "reorder_point": 3,
+        "list_price_eur": 50.47,
+        "unit_cost_eur": 36.34,
+        "excess_units": 24,
+        "tied_capital_eur": 872.16,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 40.38,
+        "proposed_weeks_to_clear": 20.1,
+        "proposed_recoverable_revenue_eur": 62.75,
+        "proposed_margin_lost_eur": 156.8,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 50.47,
+            "monthly_units": 2.48,
+            "weeks_to_clear": 41.9,
+            "margin_per_unit_eur": 14.13,
+            "recoverable_revenue_eur": 105.25
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 47.95,
+            "monthly_units": 2.74,
+            "weeks_to_clear": 38.0,
+            "margin_per_unit_eur": 11.61,
+            "recoverable_revenue_eur": 95.27
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 45.42,
+            "monthly_units": 3.35,
+            "weeks_to_clear": 31.1,
+            "margin_per_unit_eur": 9.08,
+            "recoverable_revenue_eur": 91.12
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 42.9,
+            "monthly_units": 4.14,
+            "weeks_to_clear": 25.1,
+            "margin_per_unit_eur": 6.56,
+            "recoverable_revenue_eur": 81.38
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 40.38,
+            "monthly_units": 5.18,
+            "weeks_to_clear": 20.1,
+            "margin_per_unit_eur": 4.04,
+            "recoverable_revenue_eur": 62.75
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0301",
+        "name": "Acana Weight Control Tuna Cat Food 7kg",
+        "pet_type": "cat",
+        "category": "dry-food",
+        "current_stock": 30,
+        "reorder_point": 3,
+        "list_price_eur": 45.67,
+        "unit_cost_eur": 32.88,
+        "excess_units": 24,
+        "tied_capital_eur": 789.12,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 36.54,
+        "proposed_weeks_to_clear": 18.8,
+        "proposed_recoverable_revenue_eur": 60.59,
+        "proposed_margin_lost_eur": 151.19,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 45.67,
+            "monthly_units": 2.41,
+            "weeks_to_clear": 43.1,
+            "margin_per_unit_eur": 12.79,
+            "recoverable_revenue_eur": 92.48
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 43.39,
+            "monthly_units": 2.91,
+            "weeks_to_clear": 35.7,
+            "margin_per_unit_eur": 10.51,
+            "recoverable_revenue_eur": 91.91
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 41.1,
+            "monthly_units": 3.57,
+            "weeks_to_clear": 29.1,
+            "margin_per_unit_eur": 8.22,
+            "recoverable_revenue_eur": 87.92
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 38.82,
+            "monthly_units": 4.41,
+            "weeks_to_clear": 23.6,
+            "margin_per_unit_eur": 5.94,
+            "recoverable_revenue_eur": 78.53
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 36.54,
+            "monthly_units": 5.52,
+            "weeks_to_clear": 18.8,
+            "margin_per_unit_eur": 3.66,
+            "recoverable_revenue_eur": 60.59
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0020",
+        "name": "Hill's Science Plan Chicken Dog Food 4kg",
+        "pet_type": "dog",
+        "category": "dry-food",
+        "current_stock": 34,
+        "reorder_point": 3,
+        "list_price_eur": 27.96,
+        "unit_cost_eur": 20.13,
+        "excess_units": 28,
+        "tied_capital_eur": 563.64,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 22.37,
+        "proposed_weeks_to_clear": 15.0,
+        "proposed_recoverable_revenue_eur": 54.14,
+        "proposed_margin_lost_eur": 135.17,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 27.96,
+            "monthly_units": 3.69,
+            "weeks_to_clear": 32.8,
+            "margin_per_unit_eur": 7.83,
+            "recoverable_revenue_eur": 86.73
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 26.56,
+            "monthly_units": 4.47,
+            "weeks_to_clear": 27.1,
+            "margin_per_unit_eur": 6.43,
+            "recoverable_revenue_eur": 86.19
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 25.16,
+            "monthly_units": 5.46,
+            "weeks_to_clear": 22.2,
+            "margin_per_unit_eur": 5.03,
+            "recoverable_revenue_eur": 82.44
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 23.77,
+            "monthly_units": 6.8,
+            "weeks_to_clear": 17.8,
+            "margin_per_unit_eur": 3.64,
+            "recoverable_revenue_eur": 74.24
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 22.37,
+            "monthly_units": 8.06,
+            "weeks_to_clear": 15.0,
+            "margin_per_unit_eur": 2.24,
+            "recoverable_revenue_eur": 54.14
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0305",
+        "name": "Acana Indoor Chicken Cat Food 4kg",
+        "pet_type": "cat",
+        "category": "dry-food",
+        "current_stock": 34,
+        "reorder_point": 3,
+        "list_price_eur": 26.75,
+        "unit_cost_eur": 19.26,
+        "excess_units": 28,
+        "tied_capital_eur": 539.28,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 21.4,
+        "proposed_weeks_to_clear": 22.7,
+        "proposed_recoverable_revenue_eur": 34.34,
+        "proposed_margin_lost_eur": 85.87,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 26.75,
+            "monthly_units": 2.34,
+            "weeks_to_clear": 51.9,
+            "margin_per_unit_eur": 7.49,
+            "recoverable_revenue_eur": 52.47
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 25.41,
+            "monthly_units": 2.83,
+            "weeks_to_clear": 42.9,
+            "margin_per_unit_eur": 6.15,
+            "recoverable_revenue_eur": 52.14
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 24.07,
+            "monthly_units": 3.46,
+            "weeks_to_clear": 35.0,
+            "margin_per_unit_eur": 4.81,
+            "recoverable_revenue_eur": 49.93
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 22.74,
+            "monthly_units": 4.27,
+            "weeks_to_clear": 28.4,
+            "margin_per_unit_eur": 3.48,
+            "recoverable_revenue_eur": 44.56
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 21.4,
+            "monthly_units": 5.35,
+            "weeks_to_clear": 22.7,
+            "margin_per_unit_eur": 2.14,
+            "recoverable_revenue_eur": 34.34
+          }
+        ]
+      }
+    ],
+    "last_query": {
+      "endpoint": "_estimate",
+      "body": {
+        "from": "monthly_sales",
+        "where": {
+          "product_sku": "<each overstock SKU>",
+          "month": "2026-05",
+          "price_eur": "<discounted price>"
+        },
+        "estimate": "units_sold"
+      }
+    },
+    "last_response_ms": 17210
+  },
+  "timings": [
+    [
+      "_search",
+      44.29
+    ],
+    [
+      "_search",
+      50.35
+    ],
+    [
+      "_search",
+      412.24
+    ],
+    [
+      "_search",
+      406.98
+    ],
+    [
+      "_search",
+      128.35
+    ]
+  ]
+}

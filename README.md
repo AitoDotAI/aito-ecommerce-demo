@@ -468,7 +468,8 @@ $EDITOR .env
 
 # 3. (Optional) Regenerate the PetNord dataset + upload to Aito
 ./do generate-fixtures
-./do reset-data           # full bring-up, ~50 s
+./do reset-data           # upload + warm light views + precompute the six
+                          # heavy views' snapshots, ~3 min
 
 # 4. Run
 ./do dev
@@ -535,9 +536,19 @@ Browser → Next.js (port 8500) → fetch("/api/...") → FastAPI (port 8501)
   denormalised columns for cases where Aito only supports
   single-hop traversal: `order_lines.{customer_segment,
   customer_pet_size}` and `orders.line_categories`.
-- **Cache** — Two layers: in-memory LRU per process + Aito-backed
-  `prediction_cache` table that survives restarts. Read-only API
-  keys disable the persistent layer cleanly.
+- **Caching** — Two mechanisms, split by cost. The nine *light* views
+  use a lazy two-layer cache (`cache.py`): in-memory LRU per process +
+  Aito-backed `prediction_cache` table that survives restarts, computed
+  on first hit (read-only keys disable the persistent layer cleanly).
+  The six *heavy* views (churn, demand, evaluation, inventory, markdown,
+  win-back) — plus the **dashboard** landing page, which looks light but
+  runs ~321 sequential `_search` calls (~93 s cold, the heaviest cold
+  page) — are **precompute-and-served** (`precompute_store.py`, ADR
+  0024): `./do precompute` runs that work offline and snapshots each
+  result into an Aito `precompute_entries` table plus a git-committed
+  JSON bootstrap, so the app only ever reads.
+  Reads need just a read key, so the read-only public deploy opens those
+  pages in well under a second even on a cold container.
 
 ---
 
@@ -565,7 +576,9 @@ semantics, hyphen tokenisation, single-hop link traversal, the
 src/                Python FastAPI backend
   app.py              All endpoints — table of contents
   aito_client.py      Thin REST wrapper, retries + `$why`-decorated `_predict`
-  cache.py            Two-layer cache (memory + Aito table)
+  cache.py            Two-layer lazy cache (memory + Aito table) — light views
+  precompute_store.py Precompute-and-serve store (Aito + git JSON) — heavy views
+  precompute.py       Offline snapshot driver for the six heavy views
   rate_limit.py       Two-tier rate limiter (per-IP + global)
   data_loader.py      Schema + fixture upload
   overview_service.py    Dashboard

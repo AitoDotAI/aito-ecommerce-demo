@@ -220,6 +220,28 @@ def test_aggregate_omits_where_when_none(client, httpx_mock: HTTPXMock):
     assert "where" not in body
 
 
+def test_batch_posts_query_array_and_returns_ordered_results(
+    client, httpx_mock: HTTPXMock
+):
+    # `_batch` takes a JSON *array* of query bodies and returns results
+    # in the same order — used to collapse a sequential read fan-out
+    # (e.g. per-segment customer counts) into one round-trip.
+    httpx_mock.add_response(
+        url="https://example.aito.app/api/v1/_batch",
+        method="POST",
+        json=[{"total": 1263}, {"total": 894}],
+    )
+    out = client.batch([
+        {"from": "customers", "where": {"segment": "dog_owner"}, "limit": 0},
+        {"from": "customers", "where": {"segment": "cat_owner"}, "limit": 0},
+    ])
+    assert out == [{"total": 1263}, {"total": 894}]
+    body = _last_body(httpx_mock)
+    assert isinstance(body, list) and len(body) == 2
+    assert body[0]["from"] == "customers"
+    assert body[1]["where"] == {"segment": "cat_owner"}
+
+
 def test_non_2xx_raises_aito_error(client, httpx_mock: HTTPXMock):
     httpx_mock.add_response(
         url="https://example.aito.app/api/v1/_predict",

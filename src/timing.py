@@ -45,6 +45,30 @@ def current_calls() -> list[tuple[str, float]]:
     return list(_calls.get() or [])
 
 
+def replace_calls(calls: list[tuple[str, float]]) -> None:
+    """Replace the current request's recorded calls wholesale.
+
+    Used by the precompute store to drop its own `precompute_entries`
+    lookup from the pill before replaying a snapshot's real query
+    timings — so the pill shows what the predictive query costs, not the
+    cache read that served it.
+
+    Mutates the existing bucket list *in place* (clear + extend) rather
+    than rebinding the ContextVar. FastAPI runs sync endpoints in a
+    threadpool whose context is a shallow copy of the middleware's; the
+    two share the same list object, and the middleware reads timings back
+    off that shared object. Rebinding here would detach the endpoint's
+    list from the middleware's and the replayed timings would never reach
+    the `X-Aito-Calls` header.
+    """
+    bucket = _calls.get()
+    if bucket is None:
+        _calls.set(list(calls))
+        return
+    bucket.clear()
+    bucket.extend(calls)
+
+
 def render_header() -> str:
     """Render the call list as the `X-Aito-Calls` header value.
 

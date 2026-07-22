@@ -203,8 +203,9 @@ Point at a row where the proposed discount is 0 %.
 Click into the row to expand the curve.
 
 > "Five `_estimate` probes per SKU, chosen row highlighted.
-> Whole sweep takes 18 seconds cold across the 15 overstock
-> SKUs. Cached for 30 minutes after."
+> The full 15-SKU sweep is ~18 s of real Aito work — precomputed
+> offline and served from a snapshot here, so the page is instant
+> while the pill still shows what the query actually costs."
 
 ---
 
@@ -252,6 +253,20 @@ Pause. Look at audience.
 
 ---
 
+## Performance note — heavy pages are snapshot-served
+
+The six heaviest views (Churn, Demand, Evaluation, Inventory, Markdown,
+Win-back) each run an `_evaluate` and/or a large fan-out — 14–32 s of
+real work — plus the **Dashboard** landing page (deceptively light: ~321
+sequential `_search` calls, ~93 s cold). They are **precompute-and-served**
+(ADR 0024): `./do precompute`
+runs that work offline and snapshots each result into an Aito table plus
+a git-committed JSON bootstrap, and the app only reads. So every one of
+them opens in well under a second, cold container included, and the pill
+still shows the real query cost. Refresh the snapshot with `./do precompute`
+— it's chained into `./do reset-data`, so a data reload can't leave it
+stale.
+
 ## Quick recovery — if a moment doesn't land
 
 | Symptom | Recovery |
@@ -259,7 +274,7 @@ Pause. Look at audience.
 | Smart Search doesn't flip (Saara still shows cat food on right) | Hit refresh — likely a cache leak from a previous session. The first cold call takes ~600 ms then the cache warms. |
 | For You returns empty | Backend hasn't loaded. Run `./do load-data`. |
 | Pattern Explorer / Bought Together returns 400 | Schema regression. Run `./do reset-data`; the `orders.line_categories` Text column needs the denormalised tokens. |
-| Evaluation row stuck at 0/0/0 | Aito timed out on `_evaluate` (cold path is ~30 s). Wait a few seconds and refresh. |
+| Evaluation row stuck at 0/0/0 | Evaluation is precompute-served from a snapshot (ADR 0024), so it should be instant. If it's blank the snapshot is missing — run `./do precompute` (or `./do reset-data`, which chains it). |
 
 ---
 
