@@ -26,6 +26,10 @@ class FakeAito:
 
     def search(self, table, *, where=None, limit=10):
         self.requests.append(("search", table, where))
+        # The real AitoClient records every call on the timing bucket;
+        # mimic that so tests can assert the store's own lookup is kept
+        # off the latency pill.
+        timing.record_call("_search", 9.9)
         return {"hits": [self.search_hit] if self.search_hit else []}
 
     def _request(self, method, path, json=None):
@@ -127,6 +131,31 @@ def test_serve_replays_timings_from_store_hit():
     # The recorded query cost is replayed onto the request so the pill
     # shows the real _evaluate time, not a blank "cached" pill.
     assert timing.current_calls() == [("_evaluate", 15515.0)]
+
+
+def test_serve_keeps_the_store_lookup_off_the_pill():
+    # An Aito-backed hit: `get` runs an `_search` to precompute_entries,
+    # which the client records. That cache-read must not appear on the
+    # pill — only the snapshot's own query timings.
+    hit = {"payload": json.dumps({"data": {"x": 1}, "timings": [["_evaluate", 100.0]]})}
+    store._aito = FakeAito(search_hit=hit)
+    result = store.serve("churn", lambda: pytest.fail("must not compute on a hit"))
+    assert result == {"x": 1}
+    assert timing.current_calls() == [("_evaluate", 100.0)]  # no stray _search
+
+
+def test_replace_calls_mutates_the_bucket_in_place():
+    # The pill survives FastAPI's sync-endpoint threadpool only because
+    # the middleware and endpoint share ONE bucket list object. If
+    # `replace_calls` rebinds the ContextVar instead of mutating in
+    # place, the replayed timings never reach the header. Pin the list
+    # identity so a reassign regression fails here, not in prod.
+    timing.start_request()
+    bucket = timing._calls.get()
+    timing.record_call("_search", 9.9)  # the store lookup
+    timing.replace_calls([("_evaluate", 100.0)])
+    assert timing._calls.get() is bucket  # same object, not a rebind
+    assert timing.current_calls() == [("_evaluate", 100.0)]
 
 
 def test_serve_falls_back_to_live_compute_on_miss():

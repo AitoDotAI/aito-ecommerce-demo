@@ -189,8 +189,13 @@ def serve(name: str, compute_fn: Callable[[], Any]) -> Any:
     timings onto the current request's pill. On a store miss (fresh
     local dev with no snapshot), fall back to live `compute_fn`.
     """
+    before = timing.current_calls()
     entry = get(name)
     if isinstance(entry, dict) and "data" in entry:
+        # Drop the store's own precompute_entries lookup (an Aito
+        # `_search` recorded during `get`) so the pill shows the
+        # snapshot's real query cost, not the cache read that served it.
+        timing.replace_calls(before)
         for ep, ms in entry.get("timings", []):
             timing.record_call(ep, ms)
         return entry["data"]
