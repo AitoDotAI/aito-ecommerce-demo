@@ -383,6 +383,19 @@ def upload_data(client: AitoClient, table: str, records: list[dict]) -> None:
         print(f"  Uploaded {uploaded}/{total} rows to '{table}'")
 
 
+def optimize_table(client: AitoClient, table: str) -> None:
+    """Merge the table's batch segments into one, for faster reads.
+
+    `upload_data` sends rows in ~1000-row batches, and each batch lands
+    as its own segment — every read then has to touch all of them. On a
+    125 k-row table (impressions) that's ~126 segments. Aito's
+    `POST /data/{table}/optimize` rewrites the table as a single segment.
+    Data-preserving and idempotent; the body is an empty object.
+    """
+    print(f"  Optimizing '{table}'...")
+    client._request("POST", f"/data/{table}/optimize", json={})
+
+
 def delete_table(client: AitoClient, table: str) -> None:
     print(f"  Deleting table '{table}'...")
     try:
@@ -436,7 +449,31 @@ def run(*, reset: bool = False, tables: list[str] | None = None) -> None:
         upload_data(client, table, records)
         total += len(records)
 
+    # Batch uploads leave one segment per batch; merge them so reads
+    # touch a single segment. See `optimize_table`.
+    print("Optimizing (merge batch segments for faster reads)...")
+    for table in selected:
+        optimize_table(client, table)
+
     print(f"Done. Loaded {total} rows across {len(selected)} table(s).")
+
+
+def optimize_all(tables: list[str] | None = None) -> None:
+    """Optimize (segment-merge) all — or `tables` — without reloading.
+
+    Backs `./do optimize`, and lets an already-loaded instance be
+    optimized by hand without a full `reset-data`.
+    """
+    config = load_config()
+    client = AitoClient(config)
+    if not client.check_connectivity():
+        print(f"Cannot connect to Aito at {config.aito_api_url}.")
+        sys.exit(1)
+    selected = [t for t in SCHEMAS if (tables is None or t in tables)]
+    print(f"Optimizing {len(selected)} table(s) on {config.aito_api_url}")
+    for table in selected:
+        optimize_table(client, table)
+    print("Done.")
 
 
 def _parse_tables_arg(argv: list[str]) -> list[str] | None:
@@ -448,6 +485,9 @@ def _parse_tables_arg(argv: list[str]) -> list[str] | None:
 
 
 if __name__ == "__main__":
-    reset = "--reset" in sys.argv
-    tables = _parse_tables_arg(sys.argv)
-    run(reset=reset, tables=tables)
+    if "--optimize-only" in sys.argv:
+        optimize_all(tables=_parse_tables_arg(sys.argv))
+    else:
+        reset = "--reset" in sys.argv
+        tables = _parse_tables_arg(sys.argv)
+        run(reset=reset, tables=tables)

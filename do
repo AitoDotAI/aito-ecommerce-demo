@@ -56,6 +56,7 @@ Data
   generate-fixtures (Re)run data/generate_fixtures.py
   load-data         Upload schema + fixtures to Aito
   reset-data        Drop and reload all Aito tables + warm the cache
+  optimize          Merge batch segments on all tables for faster reads
   clear-cache       Clear in-memory + Aito persistent prediction cache
   warm-cache        Pre-compute every cacheable endpoint once
   precompute        Snapshot the six heavy endpoints to Aito + git JSON (ADR 0024)
@@ -286,6 +287,16 @@ precompute_all(client, verbose=True)
 "
 }
 
+cmd_optimize() {
+  # Merge each table's batch-upload segments into one for faster reads
+  # (POST /data/<table>/optimize). reset-data already does this after a
+  # load; this verb re-runs it by hand on an already-loaded instance.
+  echo "Optimizing all tables (merge batch segments)..."
+  cd "$SCRIPT_DIR"
+  _show_target
+  uv run python -m src.data_loader --optimize-only
+}
+
 # ── Workbook ────────────────────────────────────────────────────────
 
 # (Re)create the Aito console workbook from its JSON definition. The
@@ -505,6 +516,7 @@ case "${1:-help}" in
   clear-cache)       cmd_clear_cache ;;
   warm-cache)        cmd_warm_cache ;;
   precompute)        cmd_precompute ;;
+  optimize)          cmd_optimize ;;
   workbook)          cmd_workbook ;;
   test)              cmd_test ;;
   aito-check)        cmd_aito_check ;;
