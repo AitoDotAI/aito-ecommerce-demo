@@ -106,6 +106,39 @@ four tables) lands in ~60 s including network round-trip.
 
 ---
 
+## Segment merge — `POST /data/<table>/optimize`
+
+**Verified live, 2026-07-23.** Each `POST /data/<table>/batch` lands as
+its own **segment**, and every read touches all of them — a 125 935-row
+table loaded in 1 000-row batches is ~126 segments. `optimize` rewrites
+the table as a single segment for faster reads.
+
+```json
+POST /api/v1/data/impressions/optimize
+{}
+```
+
+Response: `{}` (HTTP 200). Data-preserving and idempotent — safe to
+re-run. `src/data_loader.run()` calls it for every table after upload
+(so `./do reset-data` optimizes automatically); `./do optimize`
+re-runs it by hand on an already-loaded instance.
+
+### Gotchas
+
+- **Optimize invalidates the warm working set.** Rewriting the table
+  drops the per-slice structures the engine built, so the first reads
+  after an optimize are cold again (measured: `_recommend` warm read
+  ~110–150 ms server-side, but ~2.5–3.5 s for ~1 min right after a
+  full-instance optimize while it re-warms). Optimize during a
+  maintenance window, not mid-demo.
+- **Not a fix for cold-slice latency.** Segment-merge lowers the
+  *baseline* read cost but does **not** address the working-set
+  eviction that makes the first `_recommend` to an idle slice cost
+  5–9 s (see `docs/notes/aito-perf-findings.md` finding #2). Different
+  mechanism.
+
+---
+
 ## Free-text matching on a `Text` column — `_search` with `$match`
 
 **Verified live, 2026-05-10**, against
