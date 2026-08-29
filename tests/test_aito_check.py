@@ -63,6 +63,54 @@ def test_recommend_purchase_kpi_ranks_segment_appropriate_products(
     assert all(pet == expected_pet for pet in top_pets), top_pets
 
 
+@pytest.mark.parametrize(
+    "segment, pet_size, expected_pet",
+    [
+        ("cat_owner", None, "cat"),
+        ("dog_owner", "large", "dog"),
+        ("dog_owner", "small", "dog"),  # the thin slice where priors dominate
+    ],
+)
+def test_smart_search_name_filter_excludes_cross_pet_products(
+    client, segment, pet_size, expected_pet
+):
+    """Smart Search's predictive recommend (ADR 0006/0021) hard-filters
+    candidates by `product_sku.name: {$match: query}` and passes the
+    query text as plain `search_query` context.
+
+    The filter's job is a correctness floor: NO hit — not just the top
+    few — may be the wrong pet, even for the thin `dog_owner + small`
+    slice where a sparse funnel signal lets priors float an off-type
+    product up. Without the name filter a broad query like "food" can
+    leak cross-pet results; with it, it cannot. `query.lower()` appears
+    in every returned name, confirming the filter actually bound the set
+    rather than the ranking merely happening to be clean.
+    """
+    query = f"{expected_pet} food"  # e.g. "dog food"
+    where: dict[str, object] = {
+        "product_sku.name": {"$match": query},
+        "search_query": query,
+        "customer_segment": segment,
+    }
+    if pet_size is not None:
+        where["customer_pet_size"] = pet_size
+
+    res = client.recommend(
+        table="impressions",
+        where=where,
+        recommend_field="product_sku",
+        goal={"purchased": True},
+        based_on=["pet_type", "brand", "dietary", "category"],
+        limit=10,
+    )
+    hits = res.get("hits", [])
+    assert hits, f"empty recommendation for {segment}/{pet_size}"
+    off_pet = [h.get("name") for h in hits if h.get("pet_type") != expected_pet]
+    assert not off_pet, f"{segment}/{pet_size} leaked non-{expected_pet}: {off_pet}"
+    for hit in hits:
+        assert expected_pet in hit.get("name", "").lower(), hit.get("name")
+
+
 def test_recommend_clicks_and_purchases_goals_differ(client):
     """The demo beat: ranking by engagement (clicked) is not the same as
     ranking by conversion (purchased)."""

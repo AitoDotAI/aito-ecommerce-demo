@@ -244,6 +244,43 @@ multi-pet+small cat-heavy pool.
 | Saara (dog_owner+large) | dog × dry-food × 3 | p ≈ 0.51 — narrow pet_size constraint reduces absolute p |
 | Aquarium owner       | cat × dry-food × 3   | p ≈ 0.05 — aquarium customers rarely buy "food"-named products; ranking is noise |
 
+### Hard candidate filter vs. context — Smart Search's live shape
+
+The current Smart Search path (ADR 0021) recommends over `impressions`
+with `goal: {purchased: true}`, and separates two roles the query text
+plays:
+
+```json
+POST /api/v1/_recommend
+{
+  "from": "impressions",
+  "where": {
+    "product_sku.name": { "$match": "dog food" },
+    "search_query": "dog food",
+    "customer_segment": "dog_owner"
+  },
+  "recommend": "product_sku",
+  "goal": { "purchased": true },
+  "basedOn": ["pet_type", "brand", "dietary", "category"],
+  "limit": 10
+}
+```
+
+- **`product_sku.name: {$match: query}` is a hard filter**, not a ranking
+  hint. It bounds the *candidate set* to products whose name matches the
+  query tokens, so a thin funnel slice (e.g. `dog_owner + small`, where
+  priors dominate) can never surface a cross-pet product. The ranking
+  only reorders what survives the filter. Without it, a broad query like
+  "food" leaks cat products into a dog persona's list.
+- **`search_query: query` is plain context evidence** — the exact value,
+  no `$match`. The token work is already done by the name filter, so this
+  stays an exact-match signal on the impressions column. In **API v2**
+  drop the `$match` on the candidate filter and use v2's native search
+  filter instead (ADR 0025); `search_query` stays a plain value on both.
+- Guarded by `test_smart_search_name_filter_excludes_cross_pet_products`
+  in `test_aito_check.py`: *every* hit must be on-pet, not just the top
+  few.
+
 ### `basedOn` — curate which features feed prior-feature inference
 
 By default `_recommend` ranks candidates by

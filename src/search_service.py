@@ -8,7 +8,8 @@ the denormalisation rationale.
 Two live Aito calls per request:
   1. `_search where {name: {$match: q}}`            — baseline
   2. `_recommend product_sku from impressions
-       where {search_query: {$match: q}, customer_segment, [pet_size]}
+       where {product_sku.name: {$match: q},        — hard candidate filter
+              search_query: q, customer_segment, [pet_size]}
        goal {purchased: true}`                      — predictive
 
 The predictive call ranks by a real conversion KPI — P(the customer
@@ -132,20 +133,34 @@ def _predictive_recommend(
     """Predictive ranking via `_recommend product_sku from impressions`.
 
     Ranks candidate products by P(`purchased` = true | this customer
-    searched this query), the textbook conversion-KPI recommend:
-      - `where` sets the context — impressions where the customer
-        searched `query`, narrowed to the persona's `customer_segment`
-        (and `customer_pet_size` when set).
+    searched this query), the textbook conversion-KPI recommend, with a
+    hard candidate filter so the ranking can only reorder *relevant*
+    products:
+      - `product_sku.name: {$match: query}` — the hard filter. Only
+        products whose name matches the query tokens are eligible, so a
+        dog owner searching "food" can never be shown cat food even when
+        the funnel signal for their slice is thin and the priors would
+        otherwise float an off-type product up. Field path is relative
+        to the recommend target (`product_sku` → `products`).
+      - `search_query: query` — the query as plain context evidence (no
+        `$match`): the impressions the customer's slice searched. The
+        token work is done by the name filter above, so this stays an
+        exact-value context signal. (v2 drops `$match` here entirely and
+        uses its native search filter for the candidate constraint — see
+        ADR 0025.)
+      - `customer_segment` (+ `customer_pet_size` when set) — the
+        persona context to condition on.
       - `goal` is the real outcome label `{purchased: true}`.
 
     The persona signal lives in `where` (context to condition on), not
-    in `goal` (which is now the conversion KPI). This is what makes the
-    per-persona flip honest: cat owners' searches convert on cat
-    products, dog owners' on dog products — learned from the funnel,
-    not asserted. See ADR 0021.
+    in `goal` (which is the conversion KPI). Within the filtered
+    candidate set the per-persona flip is still learned from the funnel
+    — cat owners' searches convert on cat products, dog owners' on dog
+    — the filter only bounds *which* products can appear. See ADR 0021.
     """
     where: dict[str, object] = {
-        "search_query": {"$match": query},
+        "product_sku.name": {"$match": query},
+        "search_query": query,
         "customer_segment": persona.segment,
     }
     if persona.pet_size is not None:
