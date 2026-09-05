@@ -170,6 +170,18 @@ function isEstimatePayload(
 
 
 function renderPredictBody(why: WhyExplanationPayload): React.ReactNode {
+  // The lifts are marginal per-pattern factors; Aito's posterior is NOT
+  // their naive product. Aito normalises overlapping evidence, so the raw
+  // product routinely overshoots — e.g. 35% × 1.5 × 2.9 × 1.7 × 1.8 ≈ 434%
+  // for a class whose actual $p is 98%. Print an equals sign only when the
+  // product actually lands on the model's probability; otherwise show the
+  // calibration step, so the chain is never an arithmetically false
+  // equation (the "0% × 0.7 = 58%" demo-effect class the accounting demo
+  // hit). When it does reconcile — usually a single dominant factor — the
+  // equation stays checkable by eye.
+  const chainProduct = why.lifts.reduce((acc, e) => acc * e.lift, why.base_p);
+  const reconciles =
+    why.final_p !== null && Math.abs(chainProduct - why.final_p) <= 0.05;
   return (
     <>
       {/* Base probability card */}
@@ -203,22 +215,35 @@ function renderPredictBody(why: WhyExplanationPayload): React.ReactNode {
         <PatternMatchCard key={i} entry={entry} />
       ))}
 
-      {/* Multiplicative chain */}
+      {/* Evidence chain. `=` only when the product reconciles; otherwise
+          `→` to the calibrated probability, with a note (see above). */}
       {why.final_p !== null && (
-        <div style={{
-          textAlign: "center", padding: "10px 0 6px",
-          fontFamily: "var(--mono)", fontSize: 13,
-          color: "var(--text-2)",
-        }}>
-          {pctOf(why.base_p)}%
-          {why.lifts.map((entry, i) => (
-            <span key={i}> × {entry.lift.toFixed(1)}</span>
-          ))}
-          {" = "}
-          <strong style={{ color: "var(--text)", fontSize: 14 }}>
-            {pctOf(why.final_p)}%
-          </strong>
-        </div>
+        <>
+          <div style={{
+            textAlign: "center", padding: "10px 0 6px",
+            fontFamily: "var(--mono)", fontSize: 13,
+            color: "var(--text-2)",
+          }}>
+            {pctOf(why.base_p)}%
+            {why.lifts.map((entry, i) => (
+              <span key={i}> × {entry.lift.toFixed(1)}</span>
+            ))}
+            {reconciles ? " = " : " → "}
+            <strong style={{ color: "var(--text)", fontSize: 14 }}>
+              {pctOf(why.final_p)}%
+            </strong>
+          </div>
+          {!reconciles && (
+            <div style={{
+              textAlign: "center", fontSize: 10.5,
+              color: "var(--text-muted)", marginTop: -2, marginBottom: 2,
+              lineHeight: 1.45,
+            }}>
+              Aito normalises overlapping evidence — the calibrated
+              probability is not the raw product of the lifts.
+            </div>
+          )}
+        </>
       )}
 
       {/* Footer */}
