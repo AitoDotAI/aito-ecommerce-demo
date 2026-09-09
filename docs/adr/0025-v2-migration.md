@@ -231,3 +231,42 @@ rather than edited away, because each one is a trap the next demo will hit.
    Handling belongs in the compat layer (reconstruct v1's implicit default by
    injecting an explicit `select` derived from the link target's columns), and
    the silence is worth reporting upstream even though the capability exists.
+
+## First conformance run against the migrated env (2026-09-09)
+
+`AITO_USE_V2=1 ./do aito-check` — the demo's real payloads against native
+Rep2. **5 of 9 pass.** The shape gap (item 3 above) is handled in the compat
+layer; the remaining four failures share ONE root cause and are a core gap,
+not something to work around (§5).
+
+### Core gap: `_recommend` does not honour `where` on v2
+
+`_search` and `_recommend` were given the identical `where`, same env, same
+data:
+
+| query | v1 | v2 |
+|:--|:--|:--|
+| `_search` `{product_sku.name: {$match: "dog food"}, …}` | total 3475 | total 3475 ✅ |
+| `_recommend`, same `where` | 5 dog foods | bacon treats, cheese treats, **JBL Cichlid Pellets** ❌ |
+
+So `_search` applies the filter correctly on v2 while `_recommend` ignores it.
+It is not limited to linked fields — a plain context column is ignored too, so
+the demo's headline segment flip collapses:
+
+| `where: {customer_segment: …}` | cat_owner | dog_owner |
+|:--|:--|:--|
+| v1 | Whiskas cat food / treats | PetNord bacon treats |
+| v2 | Royal Canin cat, then **PetNord bacon/cheese treats** | PetNord bacon treats, JBL Cichlid Pellets |
+
+On v2 both segments converge on essentially the same global ranking. That one
+defect explains every remaining failure: the dropped candidate filter *and*
+the broken persona flip.
+
+**Severity is the silence.** Every one of these answers `200`. A dog owner
+searching "dog food" is shown aquarium pellets, and a cat owner is shown dog
+treats, with no error anywhere — the failure mode reaches a live demo looking
+like a bad recommendation rather than a bug. Related: V2-13
+(`recommend` disjunctive-filter drop).
+
+**Not worked around.** Nothing in the compat layer masks this; the four
+failing checks are left failing, because they are the correct signal.

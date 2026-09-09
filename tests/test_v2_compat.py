@@ -148,3 +148,37 @@ def test_tables_to_migrate_covers_every_loader_table():
 
     assert tables_to_migrate() == sorted(SCHEMAS)
     assert len(tables_to_migrate()) == len(SCHEMAS)
+
+
+def test_v2_select_reconstructs_v1s_implicit_link_expansion():
+    """v1 expands a link column automatically — `_recommend product_sku`
+    returns every column of `products` on the hit. v2 returns only
+    `{$p, $value}`, so `hit["name"]` is None while the query still
+    answers 200. The compat layer restores the v1 default by asking for
+    the linked table's columns explicitly."""
+    out = adapt_request(
+        "/_recommend",
+        {"from": "impressions", "recommend": "product_sku", "goal": {"purchased": True}},
+        use_v2=True,
+    )
+    assert out["select"][:2] == ["$p", "$value"]
+    for column in ("name", "pet_type", "sku", "brand"):
+        assert column in out["select"], column
+
+
+def test_an_explicit_select_is_never_overridden():
+    body = {"from": "impressions", "recommend": "product_sku", "select": ["$p"]}
+    assert adapt_request("/_recommend", body, use_v2=True)["select"] == ["$p"]
+
+
+def test_a_non_link_recommend_target_gets_no_injected_select():
+    """Only link columns expanded implicitly on v1, so only they need
+    reconstructing — injecting a select elsewhere would silently narrow
+    the response."""
+    body = {"from": "impressions", "predict": "purchased"}
+    assert "select" not in adapt_request("/_predict", body, use_v2=True)
+
+
+def test_unknown_table_is_not_guessed_at():
+    body = {"from": "prediction_cache", "recommend": "cache_key"}
+    assert "select" not in adapt_request("/_recommend", body, use_v2=True)

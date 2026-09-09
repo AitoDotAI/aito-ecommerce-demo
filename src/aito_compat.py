@@ -24,6 +24,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from src.schema import SCHEMAS
+
 # `select` entries v2 rejects with a 400. Nothing in this demo reads
 # them; if that changes, the drop must become a real port, not a silent
 # omission.
@@ -49,6 +51,19 @@ def adapt_request(path: str, body: Any, *, use_v2: bool) -> Any:
         predict = adapted.get("predict")
         if isinstance(predict, str) and not predict.endswith(".$feature"):
             adapted["predict"] = f"{predict}.$feature"
+
+    # v1 expands a link column automatically: `_recommend product_sku`
+    # returns every column of `products` flattened onto the hit
+    # (`name`, `pet_type`, ...). v2 returns only `{$p, $value}` — the
+    # bare id — so every caller reading `hit["name"]` gets None while
+    # the query still answers 200. The capability is not missing, only
+    # the default: an explicit `select` returns the same columns. So
+    # reconstruct v1's implicit default here, and nowhere else, rather
+    # than teaching each service about v2 (ADR 0025).
+    if "select" not in adapted:
+        linked = _linked_columns(adapted.get("from"), adapted.get("recommend") or adapted.get("predict"))
+        if linked:
+            adapted["select"] = ["$p", "$value", *linked]
 
     # v2 wants `relate` as a list of fields. The array form is accepted by
     # BOTH versions, so this is safe to send either way.
@@ -126,3 +141,23 @@ def _normalize_hit(hit: Any, predicted_field: str | None) -> None:
     related = hit.get("related")
     if related is not None and not isinstance(related, (dict, list)):
         hit["related"] = {"$has": related}
+
+
+def _linked_columns(from_table: Any, field: Any) -> list[str]:
+    """Columns of the table `from_table.field` links to, or [] if it is
+    not a link.
+
+    Read from the declared schema rather than fetched from Aito: the link
+    graph is already the demo's source of truth, and a per-query schema
+    round-trip would add latency to exactly the call this exists to fix.
+    """
+    if not isinstance(from_table, str) or not isinstance(field, str):
+        return []
+    # `predict` may carry the v2 `.$feature` suffix adapt_request adds.
+    field = field.removesuffix(".$feature")
+    column = SCHEMAS.get(from_table, {}).get("columns", {}).get(field, {})
+    link = column.get("link") if isinstance(column, dict) else None
+    if not isinstance(link, str) or "." not in link:
+        return []
+    linked_table = link.split(".", 1)[0]
+    return sorted(SCHEMAS.get(linked_table, {}).get("columns", {}))
