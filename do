@@ -65,6 +65,7 @@ Data
 Quality
   test              Run pytest
   aito-check        Sanity-check Aito queries against the loaded data
+  v2-env            Stage the v2 (Rep2) env — ADR 0025 (dry run unless --apply)
   verify <feature>  Run the adversary Playwright agent for one feature
   verify-demo       End-to-end demo-path check
   verify-mobile     Mobile-viewport screenshot sweep of every sidebar view
@@ -382,6 +383,11 @@ cmd_verify_mobile() {
   node frontend/scripts/inspect-mobile.cjs
 }
 
+cmd_v2_env() {
+  cd "$SCRIPT_DIR"
+  uv run python -m src.v2_env "$@"
+}
+
 cmd_check() {
   cmd_test
   cmd_fmt
@@ -520,6 +526,7 @@ case "${1:-help}" in
   workbook)          cmd_workbook ;;
   test)              cmd_test ;;
   aito-check)        cmd_aito_check ;;
+  v2-env)          cmd_v2_env "${@:2}" ;;
   verify)            shift; cmd_verify "$@" ;;
   verify-demo)       cmd_verify_demo ;;
   verify-mobile)     cmd_verify_mobile ;;
