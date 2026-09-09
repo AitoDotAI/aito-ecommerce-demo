@@ -139,26 +139,12 @@ def test_already_wrapped_related_is_left_alone():
 # ── v2 env staging ───────────────────────────────────────────────────
 
 
-def test_collection_schemas_only_retype_the_tables():
-    """Rep2's schema differs from v1's in exactly one way: `table` becomes
-    `collection`. Columns must be identical — that identity is what makes
-    a v1-vs-v2 comparison meaningful, and it is why the v2 schema is
-    derived from SCHEMAS rather than copied into a second file."""
+def test_tables_to_migrate_covers_every_loader_table():
+    """Derived from SCHEMAS so a table added to the demo can never be
+    silently left behind on the old engine — a half-migrated env answers
+    200 for every query while quietly running two different engines."""
     from src.data_loader import SCHEMAS
-    from src.v2_env import collection_schemas
+    from src.v2_env import tables_to_migrate
 
-    v2 = collection_schemas()
-    assert set(v2) == set(SCHEMAS)
-    for table, schema in v2.items():
-        assert schema["type"] == "collection", table
-        assert SCHEMAS[table]["type"] == "table", "source must stay v1-typed"
-        assert schema["columns"] == SCHEMAS[table]["columns"], table
-
-
-def test_collection_schemas_does_not_mutate_the_v1_source():
-    """A shallow copy bug here would silently retype the LIVE loader."""
-    from src.data_loader import SCHEMAS
-    from src.v2_env import collection_schemas
-
-    collection_schemas()
-    assert all(s["type"] == "table" for s in SCHEMAS.values())
+    assert tables_to_migrate() == sorted(SCHEMAS)
+    assert len(tables_to_migrate()) == len(SCHEMAS)

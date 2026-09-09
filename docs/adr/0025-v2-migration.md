@@ -182,3 +182,52 @@ the v2 ML values first.
 - Open question: aito-demo shares one instance for both envs. Confirm the
   shared instance's env quota/storage headroom before creating `v2`, or stage
   on a dedicated instance if headroom is tight.
+
+## Corrections from implementation (2026-09-09)
+
+Three claims above did not survive contact with a real env. Recorded here
+rather than edited away, because each one is a trap the next demo will hit.
+
+1. **The clone brings the data — there is no upload step.**
+   `basedOn: env.master` is copy-on-write over the tables *and* their rows
+   (verified: `products` 658, `impressions` 125 935, `orders` 12 215 present
+   immediately). The `PUT .../schema/{table}` this ADR describes fails with
+   `schema.create_failed: Table 'products' already exists`, and there is no
+   analogue of aito-demo's `upload-data-v2.js` to write.
+
+2. **What makes a table "v2" is its `engine`, not its schema `type`.**
+   `/api/v2` is *engine-dispatched*: a table still on `engine: v1` served over
+   `/api/v2` runs the v1 **adapter**, so pointing the demo at v2 without
+   migrating exercises the compatibility path and proves almost nothing. The
+   real step — and the real customer migration path, "migrate the storage,
+   change no application code" — is:
+
+   ```
+   POST {url}/env/v2/api/v2/schema/{table}/_migrate   {"engine": "v2"}
+   ```
+
+   It is idempotent (a second call answers `status: unchanged`) and
+   **irreversible**: there is no reverse migration. Safe here only because it
+   happens in a cloned env — `master` is untouched, and the env can be dropped
+   with `DELETE {url}/api/v1/_envs/v2` and re-cloned.
+
+3. **`_recommend` on a link column does not auto-expand the linked row on v2.**
+   Same body, same data:
+
+   | | v1 | v2 |
+   |:--|:--|:--|
+   | hit keys | `$p`, `sku`, `name`, `pet_type`, `brand`, `price_eur`, … | `$p`, `$value` only |
+
+   v1 expands every column of the linked table by default; v2 returns the bare
+   id in `$value`. This is a **default** difference, not a missing capability —
+   `select: ["$p", "$value", "name", "pet_type"]` returns the columns
+   flattened, exactly as v1 did implicitly. (`select: [{"product_sku": [...]}]`
+   is rejected: `unsupported value START_ARRAY`.)
+
+   It is silent and severe: every caller reading `hit["name"]` /
+   `hit["pet_type"]` — Smart Search, For You, the recommend KPI checks — gets
+   `None` while the query still answers `200`. Six of the nine live
+   `./do aito-check` cases fail this way on v2 with `KeyError: 'sku'`.
+   Handling belongs in the compat layer (reconstruct v1's implicit default by
+   injecting an explicit `select` derived from the link target's columns), and
+   the silence is worth reporting upstream even though the capability exists.
