@@ -170,6 +170,27 @@ function isEstimatePayload(
 
 
 function renderPredictBody(why: WhyExplanationPayload): React.ReactNode {
+  // The lifts are marginal per-pattern factors; Aito's posterior is NOT
+  // their naive product. Aito normalises overlapping evidence, so with
+  // weak evidence the product does land on the model's probability, but
+  // with strong evidence it overshoots — measured: 35% × 1.5 × 2.9 × 1.7
+  // × 1.8 = 434% for a class whose actual $p is 98%. Printing "= 98%"
+  // there is an arithmetically false equation (the "0% × 0.7 = 58%"
+  // demo-effect class the accounting demo hit).
+  //
+  // Rather than soften the equals sign, surface the normalising constant
+  // as its own term so the chain genuinely reconciles and stays checkable
+  // by eye. This mirrors the grocery demo (aito-demo InvoicingPage),
+  // which shows the same term for the same reason.
+  // Derive it from the ROUNDED figures actually on screen, not the raw
+  // ones — otherwise multiplying what the reader sees still misses the
+  // stated result, which defeats the point of showing the term at all.
+  const shownBase = Math.round(why.base_p * 100) / 100;
+  const shownLifts = why.lifts.map((e) => Number(e.lift.toFixed(1)));
+  const chainProduct = shownLifts.reduce((acc, l) => acc * l, shownBase);
+  const normalizer =
+    why.final_p !== null && chainProduct > 0 ? why.final_p / chainProduct : 1;
+  const showNormalizer = Math.abs(normalizer - 1) > 0.1;
   return (
     <>
       {/* Base probability card */}
@@ -203,22 +224,43 @@ function renderPredictBody(why: WhyExplanationPayload): React.ReactNode {
         <PatternMatchCard key={i} entry={entry} />
       ))}
 
-      {/* Multiplicative chain */}
+      {/* Evidence chain. The normalising constant is shown as its own
+          term whenever it moves the result, so the equation reconciles
+          (see above). */}
       {why.final_p !== null && (
-        <div style={{
-          textAlign: "center", padding: "10px 0 6px",
-          fontFamily: "var(--mono)", fontSize: 13,
-          color: "var(--text-2)",
-        }}>
-          {pctOf(why.base_p)}%
-          {why.lifts.map((entry, i) => (
-            <span key={i}> × {entry.lift.toFixed(1)}</span>
-          ))}
-          {" = "}
-          <strong style={{ color: "var(--text)", fontSize: 14 }}>
-            {pctOf(why.final_p)}%
-          </strong>
-        </div>
+        <>
+          <div style={{
+            textAlign: "center", padding: "10px 0 6px",
+            fontFamily: "var(--mono)", fontSize: 13,
+            color: "var(--text-2)",
+          }}>
+            {pctOf(why.base_p)}%
+            {why.lifts.map((entry, i) => (
+              <span key={i}> × {entry.lift.toFixed(1)}</span>
+            ))}
+            {showNormalizer && (
+              <span style={{ color: "var(--green)" }}>
+                {" × "}{normalizer.toFixed(2)}
+              </span>
+            )}
+            {" = "}
+            <strong style={{ color: "var(--text)", fontSize: 14 }}>
+              {pctOf(why.final_p)}%
+            </strong>
+          </div>
+          {showNormalizer && (
+            <div style={{
+              textAlign: "center", fontSize: 10.5,
+              color: "var(--text-muted)", marginTop: -2, marginBottom: 2,
+              lineHeight: 1.45,
+            }}>
+              <strong>× {normalizer.toFixed(2)}</strong>{" "}
+              is Aito&apos;s
+              normalising constant — evidence that overlaps is not counted
+              twice, so the result is not the raw product of the lifts.
+            </div>
+          )}
+        </>
       )}
 
       {/* Footer */}

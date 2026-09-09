@@ -12,6 +12,9 @@ Aito's `_predict ... select [$why]` returns a nested factor tree:
             {"type": "relatedPropositionLift",
              "value": 1.39,
              "proposition": {"$and": [...]} or {field: {$has: value}}},
+             # v2 (Rep2) encodes the same as {"$group": [...]} /
+             # {field: {$match: value}} / {field: value} — see
+             # _flatten_proposition, which reads either.
             ...
         ]
     }
@@ -115,41 +118,66 @@ def process_why(
 
 def _flatten_proposition(prop: Any) -> list[dict]:
     """`{field: {$has: value}}` → [{field, value}].
-    `{$and: [...]}` → recursively flattened list.
-    `{$not: {...}}` → propagates with a `not_` flag (rendered as 'is not').
+    A conjunction → recursively flattened list.
+    `{$not: {...}}` → propagates with a `negate` flag (rendered as 'is not').
+
+    Handles both API encodings, because the same `$why` tree comes back
+    shaped differently on v1 and v2 (Rep2) and the popover must read
+    either — the accounting demo hit the identical rename and its parser
+    now accepts both (see ADR 0025):
+
+      - conjunctions: v1 groups ANDed propositions under `$and`; v2 under
+        `$group`.
+      - predicates: v1 wraps the value in an operator (`{$has: "Kesko"}`);
+        v2 text matches use `{$match: "milk"}`, and v2 non-text fields
+        return the bare value (`{vendor: "Kesko"}`).
+
+    Missing either encoding is not a soft failure — it silently drops the
+    factor's conditions, so a lift card renders a bare multiplier with no
+    "when field is value" text (CLAUDE.md prime directive #2).
     """
     if not isinstance(prop, dict):
         return []
-    if "$and" in prop:
-        out: list[dict] = []
-        for sub in prop["$and"]:
-            out.extend(_flatten_proposition(sub))
-        return out
+    for conjunction in ("$and", "$group"):
+        if conjunction in prop:
+            out: list[dict] = []
+            for sub in prop[conjunction] or []:
+                out.extend(_flatten_proposition(sub))
+            return out
     if "$not" in prop:
         inner = _flatten_proposition(prop["$not"])
         for item in inner:
             item["negate"] = True
         return inner
-    # Plain `{field: {$has: value}}` or `{field: value}`
+    # Plain `{field: {$has: value}}` / `{field: {$match: value}}` / `{field: value}`
     items: list[dict] = []
     for field, predicate in prop.items():
         if field.startswith("$"):
             continue
-        if isinstance(predicate, dict):
-            value = (
-                predicate.get("$has")
-                if "$has" in predicate
-                else predicate.get("$is")
-                if "$is" in predicate
-                else predicate
-            )
-        else:
-            value = predicate
         items.append({
             "field": field,
-            "value": _stringify(value),
+            "value": _stringify(_proposition_value(predicate)),
         })
     return items
+
+
+def _proposition_value(predicate: Any) -> Any:
+    """Pull the value out of a proposition predicate, across encodings.
+
+    v1 wraps it in an operator (`{$has: v}`, `{$is: v}`); v2 text matches
+    use `{$match: v}`; v2 non-text fields return the bare value. An
+    unrecognised single-operator wrapper still yields its inner value
+    rather than stringifying the whole dict into the popover.
+    """
+    if not isinstance(predicate, dict):
+        return predicate
+    for op in ("$has", "$is", "$match"):
+        if op in predicate:
+            return predicate[op]
+    operator_values = [v for k, v in predicate.items() if k.startswith("$")]
+    if len(operator_values) == 1:
+        return operator_values[0]
+    return predicate
 
 
 def _pick_highlight(raw: Any) -> dict | None:
