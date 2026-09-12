@@ -18,6 +18,7 @@ from typing import Any
 
 import httpx
 
+from src.aito_compat import adapt_request, normalize_response
 from src.config import Config
 from src import timing
 
@@ -39,7 +40,12 @@ class AitoClient:
     """Synchronous client for the Aito REST API."""
 
     def __init__(self, config: Config) -> None:
+        self._config = config
         self._base_url = config.aito_api_url
+        # The whole v1/v2 switch lives here (ADR 0025): one assembled
+        # base path, so every endpoint moves together.
+        self._api_base = config.api_base
+        self.use_v2 = config.use_v2
         self._headers = {
             "x-api-key": config.aito_api_key,
             "content-type": "application/json",
@@ -52,7 +58,14 @@ class AitoClient:
         self._client = httpx.Client(headers=self._headers, timeout=90.0)
 
     def _url(self, path: str) -> str:
-        return f"{self._base_url}/api/v1{path}"
+        """Every Aito URL is built here, from the configured base.
+
+        Do NOT reintroduce a literal `/api/v1/` at a call site — that
+        silently opts the call out of the v1/v2 toggle while still
+        returning 200, which is exactly the failure the single
+        chokepoint exists to prevent (ADR 0025).
+        """
+        return f"{self._api_base}{path}"
 
     def _request(self, method: str, path: str, json: dict | list | None = None) -> Any:
         """Make an HTTP request to Aito and return the parsed JSON response.
@@ -70,6 +83,11 @@ class AitoClient:
 
         Raises `AitoError` on non-2xx status or connection failure.
         """
+        # v1/v2 request + response translation happens here and nowhere
+        # else, so every service module keeps reading v1's vocabulary
+        # regardless of which API is configured (ADR 0025).
+        json = adapt_request(path, json, use_v2=self.use_v2)
+
         start = time.perf_counter()
         try:
             # 90 s timeout is set once on the pooled client (see
@@ -101,7 +119,7 @@ class AitoClient:
                 body=response.text,
             )
 
-        return response.json()
+        return normalize_response(response.json(), request_body=json)
 
     # ── Schema -------------------------------------------------------
 
