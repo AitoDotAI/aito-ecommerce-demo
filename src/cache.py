@@ -55,13 +55,55 @@ def _lock_for(key: str) -> threading.Lock:
         return lock
 
 
+# ── Cache namespace: which backend produced the answer ────────────
+#
+# A cached entry is only valid for the API version + env it came from.
+# v1/master and v2/<env> are different engines over different data and
+# answer the same question differently, so a key built from the question
+# alone lets one version serve the other's results — silently, because
+# both answers are well-formed. Observed: a v2 run of "For You" returned
+# a flawless all-cat list for a cat owner because it replayed v1's cached
+# entry; with the cache bypassed, v2 actually returned cat, dog, dog,
+# dog, aquarium.
+#
+# Scoping here rather than at each call site means every caller is
+# covered, including ones added later that forget about v2 entirely.
+
+_namespace: str | None = None
+
+
+def set_namespace(namespace: str) -> None:
+    """Scope every cache entry to a backend. Called at startup."""
+    global _namespace
+    _namespace = namespace
+
+
+def _current_namespace() -> str:
+    """The active namespace.
+
+    Read from the environment when `set_namespace` has not run (the
+    memory-only / PUBLIC_DEMO path, and tests), mirroring
+    `Config.api_namespace`. `tests/test_cache.py` pins the two to the
+    same value so they cannot drift apart.
+    """
+    if _namespace is not None:
+        return _namespace
+    use_v2 = os.environ.get("AITO_USE_V2", "").lower() in ("1", "true", "yes")
+    env = os.environ.get("AITO_ENV", "") or ("v2" if use_v2 else "master")
+    return f"{'v2' if use_v2 else 'v1'}@{env}"
+
+
+def _scoped(key: str) -> str:
+    return f"{_current_namespace()}|{key}"
+
+
 def get_or_compute(key: str, compute_fn, ttl: int = DEFAULT_TTL) -> Any:
     """Cache-aware compute: return cached value if present, otherwise
     serialise concurrent computations under a per-key lock."""
     cached = get(key)
     if cached is not None:
         return cached
-    lock = _lock_for(key)
+    lock = _lock_for(_scoped(key))
     with lock:
         cached = get(key)
         if cached is not None:
@@ -100,6 +142,11 @@ def init_persistent_cache(client: AitoClient) -> None:
     memory-only TTL cache handles a public demo's traffic shape fine.
     """
     global _aito_client
+
+    # Before the PUBLIC_DEMO return: the memory-only path needs scoping
+    # just as much as the persistent one.
+    set_namespace(client._config.api_namespace)
+
     if PUBLIC_DEMO:
         return
 
@@ -127,6 +174,7 @@ def _key_hash(key: str) -> str:
 
 def get(key: str) -> Any | None:
     """Check memory first, then Aito."""
+    key = _scoped(key)
     entry = _cache.get(key)
     if entry is not None:
         expires_at, value = entry
@@ -197,6 +245,7 @@ def _persist(client: AitoClient, key: str, value: Any, ttl: int) -> None:
 
 def set(key: str, value: Any, ttl: int = DEFAULT_TTL) -> None:
     """Write to memory and persist to Aito in background."""
+    key = _scoped(key)
     _cache[key] = (time.monotonic() + ttl, value)
 
     if _aito_client is not None:
