@@ -253,3 +253,48 @@ def test_non_2xx_raises_aito_error(client, httpx_mock: HTTPXMock):
         client.predict(table="products", where={}, predict_field="dietary")
     assert excinfo.value.status_code == 400
     assert "bad query" in str(excinfo.value)
+
+
+# ── Call tracing: where a call's time actually went ──────────────────
+
+
+def test_trace_classifies_cold_slow_and_healthy_calls(caplog):
+    """The latency pill reports Aito's own `x-aitoai-response-time` and
+    discards the wall clock. That is the right story to tell — it is
+    what the engine cost — but it hides the two things worth diagnosing:
+    a cold slice, and time spent outside Aito. A multi-second response
+    can show "aito 11ms" on the pill.
+
+    So the client traces both. Quiet at DEBUG normally, WARNING only
+    when a call crosses a threshold, so it stays readable in a live log.
+    """
+    import logging
+
+    from src.aito_client import _trace_call
+
+    with caplog.at_level(logging.DEBUG, logger="aito.client"):
+        _trace_call("/_recommend", aito_ms=14742.0, wall_ms=15520.0)
+        _trace_call("/_search", aito_ms=5.0, wall_ms=900.0)
+        _trace_call("/_predict", aito_ms=120.0, wall_ms=160.0)
+
+    by_level = {r.levelname: r.getMessage() for r in caplog.records}
+    warnings = [r.getMessage() for r in caplog.records if r.levelname == "WARNING"]
+
+    assert any("cold slice" in m for m in warnings), warnings
+    assert any("overhead dominates" in m for m in warnings), warnings
+    assert len(warnings) == 2, "a healthy call must not warn"
+    assert "DEBUG" in by_level
+
+    # The numbers a reader needs to attribute the time are all present.
+    cold = next(m for m in warnings if "cold slice" in m)
+    assert "wall=15520ms" in cold and "aito=14742ms" in cold and "overhead=778ms" in cold
+
+
+def test_trace_handles_a_missing_aito_header():
+    """No `x-aitoai-response-time` (errors, mocks) must not raise."""
+    import logging
+
+    from src.aito_client import _trace_call
+
+    logging.getLogger("aito.client").setLevel(logging.DEBUG)
+    _trace_call("/_search", aito_ms=None, wall_ms=42.0)  # must not raise
