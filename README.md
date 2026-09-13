@@ -487,7 +487,12 @@ code against it (re-pointed queries, new tables) writes cache rows the
 deployed app then serves, cross-contaminating prod.
 
 Keep R&D isolated by overriding the connection in **`.env.local`**
-(gitignored; `./do` sources it after `.env`, so it wins):
+(gitignored; `./do` sources it after `.env`, so it wins). Without one,
+`./do` **refuses** the verbs that write — `load-data`, `reset-data`,
+`clear-cache` — rather than only warning, because a warning did not stop
+an interrupted `load-data` from taking the live dashboard down. Reads,
+and the `optimize` remedy, are never gated. If you really do mean the
+shared instance, say so: `AITO_ALLOW_PROD=1 ./do load-data`.
 
 ```bash
 # .env.local — your personal dev instance
@@ -499,6 +504,28 @@ AITO_API_KEY=your-dev-instance-key
 ./do reset-data    # rebuilds the dev instance from fixtures (seed=42)
                    # — an exact, mutable copy of prod
 ```
+
+### Which commit is deployed?
+
+`GET /api/health` reports the build and the backend it is talking to:
+
+```json
+{ "status": "ok",
+  "build": { "sha": "b09907199f00", "source": "BUILD_SHA", "dirty": null },
+  "api":   "v1@master" }
+```
+
+**Set `BUILD_SHA` at build time in any deployment.** A deployed image has
+no `.git`, so that variable is the only trustworthy source; `source:
+"git"` in production means the build is not pinned, which is itself the
+finding. This exists because the deployed demo has twice served
+behaviour that was in no git branch, and both times it was caught only
+by noticing impossible output in the UI.
+
+`api` answers the other half of "why does this look wrong": which engine
+and env produced the results.
+
+
 
 Because the dataset is fully code-defined (schema in `data_loader.py`,
 data in `generate_fixtures.py`, deterministic), a dev instance *is* a
