@@ -129,16 +129,41 @@ def run(*, reset: bool = False, tables: list[str] | None = None) -> None:
 
     print("Uploading rows...")
     total = 0
-    for table in selected:
-        records = load_fixture(table)
-        upload_data(client, table, records)
-        total += len(records)
-
-    # Batch uploads leave one segment per batch; merge them so reads
-    # touch a single segment. See `optimize_table`.
-    print("Optimizing (merge batch segments for faster reads)...")
-    for table in selected:
-        optimize_table(client, table)
+    uploaded: list[str] = []
+    try:
+        for table in selected:
+            records = load_fixture(table)
+            upload_data(client, table, records)
+            uploaded.append(table)
+            total += len(records)
+    finally:
+        # Batch uploads leave one segment per batch; merge them so reads
+        # touch a single segment (see `optimize_table`).
+        #
+        # In a `finally` because an INTERRUPTED load is precisely when
+        # this matters. A load that dies partway used to skip this
+        # entirely and leave tables in many unmerged segments, where a
+        # bare `limit: 0` count takes 3-20 s instead of ~0.3 s. That is
+        # not a slow demo, it is a broken one: `_kpi_counts` exceeded the
+        # 90 s client timeout and /api/dashboard answered 500. Optimizing
+        # what was actually uploaded leaves the instance usable either
+        # way.
+        if uploaded:
+            print("Optimizing (merge batch segments for faster reads)...")
+            failed = []
+            for table in uploaded:
+                try:
+                    optimize_table(client, table)
+                except (AitoError, KeyboardInterrupt) as exc:
+                    # Report and keep going: one table refusing to merge
+                    # must not leave the remaining ones unoptimized.
+                    failed.append(table)
+                    print(f"  WARNING: could not optimize '{table}': {exc}")
+            if failed:
+                print(
+                    f"  {len(failed)} table(s) left unoptimized: {', '.join(failed)}\n"
+                    f"  Reads on those will be slow — re-run `./do optimize`."
+                )
 
     print(f"Done. Loaded {total} rows across {len(selected)} table(s).")
 
