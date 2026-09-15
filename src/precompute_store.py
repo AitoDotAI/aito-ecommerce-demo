@@ -59,6 +59,7 @@ from typing import Any, Callable
 
 from src.aito_client import AitoClient, AitoError
 from src import timing
+from src.config import current_api_namespace
 
 PRECOMPUTE_TABLE = "precompute_entries"
 PRECOMPUTE_SCHEMA = {
@@ -85,8 +86,50 @@ _l1_mutex = threading.Lock()
 # the reader (`serve`) cannot drift on its shape.
 
 
+# ── Namespacing: a snapshot belongs to the backend that computed it ──
+#
+# Same reasoning as `src/cache.py`. A precomputed dashboard is an ANSWER,
+# and v1/master and v2/<env> answer differently — so a snapshot keyed on
+# the view name alone is replayed under whichever API happens to be
+# configured. That is worse here than in the cache: these entries have no
+# TTL, they are committed to git, and seven views serve from them, so a
+# v2 deployment would render v1's numbers indefinitely and look fast
+# doing it.
+#
+# All three layers are scoped: the L1 dict, the `name` column in Aito,
+# and the committed JSON (one directory per namespace).
+
+_namespace: str | None = None
+
+
+def set_namespace(namespace: str | None) -> None:
+    """Scope every snapshot to a backend. Called by `init`.
+
+    Deliberately does NOT clear L1: the keys already carry the
+    namespace, so entries for different backends coexist rather than
+    evicting each other.
+    """
+    global _namespace
+    _namespace = namespace
+
+
+def _current_namespace() -> str:
+    return _namespace if _namespace is not None else current_api_namespace()
+
+
+def _scoped(name: str) -> str:
+    """Key used for L1 and for the `name` column in Aito."""
+    return f"{_current_namespace()}|{name}"
+
+
+def _namespace_dir(namespace: str) -> str:
+    """`v1@master` -> `v1-master`; `@` is legal in a path but reads
+    badly in a repo tree and in shell globs."""
+    return namespace.replace("@", "-")
+
+
 def _fallback_path(name: str) -> Path:
-    return _FALLBACK_DIR / f"{name}.json"
+    return _FALLBACK_DIR / _namespace_dir(_current_namespace()) / f"{name}.json"
 
 
 def init(client: AitoClient) -> None:
@@ -94,6 +137,8 @@ def init(client: AitoClient) -> None:
     failure — the git-committed JSON bootstrap still serves reads."""
     global _aito
     _aito = client
+    # Scope snapshots to the backend that produced them, before any read.
+    set_namespace(client._config.api_namespace)
     try:
         schema = client.get_schema()
         if PRECOMPUTE_TABLE not in schema.get("schema", {}):
@@ -109,18 +154,19 @@ def init(client: AitoClient) -> None:
 
 def get(name: str) -> Any | None:
     """Read a snapshot entry, falling back L1 → Aito → git JSON → None."""
-    cached = _l1.get(name)
+    key = _scoped(name)
+    cached = _l1.get(key)
     if cached is not None:
         return cached
 
     if _aito is not None:
         try:
-            r = _aito.search(PRECOMPUTE_TABLE, where={"name": name}, limit=1)
+            r = _aito.search(PRECOMPUTE_TABLE, where={"name": key}, limit=1)
             hits = r.get("hits", [])
             if hits:
                 value = json.loads(hits[0]["payload"])
                 with _l1_mutex:
-                    _l1[name] = value
+                    _l1[key] = value
                 return value
         except (AitoError, KeyError, json.JSONDecodeError):
             pass  # fall through to the bootstrap file
@@ -131,7 +177,7 @@ def get(name: str) -> Any | None:
             with open(path) as f:
                 value = json.load(f)
             with _l1_mutex:
-                _l1[name] = value
+                _l1[key] = value
             return value
         except (OSError, json.JSONDecodeError):
             pass
@@ -148,27 +194,29 @@ def put(name: str, value: Any) -> None:
     """
     if _aito is None:
         raise RuntimeError("precompute_store.init() not called")
+    key = _scoped(name)
     payload = json.dumps(value, ensure_ascii=False, default=str)
     try:
         _aito._request(
             "POST", "/data/_delete",
-            json={"from": PRECOMPUTE_TABLE, "where": {"name": name}},
+            json={"from": PRECOMPUTE_TABLE, "where": {"name": key}},
         )
     except AitoError:
         # Best-effort: a first-time write has nothing to delete.
         pass
     _aito._request(
         "POST", f"/data/{PRECOMPUTE_TABLE}",
-        json={"name": name, "payload": payload, "computed_at": int(time.time())},
+        json={"name": key, "payload": payload, "computed_at": int(time.time())},
     )
     with _l1_mutex:
-        _l1[name] = value
+        _l1[key] = value
 
 
 def write_bootstrap(name: str, value: Any) -> None:
     """Write the git-committed JSON fallback for `name`."""
-    _FALLBACK_DIR.mkdir(parents=True, exist_ok=True)
-    with open(_fallback_path(name), "w") as f:
+    path = _fallback_path(name)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w") as f:
         json.dump(value, f, ensure_ascii=False, indent=2, default=str)
 
 
@@ -214,4 +262,4 @@ def invalidate(name: str | None = None) -> None:
         if name is None:
             _l1.clear()
         else:
-            _l1.pop(name, None)
+            _l1.pop(_scoped(name), None)

@@ -29,6 +29,7 @@ import threading
 from typing import Any
 
 from src.aito_client import AitoClient, AitoError
+from src.config import current_api_namespace
 
 PUBLIC_DEMO = os.environ.get("PUBLIC_DEMO", "").lower() in ("1", "true", "yes")
 
@@ -88,9 +89,7 @@ def _current_namespace() -> str:
     """
     if _namespace is not None:
         return _namespace
-    use_v2 = os.environ.get("AITO_USE_V2", "").lower() in ("1", "true", "yes")
-    env = os.environ.get("AITO_ENV", "") or ("v2" if use_v2 else "master")
-    return f"{'v2' if use_v2 else 'v1'}@{env}"
+    return current_api_namespace()
 
 
 def _scoped(key: str) -> str:

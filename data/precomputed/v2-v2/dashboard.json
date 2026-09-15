@@ -1,0 +1,217 @@
+{
+  "data": {
+    "kpis": {
+      "products": {
+        "value": 658,
+        "delta_label": null
+      },
+      "orders_12mo": {
+        "value": 10341,
+        "delta_label": null
+      },
+      "customers": {
+        "value": 3000,
+        "delta_label": null
+      },
+      "avg_basket_eur": {
+        "value": 71.61,
+        "delta_label": null
+      }
+    },
+    "top_patterns": [
+      {
+        "label": "Dog dry-food → Dental treats",
+        "lift": 2.68,
+        "bar_pct": 76.6
+      },
+      {
+        "label": "Dog dry-food → Dog treats",
+        "lift": 1.52,
+        "bar_pct": 43.3
+      },
+      {
+        "label": "Dog dry-food → Dog accessories",
+        "lift": 1.57,
+        "bar_pct": 44.9
+      },
+      {
+        "label": "Cat wet-food → Cat litter",
+        "lift": 2.12,
+        "bar_pct": 60.6
+      },
+      {
+        "label": "Cat dry-food → Cat wet-food",
+        "lift": 2.05,
+        "bar_pct": 58.7
+      },
+      {
+        "label": "Aquarium food → Aquarium health",
+        "lift": 8.65,
+        "bar_pct": 100.0
+      }
+    ],
+    "segments": [
+      {
+        "id": "dog_owner",
+        "emoji": "🐕",
+        "label": "Dog owners",
+        "share_pct": 42.1,
+        "avg_basket_eur": 68.88,
+        "note": "monthly food reorder · highest LTV",
+        "pill_text": "Highest LTV",
+        "pill_tone": "orange"
+      },
+      {
+        "id": "cat_owner",
+        "emoji": "🐈",
+        "label": "Cat owners",
+        "share_pct": 29.8,
+        "avg_basket_eur": 69.6,
+        "note": "bi-weekly litter · steady frequency",
+        "pill_text": "High frequency",
+        "pill_tone": "blue"
+      },
+      {
+        "id": "multi_pet",
+        "emoji": "🐾",
+        "label": "Multi-pet households",
+        "share_pct": 15.2,
+        "avg_basket_eur": 63.21,
+        "note": "dog + cat · cross-sell sweet spot",
+        "pill_text": "Cross-sell",
+        "pill_tone": "purple"
+      },
+      {
+        "id": "small_animal_owner",
+        "emoji": "🐹",
+        "label": "Small animals",
+        "share_pct": 7.3,
+        "avg_basket_eur": 117.16,
+        "note": "weekly bedding · growing segment",
+        "pill_text": "Growing",
+        "pill_tone": "grey"
+      },
+      {
+        "id": "aquarium_owner",
+        "emoji": "🐟",
+        "label": "Aquarium / exotic",
+        "share_pct": 5.6,
+        "avg_basket_eur": 82.86,
+        "note": "monthly · high AOV",
+        "pill_text": "High AOV",
+        "pill_tone": "purple"
+      }
+    ],
+    "insight": {
+      "headline": "Insight",
+      "body": "<strong>Dog dry-food → Dental treats</strong> co-occurs at <strong>2.68×</strong> baseline — Aito flags this as the demo's headline cross-sell signal. Drill into individual SKU pairs on Bought Together; live-rank the pattern's customer segments on Pattern Explorer."
+    },
+    "recent_orders": [
+      {
+        "order_id": "ORD-12215",
+        "customer_short": "Janne I.",
+        "month": "2026-04",
+        "line_summary": "Hill's Science Plan Beef Dog Food 1kg + 3 more",
+        "total_eur": 115.5
+      },
+      {
+        "order_id": "ORD-12206",
+        "customer_short": "Mikko M.",
+        "month": "2026-04",
+        "line_summary": "Royal Canin Senior Turkey Dog Food 400g + 1 more",
+        "total_eur": 5.1
+      },
+      {
+        "order_id": "ORD-12205",
+        "customer_short": "Mikko M.",
+        "month": "2026-04",
+        "line_summary": "Royal Canin Turkey Dog Food 400g + 1 more",
+        "total_eur": 5.36
+      },
+      {
+        "order_id": "ORD-12203",
+        "customer_short": "Petra L.",
+        "month": "2026-04",
+        "line_summary": "Whimzees Grain Free Daily Dental Dental Treats 200g + 1 more",
+        "total_eur": 87.47
+      },
+      {
+        "order_id": "ORD-12201",
+        "customer_short": "Petra L.",
+        "month": "2026-04",
+        "line_summary": "Eukanuba Turkey Dog Food 400g + 1 more",
+        "total_eur": 6.52
+      },
+      {
+        "order_id": "ORD-12188",
+        "customer_short": "Erika L.",
+        "month": "2026-04",
+        "line_summary": "PetNord Cheese Treats 500g + 4 more",
+        "total_eur": 63.5
+      }
+    ],
+    "last_query": {
+      "endpoint": "_search",
+      "body": {
+        "from": "orders",
+        "where": {
+          "month": {
+            "$gte": "2025-04"
+          }
+        },
+        "limit": 0
+      }
+    },
+    "last_response_ms": 783
+  },
+  "timings": [
+    [
+      "_search",
+      1.11
+    ],
+    [
+      "_search",
+      1.25
+    ],
+    [
+      "_search",
+      2.87
+    ],
+    [
+      "_search",
+      17.87
+    ],
+    [
+      "_batch",
+      3.51
+    ],
+    [
+      "_aggregate",
+      17.79
+    ],
+    [
+      "_aggregate",
+      11.3
+    ],
+    [
+      "_aggregate",
+      9.98
+    ],
+    [
+      "_aggregate",
+      4.77
+    ],
+    [
+      "_aggregate",
+      3.32
+    ],
+    [
+      "_search",
+      4.87
+    ],
+    [
+      "_batch",
+      9.33
+    ]
+  ]
+}

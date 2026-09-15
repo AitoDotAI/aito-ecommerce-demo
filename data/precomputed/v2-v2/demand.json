@@ -1,0 +1,1356 @@
+{
+  "data": {
+    "forecast_month": "2026-05",
+    "top_movers": [
+      {
+        "sku": "SKU-PT-0196",
+        "name": "PetNord Puppy Dental Dental Treats 200g",
+        "pet_type": "dog",
+        "category": "dental-treats",
+        "avg_monthly_units": 10,
+        "last_month_units": 22,
+        "forecast_units": 7,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 7.452,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0196",
+              "value": 0.8199,
+              "type": "regression"
+            },
+            {
+              "name": "category=dental-treats",
+              "value": 0.0759,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.023,
+              "type": "residual"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": 0.0112,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0201",
+        "name": "PetNord Grain Free Fresh Breath Dental Treats 80g",
+        "pet_type": "dog",
+        "category": "dental-treats",
+        "avg_monthly_units": 10,
+        "last_month_units": 30,
+        "forecast_units": 6,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 6.438,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0201",
+              "value": 0.6736,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.3875,
+              "type": "residual"
+            },
+            {
+              "name": "category=dental-treats",
+              "value": 0.0759,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": 0.0112,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0176",
+        "name": "PetNord Cheese Treats 200g",
+        "pet_type": "dog",
+        "category": "treats",
+        "avg_monthly_units": 10,
+        "last_month_units": 24,
+        "forecast_units": 7,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 6.639,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0176",
+              "value": 0.7843,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.1453,
+              "type": "residual"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": 0.0112,
+              "type": "regression"
+            },
+            {
+              "name": "category=treats",
+              "value": 0.0107,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0192",
+        "name": "PetNord Grain Free Daily Dental Dental Treats 120g",
+        "pet_type": "dog",
+        "category": "dental-treats",
+        "avg_monthly_units": 9,
+        "last_month_units": 17,
+        "forecast_units": 7,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 7.207,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0192",
+              "value": 0.779,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.5158,
+              "type": "residual"
+            },
+            {
+              "name": "category=dental-treats",
+              "value": 0.0759,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": 0.0112,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0186",
+        "name": "Whimzees Grain Free Puppy Dental Dental Treats 200g",
+        "pet_type": "dog",
+        "category": "dental-treats",
+        "avg_monthly_units": 9,
+        "last_month_units": 26,
+        "forecast_units": 7,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 7.087,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0186",
+              "value": 0.765,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.0894,
+              "type": "residual"
+            },
+            {
+              "name": "category=dental-treats",
+              "value": 0.0759,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Whimzees",
+              "value": 0.0043,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0199",
+        "name": "PetNord Fresh Breath Dental Treats 200g",
+        "pet_type": "dog",
+        "category": "dental-treats",
+        "avg_monthly_units": 9,
+        "last_month_units": 23,
+        "forecast_units": 7,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 6.796,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0199",
+              "value": 0.7276,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.4415,
+              "type": "residual"
+            },
+            {
+              "name": "category=dental-treats",
+              "value": 0.0759,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": 0.0112,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0194",
+        "name": "PetNord Grain Free Daily Dental Dental Treats 80g",
+        "pet_type": "dog",
+        "category": "dental-treats",
+        "avg_monthly_units": 9,
+        "last_month_units": 21,
+        "forecast_units": 7,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 7.35,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0194",
+              "value": 0.8025,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": 0.1767,
+              "type": "residual"
+            },
+            {
+              "name": "category=dental-treats",
+              "value": 0.0759,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": 0.0112,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0193",
+        "name": "PetNord Grain Free Daily Dental Dental Treats 120g",
+        "pet_type": "dog",
+        "category": "dental-treats",
+        "avg_monthly_units": 9,
+        "last_month_units": 20,
+        "forecast_units": 6,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 5.983,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0193",
+              "value": 0.5707,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.2846,
+              "type": "residual"
+            },
+            {
+              "name": "category=dental-treats",
+              "value": 0.0759,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": 0.0112,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0180",
+        "name": "PetNord Mixed Reward Treats 500g",
+        "pet_type": "dog",
+        "category": "treats",
+        "avg_monthly_units": 9,
+        "last_month_units": 13,
+        "forecast_units": 6,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 6.266,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0180",
+              "value": 0.7004,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": 0.6318,
+              "type": "residual"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": 0.0112,
+              "type": "regression"
+            },
+            {
+              "name": "category=treats",
+              "value": 0.0107,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0185",
+        "name": "Whimzees Grain Free Puppy Dental Dental Treats 120g",
+        "pet_type": "dog",
+        "category": "dental-treats",
+        "avg_monthly_units": 8,
+        "last_month_units": 16,
+        "forecast_units": 6,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 6.371,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0185",
+              "value": 0.6568,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": 0.4835,
+              "type": "residual"
+            },
+            {
+              "name": "category=dental-treats",
+              "value": 0.0759,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Whimzees",
+              "value": 0.0043,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0195",
+        "name": "PetNord Daily Dental Dental Treats 200g",
+        "pet_type": "dog",
+        "category": "dental-treats",
+        "avg_monthly_units": 8,
+        "last_month_units": 25,
+        "forecast_units": 6,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 6.007,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -1.0269,
+              "type": "residual"
+            },
+            {
+              "name": "product_sku=SKU-PT-0195",
+              "value": 0.5969,
+              "type": "regression"
+            },
+            {
+              "name": "category=dental-treats",
+              "value": 0.0759,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": 0.0112,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0190",
+        "name": "Whimzees Grain Free Fresh Breath Dental Treats 200g",
+        "pet_type": "dog",
+        "category": "dental-treats",
+        "avg_monthly_units": 8,
+        "last_month_units": 13,
+        "forecast_units": 7,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 6.514,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -1.0695,
+              "type": "residual"
+            },
+            {
+              "name": "product_sku=SKU-PT-0190",
+              "value": 0.6464,
+              "type": "regression"
+            },
+            {
+              "name": "category=dental-treats",
+              "value": 0.0759,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Whimzees",
+              "value": 0.0043,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0189",
+        "name": "Whimzees Grain Free Fresh Breath Dental Treats 200g",
+        "pet_type": "dog",
+        "category": "dental-treats",
+        "avg_monthly_units": 8,
+        "last_month_units": 22,
+        "forecast_units": 6,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 6.239,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0189",
+              "value": 0.6421,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": 0.6317,
+              "type": "residual"
+            },
+            {
+              "name": "category=dental-treats",
+              "value": 0.0759,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Whimzees",
+              "value": 0.0043,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0151",
+        "name": "Eukanuba Large Breed Chicken Dog Food 400g",
+        "pet_type": "dog",
+        "category": "wet-food",
+        "avg_monthly_units": 8,
+        "last_month_units": 14,
+        "forecast_units": 6,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 6.302,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -1.0488,
+              "type": "residual"
+            },
+            {
+              "name": "product_sku=SKU-PT-0151",
+              "value": 0.6761,
+              "type": "regression"
+            },
+            {
+              "name": "category=wet-food",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Eukanuba",
+              "value": -0.0032,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0175",
+        "name": "PetNord Cheese Treats 500g",
+        "pet_type": "dog",
+        "category": "treats",
+        "avg_monthly_units": 8,
+        "last_month_units": 12,
+        "forecast_units": 6,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 6.112,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0175",
+              "value": 0.6774,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.349,
+              "type": "residual"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": 0.0112,
+              "type": "regression"
+            },
+            {
+              "name": "category=treats",
+              "value": 0.0107,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0198",
+        "name": "PetNord Grain Free Puppy Dental Dental Treats 120g",
+        "pet_type": "dog",
+        "category": "dental-treats",
+        "avg_monthly_units": 8,
+        "last_month_units": 21,
+        "forecast_units": 7,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 6.85,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0198",
+              "value": 0.706,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": 0.4274,
+              "type": "residual"
+            },
+            {
+              "name": "category=dental-treats",
+              "value": 0.0759,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": 0.0112,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0188",
+        "name": "Whimzees Grain Free Puppy Dental Dental Treats 80g",
+        "pet_type": "dog",
+        "category": "dental-treats",
+        "avg_monthly_units": 8,
+        "last_month_units": 17,
+        "forecast_units": 6,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 6.039,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0188",
+              "value": 0.606,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.313,
+              "type": "residual"
+            },
+            {
+              "name": "category=dental-treats",
+              "value": 0.0759,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Whimzees",
+              "value": 0.0043,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0184",
+        "name": "Whimzees Grain Free Daily Dental Dental Treats 200g",
+        "pet_type": "dog",
+        "category": "dental-treats",
+        "avg_monthly_units": 8,
+        "last_month_units": 31,
+        "forecast_units": 6,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 6.445,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0184",
+              "value": 0.6171,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.347,
+              "type": "residual"
+            },
+            {
+              "name": "category=dental-treats",
+              "value": 0.0759,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Whimzees",
+              "value": 0.0043,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0197",
+        "name": "PetNord Grain Free Puppy Dental Dental Treats 200g",
+        "pet_type": "dog",
+        "category": "dental-treats",
+        "avg_monthly_units": 8,
+        "last_month_units": 21,
+        "forecast_units": 6,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 5.773,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.9653,
+              "type": "residual"
+            },
+            {
+              "name": "product_sku=SKU-PT-0197",
+              "value": 0.5353,
+              "type": "regression"
+            },
+            {
+              "name": "category=dental-treats",
+              "value": 0.0759,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": 0.0112,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0202",
+        "name": "PetNord Grain Free Fresh Breath Dental Treats 120g",
+        "pet_type": "dog",
+        "category": "dental-treats",
+        "avg_monthly_units": 8,
+        "last_month_units": 25,
+        "forecast_units": 6,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 5.94,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0202",
+              "value": 0.5354,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": 0.4209,
+              "type": "residual"
+            },
+            {
+              "name": "category=dental-treats",
+              "value": 0.0759,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": 0.0112,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0191",
+        "name": "Whimzees Grain Free Fresh Breath Dental Treats 120g",
+        "pet_type": "dog",
+        "category": "dental-treats",
+        "avg_monthly_units": 8,
+        "last_month_units": 19,
+        "forecast_units": 6,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 5.967,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0191",
+              "value": 0.5931,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.323,
+              "type": "residual"
+            },
+            {
+              "name": "category=dental-treats",
+              "value": 0.0759,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Whimzees",
+              "value": 0.0043,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0183",
+        "name": "Whimzees Grain Free Daily Dental Dental Treats 200g",
+        "pet_type": "dog",
+        "category": "dental-treats",
+        "avg_monthly_units": 8,
+        "last_month_units": 25,
+        "forecast_units": 6,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 6.128,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0183",
+              "value": 0.5666,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.2965,
+              "type": "residual"
+            },
+            {
+              "name": "category=dental-treats",
+              "value": 0.0759,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Whimzees",
+              "value": 0.0043,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0200",
+        "name": "PetNord Grain Free Fresh Breath Dental Treats 80g",
+        "pet_type": "dog",
+        "category": "dental-treats",
+        "avg_monthly_units": 8,
+        "last_month_units": 22,
+        "forecast_units": 6,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 5.637,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.9475,
+              "type": "residual"
+            },
+            {
+              "name": "product_sku=SKU-PT-0200",
+              "value": 0.5176,
+              "type": "regression"
+            },
+            {
+              "name": "category=dental-treats",
+              "value": 0.0759,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": 0.0112,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0169",
+        "name": "PetNord Liver Treats 500g",
+        "pet_type": "dog",
+        "category": "treats",
+        "avg_monthly_units": 8,
+        "last_month_units": 18,
+        "forecast_units": 5,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 5.079,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0169",
+              "value": 0.4364,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.085,
+              "type": "residual"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": 0.0112,
+              "type": "regression"
+            },
+            {
+              "name": "category=treats",
+              "value": 0.0107,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0177",
+        "name": "PetNord Puppy Cheese Treats 100g",
+        "pet_type": "dog",
+        "category": "treats",
+        "avg_monthly_units": 8,
+        "last_month_units": 10,
+        "forecast_units": 5,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 5.147,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0177",
+              "value": 0.5305,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.1792,
+              "type": "residual"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": 0.0112,
+              "type": "regression"
+            },
+            {
+              "name": "category=treats",
+              "value": 0.0107,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      }
+    ],
+    "seasonality": [],
+    "evaluation": {
+      "accuracy": 0.31,
+      "base_accuracy": 0.2467,
+      "accuracy_gain_pp": 6.33,
+      "n": 300
+    },
+    "last_query": {
+      "endpoint": "_estimate",
+      "body": {
+        "from": "monthly_sales",
+        "where": {
+          "product_sku": "<sku>",
+          "month": "2026-05",
+          "pet_type": "<from monthly_sales row>",
+          "category": "<from monthly_sales row>",
+          "brand": "<from monthly_sales row>",
+          "season": "spring"
+        },
+        "estimate": "units_sold",
+        "select": [
+          "estimate",
+          "why"
+        ]
+      }
+    },
+    "last_response_ms": 9026
+  },
+  "timings": [
+    [
+      "_search",
+      88.81
+    ],
+    [
+      "_search",
+      45.12
+    ],
+    [
+      "_search",
+      18.36
+    ],
+    [
+      "_search",
+      22.85
+    ],
+    [
+      "_evaluate",
+      5194.64
+    ]
+  ]
+}

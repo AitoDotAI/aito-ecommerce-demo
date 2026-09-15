@@ -1,0 +1,1636 @@
+{
+  "data": {
+    "kpis": [
+      {
+        "label": "Total customers",
+        "value": 3000,
+        "sub": "cohort size"
+      },
+      {
+        "label": "Active",
+        "value": 1908,
+        "sub": "ordered in last 90 d"
+      },
+      {
+        "label": "Churned",
+        "value": 1092,
+        "sub": "no order in 90 d"
+      },
+      {
+        "label": "Churn rate",
+        "value": 36.4,
+        "sub": "of total cohort"
+      }
+    ],
+    "at_risk": [
+      {
+        "customer_id": "CUST-00072",
+        "customer_short": "Niina Heikkinen",
+        "segment": "small_animal_owner",
+        "pet_size": null,
+        "region": "turku",
+        "tenure_months": 2,
+        "visits": 3,
+        "purchases": 0,
+        "spent_eur": 0.0,
+        "latest_rating": null,
+        "latest_sentiment": null,
+        "risk_score": 0.7194,
+        "confidence_band": "high",
+        "why_explanation": {
+          "base_p": 0.3296,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 1.973,
+              "propositions": [
+                {
+                  "field": "visits",
+                  "value": "3"
+                }
+              ],
+              "highlight": {
+                "field": "visits",
+                "marked_text": "«3»"
+              }
+            },
+            {
+              "lift": 0.668,
+              "propositions": [
+                {
+                  "field": "tenure_months_at_month",
+                  "value": "2"
+                }
+              ],
+              "highlight": {
+                "field": "tenure_months_at_month",
+                "marked_text": "‹2›"
+              }
+            },
+            {
+              "lift": 1.355,
+              "propositions": [
+                {
+                  "field": "purchases",
+                  "value": "0"
+                },
+                {
+                  "field": "spent_eur",
+                  "value": "0"
+                }
+              ],
+              "highlight": {
+                "field": "purchases",
+                "marked_text": "«0»"
+              }
+            },
+            {
+              "lift": 1.267,
+              "propositions": [
+                {
+                  "field": "segment",
+                  "value": "small_animal_owner"
+                }
+              ],
+              "highlight": {
+                "field": "segment",
+                "marked_text": "«small_animal_owner»"
+              }
+            }
+          ],
+          "final_p": 0.7194
+        }
+      },
+      {
+        "customer_id": "CUST-00008",
+        "customer_short": "Anna Lampinen",
+        "segment": "small_animal_owner",
+        "pet_size": null,
+        "region": "espoo",
+        "tenure_months": 7,
+        "visits": 4,
+        "purchases": 0,
+        "spent_eur": 0.0,
+        "latest_rating": null,
+        "latest_sentiment": null,
+        "risk_score": 0.4701,
+        "confidence_band": "medium",
+        "why_explanation": {
+          "base_p": 0.3296,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 1.355,
+              "propositions": [
+                {
+                  "field": "purchases",
+                  "value": "0"
+                },
+                {
+                  "field": "spent_eur",
+                  "value": "0"
+                }
+              ],
+              "highlight": {
+                "field": "purchases",
+                "marked_text": "«0»"
+              }
+            },
+            {
+              "lift": 1.278,
+              "propositions": [
+                {
+                  "field": "segment",
+                  "value": "small_animal_owner"
+                }
+              ],
+              "highlight": {
+                "field": "segment",
+                "marked_text": "«small_animal_owner»"
+              }
+            },
+            {
+              "lift": 0.811,
+              "propositions": [
+                {
+                  "field": "region",
+                  "value": "espoo"
+                }
+              ],
+              "highlight": {
+                "field": "region",
+                "marked_text": "‹espoo›"
+              }
+            }
+          ],
+          "final_p": 0.4701
+        }
+      },
+      {
+        "customer_id": "CUST-00186",
+        "customer_short": "Anneli Toivonen",
+        "segment": "aquarium_owner",
+        "pet_size": null,
+        "region": "helsinki",
+        "tenure_months": 3,
+        "visits": 3,
+        "purchases": 1,
+        "spent_eur": 76.48,
+        "latest_rating": null,
+        "latest_sentiment": null,
+        "risk_score": 0.4677,
+        "confidence_band": "medium",
+        "why_explanation": {
+          "base_p": 0.3296,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 1.973,
+              "propositions": [
+                {
+                  "field": "visits",
+                  "value": "3"
+                }
+              ],
+              "highlight": {
+                "field": "visits",
+                "marked_text": "«3»"
+              }
+            },
+            {
+              "lift": 0.443,
+              "propositions": [
+                {
+                  "field": "purchases",
+                  "value": "1"
+                }
+              ],
+              "highlight": {
+                "field": "purchases",
+                "marked_text": "‹1›"
+              }
+            },
+            {
+              "lift": 1.341,
+              "propositions": [
+                {
+                  "field": "segment",
+                  "value": "aquarium_owner"
+                }
+              ],
+              "highlight": {
+                "field": "segment",
+                "marked_text": "«aquarium_owner»"
+              }
+            },
+            {
+              "lift": 0.882,
+              "propositions": [
+                {
+                  "field": "region",
+                  "value": "helsinki"
+                }
+              ],
+              "highlight": {
+                "field": "region",
+                "marked_text": "‹helsinki›"
+              }
+            }
+          ],
+          "final_p": 0.4677
+        }
+      },
+      {
+        "customer_id": "CUST-00026",
+        "customer_short": "Kaisa Sinkkonen",
+        "segment": "aquarium_owner",
+        "pet_size": null,
+        "region": "espoo",
+        "tenure_months": 18,
+        "visits": 3,
+        "purchases": 1,
+        "spent_eur": 242.53,
+        "latest_rating": null,
+        "latest_sentiment": null,
+        "risk_score": 0.4389,
+        "confidence_band": "low",
+        "why_explanation": {
+          "base_p": 0.3296,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 1.973,
+              "propositions": [
+                {
+                  "field": "visits",
+                  "value": "3"
+                }
+              ],
+              "highlight": {
+                "field": "visits",
+                "marked_text": "«3»"
+              }
+            },
+            {
+              "lift": 0.443,
+              "propositions": [
+                {
+                  "field": "purchases",
+                  "value": "1"
+                }
+              ],
+              "highlight": {
+                "field": "purchases",
+                "marked_text": "‹1›"
+              }
+            },
+            {
+              "lift": 1.341,
+              "propositions": [
+                {
+                  "field": "segment",
+                  "value": "aquarium_owner"
+                }
+              ],
+              "highlight": {
+                "field": "segment",
+                "marked_text": "«aquarium_owner»"
+              }
+            },
+            {
+              "lift": 0.811,
+              "propositions": [
+                {
+                  "field": "region",
+                  "value": "espoo"
+                }
+              ],
+              "highlight": {
+                "field": "region",
+                "marked_text": "‹espoo›"
+              }
+            }
+          ],
+          "final_p": 0.4389
+        }
+      },
+      {
+        "customer_id": "CUST-00089",
+        "customer_short": "Jaakko Salminen",
+        "segment": "small_animal_owner",
+        "pet_size": null,
+        "region": "turku",
+        "tenure_months": 1,
+        "visits": 4,
+        "purchases": 0,
+        "spent_eur": 0.0,
+        "latest_rating": null,
+        "latest_sentiment": null,
+        "risk_score": 0.3713,
+        "confidence_band": "low",
+        "why_explanation": {
+          "base_p": 0.3296,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 0.593,
+              "propositions": [
+                {
+                  "field": "tenure_months_at_month",
+                  "value": "1"
+                }
+              ],
+              "highlight": {
+                "field": "tenure_months_at_month",
+                "marked_text": "‹1›"
+              }
+            },
+            {
+              "lift": 1.355,
+              "propositions": [
+                {
+                  "field": "purchases",
+                  "value": "0"
+                },
+                {
+                  "field": "spent_eur",
+                  "value": "0"
+                }
+              ],
+              "highlight": {
+                "field": "purchases",
+                "marked_text": "«0»"
+              }
+            },
+            {
+              "lift": 1.278,
+              "propositions": [
+                {
+                  "field": "segment",
+                  "value": "small_animal_owner"
+                }
+              ],
+              "highlight": {
+                "field": "segment",
+                "marked_text": "«small_animal_owner»"
+              }
+            }
+          ],
+          "final_p": 0.3713
+        }
+      },
+      {
+        "customer_id": "CUST-00087",
+        "customer_short": "Elina Kallio",
+        "segment": "small_animal_owner",
+        "pet_size": null,
+        "region": "helsinki",
+        "tenure_months": 6,
+        "visits": 5,
+        "purchases": 0,
+        "spent_eur": 0.0,
+        "latest_rating": null,
+        "latest_sentiment": null,
+        "risk_score": 0.348,
+        "confidence_band": "low",
+        "why_explanation": {
+          "base_p": 0.3296,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 0.433,
+              "propositions": [
+                {
+                  "field": "visits",
+                  "value": "5"
+                }
+              ],
+              "highlight": {
+                "field": "visits",
+                "marked_text": "‹5›"
+              }
+            },
+            {
+              "lift": 1.355,
+              "propositions": [
+                {
+                  "field": "purchases",
+                  "value": "0"
+                },
+                {
+                  "field": "spent_eur",
+                  "value": "0"
+                }
+              ],
+              "highlight": {
+                "field": "purchases",
+                "marked_text": "«0»"
+              }
+            },
+            {
+              "lift": 1.34,
+              "propositions": [
+                {
+                  "field": "tenure_months_at_month",
+                  "value": "6"
+                }
+              ],
+              "highlight": {
+                "field": "tenure_months_at_month",
+                "marked_text": "«6»"
+              }
+            },
+            {
+              "lift": 0.882,
+              "propositions": [
+                {
+                  "field": "region",
+                  "value": "helsinki"
+                }
+              ],
+              "highlight": {
+                "field": "region",
+                "marked_text": "‹helsinki›"
+              }
+            },
+            {
+              "lift": 1.266,
+              "propositions": [
+                {
+                  "field": "segment",
+                  "value": "small_animal_owner"
+                }
+              ],
+              "highlight": {
+                "field": "segment",
+                "marked_text": "«small_animal_owner»"
+              }
+            }
+          ],
+          "final_p": 0.348
+        }
+      },
+      {
+        "customer_id": "CUST-00051",
+        "customer_short": "Mervi Manninen",
+        "segment": "small_animal_owner",
+        "pet_size": null,
+        "region": "jyvaskyla",
+        "tenure_months": 3,
+        "visits": 5,
+        "purchases": 1,
+        "spent_eur": 499.32,
+        "latest_rating": null,
+        "latest_sentiment": null,
+        "risk_score": 0.2935,
+        "confidence_band": "low",
+        "why_explanation": {
+          "base_p": 0.3296,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 0.413,
+              "propositions": [
+                {
+                  "field": "purchases",
+                  "value": "1"
+                }
+              ],
+              "highlight": {
+                "field": "purchases",
+                "marked_text": "‹1›"
+              }
+            },
+            {
+              "lift": 1.415,
+              "propositions": [
+                {
+                  "field": "region",
+                  "value": "jyvaskyla"
+                }
+              ],
+              "highlight": {
+                "field": "region",
+                "marked_text": "«jyvaskyla»"
+              }
+            },
+            {
+              "lift": 1.278,
+              "propositions": [
+                {
+                  "field": "segment",
+                  "value": "small_animal_owner"
+                }
+              ],
+              "highlight": {
+                "field": "segment",
+                "marked_text": "«small_animal_owner»"
+              }
+            }
+          ],
+          "final_p": 0.2935
+        }
+      },
+      {
+        "customer_id": "CUST-00090",
+        "customer_short": "Sofia Kallio",
+        "segment": "small_animal_owner",
+        "pet_size": null,
+        "region": "turku",
+        "tenure_months": 0,
+        "visits": 8,
+        "purchases": 1,
+        "spent_eur": 63.96,
+        "latest_rating": null,
+        "latest_sentiment": null,
+        "risk_score": 0.2676,
+        "confidence_band": "low",
+        "why_explanation": {
+          "base_p": 0.3296,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 0.601,
+              "propositions": [
+                {
+                  "field": "tenure_months_at_month",
+                  "value": "0"
+                },
+                {
+                  "field": "purchases",
+                  "value": "1"
+                }
+              ],
+              "highlight": {
+                "field": "tenure_months_at_month",
+                "marked_text": "‹0›"
+              }
+            },
+            {
+              "lift": 1.278,
+              "propositions": [
+                {
+                  "field": "segment",
+                  "value": "small_animal_owner"
+                }
+              ],
+              "highlight": {
+                "field": "segment",
+                "marked_text": "«small_animal_owner»"
+              }
+            }
+          ],
+          "final_p": 0.2676
+        }
+      },
+      {
+        "customer_id": "CUST-00161",
+        "customer_short": "Markku Koivisto",
+        "segment": "aquarium_owner",
+        "pet_size": null,
+        "region": "espoo",
+        "tenure_months": 1,
+        "visits": 4,
+        "purchases": 1,
+        "spent_eur": 26.09,
+        "latest_rating": null,
+        "latest_sentiment": null,
+        "risk_score": 0.2287,
+        "confidence_band": "low",
+        "why_explanation": {
+          "base_p": 0.3296,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 0.593,
+              "propositions": [
+                {
+                  "field": "tenure_months_at_month",
+                  "value": "1"
+                }
+              ],
+              "highlight": {
+                "field": "tenure_months_at_month",
+                "marked_text": "‹1›"
+              }
+            },
+            {
+              "lift": 1.356,
+              "propositions": [
+                {
+                  "field": "segment",
+                  "value": "aquarium_owner"
+                }
+              ],
+              "highlight": {
+                "field": "segment",
+                "marked_text": "«aquarium_owner»"
+              }
+            },
+            {
+              "lift": 0.811,
+              "propositions": [
+                {
+                  "field": "region",
+                  "value": "espoo"
+                }
+              ],
+              "highlight": {
+                "field": "region",
+                "marked_text": "‹espoo›"
+              }
+            }
+          ],
+          "final_p": 0.2287
+        }
+      },
+      {
+        "customer_id": "CUST-00182",
+        "customer_short": "Sanna Salminen",
+        "segment": "cat_owner",
+        "pet_size": null,
+        "region": "helsinki",
+        "tenure_months": 1,
+        "visits": 4,
+        "purchases": 0,
+        "spent_eur": 0.0,
+        "latest_rating": null,
+        "latest_sentiment": null,
+        "risk_score": 0.2142,
+        "confidence_band": "low",
+        "why_explanation": {
+          "base_p": 0.3296,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 0.593,
+              "propositions": [
+                {
+                  "field": "tenure_months_at_month",
+                  "value": "1"
+                }
+              ],
+              "highlight": {
+                "field": "tenure_months_at_month",
+                "marked_text": "‹1›"
+              }
+            },
+            {
+              "lift": 1.355,
+              "propositions": [
+                {
+                  "field": "purchases",
+                  "value": "0"
+                },
+                {
+                  "field": "spent_eur",
+                  "value": "0"
+                }
+              ],
+              "highlight": {
+                "field": "purchases",
+                "marked_text": "«0»"
+              }
+            },
+            {
+              "lift": 0.871,
+              "propositions": [
+                {
+                  "field": "segment",
+                  "value": "cat_owner"
+                }
+              ],
+              "highlight": {
+                "field": "segment",
+                "marked_text": "‹cat_owner›"
+              }
+            },
+            {
+              "lift": 0.882,
+              "propositions": [
+                {
+                  "field": "region",
+                  "value": "helsinki"
+                }
+              ],
+              "highlight": {
+                "field": "region",
+                "marked_text": "‹helsinki›"
+              }
+            }
+          ],
+          "final_p": 0.2142
+        }
+      },
+      {
+        "customer_id": "CUST-00074",
+        "customer_short": "Antti Lahtinen",
+        "segment": "cat_owner",
+        "pet_size": null,
+        "region": "oulu",
+        "tenure_months": 0,
+        "visits": 7,
+        "purchases": 1,
+        "spent_eur": 62.81,
+        "latest_rating": null,
+        "latest_sentiment": null,
+        "risk_score": 0.2134,
+        "confidence_band": "low",
+        "why_explanation": {
+          "base_p": 0.3296,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 0.601,
+              "propositions": [
+                {
+                  "field": "tenure_months_at_month",
+                  "value": "0"
+                },
+                {
+                  "field": "purchases",
+                  "value": "1"
+                }
+              ],
+              "highlight": {
+                "field": "tenure_months_at_month",
+                "marked_text": "‹0›"
+              }
+            },
+            {
+              "lift": 1.206,
+              "propositions": [
+                {
+                  "field": "region",
+                  "value": "oulu"
+                }
+              ],
+              "highlight": {
+                "field": "region",
+                "marked_text": "«oulu»"
+              }
+            },
+            {
+              "lift": 0.871,
+              "propositions": [
+                {
+                  "field": "segment",
+                  "value": "cat_owner"
+                }
+              ],
+              "highlight": {
+                "field": "segment",
+                "marked_text": "‹cat_owner›"
+              }
+            }
+          ],
+          "final_p": 0.2134
+        }
+      },
+      {
+        "customer_id": "CUST-00103",
+        "customer_short": "Jenni Kuusisto",
+        "segment": "small_animal_owner",
+        "pet_size": null,
+        "region": "helsinki",
+        "tenure_months": 2,
+        "visits": 5,
+        "purchases": 0,
+        "spent_eur": 0.0,
+        "latest_rating": null,
+        "latest_sentiment": null,
+        "risk_score": 0.16,
+        "confidence_band": "low",
+        "why_explanation": {
+          "base_p": 0.3296,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 0.433,
+              "propositions": [
+                {
+                  "field": "visits",
+                  "value": "5"
+                }
+              ],
+              "highlight": {
+                "field": "visits",
+                "marked_text": "‹5›"
+              }
+            },
+            {
+              "lift": 1.355,
+              "propositions": [
+                {
+                  "field": "purchases",
+                  "value": "0"
+                },
+                {
+                  "field": "spent_eur",
+                  "value": "0"
+                }
+              ],
+              "highlight": {
+                "field": "purchases",
+                "marked_text": "«0»"
+              }
+            },
+            {
+              "lift": 0.668,
+              "propositions": [
+                {
+                  "field": "tenure_months_at_month",
+                  "value": "2"
+                }
+              ],
+              "highlight": {
+                "field": "tenure_months_at_month",
+                "marked_text": "‹2›"
+              }
+            },
+            {
+              "lift": 0.882,
+              "propositions": [
+                {
+                  "field": "region",
+                  "value": "helsinki"
+                }
+              ],
+              "highlight": {
+                "field": "region",
+                "marked_text": "‹helsinki›"
+              }
+            },
+            {
+              "lift": 1.266,
+              "propositions": [
+                {
+                  "field": "segment",
+                  "value": "small_animal_owner"
+                }
+              ],
+              "highlight": {
+                "field": "segment",
+                "marked_text": "«small_animal_owner»"
+              }
+            }
+          ],
+          "final_p": 0.16
+        }
+      },
+      {
+        "customer_id": "CUST-00002",
+        "customer_short": "Olli Mäkelä",
+        "segment": "multi_pet",
+        "pet_size": "small",
+        "region": "tampere",
+        "tenure_months": 8,
+        "visits": 20,
+        "purchases": 1,
+        "spent_eur": 114.21,
+        "latest_rating": null,
+        "latest_sentiment": null,
+        "risk_score": 0.1587,
+        "confidence_band": "low",
+        "why_explanation": {
+          "base_p": 0.3296,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 0.413,
+              "propositions": [
+                {
+                  "field": "purchases",
+                  "value": "1"
+                }
+              ],
+              "highlight": {
+                "field": "purchases",
+                "marked_text": "‹1›"
+              }
+            },
+            {
+              "lift": 1.123,
+              "propositions": [
+                {
+                  "field": "tenure_months_at_month",
+                  "value": "8"
+                }
+              ],
+              "highlight": {
+                "field": "tenure_months_at_month",
+                "marked_text": "«8»"
+              }
+            }
+          ],
+          "final_p": 0.1587
+        }
+      },
+      {
+        "customer_id": "CUST-00044",
+        "customer_short": "Eeva Anttila",
+        "segment": "cat_owner",
+        "pet_size": null,
+        "region": "jyvaskyla",
+        "tenure_months": 5,
+        "visits": 6,
+        "purchases": 1,
+        "spent_eur": 21.25,
+        "latest_rating": 4,
+        "latest_sentiment": "positive",
+        "risk_score": 0.0897,
+        "confidence_band": "low",
+        "why_explanation": {
+          "base_p": 0.3296,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 1.206,
+              "propositions": [
+                {
+                  "field": "tenure_months_at_month",
+                  "value": "5"
+                }
+              ],
+              "highlight": {
+                "field": "tenure_months_at_month",
+                "marked_text": "«5»"
+              }
+            },
+            {
+              "lift": 1.415,
+              "propositions": [
+                {
+                  "field": "region",
+                  "value": "jyvaskyla"
+                }
+              ],
+              "highlight": {
+                "field": "region",
+                "marked_text": "«jyvaskyla»"
+              }
+            },
+            {
+              "lift": 0.579,
+              "propositions": [
+                {
+                  "field": "latest_category",
+                  "value": "quality"
+                },
+                {
+                  "field": "spent_eur",
+                  "value": "21.25"
+                },
+                {
+                  "field": "visits",
+                  "value": "6"
+                }
+              ],
+              "highlight": {
+                "field": "latest_category",
+                "marked_text": "‹quality›"
+              }
+            },
+            {
+              "lift": 0.413,
+              "propositions": [
+                {
+                  "field": "purchases",
+                  "value": "1"
+                }
+              ],
+              "highlight": {
+                "field": "purchases",
+                "marked_text": "‹1›"
+              }
+            },
+            {
+              "lift": 0.707,
+              "propositions": [
+                {
+                  "field": "latest_rating",
+                  "value": "4"
+                },
+                {
+                  "field": "latest_sentiment",
+                  "value": "positive"
+                }
+              ],
+              "highlight": {
+                "field": "latest_rating",
+                "marked_text": "‹4›"
+              }
+            },
+            {
+              "lift": 0.871,
+              "propositions": [
+                {
+                  "field": "segment",
+                  "value": "cat_owner"
+                }
+              ],
+              "highlight": {
+                "field": "segment",
+                "marked_text": "‹cat_owner›"
+              }
+            }
+          ],
+          "final_p": 0.0897
+        }
+      },
+      {
+        "customer_id": "CUST-00028",
+        "customer_short": "Ilkka Manninen",
+        "segment": "cat_owner",
+        "pet_size": null,
+        "region": "oulu",
+        "tenure_months": 3,
+        "visits": 6,
+        "purchases": 0,
+        "spent_eur": 0.0,
+        "latest_rating": null,
+        "latest_sentiment": null,
+        "risk_score": 0.0817,
+        "confidence_band": "low",
+        "why_explanation": {
+          "base_p": 0.3296,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 0.142,
+              "propositions": [
+                {
+                  "field": "visits",
+                  "value": "6"
+                }
+              ],
+              "highlight": {
+                "field": "visits",
+                "marked_text": "‹6›"
+              }
+            },
+            {
+              "lift": 1.355,
+              "propositions": [
+                {
+                  "field": "purchases",
+                  "value": "0"
+                },
+                {
+                  "field": "spent_eur",
+                  "value": "0"
+                }
+              ],
+              "highlight": {
+                "field": "purchases",
+                "marked_text": "«0»"
+              }
+            },
+            {
+              "lift": 1.206,
+              "propositions": [
+                {
+                  "field": "region",
+                  "value": "oulu"
+                }
+              ],
+              "highlight": {
+                "field": "region",
+                "marked_text": "«oulu»"
+              }
+            },
+            {
+              "lift": 0.876,
+              "propositions": [
+                {
+                  "field": "segment",
+                  "value": "cat_owner"
+                }
+              ],
+              "highlight": {
+                "field": "segment",
+                "marked_text": "‹cat_owner›"
+              }
+            }
+          ],
+          "final_p": 0.0817
+        }
+      },
+      {
+        "customer_id": "CUST-00107",
+        "customer_short": "Marja Mikkonen",
+        "segment": "multi_pet",
+        "pet_size": "medium",
+        "region": "helsinki",
+        "tenure_months": 11,
+        "visits": 15,
+        "purchases": 1,
+        "spent_eur": 19.28,
+        "latest_rating": 4,
+        "latest_sentiment": "positive",
+        "risk_score": 0.0723,
+        "confidence_band": "low",
+        "why_explanation": {
+          "base_p": 0.3296,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 0.413,
+              "propositions": [
+                {
+                  "field": "purchases",
+                  "value": "1"
+                }
+              ],
+              "highlight": {
+                "field": "purchases",
+                "marked_text": "‹1›"
+              }
+            },
+            {
+              "lift": 0.707,
+              "propositions": [
+                {
+                  "field": "latest_rating",
+                  "value": "4"
+                },
+                {
+                  "field": "latest_sentiment",
+                  "value": "positive"
+                }
+              ],
+              "highlight": {
+                "field": "latest_rating",
+                "marked_text": "‹4›"
+              }
+            },
+            {
+              "lift": 0.882,
+              "propositions": [
+                {
+                  "field": "region",
+                  "value": "helsinki"
+                }
+              ],
+              "highlight": {
+                "field": "region",
+                "marked_text": "‹helsinki›"
+              }
+            },
+            {
+              "lift": 0.911,
+              "propositions": [
+                {
+                  "field": "segment",
+                  "value": "multi_pet"
+                }
+              ],
+              "highlight": {
+                "field": "segment",
+                "marked_text": "‹multi_pet›"
+              }
+            }
+          ],
+          "final_p": 0.0723
+        }
+      },
+      {
+        "customer_id": "CUST-00006",
+        "customer_short": "Juha Heinonen",
+        "segment": "cat_owner",
+        "pet_size": null,
+        "region": "espoo",
+        "tenure_months": 0,
+        "visits": 8,
+        "purchases": 1,
+        "spent_eur": 8.95,
+        "latest_rating": 3,
+        "latest_sentiment": "neutral",
+        "risk_score": 0.0632,
+        "confidence_band": "low",
+        "why_explanation": {
+          "base_p": 0.3296,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 0.549,
+              "propositions": [
+                {
+                  "field": "latest_rating",
+                  "value": "3"
+                },
+                {
+                  "field": "latest_sentiment",
+                  "value": "neutral"
+                },
+                {
+                  "field": "spent_eur",
+                  "value": "8.95"
+                },
+                {
+                  "field": "visits",
+                  "value": "8"
+                }
+              ],
+              "highlight": {
+                "field": "latest_rating",
+                "marked_text": "‹3›"
+              }
+            },
+            {
+              "lift": 0.601,
+              "propositions": [
+                {
+                  "field": "tenure_months_at_month",
+                  "value": "0"
+                },
+                {
+                  "field": "purchases",
+                  "value": "1"
+                }
+              ],
+              "highlight": {
+                "field": "tenure_months_at_month",
+                "marked_text": "‹0›"
+              }
+            },
+            {
+              "lift": 0.811,
+              "propositions": [
+                {
+                  "field": "region",
+                  "value": "espoo"
+                }
+              ],
+              "highlight": {
+                "field": "region",
+                "marked_text": "‹espoo›"
+              }
+            },
+            {
+              "lift": 0.871,
+              "propositions": [
+                {
+                  "field": "segment",
+                  "value": "cat_owner"
+                }
+              ],
+              "highlight": {
+                "field": "segment",
+                "marked_text": "‹cat_owner›"
+              }
+            }
+          ],
+          "final_p": 0.0632
+        }
+      },
+      {
+        "customer_id": "CUST-00129",
+        "customer_short": "Suvi Laitinen",
+        "segment": "cat_owner",
+        "pet_size": null,
+        "region": "espoo",
+        "tenure_months": 8,
+        "visits": 6,
+        "purchases": 0,
+        "spent_eur": 0.0,
+        "latest_rating": null,
+        "latest_sentiment": null,
+        "risk_score": 0.047,
+        "confidence_band": "low",
+        "why_explanation": {
+          "base_p": 0.3296,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 0.142,
+              "propositions": [
+                {
+                  "field": "visits",
+                  "value": "6"
+                }
+              ],
+              "highlight": {
+                "field": "visits",
+                "marked_text": "‹6›"
+              }
+            },
+            {
+              "lift": 1.355,
+              "propositions": [
+                {
+                  "field": "purchases",
+                  "value": "0"
+                },
+                {
+                  "field": "spent_eur",
+                  "value": "0"
+                }
+              ],
+              "highlight": {
+                "field": "purchases",
+                "marked_text": "«0»"
+              }
+            },
+            {
+              "lift": 0.811,
+              "propositions": [
+                {
+                  "field": "region",
+                  "value": "espoo"
+                }
+              ],
+              "highlight": {
+                "field": "region",
+                "marked_text": "‹espoo›"
+              }
+            },
+            {
+              "lift": 0.876,
+              "propositions": [
+                {
+                  "field": "segment",
+                  "value": "cat_owner"
+                }
+              ],
+              "highlight": {
+                "field": "segment",
+                "marked_text": "‹cat_owner›"
+              }
+            }
+          ],
+          "final_p": 0.047
+        }
+      },
+      {
+        "customer_id": "CUST-00115",
+        "customer_short": "Jari Salminen",
+        "segment": "small_animal_owner",
+        "pet_size": null,
+        "region": "jyvaskyla",
+        "tenure_months": 0,
+        "visits": 7,
+        "purchases": 1,
+        "spent_eur": 156.73,
+        "latest_rating": 4,
+        "latest_sentiment": "positive",
+        "risk_score": 0.0359,
+        "confidence_band": "low",
+        "why_explanation": {
+          "base_p": 0.3296,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 0.707,
+              "propositions": [
+                {
+                  "field": "latest_rating",
+                  "value": "4"
+                },
+                {
+                  "field": "latest_sentiment",
+                  "value": "positive"
+                }
+              ],
+              "highlight": {
+                "field": "latest_rating",
+                "marked_text": "‹4›"
+              }
+            },
+            {
+              "lift": 1.0,
+              "propositions": [
+                {
+                  "field": "latest_category",
+                  "value": "question"
+                }
+              ],
+              "highlight": {
+                "field": "latest_category",
+                "marked_text": "«question»"
+              }
+            },
+            {
+              "lift": 1.0,
+              "propositions": [
+                {
+                  "field": "visits",
+                  "value": "7"
+                }
+              ],
+              "highlight": {
+                "field": "visits",
+                "marked_text": "«7»"
+              }
+            },
+            {
+              "lift": 1.415,
+              "propositions": [
+                {
+                  "field": "region",
+                  "value": "jyvaskyla"
+                }
+              ],
+              "highlight": {
+                "field": "region",
+                "marked_text": "«jyvaskyla»"
+              }
+            },
+            {
+              "lift": 0.123,
+              "propositions": [
+                {
+                  "field": "latest_category",
+                  "value": "question"
+                },
+                {
+                  "field": "spent_eur",
+                  "value": "156.73"
+                },
+                {
+                  "field": "visits",
+                  "value": "7"
+                }
+              ],
+              "highlight": {
+                "field": "latest_category",
+                "marked_text": "‹question›"
+              }
+            },
+            {
+              "lift": 0.601,
+              "propositions": [
+                {
+                  "field": "tenure_months_at_month",
+                  "value": "0"
+                },
+                {
+                  "field": "purchases",
+                  "value": "1"
+                }
+              ],
+              "highlight": {
+                "field": "tenure_months_at_month",
+                "marked_text": "‹0›"
+              }
+            },
+            {
+              "lift": 1.266,
+              "propositions": [
+                {
+                  "field": "segment",
+                  "value": "small_animal_owner"
+                }
+              ],
+              "highlight": {
+                "field": "segment",
+                "marked_text": "«small_animal_owner»"
+              }
+            }
+          ],
+          "final_p": 0.0359
+        }
+      },
+      {
+        "customer_id": "CUST-00148",
+        "customer_short": "Raija Karjalainen",
+        "segment": "aquarium_owner",
+        "pet_size": null,
+        "region": "jyvaskyla",
+        "tenure_months": 1,
+        "visits": 5,
+        "purchases": 2,
+        "spent_eur": 234.62,
+        "latest_rating": 5,
+        "latest_sentiment": "positive",
+        "risk_score": 0.0341,
+        "confidence_band": "low",
+        "why_explanation": {
+          "base_p": 0.3296,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 0.63,
+              "propositions": [
+                {
+                  "field": "tenure_months_at_month",
+                  "value": "1"
+                }
+              ],
+              "highlight": {
+                "field": "tenure_months_at_month",
+                "marked_text": "‹1›"
+              }
+            },
+            {
+              "lift": 1.415,
+              "propositions": [
+                {
+                  "field": "region",
+                  "value": "jyvaskyla"
+                }
+              ],
+              "highlight": {
+                "field": "region",
+                "marked_text": "«jyvaskyla»"
+              }
+            },
+            {
+              "lift": 0.307,
+              "propositions": [
+                {
+                  "field": "latest_category",
+                  "value": "praise"
+                },
+                {
+                  "field": "latest_rating",
+                  "value": "5"
+                },
+                {
+                  "field": "latest_sentiment",
+                  "value": "positive"
+                }
+              ],
+              "highlight": {
+                "field": "latest_category",
+                "marked_text": "‹praise›"
+              }
+            },
+            {
+              "lift": 0.226,
+              "propositions": [
+                {
+                  "field": "purchases",
+                  "value": "2"
+                }
+              ],
+              "highlight": {
+                "field": "purchases",
+                "marked_text": "‹2›"
+              }
+            },
+            {
+              "lift": 1.356,
+              "propositions": [
+                {
+                  "field": "segment",
+                  "value": "aquarium_owner"
+                }
+              ],
+              "highlight": {
+                "field": "segment",
+                "marked_text": "«aquarium_owner»"
+              }
+            }
+          ],
+          "final_p": 0.0341
+        }
+      }
+    ],
+    "drivers": [],
+    "evaluation": {
+      "accuracy": 0.9367,
+      "base_accuracy": 0.6667,
+      "accuracy_gain_pp": 27.0,
+      "n": 300
+    },
+    "last_query": {
+      "endpoint": "_predict",
+      "body": {
+        "from": "customer_months",
+        "where": {
+          "segment": "<from segment>",
+          "pet_size": "<from pet_size>",
+          "region": "<from region>",
+          "tenure_months_at_month": "<from tenure_months_at_month>",
+          "visits": "<from visits>",
+          "purchases": "<from purchases>",
+          "spent_eur": "<from spent_eur>",
+          "latest_rating": "<from latest_rating>",
+          "latest_sentiment": "<from latest_sentiment>",
+          "latest_category": "<from latest_category>"
+        },
+        "predict": "churned_in_3_months"
+      }
+    },
+    "last_response_ms": 10417
+  },
+  "timings": [
+    [
+      "_search",
+      49.42
+    ],
+    [
+      "_search",
+      2.17
+    ],
+    [
+      "_search",
+      88.88
+    ],
+    [
+      "_evaluate",
+      5117.2
+    ]
+  ]
+}
