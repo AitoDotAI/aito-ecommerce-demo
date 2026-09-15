@@ -74,7 +74,7 @@ identity so a reassign regression fails in tests, not in prod.
 ## Fallback paths
 
 - **Aito miss → git JSON bootstrap:** `get` falls through to
-  `data/precomputed/{name}.json`. Covered by
+  `data/precomputed/{version}-{env}/{name}.json` (scoped per backend). Covered by
   `test_get_falls_back_to_committed_json`; the six bootstrap files are
   committed.
 - **No snapshot anywhere → live compute:** `serve` calls the endpoint's

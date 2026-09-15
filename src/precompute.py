@@ -8,7 +8,8 @@ behind a data reload.
 For each view it computes the result once (capturing the per-call Aito
 timings for the latency pill), writes the `{data, timings}` wrapper to
 the Aito `precompute_entries` table, and writes the git-committed JSON
-bootstrap at `data/precomputed/{name}.json`.
+bootstrap at `data/precomputed/{version}-{env}/{name}.json` — snapshots
+are scoped to the backend that produced them (see precompute_store).
 
 The Aito write is best-effort — on a read-only key it is skipped with a
 warning, but the JSON bootstrap is always written so the committed

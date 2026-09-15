@@ -96,3 +96,21 @@ def load_config(*, use_dotenv: bool = True) -> Config:
         use_v2=use_v2,
         aito_env=aito_env,
     )
+
+
+DEFAULT_API_NAMESPACE = "v1@master"
+
+
+def current_api_namespace() -> str:
+    """The active `version@env` namespace, read straight from the
+    environment.
+
+    Cheap and dotenv-free, for callers that must scope something before
+    `load_config()` has run or without paying for it on every call —
+    `cache` and `precompute_store` both key their entries on this.
+    Mirrors `Config.api_namespace`; tests pin the two together so they
+    cannot drift.
+    """
+    use_v2 = os.environ.get("AITO_USE_V2", "").lower() in ("1", "true", "yes")
+    env = os.environ.get("AITO_ENV", "") or ("v2" if use_v2 else "master")
+    return f"{'v2' if use_v2 else 'v1'}@{env}"
