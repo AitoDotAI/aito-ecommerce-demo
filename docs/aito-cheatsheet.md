@@ -163,11 +163,16 @@ string equality on a `Text` column is whole-string equality, not
 tokenised matching. **Use `{ "$match": "..." }` for token search.**
 
 This is the load-bearing syntax behind the Smart Search baseline
-("food" → 10 results across cat/dog/aquarium food). The customer-
-context re-rank (the rank-flip demo moment) needs a `$context` form
-that we have NOT yet pinned — first attempt with
-`order_lines.{orders.customers.segment}` returned 400. The Smart
-Search view ADR will record the verified shape when we build it.
+("food" → 10 results across cat/dog/aquarium food).
+
+The customer-context re-rank (the rank-flip demo moment) is **not** a
+`$context` form on `_search`. An early attempt at one
+(`order_lines.{orders.customers.segment}`) returned 400, and the view
+was built differently: the predictive column is a separate `_recommend`
+over `impressions`, run in parallel with this baseline and shown beside
+it. See "Hard candidate filter vs. context — Smart Search's live shape"
+below for the verified body, and `search_service._predictive_recommend`
+for the caller.
 
 ---
 

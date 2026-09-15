@@ -294,22 +294,26 @@ class AitoClient:
     ) -> dict:
         """Run a `_search` query — retrieve matching rows.
 
-        Smart Search uses this with a ``where`` that mixes free-text
-        token matching on ``products.name`` and the customer's
-        segment context.
+        Free-text token matching needs the ``$match`` operator. A bare
+        ``{"name": "food"}`` on a ``Text`` column is an EXACT-value
+        comparison, so it matches a product literally called "food" and
+        nothing else — which looks like a working query returning no
+        rows, rather than an error.
 
-        Example (Smart Search re-ranked for a large-breed dog owner):
+        Example — Smart Search's baseline column (`search_service.
+        _baseline_search`), the honest non-predictive half:
             client.search(
                 table="products",
-                where={
-                    "name": "food",
-                    "$context": {
-                        "order_lines.{customer_segment}": "dog_owner",
-                        "order_lines.{customer_pet_size}": "large",
-                    },
-                },
+                where={"name": {"$match": "dog food"}},
                 limit=10,
             )
+
+        Smart Search's *predictive* column does not come from here: it is
+        a `_recommend` over ``impressions`` conditioned on the customer's
+        segment (see ``search_service._predictive_recommend``). The two
+        run in parallel and are shown side by side, which is the demo's
+        whole point — so don't reach for a `$context` re-rank on
+        ``_search`` to do that job.
         """
         body: dict = {"from": table, "limit": limit, "offset": offset}
         if where is not None:
