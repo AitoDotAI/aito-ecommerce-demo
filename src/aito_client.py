@@ -13,6 +13,7 @@ dropped vs. `aito-erp-demo`; if you need it back, lift it whole from
 that repo rather than half-implementing it here.
 """
 
+import logging
 import time
 from typing import Any
 
@@ -101,15 +102,17 @@ class AitoClient:
                 f"Aito request failed: {method} {path}: {exc}"
             ) from exc
 
+        wall_ms = (time.perf_counter() - start) * 1000
         aito_ms_header = response.headers.get("x-aitoai-response-time")
+        aito_ms: float | None = None
         if aito_ms_header:
             try:
-                ms = float(aito_ms_header)
+                aito_ms = float(aito_ms_header)
             except ValueError:
-                ms = (time.perf_counter() - start) * 1000
-        else:
-            ms = (time.perf_counter() - start) * 1000
+                aito_ms = None
+        ms = aito_ms if aito_ms is not None else wall_ms
         timing.record_call(path, ms)
+        _trace_call(path, aito_ms=aito_ms, wall_ms=wall_ms)
 
         if response.status_code >= 400:
             raise AitoError(
@@ -492,3 +495,39 @@ class AitoClient:
             "select": ["accuracy", "baseAccuracy", "n"],
         }
         return self._request("POST", "/_evaluate", json=body)
+
+
+logger = logging.getLogger("aito.client")
+
+# Above this, a single Aito call is not "a query" any more — it is the
+# engine rebuilding a slice it had evicted (cold-slice eviction; warm
+# repeats of the same call land in the low hundreds of ms).
+_COLD_MS = 1000.0
+# Wall minus Aito's own compute: network round-trip plus our overhead.
+# The latency pill shows ONLY Aito's number, so without this line a
+# multi-second user-visible response looks like a fast query.
+_OVERHEAD_MS = 500.0
+
+
+def _trace_call(path: str, *, aito_ms: float | None, wall_ms: float) -> None:
+    """Record where a call's time actually went.
+
+    The pill reports Aito's `x-aitoai-response-time` and discards the
+    wall clock, which is the right story to TELL (it is what the engine
+    cost) but hides the two things worth diagnosing: a cold slice, and
+    time spent outside Aito. Quiet at DEBUG normally; WARNING only when
+    a call crosses a threshold, so this stays useful in a live log
+    rather than becoming noise to filter out.
+    """
+    overhead_ms = wall_ms - aito_ms if aito_ms is not None else None
+    detail = (
+        f"{path} wall={wall_ms:.0f}ms "
+        f"aito={'n/a' if aito_ms is None else f'{aito_ms:.0f}ms'} "
+        f"overhead={'n/a' if overhead_ms is None else f'{overhead_ms:.0f}ms'}"
+    )
+    if aito_ms is not None and aito_ms >= _COLD_MS:
+        logger.warning("aito call SLOW (cold slice?) %s", detail)
+    elif overhead_ms is not None and overhead_ms >= _OVERHEAD_MS:
+        logger.warning("aito call overhead dominates (network/backend) %s", detail)
+    else:
+        logger.debug("aito call %s", detail)

@@ -30,6 +30,33 @@ _show_target() {
   fi
 }
 
+# Refuse a WRITE against the shared prod instance unless it is asked for
+# explicitly. Printing a warning was not enough: `./do load-data` was run
+# against shared prod with no .env.local, its optimize step did not
+# finish, and /api/dashboard started answering 500 — the live demo, from
+# a command meant for a dev box. Reads stay unguarded; only verbs that
+# mutate data call this.
+#
+# The paved path is .env.local (gitignored) pointing at your own
+# instance — see README "R&D environment". Having one satisfies this
+# guard, so the routine case needs no flag and no prompt.
+_guard_prod_write() {
+  local verb="$1"
+  local url="${AITO_API_URL:-}"
+
+  [[ "$url" == *"/aito-ecommerce-demo" ]] || return 0        # not prod
+  [[ -f "$SCRIPT_DIR/.env.local" ]] && return 0              # own instance configured
+  [[ "${AITO_ALLOW_PROD:-}" == "1" ]] && return 0            # opted in
+
+  echo "⛔ REFUSING '$verb' — it writes, and the target is the SHARED demo instance:"
+  echo "     $url"
+  echo
+  echo "   There is no .env.local, so this is the instance fronting ecommerce.aito.ai."
+  echo "   Either point .env.local at your own instance (README \"R&D environment\"),"
+  echo "   or, if you really mean prod:  AITO_ALLOW_PROD=1 ./do $verb"
+  exit 1
+}
+
 # Ports: frontend on 8500 (user-facing), backend on 8501 (internal).
 # Allocated by the cross-demo framework doc — see
 # aito-demo-framework.md §2 "Port allocation". Don't reuse other
@@ -198,6 +225,7 @@ cmd_load_data() {
     echo "src/data_loader.py not implemented yet (build-order step 3)."
     exit 1
   fi
+  _guard_prod_write load-data
   _show_target
   _ensure_impressions
   uv run python -m src.data_loader "$@"
@@ -209,6 +237,7 @@ cmd_reset_data() {
     echo "src/data_loader.py not implemented yet (build-order step 3)."
     exit 1
   fi
+  _guard_prod_write reset-data
   _show_target
   _ensure_impressions
   uv run python -m src.data_loader --reset "$@"
@@ -238,6 +267,7 @@ precompute_all(client, verbose=True)
 cmd_clear_cache() {
   echo "Clearing caches..."
   cd "$SCRIPT_DIR"
+  _guard_prod_write clear-cache
   _show_target
   uv run python -c "
 from src.config import load_config

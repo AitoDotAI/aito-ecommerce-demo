@@ -24,6 +24,7 @@ from fastapi.staticfiles import StaticFiles
 
 from src.aito_client import AitoClient, AitoError
 from src import cache, timing, precompute_store
+from src.build_info import build_info
 from src.config import load_config
 from src.rate_limit import check_rate_limit
 from src.overview_service import get_dashboard
@@ -183,6 +184,14 @@ def health():
         "status": "ok",
         "aito_connected": connected,
         "aito_url": aito._base_url if not _PUBLIC else None,
+        # Provenance, deliberately NOT hidden in PUBLIC_DEMO: a commit
+        # id is not a secret, and being able to ask the deployed demo
+        # which commit it runs is the whole point (see src/build_info).
+        "build": build_info(),
+        # Which backend answers — v1@master / v2@v2. Same reason: when
+        # results look wrong, the first question is which engine and env
+        # produced them.
+        "api": aito._config.api_namespace,
     }
     cache.set("health", result, ttl=60)
     return result

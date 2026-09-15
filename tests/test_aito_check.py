@@ -180,3 +180,41 @@ def test_basket_rules_mines_well_formed_association_rules(client):
         assert r.support_orders >= 50, r                # absolute-count gate held
     pairs = {(r.antecedent, r.consequent) for r in resp.rules}
     assert ("Dog dry-food", "Dog dental-treats") in pairs, sorted(pairs)
+
+
+# ── Instance health: are the tables actually optimized? ──────────────
+
+
+def test_table_counts_return_fast_enough_to_serve(client):
+    """A bare `limit: 0` count must be quick on every table.
+
+    This is a health probe, not a performance benchmark. Batch uploads
+    leave one segment per batch, and a table left unmerged answers a
+    plain count in 3-20 s instead of ~0.3 s. That is not a slow demo, it
+    is a broken one: `_kpi_counts` issues several of these per dashboard
+    request and once exceeded the 90 s client timeout, so /api/dashboard
+    answered 500 with no hint that segmentation was the cause.
+
+    The threshold is deliberately loose — an order of magnitude above a
+    healthy instance (~0.2-0.5 s) and well under the pathology — so this
+    fails when a load was interrupted, not when the shared instance is
+    merely busy. If it trips, run `./do optimize`.
+    """
+    import time
+
+    from src.schema import SCHEMAS
+
+    budget_s = 5.0
+    slow: list[tuple[str, float]] = []
+    for table in SCHEMAS:
+        started = time.perf_counter()
+        client._request("POST", "/_search", json={"from": table, "limit": 0})
+        elapsed = time.perf_counter() - started
+        if elapsed > budget_s:
+            slow.append((table, elapsed))
+
+    assert not slow, (
+        "table(s) answering a bare count too slowly — most likely left in "
+        "many unmerged segments by an interrupted load; run `./do optimize`: "
+        + ", ".join(f"{t} {e:.1f}s" for t, e in slow)
+    )

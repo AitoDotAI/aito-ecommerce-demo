@@ -45,8 +45,24 @@ class Config:
         a literal `/api/v1/`, which would silently opt its call out.
         """
         env_path = "" if self.aito_env == "master" else f"/env/{self.aito_env}"
-        version = "v2" if self.use_v2 else "v1"
-        return f"{self.aito_api_url}{env_path}/api/{version}"
+        return f"{self.aito_api_url}{env_path}/api/{self.api_version}"
+
+    @property
+    def api_version(self) -> str:
+        return "v2" if self.use_v2 else "v1"
+
+    @property
+    def api_namespace(self) -> str:
+        """Identifies WHICH backend an answer came from — `v1@master`,
+        `v2@v2`.
+
+        Cached responses must be scoped by this. The two APIs return
+        genuinely different answers from genuinely different data, so a
+        cache keyed only on the question replays one version's answer
+        under the other — silently, because both are well-formed. That
+        is how a v2 run can look correct while serving v1's results.
+        """
+        return f"{self.api_version}@{self.aito_env}"
 
 
 def load_config(*, use_dotenv: bool = True) -> Config:
