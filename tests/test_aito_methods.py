@@ -16,10 +16,24 @@ from src.config import Config
 
 @pytest.fixture
 def client() -> AitoClient:
+    """A v1 client, pinned explicitly rather than inheriting the default.
+
+    These assert the bodies the query methods BUILD. On v2 the compat
+    layer rewrites some of them on the way out (`relate` to the array
+    form, `exclusiveness: false` to `field.$feature`, `$matches` dropped
+    from `select`), so running them against v2 would assert the adapted
+    shape and quietly stop covering the unadapted one. The v2 side is
+    covered by `tests/test_v2_compat.py`.
+
+    Pinning also means the default flipping again cannot silently
+    repoint these at another API.
+    """
     cfg = Config(
         aito_api_url="https://example.aito.app",
         aito_api_key="test-key",
         public_demo=False,
+        use_v2=False,
+        aito_env="master",
     )
     return AitoClient(cfg)
 

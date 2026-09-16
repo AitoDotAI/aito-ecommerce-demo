@@ -27,9 +27,40 @@ def _cfg(**kw) -> Config:
 # ── The one switch ───────────────────────────────────────────────────
 
 
-def test_default_base_is_v1_against_master():
-    """The live demo's path. `master` is unprefixed."""
-    assert _cfg().api_base == "https://shared.aito.ai/db/aito-ecommerce-demo/api/v1"
+def test_default_base_is_v2_against_the_v2_env():
+    """The default since 2026-09-16 — a deployment that sets nothing
+    gets v2 (ADR 0025 §4)."""
+    assert _cfg().api_base == (
+        "https://shared.aito.ai/db/aito-ecommerce-demo/env/v2/api/v2"
+    )
+
+
+def test_v1_against_master_is_still_reachable():
+    """v1 is not removed, only no longer the default: `master` is
+    unprefixed, and the compat layer keeps both paths working. This is
+    the way back if v2 has to be rolled off in a hurry."""
+    cfg = _cfg(use_v2=False, aito_env="master")
+    assert cfg.api_base == "https://shared.aito.ai/db/aito-ecommerce-demo/api/v1"
+
+
+def test_only_an_explicit_falsey_value_opts_out_of_v2(monkeypatch):
+    """`AITO_USE_V2` is an opt-OUT now. Anything else — unset, empty,
+    "1", a typo — must leave v2 on, so a malformed deploy variable
+    cannot silently drop production back to v1."""
+    from src.config import current_api_namespace
+
+    for value, expected in (
+        ("0", "v1@master"),
+        ("false", "v1@master"),
+        ("no", "v1@master"),
+        ("1", "v2@v2"),
+        ("", "v2@v2"),
+        ("yes", "v2@v2"),
+        ("tru", "v2@v2"),
+    ):
+        monkeypatch.setenv("AITO_USE_V2", value)
+        monkeypatch.delenv("AITO_ENV", raising=False)
+        assert current_api_namespace() == expected, value
 
 
 def test_v2_base_targets_the_v2_env():

@@ -505,6 +505,24 @@ AITO_API_KEY=your-dev-instance-key
                    # — an exact, mutable copy of prod
 ```
 
+### Which Aito API does it use?
+
+**v2 (Rep2), against the `v2` env — the default since 2026-09-16** (ADR
+0025 §4). `AITO_USE_V2` is an opt-OUT, so a deployment that sets nothing
+gets v2:
+
+```bash
+./do dev                  # v2 against the `v2` env
+AITO_USE_V2=0 ./do dev    # v1 against `master` — still supported
+AITO_ENV=pr-42 ./do dev   # a feature-branch sandbox env
+```
+
+v1 is not removed. `src/aito_compat.py` normalises both at the transport
+boundary, the live checks pass on either, and `AITO_USE_V2=0` is the way
+back if v2 has to be rolled off. Cache entries and precompute snapshots
+are scoped per `version@env`, so the two never serve each other's
+answers.
+
 ### Which commit is deployed?
 
 `GET /api/health` reports the build and the backend it is talking to:

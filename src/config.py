@@ -25,10 +25,12 @@ class Config:
     aito_api_url: str
     aito_api_key: str
     public_demo: bool
-    # API v2 (Rep2) staging — ADR 0025. Off by default: the live demo
-    # keeps serving v1 against `master`.
-    use_v2: bool = False
-    aito_env: str = "master"
+    # API v2 (Rep2) — ADR 0025, and the DEFAULT since 2026-09-16.
+    # `AITO_USE_V2=0` opts back out to v1 against `master`, which stays
+    # a supported path: the compat layer keeps both working and the live
+    # checks run green on either.
+    use_v2: bool = True
+    aito_env: str = "v2"
 
     @property
     def api_base(self) -> str:
@@ -77,7 +79,9 @@ def load_config(*, use_dotenv: bool = True) -> Config:
     api_url = os.environ.get("AITO_API_URL", "").rstrip("/")
     api_key = os.environ.get("AITO_API_KEY", "")
     public_demo = os.environ.get("PUBLIC_DEMO", "").lower() in ("1", "true", "yes")
-    use_v2 = os.environ.get("AITO_USE_V2", "").lower() in ("1", "true", "yes")
+    # Default ON: only an explicit falsey value opts back out, so a
+    # deployment that sets nothing gets v2.
+    use_v2 = os.environ.get("AITO_USE_V2", "").lower() not in ("0", "false", "no")
     # The env defaults to the version's home: v1 lives in `master`, v2 in
     # the `v2` env cloned from it. `AITO_ENV` overrides for a
     # feature-branch sandbox env.
@@ -98,7 +102,7 @@ def load_config(*, use_dotenv: bool = True) -> Config:
     )
 
 
-DEFAULT_API_NAMESPACE = "v1@master"
+DEFAULT_API_NAMESPACE = "v2@v2"
 
 
 def current_api_namespace() -> str:
@@ -111,6 +115,6 @@ def current_api_namespace() -> str:
     Mirrors `Config.api_namespace`; tests pin the two together so they
     cannot drift.
     """
-    use_v2 = os.environ.get("AITO_USE_V2", "").lower() in ("1", "true", "yes")
+    use_v2 = os.environ.get("AITO_USE_V2", "").lower() not in ("0", "false", "no")
     env = os.environ.get("AITO_ENV", "") or ("v2" if use_v2 else "master")
     return f"{'v2' if use_v2 else 'v1'}@{env}"
