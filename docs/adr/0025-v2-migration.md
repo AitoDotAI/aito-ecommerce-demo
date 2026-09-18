@@ -104,10 +104,30 @@ chokepoint, so the service modules and cache stay unchanged.
      `v2:parity`. The captured run lands in `docs/verification/v2-parity.json`.
    - `_show_target` learns to surface the env (`env=v2`) alongside the URL.
 
-4. **Default stays v1.** `ecommerce.aito.ai` keeps serving `/api/v1` against
-   `master`. Flipping the default is a **separate** decision (see Out of
-   scope): the app runs on v2, but v2 returns different ML values, which
-   changes what the demo shows.
+4. ~~**Default stays v1.**~~ **SUPERSEDED 2026-09-16 — the default is now
+   v2.** As written, this said `ecommerce.aito.ai` keeps serving `/api/v1`
+   against `master`, and that flipping was a separate decision because v2
+   returned different ML values which would change what the demo shows.
+
+   That separate decision has now been taken, and the reasoning that
+   blocked it no longer holds: v2.9.0 fixed `basedOn` being a no-op
+   (aito-core `0367a0f34`), and with `basedOn` applied v2's probabilities
+   land next to v1's — 0.494 / 0.480 / 0.463 against v1's 0.498 / 0.425 /
+   0.417 on the same query — so the headline numbers no longer move
+   materially. The live checks pass 10/10 on v2, all 17 routes answer, and
+   the segment flip and Smart Search hard filter behave per persona.
+
+   `AITO_USE_V2` becomes an opt-OUT: unset means v2, and only an explicit
+   `0` / `false` / `no` returns to v1 against `master`. v1 is not removed —
+   the compat layer keeps it working and it is the way back if v2 has to
+   be rolled off.
+
+   **Known and accepted at flip time:** the Evaluation view is weaker on
+   v2 — `customer_segment` lands exactly on its own baseline (0.475 =
+   0.475) where v1 scores 0.805 — and `pet_type` reports `baseAccuracy`
+   0.0 on both engines where the majority class is 0.422. Tracked as
+   td-20260915225319837634 (engine) and td-20260915230157220135 (the view
+   also ships stale numbers, independently of v2).
 
 5. **File breaks as core gaps, don't work around.** Per CLAUDE.md Prime
    Directive #2, a v2 divergence that is an engine defect (not a response-shape
