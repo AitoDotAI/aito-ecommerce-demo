@@ -525,13 +525,18 @@ answers.
 
 ### Which commit is deployed?
 
-`GET /api/health` reports the build and the backend it is talking to:
+`GET /version` — mirroring Aito's own `/version`, so asking a demo and
+asking the database it runs on are the same gesture. Aito-free, so it
+still answers when the database does not:
 
 ```json
-{ "status": "ok",
-  "build": { "sha": "b09907199f00", "source": "BUILD_SHA", "dirty": null },
-  "api":   "v1@master" }
+{ "build":  { "sha": "755db4c164d9", "source": "BUILD_SHA", "dirty": null },
+  "api":    "v2@v2",
+  "pinned": true }
 ```
+
+`pinned: false` means the build cannot say where it came from. The same
+`build` and `api` fields also ride along on `GET /api/health`.
 
 **Set `BUILD_SHA` at build time in any deployment.** A deployed image has
 no `.git`, so that variable is the only trustworthy source; `source:
