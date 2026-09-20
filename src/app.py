@@ -168,6 +168,35 @@ def liveness():
     return {"ok": True}
 
 
+@app.get("/version")
+def version():
+    """What is this process, and what is it talking to?
+
+    Mirrors Aito's own `GET /version`, so asking a demo and asking the
+    database it runs on are the same gesture. Cheap and Aito-free, like
+    /health — the answer must still arrive when Aito does not.
+
+    It exists because "which build is live?" has twice been answerable
+    only by inference. Both times the deployed demo served behaviour
+    that was in no git branch, and both times it was caught by noticing
+    impossible output in the UI rather than by asking. `api` answers the
+    companion question — which engine and env produced a result — which
+    is the first thing worth knowing when a number looks wrong.
+
+    Not gated by PUBLIC_DEMO: a commit id is not a secret, and a build
+    that will not say what it is cannot be checked by anyone.
+    """
+    info = build_info()
+    return {
+        "build": info,
+        "api": aito._config.api_namespace,
+        # Say it plainly rather than making a reader infer it from a
+        # null sha: on a deployment this means BUILD_SHA was not set at
+        # build time, so provenance is unverifiable.
+        "pinned": info.get("source") == "BUILD_SHA",
+    }
+
+
 @app.get("/api/health")
 def health():
     """Cheap liveness probe + Aito connectivity check.
