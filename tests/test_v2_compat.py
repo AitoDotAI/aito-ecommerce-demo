@@ -27,19 +27,22 @@ def _cfg(**kw) -> Config:
 # ── The one switch ───────────────────────────────────────────────────
 
 
-def test_default_base_is_v2_against_the_v2_env():
-    """The default since 2026-09-16 — a deployment that sets nothing
-    gets v2 (ADR 0025 §4)."""
+def test_default_base_is_v2_against_master():
+    """v2 against MASTER, unprefixed — the staged `v2` env was promoted
+    onto master on 2026-09-23, so there is no second env to address."""
     assert _cfg().api_base == (
-        "https://shared.aito.ai/db/aito-ecommerce-demo/env/v2/api/v2"
+        "https://shared.aito.ai/db/aito-ecommerce-demo/api/v2"
     )
 
 
 def test_v1_against_master_is_still_reachable():
-    """v1 is not removed, only no longer the default: `master` is
-    unprefixed, and the compat layer keeps both paths working. This is
-    the way back if v2 has to be rolled off in a hurry."""
-    cfg = _cfg(use_v2=False, aito_env="master")
+    """v1 is not removed, only no longer the default.
+
+    Since master's STORAGE is rep2, a v1 call now reaches it through the
+    engine-dispatched adapter rather than a separate rep1 database —
+    which is the migration Aito sells: move the storage, change no
+    application code. Still the way back if v2 has to be rolled off."""
+    cfg = _cfg(use_v2=False)
     assert cfg.api_base == "https://shared.aito.ai/db/aito-ecommerce-demo/api/v1"
 
 
@@ -53,10 +56,10 @@ def test_only_an_explicit_falsey_value_opts_out_of_v2(monkeypatch):
         ("0", "v1@master"),
         ("false", "v1@master"),
         ("no", "v1@master"),
-        ("1", "v2@v2"),
-        ("", "v2@v2"),
-        ("yes", "v2@v2"),
-        ("tru", "v2@v2"),
+        ("1", "v2@master"),
+        ("", "v2@master"),
+        ("yes", "v2@master"),
+        ("tru", "v2@master"),
     ):
         monkeypatch.setenv("AITO_USE_V2", value)
         monkeypatch.delenv("AITO_ENV", raising=False)

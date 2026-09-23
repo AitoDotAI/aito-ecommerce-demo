@@ -507,15 +507,21 @@ AITO_API_KEY=your-dev-instance-key
 
 ### Which Aito API does it use?
 
-**v2 (Rep2), against the `v2` env — the default since 2026-09-16** (ADR
-0025 §4). `AITO_USE_V2` is an opt-OUT, so a deployment that sets nothing
-gets v2:
+**v2 (Rep2), against `master`.** The staged `v2` env was promoted onto
+master on 2026-09-23, so master IS the migrated database — there is no
+second env to point at or keep in sync. `AITO_USE_V2` is an opt-OUT, so a
+deployment that sets nothing gets v2:
 
 ```bash
-./do dev                  # v2 against the `v2` env
-AITO_USE_V2=0 ./do dev    # v1 against `master` — still supported
+./do dev                  # v2 against master
+AITO_USE_V2=0 ./do dev    # v1 against master — still supported
 AITO_ENV=pr-42 ./do dev   # a feature-branch sandbox env
 ```
+
+Because master's *storage* is rep2, the v1 path now reaches it through
+Aito's engine-dispatched adapter rather than a separate rep1 database.
+That is the migration Aito sells — move the storage, change no
+application code — so the fallback doubles as a live test of it.
 
 v1 is not removed. `src/aito_compat.py` normalises both at the transport
 boundary, the live checks pass on either, and `AITO_USE_V2=0` is the way

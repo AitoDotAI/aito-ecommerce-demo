@@ -147,7 +147,7 @@ def test_lazy_namespace_matches_the_config_property(monkeypatch):
     assert cache._current_namespace() == Config(**cfg_kwargs).api_namespace
 
     monkeypatch.setenv("AITO_USE_V2", "1")
-    expected = Config(**cfg_kwargs, use_v2=True, aito_env="v2").api_namespace
+    expected = Config(**cfg_kwargs, use_v2=True, aito_env="master").api_namespace
     assert cache._current_namespace() == expected
 
     monkeypatch.setenv("AITO_ENV", "pr-42")

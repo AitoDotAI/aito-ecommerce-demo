@@ -1305,9 +1305,9 @@
     ],
     "seasonality": [],
     "evaluation": {
-      "accuracy": 0.31,
+      "accuracy": 0.2133,
       "base_accuracy": 0.2467,
-      "accuracy_gain_pp": 6.33,
+      "accuracy_gain_pp": -3.33,
       "n": 300
     },
     "last_query": {
@@ -1329,28 +1329,28 @@
         ]
       }
     },
-    "last_response_ms": 9026
+    "last_response_ms": 10137
   },
   "timings": [
     [
       "_search",
-      88.81
+      63.72
     ],
     [
       "_search",
-      45.12
+      37.1
     ],
     [
       "_search",
-      18.36
+      9.3
     ],
     [
       "_search",
-      22.85
+      15.08
     ],
     [
       "_evaluate",
-      5194.64
+      3540.45
     ]
   ]
 }
