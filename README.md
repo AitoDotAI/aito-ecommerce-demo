@@ -538,6 +538,12 @@ still answers when the database does not:
 `pinned: false` means the build cannot say where it came from. The same
 `build` and `api` fields also ride along on `GET /api/health`.
 
+Served at **both `/version` and `/api/version`**. The root path matches
+Aito's own convention; the `/api/` one is there because a deployment
+that proxies only `/api/*` would otherwise never reach it — and an
+endpoint whose whole job is to be askable must not depend on a routing
+assumption.
+
 **Set `BUILD_SHA` at build time in any deployment.** A deployed image has
 no `.git`, so that variable is the only trustworthy source; `source:
 "git"` in production means the build is not pinned, which is itself the
