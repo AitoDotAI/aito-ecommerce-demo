@@ -169,6 +169,7 @@ def liveness():
 
 
 @app.get("/version")
+@app.get("/api/version")
 def version():
     """What is this process, and what is it talking to?
 
