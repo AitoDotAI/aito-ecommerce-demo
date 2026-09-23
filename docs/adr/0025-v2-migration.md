@@ -290,3 +290,66 @@ like a bad recommendation rather than a bug. Related: V2-13
 
 **Not worked around.** Nothing in the compat layer masks this; the four
 failing checks are left failing, because they are the correct signal.
+
+
+## Cutover: the `v2` env promoted onto master (2026-09-23)
+
+The staging env is gone as a *destination*. Rather than migrate master's
+tables in place — a per-table, irreversible walk with no defined state if
+it fails halfway — the already-migrated `v2` env was promoted:
+
+```
+POST /api/v1/_envs/v2/promote     ->  {"status": "promoted", "name": "v2"}
+```
+
+One atomic commit. `env.master` and `v2` then share the same saved state
+and diverge on subsequent writes; the source env is NOT deleted.
+
+**Promote REPLACES master — the previous contents are preserved nowhere.**
+So a backup env was cloned first and verified against master table by
+table (`products` 658, `impressions` 125 935, `orders` 12 215,
+`order_lines` 38 013, `customers` 3 000, `reviews` 6 000) and confirmed
+still `engine: v1`, i.e. a true pre-migration snapshot rather than a
+pointer that would follow master:
+
+```
+POST /api/v1/_envs  {"name": "master-backup-20260920", "basedOn": "env.master"}
+```
+
+Rollback is therefore symmetric and atomic:
+`POST /api/v1/_envs/master-backup-20260920/promote`.
+
+### Preconditions that were checked first
+
+- **The v1 endpoints answer over rep2 storage.** Until aito-core
+  `c777d59a6` shipped, `_evaluate`, `_match`, `_similarity`, `_estimate`
+  and `_aggregate` all returned `400 failed to open '<table>'` against a
+  migrated collection. Promoting before that would have destroyed the
+  `AITO_USE_V2=0` fallback, because it goes to `/api/v1` against master —
+  exactly the broken path. Re-probed on the day: all verbs answer, and
+  `_predict` returns v1's shape (`field`, `feature`).
+- **The backup still matched master** three days after it was taken.
+- **The `demo` env was already `engine: v2`** and is an independent saved
+  state, so promoting master does not disturb it.
+
+### Consequences
+
+- `aito_env` defaults to `master`; there is no second env to keep in sync,
+  which removes the standing drift hazard the clone represented.
+- The cache/precompute namespace moves `v2@v2` → `v2@master`, so the
+  snapshots were regenerated into `data/precomputed/v2-master/`.
+- `data/precomputed/v1-master/` was DELETED. Those snapshots were computed
+  against a rep1 master that no longer exists; post-promote the same
+  namespace key means "v1 API over rep2 storage", which is a different
+  backend. Serving them would have been precisely the stale-snapshot
+  failure this ADR's own §5 exists to prevent. `AITO_USE_V2=0` now
+  computes those views live — correct, and slower, which is the right
+  trade for an emergency path.
+- `data/precomputed/v2-v2/` was deleted as redundant.
+
+### Known-carried-over
+
+One residue of the v1-over-rep2 dispatch: `_aggregate` still returns the
+v2 `{kind, data}` envelope on the **v1** endpoint, where `_evaluate` was
+given the v1 shape. The compat layer unwraps it structurally so this demo
+is unaffected, but a pure v1 client would break on it.

@@ -13,7 +13,7 @@
       },
       {
         "label": "Margin recoverable",
-        "value": 1587.42,
+        "value": 1508.62,
         "sub": "(price − cost) × units cleared at proposed markdowns"
       }
     ],
@@ -29,49 +29,49 @@
         "unit_cost_eur": 66.73,
         "excess_units": 10,
         "tied_capital_eur": 667.3,
-        "proposed_discount_pct": 0,
-        "proposed_price_eur": 92.68,
-        "proposed_weeks_to_clear": 11.8,
-        "proposed_recoverable_revenue_eur": 259.5,
-        "proposed_margin_lost_eur": 0.0,
+        "proposed_discount_pct": 5,
+        "proposed_price_eur": 88.05,
+        "proposed_weeks_to_clear": 10.2,
+        "proposed_recoverable_revenue_eur": 213.2,
+        "proposed_margin_lost_eur": 46.3,
         "curve": [
           {
             "discount_pct": 0,
             "price_eur": 92.68,
-            "monthly_units": 3.67,
-            "weeks_to_clear": 11.8,
+            "monthly_units": 3.52,
+            "weeks_to_clear": 12.3,
             "margin_per_unit_eur": 25.95,
             "recoverable_revenue_eur": 259.5
           },
           {
             "discount_pct": 5,
             "price_eur": 88.05,
-            "monthly_units": 4.44,
-            "weeks_to_clear": 9.8,
+            "monthly_units": 4.25,
+            "weeks_to_clear": 10.2,
             "margin_per_unit_eur": 21.32,
             "recoverable_revenue_eur": 213.2
           },
           {
             "discount_pct": 10,
             "price_eur": 83.41,
-            "monthly_units": 5.42,
-            "weeks_to_clear": 8.0,
+            "monthly_units": 5.2,
+            "weeks_to_clear": 8.3,
             "margin_per_unit_eur": 16.68,
             "recoverable_revenue_eur": 166.8
           },
           {
             "discount_pct": 15,
             "price_eur": 78.78,
-            "monthly_units": 6.7,
-            "weeks_to_clear": 6.5,
+            "monthly_units": 6.42,
+            "weeks_to_clear": 6.7,
             "margin_per_unit_eur": 12.05,
             "recoverable_revenue_eur": 120.5
           },
           {
             "discount_pct": 20,
             "price_eur": 74.14,
-            "monthly_units": 8.4,
-            "weeks_to_clear": 5.2,
+            "monthly_units": 8.04,
+            "weeks_to_clear": 5.4,
             "margin_per_unit_eur": 7.41,
             "recoverable_revenue_eur": 74.1
           }
@@ -90,47 +90,47 @@
         "tied_capital_eur": 1518.66,
         "proposed_discount_pct": 20,
         "proposed_price_eur": 76.7,
-        "proposed_weeks_to_clear": 12.5,
+        "proposed_weeks_to_clear": 12.7,
         "proposed_recoverable_revenue_eur": 168.74,
         "proposed_margin_lost_eur": 421.74,
         "curve": [
           {
             "discount_pct": 0,
             "price_eur": 95.87,
-            "monthly_units": 3.32,
-            "weeks_to_clear": 28.7,
+            "monthly_units": 3.28,
+            "weeks_to_clear": 29.1,
             "margin_per_unit_eur": 26.84,
-            "recoverable_revenue_eur": 267.66
+            "recoverable_revenue_eur": 263.85
           },
           {
             "discount_pct": 5,
             "price_eur": 91.08,
-            "monthly_units": 4.02,
-            "weeks_to_clear": 23.7,
+            "monthly_units": 3.96,
+            "weeks_to_clear": 24.0,
             "margin_per_unit_eur": 22.05,
-            "recoverable_revenue_eur": 266.0
+            "recoverable_revenue_eur": 262.08
           },
           {
             "discount_pct": 10,
             "price_eur": 86.28,
-            "monthly_units": 4.92,
-            "weeks_to_clear": 19.4,
+            "monthly_units": 4.84,
+            "weeks_to_clear": 19.7,
             "margin_per_unit_eur": 17.25,
-            "recoverable_revenue_eur": 254.44
+            "recoverable_revenue_eur": 250.57
           },
           {
             "discount_pct": 15,
             "price_eur": 81.49,
-            "monthly_units": 6.08,
-            "weeks_to_clear": 15.7,
+            "monthly_units": 5.98,
+            "weeks_to_clear": 15.9,
             "margin_per_unit_eur": 12.46,
-            "recoverable_revenue_eur": 227.21
+            "recoverable_revenue_eur": 223.64
           },
           {
             "discount_pct": 20,
             "price_eur": 76.7,
-            "monthly_units": 7.61,
-            "weeks_to_clear": 12.5,
+            "monthly_units": 7.49,
+            "weeks_to_clear": 12.7,
             "margin_per_unit_eur": 7.67,
             "recoverable_revenue_eur": 168.74
           }
@@ -149,47 +149,47 @@
         "tied_capital_eur": 1446.24,
         "proposed_discount_pct": 20,
         "proposed_price_eur": 69.86,
-        "proposed_weeks_to_clear": 11.8,
+        "proposed_weeks_to_clear": 12.3,
         "proposed_recoverable_revenue_eur": 160.54,
         "proposed_margin_lost_eur": 401.81,
         "curve": [
           {
             "discount_pct": 0,
             "price_eur": 87.33,
-            "monthly_units": 3.67,
-            "weeks_to_clear": 27.1,
+            "monthly_units": 3.53,
+            "weeks_to_clear": 28.2,
             "margin_per_unit_eur": 24.45,
-            "recoverable_revenue_eur": 269.5
+            "recoverable_revenue_eur": 259.19
           },
           {
             "discount_pct": 5,
             "price_eur": 82.96,
-            "monthly_units": 4.45,
-            "weeks_to_clear": 22.4,
+            "monthly_units": 4.27,
+            "weeks_to_clear": 23.3,
             "margin_per_unit_eur": 20.08,
-            "recoverable_revenue_eur": 267.82
+            "recoverable_revenue_eur": 257.46
           },
           {
             "discount_pct": 10,
             "price_eur": 78.6,
-            "monthly_units": 5.43,
-            "weeks_to_clear": 18.3,
+            "monthly_units": 5.22,
+            "weeks_to_clear": 19.1,
             "margin_per_unit_eur": 15.72,
-            "recoverable_revenue_eur": 256.22
+            "recoverable_revenue_eur": 246.18
           },
           {
             "discount_pct": 15,
             "price_eur": 74.23,
-            "monthly_units": 6.72,
-            "weeks_to_clear": 14.8,
+            "monthly_units": 6.45,
+            "weeks_to_clear": 15.4,
             "margin_per_unit_eur": 11.35,
-            "recoverable_revenue_eur": 228.78
+            "recoverable_revenue_eur": 219.7
           },
           {
             "discount_pct": 20,
             "price_eur": 69.86,
-            "monthly_units": 8.42,
-            "weeks_to_clear": 11.8,
+            "monthly_units": 8.08,
+            "weeks_to_clear": 12.3,
             "margin_per_unit_eur": 6.98,
             "recoverable_revenue_eur": 160.54
           }
@@ -208,47 +208,47 @@
         "tied_capital_eur": 780.22,
         "proposed_discount_pct": 15,
         "proposed_price_eur": 65.79,
-        "proposed_weeks_to_clear": 11.3,
+        "proposed_weeks_to_clear": 11.8,
         "proposed_recoverable_revenue_eur": 140.84,
         "proposed_margin_lost_eur": 162.54,
         "curve": [
           {
             "discount_pct": 0,
             "price_eur": 77.4,
-            "monthly_units": 2.93,
-            "weeks_to_clear": 20.7,
+            "monthly_units": 2.82,
+            "weeks_to_clear": 21.5,
             "margin_per_unit_eur": 21.67,
-            "recoverable_revenue_eur": 190.41
+            "recoverable_revenue_eur": 183.17
           },
           {
             "discount_pct": 5,
             "price_eur": 73.53,
-            "monthly_units": 3.54,
-            "weeks_to_clear": 17.1,
+            "monthly_units": 3.41,
+            "weeks_to_clear": 17.8,
             "margin_per_unit_eur": 17.8,
-            "recoverable_revenue_eur": 189.22
+            "recoverable_revenue_eur": 181.95
           },
           {
             "discount_pct": 10,
             "price_eur": 69.66,
-            "monthly_units": 4.33,
-            "weeks_to_clear": 14.0,
+            "monthly_units": 4.16,
+            "weeks_to_clear": 14.6,
             "margin_per_unit_eur": 13.93,
-            "recoverable_revenue_eur": 181.01
+            "recoverable_revenue_eur": 173.97
           },
           {
             "discount_pct": 15,
             "price_eur": 65.79,
-            "monthly_units": 5.36,
-            "weeks_to_clear": 11.3,
+            "monthly_units": 5.14,
+            "weeks_to_clear": 11.8,
             "margin_per_unit_eur": 10.06,
             "recoverable_revenue_eur": 140.84
           },
           {
             "discount_pct": 20,
             "price_eur": 61.92,
-            "monthly_units": 6.71,
-            "weeks_to_clear": 9.0,
+            "monthly_units": 6.44,
+            "weeks_to_clear": 9.4,
             "margin_per_unit_eur": 6.19,
             "recoverable_revenue_eur": 86.66
           }
@@ -267,49 +267,49 @@
         "tied_capital_eur": 1532.16,
         "proposed_discount_pct": 20,
         "proposed_price_eur": 60.8,
-        "proposed_weeks_to_clear": 18.7,
-        "proposed_recoverable_revenue_eur": 118.44,
-        "proposed_margin_lost_eur": 295.94,
+        "proposed_weeks_to_clear": 20.2,
+        "proposed_recoverable_revenue_eur": 109.25,
+        "proposed_margin_lost_eur": 273.14,
         "curve": [
           {
             "discount_pct": 0,
             "price_eur": 76.0,
-            "monthly_units": 2.84,
-            "weeks_to_clear": 42.8,
+            "monthly_units": 2.62,
+            "weeks_to_clear": 46.3,
             "margin_per_unit_eur": 21.28,
-            "recoverable_revenue_eur": 181.0
+            "recoverable_revenue_eur": 167.3
           },
           {
             "discount_pct": 5,
             "price_eur": 72.2,
-            "monthly_units": 3.43,
-            "weeks_to_clear": 35.3,
+            "monthly_units": 3.17,
+            "weeks_to_clear": 38.3,
             "margin_per_unit_eur": 17.48,
-            "recoverable_revenue_eur": 179.87
+            "recoverable_revenue_eur": 166.18
           },
           {
             "discount_pct": 10,
             "price_eur": 68.4,
-            "monthly_units": 4.19,
-            "weeks_to_clear": 28.9,
+            "monthly_units": 3.87,
+            "weeks_to_clear": 31.3,
             "margin_per_unit_eur": 13.68,
-            "recoverable_revenue_eur": 172.07
+            "recoverable_revenue_eur": 158.9
           },
           {
             "discount_pct": 15,
             "price_eur": 64.6,
-            "monthly_units": 5.18,
-            "weeks_to_clear": 23.4,
+            "monthly_units": 4.78,
+            "weeks_to_clear": 25.3,
             "margin_per_unit_eur": 9.88,
-            "recoverable_revenue_eur": 153.67
+            "recoverable_revenue_eur": 141.82
           },
           {
             "discount_pct": 20,
             "price_eur": 60.8,
-            "monthly_units": 6.49,
-            "weeks_to_clear": 18.7,
+            "monthly_units": 5.99,
+            "weeks_to_clear": 20.2,
             "margin_per_unit_eur": 6.08,
-            "recoverable_revenue_eur": 118.44
+            "recoverable_revenue_eur": 109.25
           }
         ]
       },
@@ -326,49 +326,49 @@
         "tied_capital_eur": 1516.2,
         "proposed_discount_pct": 20,
         "proposed_price_eur": 60.17,
-        "proposed_weeks_to_clear": 19.6,
-        "proposed_recoverable_revenue_eur": 111.79,
-        "proposed_margin_lost_eur": 279.29,
+        "proposed_weeks_to_clear": 20.5,
+        "proposed_recoverable_revenue_eur": 106.99,
+        "proposed_margin_lost_eur": 267.11,
         "curve": [
           {
             "discount_pct": 0,
             "price_eur": 75.21,
-            "monthly_units": 2.7,
-            "weeks_to_clear": 44.9,
+            "monthly_units": 2.57,
+            "weeks_to_clear": 47.2,
             "margin_per_unit_eur": 21.06,
-            "recoverable_revenue_eur": 170.5
+            "recoverable_revenue_eur": 162.4
           },
           {
             "discount_pct": 5,
             "price_eur": 71.45,
-            "monthly_units": 3.27,
-            "weeks_to_clear": 37.1,
+            "monthly_units": 3.13,
+            "weeks_to_clear": 38.7,
             "margin_per_unit_eur": 17.3,
-            "recoverable_revenue_eur": 169.71
+            "recoverable_revenue_eur": 162.68
           },
           {
             "discount_pct": 10,
             "price_eur": 67.69,
-            "monthly_units": 4.0,
-            "weeks_to_clear": 30.3,
+            "monthly_units": 3.83,
+            "weeks_to_clear": 31.7,
             "margin_per_unit_eur": 13.54,
-            "recoverable_revenue_eur": 162.36
+            "recoverable_revenue_eur": 155.55
           },
           {
             "discount_pct": 15,
             "price_eur": 63.93,
-            "monthly_units": 4.94,
-            "weeks_to_clear": 24.5,
+            "monthly_units": 4.73,
+            "weeks_to_clear": 25.6,
             "margin_per_unit_eur": 9.78,
-            "recoverable_revenue_eur": 145.0
+            "recoverable_revenue_eur": 138.85
           },
           {
             "discount_pct": 20,
             "price_eur": 60.17,
-            "monthly_units": 6.19,
-            "weeks_to_clear": 19.6,
+            "monthly_units": 5.92,
+            "weeks_to_clear": 20.5,
             "margin_per_unit_eur": 6.02,
-            "recoverable_revenue_eur": 111.79
+            "recoverable_revenue_eur": 106.99
           }
         ]
       },
@@ -385,108 +385,49 @@
         "tied_capital_eur": 1653.58,
         "proposed_discount_pct": 20,
         "proposed_price_eur": 63.35,
-        "proposed_weeks_to_clear": 25.2,
-        "proposed_recoverable_revenue_eur": 94.63,
-        "proposed_margin_lost_eur": 236.65,
+        "proposed_weeks_to_clear": 26.2,
+        "proposed_recoverable_revenue_eur": 90.84,
+        "proposed_margin_lost_eur": 227.15,
         "curve": [
           {
             "discount_pct": 0,
             "price_eur": 79.19,
-            "monthly_units": 2.18,
-            "weeks_to_clear": 57.7,
+            "monthly_units": 2.09,
+            "weeks_to_clear": 60.0,
             "margin_per_unit_eur": 22.17,
-            "recoverable_revenue_eur": 144.68
+            "recoverable_revenue_eur": 139.18
           },
           {
             "discount_pct": 5,
             "price_eur": 75.23,
-            "monthly_units": 2.63,
-            "weeks_to_clear": 47.7,
+            "monthly_units": 2.53,
+            "weeks_to_clear": 49.6,
             "margin_per_unit_eur": 18.21,
-            "recoverable_revenue_eur": 143.78
+            "recoverable_revenue_eur": 138.25
           },
           {
             "discount_pct": 10,
             "price_eur": 71.27,
-            "monthly_units": 3.22,
-            "weeks_to_clear": 39.0,
+            "monthly_units": 3.09,
+            "weeks_to_clear": 40.6,
             "margin_per_unit_eur": 14.25,
-            "recoverable_revenue_eur": 137.54
+            "recoverable_revenue_eur": 132.18
           },
           {
             "discount_pct": 15,
             "price_eur": 67.31,
-            "monthly_units": 3.98,
-            "weeks_to_clear": 31.6,
+            "monthly_units": 3.82,
+            "weeks_to_clear": 32.9,
             "margin_per_unit_eur": 10.29,
-            "recoverable_revenue_eur": 122.81
+            "recoverable_revenue_eur": 117.96
           },
           {
             "discount_pct": 20,
             "price_eur": 63.35,
-            "monthly_units": 4.98,
-            "weeks_to_clear": 25.2,
+            "monthly_units": 4.78,
+            "weeks_to_clear": 26.2,
             "margin_per_unit_eur": 6.33,
-            "recoverable_revenue_eur": 94.63
-          }
-        ]
-      },
-      {
-        "sku": "SKU-PT-0584",
-        "name": "PetNord Canary Seed Food 15kg",
-        "pet_type": "bird",
-        "category": "dry-food",
-        "current_stock": 19,
-        "reorder_point": 3,
-        "list_price_eur": 92.01,
-        "unit_cost_eur": 66.25,
-        "excess_units": 13,
-        "tied_capital_eur": 861.25,
-        "proposed_discount_pct": 20,
-        "proposed_price_eur": 73.61,
-        "proposed_weeks_to_clear": 13.5,
-        "proposed_recoverable_revenue_eur": 91.75,
-        "proposed_margin_lost_eur": 229.63,
-        "curve": [
-          {
-            "discount_pct": 0,
-            "price_eur": 92.01,
-            "monthly_units": 1.81,
-            "weeks_to_clear": 31.0,
-            "margin_per_unit_eur": 25.76,
-            "recoverable_revenue_eur": 140.22
-          },
-          {
-            "discount_pct": 5,
-            "price_eur": 87.41,
-            "monthly_units": 2.2,
-            "weeks_to_clear": 25.6,
-            "margin_per_unit_eur": 21.16,
-            "recoverable_revenue_eur": 139.35
-          },
-          {
-            "discount_pct": 10,
-            "price_eur": 82.81,
-            "monthly_units": 2.7,
-            "weeks_to_clear": 20.9,
-            "margin_per_unit_eur": 16.56,
-            "recoverable_revenue_eur": 133.93
-          },
-          {
-            "discount_pct": 15,
-            "price_eur": 78.21,
-            "monthly_units": 3.32,
-            "weeks_to_clear": 17.0,
-            "margin_per_unit_eur": 11.96,
-            "recoverable_revenue_eur": 119.04
-          },
-          {
-            "discount_pct": 20,
-            "price_eur": 73.61,
-            "monthly_units": 4.16,
-            "weeks_to_clear": 13.5,
-            "margin_per_unit_eur": 7.36,
-            "recoverable_revenue_eur": 91.75
+            "recoverable_revenue_eur": 90.84
           }
         ]
       },
@@ -503,49 +444,108 @@
         "tied_capital_eur": 783.6,
         "proposed_discount_pct": 20,
         "proposed_price_eur": 58.04,
-        "proposed_weeks_to_clear": 9.9,
+        "proposed_weeks_to_clear": 10.2,
         "proposed_recoverable_revenue_eur": 87.0,
         "proposed_margin_lost_eur": 217.65,
         "curve": [
           {
             "discount_pct": 0,
             "price_eur": 72.55,
-            "monthly_units": 2.85,
-            "weeks_to_clear": 22.8,
+            "monthly_units": 2.79,
+            "weeks_to_clear": 23.3,
             "margin_per_unit_eur": 20.31,
-            "recoverable_revenue_eur": 173.9
+            "recoverable_revenue_eur": 169.81
           },
           {
             "discount_pct": 5,
             "price_eur": 68.92,
-            "monthly_units": 3.45,
-            "weeks_to_clear": 18.8,
+            "monthly_units": 3.37,
+            "weeks_to_clear": 19.3,
             "margin_per_unit_eur": 16.68,
-            "recoverable_revenue_eur": 172.82
+            "recoverable_revenue_eur": 168.67
           },
           {
             "discount_pct": 10,
             "price_eur": 65.3,
-            "monthly_units": 4.22,
-            "weeks_to_clear": 15.4,
+            "monthly_units": 4.12,
+            "weeks_to_clear": 15.8,
             "margin_per_unit_eur": 13.06,
-            "recoverable_revenue_eur": 165.33
+            "recoverable_revenue_eur": 161.28
           },
           {
             "discount_pct": 15,
             "price_eur": 61.67,
-            "monthly_units": 5.22,
-            "weeks_to_clear": 12.4,
+            "monthly_units": 5.09,
+            "weeks_to_clear": 12.8,
             "margin_per_unit_eur": 9.43,
             "recoverable_revenue_eur": 141.45
           },
           {
             "discount_pct": 20,
             "price_eur": 58.04,
-            "monthly_units": 6.54,
-            "weeks_to_clear": 9.9,
+            "monthly_units": 6.37,
+            "weeks_to_clear": 10.2,
             "margin_per_unit_eur": 5.8,
             "recoverable_revenue_eur": 87.0
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0584",
+        "name": "PetNord Canary Seed Food 15kg",
+        "pet_type": "bird",
+        "category": "dry-food",
+        "current_stock": 19,
+        "reorder_point": 3,
+        "list_price_eur": 92.01,
+        "unit_cost_eur": 66.25,
+        "excess_units": 13,
+        "tied_capital_eur": 861.25,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 73.61,
+        "proposed_weeks_to_clear": 14.7,
+        "proposed_recoverable_revenue_eur": 84.78,
+        "proposed_margin_lost_eur": 211.97,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 92.01,
+            "monthly_units": 1.68,
+            "weeks_to_clear": 33.5,
+            "margin_per_unit_eur": 25.76,
+            "recoverable_revenue_eur": 129.83
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 87.41,
+            "monthly_units": 2.03,
+            "weeks_to_clear": 27.7,
+            "margin_per_unit_eur": 21.16,
+            "recoverable_revenue_eur": 128.96
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 82.81,
+            "monthly_units": 2.52,
+            "weeks_to_clear": 22.4,
+            "margin_per_unit_eur": 16.56,
+            "recoverable_revenue_eur": 125.04
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 78.21,
+            "monthly_units": 3.07,
+            "weeks_to_clear": 18.4,
+            "margin_per_unit_eur": 11.96,
+            "recoverable_revenue_eur": 110.05
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 73.61,
+            "monthly_units": 3.84,
+            "weeks_to_clear": 14.7,
+            "margin_per_unit_eur": 7.36,
+            "recoverable_revenue_eur": 84.78
           }
         ]
       },
@@ -562,47 +562,47 @@
         "tied_capital_eur": 688.09,
         "proposed_discount_pct": 20,
         "proposed_price_eur": 58.81,
-        "proposed_weeks_to_clear": 10.1,
+        "proposed_weeks_to_clear": 10.5,
         "proposed_recoverable_revenue_eur": 76.44,
         "proposed_margin_lost_eur": 191.1,
         "curve": [
           {
             "discount_pct": 0,
             "price_eur": 73.51,
-            "monthly_units": 2.45,
-            "weeks_to_clear": 23.0,
+            "monthly_units": 2.35,
+            "weeks_to_clear": 23.9,
             "margin_per_unit_eur": 20.58,
-            "recoverable_revenue_eur": 150.98
+            "recoverable_revenue_eur": 145.3
           },
           {
             "discount_pct": 5,
             "price_eur": 69.83,
-            "monthly_units": 2.96,
-            "weeks_to_clear": 19.0,
+            "monthly_units": 2.85,
+            "weeks_to_clear": 19.8,
             "margin_per_unit_eur": 16.9,
-            "recoverable_revenue_eur": 150.04
+            "recoverable_revenue_eur": 144.33
           },
           {
             "discount_pct": 10,
             "price_eur": 66.16,
-            "monthly_units": 3.62,
-            "weeks_to_clear": 15.6,
+            "monthly_units": 3.48,
+            "weeks_to_clear": 16.2,
             "margin_per_unit_eur": 13.23,
-            "recoverable_revenue_eur": 143.53
+            "recoverable_revenue_eur": 138.0
           },
           {
             "discount_pct": 15,
             "price_eur": 62.48,
-            "monthly_units": 4.47,
-            "weeks_to_clear": 12.6,
+            "monthly_units": 4.3,
+            "weeks_to_clear": 13.1,
             "margin_per_unit_eur": 9.55,
-            "recoverable_revenue_eur": 124.15
+            "recoverable_revenue_eur": 123.14
           },
           {
             "discount_pct": 20,
             "price_eur": 58.81,
-            "monthly_units": 5.6,
-            "weeks_to_clear": 10.1,
+            "monthly_units": 5.38,
+            "weeks_to_clear": 10.5,
             "margin_per_unit_eur": 5.88,
             "recoverable_revenue_eur": 76.44
           }
@@ -621,47 +621,47 @@
         "tied_capital_eur": 593.18,
         "proposed_discount_pct": 20,
         "proposed_price_eur": 34.69,
-        "proposed_weeks_to_clear": 10.9,
+        "proposed_weeks_to_clear": 11.2,
         "proposed_recoverable_revenue_eur": 65.93,
         "proposed_margin_lost_eur": 164.73,
         "curve": [
           {
             "discount_pct": 0,
             "price_eur": 43.36,
-            "monthly_units": 3.29,
-            "weeks_to_clear": 25.0,
+            "monthly_units": 3.22,
+            "weeks_to_clear": 25.5,
             "margin_per_unit_eur": 12.14,
-            "recoverable_revenue_eur": 119.78
+            "recoverable_revenue_eur": 117.28
           },
           {
             "discount_pct": 5,
             "price_eur": 41.19,
-            "monthly_units": 3.98,
-            "weeks_to_clear": 20.7,
+            "monthly_units": 3.89,
+            "weeks_to_clear": 21.1,
             "margin_per_unit_eur": 9.97,
-            "recoverable_revenue_eur": 119.04
+            "recoverable_revenue_eur": 116.49
           },
           {
             "discount_pct": 10,
             "price_eur": 39.02,
-            "monthly_units": 5.08,
-            "weeks_to_clear": 16.2,
+            "monthly_units": 4.92,
+            "weeks_to_clear": 16.7,
             "margin_per_unit_eur": 7.8,
-            "recoverable_revenue_eur": 118.88
+            "recoverable_revenue_eur": 115.23
           },
           {
             "discount_pct": 15,
             "price_eur": 36.86,
-            "monthly_units": 6.01,
-            "weeks_to_clear": 13.7,
+            "monthly_units": 5.88,
+            "weeks_to_clear": 14.0,
             "margin_per_unit_eur": 5.64,
-            "recoverable_revenue_eur": 101.72
+            "recoverable_revenue_eur": 99.45
           },
           {
             "discount_pct": 20,
             "price_eur": 34.69,
-            "monthly_units": 7.53,
-            "weeks_to_clear": 10.9,
+            "monthly_units": 7.36,
+            "weeks_to_clear": 11.2,
             "margin_per_unit_eur": 3.47,
             "recoverable_revenue_eur": 65.93
           }
@@ -680,49 +680,49 @@
         "tied_capital_eur": 872.16,
         "proposed_discount_pct": 20,
         "proposed_price_eur": 40.38,
-        "proposed_weeks_to_clear": 20.1,
-        "proposed_recoverable_revenue_eur": 62.75,
-        "proposed_margin_lost_eur": 156.8,
+        "proposed_weeks_to_clear": 21.1,
+        "proposed_recoverable_revenue_eur": 59.8,
+        "proposed_margin_lost_eur": 149.23,
         "curve": [
           {
             "discount_pct": 0,
             "price_eur": 50.47,
-            "monthly_units": 2.48,
-            "weeks_to_clear": 41.9,
+            "monthly_units": 2.39,
+            "weeks_to_clear": 43.4,
             "margin_per_unit_eur": 14.13,
-            "recoverable_revenue_eur": 105.25
+            "recoverable_revenue_eur": 101.42
           },
           {
             "discount_pct": 5,
             "price_eur": 47.95,
-            "monthly_units": 2.74,
-            "weeks_to_clear": 38.0,
+            "monthly_units": 2.61,
+            "weeks_to_clear": 39.8,
             "margin_per_unit_eur": 11.61,
-            "recoverable_revenue_eur": 95.27
+            "recoverable_revenue_eur": 90.93
           },
           {
             "discount_pct": 10,
             "price_eur": 45.42,
-            "monthly_units": 3.35,
-            "weeks_to_clear": 31.1,
+            "monthly_units": 3.19,
+            "weeks_to_clear": 32.6,
             "margin_per_unit_eur": 9.08,
-            "recoverable_revenue_eur": 91.12
+            "recoverable_revenue_eur": 86.93
           },
           {
             "discount_pct": 15,
             "price_eur": 42.9,
-            "monthly_units": 4.14,
-            "weeks_to_clear": 25.1,
+            "monthly_units": 3.94,
+            "weeks_to_clear": 26.4,
             "margin_per_unit_eur": 6.56,
-            "recoverable_revenue_eur": 81.38
+            "recoverable_revenue_eur": 77.59
           },
           {
             "discount_pct": 20,
             "price_eur": 40.38,
-            "monthly_units": 5.18,
-            "weeks_to_clear": 20.1,
+            "monthly_units": 4.93,
+            "weeks_to_clear": 21.1,
             "margin_per_unit_eur": 4.04,
-            "recoverable_revenue_eur": 62.75
+            "recoverable_revenue_eur": 59.8
           }
         ]
       },
@@ -739,49 +739,49 @@
         "tied_capital_eur": 789.12,
         "proposed_discount_pct": 20,
         "proposed_price_eur": 36.54,
-        "proposed_weeks_to_clear": 18.8,
-        "proposed_recoverable_revenue_eur": 60.59,
-        "proposed_margin_lost_eur": 151.19,
+        "proposed_weeks_to_clear": 19.8,
+        "proposed_recoverable_revenue_eur": 57.73,
+        "proposed_margin_lost_eur": 144.07,
         "curve": [
           {
             "discount_pct": 0,
             "price_eur": 45.67,
-            "monthly_units": 2.41,
-            "weeks_to_clear": 43.1,
+            "monthly_units": 2.3,
+            "weeks_to_clear": 45.2,
             "margin_per_unit_eur": 12.79,
-            "recoverable_revenue_eur": 92.48
+            "recoverable_revenue_eur": 88.29
           },
           {
             "discount_pct": 5,
             "price_eur": 43.39,
-            "monthly_units": 2.91,
-            "weeks_to_clear": 35.7,
+            "monthly_units": 2.78,
+            "weeks_to_clear": 37.4,
             "margin_per_unit_eur": 10.51,
-            "recoverable_revenue_eur": 91.91
+            "recoverable_revenue_eur": 87.71
           },
           {
             "discount_pct": 10,
             "price_eur": 41.1,
-            "monthly_units": 3.57,
-            "weeks_to_clear": 29.1,
+            "monthly_units": 3.4,
+            "weeks_to_clear": 30.6,
             "margin_per_unit_eur": 8.22,
-            "recoverable_revenue_eur": 87.92
+            "recoverable_revenue_eur": 83.86
           },
           {
             "discount_pct": 15,
             "price_eur": 38.82,
-            "monthly_units": 4.41,
-            "weeks_to_clear": 23.6,
+            "monthly_units": 4.2,
+            "weeks_to_clear": 24.7,
             "margin_per_unit_eur": 5.94,
-            "recoverable_revenue_eur": 78.53
+            "recoverable_revenue_eur": 74.87
           },
           {
             "discount_pct": 20,
             "price_eur": 36.54,
-            "monthly_units": 5.52,
-            "weeks_to_clear": 18.8,
+            "monthly_units": 5.26,
+            "weeks_to_clear": 19.8,
             "margin_per_unit_eur": 3.66,
-            "recoverable_revenue_eur": 60.59
+            "recoverable_revenue_eur": 57.73
           }
         ]
       },
@@ -798,49 +798,49 @@
         "tied_capital_eur": 563.64,
         "proposed_discount_pct": 20,
         "proposed_price_eur": 22.37,
-        "proposed_weeks_to_clear": 15.0,
-        "proposed_recoverable_revenue_eur": 54.14,
-        "proposed_margin_lost_eur": 135.17,
+        "proposed_weeks_to_clear": 15.5,
+        "proposed_recoverable_revenue_eur": 52.59,
+        "proposed_margin_lost_eur": 131.31,
         "curve": [
           {
             "discount_pct": 0,
             "price_eur": 27.96,
-            "monthly_units": 3.69,
-            "weeks_to_clear": 32.8,
+            "monthly_units": 3.49,
+            "weeks_to_clear": 34.7,
             "margin_per_unit_eur": 7.83,
-            "recoverable_revenue_eur": 86.73
+            "recoverable_revenue_eur": 82.08
           },
           {
             "discount_pct": 5,
             "price_eur": 26.56,
-            "monthly_units": 4.47,
-            "weeks_to_clear": 27.1,
+            "monthly_units": 4.23,
+            "weeks_to_clear": 28.7,
             "margin_per_unit_eur": 6.43,
-            "recoverable_revenue_eur": 86.19
+            "recoverable_revenue_eur": 81.53
           },
           {
             "discount_pct": 10,
             "price_eur": 25.16,
-            "monthly_units": 5.46,
-            "weeks_to_clear": 22.2,
+            "monthly_units": 5.17,
+            "weeks_to_clear": 23.5,
             "margin_per_unit_eur": 5.03,
-            "recoverable_revenue_eur": 82.44
+            "recoverable_revenue_eur": 77.95
           },
           {
             "discount_pct": 15,
             "price_eur": 23.77,
-            "monthly_units": 6.8,
-            "weeks_to_clear": 17.8,
+            "monthly_units": 6.63,
+            "weeks_to_clear": 18.3,
             "margin_per_unit_eur": 3.64,
-            "recoverable_revenue_eur": 74.24
+            "recoverable_revenue_eur": 72.42
           },
           {
             "discount_pct": 20,
             "price_eur": 22.37,
-            "monthly_units": 8.06,
-            "weeks_to_clear": 15.0,
+            "monthly_units": 7.83,
+            "weeks_to_clear": 15.5,
             "margin_per_unit_eur": 2.24,
-            "recoverable_revenue_eur": 54.14
+            "recoverable_revenue_eur": 52.59
           }
         ]
       },
@@ -857,49 +857,49 @@
         "tied_capital_eur": 539.28,
         "proposed_discount_pct": 20,
         "proposed_price_eur": 21.4,
-        "proposed_weeks_to_clear": 22.7,
-        "proposed_recoverable_revenue_eur": 34.34,
-        "proposed_margin_lost_eur": 85.87,
+        "proposed_weeks_to_clear": 22.9,
+        "proposed_recoverable_revenue_eur": 33.95,
+        "proposed_margin_lost_eur": 84.9,
         "curve": [
           {
             "discount_pct": 0,
             "price_eur": 26.75,
-            "monthly_units": 2.34,
-            "weeks_to_clear": 51.9,
+            "monthly_units": 2.31,
+            "weeks_to_clear": 52.4,
             "margin_per_unit_eur": 7.49,
-            "recoverable_revenue_eur": 52.47
+            "recoverable_revenue_eur": 51.99
           },
           {
             "discount_pct": 5,
             "price_eur": 25.41,
-            "monthly_units": 2.83,
-            "weeks_to_clear": 42.9,
+            "monthly_units": 2.8,
+            "weeks_to_clear": 43.3,
             "margin_per_unit_eur": 6.15,
-            "recoverable_revenue_eur": 52.14
+            "recoverable_revenue_eur": 51.64
           },
           {
             "discount_pct": 10,
             "price_eur": 24.07,
-            "monthly_units": 3.46,
-            "weeks_to_clear": 35.0,
+            "monthly_units": 3.44,
+            "weeks_to_clear": 35.3,
             "margin_per_unit_eur": 4.81,
-            "recoverable_revenue_eur": 49.93
+            "recoverable_revenue_eur": 49.6
           },
           {
             "discount_pct": 15,
             "price_eur": 22.74,
-            "monthly_units": 4.27,
-            "weeks_to_clear": 28.4,
+            "monthly_units": 4.22,
+            "weeks_to_clear": 28.7,
             "margin_per_unit_eur": 3.48,
-            "recoverable_revenue_eur": 44.56
+            "recoverable_revenue_eur": 44.09
           },
           {
             "discount_pct": 20,
             "price_eur": 21.4,
-            "monthly_units": 5.35,
-            "weeks_to_clear": 22.7,
+            "monthly_units": 5.29,
+            "weeks_to_clear": 22.9,
             "margin_per_unit_eur": 2.14,
-            "recoverable_revenue_eur": 34.34
+            "recoverable_revenue_eur": 33.95
           }
         ]
       }
@@ -916,28 +916,28 @@
         "estimate": "units_sold"
       }
     },
-    "last_response_ms": 17210
+    "last_response_ms": 11681
   },
   "timings": [
     [
       "_search",
-      44.29
+      8.62
     ],
     [
       "_search",
-      50.35
+      24.26
     ],
     [
       "_search",
-      412.24
+      72.5
     ],
     [
       "_search",
-      406.98
+      49.39
     ],
     [
       "_search",
-      128.35
+      9.29
     ]
   ]
 }

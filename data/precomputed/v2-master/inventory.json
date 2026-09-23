@@ -23,69 +23,11 @@
       },
       {
         "label": "Revenue at risk",
-        "value": 2278.0,
+        "value": 1844.0,
         "sub": "€ if criticals stock out"
       }
     ],
     "reorder_queue": [
-      {
-        "sku": "SKU-PT-0320",
-        "name": "Orijen Sensitive Salmon Cat Food 15kg",
-        "pet_type": "cat",
-        "category": "dry-food",
-        "current_stock": 0,
-        "reorder_point": 3,
-        "days_of_supply": 0.0,
-        "avg_monthly_units": 3,
-        "forecast_units": 3,
-        "suggested_reorder_qty": 5,
-        "unit_cost_eur": 73.62,
-        "revenue_at_risk_eur": 306.75,
-        "supplier": "S-09",
-        "lead_time_days": 7,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 2.609,
-          "field_label": "units_sold",
-          "components": [
-            {
-              "name": "column mean (log)",
-              "value": 1.0995,
-              "type": "mean"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
-              "type": "regression"
-            },
-            {
-              "name": "neighbor residual",
-              "value": 0.1527,
-              "type": "residual"
-            },
-            {
-              "name": "brand=Orijen",
-              "value": -0.1488,
-              "type": "regression"
-            },
-            {
-              "name": "product_sku=SKU-PT-0320",
-              "value": 0.1259,
-              "type": "regression"
-            },
-            {
-              "name": "pet_type=cat",
-              "value": -0.1241,
-              "type": "regression"
-            },
-            {
-              "name": "category=dry-food",
-              "value": -0.0621,
-              "type": "regression"
-            }
-          ]
-        }
-      },
       {
         "sku": "SKU-PT-0294",
         "name": "Acana Indoor Salmon Cat Food 12kg",
@@ -95,15 +37,15 @@
         "reorder_point": 3,
         "days_of_supply": 0.0,
         "avg_monthly_units": 4,
-        "forecast_units": 4,
-        "suggested_reorder_qty": 6,
+        "forecast_units": 3,
+        "suggested_reorder_qty": 5,
         "unit_cost_eur": 52.88,
-        "revenue_at_risk_eur": 293.8,
+        "revenue_at_risk_eur": 220.35,
         "supplier": "S-07",
         "lead_time_days": 7,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 3.718,
+          "estimate": 3.182,
           "field_label": "units_sold",
           "components": [
             {
@@ -113,90 +55,32 @@
             },
             {
               "name": "neighbor residual",
-              "value": -0.9595,
+              "value": -0.8832,
               "type": "residual"
             },
             {
               "name": "product_sku=SKU-PT-0294",
-              "value": 0.4343,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
+              "value": 0.1207,
               "type": "regression"
             },
             {
               "name": "pet_type=cat",
-              "value": -0.1241,
+              "value": -0.0282,
               "type": "regression"
             },
             {
               "name": "brand=Acana",
-              "value": -0.1042,
+              "value": -0.0177,
               "type": "regression"
             },
             {
               "name": "category=dry-food",
-              "value": -0.0621,
-              "type": "regression"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0049",
-        "name": "Eukanuba Grain Free Salmon Dog Food 12kg",
-        "pet_type": "dog",
-        "category": "dry-food",
-        "current_stock": 1,
-        "reorder_point": 3,
-        "days_of_supply": 7.5,
-        "avg_monthly_units": 4,
-        "forecast_units": 4,
-        "suggested_reorder_qty": 5,
-        "unit_cost_eur": 59.62,
-        "revenue_at_risk_eur": 248.4,
-        "supplier": "S-02",
-        "lead_time_days": 7,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 3.768,
-          "field_label": "units_sold",
-          "components": [
-            {
-              "name": "column mean (log)",
-              "value": 1.0995,
-              "type": "mean"
-            },
-            {
-              "name": "neighbor residual",
-              "value": -0.8069,
-              "type": "residual"
-            },
-            {
-              "name": "pet_type=dog",
-              "value": 0.1974,
+              "value": -0.0068,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.1568,
-              "type": "regression"
-            },
-            {
-              "name": "product_sku=SKU-PT-0049",
-              "value": -0.135,
-              "type": "regression"
-            },
-            {
-              "name": "category=dry-food",
-              "value": -0.0621,
-              "type": "regression"
-            },
-            {
-              "name": "brand=Eukanuba",
-              "value": 0.0571,
+              "value": 0.0014,
               "type": "regression"
             }
           ]
@@ -219,7 +103,7 @@
         "lead_time_days": 7,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 4.164,
+          "estimate": 3.567,
           "field_label": "units_sold",
           "components": [
             {
@@ -229,32 +113,90 @@
             },
             {
               "name": "neighbor residual",
-              "value": 0.4234,
+              "value": 0.4024,
               "type": "residual"
             },
             {
               "name": "product_sku=SKU-PT-0068",
-              "value": 0.2377,
+              "value": 0.283,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.1974,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
+              "value": 0.0331,
               "type": "regression"
             },
             {
               "name": "brand=Acana",
-              "value": -0.1042,
+              "value": -0.0177,
               "type": "regression"
             },
             {
               "name": "category=dry-food",
-              "value": -0.0621,
+              "value": -0.0068,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0320",
+        "name": "Orijen Sensitive Salmon Cat Food 15kg",
+        "pet_type": "cat",
+        "category": "dry-food",
+        "current_stock": 0,
+        "reorder_point": 3,
+        "days_of_supply": 0.0,
+        "avg_monthly_units": 3,
+        "forecast_units": 2,
+        "suggested_reorder_qty": 4,
+        "unit_cost_eur": 73.62,
+        "revenue_at_risk_eur": 204.5,
+        "supplier": "S-09",
+        "lead_time_days": 7,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 2.101,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0320",
+              "value": -0.1953,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": 0.175,
+              "type": "residual"
+            },
+            {
+              "name": "pet_type=cat",
+              "value": -0.0282,
+              "type": "regression"
+            },
+            {
+              "name": "category=dry-food",
+              "value": -0.0068,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Orijen",
+              "value": -0.0005,
               "type": "regression"
             }
           ]
@@ -277,7 +219,7 @@
         "lead_time_days": 7,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 2.15,
+          "estimate": 1.975,
           "field_label": "units_sold",
           "components": [
             {
@@ -286,33 +228,33 @@
               "type": "mean"
             },
             {
+              "name": "product_sku=SKU-PT-0327",
+              "value": -0.4284,
+              "type": "regression"
+            },
+            {
               "name": "neighbor residual",
-              "value": -0.2916,
+              "value": -0.2282,
               "type": "residual"
             },
             {
-              "name": "season=spring",
-              "value": 0.1568,
-              "type": "regression"
-            },
-            {
-              "name": "brand=Orijen",
-              "value": -0.1488,
-              "type": "regression"
-            },
-            {
               "name": "pet_type=cat",
-              "value": -0.1241,
-              "type": "regression"
-            },
-            {
-              "name": "product_sku=SKU-PT-0327",
-              "value": -0.0676,
+              "value": -0.0282,
               "type": "regression"
             },
             {
               "name": "category=dry-food",
-              "value": -0.0621,
+              "value": -0.0068,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Orijen",
+              "value": -0.0005,
               "type": "regression"
             }
           ]
@@ -335,7 +277,7 @@
         "lead_time_days": 7,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 3.13,
+          "estimate": 2.709,
           "field_label": "units_sold",
           "components": [
             {
@@ -345,90 +287,90 @@
             },
             {
               "name": "neighbor residual",
-              "value": 0.7739,
+              "value": 0.7311,
               "type": "residual"
             },
             {
-              "name": "pet_type=dog",
-              "value": 0.1974,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
-              "type": "regression"
-            },
-            {
-              "name": "brand=Orijen",
-              "value": -0.1488,
-              "type": "regression"
-            },
-            {
               "name": "product_sku=SKU-PT-0087",
-              "value": -0.0684,
+              "value": -0.0627,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
               "type": "regression"
             },
             {
               "name": "category=dry-food",
-              "value": -0.0621,
+              "value": -0.0068,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Orijen",
+              "value": -0.0005,
               "type": "regression"
             }
           ]
         }
       },
       {
-        "sku": "SKU-PT-0065",
-        "name": "Acana Weight Control Salmon Dog Food 7kg",
+        "sku": "SKU-PT-0049",
+        "name": "Eukanuba Grain Free Salmon Dog Food 12kg",
         "pet_type": "dog",
         "category": "dry-food",
         "current_stock": 1,
         "reorder_point": 3,
-        "days_of_supply": 10.0,
-        "avg_monthly_units": 3,
-        "forecast_units": 4,
-        "suggested_reorder_qty": 5,
-        "unit_cost_eur": 36.41,
-        "revenue_at_risk_eur": 151.71,
-        "supplier": "S-06",
+        "days_of_supply": 7.5,
+        "avg_monthly_units": 4,
+        "forecast_units": 3,
+        "suggested_reorder_qty": 4,
+        "unit_cost_eur": 59.62,
+        "revenue_at_risk_eur": 165.6,
+        "supplier": "S-02",
         "lead_time_days": 7,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 3.585,
+          "estimate": 3.41,
           "field_label": "units_sold",
           "components": [
-            {
-              "name": "neighbor residual",
-              "value": 1.1267,
-              "type": "residual"
-            },
             {
               "name": "column mean (log)",
               "value": 1.0995,
               "type": "mean"
             },
             {
+              "name": "neighbor residual",
+              "value": -0.8258,
+              "type": "residual"
+            },
+            {
+              "name": "product_sku=SKU-PT-0049",
+              "value": 0.0536,
+              "type": "regression"
+            },
+            {
               "name": "pet_type=dog",
-              "value": 0.1974,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
-              "type": "regression"
-            },
-            {
-              "name": "brand=Acana",
-              "value": -0.1042,
+              "value": 0.0331,
               "type": "regression"
             },
             {
               "name": "category=dry-food",
-              "value": -0.0621,
+              "value": -0.0068,
               "type": "regression"
             },
             {
-              "name": "product_sku=SKU-PT-0065",
-              "value": -0.0602,
+              "name": "brand=Eukanuba",
+              "value": -0.0032,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
               "type": "regression"
             }
           ]
@@ -451,7 +393,7 @@
         "lead_time_days": 7,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 3.103,
+          "estimate": 2.569,
           "field_label": "units_sold",
           "components": [
             {
@@ -461,32 +403,90 @@
             },
             {
               "name": "neighbor residual",
-              "value": -0.6239,
+              "value": -0.5743,
               "type": "residual"
             },
             {
-              "name": "season=spring",
-              "value": 0.1568,
+              "name": "product_sku=SKU-PT-0263",
+              "value": -0.0655,
               "type": "regression"
             },
             {
               "name": "pet_type=cat",
-              "value": -0.1241,
-              "type": "regression"
-            },
-            {
-              "name": "product_sku=SKU-PT-0263",
-              "value": 0.0796,
-              "type": "regression"
-            },
-            {
-              "name": "category=dry-food",
-              "value": -0.0621,
+              "value": -0.0282,
               "type": "regression"
             },
             {
               "name": "brand=Royal Canin",
-              "value": 0.0363,
+              "value": -0.0173,
+              "type": "regression"
+            },
+            {
+              "name": "category=dry-food",
+              "value": -0.0068,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0065",
+        "name": "Acana Weight Control Salmon Dog Food 7kg",
+        "pet_type": "dog",
+        "category": "dry-food",
+        "current_stock": 1,
+        "reorder_point": 3,
+        "days_of_supply": 10.0,
+        "avg_monthly_units": 3,
+        "forecast_units": 3,
+        "suggested_reorder_qty": 4,
+        "unit_cost_eur": 36.41,
+        "revenue_at_risk_eur": 101.14,
+        "supplier": "S-06",
+        "lead_time_days": 7,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 2.865,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "neighbor residual",
+              "value": 1.1284,
+              "type": "residual"
+            },
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0065",
+              "value": -0.0375,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Acana",
+              "value": -0.0177,
+              "type": "regression"
+            },
+            {
+              "name": "category=dry-food",
+              "value": -0.0068,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
               "type": "regression"
             }
           ]
@@ -509,7 +509,7 @@
         "lead_time_days": 7,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 2.993,
+          "estimate": 2.563,
           "field_label": "units_sold",
           "components": [
             {
@@ -519,32 +519,32 @@
             },
             {
               "name": "neighbor residual",
-              "value": -0.6715,
+              "value": -0.6339,
               "type": "residual"
             },
             {
               "name": "product_sku=SKU-PT-0304",
-              "value": 0.2125,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
+              "value": -0.0624,
               "type": "regression"
             },
             {
               "name": "pet_type=cat",
-              "value": -0.1241,
+              "value": -0.0282,
               "type": "regression"
             },
             {
               "name": "brand=Acana",
-              "value": -0.1042,
+              "value": -0.0177,
               "type": "regression"
             },
             {
               "name": "category=dry-food",
-              "value": -0.0621,
+              "value": -0.0068,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
               "type": "regression"
             }
           ]
@@ -559,15 +559,15 @@
         "reorder_point": 5,
         "days_of_supply": 12.0,
         "avg_monthly_units": 5,
-        "forecast_units": 5,
-        "suggested_reorder_qty": 5,
+        "forecast_units": 4,
+        "suggested_reorder_qty": 4,
         "unit_cost_eur": 12.26,
-        "revenue_at_risk_eur": 66.87,
+        "revenue_at_risk_eur": 44.58,
         "supplier": "S-12",
         "lead_time_days": 21,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 5.183,
+          "estimate": 4.437,
           "field_label": "units_sold",
           "components": [
             {
@@ -577,32 +577,32 @@
             },
             {
               "name": "product_sku=SKU-PT-0215",
-              "value": 0.2798,
-              "type": "regression"
-            },
-            {
-              "name": "pet_type=dog",
-              "value": 0.1974,
-              "type": "regression"
-            },
-            {
-              "name": "brand=Trixie",
-              "value": -0.1575,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
+              "value": 0.3221,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": 0.059,
+              "value": 0.0481,
               "type": "residual"
             },
             {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Trixie",
+              "value": -0.0109,
+              "type": "regression"
+            },
+            {
               "name": "category=accessories",
-              "value": -0.0001,
+              "value": -0.009,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
               "type": "regression"
             }
           ]
@@ -625,216 +625,42 @@
         "lead_time_days": 14,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 5.187,
+          "estimate": 4.52,
           "field_label": "units_sold",
           "components": [
+            {
+              "name": "neighbor residual",
+              "value": -1.1267,
+              "type": "residual"
+            },
             {
               "name": "column mean (log)",
               "value": 1.0995,
               "type": "mean"
-            },
-            {
-              "name": "neighbor residual",
-              "value": -1.0565,
-              "type": "residual"
-            },
-            {
-              "name": "pet_type=dog",
-              "value": 0.1974,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
-              "type": "regression"
             },
             {
               "name": "product_sku=SKU-PT-0178",
-              "value": 0.084,
+              "value": 0.3795,
               "type": "regression"
             },
             {
-              "name": "category=treats",
-              "value": 0.0666,
+              "name": "pet_type=dog",
+              "value": 0.0331,
               "type": "regression"
             },
             {
               "name": "brand=PetNord",
-              "value": 0.0144,
-              "type": "regression"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0021",
-        "name": "Hill's Science Plan Chicken Dog Food 2kg",
-        "pet_type": "dog",
-        "category": "dry-food",
-        "current_stock": 1,
-        "reorder_point": 3,
-        "days_of_supply": 7.5,
-        "avg_monthly_units": 4,
-        "forecast_units": 4,
-        "suggested_reorder_qty": 5,
-        "unit_cost_eur": 10.12,
-        "revenue_at_risk_eur": 42.15,
-        "supplier": "S-10",
-        "lead_time_days": 7,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 3.918,
-          "field_label": "units_sold",
-          "components": [
-            {
-              "name": "column mean (log)",
-              "value": 1.0995,
-              "type": "mean"
-            },
-            {
-              "name": "pet_type=dog",
-              "value": 0.1974,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
-              "type": "regression"
-            },
-            {
-              "name": "neighbor residual",
-              "value": -0.1249,
-              "type": "residual"
-            },
-            {
-              "name": "category=dry-food",
-              "value": -0.0621,
-              "type": "regression"
-            },
-            {
-              "name": "product_sku=SKU-PT-0021",
-              "value": -0.0396,
-              "type": "regression"
-            },
-            {
-              "name": "brand=Hill's Science Plan",
-              "value": 0.0282,
-              "type": "regression"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0067",
-        "name": "Acana Grain Free Salmon Dog Food 2kg",
-        "pet_type": "dog",
-        "category": "dry-food",
-        "current_stock": 1,
-        "reorder_point": 3,
-        "days_of_supply": 10.0,
-        "avg_monthly_units": 3,
-        "forecast_units": 4,
-        "suggested_reorder_qty": 5,
-        "unit_cost_eur": 9.7,
-        "revenue_at_risk_eur": 40.41,
-        "supplier": "S-08",
-        "lead_time_days": 7,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 3.508,
-          "field_label": "units_sold",
-          "components": [
-            {
-              "name": "column mean (log)",
-              "value": 1.0995,
-              "type": "mean"
-            },
-            {
-              "name": "neighbor residual",
-              "value": -0.6431,
-              "type": "residual"
-            },
-            {
-              "name": "pet_type=dog",
-              "value": 0.1974,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
-              "type": "regression"
-            },
-            {
-              "name": "brand=Acana",
-              "value": -0.1042,
-              "type": "regression"
-            },
-            {
-              "name": "product_sku=SKU-PT-0067",
-              "value": -0.0821,
-              "type": "regression"
-            },
-            {
-              "name": "category=dry-food",
-              "value": -0.0621,
-              "type": "regression"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0171",
-        "name": "PetNord Weight Control Liver Treats 500g",
-        "pet_type": "dog",
-        "category": "treats",
-        "current_stock": 2,
-        "reorder_point": 4,
-        "days_of_supply": 10.0,
-        "avg_monthly_units": 6,
-        "forecast_units": 6,
-        "suggested_reorder_qty": 6,
-        "unit_cost_eur": 5.32,
-        "revenue_at_risk_eur": 38.68,
-        "supplier": "S-04",
-        "lead_time_days": 14,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 6.02,
-          "field_label": "units_sold",
-          "components": [
-            {
-              "name": "neighbor residual",
-              "value": -1.1532,
-              "type": "residual"
-            },
-            {
-              "name": "column mean (log)",
-              "value": 1.0995,
-              "type": "mean"
-            },
-            {
-              "name": "pet_type=dog",
-              "value": 0.1974,
-              "type": "regression"
-            },
-            {
-              "name": "product_sku=SKU-PT-0171",
-              "value": 0.1806,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
+              "value": 0.0112,
               "type": "regression"
             },
             {
               "name": "category=treats",
-              "value": 0.0666,
+              "value": 0.0107,
               "type": "regression"
             },
             {
-              "name": "brand=PetNord",
-              "value": 0.0144,
+              "name": "season=spring",
+              "value": 0.0014,
               "type": "regression"
             }
           ]
@@ -857,7 +683,7 @@
         "lead_time_days": 21,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 2.932,
+          "estimate": 2.629,
           "field_label": "units_sold",
           "components": [
             {
@@ -867,33 +693,207 @@
             },
             {
               "name": "category=toys",
-              "value": -0.2,
-              "type": "regression"
-            },
-            {
-              "name": "pet_type=dog",
-              "value": 0.1974,
-              "type": "regression"
-            },
-            {
-              "name": "brand=Trixie",
-              "value": -0.1575,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
-              "type": "regression"
-            },
-            {
-              "name": "product_sku=SKU-PT-0236",
-              "value": 0.0835,
+              "value": -0.0955,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": 0.0202,
+              "value": 0.0785,
               "type": "residual"
+            },
+            {
+              "name": "product_sku=SKU-PT-0236",
+              "value": -0.0611,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Trixie",
+              "value": -0.0109,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0171",
+        "name": "PetNord Weight Control Liver Treats 500g",
+        "pet_type": "dog",
+        "category": "treats",
+        "current_stock": 2,
+        "reorder_point": 4,
+        "days_of_supply": 10.0,
+        "avg_monthly_units": 6,
+        "forecast_units": 5,
+        "suggested_reorder_qty": 5,
+        "unit_cost_eur": 5.32,
+        "revenue_at_risk_eur": 29.01,
+        "supplier": "S-04",
+        "lead_time_days": 14,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 5.153,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "neighbor residual",
+              "value": -1.198,
+              "type": "residual"
+            },
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0171",
+              "value": 0.4508,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": 0.0112,
+              "type": "regression"
+            },
+            {
+              "name": "category=treats",
+              "value": 0.0107,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0021",
+        "name": "Hill's Science Plan Chicken Dog Food 2kg",
+        "pet_type": "dog",
+        "category": "dry-food",
+        "current_stock": 1,
+        "reorder_point": 3,
+        "days_of_supply": 7.5,
+        "avg_monthly_units": 4,
+        "forecast_units": 3,
+        "suggested_reorder_qty": 4,
+        "unit_cost_eur": 10.12,
+        "revenue_at_risk_eur": 28.1,
+        "supplier": "S-10",
+        "lead_time_days": 7,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 3.281,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.1642,
+              "type": "residual"
+            },
+            {
+              "name": "product_sku=SKU-PT-0021",
+              "value": 0.1274,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Hill's Science Plan",
+              "value": 0.0114,
+              "type": "regression"
+            },
+            {
+              "name": "category=dry-food",
+              "value": -0.0068,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0067",
+        "name": "Acana Grain Free Salmon Dog Food 2kg",
+        "pet_type": "dog",
+        "category": "dry-food",
+        "current_stock": 1,
+        "reorder_point": 3,
+        "days_of_supply": 10.0,
+        "avg_monthly_units": 3,
+        "forecast_units": 3,
+        "suggested_reorder_qty": 4,
+        "unit_cost_eur": 9.7,
+        "revenue_at_risk_eur": 26.94,
+        "supplier": "S-08",
+        "lead_time_days": 7,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 2.872,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.6826,
+              "type": "residual"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "product_sku=SKU-PT-0067",
+              "value": -0.0182,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Acana",
+              "value": -0.0177,
+              "type": "regression"
+            },
+            {
+              "name": "category=dry-food",
+              "value": -0.0068,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
             }
           ]
         }
@@ -907,15 +907,15 @@
         "reorder_point": 5,
         "days_of_supply": 8.6,
         "avg_monthly_units": 7,
-        "forecast_units": 8,
-        "suggested_reorder_qty": 8,
+        "forecast_units": 6,
+        "suggested_reorder_qty": 6,
         "unit_cost_eur": 2.46,
-        "revenue_at_risk_eur": 29.46,
+        "revenue_at_risk_eur": 19.64,
         "supplier": "S-08",
         "lead_time_days": 14,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 7.574,
+          "estimate": 6.484,
           "field_label": "units_sold",
           "components": [
             {
@@ -924,208 +924,34 @@
               "type": "mean"
             },
             {
-              "name": "brand=Whimzees",
-              "value": 0.4318,
+              "name": "product_sku=SKU-PT-0187",
+              "value": 0.6501,
               "type": "regression"
             },
             {
               "name": "category=dental-treats",
-              "value": 0.2395,
-              "type": "regression"
-            },
-            {
-              "name": "product_sku=SKU-PT-0187",
-              "value": -0.2175,
+              "value": 0.0759,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.1974,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
+              "value": 0.0331,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": 0.1329,
-              "type": "residual"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0222",
-        "name": "Kong Chew Bone",
-        "pet_type": "dog",
-        "category": "toys",
-        "current_stock": 1,
-        "reorder_point": 4,
-        "days_of_supply": 15.0,
-        "avg_monthly_units": 2,
-        "forecast_units": 3,
-        "suggested_reorder_qty": 4,
-        "unit_cost_eur": 6.52,
-        "revenue_at_risk_eur": 25.06,
-        "supplier": "S-07",
-        "lead_time_days": 21,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 2.63,
-          "field_label": "units_sold",
-          "components": [
-            {
-              "name": "column mean (log)",
-              "value": 1.0995,
-              "type": "mean"
-            },
-            {
-              "name": "neighbor residual",
-              "value": -0.4649,
+              "value": 0.0255,
               "type": "residual"
             },
             {
-              "name": "brand=Kong",
-              "value": -0.3976,
-              "type": "regression"
-            },
-            {
-              "name": "category=toys",
-              "value": -0.2,
-              "type": "regression"
-            },
-            {
-              "name": "pet_type=dog",
-              "value": 0.1974,
-              "type": "regression"
-            },
-            {
-              "name": "product_sku=SKU-PT-0222",
-              "value": 0.1709,
+              "name": "brand=Whimzees",
+              "value": 0.0043,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.1568,
+              "value": 0.0014,
               "type": "regression"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0033",
-        "name": "Hill's Science Plan Large Breed Beef Dog Food 4kg",
-        "pet_type": "dog",
-        "category": "dry-food",
-        "current_stock": 2,
-        "reorder_point": 3,
-        "days_of_supply": 20.0,
-        "avg_monthly_units": 3,
-        "forecast_units": 3,
-        "suggested_reorder_qty": 3,
-        "unit_cost_eur": 17.81,
-        "revenue_at_risk_eur": 24.74,
-        "supplier": "S-10",
-        "lead_time_days": 7,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 2.706,
-          "field_label": "units_sold",
-          "components": [
-            {
-              "name": "column mean (log)",
-              "value": 1.0995,
-              "type": "mean"
-            },
-            {
-              "name": "product_sku=SKU-PT-0033",
-              "value": -0.4299,
-              "type": "regression"
-            },
-            {
-              "name": "neighbor residual",
-              "value": -0.4278,
-              "type": "residual"
-            },
-            {
-              "name": "pet_type=dog",
-              "value": 0.1974,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
-              "type": "regression"
-            },
-            {
-              "name": "category=dry-food",
-              "value": -0.0621,
-              "type": "regression"
-            },
-            {
-              "name": "brand=Hill's Science Plan",
-              "value": 0.0282,
-              "type": "regression"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0225",
-        "name": "Kong Tennis Ball",
-        "pet_type": "dog",
-        "category": "toys",
-        "current_stock": 1,
-        "reorder_point": 4,
-        "days_of_supply": 10.0,
-        "avg_monthly_units": 3,
-        "forecast_units": 3,
-        "suggested_reorder_qty": 4,
-        "unit_cost_eur": 6.31,
-        "revenue_at_risk_eur": 24.26,
-        "supplier": "S-10",
-        "lead_time_days": 21,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 2.83,
-          "field_label": "units_sold",
-          "components": [
-            {
-              "name": "column mean (log)",
-              "value": 1.0995,
-              "type": "mean"
-            },
-            {
-              "name": "brand=Kong",
-              "value": -0.3976,
-              "type": "regression"
-            },
-            {
-              "name": "product_sku=SKU-PT-0225",
-              "value": 0.2025,
-              "type": "regression"
-            },
-            {
-              "name": "category=toys",
-              "value": -0.2,
-              "type": "regression"
-            },
-            {
-              "name": "pet_type=dog",
-              "value": 0.1974,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
-              "type": "regression"
-            },
-            {
-              "name": "neighbor residual",
-              "value": -0.1169,
-              "type": "residual"
             }
           ]
         }
@@ -1147,7 +973,7 @@
         "lead_time_days": 7,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 3.203,
+          "estimate": 2.873,
           "field_label": "units_sold",
           "components": [
             {
@@ -1157,32 +983,32 @@
             },
             {
               "name": "neighbor residual",
-              "value": -0.6355,
+              "value": -0.6363,
               "type": "residual"
             },
             {
+              "name": "product_sku=SKU-PT-0089",
+              "value": -0.0817,
+              "type": "regression"
+            },
+            {
               "name": "pet_type=dog",
-              "value": 0.1974,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
-              "type": "regression"
-            },
-            {
-              "name": "brand=Orijen",
-              "value": -0.1488,
+              "value": 0.0331,
               "type": "regression"
             },
             {
               "name": "category=dry-food",
-              "value": -0.0621,
+              "value": -0.0068,
               "type": "regression"
             },
             {
-              "name": "product_sku=SKU-PT-0089",
-              "value": -0.0452,
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Orijen",
+              "value": -0.0005,
               "type": "regression"
             }
           ]
@@ -1205,7 +1031,7 @@
         "lead_time_days": 7,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 2.97,
+          "estimate": 2.544,
           "field_label": "units_sold",
           "components": [
             {
@@ -1215,32 +1041,148 @@
             },
             {
               "name": "product_sku=SKU-PT-0064",
-              "value": -0.22,
-              "type": "regression"
-            },
-            {
-              "name": "pet_type=dog",
-              "value": 0.1974,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
+              "value": -0.1778,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": -0.1256,
+              "value": -0.1405,
               "type": "residual"
             },
             {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
               "name": "brand=Acana",
-              "value": -0.1042,
+              "value": -0.0177,
               "type": "regression"
             },
             {
               "name": "category=dry-food",
-              "value": -0.0621,
+              "value": -0.0068,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0222",
+        "name": "Kong Chew Bone",
+        "pet_type": "dog",
+        "category": "toys",
+        "current_stock": 1,
+        "reorder_point": 4,
+        "days_of_supply": 15.0,
+        "avg_monthly_units": 2,
+        "forecast_units": 2,
+        "suggested_reorder_qty": 3,
+        "unit_cost_eur": 6.52,
+        "revenue_at_risk_eur": 12.53,
+        "supplier": "S-07",
+        "lead_time_days": 21,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 2.251,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.3673,
+              "type": "residual"
+            },
+            {
+              "name": "product_sku=SKU-PT-0222",
+              "value": -0.2551,
+              "type": "regression"
+            },
+            {
+              "name": "category=toys",
+              "value": -0.0955,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Kong",
+              "value": -0.0074,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0225",
+        "name": "Kong Tennis Ball",
+        "pet_type": "dog",
+        "category": "toys",
+        "current_stock": 1,
+        "reorder_point": 4,
+        "days_of_supply": 10.0,
+        "avg_monthly_units": 3,
+        "forecast_units": 2,
+        "suggested_reorder_qty": 3,
+        "unit_cost_eur": 6.31,
+        "revenue_at_risk_eur": 12.13,
+        "supplier": "S-10",
+        "lead_time_days": 21,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 2.424,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "product_sku=SKU-PT-0225",
+              "value": -0.1834,
+              "type": "regression"
+            },
+            {
+              "name": "category=toys",
+              "value": -0.0955,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.0564,
+              "type": "residual"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Kong",
+              "value": -0.0074,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
               "type": "regression"
             }
           ]
@@ -1255,20 +1197,20 @@
         "reorder_point": 4,
         "days_of_supply": 6.0,
         "avg_monthly_units": 5,
-        "forecast_units": 7,
-        "suggested_reorder_qty": 8,
+        "forecast_units": 5,
+        "suggested_reorder_qty": 6,
         "unit_cost_eur": 1.21,
-        "revenue_at_risk_eur": 10.68,
+        "revenue_at_risk_eur": 7.12,
         "supplier": "S-03",
         "lead_time_days": 10,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 6.619,
+          "estimate": 4.891,
           "field_label": "units_sold",
           "components": [
             {
               "name": "neighbor residual",
-              "value": -1.155,
+              "value": -1.2256,
               "type": "residual"
             },
             {
@@ -1277,28 +1219,28 @@
               "type": "mean"
             },
             {
-              "name": "pet_type=dog",
-              "value": 0.1974,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
-              "type": "regression"
-            },
-            {
               "name": "product_sku=SKU-PT-0146",
-              "value": 0.1177,
+              "value": 0.4557,
               "type": "regression"
             },
             {
               "name": "category=wet-food",
-              "value": 0.1176,
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
               "type": "regression"
             },
             {
               "name": "brand=Hill's Science Plan",
-              "value": 0.0282,
+              "value": 0.0114,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
               "type": "regression"
             }
           ]
@@ -1313,15 +1255,15 @@
         "reorder_point": 4,
         "days_of_supply": 0.0,
         "avg_monthly_units": 5,
-        "forecast_units": 5,
-        "suggested_reorder_qty": 7,
+        "forecast_units": 4,
+        "suggested_reorder_qty": 6,
         "unit_cost_eur": 0.62,
-        "revenue_at_risk_eur": 4.55,
+        "revenue_at_risk_eur": 3.64,
         "supplier": "S-07",
         "lead_time_days": 10,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 4.514,
+          "estimate": 3.865,
           "field_label": "units_sold",
           "components": [
             {
@@ -1331,32 +1273,32 @@
             },
             {
               "name": "neighbor residual",
-              "value": 0.6364,
+              "value": 0.5529,
               "type": "residual"
             },
             {
-              "name": "pet_type=dog",
-              "value": 0.1974,
-              "type": "regression"
-            },
-            {
               "name": "product_sku=SKU-PT-0126",
-              "value": -0.1955,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
+              "value": 0.1584,
               "type": "regression"
             },
             {
               "name": "category=wet-food",
-              "value": 0.1176,
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
               "type": "regression"
             },
             {
               "name": "brand=Hill's Science Plan",
-              "value": 0.0282,
+              "value": 0.0114,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
               "type": "regression"
             }
           ]
@@ -1371,15 +1313,15 @@
         "reorder_point": 4,
         "days_of_supply": 6.0,
         "avg_monthly_units": 5,
-        "forecast_units": 5,
-        "suggested_reorder_qty": 6,
+        "forecast_units": 4,
+        "suggested_reorder_qty": 5,
         "unit_cost_eur": 0.67,
-        "revenue_at_risk_eur": 3.96,
+        "revenue_at_risk_eur": 2.97,
         "supplier": "S-01",
         "lead_time_days": 10,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 5.471,
+          "estimate": 4.325,
           "field_label": "units_sold",
           "components": [
             {
@@ -1389,32 +1331,32 @@
             },
             {
               "name": "neighbor residual",
-              "value": -0.5849,
+              "value": -0.6584,
               "type": "residual"
             },
             {
-              "name": "pet_type=dog",
-              "value": 0.1974,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
+              "name": "product_sku=SKU-PT-0132",
+              "value": 0.271,
               "type": "regression"
             },
             {
               "name": "category=wet-food",
-              "value": 0.1176,
+              "value": 0.0331,
               "type": "regression"
             },
             {
-              "name": "product_sku=SKU-PT-0132",
-              "value": -0.0728,
+              "name": "pet_type=dog",
+              "value": 0.0331,
               "type": "regression"
             },
             {
               "name": "brand=Hill's Science Plan",
-              "value": 0.0282,
+              "value": 0.0114,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
               "type": "regression"
             }
           ]
@@ -1429,15 +1371,15 @@
         "reorder_point": 4,
         "days_of_supply": 12.0,
         "avg_monthly_units": 5,
-        "forecast_units": 5,
-        "suggested_reorder_qty": 5,
+        "forecast_units": 4,
+        "suggested_reorder_qty": 4,
         "unit_cost_eur": 0.7,
-        "revenue_at_risk_eur": 3.09,
+        "revenue_at_risk_eur": 2.06,
         "supplier": "S-07",
         "lead_time_days": 10,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 4.946,
+          "estimate": 4.268,
           "field_label": "units_sold",
           "components": [
             {
@@ -1446,33 +1388,91 @@
               "type": "mean"
             },
             {
-              "name": "pet_type=dog",
-              "value": 0.1974,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.1568,
-              "type": "regression"
-            },
-            {
-              "name": "category=wet-food",
-              "value": 0.1176,
+              "name": "product_sku=SKU-PT-0114",
+              "value": 0.2898,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": 0.1019,
+              "value": 0.0448,
               "type": "residual"
             },
             {
-              "name": "product_sku=SKU-PT-0114",
-              "value": -0.0746,
+              "name": "category=wet-food",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
               "type": "regression"
             },
             {
               "name": "brand=Royal Canin",
-              "value": 0.0363,
+              "value": -0.0173,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0033",
+        "name": "Hill's Science Plan Large Breed Beef Dog Food 4kg",
+        "pet_type": "dog",
+        "category": "dry-food",
+        "current_stock": 2,
+        "reorder_point": 3,
+        "days_of_supply": 20.0,
+        "avg_monthly_units": 3,
+        "forecast_units": 2,
+        "suggested_reorder_qty": 2,
+        "unit_cost_eur": 17.81,
+        "revenue_at_risk_eur": 0.0,
+        "supplier": "S-10",
+        "lead_time_days": 7,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 2.317,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "column mean (log)",
+              "value": 1.0995,
+              "type": "mean"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.4648,
+              "type": "residual"
+            },
+            {
+              "name": "product_sku=SKU-PT-0033",
+              "value": -0.2651,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": 0.0331,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Hill's Science Plan",
+              "value": 0.0114,
+              "type": "regression"
+            },
+            {
+              "name": "category=dry-food",
+              "value": -0.0068,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.0014,
               "type": "regression"
             }
           ]
@@ -1720,28 +1720,28 @@
         ]
       }
     },
-    "last_response_ms": 12758
+    "last_response_ms": 5736
   },
   "timings": [
     [
       "_search",
-      38.86
+      8.59
     ],
     [
       "_search",
-      50.94
+      18.18
     ],
     [
       "_search",
-      404.61
+      65.24
     ],
     [
       "_search",
-      396.67
+      36.41
     ],
     [
       "_search",
-      88.25
+      9.43
     ]
   ]
 }

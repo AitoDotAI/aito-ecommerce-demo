@@ -1589,9 +1589,9 @@
     ],
     "drivers": [],
     "evaluation": {
-      "accuracy": 0.9367,
+      "accuracy": 0.95,
       "base_accuracy": 0.6667,
-      "accuracy_gain_pp": 27.0,
+      "accuracy_gain_pp": 28.33,
       "n": 300
     },
     "last_query": {
@@ -1613,24 +1613,24 @@
         "predict": "churned_in_3_months"
       }
     },
-    "last_response_ms": 10417
+    "last_response_ms": 9888
   },
   "timings": [
     [
       "_search",
-      49.42
+      36.6
     ],
     [
       "_search",
-      2.17
+      1.29
     ],
     [
       "_search",
-      88.88
+      106.86
     ],
     [
       "_evaluate",
-      5117.2
+      4012.34
     ]
   ]
 }

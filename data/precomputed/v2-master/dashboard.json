@@ -162,56 +162,56 @@
         "limit": 0
       }
     },
-    "last_response_ms": 783
+    "last_response_ms": 996
   },
   "timings": [
     [
       "_search",
-      1.11
+      0.61
     ],
     [
       "_search",
-      1.25
+      0.68
     ],
     [
       "_search",
-      2.87
+      2.98
     ],
     [
       "_search",
-      17.87
+      30.67
     ],
     [
       "_batch",
-      3.51
+      2.5
     ],
     [
       "_aggregate",
-      17.79
+      15.01
     ],
     [
       "_aggregate",
-      11.3
+      9.73
     ],
     [
       "_aggregate",
-      9.98
+      8.82
     ],
     [
       "_aggregate",
-      4.77
+      3.2
     ],
     [
       "_aggregate",
-      3.32
+      2.78
     ],
     [
       "_search",
-      4.87
+      3.89
     ],
     [
       "_batch",
-      9.33
+      3.02
     ]
   ]
 }

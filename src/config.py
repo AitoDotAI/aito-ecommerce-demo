@@ -26,11 +26,16 @@ class Config:
     aito_api_key: str
     public_demo: bool
     # API v2 (Rep2) — ADR 0025, and the DEFAULT since 2026-09-16.
-    # `AITO_USE_V2=0` opts back out to v1 against `master`, which stays
-    # a supported path: the compat layer keeps both working and the live
-    # checks run green on either.
+    # `AITO_USE_V2=0` opts back out to v1, which stays a supported path:
+    # the compat layer keeps both working, and since master's storage is
+    # rep2 the v1 endpoints reach it through the engine-dispatched
+    # adapter — "migrate the storage, change no application code".
     use_v2: bool = True
-    aito_env: str = "v2"
+    # `master` since 2026-09-23, when the staged `v2` env was PROMOTED
+    # onto master (POST /_envs/v2/promote). There is no longer a separate
+    # env to point at: master IS the migrated database. `AITO_ENV`
+    # overrides for a feature-branch sandbox.
+    aito_env: str = "master"
 
     @property
     def api_base(self) -> str:
@@ -82,10 +87,10 @@ def load_config(*, use_dotenv: bool = True) -> Config:
     # Default ON: only an explicit falsey value opts back out, so a
     # deployment that sets nothing gets v2.
     use_v2 = os.environ.get("AITO_USE_V2", "").lower() not in ("0", "false", "no")
-    # The env defaults to the version's home: v1 lives in `master`, v2 in
-    # the `v2` env cloned from it. `AITO_ENV` overrides for a
-    # feature-branch sandbox env.
-    aito_env = os.environ.get("AITO_ENV", "") or ("v2" if use_v2 else "master")
+    # Always `master` now: the staged `v2` env was promoted onto it, so
+    # both versions address the same database and there is no second env
+    # to keep in sync. `AITO_ENV` overrides for a sandbox env.
+    aito_env = os.environ.get("AITO_ENV", "") or "master"
 
     if not api_url or not api_key:
         raise ValueError(
@@ -102,7 +107,7 @@ def load_config(*, use_dotenv: bool = True) -> Config:
     )
 
 
-DEFAULT_API_NAMESPACE = "v2@v2"
+DEFAULT_API_NAMESPACE = "v2@master"
 
 
 def current_api_namespace() -> str:
@@ -116,5 +121,5 @@ def current_api_namespace() -> str:
     cannot drift.
     """
     use_v2 = os.environ.get("AITO_USE_V2", "").lower() not in ("0", "false", "no")
-    env = os.environ.get("AITO_ENV", "") or ("v2" if use_v2 else "master")
+    env = os.environ.get("AITO_ENV", "") or "master"
     return f"{'v2' if use_v2 else 'v1'}@{env}"

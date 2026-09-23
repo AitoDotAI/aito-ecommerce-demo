@@ -224,5 +224,5 @@ def test_namespace_fallback_matches_the_config_property(monkeypatch):
     store.set_namespace(None)
     monkeypatch.setenv("AITO_USE_V2", "1")
     cfg = Config(aito_api_url="https://x", aito_api_key="k", public_demo=False,
-                 use_v2=True, aito_env="v2")
+                 use_v2=True, aito_env="master")
     assert store._current_namespace() == cfg.api_namespace == current_api_namespace()
