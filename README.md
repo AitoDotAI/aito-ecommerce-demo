@@ -487,12 +487,14 @@ code against it (re-pointed queries, new tables) writes cache rows the
 deployed app then serves, cross-contaminating prod.
 
 Keep R&D isolated by overriding the connection in **`.env.local`**
-(gitignored; `./do` sources it after `.env`, so it wins). Without one,
-`./do` **refuses** the verbs that write — `load-data`, `reset-data`,
-`clear-cache` — rather than only warning, because a warning did not stop
-an interrupted `load-data` from taking the live dashboard down. Reads,
-and the `optimize` remedy, are never gated. If you really do mean the
-shared instance, say so: `AITO_ALLOW_PROD=1 ./do load-data`.
+(gitignored; `./do` sources it after `.env`, so it wins over `.env`; a
+variable you export yourself wins over both). When the URL in effect is
+the shared demo instance, `./do` **refuses** the verbs that write —
+`load-data`, `reset-data`, `clear-cache` — rather than only warning,
+because a warning did not stop an interrupted `load-data` from taking the
+live dashboard down. Reads, and the `optimize` remedy, are never gated.
+If you really do mean the shared instance, say so:
+`AITO_ALLOW_PROD=1 ./do load-data`.
 
 ```bash
 # .env.local — your personal dev instance

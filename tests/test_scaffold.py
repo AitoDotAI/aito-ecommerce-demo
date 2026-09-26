@@ -38,6 +38,44 @@ def test_load_config_raises_when_credentials_missing(monkeypatch):
         raise AssertionError("expected ValueError")
 
 
+def test_explicit_env_var_wins_over_dotenv(monkeypatch, tmp_path):
+    # The 2026-09-20 incident: a loader run with AITO_API_URL pointing at
+    # localhost had it silently replaced by the file's production URL.
+    monkeypatch.setattr(config, "_PROJECT_ROOT", tmp_path)
+    (tmp_path / ".env").write_text(
+        "AITO_API_URL=https://shared.aito.ai/db/aito-ecommerce-demo\n"
+        "AITO_API_KEY=file-key\n")
+    monkeypatch.setenv("AITO_API_URL", "http://localhost:8080")
+    monkeypatch.setenv("AITO_API_KEY", "")  # blank counts as unset
+
+    cfg = config.load_config()
+
+    assert cfg.aito_api_url == "http://localhost:8080"
+    assert cfg.aito_api_key == "file-key"
+
+
+def test_do_script_lets_explicit_env_win_over_dotenv_files(tmp_path):
+    """`./do` sources .env and .env.local itself, before Python runs."""
+    import os
+    import subprocess
+    from pathlib import Path
+
+    do = (Path(__file__).resolve().parent.parent / "do").read_text()
+    helper = do[do.index("_source_env_files() {"):]
+    helper = helper[:helper.index("\n}\n") + 3]
+    (tmp_path / "base").write_text("AITO_API_URL=https://prod\nAITO_API_KEY=base-key\nX=base\n")
+    (tmp_path / "local").write_text("X=local\n")
+    script = helper + '_source_env_files "$1/base" "$1/local" "$1/missing"\n' \
+        'echo "$AITO_API_URL $AITO_API_KEY $X"\n'
+    env = {k: v for k, v in os.environ.items() if k not in ("AITO_API_URL", "X")}
+    env.update(AITO_API_URL="http://localhost:8080", AITO_API_KEY="")
+
+    out = subprocess.run(["bash", "-euo", "pipefail", "-c", script, "_", str(tmp_path)],
+                         env=env, capture_output=True, text=True, check=True).stdout
+
+    assert out.split() == ["http://localhost:8080", "base-key", "local"]
+
+
 def test_public_demo_flag_truthy(monkeypatch):
     monkeypatch.setenv("AITO_API_URL", "https://example.aito.app")
     monkeypatch.setenv("AITO_API_KEY", "test-key")

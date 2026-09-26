@@ -7,17 +7,34 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # .env holds the shared defaults (prod instance); .env.local (gitignored)
 # lets you point AITO_API_URL/AITO_API_KEY at a personal dev instance for
 # R&D without editing tracked files or touching prod. See README
-# "R&D environment". Sourcing .env.local last means its values win.
-if [[ -f "$SCRIPT_DIR/.env" ]]; then
-  set -a
-  source "$SCRIPT_DIR/.env"
-  set +a
-fi
-if [[ -f "$SCRIPT_DIR/.env.local" ]]; then
-  set -a
-  source "$SCRIPT_DIR/.env.local"
-  set +a
-fi
+# "R&D environment". Sourcing .env.local last means its values win over
+# .env — but a variable you exported yourself wins over both.
+#
+# Source dotenv files without overriding the caller's environment. A variable
+# that was already set (non-empty) when ./do started wins over every file, so
+# `AITO_API_URL=http://localhost:8080 ./do load-data` really targets
+# localhost; among the files, a later one wins over an earlier one. Plain
+# `set -a; source` let the file win: on 2026-09-20 a loader pointed at a
+# local engine silently wrote to production (shared.aito.ai) instead.
+_source_env_files() {
+  local file name kv
+  local -a explicit=()
+  for file in "$@"; do
+    [[ -f "$file" ]] || continue
+    while IFS= read -r name; do
+      [[ -n "${!name:-}" ]] && explicit+=("$name=${!name}")
+    done < <(sed -nE 's/^[[:space:]]*(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)=.*/\2/p' "$file")
+  done
+  for file in "$@"; do
+    [[ -f "$file" ]] || continue
+    set -a
+    # shellcheck disable=SC1090
+    source "$file"
+    set +a
+  done
+  for kv in ${explicit[@]+"${explicit[@]}"}; do export "$kv"; done
+}
+_source_env_files "$SCRIPT_DIR/.env" "$SCRIPT_DIR/.env.local"
 
 # Print the Aito instance a data command is about to touch, so you never
 # load/clear the wrong environment. Loud when it's the shared prod DB.
@@ -38,20 +55,21 @@ _show_target() {
 # mutate data call this.
 #
 # The paved path is .env.local (gitignored) pointing at your own
-# instance — see README "R&D environment". Having one satisfies this
-# guard, so the routine case needs no flag and no prompt.
+# instance — see README "R&D environment". Then the URL is not prod and
+# the routine case needs no flag and no prompt. The guard checks the URL
+# actually in effect, not whether .env.local exists: an exported
+# AITO_API_URL wins over .env.local, so its existence proves nothing.
 _guard_prod_write() {
   local verb="$1"
   local url="${AITO_API_URL:-}"
 
   [[ "$url" == *"/aito-ecommerce-demo" ]] || return 0        # not prod
-  [[ -f "$SCRIPT_DIR/.env.local" ]] && return 0              # own instance configured
   [[ "${AITO_ALLOW_PROD:-}" == "1" ]] && return 0            # opted in
 
   echo "⛔ REFUSING '$verb' — it writes, and the target is the SHARED demo instance:"
   echo "     $url"
   echo
-  echo "   There is no .env.local, so this is the instance fronting ecommerce.aito.ai."
+  echo "   This is the instance fronting ecommerce.aito.ai."
   echo "   Either point .env.local at your own instance (README \"R&D environment\"),"
   echo "   or, if you really mean prod:  AITO_ALLOW_PROD=1 ./do $verb"
   exit 1

@@ -14,10 +14,27 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-from dotenv import load_dotenv
+from dotenv import dotenv_values
 
 
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
+def _load_dotenv(path: Path) -> None:
+    """Fill the environment from a dotenv file without overriding it.
+
+    A variable the caller set wins over the file, so
+    `AITO_API_URL=http://localhost:8080 uv run ...` really reaches the
+    local engine. This used `load_dotenv(override=True)`, where the file
+    won: on 2026-09-20 a loader run pointed at localhost silently wrote to
+    the production instance (shared.aito.ai) instead.
+
+    An empty variable counts as unset, so a blank export still picks up
+    the file's value rather than shadowing it.
+    """
+    for key, value in dotenv_values(path).items():
+        if value is not None and not os.environ.get(key):
+            os.environ[key] = value
 
 
 @dataclass(frozen=True)
@@ -75,11 +92,13 @@ class Config:
 def load_config(*, use_dotenv: bool = True) -> Config:
     """Load config from environment, with `.env` file fallback.
 
+    An explicitly set environment variable wins over `.env`.
+
     Set `use_dotenv=False` in tests to prevent `.env` from interfering
     with monkeypatched environment variables.
     """
     if use_dotenv:
-        load_dotenv(_PROJECT_ROOT / ".env", override=True)
+        _load_dotenv(_PROJECT_ROOT / ".env")
 
     api_url = os.environ.get("AITO_API_URL", "").rstrip("/")
     api_key = os.environ.get("AITO_API_KEY", "")
