@@ -26,6 +26,7 @@ import pytest
 from data.generate_fixtures import (
     FILLABLE_CATEGORIES,
     PERSONAS,
+    units_range,
 )
 
 
@@ -700,3 +701,32 @@ def test_no_product_name_repeats_a_word():
         words = p["name"].lower().split()
         repeats = [w for w, nxt in zip(words, words[1:]) if w == nxt]
         assert not repeats, p["name"]
+
+
+# ── monthly_sales lag + ranges (ADR 0014 §Correction) ────────────────
+
+
+def test_units_range_boundaries_double_in_width():
+    cases = {0: "0", 1: "1", 2: "2-3", 3: "2-3", 4: "4-7", 7: "4-7",
+             8: "8-15", 15: "8-15", 16: "16-31", 31: "16-31", 32: "32+", 500: "32+"}
+    assert {u: units_range(u) for u in cases} == cases
+
+
+def test_units_last_month_is_the_previous_calendar_months_sales():
+    """The Demand forecast conditions on this column, so it must be the
+    SKU's sales in the immediately preceding month — 0 when that month
+    has no row, never the last month that happened to have sales."""
+    sales = _load("monthly_sales.json")
+    units = {(r["product_sku"], r["month"]): r["units_sold"] for r in sales}
+
+    def previous(month: str) -> str:
+        y, m = (int(x) for x in month.split("-"))
+        return f"{y - 1}-12" if m == 1 else f"{y}-{m - 1:02d}"
+
+    for r in sales:
+        expected = units.get((r["product_sku"], previous(r["month"])), 0)
+        assert r["units_last_month"] == expected, r["monthly_sale_id"]
+        assert r["units_bucket"] == units_range(r["units_sold"])
+        assert r["units_last_month_bucket"] == units_range(expected)
+    # Gaps exist, so the zero case is exercised, not just defined.
+    assert any(r["units_last_month"] == 0 for r in sales)

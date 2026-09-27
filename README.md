@@ -65,7 +65,7 @@ Each is in its own view, each builds on the previous:
 | 4 | Product Filling 5 fields — multi-`_predict` in ~480 ms | [Product Filling](#15-product-filling--catalog-enrichment) | `_predict` × 5 |
 | 5 | Evaluation honest failure — Return Risk +0.0 pp gain | [Evaluation](#16-evaluation--honest-passfail) | `_evaluate` × 4 |
 | 6 | Churn ranking — 100 active customers scored by P(churn in 3 mo) from the time-series panel | [Churn](#8-churn--time-series-prediction-over-the-panel) | `_predict` × N + `_relate` × 5 + `_evaluate` |
-| 7 | **Inventory reorder workflow** — critical SKUs ranked by revenue at risk in €, per-row `$why` decomposing the demand forecast | [Inventory](#10-inventory--the-killer-operate-view) | `_predict` × 25 + `_search` |
+| 7 | **Inventory reorder workflow** — critical SKUs ranked by revenue at risk in €, per-row `$why` decomposing the demand forecast | [Inventory](#10-inventory--the-killer-operate-view) | `_estimate` × 25 + `_search` |
 | 8 | *Paused:* Markdown decision — the discount that clears overstock at the highest recoverable margin | [Markdown](#12-markdown--inventory--demand--price-one-workflow) | `_estimate` × 5 per SKU |
 | 9 | *Paused:* Win-back — products a churned customer is likely to respond to | [Win-back](#14-winback--empirical-revenue-impact-per-send) | `_recommend` + `_estimate` |
 
@@ -272,7 +272,7 @@ review fields); held-out accuracy via `_evaluate`. The killer
 feature of the Understand section.
 [→ Implementation](src/churn_service.py) | [Use case guide](docs/use-cases/10-churn.md) | [ADR](docs/adr/0013-churn-prediction.md)
 
-### 9. 📦 Demand Forecast — `_predict units_sold` on a panel
+### 9. 📦 Demand Forecast — `_estimate units_sold`, judged against naive
 
 ![Demand](screenshots/11-demand.png)
 
@@ -281,21 +281,23 @@ feature of the Understand section.
   "from": "monthly_sales",
   "where": {
     "product_sku": "SKU-PT-0042",
-    "month": "2026-05",
+    "units_last_month": 14,
     "pet_type": "dog",
     "category": "dry-food",
     "brand": "Royal Canin",
     "season": "spring"
   },
-  "predict": "units_sold"
+  "estimate": "units_sold"
 }
 ```
 
-Per-SKU next-month units forecast via 25 parallel `_predict`
-calls over the `monthly_sales` panel. Seasonality drivers
-surfaced via four parallel `_relate` (one per season). Honest
-accuracy via `_evaluate` on a held-out 300-row sample. Forecasts
-feed the Inventory view's reorder workflow directly.
+Per-SKU next-month units via 25 parallel `_estimate` calls over the
+`monthly_sales` panel, conditioned on last month's sales. Seasonality
+drivers come from four parallel `_relate` calls (one per season).
+Accuracy is a time split: train on earlier months, test on the latest.
+It is shown next to the naive "same as last month" forecast, which is
+the bar a forecast has to clear. Forecasts feed the Inventory view's
+reorder workflow directly.
 [→ Implementation](src/demand_service.py) | [Use case guide](docs/use-cases/11-demand-forecast.md) | [ADR](docs/adr/0014-demand.md)
 
 ### 10. 🏷️ Inventory — the killer Operate view
@@ -307,14 +309,15 @@ feed the Inventory view's reorder workflow directly.
   "from": "monthly_sales",
   "where": {
     "product_sku": "SKU-PT-0042",
-    "month": "2026-05",
+    "units_last_month": 14,
     "category": "dry-food",
     "season": "spring"
   },
-  "predict": "units_sold"
+  "estimate": "units_sold"
 }
 ```
 
+The same next-month forecast as Demand (`src/demand_forecast.py`).
 KPI strip with **revenue at risk** in €, reorder queue ranked by
 forecast shortfall × retail price, per-row `?` opens the demand
 forecast's `$why`. Plus an overstock list with tied-capital
@@ -734,7 +737,7 @@ Read top-to-bottom and you have the demo's full design rationale.
 | 0011 | [Purchase Analytics + Pattern Explorer](docs/adr/0011-analytics-and-patterns.md) | Accepted |
 | 0012 | [Feedback — multi-field `_predict` over review text](docs/adr/0012-feedback-multi-predict.md) | Accepted |
 | 0013 | [Churn — the killer Understand view](docs/adr/0013-churn-prediction.md) | Accepted |
-| 0014 | [Demand Forecast — `_predict units_sold` over a monthly_sales panel](docs/adr/0014-demand.md) | Accepted |
+| 0014 | [Demand Forecast — `_estimate units_sold`, time-split accuracy against the naive forecast](docs/adr/0014-demand.md) | Accepted |
 | 0015 | [Inventory Intelligence — the killer Operate view](docs/adr/0015-inventory.md) | Accepted |
 | 0016 | [Price Intelligence — fair-band + sweet-spot `_relate`](docs/adr/0016-price.md) | Accepted |
 
