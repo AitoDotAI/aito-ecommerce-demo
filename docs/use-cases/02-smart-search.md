@@ -100,7 +100,8 @@ still had cat food at ranks 7-10. 3.0 is the smallest weight tried
 that keeps pet-specific queries on that pet (pinned in
 `tests/test_aito_check.py`) while ambiguous queries like "food" are
 still decided by the customer. θ was chosen on the same query set it
-is reported on; a fresh set would be the fair test of the choice.
+is reported on. Re-choosing it on half the queries picks 3.0 in all
+500 stratified splits, so the choice itself is stable.
 
 ### When no word matches
 
@@ -134,8 +135,12 @@ personas only the `where` values change.
 
 The left column is a real text ranker against the same database, and
 it's a strong one (nDCG@10 0.52 against the old 0.29). The right
-column is measured against it, and beats it for every persona
-(paired bootstrap, 95 % interval above zero).
+column is measured against it. In-sample it's ahead for every persona.
+Because θ was tuned on the same queries, the report also repeats the
+choice out of sample: the held-out gain is small (median +0.06) and
+positive in every split, but 30 held-out queries are too few to prove
+it per persona. Honestly stated: at least as good as BM25, probably
+slightly better.
 
 ## Tradeoffs and gotchas
 

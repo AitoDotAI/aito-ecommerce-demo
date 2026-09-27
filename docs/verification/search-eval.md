@@ -4,23 +4,23 @@
 
 | arm | nDCG@10 | P@5 | R@20 | MRR | zero-result | p50 ms | p95 ms |
 |:--|--:|--:|--:|--:|--:|--:|--:|
-| before: $match | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 57 | 135 |
-| before: predictive[maija] | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 120 | 234 |
-| before: predictive[olli] | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 133 | 201 |
-| before: predictive[saara] | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 151 | 233 |
-| left: bm25 | 0.518 | 0.613 | 0.331 | 0.528 | 0.300 | 62 | 436 |
-| right θ0.33[maija] | 0.313 | 0.367 | 0.128 | 0.335 | 0.000 | 110 | 487 |
-| right θ0.33[olli] | 0.312 | 0.357 | 0.152 | 0.361 | 0.000 | 122 | 340 |
-| right θ0.33[saara] | 0.321 | 0.357 | 0.168 | 0.399 | 0.000 | 137 | 617 |
-| right θ1.0[maija] | 0.497 | 0.573 | 0.269 | 0.548 | 0.000 | 103 | 189 |
-| right θ1.0[olli] | 0.483 | 0.550 | 0.295 | 0.553 | 0.000 | 154 | 502 |
-| right θ1.0[saara] | 0.534 | 0.577 | 0.353 | 0.584 | 0.000 | 133 | 219 |
-| right θ2.0[maija] | 0.543 | 0.643 | 0.299 | 0.599 | 0.000 | 104 | 194 |
-| right θ2.0[olli] | 0.541 | 0.630 | 0.347 | 0.579 | 0.000 | 138 | 3059 |
-| right θ2.0[saara] | 0.581 | 0.660 | 0.366 | 0.610 | 0.000 | 146 | 2664 |
-| right θ3.0[maija] | 0.587 | 0.687 | 0.326 | 0.603 | 0.000 | 107 | 195 |
-| right θ3.0[olli] | 0.565 | 0.660 | 0.355 | 0.596 | 0.000 | 120 | 331 |
-| right θ3.0[saara] | 0.586 | 0.663 | 0.367 | 0.621 | 0.000 | 141 | 256 |
+| before: $match | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 52 | 83 |
+| before: predictive[maija] | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 126 | 261 |
+| before: predictive[olli] | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 123 | 205 |
+| before: predictive[saara] | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 145 | 575 |
+| left: bm25 | 0.518 | 0.613 | 0.331 | 0.528 | 0.300 | 52 | 92 |
+| right θ0.33[maija] | 0.313 | 0.367 | 0.128 | 0.335 | 0.000 | 100 | 128 |
+| right θ0.33[olli] | 0.312 | 0.357 | 0.152 | 0.361 | 0.000 | 115 | 160 |
+| right θ0.33[saara] | 0.321 | 0.357 | 0.168 | 0.399 | 0.000 | 131 | 177 |
+| right θ1.0[maija] | 0.497 | 0.573 | 0.269 | 0.548 | 0.000 | 101 | 471 |
+| right θ1.0[olli] | 0.483 | 0.550 | 0.295 | 0.553 | 0.000 | 129 | 504 |
+| right θ1.0[saara] | 0.534 | 0.577 | 0.353 | 0.584 | 0.000 | 126 | 176 |
+| right θ2.0[maija] | 0.543 | 0.643 | 0.299 | 0.599 | 0.000 | 333 | 3323 |
+| right θ2.0[olli] | 0.541 | 0.630 | 0.347 | 0.579 | 0.000 | 134 | 654 |
+| right θ2.0[saara] | 0.581 | 0.660 | 0.366 | 0.610 | 0.000 | 129 | 205 |
+| right θ3.0[maija] | 0.587 | 0.687 | 0.326 | 0.603 | 0.000 | 102 | 181 |
+| right θ3.0[olli] | 0.565 | 0.660 | 0.355 | 0.596 | 0.000 | 120 | 239 |
+| right θ3.0[saara] | 0.586 | 0.663 | 0.367 | 0.621 | 0.000 | 170 | 525 |
 | random (control) | 0.091 | 0.167 | 0.027 | 0.141 | 0.000 | 0 | 0 |
 | table order (control) | 0.196 | 0.317 | 0.042 | 0.185 | 0.000 | 0 | 0 |
 
@@ -54,9 +54,20 @@ The old right column tied `$match` because its `product_sku.name $match` filter 
 
 Rows that match no query word are dropped from the left column. Left in, they arrive in table order, and the table starts with dog dry food, so every unmatched dog query would score as if answered perfectly. The table-order control shows how much credit that ordering gives for free.
 
-θ3.0 was chosen from 0.33, 1.0, 2.0, 3.0 on this same query set. The table above reports all three, so the choice can be checked; a fresh query set would be the fair test of it.
+θ3.0 was chosen from 0.33, 1.0, 2.0, 3.0 on this same query set, so the right-vs-left gain above is in-sample and may be optimistic. The next section repeats the choice out of sample.
 
 These labels ignore the persona, so this report cannot see personalisation. Measuring that needs labels from purchases, which waits on purchase data with real repeat and progression patterns.
+
+## θ chosen out of sample
+
+Chosen on half the queries, scored on the other half, over 500 stratified splits (see src/search_eval/theta_selection.py).
+
+- θ chosen on the tuning half: θ0.33 0/500, θ1.0 0/500, θ2.0 0/500, θ3.0 500/500
+- held-out right-vs-left gain (nDCG@10): median +0.062, 90 % of splits in [+0.034, +0.091], positive in 100% of splits
+- one split (seed 0, θ3.0), per persona on its 30 held-out queries:
+  - maija: +0.043 [-0.036, +0.142]
+  - olli: +0.043 [-0.024, +0.116]
+  - saara: +0.075 [-0.007, +0.173]
 
 ## Controls
 

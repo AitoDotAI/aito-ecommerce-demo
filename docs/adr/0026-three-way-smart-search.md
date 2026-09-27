@@ -95,6 +95,12 @@ Ship in two steps, each measured on the harness before it merges.
 
 ### Step 2: add meaning (vectors)
 
+Targets engine **v2.11.0** (cut from master), not the v2.10.3 on shared
+today. The Vector type, `$nearest` and `$vectorIdf` exist in v2.10.3
+and master code and booktests. Vector ingest and query are being
+profiled on master right now, so step 2 is measured on the release it
+will ship on. Its live smoke test runs against that engine.
+
 - **Embedding model:** `intfloat/multilingual-e5-small` (384
   dimensions). It is multilingual on purpose: the Finnish/Swedish group
   is where word matching fails. e5 expects `passage: ` before indexed
@@ -211,10 +217,22 @@ that keeps pet-specific queries on that pet. At 2.0, a cat owner's
 "dog food" still had cat food at ranks 7-10. Chosen on the same query
 set; every value tried is reported.
 
+**Tuned in-sample, so checked out of sample.** θ was chosen on the same
+60 queries the table below scores, and the right-vs-left gain is small
+enough that this matters. Repeating the choice on half the queries
+(stratified) and scoring the other half, over 500 splits: θ 3.0 wins on
+the tuning half in all 500, so the choice is stable. The held-out gain
+has a median of +0.062 (90 % of splits in [+0.034, +0.091]) and is
+positive in every split. **But on 30 held-out queries no persona's
+interval excludes zero** (e.g. Maija +0.043 [-0.036, +0.142]). Read
+the right column as at least as good as BM25 and probably slightly
+better, not proven better. 3.0 is also the top of the grid tried, and
+the trend was still rising.
+
 | acceptance criterion | result |
 |:--|:--|
 | Both columns improve | left +0.225 [+0.141, +0.318]; right +0.273 to +0.294 per persona, all intervals above zero |
-| Right column ≥ left (BM25) | better for every persona: +0.047 to +0.069, all intervals above zero |
+| Right column ≥ left (BM25) | in-sample, better for every persona (+0.047 to +0.069, intervals above zero). **θ was tuned on the same queries**, so see below |
 | Right column zero-result rate 0 % | 0 % |
 | Maija/Saara flip for "food" survives in the `get` form | yes: top 5 all cat / all dog (`test_smart_search_food_flips_between_cat_and_dog_owner`) |
 | Latency no worse than 2.4 s p50 | p50 107-141 ms, p95 ≤ 331 ms |

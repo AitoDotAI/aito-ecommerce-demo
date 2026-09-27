@@ -33,6 +33,7 @@ from src.search_service import TEXT_THETA
 from src.search_eval import arms as A
 from src.search_eval.metrics import mrr, ndcg_at_k, paired_bootstrap_ci, precision_at_k, recall_at_k
 from src.search_eval.relevance import judge, load_products, load_queries
+from src.search_eval.theta_selection import out_of_sample_report
 
 OUT = Path(__file__).resolve().parents[2] / "docs" / "verification"
 K = 20
@@ -165,12 +166,13 @@ def _report(queries, labels, rows, latency, best, shuffled, random_ndcg) -> dict
               "how much credit that ordering gives for free.",
               "",
               f"θ{TEXT_THETA} was chosen from {', '.join(str(t) for t in THETAS)} on this same "
-              "query set. The table above reports all three, so the choice can be checked; "
-              "a fresh query set would be the fair test of it.",
+              "query set, so the right-vs-left gain above is in-sample and may be optimistic. "
+              "The next section repeats the choice out of sample.",
               "",
               "These labels ignore the persona, so this report cannot see personalisation. "
               "Measuring that needs labels from purchases, which waits on purchase data with "
               "real repeat and progression patterns."]
+    lines += out_of_sample_report(queries, rows, THETAS, PERSONA_IDS, "left: bm25")
     lines += ["", "## Controls", "",
               f"- chance level (random arm): {random_ndcg:.3f} nDCG@10",
               f"- best arm (`{best}`) against SHUFFLED labels: {shuffled:.3f} "

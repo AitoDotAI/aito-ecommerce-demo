@@ -104,3 +104,18 @@ def test_labels_do_not_come_from_the_text_being_searched():
     q = next(q for q in load_queries() if q["id"] == "p01")
     full = [p for p in products if grade(q, p) == 2]
     assert any("senior" not in p["name"].lower() for p in full)
+
+
+def test_theta_check_splits_every_stratum_in_half_without_overlap():
+    """The out-of-sample θ check is only fair if tuning and held-out
+    queries never overlap and each half covers every stratum."""
+    from collections import Counter
+    from src.search_eval.theta_selection import _halves
+
+    queries = load_queries()
+    stratum = {q["id"]: q["stratum"] for q in queries}
+    tune, test = _halves(queries, seed=7)
+    assert not set(tune) & set(test)
+    assert sorted(tune + test) == sorted(q["id"] for q in queries)
+    assert set(Counter(stratum[i] for i in tune).values()) == {5}
+    assert set(Counter(stratum[i] for i in test).values()) == {5}
