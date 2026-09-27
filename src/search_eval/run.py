@@ -69,8 +69,10 @@ def run() -> int:
         print(f"ABORT: queries with no fully relevant product: {unjudgeable}")
         return 2
 
-    arms: dict[str, A.Arm] = {"current_match": A.current_match, "bm25": A.bm25,
-                              "random (control)": A.random_control(skus)}
+    arms: dict[str, A.Arm] = {"current_match": A.current_match, "bm25": A.bm25}
+    for persona_id in ("maija", "olli", "saara"):
+        arms[f"predictive[{persona_id}]"] = A.smart_search_predictive(persona_id)
+    arms["random (control)"] = A.random_control(skus)
     rows, latency = {}, {}
     for name, arm in arms.items():
         rows[name], latency[name] = {}, []

@@ -15,6 +15,7 @@ import random
 from typing import Callable
 
 from src.aito_client import AitoClient
+from src.search_service import PERSONAS, _predictive_recommend
 
 Arm = Callable[[AitoClient, str, int], list[str]]
 
@@ -37,6 +38,19 @@ def bm25(client: AitoClient, q: str, k: int) -> list[str]:
         "limit": k,
     })
     return [h["sku"] for h in res.get("hits", [])]
+
+
+def smart_search_predictive(persona_id: str) -> Arm:
+    """Smart Search's RIGHT column today, as one persona sees it: the live
+    `_recommend` from search_service, name-`$match` candidate filter and
+    all. Relevance labels ignore the persona, so this measures whether the
+    column finds relevant products, not whether it personalises."""
+    persona = PERSONAS[persona_id]
+
+    def arm(client: AitoClient, q: str, k: int) -> list[str]:
+        hits, _body = _predictive_recommend(client, q, persona, k)
+        return [h.sku for h in hits]
+    return arm
 
 
 def random_control(skus: list[str]) -> Arm:
