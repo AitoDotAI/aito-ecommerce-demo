@@ -42,33 +42,35 @@ opener; the predictions live in the next four beats.
 
 Click **Smart Search**.
 
-> "Type `food`, classic e-commerce query. On the left, plain
-> token match — dog food at the top because the catalog is dog-
-> heavy. Now I switch the customer pill to Maija, a cat owner."
+> "Type `food`, classic e-commerce query. On the left, text
+> relevance — BM25 over the product name, the way a good search
+> engine ranks. Dog food at the top. Now I switch the customer pill
+> to Maija, a cat owner."
 
 Click the **Maija** pill.
 
-> "Same query string. The right column is now entirely cat food
-> — Whiskas, Acana cat lines, Orijen indoor cat. Every row in
-> the predictive column has a gold ★ — none of those products
-> are in the baseline top 10. The Aito panel shows the live
-> `_recommend` body, over the `impressions` funnel: context is
-> `where {search_query $match food, customer_segment: cat_owner}`
-> and the goal is the real conversion KPI — `goal: {purchased:
-> true}`. It's ranking by *how likely this shopper is to buy*,
-> not by a hand-tuned rule."
+> "Same query string. The right column is now entirely cat food,
+> and every row has a gold ★ — none of them are in the left
+> column's top 10. The Aito panel shows the one query behind it: a
+> `_search` over the `impressions` funnel that multiplies two
+> things — the probability that a cat owner *buys* each product,
+> and how well its name matches `food`. Prediction and search in a
+> single `orderBy`."
 
 Click **Saara** (large-breed dog).
 
-> "Switch to Saara — large-breed dog owner — and the predictive
-> column flips again. Now it's Acana, Hill's Science Plan,
-> Eukanuba large-breed kibble. Royal Canin drops out — the
-> brand a generic-search engine ranks at the top, Aito puts
-> further down because Saara's segment buys those specialised
-> brands."
+> "Switch to Saara — large-breed dog owner — and the right column
+> flips to the dog foods her segment actually buys."
+
+Type `food for an old dog`, keep **Maija**.
+
+> "And the words still win when they're specific: Maija asked for
+> *dog* food, so she gets dog food, not her usual cat food. Before
+> this change, both columns returned nothing for a sentence like
+> this — the old search needed every word in the product name."
 
 **The phrase to say**: "same query, different list per
-customer." That's the moment.
+customer — and the query still means what it says."
 
 ---
 
@@ -271,7 +273,7 @@ stale.
 
 | Symptom | Recovery |
 |---|---|
-| Smart Search doesn't flip (Saara still shows cat food on right) | Hit refresh — likely a cache leak from a previous session. The first cold call takes ~600 ms then the cache warms. |
+| Smart Search doesn't flip (Saara still shows cat food on right) | Hit refresh — likely a cache leak from a previous session. `./do aito-check` pins the flip (`test_smart_search_food_flips_between_cat_and_dog_owner`). |
 | For You returns empty | Backend hasn't loaded. Run `./do load-data`. |
 | Pattern Explorer / Bought Together returns 400 | Schema regression. Run `./do reset-data`; the `orders.line_categories` Text column needs the denormalised tokens. |
 | Evaluation row stuck at 0/0/0 | Evaluation is precompute-served from a snapshot (ADR 0024), so it should be instant. If it's blank the snapshot is missing — run `./do precompute` (or `./do reset-data`, which chains it). |

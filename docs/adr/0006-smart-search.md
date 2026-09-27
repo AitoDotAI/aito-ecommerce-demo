@@ -1,6 +1,6 @@
 # ADR 0006: Smart Search — predictive re-ranking
 
-**Status:** Accepted
+**Status:** Accepted. Query shape superseded by [ADR 0026](0026-three-way-smart-search.md) (BM25 left; `$p × $similarity` right, no `$match` filter)
 **Date:** 2026-05-11
 **Deciders:** Demo team
 

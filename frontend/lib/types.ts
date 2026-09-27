@@ -345,6 +345,9 @@ export interface SmartSearchResponse {
   };
   baseline: SmartSearchHit[];
   predictive: SmartSearchHitWithDelta[];
+  // false: no product name contains a query word, so the predictive
+  // column is purchase probability alone — the page says so.
+  text_matched: boolean;
   last_query: { endpoint: string; body: Record<string, unknown> };
   last_response_ms: number;
 }

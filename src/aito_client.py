@@ -294,6 +294,7 @@ class AitoClient:
         limit: int = 10,
         offset: int = 0,
         select: list | None = None,
+        get: str | None = None,
     ) -> dict:
         """Run a `_search` query — retrieve matching rows.
 
@@ -304,21 +305,26 @@ class AitoClient:
         rows, rather than an error.
 
         Example — Smart Search's baseline column (`search_service.
-        _baseline_search`), the honest non-predictive half:
+        _baseline_search`): BM25 over the name, no candidate filter:
             client.search(
                 table="products",
-                where={"name": {"$match": "dog food"}},
+                order_by={"$similarity": {"name": "dog food"}},
+                select=["sku", "name", "$score"],
                 limit=10,
             )
+        ``$score`` there is the lift ``exp(θ·bm25)``; exactly 1.0 means no
+        query word matched, and those rows come back in table order.
 
-        Smart Search's *predictive* column does not come from here: it is
-        a `_recommend` over ``impressions`` conditioned on the customer's
-        segment (see ``search_service._predictive_recommend``). The two
-        run in parallel and are shown side by side, which is the demo's
-        whole point — so don't reach for a `$context` re-rank on
-        ``_search`` to do that job.
+        ``get`` returns the rows a link column points to instead of the
+        ``from`` rows: ``from: impressions, get: product_sku`` ranks
+        *products* while ``where`` and ``$p`` read the impressions. That
+        is how Smart Search's predictive column ranks the catalogue by
+        purchase probability x text match in one query (API v2; see
+        ``search_service.predictive_blend_body`` and ADR 0026).
         """
         body: dict = {"from": table, "limit": limit, "offset": offset}
+        if get is not None:
+            body["get"] = get
         if where is not None:
             body["where"] = where
         if order_by is not None:

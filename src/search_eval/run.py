@@ -29,6 +29,7 @@ from pathlib import Path
 
 from src.aito_client import AitoClient
 from src.config import load_config
+from src.search_service import TEXT_THETA
 from src.search_eval import arms as A
 from src.search_eval.metrics import mrr, ndcg_at_k, paired_bootstrap_ci, precision_at_k, recall_at_k
 from src.search_eval.relevance import judge, load_products, load_queries
@@ -40,6 +41,11 @@ CHANCE_TOLERANCE = 0.05
 # ... and the best real arm must clear chance by at least this much, or
 # the evaluation cannot tell a system from a shuffle at all.
 MIN_SIGNAL = 0.20
+# Text-arm weights tried for the right column: Aito's calibrated default,
+# then stronger. The shipped value (search_service.TEXT_THETA) was chosen
+# on this set, so every candidate's score is reported, not just the winner's.
+THETAS = (0.33, 1.0, 2.0, TEXT_THETA)
+PERSONA_IDS = ("maija", "olli", "saara")
 
 
 def _score(ranked: list[str], labels: dict[str, int]) -> dict:
@@ -69,10 +75,15 @@ def run() -> int:
         print(f"ABORT: queries with no fully relevant product: {unjudgeable}")
         return 2
 
-    arms: dict[str, A.Arm] = {"current_match": A.current_match, "bm25": A.bm25}
-    for persona_id in ("maija", "olli", "saara"):
-        arms[f"predictive[{persona_id}]"] = A.smart_search_predictive(persona_id)
+    arms: dict[str, A.Arm] = {"before: $match": A.before_match}
+    for pid in PERSONA_IDS:
+        arms[f"before: predictive[{pid}]"] = A.before_predictive(pid)
+    arms["left: bm25"] = A.left_bm25
+    for theta in THETAS:
+        for pid in PERSONA_IDS:
+            arms[f"right θ{theta}[{pid}]"] = A.right_blend(pid, theta)
     arms["random (control)"] = A.random_control(skus)
+    arms["table order (control)"] = A.table_order_control(skus)
     rows, latency = {}, {}
     for name, arm in arms.items():
         rows[name], latency[name] = {}, []
@@ -122,30 +133,44 @@ def _report(queries, labels, rows, latency, best, shuffled, random_ndcg) -> dict
         lat = sorted(latency[arm])
         lines.append(f"| {arm} | " + " | ".join(f"{mean(arm, m, ids_all):.3f}" for m in metrics)
                      + f" | {lat[len(lat)//2]:.0f} | {lat[int(len(lat)*0.95)-1]:.0f} |")
-    lines += ["", "## nDCG@10 by stratum", "",
-              "| stratum | " + " | ".join(rows) + " |", "|:--" + "|--:" * len(rows) + "|"]
+    shipped = [f"right θ{TEXT_THETA}[{pid}]" for pid in PERSONA_IDS]
+    focus = ["before: $match", "left: bm25", *shipped, "random (control)"]
+    lines += ["", f"## nDCG@10 by stratum (shipped arms; right column at θ{TEXT_THETA})", "",
+              "| stratum | " + " | ".join(focus) + " |", "|:--" + "|--:" * len(focus) + "|"]
     for s in strata:
         ids = [q["id"] for q in queries if q["stratum"] == s]
-        lines.append(f"| {s} | " + " | ".join(f"{mean(a, 'ndcg10', ids):.3f}" for a in rows) + " |")
-    lines += ["", "## Paired difference vs current_match (nDCG@10, 95% bootstrap CI)", ""]
-    base = [rows["current_match"][i]["ndcg10"] for i in ids_all]
-    for arm in rows:
-        if arm == "current_match":
-            continue
-        d, lo, hi = paired_bootstrap_ci(base, [rows[arm][i]["ndcg10"] for i in ids_all])
+        lines.append(f"| {s} | " + " | ".join(f"{mean(a, 'ndcg10', ids):.3f}" for a in focus) + " |")
+
+    def paired(label: str, base_arm: str, arm: str) -> str:
+        d, lo, hi = paired_bootstrap_ci([rows[base_arm][i]["ndcg10"] for i in ids_all],
+                                        [rows[arm][i]["ndcg10"] for i in ids_all])
         verdict = "better" if lo > 0 else "worse" if hi < 0 else "no clear difference"
-        lines.append(f"- **{arm}**: {d:+.3f} [{lo:+.3f}, {hi:+.3f}] — {verdict}")
-    if any(a.startswith("predictive[") for a in rows):
-        lines += ["", "## Reading the predictive arms", "",
-                  "Smart Search's right column (`_recommend` from impressions) ties `$match` "
-                  "because its `product_sku.name $match` candidate filter decides which products "
-                  "can appear. Its lists do differ per persona, but reordering a set whose members "
-                  "are all relevant cannot change an attribute-graded score, and a query `$match` "
-                  "finds nothing for stays empty. So its relevance ceiling is the filter's.",
-                  "",
-                  "These labels ignore the persona, so this report cannot see personalisation. "
-                  "Measuring that needs labels from purchases, which waits on purchase data with "
-                  "real repeat and progression patterns."]
+        return f"- **{label}**: {d:+.3f} [{lo:+.3f}, {hi:+.3f}] — {verdict}"
+
+    lines += ["", "## Did each column improve? (nDCG@10 difference, paired 95% bootstrap CI)", "",
+              paired("left: bm25 vs before: $match", "before: $match", "left: bm25")]
+    lines += [paired(f"right[{pid}] vs before: predictive[{pid}]",
+                     f"before: predictive[{pid}]", f"right θ{TEXT_THETA}[{pid}]") for pid in PERSONA_IDS]
+    lines += ["", "Is the right column at least as good as the left? (ADR 0026 acceptance)", ""]
+    lines += [paired(f"right[{pid}] vs left: bm25", "left: bm25", f"right θ{TEXT_THETA}[{pid}]")
+              for pid in PERSONA_IDS]
+    lines += ["", "## Reading the numbers", "",
+              "The old right column tied `$match` because its `product_sku.name $match` filter "
+              "decided which products could appear; reordering a set whose members are all "
+              "relevant cannot change an attribute-graded score.",
+              "",
+              "Rows that match no query word are dropped from the left column. Left in, they "
+              "arrive in table order, and the table starts with dog dry food, so every unmatched "
+              "dog query would score as if answered perfectly. The table-order control shows "
+              "how much credit that ordering gives for free.",
+              "",
+              f"θ{TEXT_THETA} was chosen from {', '.join(str(t) for t in THETAS)} on this same "
+              "query set. The table above reports all three, so the choice can be checked; "
+              "a fresh query set would be the fair test of it.",
+              "",
+              "These labels ignore the persona, so this report cannot see personalisation. "
+              "Measuring that needs labels from purchases, which waits on purchase data with "
+              "real repeat and progression patterns."]
     lines += ["", "## Controls", "",
               f"- chance level (random arm): {random_ndcg:.3f} nDCG@10",
               f"- best arm (`{best}`) against SHUFFLED labels: {shuffled:.3f} "

@@ -1,6 +1,6 @@
 # ADR 0026: Smart Search as one three-way blend — text × meaning × purchase probability
 
-**Status:** Proposed
+**Status:** Proposed. Step 1 built and measured (see §Step 1 results); awaiting maintainer review
 **Date:** 2026-09-27
 **Deciders:** Antti
 
@@ -16,14 +16,17 @@ product graded from its attributes; report in
 |:--|--:|--:|
 | Left: `_search name $match` | 0.293 | 70 % |
 | Right: `_recommend` with a `name $match` candidate filter, any persona | 0.293 | 70 % |
-| BM25 over the name (`$similarity`), not shipped | 0.599 | 0 % |
+| BM25 over the name (`$similarity`), not shipped | 0.599* | 0 % |
+
+\* Inflated by table order; the honest figure is 0.518. See §Step 1 results.
 
 `$match` requires every query word in the product name. Natural
 phrasing ("food for an old dog"), misspellings and Finnish/Swedish
 queries return nothing, in **both** columns: the predictive column can
-only reorder what the filter lets through. BM25 fixes most of that
-(+0.306 nDCG@10, 95 % CI [+0.212, +0.409]), but it is still word
-matching. Its weakest group is Finnish/Swedish, at 0.233.
+only reorder what the filter lets through. BM25 fixes much of that
+(+0.225 nDCG@10, 95 % CI [+0.141, +0.318], honest figures), but it is
+still word matching. Finnish/Swedish queries match no English product
+name at all (0.000).
 
 Switching only the left column to BM25 would invert the demo: a
 query would show ten sensible results on the left and nothing on the
@@ -186,3 +189,41 @@ right finds the products.
   and checks the hash.
 - A schema change (`products.vec`) and a reload on the shared instance,
   which need the maintainer's yes.
+
+## Step 1 results (2026-09-27)
+
+Measured with `./do search-eval`; full tables in
+`docs/verification/search-eval.md`.
+
+**A correction to the baseline above.** BM25 ties every product at
+lift 1.0 when no query word matches, and Aito returns ties in table
+order. The products table starts with dog dry food, so unmatched dog
+queries ("hundmat", "koiranruoka", "canine kibble") scored a perfect
+1.0 by accident. Dropping rows with `$score == 1.0` gives honest BM25
+0.518 (not 0.599), 30 % zero-result, and **0.000 on Finnish/Swedish**
+(not 0.233). A table-order control arm (0.196, twice chance) now shows
+the free credit that ordering gives.
+
+**The text weight.** At Aito's default θ 0.33, purchase probability
+drowned the words (nDCG@10 0.31; a cat owner's "food for an old dog"
+returned cat food). The shipped value is **θ 3.0**: the smallest tried
+that keeps pet-specific queries on that pet. At 2.0, a cat owner's
+"dog food" still had cat food at ranks 7-10. Chosen on the same query
+set; every value tried is reported.
+
+| acceptance criterion | result |
+|:--|:--|
+| Both columns improve | left +0.225 [+0.141, +0.318]; right +0.273 to +0.294 per persona, all intervals above zero |
+| Right column ≥ left (BM25) | better for every persona: +0.047 to +0.069, all intervals above zero |
+| Right column zero-result rate 0 % | 0 % |
+| Maija/Saara flip for "food" survives in the `get` form | yes: top 5 all cat / all dog (`test_smart_search_food_flips_between_cat_and_dog_owner`) |
+| Latency no worse than 2.4 s p50 | p50 107-141 ms, p95 ≤ 331 ms |
+| "food for an old dog" returns relevant results in both columns | yes |
+| "kissanruoka" / "hundmat" return relevant results | **no, step 2**: no English name matches; the right column falls back to purchase probability (~0.2, near chance) |
+
+**Found while building: an unlabelled fallback.** When no product name
+contains any query word ("dogfood"), the right column ranks on
+purchase probability alone. For a dog owner that's puppy treats, under
+a heading saying "× text relevance". The response now carries
+`text_matched`, and the page says "No product name matches … showing
+what this customer is most likely to buy instead".

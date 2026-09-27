@@ -1,43 +1,65 @@
 # Search evaluation
 
-60 judged queries x 6 arms. Relevance is graded exhaustively from product attributes (see src/search_eval/relevance.py), never by a search system.
+60 judged queries x 19 arms. Relevance is graded exhaustively from product attributes (see src/search_eval/relevance.py), never by a search system.
 
 | arm | nDCG@10 | P@5 | R@20 | MRR | zero-result | p50 ms | p95 ms |
 |:--|--:|--:|--:|--:|--:|--:|--:|
-| current_match | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 51 | 78 |
-| bm25 | 0.599 | 0.713 | 0.345 | 0.613 | 0.000 | 51 | 62 |
-| predictive[maija] | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 116 | 185 |
-| predictive[olli] | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 124 | 190 |
-| predictive[saara] | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 151 | 223 |
+| before: $match | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 57 | 135 |
+| before: predictive[maija] | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 120 | 234 |
+| before: predictive[olli] | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 133 | 201 |
+| before: predictive[saara] | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 151 | 233 |
+| left: bm25 | 0.518 | 0.613 | 0.331 | 0.528 | 0.300 | 62 | 436 |
+| right θ0.33[maija] | 0.313 | 0.367 | 0.128 | 0.335 | 0.000 | 110 | 487 |
+| right θ0.33[olli] | 0.312 | 0.357 | 0.152 | 0.361 | 0.000 | 122 | 340 |
+| right θ0.33[saara] | 0.321 | 0.357 | 0.168 | 0.399 | 0.000 | 137 | 617 |
+| right θ1.0[maija] | 0.497 | 0.573 | 0.269 | 0.548 | 0.000 | 103 | 189 |
+| right θ1.0[olli] | 0.483 | 0.550 | 0.295 | 0.553 | 0.000 | 154 | 502 |
+| right θ1.0[saara] | 0.534 | 0.577 | 0.353 | 0.584 | 0.000 | 133 | 219 |
+| right θ2.0[maija] | 0.543 | 0.643 | 0.299 | 0.599 | 0.000 | 104 | 194 |
+| right θ2.0[olli] | 0.541 | 0.630 | 0.347 | 0.579 | 0.000 | 138 | 3059 |
+| right θ2.0[saara] | 0.581 | 0.660 | 0.366 | 0.610 | 0.000 | 146 | 2664 |
+| right θ3.0[maija] | 0.587 | 0.687 | 0.326 | 0.603 | 0.000 | 107 | 195 |
+| right θ3.0[olli] | 0.565 | 0.660 | 0.355 | 0.596 | 0.000 | 120 | 331 |
+| right θ3.0[saara] | 0.586 | 0.663 | 0.367 | 0.621 | 0.000 | 141 | 256 |
 | random (control) | 0.091 | 0.167 | 0.027 | 0.141 | 0.000 | 0 | 0 |
+| table order (control) | 0.196 | 0.317 | 0.042 | 0.185 | 0.000 | 0 | 0 |
 
-## nDCG@10 by stratum
+## nDCG@10 by stratum (shipped arms; right column at θ3.0)
 
-| stratum | current_match | bm25 | predictive[maija] | predictive[olli] | predictive[saara] | random (control) |
+| stratum | before: $match | left: bm25 | right θ3.0[maija] | right θ3.0[olli] | right θ3.0[saara] | random (control) |
 |:--|--:|--:|--:|--:|--:|--:|
-| brand | 0.700 | 0.833 | 0.700 | 0.700 | 0.700 | 0.085 |
-| exact | 1.000 | 1.000 | 1.000 | 1.000 | 1.000 | 0.057 |
-| misspelling | 0.000 | 0.525 | 0.000 | 0.000 | 0.000 | 0.110 |
-| nordic | 0.000 | 0.233 | 0.000 | 0.000 | 0.000 | 0.131 |
-| paraphrase | 0.000 | 0.521 | 0.000 | 0.000 | 0.000 | 0.068 |
-| synonym | 0.056 | 0.482 | 0.056 | 0.056 | 0.056 | 0.093 |
+| brand | 0.700 | 0.833 | 0.866 | 0.846 | 0.846 | 0.085 |
+| exact | 1.000 | 1.000 | 0.979 | 0.994 | 1.000 | 0.057 |
+| misspelling | 0.000 | 0.373 | 0.460 | 0.371 | 0.407 | 0.110 |
+| nordic | 0.000 | 0.000 | 0.184 | 0.221 | 0.212 | 0.131 |
+| paraphrase | 0.000 | 0.521 | 0.460 | 0.464 | 0.502 | 0.068 |
+| synonym | 0.056 | 0.382 | 0.574 | 0.497 | 0.547 | 0.093 |
 
-## Paired difference vs current_match (nDCG@10, 95% bootstrap CI)
+## Did each column improve? (nDCG@10 difference, paired 95% bootstrap CI)
 
-- **bm25**: +0.306 [+0.212, +0.409] — better
-- **predictive[maija]**: +0.000 [+0.000, +0.000] — no clear difference
-- **predictive[olli]**: +0.000 [+0.000, +0.000] — no clear difference
-- **predictive[saara]**: +0.000 [+0.000, +0.000] — no clear difference
-- **random (control)**: -0.202 [-0.331, -0.085] — worse
+- **left: bm25 vs before: $match**: +0.225 [+0.141, +0.318] — better
+- **right[maija] vs before: predictive[maija]**: +0.294 [+0.198, +0.391] — better
+- **right[olli] vs before: predictive[olli]**: +0.273 [+0.195, +0.358] — better
+- **right[saara] vs before: predictive[saara]**: +0.293 [+0.205, +0.388] — better
 
-## Reading the predictive arms
+Is the right column at least as good as the left? (ADR 0026 acceptance)
 
-Smart Search's right column (`_recommend` from impressions) ties `$match` because its `product_sku.name $match` candidate filter decides which products can appear. Its lists do differ per persona, but reordering a set whose members are all relevant cannot change an attribute-graded score, and a query `$match` finds nothing for stays empty. So its relevance ceiling is the filter's.
+- **right[maija] vs left: bm25**: +0.069 [+0.005, +0.145] — better
+- **right[olli] vs left: bm25**: +0.047 [+0.005, +0.096] — better
+- **right[saara] vs left: bm25**: +0.068 [+0.019, +0.124] — better
+
+## Reading the numbers
+
+The old right column tied `$match` because its `product_sku.name $match` filter decided which products could appear; reordering a set whose members are all relevant cannot change an attribute-graded score.
+
+Rows that match no query word are dropped from the left column. Left in, they arrive in table order, and the table starts with dog dry food, so every unmatched dog query would score as if answered perfectly. The table-order control shows how much credit that ordering gives for free.
+
+θ3.0 was chosen from 0.33, 1.0, 2.0, 3.0 on this same query set. The table above reports all three, so the choice can be checked; a fresh query set would be the fair test of it.
 
 These labels ignore the persona, so this report cannot see personalisation. Measuring that needs labels from purchases, which waits on purchase data with real repeat and progression patterns.
 
 ## Controls
 
 - chance level (random arm): 0.091 nDCG@10
-- best arm (`bm25`) against SHUFFLED labels: 0.098 — must fall to within 0.05 of chance
+- best arm (`right θ3.0[maija]`) against SHUFFLED labels: 0.105 — must fall to within 0.05 of chance
 - best arm against the real labels must clear chance by ≥ 0.2
