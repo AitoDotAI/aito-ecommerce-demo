@@ -1,226 +1,182 @@
-# Smart Search — predictive re-ranking
+# Smart Search — purchase probability × text relevance
 
 ![Smart Search](../../screenshots/02-smart-search.png)
 
-*Side-by-side standard `_search` vs. predictive `_recommend` for
-the same query string. Switch the persona pill (Maija → Olli →
-Saara) and the right column flips entirely — same query, different
-`where` + `goal`, three personas, three different "top food
-results".*
+*Side by side for the same query: text relevance (BM25) on the left,
+and on the right one `_search` that ranks every product by how likely
+this customer is to buy it times how well its name matches. Switch
+the persona pill (Maija → Olli → Saara) and the right column flips.*
 
 ## Overview
 
-The standard e-commerce search box returns "products whose name
-contains the query". That's right when the catalog is small and
-the customer is anonymous — and wrong the moment either of those
-breaks. A large-breed dog owner typing "food" doesn't want cat
-food at rank 1; they want dog food at rank 1, even though "cat
-food" matches the query string just as well.
+A search box that returns "products whose name contains the query"
+fails two ways. It's blind to the customer: a large-breed dog owner
+typing "food" gets whatever food ranks first, cat food included. And
+it's brittle: require every word in the name and "food for an old
+dog" returns nothing, because no product is called that.
 
-Smart Search runs two queries side-by-side and renders the
-delta. The left column is honest baseline — plain token match on
-the product name. The right column is a `_recommend` that uses
-the customer's persona context (segment, pet size) to rank
-products by P(this customer would buy it | name contains "food").
+Smart Search shows the fix next to the baseline:
 
-This is the demo's headline moment. Done right, it sells the
-whole demo: switching the persona pill flips the entire grid live
-in <300 ms, and the Aito panel shows the exact `_recommend` body
-that produced the new order.
+- **Left**: BM25 over the product name, a real text ranker with no
+  customer context.
+- **Right**: purchase probability for this customer context,
+  multiplied by the same text relevance, in a single Aito query.
+
+Both columns are measured on a judged query set (`./do search-eval`,
+[report](../verification/search-eval.md)). Against the previous
+version, which required every query word in the name:
+
+| | nDCG@10 before | after | queries with no results, after |
+|:--|--:|--:|--:|
+| Left | 0.29 | 0.52 | 30 % |
+| Right (per persona) | 0.29 | 0.57-0.59 | 0 % |
 
 ## How it works
 
-### Baseline — plain `_search`
+### Left — BM25 text relevance
 
 ```python
 # src/search_service.py — _baseline_search()
-client.search(
+res = client.search(
     table="products",
-    where={"name": {"$match": query}},
+    order_by={"$similarity": {"name": query}},
+    select=["sku", "name", "brand", "pet_type", "category", "price_eur", "$score"],
     limit=10,
 )
+matched = [h for h in res["hits"] if h["$score"] > 1.0]
 ```
 
-`$match` is required for Text columns (`name` is Text). `$has` and
-plain equality only work on Strings. The result is an order-of-
-indexing list — Aito's `_search` doesn't rank by relevance unless
-you ask it to.
+`$similarity` is BM25 expressed as a lift, `exp(θ·bm25)`. A product
+that matches no query word gets exactly 1.0, and all such products
+tie. **Aito returns ties in table order**, and this table starts with
+dog dry food. Without the `> 1.0` filter, any query with no matching
+word ("hundmat", "canine kibble") would show the first ten dog foods
+as if they were results.
 
-### Predictive — `_recommend product_sku`
+### Right — `$p × $similarity` in one `orderBy`
 
 ```python
-# src/search_service.py — _predictive_recommend()
-where = {"product_sku.name": {"$match": query}}
-if persona.pet_size is not None:
-    where["customer_pet_size"] = persona.pet_size
-
-body = {
-    "from": "order_lines",
-    "where": where,
-    "recommend": "product_sku",
-    "goal": {"customer_segment": persona.segment},
+# src/search_service.py — predictive_blend_body()
+{
+    "from": "impressions",
+    "get": "product_sku",
+    "where": {"customer_segment": "dog_owner", "customer_pet_size": "large"},
+    "orderBy": {"$multiply": [
+        {"$p": {"$context": {"purchased": True}}},
+        {"$similarity": {"name": query}, "theta": 4.0},
+    ]},
+    "select": ["sku", "name", "brand", "pet_type", "category", "price_eur"],
     "limit": 10,
 }
-
-client.recommend(
-    table="order_lines",
-    where=where,
-    recommend_field="product_sku",
-    goal={"customer_segment": persona.segment},
-    limit=10,
-)
 ```
 
-Reading this query line by line:
+Reading it line by line:
 
-- `from: order_lines` — every observation is one order line. Aito
-  conditions probabilities on rows that match `where`.
-- `where: {product_sku.name: {$match: query}}` — name-match via
-  the order_line's link to the product. The Text-column `$match`
-  rule still applies; the `.` syntax traverses the link.
-- `where: {customer_pet_size: ...}` — when present, narrows the
-  conditioning to lines bought by that pet-size cohort.
-- `recommend: product_sku` — return distinct product SKUs ranked
-  by P(`goal` | `product_sku = X`).
-- `goal: {customer_segment: persona.segment}` — the lift target.
-  "Of the rows where this product was bought, what share were
-  bought by this customer segment?"
+- `from: impressions` — one row per product shown to a shopper, with
+  the outcome (`clicked`, `purchased`) and the shopper's segment.
+- `get: product_sku` — rank the *products* those rows link to, not
+  the rows themselves. Every product in the catalogue is a candidate.
+- `where` — the customer context to condition on.
+- `$p{$context: {purchased: true}}` — P(this context buys the
+  product), learned from the funnel.
+- `$similarity {name: query}` — BM25 over the product name, as a lift.
+- `$multiply` — rank by the product of the two.
 
-That `where` / `goal` split is load-bearing. See the gotchas
-section below.
+### Choosing the text weight (θ)
+
+The two signals trade off through `$similarity`'s `theta`. Aito's
+calibrated default (0.33) let purchase history drown the words: a cat
+owner typing "food for an old dog" got cat food. On the judged set
+(nDCG@10, right column per persona):
+
+| θ | 0.33 | 1.0 | 2.0 | 3.0 | **4.0** | 6.0 | 10.0 |
+|:--|--:|--:|--:|--:|--:|--:|--:|
+| Maija | 0.31 | 0.50 | 0.54 | 0.59 | **0.59** | 0.59 | 0.59 |
+| Olli | 0.31 | 0.48 | 0.54 | 0.57 | **0.57** | 0.57 | 0.57 |
+| Saara | 0.32 | 0.53 | 0.58 | 0.59 | **0.59** | 0.59 | 0.58 |
+
+At 2.0, a cat owner's "dog food" still had cat food at ranks 7-10.
+From 3.0 up, pet-specific queries stay on that pet (pinned in
+`tests/test_aito_check.py`), and relevance plateaus.
+
+To avoid choosing θ on the queries it's scored on, the report repeats
+the choice on half the queries and scores the other half, over 500
+stratified splits. The held-out gain over BM25 is +0.062 at θ 3,
++0.067 at 4, +0.066 at 6 and +0.065 at 10: a plateau with a marginal
+peak at 4.0, which also wins most often on the tuning half (311/500).
+4.0 ships. Ambiguous queries like "food" are still decided by the
+customer.
+
+### When no word matches
+
+If no product name contains any query word ("dogfood" as one word),
+every `$similarity` is 1.0 and the right column ranks on purchase
+probability alone: what this customer usually buys. That's a
+reasonable fallback, but it isn't a text match, so the response
+carries `text_matched: false` and the page says so above the column.
 
 ### The delta — what flips between columns
 
-For every product in the predictive column, the frontend renders
-a chip with the rank delta vs. the baseline:
-
-```python
-# src/search_service.py — _annotate_with_delta()
-def _annotate_with_delta(predictive, baseline):
-    baseline_rank = {h.sku: h.rank for h in baseline}
-    out = []
-    for hit in predictive:
-        prev = baseline_rank.get(hit.sku)
-        if prev is None:
-            out.append(HitWithDelta(**asdict(hit), delta_rank=None, new_entry=True))
-        else:
-            out.append(HitWithDelta(
-                **asdict(hit),
-                delta_rank=hit.rank - prev,   # negative = moved up
-                new_entry=False,
-            ))
-    return out
-```
-
-A chip showing "↑ 4" means the SKU jumped from rank 5 to rank 1.
-"NEW" means the SKU wasn't in the baseline top-10 at all but
-landed in the predictive top-10 — a product the customer would
-buy that didn't even show up under plain name match.
+Each product in the right column carries its rank change against the
+left. "↑ 4" means it moved from rank 5 to rank 1. A ★ means it wasn't
+in the left column's top 10 at all.
 
 ## Key features
 
-### 1. Persona context, not personalised-by-customer-id
+### 1. Persona context, not per-customer history
 
-The three personas — Maija (cat owner), Olli (multi-pet small dog),
-Saara (large breed dog) — are *segment* contexts, not individual
-customer histories. The `goal` uses `{customer_segment: ...}`,
-not `{customer_id: ...}`. On a 3,000-customer dataset, per-
-customer conditioning under-fits; segment conditioning produces
-the cleanest visible flip.
+Maija (cat owner), Olli (small dog) and Saara (large-breed dog) are
+*segment* contexts in `where`, not individual customer ids. On 3,000
+synthetic customers, per-customer conditioning under-fits; segment
+conditioning gives the clean, visible flip.
 
-### 2. Same query body, three personas, three orderings
+### 2. One query shape, three personas
 
-The Aito panel on the right shows the live `_recommend` body
-verbatim. Click between Maija / Olli / Saara and only the `where`
-+ `goal` values change — the query shape stays identical.
+The Aito panel shows the body the right column actually sent. Between
+personas only the `where` values change.
 
-### 3. The baseline isn't strawmanned
+### 3. The baseline isn't a strawman
 
-The baseline column is real `_search` against the same Aito DB,
-not a separately-mocked "this is what bad looks like" list. If
-the predictive column doesn't beat it on a query, that shows up
-as no rank deltas — and we leave that visible in the demo for
-queries where it happens.
-
-## Data schema
-
-Smart Search reads `order_lines` (the conditioning surface) and
-traverses the `product_sku` link out to `products` for the
-name-match:
-
-```json
-{
-  "products": {
-    "type": "table",
-    "columns": {
-      "sku":       { "type": "String" },
-      "name":      { "type": "Text", "analyzer": "whitespace" },
-      "pet_type":  { "type": "String" },
-      "brand":     { "type": "String" }
-    }
-  },
-  "order_lines": {
-    "type": "table",
-    "columns": {
-      "product_sku":         { "type": "String", "link": "products.sku" },
-      "customer_segment":    { "type": "String" },
-      "customer_pet_size":   { "type": "String" }
-    }
-  }
-}
-```
-
-`customer_segment` and `customer_pet_size` are denormalised onto
-`order_lines` so the conditioning happens in a single hop. ADR 0007
-documents the alternative (two-hop traversal via
-`order_lines → orders → customers`) and why we rejected it (returns
-400 from Aito's `_recommend` endpoint).
+The left column is a real text ranker against the same database, and
+it's a strong one (nDCG@10 0.52 against the old 0.29). The right
+column is measured against it. In-sample it's ahead for every persona.
+Out of sample the gain is small (median +0.065 over 500 splits) and
+positive in every split, but 30 held-out queries are too few to prove
+it per persona. Honestly stated: at least as good as BM25, probably
+slightly better.
 
 ## Tradeoffs and gotchas
 
-- **Multi-field `goal` doesn't AND**. `goal: {customer_segment,
-  customer_pet_size}` for Olli (`dog_owner` + `small`) returns the
-  same cat-heavy result as `goal: {customer_pet_size: small}`
-  alone, because `pet_size=small` is shared between small dog
-  owners and small multi-pet households (which lean cat in our
-  fixture). Aito's combined-goal ranking collapses to the dominant
-  feature. **Fix**: put one constraint in `where`, the other in
-  `goal`. We put `pet_size` in `where`, `segment` in `goal` — see
-  `docs/aito-cheatsheet.md`.
-- **Hyphen tokenisation on Text fields**. `name: {$match: "dry-food"}`
-  searches for the *tokens* `dry` and `food` separately because
-  the whitespace analyzer splits on hyphens. For categories we
-  strip hyphens at fixture-gen (`dryfood`); for product names
-  with hyphenated terms (`"Acana Large-Breed Adult"`) the user
-  picks up both tokens, which is usually what they want.
-- **The rank delta arrow doesn't show "by how much" in
-  probability**. We render rank-delta only because the predictive
-  column is ranked, not scored, in this UI. The Aito `$p` is
-  available on every hit; a real product would surface it as a
-  confidence pill on each tile.
+- **`$p` in `select` is not a probability here.** With `$multiply` in
+  the `orderBy`, the selected `$p` is the product of the lifts (values
+  well above 1). It isn't selected, so it can't be misread as a
+  percentage.
+- **Meaning isn't matched yet.** "old" doesn't match "Senior", and
+  Finnish/Swedish queries match no English name. Those rank on
+  purchase probability alone (nDCG@10 ~0.2 on Nordic queries, near
+  chance). Step 2 of ADR 0026 adds multilingual vector similarity as
+  a third `$multiply` factor.
+- **Hyphen tokenisation on Text fields.** BM25 tokenises
+  `"Large-Breed"` into `large` and `breed`, which is usually what a
+  shopper wants.
 - **The persona pill bar persists in `localStorage`** so the demo
-  remembers your last persona. That's not a real-product feature;
-  in production the customer context comes from session auth, not
-  a manual pill.
+  remembers your last persona. In production the customer context
+  comes from the session.
 
 ## What this demo abstracts away
 
-- **Authenticated per-customer search**. Real e-commerce wires
-  the active customer's ID into every search call; we use
-  segment pills to make the flip visible in a single screenshot.
-- **Query suggestion / typeahead**. The search box is a plain
-  text input. A real predictive search would also suggest queries
-  (`_recommend` over a `search_log` table — same pattern as
-  recommendations).
-- **Result-set diversity rules**. Both columns can return all-
-  dog or all-cat results in a row; production wants category
-  spreading rules on top of the ranker.
+- **Authenticated per-customer search.** Real e-commerce wires the
+  active customer into every search call; the demo uses segment pills
+  to make the flip visible in one screenshot.
+- **Query suggestion / typeahead.**
+- **Result-set diversity rules.** Production would spread categories
+  on top of the ranker.
 
 ## Try it live
 
-[**Open Smart Search**](http://localhost:8500/smart-search/) and
-type "food", "treats", or "litter". Click the persona pills above
-the columns — the predictive column re-renders in <300 ms.
+[**Open Smart Search**](http://localhost:8500/smart-search/) and type
+"food", then "food for an old dog". Click the persona pills above the
+columns.
 
 ```bash
 ./do dev

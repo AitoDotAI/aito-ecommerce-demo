@@ -23,8 +23,8 @@ export default function SmartSearchPage() {
   usePagePanel(smartSearchPanel(), {
     title: "Smart Search",
     description:
-      "Same query, side-by-side results — left is plain token match, " +
-      "right is Aito's prediction conditioned on the customer's segment.",
+      "Same query, side-by-side results — left is text relevance (BM25), " +
+      "right is purchase probability for this customer × text relevance, in one query.",
     breadcrumb: "Smart Search",
   });
 
@@ -45,13 +45,10 @@ export default function SmartSearchPage() {
       );
       setData(res);
       // Update the Aito panel's query block with the *actual* body
-      // that ran. The default `smartSearchPanel()` shows the
-      // `_search` baseline; once a search runs we want the
-      // `_recommend` body (with the live segment + pet_size) on
-      // screen because that's the predictive call.
+      // that ran: the predictive `_search` (with the live segment +
+      // pet_size), since that is the call worth reading.
       setPanel({
         ...smartSearchPanel(),
-        endpoints: ["_search", "_recommend"],
         query: highlightQuery(res.last_query.body),
       });
     } catch (e) {
@@ -78,9 +75,10 @@ export default function SmartSearchPage() {
       <div className="page-header">
         <div className="page-title">Smart Search</div>
         <div className="page-desc">
-          Same query, side-by-side. Left is plain token match; right is
-          Aito's prediction conditioned on the customer's segment. Flip
-          the customer pill to see the predictive column re-rank live.
+          Same query, side-by-side. Left ranks by how well the product
+          name matches the words. Right multiplies that by how likely
+          this customer is to buy, in a single Aito query. Flip the
+          customer pill to see the predictive column change live.
         </div>
       </div>
 
@@ -129,7 +127,7 @@ export default function SmartSearchPage() {
         <div className="two-col">
           <ResultsColumn
             title="Standard search"
-            sub="Plain token match on the product name."
+            sub="Text relevance (BM25) on the product name."
             hits={data?.baseline ?? []}
             loading={loading || !data}
           />
@@ -137,8 +135,10 @@ export default function SmartSearchPage() {
             title="Predictive search"
             sub={
               data
-                ? `Re-ranked for ${data.customer.label} — same query, customer-context bias.`
-                : "Re-ranked by Aito's prediction…"
+                ? data.text_matched
+                  ? `Ranked for ${data.customer.label} — purchase probability × text relevance.`
+                  : `No product name matches “${data.query}”. Showing what ${data.customer.label} is most likely to buy instead.`
+                : "Ranked by purchase probability × text relevance…"
             }
             hits={data?.predictive ?? []}
             loading={loading || !data}

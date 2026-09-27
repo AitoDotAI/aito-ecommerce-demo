@@ -59,7 +59,7 @@ Each is in its own view, each builds on the previous:
 
 | # | Moment | View | Aito |
 |---|---|---|---|
-| 1 | Smart Search rank flip — cat food drops from rank 1 to rank 6 for a dog-owner persona | [Smart Search](#2-smart-search--predictive-re-ranking) | `_search` + `_recommend` |
+| 1 | Smart Search rank flip — same query, cat food for a cat owner, dog food for a dog owner | [Smart Search](#2-smart-search--purchase-probability--text-relevance) | `_search` × 2 (`$similarity`, `$multiply`) |
 | 2 | For You persona switch — grid re-ranks in <300 ms on pill click | [For You](#3-for-you--personalised-tile-grid) | `_recommend` |
 | 3 | Bought Together 2.72× — dog dry-food → dental treats, live | [Bought Together](#4-bought-together--co-purchase-lift) | `_relate` |
 | 4 | Product Filling 5 fields — multi-`_predict` in ~480 ms | [Product Filling](#15-product-filling--catalog-enrichment) | `_predict` × 5 |
@@ -99,32 +99,33 @@ body Bought Together runs per anchor — same 2.72× lift surfaces
 in both views.
 [→ Implementation](src/overview_service.py) | [Use case guide](docs/use-cases/01-dashboard.md) | [ADR](docs/adr/0005-dashboard.md)
 
-### 2. 🔍 Smart Search — predictive re-ranking
+### 2. 🔍 Smart Search — purchase probability × text relevance
 
 ![Smart Search](screenshots/02-smart-search.png)
 
 ```json
 {
   "from": "impressions",
-  "where": {
-    "search_query": { "$match": "food" },
-    "customer_segment": "dog_owner",
-    "customer_pet_size": "large"
-  },
-  "recommend": "product_sku",
-  "goal": { "purchased": true },
-  "basedOn": ["pet_type", "brand", "dietary", "category"],
+  "get": "product_sku",
+  "where": { "customer_segment": "dog_owner", "customer_pet_size": "large" },
+  "orderBy": { "$multiply": [
+    { "$p": { "$context": { "purchased": true } } },
+    { "$similarity": { "name": "food for an old dog" }, "theta": 4.0 }
+  ] },
   "limit": 10
 }
 ```
 
-Side-by-side standard `_search` vs. predictive `_recommend`. The
-predictive column ranks by a real conversion KPI — P(this shopper
-buys | they searched this query) — learned from the `impressions`
-funnel. Same query string, different `where` context per persona,
-and the right column flips entirely when you click the Maija /
-Olli / Saara pills. **Demo moment #1.**
-[→ Implementation](src/search_service.py) | [Use case guide](docs/use-cases/02-smart-search.md) | [ADR](docs/adr/0021-impressions-and-recommendation-kpi.md)
+Side by side: BM25 text relevance on the left, and on the right one
+`_search` that ranks every product by the probability this shopper
+buys it (learned from the `impressions` funnel) times how well its
+name matches the query. There's no word filter, so natural phrasing
+and misspellings still find products. Same query string, different
+`where` context per persona: the right column flips when you click
+the Maija / Olli / Saara pills. Measured on a judged query set
+([search-eval](docs/verification/search-eval.md)): nDCG@10 0.29 →
+0.52 on the left and 0.29 → 0.57-0.59 on the right. **Demo moment #1.**
+[→ Implementation](src/search_service.py) | [Use case guide](docs/use-cases/02-smart-search.md) | [ADR](docs/adr/0026-three-way-smart-search.md)
 
 ### 3. ✨ For You — personalised tile grid
 
@@ -143,8 +144,8 @@ Olli / Saara pills. **Demo moment #1.**
 }
 ```
 
-Same conversion-KPI `_recommend` shape as Smart Search minus the
-`search_query` filter. The whole catalog re-ranks per persona by
+The conversion-KPI `_recommend`: purchase probability learned from
+the `impressions` funnel, with no query. The whole catalog re-ranks per persona by
 purchase probability; Maija (cat owner) sees cat food + treats at
 the top, Saara (large breed dog) sees dog food + treats. Flip the
 goal to `{ clicked: true }` and the grid reorders toward
@@ -620,9 +621,9 @@ Browser → Next.js (port 8500) → fetch("/api/...") → FastAPI (port 8501)
 
 | Operator | What it does | Used in |
 |---|---|---|
-| `_search` | Retrieve rows / count via `limit=0` | Dashboard KPIs, Smart Search baseline, Purchase Analytics, Bought Together sample SKUs, Price aggregation, Inventory snapshot |
-| `_match` (via `$match`) | Token match on Text columns | Smart Search, Bought Together (`line_categories`), Pattern Explorer |
-| `_recommend` | Rank rows by `P(goal | row)` | Smart Search predictive column, For You |
+| `_search` | Retrieve rows / count via `limit=0`; rank by `$similarity` or `$multiply` | Dashboard KPIs, Smart Search (both columns), Purchase Analytics, Bought Together sample SKUs, Price aggregation, Inventory snapshot |
+| `_match` (via `$match`) | Token match on Text columns | Bought Together (`line_categories`), Pattern Explorer |
+| `_recommend` | Rank rows by `P(goal | row)` | For You |
 | `_relate` | Co-occurrence with lift / support / `pOnCondition` | Dashboard top patterns, Bought Together, Pattern Explorer, Churn drivers × 5 parallel, Demand seasonality × 4 parallel, Price sweet-spot × 3 parallel |
 | `_predict` | Predict a field with `$p` + `$why` factor tree | Product Filling × 5 parallel, Feedback × 4 parallel, Churn at-risk × N parallel, Demand × 25 parallel, Inventory × 25 parallel |
 | `_evaluate` | Cross-validation accuracy + baseline + per-row results | Evaluation × 4 parallel, Churn × 1, Demand × 1 |

@@ -162,19 +162,62 @@ Response: `{ "hits": [...], "offset": 0, "total": 385 }`.
 string equality on a `Text` column is whole-string equality, not
 tokenised matching. **Use `{ "$match": "..." }` for token search.**
 
-This is the load-bearing syntax behind the Smart Search baseline
-("food" → 10 results across cat/dog/aquarium food).
-
-The customer-context re-rank (the rank-flip demo moment) is **not** a
-`$context` form on `_search`. An early attempt at one
-(`order_lines.{orders.customers.segment}`) returned 400, and the view
-was built differently: the predictive column is a separate `_recommend`
-over `impressions`, run in parallel with this baseline and shown beside
-it. See "Hard candidate filter vs. context — Smart Search's live shape"
-below for the verified body, and `search_service._predictive_recommend`
-for the caller.
+`$match` requires EVERY query token in the field (AND). Smart Search
+used it until ADR 0026 and returned nothing for 70 % of a judged query
+set ("food for an old dog", misspellings, Finnish/Swedish). For search,
+rank instead of filter: see the next section.
 
 ---
+
+## Ranking by text, and by text × prediction — `$similarity`, `$multiply`
+
+**Verified live, 2026-09-27**, API v2, `shared.aito.ai` (v2.10.3).
+Used by Smart Search (`src/search_service.py`, ADR 0026).
+
+**Text relevance (BM25), no filter:**
+
+```json
+POST /_search
+{ "from": "products",
+  "orderBy": { "$similarity": { "name": "food for an old dog" } },
+  "select": ["sku", "name", "$score"], "limit": 10 }
+```
+
+- `$score` is the lift `exp(θ·bm25)`, θ 0.33 by default. **Exactly 1.0
+  means no query word matched.**
+- **Gotcha: ties come back in table order.** For a query matching
+  nothing, every row ties at 1.0 and you get the first rows of the
+  table. Here that's dog dry food, which looked like a perfect answer
+  to "hundmat". Drop `$score == 1.0` rows.
+- `$similarity` is valid in `orderBy`, not in `select` (400).
+
+**Text × purchase probability, in one query:**
+
+```json
+POST /_search
+{ "from": "impressions",
+  "get": "product_sku",
+  "where": { "customer_segment": "cat_owner" },
+  "orderBy": { "$multiply": [
+    { "$p": { "$context": { "purchased": true } } },
+    { "$similarity": { "name": "food" }, "theta": 4.0 } ] },
+  "select": ["sku", "name"], "limit": 10 }
+```
+
+- `get` ranks the rows a link points to (products) while `where` and
+  `$p` read the `from` table (impressions). Every product is a
+  candidate: `total` is the catalogue size.
+- `where` conditions `$p`: the same query flips from cat to dog products
+  between segments. `./do aito-check` pins it.
+- **The θ on `$similarity` sets how much the words count against the
+  prediction.** At the default 0.33 the prediction drowned the text (a
+  cat owner's "dog food" returned cat food). Measure it on a judged set;
+  4.0 here, chosen out of sample.
+- **Gotcha: the selected `$p` is the whole product**, not a probability
+  (values ≫ 1). Don't display it as a percentage.
+- When no word matches, every `$similarity` is 1.0 and the ranking is
+  `$p` alone. Detect it (e.g. the BM25 query above returned nothing)
+  and say so in the UI.
 
 ## Predictive re-ranking — `_recommend` with `goal: { segment }`
 
@@ -249,9 +292,13 @@ multi-pet+small cat-heavy pool.
 | Saara (dog_owner+large) | dog × dry-food × 3 | p ≈ 0.51 — narrow pet_size constraint reduces absolute p |
 | Aquarium owner       | cat × dry-food × 3   | p ≈ 0.05 — aquarium customers rarely buy "food"-named products; ranking is noise |
 
-### Hard candidate filter vs. context — Smart Search's live shape
+### Hard candidate filter vs. context — Smart Search's shape until ADR 0026
 
-The current Smart Search path (ADR 0021) recommends over `impressions`
+Superseded: Smart Search now ranks with `$multiply` and no filter (see
+"Ranking by text, and by text × prediction" above). This shape is kept
+because the filter/context split still applies to `_recommend` elsewhere.
+
+The Smart Search path of ADR 0021 recommended over `impressions`
 with `goal: {purchased: true}`, and separates two roles the query text
 plays:
 

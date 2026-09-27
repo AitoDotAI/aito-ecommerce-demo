@@ -63,52 +63,54 @@ def test_recommend_purchase_kpi_ranks_segment_appropriate_products(
     assert all(pet == expected_pet for pet in top_pets), top_pets
 
 
-@pytest.mark.parametrize(
-    "segment, pet_size, expected_pet",
-    [
-        ("cat_owner", None, "cat"),
-        ("dog_owner", "large", "dog"),
-        ("dog_owner", "small", "dog"),  # the thin slice where priors dominate
-    ],
-)
-def test_smart_search_name_filter_excludes_cross_pet_products(
-    client, segment, pet_size, expected_pet
+# ── Smart Search: BM25 left, P(purchase) x BM25 right (ADR 0026) ─────
+
+
+def _blend(client, query: str, persona_id: str) -> list[dict]:
+    from src.search_service import PERSONAS, predictive_blend_body
+
+    body = predictive_blend_body(query, PERSONAS[persona_id], limit=10)
+    return client.search(table=body["from"], get=body["get"], where=body["where"],
+                         order_by=body["orderBy"], select=body["select"],
+                         limit=body["limit"])["hits"]
+
+
+def test_smart_search_food_flips_between_cat_and_dog_owner(client):
+    """The demo's headline: same query, different customer, different
+    products. Without a candidate filter the flip must come from `$p`;
+    if persona context stopped conditioning `$p` in the `get` form, both
+    columns would show the same list."""
+    maija = [h["pet_type"] for h in _blend(client, "food", "maija")[:5]]
+    saara = [h["pet_type"] for h in _blend(client, "food", "saara")[:5]]
+    assert maija == ["cat"] * 5, maija
+    assert saara == ["dog"] * 5, saara
+
+
+@pytest.mark.parametrize("persona_id, query, expected_pet", [
+    ("maija", "cat food", "cat"),
+    ("saara", "dog food", "dog"),
+    ("olli", "dog food", "dog"),    # the thin dog_owner + small slice
+    # The text must beat purchase history: a cat owner asking for dog
+    # food gets dog food. At Aito's default text weight (θ 0.33) she got
+    # cat food; this pins the reason TEXT_THETA is higher.
+    ("maija", "dog food", "dog"),
+])
+def test_smart_search_predictive_column_stays_on_the_asked_for_pet(
+    client, persona_id, query, expected_pet
 ):
-    """Smart Search's predictive recommend (ADR 0006/0021) hard-filters
-    candidates by `product_sku.name: {$match: query}` and passes the
-    query text as plain `search_query` context.
+    off_pet = [h["name"] for h in _blend(client, query, persona_id)
+               if h["pet_type"] != expected_pet]
+    assert not off_pet, f"{persona_id} / {query!r} leaked: {off_pet}"
 
-    The filter's job is a correctness floor: NO hit — not just the top
-    few — may be the wrong pet, even for the thin `dog_owner + small`
-    slice where a sparse funnel signal lets priors float an off-type
-    product up. Without the name filter a broad query like "food" can
-    leak cross-pet results; with it, it cannot. `query.lower()` appears
-    in every returned name, confirming the filter actually bound the set
-    rather than the ranking merely happening to be clean.
-    """
-    query = f"{expected_pet} food"  # e.g. "dog food"
-    where: dict[str, object] = {
-        "product_sku.name": {"$match": query},
-        "search_query": query,
-        "customer_segment": segment,
-    }
-    if pet_size is not None:
-        where["customer_pet_size"] = pet_size
 
-    res = client.recommend(
-        table="impressions",
-        where=where,
-        recommend_field="product_sku",
-        goal={"purchased": True},
-        based_on=["pet_type", "brand", "dietary", "category"],
-        limit=10,
-    )
-    hits = res.get("hits", [])
-    assert hits, f"empty recommendation for {segment}/{pet_size}"
-    off_pet = [h.get("name") for h in hits if h.get("pet_type") != expected_pet]
-    assert not off_pet, f"{segment}/{pet_size} leaked non-{expected_pet}: {off_pet}"
-    for hit in hits:
-        assert expected_pet in hit.get("name", "").lower(), hit.get("name")
+def test_smart_search_baseline_returns_nothing_when_no_word_matches(client):
+    """BM25 ties every row at lift 1.0 when no query word matches, and the
+    tie comes back in table order (dog dry food first). The baseline must
+    show nothing then, not ten products that merely come first."""
+    from src.search_service import _baseline_search
+
+    assert _baseline_search(client, "hundmat", 10) == []
+    assert _baseline_search(client, "dog food", 10), "a matching query must still return rows"
 
 
 def test_recommend_clicks_and_purchases_goals_differ(client):

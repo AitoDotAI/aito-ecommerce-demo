@@ -1,21 +1,21 @@
-"""Smart Search — predictive re-ranking.
+"""Smart Search — text relevance, and text relevance x purchase probability.
 
 The demo's headline moment: same query string, side-by-side
 results, the right column flips per customer-segment context.
-See `docs/adr/0006-smart-search.md` for the chosen query shape +
-the denormalisation rationale.
 
-Two live Aito calls per request:
-  1. `_search where {name: {$match: q}}`            — baseline
-  2. `_recommend product_sku from impressions
-       where {product_sku.name: {$match: q},        — hard candidate filter
-              search_query: q, customer_segment, [pet_size]}
-       goal {purchased: true}`                      — predictive
+Two live Aito calls per request (ADR 0026, step 1):
+  1. baseline   — `_search products` ordered by `$similarity` over the
+                  name (BM25). Rows that match no query word are dropped.
+  2. predictive — `_search impressions get product_sku`, ordered by
+                  `$multiply [$p{purchased} , $similarity name]`: purchase
+                  probability for this customer context x text match, over
+                  the whole catalogue in one query.
 
-The predictive call ranks by a real conversion KPI — P(the customer
-buys | they searched this query) — learned from the `impressions`
-table's funnel outcomes, rather than the segment-affinity proxy the
-view used before. See `docs/adr/0021-impressions-and-recommendation-kpi.md`.
+Neither column filters candidates on the query words. The previous
+`name $match` filter required EVERY word in the name, so natural
+phrasing ("food for an old dog"), misspellings and Finnish/Swedish
+queries returned nothing in both columns. Measured on the judged query
+set (`./do search-eval`, docs/verification/search-eval.md).
 
 Cached per `(query, customer_id)` for 5 minutes through the
 two-layer cache.
@@ -97,6 +97,10 @@ class SmartSearchResponse:
     customer: dict
     baseline: list[Hit]
     predictive: list[HitWithDelta]
+    # False when no product name contains any query word. The predictive
+    # column then ranks on purchase probability alone, and the page must
+    # say so rather than present it as a text match.
+    text_matched: bool
     last_query: dict
     last_response_ms: int
 
@@ -106,6 +110,7 @@ class SmartSearchResponse:
             "customer":   self.customer,
             "baseline":   [asdict(h) for h in self.baseline],
             "predictive": [asdict(h) for h in self.predictive],
+            "text_matched": self.text_matched,
             "last_query": self.last_query,
             "last_response_ms": self.last_response_ms,
         }
@@ -114,97 +119,87 @@ class SmartSearchResponse:
 # ── Live calls ─────────────────────────────────────────────────────
 
 
+PRODUCT_FIELDS = ["sku", "name", "brand", "pet_type", "category", "price_eur"]
+
+# The text arm's weight in the predictive blend. Aito's calibrated default
+# is 0.33; on the judged query set it let purchase probability drown the
+# words (a cat owner asking for "food for an old dog" got cat food, nDCG@10
+# 0.31). At 2.0 a cat owner's "dog food" still had cat food at ranks 7-10.
+# From 3.0 up the text holds (tests/test_aito_check.py) and the held-out
+# gain over BM25 plateaus: +0.062 at 3, +0.067 at 4, +0.066 at 6, +0.065 at
+# 10. 4.0 is the marginal peak, chosen out of sample (half the queries,
+# 500 splits). Ambiguous queries like "food" are still decided by the
+# customer. Every weight tried: docs/verification/search-eval.md.
+TEXT_THETA = 4.0
+
+
 def _baseline_search(client: AitoClient, query: str, limit: int) -> list[Hit]:
-    """Plain token-match `_search` — the honest non-predictive baseline."""
+    """BM25 over the product name — the honest non-predictive baseline.
+
+    `$score` is the lift `exp(θ·bm25)`: exactly 1.0 means no query word
+    matched. Those rows are dropped rather than shown, because they come
+    back in table order — the first ten dog foods, whatever was typed.
+    """
     res = client.search(
         table="products",
-        where={"name": {"$match": query}},
+        order_by={"$similarity": {"name": query}},
+        select=PRODUCT_FIELDS + ["$score"],
         limit=limit,
     )
-    return [_to_hit(h, idx) for idx, h in enumerate(res.get("hits", []), 1)]
+    matched = [h for h in res["hits"] if h["$score"] > 1.0]
+    return [_to_hit(h, idx) for idx, h in enumerate(matched, 1)]
 
 
-def _predictive_recommend(
+def predictive_blend_body(query: str, persona: PersonaContext, limit: int,
+                          text_theta: float = TEXT_THETA) -> dict:
+    """The predictive column's `_search` body, shared with the search
+    evaluation so the harness measures exactly what the page runs.
+
+    - `from impressions, get product_sku`: `where` and `$p` read the
+      impressions funnel; the rows returned are products.
+    - `where`: the customer context to condition on (segment, pet size).
+    - `$p{$context: {purchased: true}}`: P(this context buys the product).
+    - `$similarity {name: query}`: BM25 over the product name, as a lift.
+    - `$multiply`: rank by the product of the two. A product that matches
+      no query word keeps lift 1.0, so it can still rank on purchase
+      probability alone — relevant when the words fail (a misspelling),
+      beaten whenever something matches them.
+
+    The selected `$p` would be the blended score, not a probability, so it
+    is not selected.
+    """
+    where: dict[str, object] = {"customer_segment": persona.segment}
+    if persona.pet_size is not None:
+        where["customer_pet_size"] = persona.pet_size
+    return {
+        "from": "impressions",
+        "get": "product_sku",
+        "where": where,
+        "orderBy": {"$multiply": [
+            {"$p": {"$context": {"purchased": True}}},
+            {"$similarity": {"name": query}, "theta": text_theta},
+        ]},
+        "select": PRODUCT_FIELDS,
+        "limit": limit,
+    }
+
+
+def _predictive_blend(
     client: AitoClient,
     query: str,
     persona: PersonaContext,
     limit: int,
 ) -> tuple[list[Hit], dict]:
-    """Predictive ranking via `_recommend product_sku from impressions`.
-
-    Ranks candidate products by P(`purchased` = true | this customer
-    searched this query), the textbook conversion-KPI recommend, with a
-    hard candidate filter so the ranking can only reorder *relevant*
-    products:
-      - `product_sku.name: {$match: query}` — the hard filter. Only
-        products whose name matches the query tokens are eligible, so a
-        dog owner searching "food" can never be shown cat food even when
-        the funnel signal for their slice is thin and the priors would
-        otherwise float an off-type product up. Field path is relative
-        to the recommend target (`product_sku` → `products`).
-      - `search_query: query` — the query as plain context evidence (no
-        `$match`): the impressions the customer's slice searched. The
-        token work is done by the name filter above, so this stays an
-        exact-value context signal. (v2 drops `$match` here entirely and
-        uses its native search filter for the candidate constraint — see
-        ADR 0025.)
-      - `customer_segment` (+ `customer_pet_size` when set) — the
-        persona context to condition on.
-      - `goal` is the real outcome label `{purchased: true}`.
-
-    The persona signal lives in `where` (context to condition on), not
-    in `goal` (which is the conversion KPI). Within the filtered
-    candidate set the per-persona flip is still learned from the funnel
-    — cat owners' searches convert on cat products, dog owners' on dog
-    — the filter only bounds *which* products can appear. See ADR 0021.
-    """
-    where: dict[str, object] = {
-        "product_sku.name": {"$match": query},
-        "search_query": query,
-        "customer_segment": persona.segment,
-    }
-    if persona.pet_size is not None:
-        where["customer_pet_size"] = persona.pet_size
-
-    goal = {"purchased": True}
-
-    # `basedOn` curates which product features feed Aito's prior-
-    # feature inference. The default uses *every* product feature —
-    # including numerics (price_eur, weight_kg) and high-cardinality
-    # text (name tokens) that add inference cost without helping a
-    # `purchased` goal. Curating to the four categorical features that
-    # carry the conversion signal trims inference cost.
-    #
-    # Field paths are relative to the recommend target — the
-    # `product_sku` link resolves to `products`, so write `["brand"]`,
-    # NOT `["product_sku.brand"]` (Aito prepends the target column and
-    # 400s on the doubled path).
-    #
-    # Priors matter most for cold candidates (SKUs with few/no
-    # impressions in this context slice) and thin context slices
-    # (e.g. Olli = dog_owner + small): there the direct
-    # P(purchased | sku, context) is sparse and the category / brand
-    # prior carries the ranking. See `docs/aito-cheatsheet.md`
-    # §"When do priors actually move the ranking?".
-    based_on: list[str] = ["pet_type", "brand", "dietary", "category"]
-
-    body = {
-        "from": "impressions",
-        "where": where,
-        "recommend": "product_sku",
-        "goal": goal,
-        "basedOn": based_on,
-        "limit": limit,
-    }
-    res = client.recommend(
-        table="impressions",
-        where=where,
-        recommend_field="product_sku",
-        goal=goal,
-        based_on=based_on,
-        limit=limit,
+    body = predictive_blend_body(query, persona, limit)
+    res = client.search(
+        table=body["from"],
+        get=body["get"],
+        where=body["where"],
+        order_by=body["orderBy"],
+        select=body["select"],
+        limit=body["limit"],
     )
-    return [_to_hit(h, idx) for idx, h in enumerate(res.get("hits", []), 1)], body
+    return [_to_hit(h, idx) for idx, h in enumerate(res["hits"], 1)], body
 
 
 def _to_hit(raw: dict, rank: int) -> Hit:
@@ -261,14 +256,11 @@ def smart_search(
 
     started = time.perf_counter()
     # The two Aito calls are independent — run them in parallel so
-    # cold wall-clock is max(baseline, recommend) rather than the
-    # sum. Recommend dominates for broad queries like "food"
-    # (~2-4 s cold), baseline is consistently ~300 ms, so this
-    # saves the baseline cost on every cache miss.
+    # cold wall-clock is max(baseline, predictive) rather than the sum.
     with ThreadPoolExecutor(max_workers=2) as pool:
         baseline_fut = pool.submit(_baseline_search, client, query, limit)
         predictive_fut = pool.submit(
-            _predictive_recommend, client, query, persona, limit
+            _predictive_blend, client, query, persona, limit
         )
         baseline = baseline_fut.result()
         predictive_hits, last_body = predictive_fut.result()
@@ -285,7 +277,10 @@ def smart_search(
         },
         baseline=baseline,
         predictive=predictive,
-        last_query={"endpoint": "_recommend", "body": last_body},
+        # The baseline is BM25 over the same name field with non-matching
+        # rows dropped, so it is empty exactly when no name matches a word.
+        text_matched=bool(baseline),
+        last_query={"endpoint": "_search", "body": last_body},
         last_response_ms=elapsed,
     )
 
@@ -302,6 +297,7 @@ def _from_dict(d: dict) -> SmartSearchResponse:
         customer=d["customer"],
         baseline=[Hit(**h) for h in d["baseline"]],
         predictive=[HitWithDelta(**h) for h in d["predictive"]],
+        text_matched=d["text_matched"],
         last_query=d["last_query"],
         last_response_ms=d["last_response_ms"],
     )

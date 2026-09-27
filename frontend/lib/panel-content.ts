@@ -59,17 +59,22 @@ export function smartSearchPanel(): AitoPanelConfig {
     operation: "Smart Search",
     endpoints: ["_search"],
     description:
-      `Re-ranks search results by combining free-text token matching ` +
-      `(<code style="color:var(--aito-teal);">$match</code> on the ` +
-      `<code style="color:var(--aito-teal);">name</code> Text column) with ` +
-      `customer-context biasing. Customers see products they're likely to ` +
-      `buy, not just products whose names contain the query.`,
+      `One <code style="color:var(--aito-teal);">_search</code> ranks the whole ` +
+      `catalogue by <code style="color:var(--aito-teal);">$multiply</code>: the ` +
+      `probability this customer context buys the product (` +
+      `<code style="color:var(--aito-teal);">$p</code>, learned from the impressions ` +
+      `funnel) times how well its name matches the query (` +
+      `<code style="color:var(--aito-teal);">$similarity</code>, BM25). No word filter, ` +
+      `so natural phrasing and misspellings still find products.`,
     query:
 `${k('"search"')}: {
-  ${n('"from"')}: ${s('"products"')},
-  ${n('"where"')}: {
-    ${n('"name"')}: { ${n('"$match"')}: ${s('"food"')} }
-  },
+  ${n('"from"')}: ${s('"impressions"')},
+  ${n('"get"')}: ${s('"product_sku"')},
+  ${n('"where"')}: { ${n('"customer_segment"')}: ${s('"cat_owner"')} },
+  ${n('"orderBy"')}: { ${n('"$multiply"')}: [
+    { ${n('"$p"')}: { ${n('"$context"')}: { ${n('"purchased"')}: ${s('true')} } } },
+    { ${n('"$similarity"')}: { ${n('"name"')}: ${s('"food"')} }, ${n('"theta"')}: ${s('4.0')} }
+  ] },
   ${n('"limit"')}: 10
 }`,
     links: LEARN_MORE_LINKS,
