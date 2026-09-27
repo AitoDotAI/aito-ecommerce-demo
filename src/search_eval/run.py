@@ -135,6 +135,17 @@ def _report(queries, labels, rows, latency, best, shuffled, random_ndcg) -> dict
         d, lo, hi = paired_bootstrap_ci(base, [rows[arm][i]["ndcg10"] for i in ids_all])
         verdict = "better" if lo > 0 else "worse" if hi < 0 else "no clear difference"
         lines.append(f"- **{arm}**: {d:+.3f} [{lo:+.3f}, {hi:+.3f}] — {verdict}")
+    if any(a.startswith("predictive[") for a in rows):
+        lines += ["", "## Reading the predictive arms", "",
+                  "Smart Search's right column (`_recommend` from impressions) ties `$match` "
+                  "because its `product_sku.name $match` candidate filter decides which products "
+                  "can appear. Its lists do differ per persona, but reordering a set whose members "
+                  "are all relevant cannot change an attribute-graded score, and a query `$match` "
+                  "finds nothing for stays empty. So its relevance ceiling is the filter's.",
+                  "",
+                  "These labels ignore the persona, so this report cannot see personalisation. "
+                  "Measuring that needs labels from purchases, which waits on purchase data with "
+                  "real repeat and progression patterns."]
     lines += ["", "## Controls", "",
               f"- chance level (random arm): {random_ndcg:.3f} nDCG@10",
               f"- best arm (`{best}`) against SHUFFLED labels: {shuffled:.3f} "

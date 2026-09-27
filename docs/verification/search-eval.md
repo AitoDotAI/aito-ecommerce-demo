@@ -4,11 +4,11 @@
 
 | arm | nDCG@10 | P@5 | R@20 | MRR | zero-result | p50 ms | p95 ms |
 |:--|--:|--:|--:|--:|--:|--:|--:|
-| current_match | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 100 | 2714 |
-| bm25 | 0.599 | 0.713 | 0.345 | 0.613 | 0.000 | 106 | 2617 |
-| predictive[maija] | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 2398 | 3119 |
-| predictive[olli] | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 2421 | 2822 |
-| predictive[saara] | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 2510 | 3033 |
+| current_match | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 51 | 78 |
+| bm25 | 0.599 | 0.713 | 0.345 | 0.613 | 0.000 | 51 | 62 |
+| predictive[maija] | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 116 | 185 |
+| predictive[olli] | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 124 | 190 |
+| predictive[saara] | 0.293 | 0.297 | 0.208 | 0.300 | 0.700 | 151 | 223 |
 | random (control) | 0.091 | 0.167 | 0.027 | 0.141 | 0.000 | 0 | 0 |
 
 ## nDCG@10 by stratum
@@ -29,6 +29,12 @@
 - **predictive[olli]**: +0.000 [+0.000, +0.000] — no clear difference
 - **predictive[saara]**: +0.000 [+0.000, +0.000] — no clear difference
 - **random (control)**: -0.202 [-0.331, -0.085] — worse
+
+## Reading the predictive arms
+
+Smart Search's right column (`_recommend` from impressions) ties `$match` because its `product_sku.name $match` candidate filter decides which products can appear. Its lists do differ per persona, but reordering a set whose members are all relevant cannot change an attribute-graded score, and a query `$match` finds nothing for stays empty. So its relevance ceiling is the filter's.
+
+These labels ignore the persona, so this report cannot see personalisation. Measuring that needs labels from purchases, which waits on purchase data with real repeat and progression patterns.
 
 ## Controls
 
