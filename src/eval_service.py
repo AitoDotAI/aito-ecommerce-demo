@@ -123,17 +123,11 @@ class EvalResponse:
 
 
 def _evaluate_one(client: AitoClient, model: ModelSpec) -> EvalResult:
-    body = {
-        "testSource": {"from": model.table, "limit": 200},
-        "evaluate": {
-            "from":    model.table,
-            "where":   model.where,
-            "predict": model.predict,
-        },
-        "select": ["accuracy", "baseAccuracy", "n"],
-    }
+    # The body shown in the query panel is the one actually sent: built
+    # by the client, not re-typed here, so the two cannot drift apart.
+    body = AitoClient.evaluate_body(model.table, model.where, model.predict)
     try:
-        res = client.evaluate(model.table, model.where, model.predict, test_limit=200)
+        res = client.evaluate(model.table, model.where, model.predict)
     except Exception as exc:
         return EvalResult(
             id=model.id, label=model.label, table=model.table,

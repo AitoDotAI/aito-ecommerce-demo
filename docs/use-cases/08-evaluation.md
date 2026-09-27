@@ -31,9 +31,9 @@ and the view renders that as failure.
 ### The query
 
 ```python
-# src/eval_service.py — _evaluate_one()
+# src/aito_client.py — AitoClient.evaluate_body(), the exact body sent
 body = {
-    "testSource": {"from": model.table, "limit": 200},
+    "test": {"$sample": {"n": 200, "seed": 0}},
     "evaluate": {
         "from":    model.table,
         "where":   model.where,
@@ -42,19 +42,15 @@ body = {
     "select": ["accuracy", "baseAccuracy", "n"],
 }
 
-res = client.evaluate(
-    model.table,
-    model.where,
-    model.predict,
-    test_limit=200,
-)
+res = client.evaluate(model.table, model.where, model.predict)
 ```
 
 `_evaluate` is Aito's cross-validation endpoint. The body has
 two top-level keys:
 
-- `testSource` — the row set Aito holds out as the test sample
-  (200 rows from the table).
+- `test` — which rows Aito holds out: `{"$sample": {"n": 200,
+  "seed": 0}}`, a seeded random sample. Seeded so the demo shows the
+  same numbers every run; random so the sample represents the table.
 - `evaluate` — the prediction call to run for each test row. The
   `where` clause references the test row's values via
   `{"$get": "<field>"}`.
@@ -196,17 +192,30 @@ Evaluation reads the same tables the live views read:
 - `order_lines` — for the segment-from-product and return-risk
   models
 
-No new tables, no special evaluation set. The held-out sample is
-a random 200-row slice that Aito carves at evaluation time via
-`testSource.limit`.
+No new tables, no special evaluation set. The held-out sample is a
+seeded random 200-row sample that Aito carves at evaluation time via
+`test: {"$sample": ...}`.
+
+**This used to say the slice was random, and it was not.** The view
+originally used `testSource: {"limit": 200}`, which takes the FIRST 200
+rows — and `products` is grouped by pet type, so the head of the table
+is not the population. The pet-type model showed accuracy 0.06 against a
+baseline of 0.0: no test row carried the majority class (`cat`, 42% of
+products). On a seeded sample the same model scores 0.85 against a 0.40
+baseline. The model was never broken; the split was. The live check
+`test_evaluate_baseline_matches_the_population_majority_share` pins the
+baseline to the measured majority share so this cannot regress quietly.
 
 ## Tradeoffs and gotchas
 
-- **`_evaluate` requires both `testSource` AND `evaluate`**. The
-  initial implementation tried `{"evaluate": {...}}` alone and
-  got a 400 from Aito. The full shape needs `testSource` to
-  carve the held-out set + `evaluate` for the per-row call +
-  `select` for the metrics to return.
+- **Never hold out with a positional `limit`.** `testSource.limit`
+  is a first-N cut: on any table ordered by the predicted column or by
+  time, it silently measures the head of the table instead of the
+  population. Use `test: {"$sample": {"n": ..., "seed": ...}}`. A
+  baseAccuracy of 0.0 next to a respectable accuracy is the tell.
+- **`_evaluate` requires a hold-out AND `evaluate`**. `{"evaluate":
+  {...}}` alone is a 400 — the body needs `test` to carve the held-out
+  set, `evaluate` for the per-row call, and `select` for the metrics.
 - **`$get` is mandatory in `where`**. Without `{"$get": "<field>"}`,
   Aito would substitute the literal value of `where` for every
   row in the test sample — predicting the same thing 200 times.
@@ -227,7 +236,7 @@ a random 200-row slice that Aito carves at evaluation time via
 - **Per-fold cross-validation**. `_evaluate` with `limit=200`
   runs one held-out fold. Production would want k-fold (Aito
   supports it — just run k separate `_evaluate` calls with
-  different `testSource` filters).
+  different `test` selectors, e.g. `{"$index": {"$mod": [k, i]}}`).
 - **Confusion matrices**. The view shows accuracy + baseline
   only. A real evaluation surface would show per-class
   precision/recall + a confusion matrix (clickable cells →

@@ -334,7 +334,7 @@ def _evaluate_churn(client: AitoClient) -> EvalSummary:
         table="customer_months",
         where=where,
         predict_field="churned_in_3_months",
-        test_limit=300,
+        test_n=300,
     )
     accuracy = float(res.get("accuracy", 0) or 0)
     base = float(res.get("baseAccuracy", 0) or 0)

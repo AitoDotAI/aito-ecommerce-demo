@@ -471,26 +471,46 @@ class AitoClient:
         where: dict,
         predict_field: str,
         *,
-        test_limit: int = 200,
-        test_where: dict | None = None,
+        test_n: int = 200,
+        seed: int = 0,
     ) -> dict:
         """Run an `_evaluate` query — accuracy on a held-out test set.
 
-        Aito requires a `testSource` describing which rows to hold
-        out. Each row from `testSource` is then evaluated against
-        the `evaluate` block: the target field is hidden, predicted
-        from the `where` (which typically reads other fields off
-        the held-out row via `$get`), and compared to ground truth.
-
-        Used for the Evaluation view: per-model accuracy +
-        baseline accuracy + accuracy_gain. Returns
+        Each held-out row has its target field hidden, predicted from
+        the `where` (which typically reads other fields off the held-out
+        row via `$get`), and compared to ground truth. Returns
         ``{"accuracy": float, "baseAccuracy": float, "n": int, ...}``.
         """
-        test_source: dict = {"from": table, "limit": test_limit}
-        if test_where is not None:
-            test_source["where"] = test_where
-        body = {
-            "testSource": test_source,
+        body = self.evaluate_body(
+            table, where, predict_field, test_n=test_n, seed=seed
+        )
+        return self._request("POST", "/_evaluate", json=body)
+
+    @staticmethod
+    def evaluate_body(
+        table: str,
+        where: dict,
+        predict_field: str,
+        *,
+        test_n: int = 200,
+        seed: int = 0,
+    ) -> dict:
+        """The exact `_evaluate` body `evaluate` sends — exposed so a view
+        can show the query it actually ran, not a hand-copied lookalike.
+
+        The test rows are a SEEDED RANDOM sample (`$sample`), not the
+        first N rows. A positional `testSource.limit` takes the head of
+        the table, and our tables are ordered — products grouped by type,
+        the monthly panels by time — so the head is not the population.
+        Measured on this data: predicting `pet_type` from the first 200
+        products scored 0.06 against a baseAccuracy of 0.0, because no
+        test row carried the majority class; the same query on a seeded
+        sample scores 0.85 against a 0.40 baseline, which matches the
+        measured majority share (0.42). The model was fine; the split was
+        not. The seed keeps the demo reproducible run to run.
+        """
+        return {
+            "test": {"$sample": {"n": test_n, "seed": seed}},
             "evaluate": {
                 "from": table,
                 "where": where,
@@ -498,7 +518,6 @@ class AitoClient:
             },
             "select": ["accuracy", "baseAccuracy", "n"],
         }
-        return self._request("POST", "/_evaluate", json=body)
 
 
 logger = logging.getLogger("aito.client")

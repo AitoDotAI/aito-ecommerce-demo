@@ -430,7 +430,7 @@ five at ≥ 0.87 in ~480 ms.
 
 ```json
 {
-  "testSource": { "from": "order_lines", "limit": 200 },
+  "test": { "$sample": { "n": 200, "seed": 0 } },
   "evaluate": {
     "from": "order_lines",
     "where": {
