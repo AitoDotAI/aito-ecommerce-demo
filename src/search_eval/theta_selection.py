@@ -6,6 +6,7 @@ the choice on half the queries (stratified: half of each stratum) and
 measures the gain on the other half, over many random splits:
 
   - how often each θ wins on the tuning half (is the choice stable?);
+  - each θ's held-out gain (where does it peak or flatten?);
   - the held-out right-vs-left gain across splits (is it still there?);
   - one split's per-persona paired interval (can 30 queries confirm it?).
 
@@ -46,14 +47,20 @@ def out_of_sample_report(queries: list[dict], rows: dict, thetas: tuple, persona
     def right_mean(theta, ids):
         return statistics.mean(ndcg(right(theta, p), i) for p in personas for i in ids)
 
+    def gain(theta, ids):
+        return statistics.mean(ndcg(right(theta, p), i) - ndcg(left_arm, i)
+                               for p in personas for i in ids)
+
     wins: dict = defaultdict(int)
     gains = []
+    gain_by_theta: dict = defaultdict(list)
     for seed in range(N_SPLITS):
         tune, test = _halves(queries, seed)
         best = max(thetas, key=lambda t: right_mean(t, tune))
         wins[best] += 1
-        gains.append(statistics.mean(ndcg(right(best, p), i) - ndcg(left_arm, i)
-                                     for p in personas for i in test))
+        gains.append(gain(best, test))
+        for t in thetas:
+            gain_by_theta[t].append(gain(t, test))
     gains.sort()
     lo, hi = gains[int(0.05 * N_SPLITS)], gains[int(0.95 * N_SPLITS) - 1]
 
@@ -64,7 +71,9 @@ def out_of_sample_report(queries: list[dict], rows: dict, thetas: tuple, persona
              "stratified splits (see src/search_eval/theta_selection.py).", "",
              "- θ chosen on the tuning half: " + ", ".join(
                  f"θ{t} {wins.get(t, 0)}/{N_SPLITS}" for t in thetas),
-             f"- held-out right-vs-left gain (nDCG@10): median {statistics.median(gains):+.3f}, "
+             "- held-out right-vs-left gain for each θ (median over splits): " + ", ".join(
+                 f"θ{t} {statistics.median(gain_by_theta[t]):+.3f}" for t in thetas),
+             f"- held-out right-vs-left gain of the θ chosen per split: median {statistics.median(gains):+.3f}, "
              f"90 % of splits in [{lo:+.3f}, {hi:+.3f}], "
              f"positive in {sum(g > 0 for g in gains) / N_SPLITS:.0%} of splits",
              f"- one split (seed 0, θ{best}), per persona on its {len(test)} held-out queries:"]

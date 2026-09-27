@@ -63,7 +63,7 @@ as if they were results.
     "where": {"customer_segment": "dog_owner", "customer_pet_size": "large"},
     "orderBy": {"$multiply": [
         {"$p": {"$context": {"purchased": True}}},
-        {"$similarity": {"name": query}, "theta": 3.0},
+        {"$similarity": {"name": query}, "theta": 4.0},
     ]},
     "select": ["sku", "name", "brand", "pet_type", "category", "price_eur"],
     "limit": 10,
@@ -89,19 +89,23 @@ calibrated default (0.33) let purchase history drown the words: a cat
 owner typing "food for an old dog" got cat food. On the judged set
 (nDCG@10, right column per persona):
 
-| θ | 0.33 | 1.0 | 2.0 | 3.0 |
-|:--|--:|--:|--:|--:|
-| Maija | 0.31 | 0.50 | 0.54 | 0.59 |
-| Olli | 0.31 | 0.48 | 0.54 | 0.57 |
-| Saara | 0.32 | 0.53 | 0.58 | 0.59 |
+| θ | 0.33 | 1.0 | 2.0 | 3.0 | **4.0** | 6.0 | 10.0 |
+|:--|--:|--:|--:|--:|--:|--:|--:|
+| Maija | 0.31 | 0.50 | 0.54 | 0.59 | **0.59** | 0.59 | 0.59 |
+| Olli | 0.31 | 0.48 | 0.54 | 0.57 | **0.57** | 0.57 | 0.57 |
+| Saara | 0.32 | 0.53 | 0.58 | 0.59 | **0.59** | 0.59 | 0.58 |
 
-At 2.0, relevance already matched BM25, but a cat owner's "dog food"
-still had cat food at ranks 7-10. 3.0 is the smallest weight tried
-that keeps pet-specific queries on that pet (pinned in
-`tests/test_aito_check.py`) while ambiguous queries like "food" are
-still decided by the customer. θ was chosen on the same query set it
-is reported on. Re-choosing it on half the queries picks 3.0 in all
-500 stratified splits, so the choice itself is stable.
+At 2.0, a cat owner's "dog food" still had cat food at ranks 7-10.
+From 3.0 up, pet-specific queries stay on that pet (pinned in
+`tests/test_aito_check.py`), and relevance plateaus.
+
+To avoid choosing θ on the queries it's scored on, the report repeats
+the choice on half the queries and scores the other half, over 500
+stratified splits. The held-out gain over BM25 is +0.062 at θ 3,
++0.067 at 4, +0.066 at 6 and +0.065 at 10: a plateau with a marginal
+peak at 4.0, which also wins most often on the tuning half (311/500).
+4.0 ships. Ambiguous queries like "food" are still decided by the
+customer.
 
 ### When no word matches
 
@@ -136,8 +140,7 @@ personas only the `where` values change.
 The left column is a real text ranker against the same database, and
 it's a strong one (nDCG@10 0.52 against the old 0.29). The right
 column is measured against it. In-sample it's ahead for every persona.
-Because θ was tuned on the same queries, the report also repeats the
-choice out of sample: the held-out gain is small (median +0.06) and
+Out of sample the gain is small (median +0.065 over 500 splits) and
 positive in every split, but 30 held-out queries are too few to prove
 it per persona. Honestly stated: at least as good as BM25, probably
 slightly better.

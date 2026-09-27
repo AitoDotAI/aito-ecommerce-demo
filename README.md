@@ -110,7 +110,7 @@ in both views.
   "where": { "customer_segment": "dog_owner", "customer_pet_size": "large" },
   "orderBy": { "$multiply": [
     { "$p": { "$context": { "purchased": true } } },
-    { "$similarity": { "name": "food for an old dog" }, "theta": 3.0 }
+    { "$similarity": { "name": "food for an old dog" }, "theta": 4.0 }
   ] },
   "limit": 10
 }

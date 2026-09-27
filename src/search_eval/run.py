@@ -45,7 +45,7 @@ MIN_SIGNAL = 0.20
 # Text-arm weights tried for the right column: Aito's calibrated default,
 # then stronger. The shipped value (search_service.TEXT_THETA) was chosen
 # on this set, so every candidate's score is reported, not just the winner's.
-THETAS = (0.33, 1.0, 2.0, TEXT_THETA)
+THETAS = (0.33, 1.0, 2.0, 3.0, 4.0, 6.0, 10.0)
 PERSONA_IDS = ("maija", "olli", "saara")
 
 

@@ -200,7 +200,7 @@ POST /_search
   "where": { "customer_segment": "cat_owner" },
   "orderBy": { "$multiply": [
     { "$p": { "$context": { "purchased": true } } },
-    { "$similarity": { "name": "food" }, "theta": 3.0 } ] },
+    { "$similarity": { "name": "food" }, "theta": 4.0 } ] },
   "select": ["sku", "name"], "limit": 10 }
 ```
 
@@ -212,7 +212,7 @@ POST /_search
 - **The θ on `$similarity` sets how much the words count against the
   prediction.** At the default 0.33 the prediction drowned the text (a
   cat owner's "dog food" returned cat food). Measure it on a judged set;
-  3.0 here.
+  4.0 here, chosen out of sample.
 - **Gotcha: the selected `$p` is the whole product**, not a probability
   (values ≫ 1). Don't display it as a percentage.
 - When no word matches, every `$similarity` is 1.0 and the ranking is

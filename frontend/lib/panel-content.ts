@@ -73,7 +73,7 @@ export function smartSearchPanel(): AitoPanelConfig {
   ${n('"where"')}: { ${n('"customer_segment"')}: ${s('"cat_owner"')} },
   ${n('"orderBy"')}: { ${n('"$multiply"')}: [
     { ${n('"$p"')}: { ${n('"$context"')}: { ${n('"purchased"')}: ${s('true')} } } },
-    { ${n('"$similarity"')}: { ${n('"name"')}: ${s('"food"')} }, ${n('"theta"')}: ${s('3.0')} }
+    { ${n('"$similarity"')}: { ${n('"name"')}: ${s('"food"')} }, ${n('"theta"')}: ${s('4.0')} }
   ] },
   ${n('"limit"')}: 10
 }`,

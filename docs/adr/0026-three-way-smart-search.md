@@ -212,30 +212,30 @@ the free credit that ordering gives.
 
 **The text weight.** At Aito's default θ 0.33, purchase probability
 drowned the words (nDCG@10 0.31; a cat owner's "food for an old dog"
-returned cat food). The shipped value is **θ 3.0**: the smallest tried
-that keeps pet-specific queries on that pet. At 2.0, a cat owner's
-"dog food" still had cat food at ranks 7-10. Chosen on the same query
-set; every value tried is reported.
+returned cat food). At 2.0 a cat owner's "dog food" still had cat food
+at ranks 7-10. From 3.0 up, pet-specific queries stay on that pet.
 
-**Tuned in-sample, so checked out of sample.** θ was chosen on the same
-60 queries the table below scores, and the right-vs-left gain is small
-enough that this matters. Repeating the choice on half the queries
-(stratified) and scoring the other half, over 500 splits: θ 3.0 wins on
-the tuning half in all 500, so the choice is stable. The held-out gain
-has a median of +0.062 (90 % of splits in [+0.034, +0.091]) and is
-positive in every split. **But on 30 held-out queries no persona's
-interval excludes zero** (e.g. Maija +0.043 [-0.036, +0.142]). Read
-the right column as at least as good as BM25 and probably slightly
-better, not proven better. 3.0 is also the top of the grid tried, and
-the trend was still rising.
+**Chosen out of sample.** θ is picked on the same queries the report
+scores, and the right-vs-left gain is small enough for that to matter.
+So the choice is repeated on half the queries (stratified) and scored on
+the other half, over 500 splits, across θ 0.33 to 10. The held-out gain
+over BM25 plateaus from θ 3: +0.062 at 3, **+0.067 at 4**, +0.066 at 6,
++0.065 at 10. θ 4.0 is the marginal peak and wins most often on the
+tuning half (311/500), so **θ 4.0 ships**. The live cross-pet check
+passes at 4.0. The gain of the per-split choice has a median of +0.065
+(90 % of splits in [+0.036, +0.093]) and is positive in every split.
+**But on 30 held-out queries the per-persona intervals mostly include
+zero** (seed 0: Maija +0.052 [-0.022, +0.148], Olli +0.052 [-0.012,
++0.123], Saara +0.081 [+0.004, +0.176]). Read the right column as at
+least as good as BM25 and probably slightly better, not proven better.
 
 | acceptance criterion | result |
 |:--|:--|
-| Both columns improve | left +0.225 [+0.141, +0.318]; right +0.273 to +0.294 per persona, all intervals above zero |
-| Right column ≥ left (BM25) | in-sample, better for every persona (+0.047 to +0.069, intervals above zero). **θ was tuned on the same queries**, so see below |
+| Both columns improve | left +0.225 [+0.141, +0.318]; right +0.278 to +0.299 per persona, all intervals above zero |
+| Right column ≥ left (BM25) | in-sample +0.053 to +0.074, intervals above zero; out of sample +0.065 median, not proven per persona (above) |
 | Right column zero-result rate 0 % | 0 % |
 | Maija/Saara flip for "food" survives in the `get` form | yes: top 5 all cat / all dog (`test_smart_search_food_flips_between_cat_and_dog_owner`) |
-| Latency no worse than 2.4 s p50 | p50 107-141 ms, p95 ≤ 331 ms |
+| Latency no worse than 2.4 s p50 | p50 101-125 ms, p95 ≤ 244 ms |
 | "food for an old dog" returns relevant results in both columns | yes |
 | "kissanruoka" / "hundmat" return relevant results | **no, step 2**: no English name matches; the right column falls back to purchase probability (~0.2, near chance) |
 

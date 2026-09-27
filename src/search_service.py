@@ -124,12 +124,13 @@ PRODUCT_FIELDS = ["sku", "name", "brand", "pet_type", "category", "price_eur"]
 # The text arm's weight in the predictive blend. Aito's calibrated default
 # is 0.33; on the judged query set it let purchase probability drown the
 # words (a cat owner asking for "food for an old dog" got cat food, nDCG@10
-# 0.31). At 2.0 relevance matched BM25, but a cat owner's "dog food" still
-# had cat food at ranks 7-10. 3.0 is the smallest weight tried that keeps a
-# pet-specific query on that pet (tests/test_aito_check.py) while the
-# customer still decides ambiguous queries like "food". Every weight tried
-# is scored in docs/verification/search-eval.md.
-TEXT_THETA = 3.0
+# 0.31). At 2.0 a cat owner's "dog food" still had cat food at ranks 7-10.
+# From 3.0 up the text holds (tests/test_aito_check.py) and the held-out
+# gain over BM25 plateaus: +0.062 at 3, +0.067 at 4, +0.066 at 6, +0.065 at
+# 10. 4.0 is the marginal peak, chosen out of sample (half the queries,
+# 500 splits). Ambiguous queries like "food" are still decided by the
+# customer. Every weight tried: docs/verification/search-eval.md.
+TEXT_THETA = 4.0
 
 
 def _baseline_search(client: AitoClient, query: str, limit: int) -> list[Hit]:
