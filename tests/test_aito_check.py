@@ -218,3 +218,27 @@ def test_table_counts_return_fast_enough_to_serve(client):
         "many unmerged segments by an interrupted load; run `./do optimize`: "
         + ", ".join(f"{t} {e:.1f}s" for t, e in slow)
     )
+
+
+# ── Evaluation: the hold-out must represent the population ───────────
+
+
+def test_evaluate_baseline_matches_the_population_majority_share(client):
+    """A representative hold-out gives a majority-class baseline close to
+    the population's majority share. `products.pet_type` is 278/658 = 0.42
+    cat, so the baseline must land near that.
+
+    This is what caught the bug: a first-200 `testSource.limit` took the
+    head of a table grouped by type, no test row carried the majority
+    class, and the baseline read 0.0 — making a working model look like
+    one scoring 0.06. With a seeded `$sample` it is ~0.40 and the model
+    ~0.85. Bounds are wide on purpose (a 200-row sample of 658 varies);
+    they exclude the failure, not the noise.
+    """
+    from src.eval_service import MODELS
+
+    m = next(m for m in MODELS if m.predict == "pet_type")
+    res = client.evaluate(m.table, m.where, m.predict)
+    base, acc = res["baseAccuracy"], res["accuracy"]
+    assert 0.30 <= base <= 0.55, f"baseline {base} is not the ~0.42 majority share"
+    assert acc - base >= 0.2, f"model {acc} barely beats its baseline {base}"

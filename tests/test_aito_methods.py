@@ -142,13 +142,44 @@ def test_evaluate_wraps_body_in_evaluate_key(client, httpx_mock: HTTPXMock):
         predict_field="returned",
     )
     body = _last_body(httpx_mock)
-    # Aito requires both `testSource` (which rows to hold out) AND
-    # `evaluate` (the prediction shape). See ADR 0010.
-    assert "testSource" in body
-    assert body["testSource"]["from"] == "order_lines"
+    # Which rows to hold out, plus the prediction shape. See ADR 0010.
     assert "evaluate" in body
     assert body["evaluate"]["predict"] == "returned"
     assert body["evaluate"]["where"] == {"category": {"$get": "category"}}
+
+
+def test_evaluate_holds_out_a_seeded_sample_not_the_first_rows(
+    client, httpx_mock: HTTPXMock
+):
+    """A positional `testSource.limit` takes the HEAD of the table, and
+    ordered tables make the head unrepresentative. On this demo's data it
+    turned a working pet_type model into "accuracy 0.06, baseline 0.0".
+    The hold-out must be a seeded random sample, and nothing positional
+    may sneak back in."""
+    httpx_mock.add_response(
+        url="https://example.aito.app/api/v1/_evaluate",
+        method="POST",
+        json={"accuracy": 0.9, "baseAccuracy": 0.4, "n": 200},
+    )
+    client.evaluate(table="products", where={}, predict_field="pet_type")
+    body = _last_body(httpx_mock)
+    assert body["test"] == {"$sample": {"n": 200, "seed": 0}}
+    assert "testSource" not in body, "a first-N testSource is the bug"
+
+
+def test_evaluate_body_is_what_evaluate_sends(client, httpx_mock: HTTPXMock):
+    """The Evaluation view displays `evaluate_body`; it must be byte-for-
+    byte the request, or the panel shows a query that was never run."""
+    from src.aito_client import AitoClient
+
+    httpx_mock.add_response(
+        url="https://example.aito.app/api/v1/_evaluate",
+        method="POST",
+        json={"accuracy": 0.9, "baseAccuracy": 0.4, "n": 50},
+    )
+    args = ("products", {"brand": {"$get": "brand"}}, "pet_type")
+    client.evaluate(*args, test_n=50, seed=7)
+    assert _last_body(httpx_mock) == AitoClient.evaluate_body(*args, test_n=50, seed=7)
 
 
 def test_estimate_emits_expected_body(client, httpx_mock: HTTPXMock):

@@ -10,18 +10,20 @@
           "name",
           "brand"
         ],
-        "accuracy": 0.06,
-        "base_accuracy": 0.0,
-        "accuracy_gain": 0.06,
+        "accuracy": 0.85,
+        "base_accuracy": 0.4,
+        "accuracy_gain": 0.45,
         "n": 200,
         "threshold_pp": 10.0,
-        "verdict": "fail",
+        "verdict": "pass",
         "last_query": {
           "endpoint": "_evaluate",
           "body": {
-            "testSource": {
-              "from": "products",
-              "limit": 200
+            "test": {
+              "$sample": {
+                "n": 200,
+                "seed": 0
+              }
             },
             "evaluate": {
               "from": "products",
@@ -55,18 +57,20 @@
           "category",
           "pet_type"
         ],
-        "accuracy": 0.4639,
-        "base_accuracy": 0.2526,
-        "accuracy_gain": 0.2113,
-        "n": 194,
+        "accuracy": 0.6508,
+        "base_accuracy": 0.2619,
+        "accuracy_gain": 0.3889,
+        "n": 126,
         "threshold_pp": 10.0,
         "verdict": "pass",
         "last_query": {
           "endpoint": "_evaluate",
           "body": {
-            "testSource": {
-              "from": "products",
-              "limit": 200
+            "test": {
+              "$sample": {
+                "n": 200,
+                "seed": 0
+              }
             },
             "evaluate": {
               "from": "products",
@@ -104,18 +108,20 @@
           "product.pet_type",
           "product.category"
         ],
-        "accuracy": 0.805,
-        "base_accuracy": 0.475,
-        "accuracy_gain": 0.33,
+        "accuracy": 0.815,
+        "base_accuracy": 0.455,
+        "accuracy_gain": 0.36,
         "n": 200,
         "threshold_pp": 10.0,
         "verdict": "pass",
         "last_query": {
           "endpoint": "_evaluate",
           "body": {
-            "testSource": {
-              "from": "order_lines",
-              "limit": 200
+            "test": {
+              "$sample": {
+                "n": 200,
+                "seed": 0
+              }
             },
             "evaluate": {
               "from": "order_lines",
@@ -148,8 +154,8 @@
           "product.pet_type",
           "customer_segment"
         ],
-        "accuracy": 0.975,
-        "base_accuracy": 0.975,
+        "accuracy": 0.98,
+        "base_accuracy": 0.98,
         "accuracy_gain": 0.0,
         "n": 200,
         "threshold_pp": 10.0,
@@ -157,9 +163,11 @@
         "last_query": {
           "endpoint": "_evaluate",
           "body": {
-            "testSource": {
-              "from": "order_lines",
-              "limit": 200
+            "test": {
+              "$sample": {
+                "n": 200,
+                "seed": 0
+              }
             },
             "evaluate": {
               "from": "order_lines",
@@ -186,8 +194,8 @@
         "error": null
       }
     ],
-    "last_run": "2026-09-23T04:28:11+00:00",
-    "total_response_ms": 4700
+    "last_run": "2026-09-27T18:51:14+00:00",
+    "total_response_ms": 5143
   },
   "timings": []
 }

@@ -229,7 +229,7 @@ def _evaluate_demand(client: AitoClient) -> EvalSummary:
             table="monthly_sales",
             where=where,
             predict_field="units_sold",
-            test_limit=300,
+            test_n=300,
         )
     except Exception:
         return EvalSummary(0.0, 0.0, 0.0, 0)
