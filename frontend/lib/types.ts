@@ -514,10 +514,11 @@ export interface DemandSeasonRow {
 }
 
 export interface DemandEvalSummary {
-  accuracy: number;
-  base_accuracy: number;
-  accuracy_gain_pp: number;
+  accuracy: number;        // model: share of test rows in the right sales range
+  naive_accuracy: number;  // "same range as last month", same rows
+  base_accuracy: number;   // always the most common range
   n: number;
+  method: string;          // how the split and scoring were done, shown verbatim
 }
 
 export interface DemandResponse {

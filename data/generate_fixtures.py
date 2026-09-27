@@ -519,6 +519,13 @@ class MonthlySale:
     brand: str                 # denormalised
     season: str                # "spring" | "summer" | "autumn" | "winter"
     price_eur: float           # realised price (revenue / units) — drives demand-curve _estimate
+    # Last calendar month's units for this SKU (0 if it sold nothing),
+    # and both months as sales ranges. The Demand forecast conditions on
+    # last month; its accuracy is scored on ranges against the naive
+    # "same range as last month" rule. See ADR 0014 §Correction.
+    units_last_month: int
+    units_bucket: str
+    units_last_month_bucket: str
 
 
 @dataclass
@@ -2171,6 +2178,20 @@ _COST_RATIO_BY_CATEGORY: dict[str, float] = {
 }
 
 
+# Doubling-width ranges: being off by 2 units matters at 3, not at 30.
+UNITS_RANGES = ((0, "0"), (1, "1"), (3, "2-3"), (7, "4-7"),
+                (15, "8-15"), (31, "16-31"))
+
+
+def units_range(units: int) -> str:
+    """The sales range a unit count falls in: 0, 1, 2-3, 4-7, 8-15, 16-31, 32+."""
+    assert units >= 0, f"negative units: {units}"
+    for upper, label in UNITS_RANGES:
+        if units <= upper:
+            return label
+    return "32+"
+
+
 def gen_monthly_sales(
     products: list[Product],
     orders: list[Order],
@@ -2215,6 +2236,8 @@ def gen_monthly_sales(
             continue
         month_int = int(month.split("-")[1])
         units = int(data["units"])
+        previous = agg.get((sku, _add_months(month, -1)))
+        units_last_month = int(previous["units"]) if previous else 0
         revenue = _round_eur(data["revenue"])
         price = _round_eur(revenue / units) if units > 0 else _round_eur(prod.price_eur)
         out.append(MonthlySale(
@@ -2229,6 +2252,9 @@ def gen_monthly_sales(
             brand=prod.brand,
             season=_SEASON_BY_MONTH[month_int],
             price_eur=price,
+            units_last_month=units_last_month,
+            units_bucket=units_range(units),
+            units_last_month_bucket=units_range(units_last_month),
         ))
     return out
 
