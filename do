@@ -110,6 +110,7 @@ Data
 Quality
   test              Run pytest
   aito-check        Sanity-check Aito queries against the loaded data
+  search-eval       Score search arms on the judged query set (nDCG, recall, controls)
   v2-env            Stage the v2 (Rep2) env — ADR 0025 (dry run unless --apply)
   verify <feature>  Run the adversary Playwright agent for one feature
   verify-demo       End-to-end demo-path check
@@ -404,6 +405,14 @@ cmd_aito_check() {
   uv run pytest tests/test_aito_check.py -v
 }
 
+cmd_search_eval() {
+  # Score every search arm on the judged query set (read-only queries).
+  # Writes docs/verification/search-eval.{md,json}; exits non-zero if a
+  # control (random arm, shuffled labels) scores too well to trust.
+  cd "$SCRIPT_DIR"
+  uv run python -m src.search_eval.run
+}
+
 cmd_verify() {
   if [[ $# -eq 0 ]]; then
     echo "Usage: ./do verify <feature>"
@@ -574,6 +583,7 @@ case "${1:-help}" in
   workbook)          cmd_workbook ;;
   test)              cmd_test ;;
   aito-check)        cmd_aito_check ;;
+  search-eval)       cmd_search_eval ;;
   v2-env)          cmd_v2_env "${@:2}" ;;
   verify)            shift; cmd_verify "$@" ;;
   verify-demo)       cmd_verify_demo ;;
