@@ -145,3 +145,80 @@ The `season` column is denormalised at fixture-gen via
 `_SEASON_BY_MONTH`. The `_relate season=<name> relate category`
 queries leverage this directly — without it, the four parallel
 seasonality `_relate` calls couldn't condition cleanly.
+
+## Correction: a forecast must beat "same as last month" (2026-09-27)
+
+The page reported a held-out accuracy *below* its baseline (21 % vs
+25 %) and forecast 6-7 units for SKUs that sold 13-30 last month. Three
+design faults, none of them tuning:
+
+1. **No memory of recent sales.** The forecast conditioned on
+   `month: "2026-05"`, a value no training row has, so it carried no
+   evidence and the estimate fell back to the SKU's all-time average.
+   The catalogue's volume grows ~17x over the 24 months, so the
+   all-time average sits far below the current level.
+2. **The wrong score.** `_evaluate predict units_sold` counts a hit only
+   on the exact integer, against "always 1 unit". Nobody plans stock to
+   the unit; the question is whether the forecast lands in the right
+   range, and whether it beats the obvious rule.
+3. **A random hold-out for a time series.** Test rows came from every
+   month, so the model could learn from a SKU's *later* months when
+   predicting an earlier one.
+
+### Decision
+
+- `monthly_sales` gains `units_last_month` (Int, 0 when the SKU sold
+  nothing), and `units_bucket` / `units_last_month_bucket` (String):
+  `0`, `1`, `2-3`, `4-7`, `8-15`, `16-31`, `32+`. Doubling-width ranges,
+  because a forecast off by 2 units matters at 3 and not at 30.
+- The forecast conditions on `units_last_month` instead of the unseen
+  `month`.
+- Accuracy is a **time split**: train on every month before the latest,
+  test on the latest (`2026-04`), predicting `units_bucket`. `_evaluate`
+  takes `train` / `test` propositions for this.
+- The page shows three numbers side by side on the same test rows: the
+  model, the **naive forecast** (next month lands in last month's
+  range), and the majority range. The naive rule is the one to beat.
+- Errors surface. The service no longer turns a failed Aito call into
+  a forecast of 0 or an accuracy of 0 %; the endpoint returns 502.
+
+### Aito usage
+
+```json
+{
+  "train": {"month": {"$not": "2026-04"}},
+  "test":  {"month": "2026-04"},
+  "evaluate": {
+    "from": "monthly_sales",
+    "where": {"units_last_month_bucket": {"$get": "units_last_month_bucket"},
+              "product_sku": {"$get": "product_sku"},
+              "category": {"$get": "category"}, "brand": {"$get": "brand"},
+              "pet_type": {"$get": "pet_type"}, "season": {"$get": "season"}},
+    "predict": "units_bucket"
+  },
+  "select": ["accuracy", "baseAccuracy", "n"]
+}
+```
+
+Verified on shared (read-only) that `train` is honoured: training on
+the oldest month alone changes the accuracy on the same test rows.
+
+This is an interim metric. The right score for a numeric forecast is
+the error size (MAE) against the naive forecast. The engine documents
+`_evaluate` over `estimate` (`select: [mae, rmse, r2]`) but v2.10.3
+rejects it on both API versions ("missing 'evaluate.predict'"), and
+computing it in the service would leak: `_estimate` has no train
+filter, so a held-out row would inform its own forecast. When the
+engine accepts it, the page moves to MAE against naive.
+
+### Acceptance criteria
+
+- The evaluation card shows model, naive and majority accuracy on the
+  same held-out rows, and names the design (time split, ranges).
+- When Aito fails, `/api/demand` returns 502 rather than zeros.
+- A top mover that sold 20+ units last month is not forecast at the
+  all-time average.
+
+The original criterion "gain ≥ 0" is replaced: the gain that matters
+is over the naive forecast, and the page reports it whichever way it
+falls.
