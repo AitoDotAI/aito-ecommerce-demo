@@ -254,7 +254,7 @@ function DemandAccuracy({ e }: { e: DemandResponse["evaluation"] }) {
       </table>
       <div className="card-sub" style={{ lineHeight: 1.6, marginTop: 8 }}>
         {e.method} {e.n} test rows. Interim metric: the next step scores the
-        error size in units against the naive forecast.
+        table's unit forecast directly, by its error against the naive forecast.
       </div>
     </>
   );

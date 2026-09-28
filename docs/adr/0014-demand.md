@@ -203,7 +203,10 @@ design faults, none of them tuning:
 Verified on shared (read-only) that `train` is honoured: training on
 the oldest month alone changes the accuracy on the same test rows.
 
-This is an interim metric. The right score for a numeric forecast is
+This is an interim metric, and it scores a **different model** from the
+one in the table: `_evaluate predict units_bucket` classifies the
+month's range, while the table shows `_estimate units_sold`. The card
+says so. The right score for the table's forecast is
 the error size (MAE) against the naive forecast. The engine documents
 `_evaluate` over `estimate` (`select: [mae, rmse, r2]`) but v2.10.3
 rejects it on both API versions ("missing 'evaluate.predict'"), and
