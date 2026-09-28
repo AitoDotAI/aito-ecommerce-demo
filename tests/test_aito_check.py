@@ -244,3 +244,38 @@ def test_evaluate_baseline_matches_the_population_majority_share(client):
     base, acc = res["baseAccuracy"], res["accuracy"]
     assert 0.30 <= base <= 0.55, f"baseline {base} is not the ~0.42 majority share"
     assert acc - base >= 0.2, f"model {acc} barely beats its baseline {base}"
+
+
+# ── Demand: a time-split `_evaluate` (ADR 0014 §Correction) ──────────
+
+
+def test_demand_time_split_tests_exactly_the_latest_month(client):
+    """`test: {month: latest}` must hold out that month's rows and nothing
+    else, and the naive score must be read from the same rows — otherwise
+    the model and naive numbers on the page are not comparable."""
+    from src.demand_evaluation import evaluate_demand
+    from src.demand_forecast import LATEST_MONTH
+
+    rows = client.search("monthly_sales", where={"month": LATEST_MONTH}, limit=0)["total"]
+    e = evaluate_demand(client, LATEST_MONTH)
+    assert e.n == rows > 0
+    for name, value in (("model", e.accuracy), ("naive", e.naive_accuracy),
+                        ("majority", e.base_accuracy)):
+        assert 0.0 <= value <= 1.0, f"{name} accuracy {value} is not a share"
+
+
+def test_demand_time_split_honours_the_train_proposition(client):
+    """If `train` were ignored the model could learn from the month it is
+    tested on. Training on the oldest month alone must change the score
+    on the same test rows; if it does not, `train` is not being read."""
+    from src.demand_evaluation import _FEATURES
+    from src.demand_forecast import LATEST_MONTH
+
+    def accuracy(train: dict) -> float:
+        return client.evaluate(
+            "monthly_sales", {f: {"$get": f} for f in _FEATURES}, "units_bucket",
+            train=train, test={"month": LATEST_MONTH})["accuracy"]
+
+    everything_before = accuracy({"month": {"$not": LATEST_MONTH}})
+    oldest_only = accuracy({"month": "2024-05"})
+    assert everything_before != oldest_only

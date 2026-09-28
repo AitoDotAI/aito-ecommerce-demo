@@ -32,13 +32,12 @@ from typing import Any
 
 from src.aito_client import AitoClient
 from src import cache
-from src.why_processor import process_estimate_why
+from src.demand_forecast import forecast_units, forecast_where, last_month_units
 
 
 # Frozen "today" — every demand forecast is for the NEXT month
 # from this anchor. Mirrors `data/generate_fixtures.py`.
 DEMO_TODAY_YYYYMM = "2026-04"
-FORECAST_MONTH = "2026-05"   # the month we're predicting demand for
 
 
 # How many critical SKUs to deep-score with a `_predict` call.
@@ -175,48 +174,6 @@ def _fetch_recent_sales(client: AitoClient) -> dict[str, list[dict]]:
     return out
 
 
-def _predict_demand(client: AitoClient, sku: str, sales_history: list[dict]) -> tuple[int, dict | None]:
-    """Estimate next-month units_sold for one SKU via `_estimate`.
-
-    Uses `_estimate` (expected-value regression) rather than
-    `_predict` because we want the *mean* of next-month units, not
-    the most-probable specific integer. Same shape as Demand
-    Forecast's `_estimate_units`. See ADR 0015 §"_estimate switch".
-    """
-    if not sales_history:
-        return 0, None
-    # Use the most recent row to extract denormalised features.
-    recent = max(sales_history, key=lambda r: r["month"])
-    forecast_month_int = int(FORECAST_MONTH.split("-")[1])
-    season_map = {
-        1: "winter", 2: "winter", 3: "spring", 4: "spring",
-        5: "spring", 6: "summer", 7: "summer", 8: "summer",
-        9: "autumn", 10: "autumn", 11: "autumn", 12: "winter",
-    }
-    where = {
-        "product_sku": sku,
-        "month":       FORECAST_MONTH,
-        "pet_type":    recent.get("pet_type", ""),
-        "category":    recent.get("category", ""),
-        "brand":       recent.get("brand", ""),
-        "season":      season_map[forecast_month_int],
-    }
-    try:
-        res = client.estimate("monthly_sales", where=where,
-                              estimate_field="units_sold")
-    except Exception:
-        return 0, None
-    estimate = res.get("estimate")
-    if estimate is None:
-        return 0, None
-    units = max(0, int(round(float(estimate))))
-    why = process_estimate_why(
-        res.get("why"), float(estimate),
-        field_label="units_sold",
-    )
-    return units, why
-
-
 # ── Public entry point ─────────────────────────────────────────────
 
 
@@ -278,7 +235,10 @@ def get_inventory(
     critical = critical[:top_n]   # cap the predict fan-out
 
     def score(r: dict) -> tuple[dict, int, dict | None]:
-        units, why = _predict_demand(client, r["sku"], sales.get(r["sku"], []))
+        history = sales.get(r["sku"], [])
+        if not history:
+            return r, 0, None   # never sold: there is nothing to forecast from
+        units, why = forecast_units(client, r["sku"], history)
         return r, units, why
 
     reorder_rows: list[ReorderRow] = []
@@ -336,19 +296,15 @@ def get_inventory(
             "€ if criticals stock out"),
     ]
 
+    # The body actually sent for the first scored SKU, not a lookalike.
+    first = next((r["sku"] for r in critical if sales.get(r["sku"])), None)
     sample_body = {
         "from": "monthly_sales",
-        "where": {
-            "product_sku": "<sku>",
-            "month":       FORECAST_MONTH,
-            "pet_type":    "<from product>",
-            "category":    "<from product>",
-            "brand":       "<from product>",
-            "season":      "spring",
-        },
+        "where": forecast_where(first, max(sales[first], key=lambda r: r["month"]),
+                                last_month_units(sales[first])),
         "estimate": "units_sold",
         "select":   ["estimate", "why"],
-    }
+    } if first else "No critical SKU has sales history, so no _estimate was sent."
 
     resp = InventoryResponse(
         kpis=kpis,

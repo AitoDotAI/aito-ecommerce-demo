@@ -479,6 +479,8 @@ class AitoClient:
         *,
         test_n: int = 200,
         seed: int = 0,
+        train: dict | None = None,
+        test: dict | None = None,
     ) -> dict:
         """Run an `_evaluate` query — accuracy on a held-out test set.
 
@@ -488,7 +490,8 @@ class AitoClient:
         ``{"accuracy": float, "baseAccuracy": float, "n": int, ...}``.
         """
         body = self.evaluate_body(
-            table, where, predict_field, test_n=test_n, seed=seed
+            table, where, predict_field, test_n=test_n, seed=seed,
+            train=train, test=test,
         )
         return self._request("POST", "/_evaluate", json=body)
 
@@ -500,6 +503,8 @@ class AitoClient:
         *,
         test_n: int = 200,
         seed: int = 0,
+        train: dict | None = None,
+        test: dict | None = None,
     ) -> dict:
         """The exact `_evaluate` body `evaluate` sends — exposed so a view
         can show the query it actually ran, not a hand-copied lookalike.
@@ -514,9 +519,14 @@ class AitoClient:
         sample scores 0.85 against a 0.40 baseline, which matches the
         measured majority share (0.42). The model was fine; the split was
         not. The seed keeps the demo reproducible run to run.
+
+        A time series needs the other split: pass `test` (e.g. the latest
+        month) and `train` (everything before it) as propositions, so the
+        model never learns from the future it is asked to predict. Given
+        `test`, `test_n` and `seed` are not used.
         """
-        return {
-            "test": {"$sample": {"n": test_n, "seed": seed}},
+        body: dict = {
+            "test": test if test is not None else {"$sample": {"n": test_n, "seed": seed}},
             "evaluate": {
                 "from": table,
                 "where": where,
@@ -524,6 +534,9 @@ class AitoClient:
             },
             "select": ["accuracy", "baseAccuracy", "n"],
         }
+        if train is not None:
+            body["train"] = train
+        return body
 
 
 logger = logging.getLogger("aito.client")
