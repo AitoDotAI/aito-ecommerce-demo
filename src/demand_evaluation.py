@@ -30,9 +30,13 @@ from src.aito_client import AitoClient
 _FEATURES = ("units_last_month_bucket", "product_sku", "pet_type",
              "category", "brand", "season")
 
-METHOD = ("Time split: trained on months before {test_month}, tested on "
-          "{test_month}. Scored on sales ranges (0, 1, 2-3, 4-7, 8-15, "
-          "16-31, 32+), not exact units.")
+# Says what is scored: Aito predicting the month's sales RANGE. That is
+# not the `_estimate` forecast in the page's table, which `_evaluate`
+# cannot score yet (see the module docstring).
+METHOD = ("Scores Aito predicting each month's sales range (0, 1, 2-3, 4-7, "
+          "8-15, 16-31, 32+) from last month's range and the product, not the "
+          "unit forecast in the table. Time split: trained on months before "
+          "{test_month}, tested on {test_month}.")
 
 
 @dataclass(frozen=True)
