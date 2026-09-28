@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { hiddenReason } from "@/lib/hidden-routes";
 import { useShell } from "./ShellState";
 
 interface NavItem {
@@ -24,7 +25,7 @@ interface NavSection {
  * data-driven (today's pending counts, current accuracy, etc.)
  * as each view's data layer lands.
  */
-const SECTIONS: NavSection[] = [
+const ALL_SECTIONS: NavSection[] = [
   {
     label: "Overview",
     items: [
@@ -73,6 +74,12 @@ const SECTIONS: NavSection[] = [
     ],
   },
 ];
+
+// Views listed in `lib/hidden-routes.ts` are left out; a section left
+// empty by that is dropped too.
+const SECTIONS: NavSection[] = ALL_SECTIONS
+  .map((section) => ({ ...section, items: section.items.filter((i) => !hiddenReason(i.href)) }))
+  .filter((section) => section.items.length > 0);
 
 
 export default function Sidebar() {

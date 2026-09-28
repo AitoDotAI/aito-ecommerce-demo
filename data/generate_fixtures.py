@@ -876,7 +876,9 @@ def _compose_name(brand: str, flavour: str, dietary: str | None,
         else:
             parts.append("Food")
     elif category == "dental-treats":
-        parts.append("Dental Treats")
+        # Two of the three flavours already say it ("Daily Dental",
+        # "Puppy Dental"); don't print "Daily Dental Dental Treats".
+        parts.append("Treats" if flavour.endswith("Dental") else "Dental Treats")
     elif category == "treats":
         parts.append("Treats")
     elif category == "litter":

@@ -690,3 +690,13 @@ def test_treat_affinity_correlates_with_treats_share(customers, products, orders
     assert h_pct >= 2 * l_pct, (
         f"treat_affinity lift too weak: high {h_pct:.1%} vs low {l_pct:.1%}"
     )
+
+
+def test_no_product_name_repeats_a_word():
+    """A shopper reading "Daily Dental Dental Treats" stops trusting the
+    catalogue (demo review, 2026-09-28): a flavour already ending in the
+    category word must not get it again."""
+    for p in _load("products.json"):
+        words = p["name"].lower().split()
+        repeats = [w for w, nxt in zip(words, words[1:]) if w == nxt]
+        assert not repeats, p["name"]
