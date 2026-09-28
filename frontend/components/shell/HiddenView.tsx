@@ -2,11 +2,18 @@
 
 import Link from "next/link";
 
+import { usePagePanel } from "./ShellState";
+
 /**
  * Shown in place of a view listed in `lib/hidden-routes.ts`. It says
  * why the view is hidden rather than pretending the page doesn't exist.
+ *
+ * The hidden page never mounts, so it never sets the Aito panel; the
+ * previous page's query would stay on screen beside this notice. Setting
+ * an empty panel and this page's own title keeps the screen coherent.
  */
 export default function HiddenView({ reason }: { reason: string }) {
+  usePagePanel(null, { title: "Not shown right now", breadcrumb: "Not shown right now" });
   return (
     <div className="fade-in">
       <div className="page-header">
