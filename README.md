@@ -66,11 +66,20 @@ Each is in its own view, each builds on the previous:
 | 5 | Evaluation honest failure — Return Risk +0.0 pp gain | [Evaluation](#16-evaluation--honest-passfail) | `_evaluate` × 4 |
 | 6 | Churn ranking — 100 active customers scored by P(churn in 3 mo) from the time-series panel | [Churn](#8-churn--time-series-prediction-over-the-panel) | `_predict` × N + `_relate` × 5 + `_evaluate` |
 | 7 | **Inventory reorder workflow** — critical SKUs ranked by revenue at risk in €, per-row `$why` decomposing the demand forecast | [Inventory](#10-inventory--the-killer-operate-view) | `_predict` × 25 + `_search` |
-| 8 | **Markdown decision** — for 15 overstock SKUs, the discount that clears in 3 months at highest recoverable margin | [Markdown](#12-markdown--inventory--demand--price-one-workflow) | `_estimate` × 5 per SKU |
-| 9 | **Win-back recoverable revenue** — €1,354 across 20 churned customers at €30 send cost (45× ROI) | [Win-back](#14-winback--empirical-revenue-impact-per-send) | `_recommend` + `_estimate` |
+| 8 | *Paused:* Markdown decision — the discount that clears overstock at the highest recoverable margin | [Markdown](#12-markdown--inventory--demand--price-one-workflow) | `_estimate` × 5 per SKU |
+| 9 | *Paused:* Win-back — products a churned customer is likely to respond to | [Win-back](#14-winback--empirical-revenue-impact-per-send) | `_recommend` + `_estimate` |
 
 The two-minute narrated walkthrough is in
 [`docs/demo-script.md`](docs/demo-script.md).
+
+**Hidden for now:** Demand Forecast, Price, Markdown, Cart Completion
+and Win-back. On today's synthetic purchase data they contradict
+themselves (a forecast that loses to "same as last month", margin-losing
+markdowns, a purchase probability shown as a campaign response rate).
+They return when the data is regenerated with realistic purchase
+patterns ([ADR 0027](docs/adr/0027-purchase-lifecycle-data.md)). The
+code, API and tests stay; the switch is one list,
+[`frontend/lib/hidden-routes.ts`](frontend/lib/hidden-routes.ts).
 
 ---
 

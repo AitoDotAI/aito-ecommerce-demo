@@ -1,8 +1,11 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { usePathname } from "next/navigation";
 
+import { hiddenReason } from "@/lib/hidden-routes";
 import AitoPanel from "./AitoPanel";
+import HiddenView from "./HiddenView";
 import Sidebar from "./Sidebar";
 import TopBar from "./TopBar";
 import { ShellProvider, useShell } from "./ShellState";
@@ -28,6 +31,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
 function ShellChrome({ children }: { children: ReactNode }) {
   const { sidebarCollapsed, aitoCollapsed, mobileOpen, closeMobile } = useShell();
+  // A hidden view's page never mounts, so it makes no API calls either.
+  const hidden = hiddenReason(usePathname());
 
   const mainClasses = [
     "main",
@@ -44,7 +49,7 @@ function ShellChrome({ children }: { children: ReactNode }) {
       <div className="layout">
         <Sidebar />
         <main className={mainClasses}>
-          {children}
+          {hidden ? <HiddenView reason={hidden} /> : children}
         </main>
         <AitoPanel />
       </div>
