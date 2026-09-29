@@ -20,6 +20,7 @@ from dataclasses import dataclass, asdict
 from pathlib import Path
 
 from src.aito_client import AitoClient
+from src.aito_compat import related_value
 from src import cache
 
 
@@ -218,9 +219,8 @@ def get_bought_together(
 
     cross_sells: list[CrossSell] = []
     for hit in res.get("hits", []):
-        rel = hit.get("related", {}).get("line_categories", {})
-        token = rel.get("$has") if isinstance(rel, dict) else None
-        if not token or token == anchor_id:
+        token = related_value(hit, "line_categories")
+        if token == anchor_id:
             continue   # skip self-anchor
         lift = float(hit.get("lift", 0))
         if lift < 1.2:

@@ -10,7 +10,7 @@ Pure functions and config — no Aito calls.
 
 from __future__ import annotations
 
-from src.aito_compat import adapt_request, normalize_response
+from src.aito_compat import adapt_request, normalize_response, related_value
 from src.config import Config
 
 
@@ -216,3 +216,36 @@ def test_a_non_link_recommend_target_gets_no_injected_select():
 def test_unknown_table_is_not_guessed_at():
     body = {"from": "prediction_cache", "recommend": "cache_key"}
     assert "select" not in adapt_request("/_recommend", body, use_v2=True)
+
+
+def test_bare_per_field_related_value_is_wrapped_like_v1():
+    """The shape v2 actually returns for a String column (measured on
+    shared, v2.10.3): `{"category": "dental-treats"}`. v1 and every reader
+    expect `{"category": {"$has": "dental-treats"}}`; unwrapped, the
+    readers dropped every row, so Demand showed "no seasonal drivers" and
+    Price's sweet spots were always empty."""
+    out = normalize_response({"hits": [{"related": {"category": "dental-treats"}, "lift": 1.06}]})
+    assert out["hits"][0]["related"] == {"category": {"$has": "dental-treats"}}
+
+
+def test_text_column_related_already_carries_has_and_is_left_alone():
+    """Text columns (`line_categories`) come back as `{"$has": token}` on
+    v2 too, which is why Bought Together kept working."""
+    related = {"line_categories": {"$has": "dog_dentaltreats"}}
+    out = normalize_response({"hits": [{"related": dict(related)}]})
+    assert out["hits"][0]["related"] == related
+
+
+def test_related_value_reads_the_matched_value():
+    hit = {"related": {"category": {"$has": "treats"}}, "lift": 1.2}
+    assert related_value(hit, "category") == "treats"
+
+
+def test_related_value_fails_loudly_on_an_unexpected_shape():
+    """A reader that silently skipped unexpected shapes is how a v2 shape
+    change emptied two panels without an error. It must raise instead."""
+    import pytest
+    with pytest.raises(ValueError, match="related.category"):
+        related_value({"related": {"category": "treats"}, "lift": 1.2}, "category")
+    with pytest.raises(ValueError, match="related.category"):
+        related_value({"related": {"brand": {"$has": "Acme"}}}, "category")

@@ -29,6 +29,7 @@ from dataclasses import dataclass, asdict
 from typing import Any
 
 from src.aito_client import AitoClient
+from src.aito_compat import related_value
 from src import cache
 from src.why_processor import process_why
 
@@ -274,15 +275,12 @@ def _drivers(client: AitoClient) -> list[DriverRow]:
     """
 
     def fetch(field: str) -> tuple[str, dict]:
-        try:
-            res = client.relate(
-                table="customer_months",
-                where={"churned_in_3_months": True},
-                relate_field=field,
-                limit=12,
-            )
-        except Exception:
-            return field, {}
+        res = client.relate(
+            table="customer_months",
+            where={"churned_in_3_months": True},
+            relate_field=field,
+            limit=12,
+        )
         return field, res
 
     with ThreadPoolExecutor(max_workers=len(_DRIVER_RELATE_FIELDS)) as pool:
@@ -291,13 +289,7 @@ def _drivers(client: AitoClient) -> list[DriverRow]:
     rows: list[DriverRow] = []
     for field, res in results:
         for hit in res.get("hits", []):
-            rel = hit.get("related", {}).get(field, {})
-            # `_relate` returns the matched value under `$has` (same
-            # key Bought Together + Pattern Explorer read). `$is` is
-            # the wrong key — it returns None and the row gets dropped.
-            value = rel.get("$has") if isinstance(rel, dict) else None
-            if value is None:
-                continue
+            value = related_value(hit, field)
             lift = float(hit.get("lift", 0))
             if abs(lift - 1.0) < 0.15:
                 continue

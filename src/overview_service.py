@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Any
 
 from src.aito_client import AitoClient
+from src.aito_compat import related_value
 from src import cache
 
 
@@ -204,19 +205,14 @@ def _compute_top_patterns(client: AitoClient, k: int = 6) -> list[Pattern]:
         anchors_targets.append((anchor_token, target_token, label, anchor_pet))
 
     def _lift_for(anchor_token: str, target_token: str) -> float | None:
-        try:
-            res = client.relate(
-                table="orders",
-                where={"line_categories": {"$match": anchor_token}},
-                relate_field="line_categories",
-                limit=20,
-            )
-        except Exception:
-            return None
+        res = client.relate(
+            table="orders",
+            where={"line_categories": {"$match": anchor_token}},
+            relate_field="line_categories",
+            limit=20,
+        )
         for hit in res.get("hits", []):
-            rel = hit.get("related", {}).get("line_categories", {})
-            token = rel.get("$has") if isinstance(rel, dict) else None
-            if token == target_token:
+            if related_value(hit, "line_categories") == target_token:
                 return float(hit.get("lift", 0))
         return None
 
