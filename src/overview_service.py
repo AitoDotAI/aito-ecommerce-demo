@@ -15,6 +15,7 @@ The same `DashboardResponse` shape is consumed by
 from __future__ import annotations
 
 import json
+import logging
 import time
 from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor
@@ -22,9 +23,11 @@ from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Any
 
-from src.aito_client import AitoClient
+from src.aito_client import AitoClient, AitoError
 from src.aito_compat import related_value
 from src import cache
+
+logger = logging.getLogger(__name__)
 
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -52,6 +55,9 @@ class Pattern:
     label: str
     lift: float
     bar_pct: float
+    # False when this pattern's `_relate` failed: the tile says so
+    # rather than disappearing (the dashboard is the landing view).
+    available: bool = True
 
 
 @dataclass(frozen=True)
@@ -205,6 +211,8 @@ def _compute_top_patterns(client: AitoClient, k: int = 6) -> list[Pattern]:
         anchors_targets.append((anchor_token, target_token, label, anchor_pet))
 
     def _lift_for(anchor_token: str, target_token: str) -> float | None:
+        """The anchor → target lift, or None when the target is not among
+        the anchor's related categories. A failed call raises."""
         res = client.relate(
             table="orders",
             where={"line_categories": {"$match": anchor_token}},
@@ -216,16 +224,29 @@ def _compute_top_patterns(client: AitoClient, k: int = 6) -> list[Pattern]:
                 return float(hit.get("lift", 0))
         return None
 
+    def _lift_or_failure(t: tuple) -> tuple[float | None, str | None]:
+        # The landing page fans out one `_relate` per pattern; one
+        # transient failure marks that tile, it doesn't take the page down.
+        try:
+            return _lift_for(t[0], t[1]), None
+        except AitoError as exc:
+            logger.warning("dashboard pattern %s → %s unavailable: %s", t[0], t[1], exc)
+            return None, str(exc)
+
     with ThreadPoolExecutor(max_workers=min(6, len(anchors_targets))) as pool:
-        lifts = list(pool.map(
-            lambda t: _lift_for(t[0], t[1]),
-            anchors_targets,
-        ))
+        outcomes = list(pool.map(_lift_or_failure, anchors_targets))
+
+    failures = [err for _, err in outcomes if err is not None]
+    if failures and len(failures) == len(outcomes):
+        raise AitoError(f"all {len(outcomes)} dashboard pattern lifts failed; first: {failures[0]}")
 
     out: list[Pattern] = []
-    for (anchor_token, target_token, label, _pet), lift in zip(anchors_targets, lifts):
-        if lift is None or lift == 0:
+    for (anchor_token, target_token, label, _pet), (lift, err) in zip(anchors_targets, outcomes):
+        if err is not None:
+            out.append(Pattern(label=label, lift=0.0, bar_pct=0.0, available=False))
             continue
+        if lift is None or lift == 0:
+            continue   # not among the anchor's related categories
         bar_pct = min(1.0, lift / 3.5) * 100
         out.append(Pattern(
             label=label,

@@ -30,7 +30,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, asdict
 from typing import Any
 
-from src.aito_client import AitoClient
+from src.aito_client import AitoClient, AitoError
 from src import cache
 
 
@@ -201,7 +201,8 @@ def _predict_aov_for_product(
         with_why=False,
     )
     v = res.get("estimate")
-    assert v is not None, f"_estimate order_value_eur returned no estimate for {product_sku}: {res}"
+    if v is None:
+        raise AitoError(f"_estimate order_value_eur returned no estimate for {product_sku}: {res}")
     return max(0.0, float(v))
 
 

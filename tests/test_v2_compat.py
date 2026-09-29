@@ -245,7 +245,8 @@ def test_related_value_fails_loudly_on_an_unexpected_shape():
     """A reader that silently skipped unexpected shapes is how a v2 shape
     change emptied two panels without an error. It must raise instead."""
     import pytest
-    with pytest.raises(ValueError, match="related.category"):
+    from src.aito_client import AitoError
+    with pytest.raises(AitoError, match="related.category"):
         related_value({"related": {"category": "treats"}, "lift": 1.2}, "category")
-    with pytest.raises(ValueError, match="related.category"):
+    with pytest.raises(AitoError, match="related.category"):
         related_value({"related": {"brand": {"$has": "Acme"}}}, "category")

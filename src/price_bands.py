@@ -32,8 +32,13 @@ def lift_interval(lift: float, f_on_condition: float, f_condition: float,
                   f: float, n: float) -> tuple[float, float]:
     """95 % interval for a `_relate` lift, from the counts Aito returns in `fs`.
 
-    Lift here is P(category | band) / P(category), a ratio of two
-    proportions, so its log has the relative-risk standard error.
+    Lift is P(category | band) / P(category), a ratio of two proportions.
+    The width uses the relative-risk standard error for two independent
+    groups. Here the reference group (everyone) contains the band, so the
+    two proportions are positively correlated and the true interval is
+    narrower: this one is conservative, which is the safe side for "is
+    it real". The centre is Aito's own lift (which may be prior-smoothed);
+    only the width comes from the raw counts.
     """
     if f_on_condition <= 0:
         return 0.0, math.inf

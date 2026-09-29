@@ -156,10 +156,14 @@ def related_value(hit: dict, field: str) -> Any:
     raises. The readers used to skip unexpected shapes, and when v2 returned
     bare values two panels went silently empty.
     """
+    # Imported here: aito_client imports this module, so a module-level
+    # import would be circular.
+    from src.aito_client import AitoError
+
     rel = hit.get("related")
     value = rel.get(field) if isinstance(rel, dict) else None
     if not isinstance(value, dict) or "$has" not in value:
-        raise ValueError(f"_relate hit has no related.{field}.$has: {hit}")
+        raise AitoError(f"_relate hit has no related.{field}.$has: {hit}")
     return value["$has"]
 
 

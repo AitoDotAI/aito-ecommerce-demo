@@ -24,7 +24,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, asdict
 
-from src.aito_client import AitoClient
+from src.aito_client import AitoClient, AitoError
 from src.aito_compat import related_value
 from src.price_bands import is_price_outlier, is_real_lift
 from src import cache
@@ -435,7 +435,8 @@ def _curve_one(
         estimate_field="units_sold", with_why=False,
     )
     units = res.get("estimate")
-    assert units is not None, f"_estimate units_sold returned no estimate for {sku} at {adjusted}: {res}"
+    if units is None:
+        raise AitoError(f"_estimate units_sold returned no estimate for {sku} at {adjusted}: {res}")
     return CurvePoint(
         price_eur=adjusted,
         units_sold=round(float(units), 2),

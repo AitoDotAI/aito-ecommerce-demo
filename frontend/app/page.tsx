@@ -85,10 +85,16 @@ export default function DashboardPage() {
           {data?.top_patterns.map((p) => (
             <div className="lift-row" key={p.label}>
               <div className="lift-label">{p.label}</div>
-              <div className="lift-bar-wrap">
-                <div className="lift-bar" style={{ width: `${p.bar_pct}%` }} />
-              </div>
-              <LiftHint value={p.lift} />
+              {p.available ? (
+                <>
+                  <div className="lift-bar-wrap">
+                    <div className="lift-bar" style={{ width: `${p.bar_pct}%` }} />
+                  </div>
+                  <LiftHint value={p.lift} />
+                </>
+              ) : (
+                <div className="card-sub">unavailable right now</div>
+              )}
             </div>
           ))}
         </div>

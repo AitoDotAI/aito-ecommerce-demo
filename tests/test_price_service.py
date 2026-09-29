@@ -55,6 +55,9 @@ class FakeAito:
         return {"hits": [
             # Big lift, tiny support: indistinguishable from 1.
             _relate_hit("grooming", 1.66, f_on=11, f_cond=1000, f=66, n=10000),
+            # Enough support to pass the floor, but lift 1.17 on 35 rows has
+            # a 95 % interval of about [0.83, 1.65]: the interval decides.
+            _relate_hit("health", 1.17, f_on=35, f_cond=1000, f=300, n=10000),
             # Modest lift, huge support: a real effect.
             _relate_hit("toys", 1.30, f_on=390, f_cond=1000, f=3000, n=10000),
         ]}
@@ -86,3 +89,13 @@ def test_a_sweet_spot_needs_a_lift_distinguishable_from_one():
     1.30 rests on 390; its interval excludes 1. Only toys is a finding."""
     spots = get_prices(FakeAito()).sweet_spots
     assert {s.category for s in spots} == {"toys"}
+
+
+def test_a_supported_sweet_spot_is_still_rejected_when_its_interval_spans_one():
+    """Support alone isn't enough: health has 35 rows (over the floor of
+    30), but its lift of 1.17 can't be told apart from 1. This exercises
+    the interval itself, so a wrong sign or term in the standard error
+    fails here, not just a wrong support threshold."""
+    categories = {s.category for s in get_prices(FakeAito()).sweet_spots}
+    assert "health" not in categories
+    assert "toys" in categories

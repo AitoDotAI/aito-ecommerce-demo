@@ -363,6 +363,7 @@ export interface DashboardPattern {
   label: string;
   lift: number;
   bar_pct: number;
+  available: boolean;   // false: this pattern's query failed; show that
 }
 
 export interface DashboardSegment {
