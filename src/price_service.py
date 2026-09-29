@@ -19,11 +19,14 @@ aggregating client-side.
 
 from __future__ import annotations
 
+import math
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, asdict
 
-from src.aito_client import AitoClient
+from src.aito_client import AitoClient, AitoError
+from src.aito_compat import related_value
+from src.price_bands import is_price_outlier, is_real_lift
 from src import cache
 
 
@@ -106,7 +109,7 @@ def _fetch_prices(client: AitoClient) -> list[dict]:
     return out
 
 
-def _aggregate_one_sku(client: AitoClient, sku: str) -> dict | None:
+def _aggregate_one_sku(client: AitoClient, sku: str) -> dict:
     """`_aggregate` for a single SKU — the per-SKU drilldown query
     we surface in the Aito panel. Rate-limit-friendly (one call).
 
@@ -115,18 +118,15 @@ def _aggregate_one_sku(client: AitoClient, sku: str) -> dict | None:
     There's no separate `$standardDeviation` keyword — requesting
     it returns a 400.
     """
-    try:
-        return client.aggregate(
-            table="price_history",
-            where={"product_sku": sku},
-            aggregate_fields=[
-                "price_eur.$mean",
-                "price_eur.$min",
-                "price_eur.$max",
-            ],
-        )
-    except Exception:
-        return None
+    return client.aggregate(
+        table="price_history",
+        where={"product_sku": sku},
+        aggregate_fields=[
+            "price_eur.$mean",
+            "price_eur.$min",
+            "price_eur.$max",
+        ],
+    )
 
 
 def _fetch_products(client: AitoClient) -> dict[str, dict]:
@@ -166,15 +166,12 @@ def _sweet_spots(client: AitoClient) -> list[SweetSpotRow]:
     ]
 
     def fetch(band_name: str, where: dict) -> tuple[str, dict]:
-        try:
-            res = client.relate(
-                table="price_history",
-                where=where,
-                relate_field="product_sku.category",
-                limit=8,
-            )
-        except Exception:
-            return band_name, {}
+        res = client.relate(
+            table="price_history",
+            where=where,
+            relate_field="product_sku.category",
+            limit=8,
+        )
         return band_name, res
 
     with ThreadPoolExecutor(max_workers=3) as pool:
@@ -183,12 +180,9 @@ def _sweet_spots(client: AitoClient) -> list[SweetSpotRow]:
     rows: list[SweetSpotRow] = []
     for band_name, res in results:
         for hit in res.get("hits", []):
-            rel = hit.get("related", {}).get("product_sku.category", {})
-            value = rel.get("$has") if isinstance(rel, dict) else None
-            if value is None:
-                continue
-            lift = float(hit.get("lift", 0))
-            if abs(lift - 1.0) < 0.08:
+            value = related_value(hit, "product_sku.category")
+            lift = float(hit["lift"])
+            if not is_real_lift(lift, hit["fs"]):
                 continue
             ps = hit.get("ps", {}) or {}
             fs = hit.get("fs", {}) or {}
@@ -228,8 +222,6 @@ def get_prices(
     for r in prices:
         by_sku.setdefault(r["product_sku"], []).append(r)
 
-    import math
-
     fair_bands: list[FairBandRow] = []
     outlier_count = 0
     for sku, rows in by_sku.items():
@@ -245,7 +237,7 @@ def get_prices(
         list_price = float(prod.get("price_eur", 0) or 0)
         band_lo = mean - 1.5 * std
         band_hi = mean + 1.5 * std
-        is_outlier = list_price < band_lo or list_price > band_hi
+        is_outlier = is_price_outlier(list_price, mean, std, len(prices_eur))
 
         if is_outlier:
             outlier_count += 1
@@ -421,7 +413,7 @@ def _curve_one(
     pct: int,
     *,
     forecast_month: str = "2026-05",
-) -> CurvePoint | None:
+) -> CurvePoint:
     """One `_estimate` call at the price adjusted by `pct %`."""
     adjusted = round(base_price * (1.0 + pct / 100.0), 2)
     season_map = {
@@ -438,16 +430,13 @@ def _curve_one(
         "season":      season_map[int(forecast_month.split("-")[1])],
         "price_eur":   adjusted,
     }
-    try:
-        res = client.estimate(
-            "monthly_sales", where=where,
-            estimate_field="units_sold", with_why=False,
-        )
-    except Exception:
-        return None
+    res = client.estimate(
+        "monthly_sales", where=where,
+        estimate_field="units_sold", with_why=False,
+    )
     units = res.get("estimate")
     if units is None:
-        return None
+        raise AitoError(f"_estimate units_sold returned no estimate for {sku} at {adjusted}: {res}")
     return CurvePoint(
         price_eur=adjusted,
         units_sold=round(float(units), 2),
@@ -539,22 +528,18 @@ def get_price_detail(client: AitoClient, sku: str) -> PriceDetail | None:
         "brand":    prod.get("brand", ""),
     }
     central_call = _curve_one(client, sku, recent, mean_price, 0)
-    central_units = central_call.units_sold if central_call else 0
+    central_units = central_call.units_sold
 
     # Six adjusted-price `_estimate` calls (parallel).
     other_adjustments = [a for a in _CURVE_ADJUSTMENTS_PCT if a != 0]
 
-    def fetch_curve(pct: int) -> CurvePoint | None:
+    def fetch_curve(pct: int) -> CurvePoint:
         return _curve_one(client, sku, recent, mean_price, pct)
 
     with ThreadPoolExecutor(max_workers=6) as pool:
         adjusted_results = list(pool.map(fetch_curve, other_adjustments))
 
-    curve_raw: list[CurvePoint] = [
-        cp for cp in adjusted_results if cp is not None
-    ]
-    if central_call is not None:
-        curve_raw.append(central_call)
+    curve_raw: list[CurvePoint] = [*adjusted_results, central_call]
     # Add profit_eur using unit_cost.
     curve = [
         CurvePoint(

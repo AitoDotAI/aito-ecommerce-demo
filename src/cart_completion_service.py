@@ -23,6 +23,7 @@ from dataclasses import dataclass, asdict
 from typing import Any
 
 from src.aito_client import AitoClient
+from src.aito_compat import related_value
 from src import cache
 
 
@@ -287,9 +288,8 @@ def _build_scenario_result_from_relate(
     for hit in relate_hits:
         if len(suggestions) >= 3:
             break
-        rel = hit.get("related", {}).get("line_categories", {})
-        token = rel.get("$has") if isinstance(rel, dict) else None
-        if not token or token in own_tokens:
+        token = related_value(hit, "line_categories")
+        if token in own_tokens:
             continue
         decoded = _token_to_pet_category(token)
         if decoded is None:

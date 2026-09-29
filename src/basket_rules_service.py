@@ -39,6 +39,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, asdict
 
 from src.aito_client import AitoClient
+from src.aito_compat import related_value
 from src import cache
 
 
@@ -146,9 +147,8 @@ def _mine_anchor(
 
     rules: list[BasketRule] = []
     for hit in res.get("hits", []):
-        rel = hit.get("related", {}).get("line_categories", {})
-        token = rel.get("$has") if isinstance(rel, dict) else None
-        if not token or token == anchor_token:
+        token = related_value(hit, "line_categories")
+        if token == anchor_token:
             continue  # skip the self-token
 
         lift = float(hit.get("lift", 0))

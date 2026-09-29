@@ -244,3 +244,22 @@ def test_evaluate_baseline_matches_the_population_majority_share(client):
     base, acc = res["baseAccuracy"], res["accuracy"]
     assert 0.30 <= base <= 0.55, f"baseline {base} is not the ~0.42 majority share"
     assert acc - base >= 0.2, f"model {acc} barely beats its baseline {base}"
+
+
+# ── Price: findings must be distinguishable from noise ───────────────
+
+
+def test_price_view_flags_no_outlier_on_a_thin_history(client):
+    """The view once opened on an "outlier" whose band came from two sales.
+    Every flagged outlier must have enough observations for a band, and
+    every sweet spot must have support and a lift interval excluding 1."""
+    from src.price_bands import MIN_OUTLIER_OBSERVATIONS, MIN_SWEET_SPOT_SUPPORT
+    from src.price_service import get_prices
+    from src import cache
+
+    cache.clear()
+    response = get_prices(client)
+    thin = [b.sku for b in response.fair_bands if b.outlier and b.observation_count < MIN_OUTLIER_OBSERVATIONS]
+    assert not thin, f"outliers on a thin history: {thin}"
+    weak = [s.category for s in response.sweet_spots if s.f_on_condition < MIN_SWEET_SPOT_SUPPORT]
+    assert not weak, f"sweet spots on thin support: {weak}"

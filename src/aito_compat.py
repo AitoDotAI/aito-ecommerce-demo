@@ -136,11 +136,35 @@ def _normalize_hit(hit: Any, predicted_field: str | None) -> None:
     if "field" not in hit and predicted_field:
         hit["field"] = predicted_field
 
-    # `_relate`'s `related` is `{"$has": v}` on v1 but sometimes a bare
-    # value on v2. Wrap so readers can index it uniformly.
+    # `_relate`'s `related` is `{field: {"$has": v}}` on v1. v2 returns a
+    # String column's value bare, `{field: v}` (Text columns keep `$has`),
+    # and occasionally the whole `related` as a bare value. Wrap both so
+    # readers index one shape; see `related_value`.
     related = hit.get("related")
     if related is not None and not isinstance(related, (dict, list)):
         hit["related"] = {"$has": related}
+    elif isinstance(related, dict) and "$has" not in related:
+        for field, value in related.items():
+            if not isinstance(value, (dict, list)):
+                related[field] = {"$has": value}
+
+
+def related_value(hit: dict, field: str) -> Any:
+    """The value a `_relate` hit is about: `hit["related"][field]["$has"]`.
+
+    After `normalize_response` every version has this shape. Anything else
+    raises. The readers used to skip unexpected shapes, and when v2 returned
+    bare values two panels went silently empty.
+    """
+    # Imported here: aito_client imports this module, so a module-level
+    # import would be circular.
+    from src.aito_client import AitoError
+
+    rel = hit.get("related")
+    value = rel.get(field) if isinstance(rel, dict) else None
+    if not isinstance(value, dict) or "$has" not in value:
+        raise AitoError(f"_relate hit has no related.{field}.$has: {hit}")
+    return value["$has"]
 
 
 def _linked_columns(from_table: Any, field: Any) -> list[str]:

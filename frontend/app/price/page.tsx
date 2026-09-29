@@ -235,7 +235,10 @@ export default function PricePage() {
               <SweetSpotChip key={`${s.discount_band}-${s.category}-${i}`} s={s} />
             ))}
             {!loading && data && data.sweet_spots.length === 0 && (
-              <div className="card-sub">No strong sweet-spot patterns detected.</div>
+              <div className="card-sub">
+                No category is discounted more or less than the others: every
+                band × category lift has a 95 % interval that includes 1.
+              </div>
             )}
           </div>
         </div>

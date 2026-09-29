@@ -30,7 +30,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, asdict
 from typing import Any
 
-from src.aito_client import AitoClient
+from src.aito_client import AitoClient, AitoError
 from src import cache
 
 
@@ -194,17 +194,16 @@ def _predict_aov_for_product(
     }
     if customer.get("pet_size"):
         where["customer_pet_size"] = customer["pet_size"]
-    try:
-        res = client.estimate(
-            "winback_campaigns",
-            where=where,
-            estimate_field="order_value_eur",
-            with_why=False,
-        )
-        v = res.get("estimate")
-        return max(0.0, float(v)) if v is not None else 0.0
-    except Exception:
-        return 0.0
+    res = client.estimate(
+        "winback_campaigns",
+        where=where,
+        estimate_field="order_value_eur",
+        with_why=False,
+    )
+    v = res.get("estimate")
+    if v is None:
+        raise AitoError(f"_estimate order_value_eur returned no estimate for {product_sku}: {res}")
+    return max(0.0, float(v))
 
 
 def _score_customer(

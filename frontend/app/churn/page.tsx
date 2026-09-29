@@ -267,6 +267,14 @@ function AtRiskRow({ c }: { c: ChurnAtRiskCustomer }) {
 }
 
 
+// Drivers read from a customer's latest review. On this data, having a
+// recent review at all marks an engaged customer, so every sentiment,
+// negative included, lowers churn. Without this note a buyer reads it as
+// "unhappy customers stay".
+const REVIEW_DRIVER_NOTE =
+  "Recent reviewers are engaged customers: this reflects activity, not sentiment.";
+const REVIEW_FIELDS = new Set(["latest_sentiment", "latest_category"]);
+
 function DriverChip({ d }: { d: ChurnDriverRow }) {
   const up = d.lift >= 1;
   const bg = up ? "var(--red-bg)" : "var(--green-bg)";
@@ -289,6 +297,11 @@ function DriverChip({ d }: { d: ChurnDriverRow }) {
           {" · "}
           {d.support_f} customers
         </div>
+        {REVIEW_FIELDS.has(d.field) && (
+          <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2, fontStyle: "italic" }}>
+            {REVIEW_DRIVER_NOTE}
+          </div>
+        )}
       </div>
       <div style={{ fontWeight: 800, fontSize: 14, color: fg }}>
         {arrow} {d.lift.toFixed(2)}×

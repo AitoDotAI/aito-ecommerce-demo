@@ -15,6 +15,7 @@ import time
 from dataclasses import dataclass, asdict
 
 from src.aito_client import AitoClient
+from src.aito_compat import related_value
 from src import cache
 
 # Re-use Bought Together's anchor catalog + token decoding to keep
@@ -107,9 +108,8 @@ def get_patterns(
 
     patterns: list[Pattern] = []
     for hit in res.get("hits", []):
-        rel = hit.get("related", {}).get("line_categories", {})
-        token = rel.get("$has") if isinstance(rel, dict) else None
-        if not token or token == anchor_id:
+        token = related_value(hit, "line_categories")
+        if token == anchor_id:
             continue
         lift = float(hit.get("lift", 0))
         decoded = _token_to_pair(token)
