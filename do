@@ -423,8 +423,10 @@ cmd_verify() {
 }
 
 cmd_verify_demo() {
-  echo "End-to-end demo-path check not wired yet — lands once the demo script in docs/demo-script.md is finalised."
-  exit 1
+  # Every view on the DEPLOYED demo (or --base http://localhost:8500), read-only:
+  # fails on an error OR a hollow view. scripts/live_smoke.py; also runs daily in CI.
+  cd "$SCRIPT_DIR"
+  python3 scripts/live_smoke.py "$@"
 }
 
 cmd_verify_mobile() {
