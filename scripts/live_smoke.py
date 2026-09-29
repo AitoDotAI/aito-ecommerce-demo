@@ -51,10 +51,11 @@ def nonempty(*keys: str, what: str) -> Callable[[dict], str]:
     return check
 
 
-# The headline evaluation model: strong on correct data (pet type from name,
-# 0.85 vs a 0.40 base). return_risk is a DELIBERATE honest failure, so it isn't
-# held to "pass"; every model is held to "no error, has a sample".
-HEADLINE_MODEL = "pet_type_from_name"
+# Models that clear the threshold comfortably on correct data (pet type 0.85 vs
+# 0.40, diet 0.65 vs 0.26, segment 0.82 vs 0.46) and would otherwise regress
+# silently. return_risk is a DELIBERATE honest failure, so it isn't held to
+# "pass"; every model is held to "no error, has a sample".
+MUST_PASS = ("pet_type_from_name", "dietary_from_name", "segment_from_product")
 
 
 def check_evaluation(body: dict) -> str:
@@ -63,13 +64,35 @@ def check_evaluation(body: dict) -> str:
     assert not errored, f"evaluation errored for {errored}"
     unsampled = [m.get("id") for m in models if not m.get("n")]
     assert not unsampled, f"evaluation has no sample for {unsampled}"
-    headline = next((m for m in models if m.get("id") == HEADLINE_MODEL), None)
-    assert headline, f"no {HEADLINE_MODEL} model"
-    assert headline.get("verdict") == "pass", (
-        f"{HEADLINE_MODEL} reads {headline.get('verdict')!r} "
-        f"({headline.get('accuracy')} vs base {headline.get('base_accuracy')}): stale snapshot? "
-        f"last_run {body.get('last_run')}")
-    return f"{len(models)} models, {HEADLINE_MODEL} {headline['accuracy']} vs {headline['base_accuracy']}"
+    by_id = {m.get("id"): m for m in models}
+    missing = [m for m in MUST_PASS if m not in by_id]
+    assert not missing, f"evaluation lacks {missing}"
+    failing = [f"{m} {by_id[m].get('accuracy')} vs {by_id[m].get('base_accuracy')}"
+               for m in MUST_PASS if by_id[m].get("verdict") != "pass"]
+    assert not failing, f"not passing: {failing}. Stale snapshot? last_run {body.get('last_run')}"
+    return f"{len(models)} models, {len(MUST_PASS)} held to pass all pass"
+
+
+def check_dashboard(body: dict) -> str:
+    """Since #37 an unavailable panel is a tile marked available:false, so a
+    non-empty list can be all-unavailable: require one real pattern."""
+    patterns = _list(body, "top_patterns", "dashboard")
+    real = [p for p in patterns if p.get("available", True) is True]
+    assert real, f"all {len(patterns)} dashboard patterns are unavailable"
+    _list(body, "segments", "dashboard")
+    return f"{len(real)}/{len(patterns)} patterns available"
+
+
+def shape_only(*keys: str, what: str) -> Callable[[dict], str]:
+    """For views hidden until their unhide criteria pass (ADR 0027, #38): the
+    route must answer without an error in the right shape, but its content
+    isn't gated on (demand's seasonality is one row just past its threshold)."""
+    def check(body: dict) -> str:
+        assert not body.get("error"), f"{what}: {body.get('error')}"
+        for key in keys:
+            assert isinstance(body.get(key), list), f"{what}: no `{key}` list in {sorted(body)[:8]}"
+        return "shape ok (hidden view: content not gated)"
+    return check
 
 
 def check_version(body: dict) -> str:
@@ -80,17 +103,17 @@ def check_version(body: dict) -> str:
 
 STEPS = [
     Step("version", "/api/version", check_version),
-    Step("dashboard", "/api/dashboard", nonempty("top_patterns", "segments", what="dashboard")),
+    Step("dashboard", "/api/dashboard", check_dashboard),
     Step("evaluation", "/api/evaluation", check_evaluation),
     Step("churn", "/api/churn", nonempty("at_risk", "drivers", what="churn")),
-    Step("demand", "/api/demand", nonempty("top_movers", "seasonality", what="demand")),
+    # hidden views (ADR 0027): shape only, until their unhide criteria pass
+    Step("demand", "/api/demand", shape_only("top_movers", "seasonality", what="demand")),
     Step("inventory", "/api/inventory", nonempty("reorder_queue", what="inventory")),
-    Step("winback", "/api/winback", nonempty("targets", what="winback")),
-    Step("markdown", "/api/markdown", nonempty("proposals", what="markdown")),
+    Step("winback", "/api/winback", shape_only("targets", what="winback")),
+    Step("markdown", "/api/markdown", shape_only("proposals", what="markdown")),
     Step("basket-rules", "/api/basket-rules", nonempty("rules", what="basket rules")),
-    Step("cart-completion", "/api/cart-completion", nonempty("scenarios", what="cart completion")),
-    # sweet_spots may legitimately be empty (support >= 30 and a 95% interval, #37)
-    Step("price", "/api/price", nonempty("fair_bands", what="price")),
+    Step("cart-completion", "/api/cart-completion", shape_only("scenarios", what="cart completion")),
+    Step("price", "/api/price", shape_only("fair_bands", "sweet_spots", what="price")),
     Step("product-filling", "/api/product-filling", nonempty("fields", what="product filling")),
     Step("feedback", "/api/feedback", nonempty("fields", what="feedback")),
     Step("smart-search", "/api/smart-search", nonempty("baseline", "predictive", what="smart search"),

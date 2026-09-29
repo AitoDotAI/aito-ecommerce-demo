@@ -20,21 +20,33 @@ def _model(id_, verdict, error=None, n=200, acc=0.85, base=0.4):
     return {"id": id_, "verdict": verdict, "error": error, "n": n, "accuracy": acc, "base_accuracy": base}
 
 
-def test_evaluation_passes_with_the_headline_model_passing_and_return_risk_failing():
-    body = {"models": [_model("pet_type_from_name", "pass"), _model("return_risk", "fail", acc=0.975, base=0.975)]}
-    assert "pet_type_from_name 0.85 vs 0.4" in smoke.check_evaluation(body)
+def _passing_models():
+    return [_model(m, "pass") for m in smoke.MUST_PASS]
+
+
+def test_evaluation_passes_with_every_held_model_passing_and_return_risk_failing():
+    body = {"models": _passing_models() + [_model("return_risk", "fail", acc=0.975, base=0.975)]}
+    assert "all pass" in smoke.check_evaluation(body)
+
+
+def test_evaluation_fails_when_a_secondary_model_regresses():
+    models = _passing_models()
+    models[1]["verdict"] = "fail"
+    with pytest.raises(AssertionError, match="dietary_from_name"):
+        smoke.check_evaluation({"models": models})
 
 
 def test_evaluation_fails_on_the_stale_snapshot():
     # 29.9: testSource {limit: 200} made pet type read 0.06 vs 0.0, verdict fail
-    body = {"models": [_model("pet_type_from_name", "fail", acc=0.06, base=0.0)],
-            "last_run": "2026-09-23T04:28:11+00:00"}
-    with pytest.raises(AssertionError, match="stale snapshot"):
+    models = _passing_models()
+    models[0] = _model("pet_type_from_name", "fail", acc=0.06, base=0.0)
+    body = {"models": models, "last_run": "2026-09-23T04:28:11+00:00"}
+    with pytest.raises(AssertionError, match="Stale snapshot"):
         smoke.check_evaluation(body)
 
 
 def test_evaluation_fails_on_an_errored_model():
-    body = {"models": [_model("pet_type_from_name", "pass"), _model("dietary_from_name", "pass", error="400")]}
+    body = {"models": _passing_models() + [_model("return_risk", "fail", error="400")]}
     with pytest.raises(AssertionError, match="errored"):
         smoke.check_evaluation(body)
 
@@ -46,11 +58,36 @@ def test_an_empty_driver_list_fails_churn():
     assert "1 drivers" in check({"at_risk": [{"customer_id": "c1"}], "drivers": [{"factor": "x"}]})
 
 
-def test_price_does_not_require_sweet_spots():
-    # empty sweet_spots is legitimate (#37: support >= 30 and a 95% interval)
-    check = next(s.check for s in smoke.STEPS if s.name == "price")
-    assert "fair_bands" in check({"fair_bands": [{"sku": "S"}], "sweet_spots": []})
+def test_hidden_views_are_checked_for_shape_not_content():
+    # ADR 0027: demand/winback/markdown/price/cart-completion are hidden; empty is fine
+    for name, body in [("demand", {"top_movers": [], "seasonality": []}),
+                       ("price", {"fair_bands": [], "sweet_spots": []}),
+                       ("winback", {"targets": []})]:
+        check = next(s.check for s in smoke.STEPS if s.name == name)
+        assert "shape ok" in check(body)
+        with pytest.raises(AssertionError):
+            check({"error": "boom"})
 
 
-def test_every_step_is_a_get():
-    assert all(not hasattr(s, "body") or s.body is None for s in smoke.STEPS)
+def test_dashboard_needs_one_available_pattern():
+    with pytest.raises(AssertionError, match="unavailable"):
+        smoke.check_dashboard({"top_patterns": [{"available": False}], "segments": [{}]})
+    assert "1/2" in smoke.check_dashboard(
+        {"top_patterns": [{"available": False}, {"available": True}], "segments": [{}]})
+
+
+def test_every_step_is_a_get(monkeypatch):
+    methods = []
+
+    class _Res:
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+        def read(self): return b"{}"
+
+    def urlopen(req, timeout):
+        methods.append(req.get_method())
+        return _Res()
+    monkeypatch.setattr(smoke.urllib.request, "urlopen", urlopen)
+    for step in smoke.STEPS:
+        smoke.fetch("http://x", step, 1)
+    assert set(methods) == {"GET"} and len(methods) == len(smoke.STEPS)
