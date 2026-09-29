@@ -468,6 +468,31 @@ still redundant, but the engineering doesn't hurt anything.
 
 ---
 
+## Reading a `_relate` hit — one shape on v1 and v2
+
+**Verified live, 2026-09-29**, API v2, `shared.aito.ai` (v2.10.3).
+
+The value a hit is about lives in `related`, and its shape differs by
+version and column type:
+
+| | v1 | v2, Text column | v2, String column |
+|:--|:--|:--|:--|
+| `related` | `{"f": {"$has": v}}` | `{"f": {"$has": v}}` | `{"f": v}` (bare) |
+
+`src/aito_compat.py` wraps the bare form, and `related_value(hit, f)` reads
+the value and **raises** on anything else. Don't parse `related` by hand
+with a silent `continue`: when v2 returned bare values, readers doing that
+kept 0 rows, and three panels (Churn drivers, Demand seasonality, Price
+sweet spots) went empty with no error.
+
+Each hit's `fs` carries the counts behind its lift (`fOnCondition`,
+`fCondition`, `f`, `n`). Use them before calling a lift a finding: a
+large lift on a handful of rows is noise. `src/price_bands.py`
+`lift_interval` gives a 95 % interval from those counts (log relative
+risk).
+
+---
+
 ## Order-level co-occurrence — denormalised Text + `_relate`
 
 **Verified live, 2026-05-11.** The Bought Together pattern.
