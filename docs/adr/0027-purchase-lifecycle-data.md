@@ -1,6 +1,6 @@
 # ADR 0027: Purchase data with a lifecycle — restocking, and a starter kit that grows
 
-**Status:** Accepted (the approach). Measured implementation to follow.
+**Status:** Accepted (the lifecycle approach). The price and win-back extensions below are proposed, awaiting the maintainer's yes.
 **Date:** 2026-09-28
 **Deciders:** Antti
 
@@ -126,6 +126,72 @@ before.
 - Precompute snapshots, cached predictions and screenshots all refresh.
 - Tests that pin today's engineered signals may need their ranges
   revisited.
+
+## Extension (proposed 2026-09-29): prices and win-back
+
+Five views are hidden until the data can support them. Diagnosing them
+(read-only, on live data) showed the purchase lifecycle alone is not
+enough: two more generators produce data with no cause and effect.
+
+### Prices as exogenous promotions
+
+Today `gen_price_history` sets each month's price **from** that month's
+demand (a busy month gets the low price). So a cheap month is a busy
+month, not the other way round:
+
+- the within-SKU correlation between price and units is −0.83 on all
+  638 SKUs, and the estimated price sensitivity comes out at about −3.7;
+- every list price sits inside its realised band (list/mean 0.95–1.04),
+  so there's no price outlier to find;
+- discounts don't differ by category (every band × category lift
+  interval includes 1), so there's no sweet spot to find.
+
+Decision:
+
+1. **Promotions are decided first,** independent of demand. Each month a
+   SKU is promoted with a probability that depends on its category
+   (treats and toys twice as often as dry food). Promotion depth is
+   10–25 %.
+2. **Demand responds to price:** units × (price / list)^ε, with ε drawn
+   per SKU from [−2, −1]. That's a price sensitivity a category manager
+   would believe.
+3. **Planted mispricings:** about 15 SKUs have a list price 15–25 %
+   above their category's level and are promoted most months. Their
+   realised prices sit well below list, with ≥ 12 observations each.
+
+### Win-back with product-level response
+
+Today each product is sent 1–3 times and response doesn't depend on the
+product. So product evidence makes predictions **worse** than the base
+rate: held-out log-loss 0.417 against a base of 0.401 (and 0.437 against
+0.418 on a second seed). "Which product to send" has no support.
+
+Decision: keep today's base response by lifestyle and recency (9–20 %).
+Multiply it by **2.5** when the product is in a category the customer
+bought at least three times (their staple), and by **0.5** for a category
+they never bought. Every product gets enough sends to learn from
+(≥ 10 each for the catalogue's top 200).
+
+### Unhide criteria, per view
+
+Each runs as a live `aito-check` in the PR that unhides the view. A view
+comes back only when its check passes on the regenerated data.
+
+| view | criterion |
+|:--|:--|
+| Demand | On the time split, the model beats the naive "same range as last month" forecast (paired CI above zero). |
+| Price | ≥ 3 outliers with n ≥ 12; ≥ 1 band × category lift whose 95 % interval excludes 1; no outlier with n < 6. |
+| Markdown | No proposal loses margin against holding stock at list; estimated units never fall as price falls; implied sensitivity at −20 % within [−3, −0.5] for ≥ 90 % of scored SKUs. |
+| Win-back | `_evaluate predict responded` with the page's evidence beats the base rate in log-loss by ≥ 0.01, on two seeds; no displayed rate above 0.5. |
+| Cart Completion | Held-out next item: hit rate at 3 beats popularity-within-pet (paired CI above zero); no suggestion priced above 2× the cart; any probability shown matches the held-out attach rate within ±0.1. |
+
+### Also noted
+
+- Churn's drivers are real but one reads backwards: a recent **negative**
+  review lowers churn (lift 0.67). The likely reason is that any recent
+  review marks an engaged customer. The regeneration should make review
+  sentiment carry its own effect (negative raises churn), measured the
+  same way.
 
 ## Out of scope
 
