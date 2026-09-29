@@ -147,7 +147,8 @@ def main() -> int:
             summary = step.check(fetch(args.base, step, args.timeout))
             elapsed = time.monotonic() - started
             print(f"  {'SLOW' if elapsed > SLOW_SECONDS else 'ok  '}  {step.name:<18} {summary}  ({elapsed:.1f}s)")
-        except (urllib.error.URLError, TimeoutError, ValueError, AssertionError, KeyError, TypeError) as exc:
+        except Exception as exc:   # noqa: BLE001 -- record every failure and walk on (RemoteDisconnected,
+            # ConnectionResetError and ssl.SSLError are OSErrors, not URLErrors)
             reason = f"{type(exc).__name__}: {exc}"
             failures.append((step.name, reason))
             print(f"  FAIL  {step.name:<18} {reason}  ({time.monotonic() - started:.1f}s)")
