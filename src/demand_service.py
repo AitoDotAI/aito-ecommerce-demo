@@ -27,6 +27,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, asdict
 
 from src.aito_client import AitoClient
+from src.aito_compat import related_value
 from src import cache
 from src.demand_evaluation import EvalSummary, evaluate_demand
 from src.demand_forecast import (
@@ -141,10 +142,7 @@ def _seasonality(client: AitoClient) -> list[SeasonRow]:
     rows: list[SeasonRow] = []
     for season, res in results:
         for hit in res.get("hits", []):
-            rel = hit.get("related", {}).get("category", {})
-            value = rel.get("$has") if isinstance(rel, dict) else None
-            if value is None:
-                continue
+            value = related_value(hit, "category")
             lift = float(hit.get("lift", 0))
             if abs(lift - 1.0) < 0.08:
                 continue
