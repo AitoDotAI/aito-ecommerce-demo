@@ -23,9 +23,9 @@ export default function ChurnPage() {
     title: "Churn",
     description:
       "Per-customer `_predict churned` ranks active customers by risk. " +
-      "Drivers via parallel `_relate`. Honest accuracy via `_evaluate` " +
-      "with the timestamp held out — Aito predicts churn from who they " +
-      "are, not from when they last ordered.",
+      "Drivers via parallel `_relate`. Accuracy via `_evaluate`, with the " +
+      "last-order timestamp excluded from the features — Aito predicts churn " +
+      "from who they are, not from when they last ordered.",
     breadcrumb: "Churn",
   });
 
@@ -187,8 +187,9 @@ export default function ChurnPage() {
                 <div className="card-sub" style={{ lineHeight: 1.6 }}>
                   Baseline accuracy <strong>{Math.round(data.evaluation.base_accuracy * 100)}%</strong>
                   {" "}(always-predict-majority).
-                  Tested on <strong>{data.evaluation.n}</strong> held-out customers.
-                  Timestamp held out so Aito can't leak the label.
+                  Tested on <strong>{data.evaluation.n}</strong> customer-months held out
+                  at random, so a customer&apos;s other months stay in training.
+                  Holding out by time instead scores no worse.
                 </div>
               )}
             </div>
