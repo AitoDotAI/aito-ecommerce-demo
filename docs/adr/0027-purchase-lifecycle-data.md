@@ -1,6 +1,6 @@
 # ADR 0027: Purchase data with a lifecycle — restocking, and a starter kit that grows
 
-**Status:** Accepted (the lifecycle approach). The price and win-back extensions below are proposed, awaiting the maintainer's yes.
+**Status:** Accepted, including the price and win-back extensions (accepted 2026-09-30).
 **Date:** 2026-09-28
 **Deciders:** Antti
 
@@ -127,7 +127,7 @@ before.
 - Tests that pin today's engineered signals may need their ranges
   revisited.
 
-## Extension (proposed 2026-09-29): prices and win-back
+## Extension (accepted 2026-09-30): prices and win-back
 
 Five views are hidden until the data can support them. Diagnosing them
 (read-only, on live data) showed the purchase lifecycle alone is not
