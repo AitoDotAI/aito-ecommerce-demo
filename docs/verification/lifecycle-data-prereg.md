@@ -55,3 +55,36 @@ As in ADR 0027, each run as it will run in `tests/test_aito_check.py`:
 A view whose criterion fails stays hidden and is reported as such. The
 generator is **not** re-tuned against these Aito checks after seeing them.
 If the generator changes, this file is amended first, with the reason.
+
+## Amendments (2026-09-30, before any Aito check on the new data)
+
+Found while building the generator, from its own data-level checks. No
+Aito check had run on the new data when these were written, so none of
+them was tuned against one.
+
+1. **The next-basket control conditions on a random customer of the same
+   segment,** not any customer. On the old data (the harness check), the
+   any-customer control scored 0.067 against popularity's 0.257, far
+   *below* popularity. A random other customer is often in another
+   segment, so it recommends the wrong pet's products. Within the segment
+   it measures what it's meant to measure: whether *this* customer's
+   history matters.
+   *Old-data harness result, for the record:* model 0.210, popularity
+   0.257 (−0.047 [−0.103, +0.013]): no gain, as the ADR claims.
+2. **D5 is measured over every SKU-month, zero-sale months included,** as
+   the implied elasticity ln(E[units | promoted] ÷ E[units | not]) ÷
+   ln(1 − mean discount), median over categories. Fitted on sale months
+   only, it read −0.01 although promoted treats sell 1.36× (exactly the
+   planted factor): dropping the zero months removes the difference.
+3. **`monthly_sales` gets a row for every SKU-month, including zero
+   sales.** The same bias would hide the price response from Aito: a demand
+   curve learned without the months a promotion turned from zero sales
+   into some can't see it. (The old comment called empty months "no
+   conditioning signal", which is wrong for price.) `units_bucket` gains
+   real "0" rows; `test_monthly_sales_units_positive` changes accordingly.
+4. **Staples respond to price by stocking up:** a restock of a promoted
+   staple buys (price / list)^ε times the usual quantity. Before this, all
+   staple units ignored promotions, which is unrealistic and flattens the
+   food categories' demand curves.
+5. **Cat wet food is a staple too** (dry food, wet food, litter). Cat
+   owners' wet food came from random draws, most of why D1 read 42 %.
