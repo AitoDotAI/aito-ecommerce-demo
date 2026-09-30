@@ -288,6 +288,9 @@ SCHEMAS: dict[str, dict] = {
             "customer_pet_size":    {"type": "String", "nullable": True},
             "customer_lifestyle":   {"type": "String", "nullable": False},
             "customer_health_focus":{"type": "String", "nullable": False},
+            # The customer's staple "pet/category" ("none" if none): a send
+            # in it responds 2.5x as often (ADR 0027).
+            "customer_staple_category": {"type": "String", "nullable": False},
             "product_pet_type":     {"type": "String", "nullable": False},
             "product_category":     {"type": "String", "nullable": False},
             "product_brand":        {"type": "String", "nullable": False},

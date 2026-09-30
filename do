@@ -225,7 +225,7 @@ cmd_generate_fixtures() {
     echo "data/generate_fixtures.py not implemented yet (build-order step 2)."
     exit 1
   fi
-  uv run python data/generate_fixtures.py
+  uv run python -m data.generate_fixtures
 }
 
 # The impressions fixture is gitignored (too large to commit, see
