@@ -22,7 +22,9 @@ from collections import Counter
 from dataclasses import dataclass, asdict, field
 from datetime import date
 from pathlib import Path
-from typing import Iterable
+from typing import Callable, Iterable
+
+from data import lifecycle
 
 RNG_SEED = 42
 DATA_DIR = Path(__file__).resolve().parent
@@ -354,6 +356,11 @@ class Persona:
 PERSONAS: list[Persona] = [
     Persona("CUST-00001", "Maija Lehtonen",  "cat_owner",
             None,    "helsinki", tenure_months=18, target_orders=12,
+            # A cats-only household. With staples (ADR 0027) most of her
+            # lines are cat food and litter, so her 5th-ranked pair is a
+            # tie at one line, and the segment default's 2 % dog lines
+            # could take it and overlap Olli.
+            pet_type_weights={"cat": 1.0},
             lifestyle="premium", health_focus="high",
             treat_affinity="low", brand_loyalty="loyal"),
     Persona("CUST-00002", "Olli Mäkelä",     "multi_pet",
@@ -579,6 +586,11 @@ class WinbackCampaign:
     customer_pet_size: str | None  # nullable
     customer_lifestyle: str
     customer_health_focus: str
+    # The (pet, category) the customer bought most, at least three times,
+    # e.g. "dog/dry-food"; "none" if nothing reached three. ADR 0027: a send
+    # in the customer's staple category responds 2.5x as often, so the page
+    # needs this as evidence to learn which product to send.
+    customer_staple_category: str
     # Denormalised product attributes for the same reason.
     product_pet_type: str
     product_category: str
@@ -1217,16 +1229,22 @@ def _pick_product(
     products_by_pet: dict[str, list[Product]],
     pet_type: str,
     category_bias: dict[str, float] | None = None,
+    demand_factor: "Callable[[str], float] | None" = None,
 ) -> Product:
-    """Pick a product of `pet_type`, weighted by category_bias."""
+    """Pick a product of `pet_type`, weighted by category_bias and, when
+    given, by `demand_factor(sku)` (how much a promotion lifts it this month)."""
     pool = products_by_pet[pet_type]
     if not pool:
         # Should not happen if products span every pet_type — but if it
         # does, fall back to any product so the generator never deadlocks.
         return rng.choice(next(iter(products_by_pet.values())))
-    if category_bias is None:
+    if category_bias is None and demand_factor is None:
         return rng.choice(pool)
-    weights = [category_bias.get(p.category, 0.05) for p in pool]
+    weights = [
+        (category_bias.get(p.category, 0.05) if category_bias is not None else 1.0)
+        * (demand_factor(p.sku) if demand_factor is not None else 1.0)
+        for p in pool
+    ]
     return rng.choices(pool, weights=weights, k=1)[0]
 
 
@@ -1236,6 +1254,7 @@ def _customer_preference_substitute(
     customer: Customer,
     persona_ids: set[str],
     line_counter: int,
+    demand_factor: "Callable[[str], float] | None" = None,
 ) -> Product:
     """Maybe swap `chosen` for a same-(pet_type, category) product
     whose brand / dietary / tier matches the customer's *personal*
@@ -1276,7 +1295,10 @@ def _customer_preference_substitute(
     if customer.brand_loyalty == "loyal" and customer.favorite_brands:
         favorite_in_slice = [p for p in same_slice if p.brand in customer.favorite_brands]
         if favorite_in_slice and sub_rng.random() < 0.85:
-            return sub_rng.choice(favorite_in_slice)
+            if demand_factor is None:
+                return sub_rng.choice(favorite_in_slice)
+            return sub_rng.choices(favorite_in_slice,
+                                   weights=[demand_factor(p.sku) for p in favorite_in_slice], k=1)[0]
 
     # General customer-preference substitution. Higher base rate
     # than the prior segment-level affinity (0.50) — customer-level
@@ -1288,7 +1310,11 @@ def _customer_preference_substitute(
     # Weight every same-slice candidate by the customer's score; pick
     # via cumulative weighted choice. Empty / all-zero weights ⇒
     # keep the original.
-    weights = [max(_customer_product_score(p, customer), 0.01) for p in same_slice]
+    # ADR 0027: a promotion lifts a product here too; without it, this
+    # re-pick diluted the price response to about a sixth of its size.
+    weights = [max(_customer_product_score(p, customer), 0.01)
+               * (demand_factor(p.sku) if demand_factor is not None else 1.0)
+               for p in same_slice]
     total = sum(weights)
     if total <= 0:
         return chosen
@@ -1490,10 +1516,47 @@ def _is_churning(customer: "Customer", n_orders: int) -> bool:
     return sub_rng.random() < _churn_propensity(customer, n_orders)
 
 
+def _order_months(rng: random.Random, eligible: list[str], n: int) -> list[str]:
+    """A customer's order months in time order, distinct while the window allows."""
+    if n <= len(eligible):
+        return sorted(rng.sample(eligible, n))
+    return sorted(rng.choice(eligible) for _ in range(n))
+
+
+def _pick_of_type(
+    rng: random.Random,
+    products_by_pet: dict[str, list[Product]],
+    pet: str,
+    kind: str,
+    customer: Customer,
+) -> Product | None:
+    """A product of item type `kind` for `pet`, weighted by the customer's tastes."""
+    pool = [p for p in products_by_pet.get(pet, []) if lifecycle.item_type(p.name, p.brand) == kind]
+    if not pool:
+        return None
+    return rng.choices(pool, weights=[_customer_product_score(p, customer) for p in pool], k=1)[0]
+
+
+def _pick_staple(
+    rng: random.Random,
+    products_by_pet_cat: dict[tuple[str, str], list[Product]],
+    pet: str,
+    category: str,
+    customer: Customer,
+    exclude: str | None,
+) -> Product:
+    """The consumable a customer settles on for one pet and category."""
+    pool = [p for p in products_by_pet_cat.get((pet, category), [])
+            if lifecycle.is_staple(p, pet) and p.sku != exclude]
+    assert pool, f"no staple products for {pet}/{category}"
+    return rng.choices(pool, weights=[_customer_product_score(p, customer) for p in pool], k=1)[0]
+
+
 def gen_orders_and_lines(
     rng: random.Random,
     customers: list[Customer],
     products: list[Product],
+    promotions: lifecycle.Promotions,
 ) -> tuple[list[Order], list[OrderLine]]:
     """Generate orders + lines with the engineered signal baked in.
 
@@ -1566,12 +1629,23 @@ def gen_orders_and_lines(
             if churn_eligible:
                 eligible_months = churn_eligible
 
-        for _ in range(n_orders):
+        # ADR 0027: the customer's life with their pets. Orders are a
+        # sequence in time; staples are restocked; each pet starts with a
+        # kit whose add-ons follow; durables are bought once.
+        # At most one order a month: a heavy customer's orders are capped by
+        # the months they were a customer (churners' windows are shorter).
+        n_orders = min(n_orders, len(eligible_months))
+        order_months = _order_months(rng, eligible_months, n_orders)
+        pets = lifecycle.main_pets(pet_type_weights)
+        staple_cats = {pet: lifecycle.staple_categories(rng, pet) for pet in pets}
+        staples: dict[tuple[str, str], Product] = {}
+        owned_durables: set[str] = set()
+
+        for order_index, month in enumerate(order_months):
             order_id = f"ORD-{order_counter:05d}"
             order_counter += 1
-            month = rng.choice(eligible_months)
 
-            # 1-6 lines, mode at 2-3.
+            # 1-6 lines, mode at 2-3. The lifecycle lines count towards it.
             n_lines = rng.choices(
                 [1, 2, 3, 4, 5, 6],
                 weights=[0.12, 0.30, 0.28, 0.18, 0.08, 0.04],
@@ -1581,7 +1655,76 @@ def gen_orders_and_lines(
             this_orders_lines: list[OrderLine] = []
             order_total = 0.0
 
-            for _line_i in range(n_lines):
+            def add(product: Product, stock_up: bool = False) -> None:
+                nonlocal line_counter, order_total
+                if product.sku in order_skus:
+                    return
+                order_skus.add(product.sku)
+                kind = lifecycle.item_type(product.name, product.brand)
+                if kind in lifecycle.DURABLE_TYPES:
+                    owned_durables.add(kind)
+                qty = rng.choices([1, 2, 3], weights=[0.78, 0.18, 0.04])[0]
+                if stock_up:
+                    # A promoted staple: stock up, (price / list)^ε the usual.
+                    wanted = qty * promotions.demand_factor(product.sku, month)
+                    qty = int(wanted) + (rng.random() < wanted - int(wanted))
+                # Returned rate modulated by lifestyle — budget customers
+                # return more (price-sensitive, less satisfied), premium
+                # return less. Overall share stays in the 2.5-3.5 % band
+                # that signal-test #5 asserts.
+                returned_rate = {"premium": 0.018, "mid": 0.030, "budget": 0.042}[customer.lifestyle]
+                this_orders_lines.append(OrderLine(
+                    line_id=f"LN-{line_counter:06d}",
+                    order_id=order_id,
+                    product_sku=product.sku,
+                    qty=qty,
+                    returned=rng.random() < returned_rate,
+                    customer_segment=customer.segment,
+                    customer_pet_size=customer.pet_size,
+                    customer_lifestyle=customer.lifestyle,
+                    customer_health_focus=customer.health_focus,
+                    customer_treat_affinity=customer.treat_affinity,
+                    customer_brand_loyalty=customer.brand_loyalty,
+                ))
+                line_counter += 1
+                order_total += product.price_eur * qty
+
+            # Starter kit, first order only.
+            if order_index == 0:
+                for pet in pets:
+                    for kind in lifecycle.STARTER_KITS.get(pet, ()):
+                        kit_item = _pick_of_type(rng, products_by_pet, pet, kind, customer)
+                        if kit_item is not None:
+                            add(kit_item)
+
+            # Staples: bought first time round, then restocked (sometimes switched).
+            for pet in pets:
+                for category in staple_cats[pet]:
+                    key = (pet, category)
+                    if key not in staples:
+                        staples[key] = _pick_staple(rng, products_by_pet_cat, pet, category, customer, exclude=None)
+                    elif rng.random() < lifecycle.RESTOCK_P:
+                        if rng.random() < lifecycle.SWITCH_P:
+                            staples[key] = _pick_staple(rng, products_by_pet_cat, pet, category, customer,
+                                                        exclude=staples[key].sku)
+                    else:
+                        continue
+                    add(staples[key], stock_up=True)
+
+            # An add-on the kit implies, not yet owned.
+            if order_index > 0 and rng.random() < lifecycle.ADD_ON_P:
+                wanted = [(pet, kind) for pet in pets for kind in lifecycle.ADD_ONS.get(pet, ())
+                          if kind not in owned_durables]
+                if wanted:
+                    pet, kind = rng.choice(wanted)
+                    add_on = _pick_of_type(rng, products_by_pet, pet, kind, customer)
+                    if add_on is not None:
+                        add(add_on)
+
+            # The rest of the basket: the segment- and trait-driven draw, where
+            # this month's promotions lift what's on offer.
+            demand = lambda sku, m=month: promotions.demand_factor(sku, m)
+            for _line_i in range(max(0, n_lines - len(this_orders_lines))):
                 # Pick a pet_type for this line, then a category-biased product.
                 pet_type = rng.choices(
                     list(pet_type_weights.keys()),
@@ -1589,45 +1732,22 @@ def gen_orders_and_lines(
                 )[0]
                 if not products_by_pet[pet_type]:
                     pet_type = rng.choice(list(products_by_pet.keys()))
-                product = _pick_product(rng, products_by_pet, pet_type, cat_bias)
+                product = _pick_product(rng, products_by_pet, pet_type, cat_bias, demand)
                 # Customer-preference substitution within (pet_type,
-                # category) using a sub-RNG keyed on
-                # (customer_id, line_counter). Main RNG state is
-                # untouched so existing engineered signals — large-
-                # breed cat share, persona top-5 overlaps, dog-food →
-                # dental lift, returned share — stay byte-identical
-                # for personas (skipped entirely) and identical-in-
-                # distribution for the generic crowd.
+                # category), sub-RNG keyed on (customer_id, line_counter).
                 product = _customer_preference_substitute(
                     product, products_by_pet_cat, customer,
-                    persona_id_set, line_counter,
+                    persona_id_set, line_counter, demand,
                 )
-                if product.sku in order_skus:
-                    continue
-                order_skus.add(product.sku)
-                qty = rng.choices([1, 2, 3], weights=[0.78, 0.18, 0.04])[0]
-                # Returned rate modulated by lifestyle — budget customers
-                # return more (price-sensitive, less satisfied), premium
-                # return less. Overall share stays in the 2.5-3.5 % band
-                # that signal-test #5 asserts.
-                returned_rate = {"premium": 0.018, "mid": 0.030, "budget": 0.042}[customer.lifestyle]
-                returned = rng.random() < returned_rate
-                line = OrderLine(
-                    line_id=f"LN-{line_counter:06d}",
-                    order_id=order_id,
-                    product_sku=product.sku,
-                    qty=qty,
-                    returned=returned,
-                    customer_segment=customer.segment,
-                    customer_pet_size=customer.pet_size,
-                    customer_lifestyle=customer.lifestyle,
-                    customer_health_focus=customer.health_focus,
-                    customer_treat_affinity=customer.treat_affinity,
-                    customer_brand_loyalty=customer.brand_loyalty,
-                )
-                line_counter += 1
-                this_orders_lines.append(line)
-                order_total += product.price_eur * qty
+                # D1: a customer who has settled on a food buys that one, not
+                # a random other food in the same category.
+                staple = staples.get((product.pet_type, product.category))
+                if staple is not None and rng.random() < lifecycle.STAPLE_LOYALTY:
+                    product = staple
+                kind = lifecycle.item_type(product.name, product.brand)
+                if kind in owned_durables and rng.random() >= lifecycle.REPLACEMENT_P:
+                    continue   # already owns one
+                add(product)
 
             # ── Signal #2: dog-food → dental-treats co-occurrence ───
             #
@@ -1641,7 +1761,11 @@ def gen_orders_and_lines(
                     and _sku_to_product(products, ln.product_sku).pet_type == "dog"
                     for ln in this_orders_lines
                 )
-                if has_dog_dryfood and rng.random() < 0.70:
+                # Treat-loving owners add dental chews more often. Flat 0.70 used
+                # to drown the treat-affinity signal once dry food became a
+                # staple restocked in most dog orders (ADR 0027).
+                dental_p = {"high": 0.90, "medium": 0.70, "low": 0.35}[customer.treat_affinity]
+                if has_dog_dryfood and rng.random() < dental_p:
                     dental_pool = [
                         p for p in products_by_pet["dog"]
                         if p.category == "dental-treats" and p.sku not in order_skus
@@ -2229,11 +2353,14 @@ def gen_monthly_sales(
         if cust:
             bucket["customers"].add(cust)
 
+    # Every SKU-month, zero-sale months included (ADR 0027 amendment 3): a
+    # demand curve learned without them can't see the months a promotion
+    # turned from no sales into some.
+    empty = {"units": 0, "revenue": 0.0, "customers": set()}
     out: list[MonthlySale] = []
-    for (sku, month), data in sorted(agg.items()):
-        prod = sku_to_product.get(sku)
-        if prod is None or data["units"] == 0:
-            continue
+    for sku, month in sorted((p.sku, m) for p in products for m in _MONTH_WINDOW):
+        prod = sku_to_product[sku]
+        data = agg.get((sku, month), empty)
         month_int = int(month.split("-")[1])
         units = int(data["units"])
         previous = agg.get((sku, _add_months(month, -1)))
@@ -2339,81 +2466,31 @@ def gen_price_history(
     rng: random.Random,
     products: list[Product],
     monthly_sales: list[MonthlySale],
+    promotions: lifecycle.Promotions,
 ) -> list[PriceObservation]:
-    """Synthesise per-SKU per-month price snapshots with engineered
-    price ↔ demand correlation.
+    """Per-SKU per-month realised prices, from the promotion calendar.
 
-    For Aito's `_estimate units_sold` (the Price view's demand
-    curve) to surface a believable elasticity, monthly_sales must
-    show low-price months selling more than high-price months.
-    The previous approach assigned prices independently from
-    demand — Aito's K-NN saw zero correlation and extrapolated
-    nonsense at the edges.
-
-    We engineer a target log-log elasticity directly. For each
-    month, given the demand deviation from the SKU's median, set
-    log(price/list) = -log(units/median) / TARGET_ELASTICITY,
-    capped to ±15 % to keep prices in a realistic retail range,
-    plus uniform noise (±3 %) so Aito's K-NN doesn't read a crisp
-    deterministic ridge as infinite elasticity.
-
-    With TARGET_ELASTICITY = -2.5 and cost ratios ~50 % on
-    non-food categories, the demand curve produces an interior
-    profit peak near list price for most SKUs — discounting helps
-    on some items, raising prices helps on others, neither
-    universally. The earlier ±25 % deep-promo bands implied
-    elasticity of -5 to -10 and made the curve always shout
-    "discount everything", which isn't how pet retail works.
+    ADR 0027: the calendar is decided before any order and the orders
+    respond to it, so a promoted month sells more *because* it's cheaper.
+    (The previous version set each month's price from that month's demand,
+    which put the causation backwards: Markdown then read a price
+    sensitivity of about −3.7.) A ±2 % noise keeps Aito's k-NN from reading
+    a crisp ridge. Rows exist only for months with sales, like
+    monthly_sales.
     """
-    # Group monthly_sales by SKU to compute per-SKU median units.
-    by_sku: dict[str, list[MonthlySale]] = {}
-    for ms in monthly_sales:
-        by_sku.setdefault(ms.product_sku, []).append(ms)
-
-    TARGET_ELASTICITY = -1.0      # aspirational slope; the K-NN regression
-                                  # reads ~1.5-2× steeper because of noise
-                                  # truncation at the price caps, landing
-                                  # the effective elasticity in the
-                                  # realistic -1.5 to -2.5 range
-    DEMAND_LOG_CAP = 0.5          # clip log(u/median) to ±0.5 → ~1.65× / 0.6×
-    PRICE_NOISE_STD = 0.10        # uniform ~±10 % noise
-    MAX_LOG_PRICE_DEV = 0.18      # cap final price swing at ±18 %
-
     out: list[PriceObservation] = []
-    for p in products:
-        sku_months = by_sku.get(p.sku, [])
-        if not sku_months:
-            continue
-        units_series = sorted(ms.units_sold for ms in sku_months)
-        median_units = max(units_series[len(units_series) // 2], 1)
-        list_price = p.price_eur
-        for ms in sku_months:
-            u = max(ms.units_sold, 1)
-            # Demand-driven centre: log(price/list) = log(u/median) / ε.
-            # Clip the demand input first so wild outlier months don't
-            # anchor a steep ridge.
-            log_u_dev = math.log(u / median_units)
-            log_u_dev = max(-DEMAND_LOG_CAP, min(DEMAND_LOG_CAP, log_u_dev))
-            centre = log_u_dev / TARGET_ELASTICITY
-            # Heavy noise uncorrelated with demand. By design this is
-            # larger than the deterministic centre's standard deviation
-            # so Var(log_price) is noise-dominated. The K-NN
-            # regression slope on the resulting data is then close to
-            # the target elasticity instead of the much-steeper slope
-            # that crisp price-demand bands would produce.
-            log_p_dev = centre + rng.uniform(-PRICE_NOISE_STD, PRICE_NOISE_STD)
-            log_p_dev = max(-MAX_LOG_PRICE_DEV, min(MAX_LOG_PRICE_DEV, log_p_dev))
-            price_ratio = math.exp(log_p_dev)
-            price = _round_eur(list_price * price_ratio)
-            discount = 1.0 - price_ratio
-            out.append(PriceObservation(
-                price_observation_id=f"{p.sku}-{ms.month}",
-                product_sku=p.sku,
-                month=ms.month,
-                price_eur=price,
-                list_price_eur=_round_eur(list_price),
-                discount_pct=round(discount * 100, 1),
-            ))
+    list_price = {p.sku: p.price_eur for p in products}
+    for ms in monthly_sales:
+        discount = promotions.discount.get((ms.product_sku, ms.month), 0.0)
+        ratio = (1.0 - discount) * (1.0 + rng.uniform(-0.02, 0.02))
+        out.append(PriceObservation(
+            price_observation_id=f"{ms.product_sku}-{ms.month}",
+            product_sku=ms.product_sku,
+            month=ms.month,
+            price_eur=_round_eur(list_price[ms.product_sku] * ratio),
+            list_price_eur=_round_eur(list_price[ms.product_sku]),
+            discount_pct=round((1.0 - ratio) * 100, 1),
+        ))
     return out
 
 
@@ -2450,6 +2527,8 @@ def gen_winback_campaigns(
     rng: random.Random,
     customers: list[Customer],
     products: list[Product],
+    orders: list[Order],
+    lines: list[OrderLine],
 ) -> list[WinbackCampaign]:
     """Synthesise ~3000 historical re-engagement email campaigns
     sent to customers who had been inactive at send time. Drives the
@@ -2496,6 +2575,25 @@ def gen_winback_campaigns(
     # product) candidate pair; tuned so the total campaign count
     # lands in the ~3000-5000 band (enough for `_predict` to be
     # well-estimated).
+    # ADR 0027: what each customer actually buys, so a send can hit (or
+    # miss) their staple, and the sends concentrate on products that get
+    # enough of them to learn from.
+    by_sku = {p.sku: p for p in products}
+    customer_of = {o.order_id: o.customer_id for o in orders}
+    bought: dict[str, Counter] = {}
+    for ln in lines:
+        prod = by_sku[ln.product_sku]
+        bought.setdefault(customer_of[ln.order_id], Counter())[(prod.pet_type, prod.category)] += 1
+    popularity = Counter(ln.product_sku for ln in lines)
+    universe = [by_sku[sku] for sku, _ in popularity.most_common(200)]
+
+    def staple_of(customer_id: str) -> tuple[str, str] | None:
+        counts = bought.get(customer_id)
+        if not counts:
+            return None
+        (pet, category), n = counts.most_common(1)[0]
+        return (pet, category) if n >= 3 else None
+
     SEND_RATE = 0.0035
 
     # 24-month send window mirroring _MONTH_WINDOW. Most campaigns
@@ -2511,12 +2609,15 @@ def gen_winback_campaigns(
         # heavy-tailed for the marketing-engaged segment.
         n_sends = rng.choices(
             [0, 1, 2, 3, 4],
-            weights=[0.55, 0.25, 0.12, 0.05, 0.03],
+            weights=[0.40, 0.30, 0.15, 0.10, 0.05],
         )[0]
         if n_sends == 0:
             continue
 
         preferred_pets = segment_to_pets.get(customer.segment, set())
+        staple = staple_of(customer.customer_id)
+        staple_pool = [p for p in universe if staple and (p.pet_type, p.category) == staple]
+        ever_bought = set(bought.get(customer.customer_id, {}))
         for _ in range(n_sends):
             sent_month = rng.choices(months, weights=month_weights)[0]
 
@@ -2525,10 +2626,12 @@ def gen_winback_campaigns(
             # "matching products respond better" pattern has enough
             # matched samples to learn from. Off-segment products
             # still occur (failed-campaign realism).
-            if preferred_pets and rng.random() < 0.7:
-                pool = [p for p in products if p.pet_type in preferred_pets]
+            if staple_pool and rng.random() < 0.5:
+                pool = staple_pool
+            elif preferred_pets and rng.random() < 0.7:
+                pool = [p for p in universe if p.pet_type in preferred_pets]
             else:
-                pool = products
+                pool = universe
             if not pool:
                 continue
             product = rng.choice(pool)
@@ -2569,7 +2672,12 @@ def gen_winback_campaigns(
                 "grain-free", "sensitive", "senior", "weight-control",
             }:
                 p *= 1.5
-            p = max(0.005, min(0.25, p))
+            # ADR 0027: product-level response, relative to what the customer buys.
+            if staple and (product.pet_type, product.category) == staple:
+                p *= 2.5
+            elif (product.pet_type, product.category) not in ever_bought:
+                p *= 0.5
+            p = max(0.005, min(0.35, p))
 
             responded = rng.random() < p
             # Order value if responded — modulated by lifestyle and
@@ -2594,6 +2702,7 @@ def gen_winback_campaigns(
                 customer_pet_size=customer.pet_size,
                 customer_lifestyle=customer.lifestyle,
                 customer_health_focus=customer.health_focus,
+                customer_staple_category=f"{staple[0]}/{staple[1]}" if staple else "none",
                 product_pet_type=product.pet_type,
                 product_category=product.category,
                 product_brand=product.brand,
@@ -2865,7 +2974,10 @@ def main() -> None:
 
     products = gen_products(rng)
     customers = gen_customers(rng)
-    orders, lines = gen_orders_and_lines(rng, customers, products)
+    # ADR 0027: promotions are decided before any order, on their own
+    # RNG, so demand can respond to price rather than price to demand.
+    promotions = lifecycle.plan_promotions(random.Random(RNG_SEED + 27), products, _MONTH_WINDOW)
+    orders, lines = gen_orders_and_lines(rng, customers, products, promotions)
 
     # Post-pass: derive customer-level aggregates from the order
     # history (total_orders, total_spent_eur, last_order_month,
@@ -2894,7 +3006,7 @@ def main() -> None:
     # `_relate`). See ADRs 0014 / 0015 / 0016.
     monthly_sales = gen_monthly_sales(products, orders, lines)
     inventory = gen_inventory(rng, products, monthly_sales)
-    price_history = gen_price_history(rng, products, monthly_sales)
+    price_history = gen_price_history(rng, products, monthly_sales, promotions)
     # Now that prices reflect demand-rank discounts/premiums, write
     # the realised price back onto monthly_sales so Aito's
     # `_estimate units_sold` conditions on the same price column.
@@ -2903,7 +3015,7 @@ def main() -> None:
     # Historical re-engagement campaigns — drives the Win-back
     # view's `_predict responded` per current-churned customer.
     # See ADR 0020.
-    winback_campaigns = gen_winback_campaigns(rng, customers, products)
+    winback_campaigns = gen_winback_campaigns(rng, customers, products, orders, lines)
 
     # Product impressions with the funnel outcome — gives the
     # recommendation surfaces a real conversion KPI to rank on

@@ -18,11 +18,14 @@ because *those* are the demo's load-bearing claims.
 from __future__ import annotations
 
 import json
-from collections import Counter
+import math
+import statistics
+from collections import Counter, defaultdict
 from pathlib import Path
 
 import pytest
 
+from data import lifecycle
 from data.generate_fixtures import (
     FILLABLE_CATEGORIES,
     PERSONAS,
@@ -494,13 +497,17 @@ def test_monthly_sales_coverage(products):
     )
 
 
-def test_monthly_sales_units_positive():
-    """Every row must have units_sold ≥ 1. Empty months aren't
-    emitted; if any zero-unit row sneaks in it'd dilute Aito's
-    conditioning."""
+def test_monthly_sales_has_every_sku_month_including_zero_sales():
+    """ADR 0027 amendment 3: zero-sale months are rows too. Without them a
+    demand curve can't see the months a promotion turned from no sales into
+    some, so the price response looked flat (fitted −0.01 against a planted
+    −1.6)."""
     sales = _load("monthly_sales.json")
-    for ms in sales:
-        assert int(ms.get("units_sold", 0)) >= 1, ms
+    months = {ms["month"] for ms in sales}
+    per_sku = Counter(ms["product_sku"] for ms in sales)
+    assert set(per_sku.values()) == {len(months)}, "a SKU is missing months"
+    assert all(int(ms["units_sold"]) >= 0 for ms in sales)
+    assert any(int(ms["units_sold"]) == 0 for ms in sales)
 
 
 def test_inventory_band_distribution():
@@ -730,3 +737,108 @@ def test_units_last_month_is_the_previous_calendar_months_sales():
         assert r["units_last_month_bucket"] == units_range(expected)
     # Gaps exist, so the zero case is exercised, not just defined.
     assert any(r["units_last_month"] == 0 for r in sales)
+
+
+# ── ADR 0027: purchase lifecycle (pre-registered D1-D7) ──────────────
+# Thresholds from docs/verification/lifecycle-data-prereg.md.
+
+
+def _history():
+    products = {p["sku"]: p for p in _load("products.json")}
+    lines_by_order = defaultdict(list)
+    for ln in _load("order_lines.json"):
+        lines_by_order[ln["order_id"]].append(products[ln["product_sku"]])
+    by_customer = defaultdict(list)
+    for o in _load("orders.json"):
+        by_customer[o["customer_id"]].append(o)
+    for orders in by_customer.values():
+        orders.sort(key=lambda o: (o["month"], o["order_id"]))
+    return products, lines_by_order, by_customer
+
+
+def test_d1_customers_rebuy_their_food():
+    """A food line re-buys a food the customer bought before in a majority
+    of cases (6.7 % before ADR 0027), and not always: switching remains."""
+    _, lines_by_order, by_customer = _history()
+    rebuy = total = 0
+    for orders in by_customer.values():
+        seen: set[str] = set()
+        for o in orders:
+            foods = [p for p in lines_by_order[o["order_id"]] if p["category"] in ("dry-food", "wet-food")]
+            total += len(foods)
+            rebuy += sum(p["sku"] in seen for p in foods)
+            seen |= {p["sku"] for p in foods}
+    assert 0.50 <= rebuy / total <= 0.90, f"food re-buy share {rebuy / total:.1%}"
+
+
+def test_d2_a_small_animal_starts_with_its_kit():
+    _, lines_by_order, by_customer = _history()
+    kit = set(lifecycle.STARTER_KITS["small_animal"])
+    first = [p for orders in by_customer.values() for p in lines_by_order[orders[0]["order_id"]]
+             if p["pet_type"] == "small_animal"]
+    later = [p for orders in by_customer.values() for o in orders[1:] for p in lines_by_order[o["order_id"]]
+             if p["pet_type"] == "small_animal"]
+    starter = lambda p: lifecycle.item_type(p["name"], p["brand"]) in kit or p["category"] == "dry-food"
+    assert sum(map(starter, first)) / len(first) >= 0.60
+    assert sum(lifecycle.item_type(p["name"], p["brand"]) in kit for p in later) / len(later) <= 0.10
+
+
+def test_d3_nobody_buys_a_second_cage_but_rarely():
+    _, lines_by_order, by_customer = _history()
+    cages = Counter()
+    for customer, orders in by_customer.items():
+        for o in orders:
+            cages[customer] += sum(lifecycle.item_type(p["name"], p["brand"]) == "Cage"
+                                   for p in lines_by_order[o["order_id"]])
+    buyers = [n for n in cages.values() if n]
+    assert sum(n >= 2 for n in buyers) / len(buyers) <= 0.02
+
+
+def test_d4_a_customers_orders_are_a_sequence_in_time():
+    _, _, by_customer = _history()
+    distinct = sum(len({o["month"] for o in orders}) == len(orders) for orders in by_customer.values())
+    assert distinct / len(by_customer) >= 0.90
+
+
+def test_d5_demand_responds_to_promotions():
+    """Implied elasticity per category over every SKU-month (zeros
+    included): ln(units promoted ÷ units not) ÷ ln(1 − mean discount)."""
+    products = {p["sku"]: p for p in _load("products.json")}
+    price = {(r["product_sku"], r["month"]): r for r in _load("price_history.json")}
+    by_cat = defaultdict(lambda: ([], [], []))
+    for r in _load("monthly_sales.json"):
+        h = price[(r["product_sku"], r["month"])]
+        promoted, flat, depth = by_cat[products[r["product_sku"]]["category"]]
+        if h["discount_pct"] > 5:
+            promoted.append(r["units_sold"])
+            depth.append(h["discount_pct"] / 100)
+        else:
+            flat.append(r["units_sold"])
+    elasticities = [
+        math.log(statistics.mean(p) / statistics.mean(f)) / math.log(1 - statistics.mean(d))
+        for p, f, d in by_cat.values() if p and f and statistics.mean(f) > 0 and statistics.mean(p) > 0
+    ]
+    assert -2.0 <= statistics.median(elasticities) <= -1.0, statistics.median(elasticities)
+
+
+def test_d6_the_planted_mispricings_are_findable():
+    products = {p["sku"]: p for p in _load("products.json")}
+    realised = defaultdict(list)
+    for r in _load("price_history.json"):
+        realised[r["product_sku"]].append(r["price_eur"])
+    outliers = [
+        sku for sku, prices in realised.items() if len(prices) >= 12
+        and not (statistics.mean(prices) - 1.5 * statistics.pstdev(prices)
+                 <= products[sku]["price_eur"]
+                 <= statistics.mean(prices) + 1.5 * statistics.pstdev(prices))
+    ]
+    assert len(outliers) >= 12, len(outliers)
+
+
+def test_d7_winback_sends_in_the_staple_category_respond_more():
+    campaigns = _load("winback_campaigns.json")
+    in_staple = lambda w: w["customer_staple_category"] == f'{w["product_pet_type"]}/{w["product_category"]}'
+    rate = lambda ws: sum(w["responded"] for w in ws) / len(ws)
+    staple = [w for w in campaigns if in_staple(w)]
+    other = [w for w in campaigns if not in_staple(w)]
+    assert rate(staple) >= 2 * rate(other), (rate(staple), rate(other))
