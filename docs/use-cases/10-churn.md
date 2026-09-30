@@ -165,7 +165,7 @@ read a stable accuracy.
 
 ## Key features
 
-### 1. The timestamp held out, deliberately
+### 1. The timestamp excluded from the features, deliberately
 
 The churn label is `last_order_month ≤ 2026-01`. If `_predict`
 sees `last_order_month` it reads the label off the same column.
@@ -175,6 +175,13 @@ they are" not "when they last bought".
 This is the technique to use any time the label is derived from
 a column the row carries — exclude the source from the
 conditioning, predict from the everything-else.
+
+Excluding a feature is not the same as holding data out. The
+accuracy is measured on customer-months held out at random, so a
+customer's other months stay in training. Measured on 2026-09-30,
+holding out by time instead (test 2026-01, train up to 2025-10)
+scores no worse: 0.941 against a 0.504 baseline, versus 0.94
+against 0.667 on the random rows.
 
 ### 2. Parallel scoring across N customers
 
