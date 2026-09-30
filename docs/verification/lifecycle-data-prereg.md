@@ -24,9 +24,12 @@ Computed by `tests/test_fixtures.py`, failing the suite if missed.
 - **Customers:** 300 with ≥ 3 orders, `random.Random(0)` over sorted ids.
 - **Task:** predict the products of each customer's **last** order from
   their earlier orders.
-- **Method:** `_recommend product_sku` over `order_lines`, conditioned on the
+- **Method:** `_predict product_sku` over `order_lines`, conditioned on the
   customer (`order_id.customer_id`), from a nested `from` that excludes the
   last order's lines (so it never sees the answer).
+  *Amended before any run (2026-09-30):* the first draft said `_recommend`,
+  which needs a `goal`, and `order_lines` has no purchase outcome to aim at.
+  "Which product does this customer's next line hold" is a `_predict`.
 - **Hit:** any product of the last order is in the top 10.
 - **Baseline:** the 10 products most bought by the customer's segment,
   from the same training rows.
