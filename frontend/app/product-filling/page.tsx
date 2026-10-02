@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
 import { apiFetch, confClass, fmtEur } from "@/lib/api";
 import { productFillingPanel } from "@/lib/panel-content";
@@ -8,6 +8,7 @@ import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import WhyPopover from "@/components/prediction/WhyPopover";
 import ErrorState from "@/components/shell/ErrorState";
 import type { FillingResponse, FillingFieldOut } from "@/lib/types";
+import { useUrlState } from "@/lib/use-url-state";
 
 
 /**
@@ -15,7 +16,7 @@ import type { FillingResponse, FillingFieldOut } from "@/lib/types";
  * Aito-filled five fields (right). Data layer:
  * `src/filling_service.py`; see `docs/adr/0009-product-filling.md`.
  */
-export default function ProductFillingPage() {
+function ProductFillingView() {
   usePagePanel(productFillingPanel(), {
     title: "Product Filling",
     description:
@@ -26,7 +27,10 @@ export default function ProductFillingPage() {
   });
 
   const { setPanel } = useShell();
-  const [sku, setSku] = useState<string | undefined>(undefined);
+  // No `sku` in the URL means the backend's default product.
+  const [skuParam, setSkuParam] = useUrlState("sku", "");
+  const sku = skuParam || undefined;
+  const setSku = (next: string | undefined) => setSkuParam(next ?? "");
   const [data, setData] = useState<FillingResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -269,4 +273,15 @@ function highlightQuery(body: Record<string, unknown>): string {
 
 function escape(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+
+// The view reads its state from the URL (`useUrlState`), which the static
+// export only allows under a Suspense boundary.
+export default function ProductFillingPage() {
+  return (
+    <Suspense>
+      <ProductFillingView />
+    </Suspense>
+  );
 }

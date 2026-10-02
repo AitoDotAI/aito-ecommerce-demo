@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 
 import { apiFetch, fmtEur } from "@/lib/api";
 import { smartSearchPanel } from "@/lib/panel-content";
 import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
+import { useUrlState } from "@/lib/use-url-state";
 import type {
   SmartSearchHit,
   SmartSearchHitWithDelta,
@@ -19,7 +20,7 @@ const PERSONAS: Array<{ id: string; emoji: string; label: string; segment: strin
 ];
 
 
-export default function SmartSearchPage() {
+function SmartSearchView() {
   usePagePanel(smartSearchPanel(), {
     title: "Smart Search",
     description:
@@ -29,8 +30,12 @@ export default function SmartSearchPage() {
   });
 
   const { setPanel } = useShell();
-  const [persona, setPersona] = useState("saara");
-  const [query, setQuery] = useState("food");
+  // The persona and the SUBMITTED query live in the URL; typing only edits
+  // a draft, so each search (not each keystroke) is a back/forward step.
+  const [persona, setPersona] = useUrlState("customer", "saara");
+  const [submitted, setSubmitted] = useUrlState("q", "food");
+  const [query, setQuery] = useState(submitted);
+  useEffect(() => setQuery(submitted), [submitted]);
   const [data, setData] = useState<SmartSearchResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -59,15 +64,16 @@ export default function SmartSearchPage() {
   }, [setPanel]);
 
   useEffect(() => {
-    fetchSearch(query, persona);
-    // Run on mount + when persona changes. Query changes go through
-    // the search-button handler so the user controls typing pace.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [persona]);
+    fetchSearch(submitted, persona);
+  }, [fetchSearch, submitted, persona]);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchSearch(query, persona);
+    if (query === submitted) {
+      fetchSearch(submitted, persona);   // the same search again: refetch, no new history entry
+    } else {
+      setSubmitted(query);
+    }
   };
 
   return (
@@ -340,4 +346,15 @@ function highlightQuery(body: Record<string, unknown>): string {
 
 function escape(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+
+// The view reads its state from the URL (`useUrlState`), which the static
+// export only allows under a Suspense boundary.
+export default function SmartSearchPage() {
+  return (
+    <Suspense>
+      <SmartSearchView />
+    </Suspense>
+  );
 }
