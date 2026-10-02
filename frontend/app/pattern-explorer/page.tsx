@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
 import { apiFetch } from "@/lib/api";
 import { patternExplorerPanel } from "@/lib/panel-content";
@@ -8,6 +8,7 @@ import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import LiftHint from "@/components/prediction/LiftHint";
 import ErrorState from "@/components/shell/ErrorState";
 import type { PatternResponse } from "@/lib/types";
+import { useUrlState } from "@/lib/use-url-state";
 
 
 /**
@@ -18,7 +19,7 @@ import type { PatternResponse } from "@/lib/types";
  * (red) co-occurrences. The Aito panel updates with the live
  * `_relate` body on every anchor change.
  */
-export default function PatternExplorerPage() {
+function PatternExplorerView() {
   usePagePanel(patternExplorerPanel(), {
     title: "Pattern Explorer",
     description:
@@ -28,7 +29,7 @@ export default function PatternExplorerPage() {
   });
 
   const { setPanel } = useShell();
-  const [anchor, setAnchor] = useState("dog_dryfood");
+  const [anchor, setAnchor] = useUrlState("anchor", "dog_dryfood");
   const [data, setData] = useState<PatternResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -228,4 +229,15 @@ function highlightQuery(body: Record<string, unknown>): string {
 
 function escape(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+
+// The view reads its state from the URL (`useUrlState`), which the static
+// export only allows under a Suspense boundary.
+export default function PatternExplorerPage() {
+  return (
+    <Suspense>
+      <PatternExplorerView />
+    </Suspense>
+  );
 }

@@ -159,9 +159,10 @@ slightly better.
 - **Hyphen tokenisation on Text fields.** BM25 tokenises
   `"Large-Breed"` into `large` and `breed`, which is usually what a
   shopper wants.
-- **The persona pill bar persists in `localStorage`** so the demo
-  remembers your last persona. In production the customer context
-  comes from the session.
+- **The persona and the query live in the URL**
+  (`/smart-search/?customer=maija&q=dog+food`), so a pasted link opens
+  the same view, and back/forward step through searches. In production
+  the customer context comes from the session.
 
 ## What this demo abstracts away
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
 import { apiFetch, confClass } from "@/lib/api";
 import { feedbackPanel } from "@/lib/panel-content";
@@ -8,6 +8,7 @@ import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import WhyPopover from "@/components/prediction/WhyPopover";
 import ErrorState from "@/components/shell/ErrorState";
 import type { FeedbackResponse } from "@/lib/types";
+import { useUrlState } from "@/lib/use-url-state";
 
 
 /**
@@ -16,7 +17,7 @@ import type { FeedbackResponse } from "@/lib/types";
  * assigned_to in one round-trip. Same fanout pattern as Product
  * Filling. See `docs/adr/0012-feedback-multi-predict.md`.
  */
-export default function FeedbackPage() {
+function FeedbackView() {
   usePagePanel(feedbackPanel(), {
     title: "Feedback",
     description:
@@ -27,7 +28,10 @@ export default function FeedbackPage() {
   });
 
   const { setPanel } = useShell();
-  const [reviewId, setReviewId] = useState<string | undefined>(undefined);
+  // No `review` in the URL means the backend's default review.
+  const [reviewParam, setReviewParam] = useUrlState("review", "");
+  const reviewId = reviewParam || undefined;
+  const setReviewId = (next: string | undefined) => setReviewParam(next ?? "");
   const [data, setData] = useState<FeedbackResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -323,4 +327,15 @@ function highlightQuery(body: Record<string, unknown>): string {
 
 function escape(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+
+// The view reads its state from the URL (`useUrlState`), which the static
+// export only allows under a Suspense boundary.
+export default function FeedbackPage() {
+  return (
+    <Suspense>
+      <FeedbackView />
+    </Suspense>
+  );
 }
