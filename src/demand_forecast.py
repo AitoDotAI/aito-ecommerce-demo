@@ -1,4 +1,5 @@
-"""Next month's units for one SKU — the forecast Demand and Inventory share.
+"""Next month's units for one SKU — the forecast Demand, Inventory, Price
+and Markdown share. Price and Markdown ask it at a given price.
 
 `_estimate`, not `_predict`: the question is the expected number of
 units, not the single most probable integer (see ADR 0014).
@@ -11,7 +12,7 @@ average, far below the current level of a growing SKU.
 
 from __future__ import annotations
 
-from src.aito_client import AitoClient
+from src.aito_client import AitoClient, AitoError
 from src.why_processor import process_estimate_why
 
 FORECAST_MONTH = "2026-05"   # the month we predict for
@@ -54,3 +55,23 @@ def forecast_units(client: AitoClient, sku: str, sales_rows: list[dict]) -> tupl
     assert estimate is not None, f"_estimate returned no estimate for {sku}: {res}"
     why = process_estimate_why(res.get("why"), float(estimate), field_label="units_sold")
     return max(0, int(round(float(estimate)))), why
+
+
+def price_where(sku: str, profile: dict, units_last_month: int, price_eur: float) -> dict:
+    """The forecast's evidence plus a price: "next month, at this price"."""
+    return {**forecast_where(sku, profile, units_last_month), "price_eur": price_eur}
+
+
+def units_at_price(client: AitoClient, sku: str, profile: dict,
+                   units_last_month: int, price_eur: float) -> float:
+    """Expected units next month if the SKU sells at `price_eur`.
+
+    `profile` carries pet_type, category and brand: the SKU's latest
+    monthly_sales row, or its products row when it has no sales history.
+    """
+    where = price_where(sku, profile, units_last_month, price_eur)
+    res = client.estimate("monthly_sales", where=where, estimate_field="units_sold", with_why=False)
+    estimate = res.get("estimate")
+    if estimate is None:
+        raise AitoError(f"_estimate units_sold returned no estimate for {sku} at €{price_eur}: {res}")
+    return max(0.0, float(estimate))

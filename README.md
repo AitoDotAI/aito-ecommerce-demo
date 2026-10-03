@@ -352,11 +352,11 @@ pattern transfers to any banded analysis.
 {
   "from": "monthly_sales",
   "where": {
-    "product_sku": "SKU-PT-0042",
-    "month":       "2026-05",
-    "price_eur":   72.20,
-    "category":    "dry-food",
-    "season":      "spring"
+    "product_sku":      "SKU-PT-0042",
+    "units_last_month": 14,
+    "price_eur":        72.20,
+    "category":         "dry-food",
+    "season":           "spring"
   },
   "estimate": "units_sold"
 }
