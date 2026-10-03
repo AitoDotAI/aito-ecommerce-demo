@@ -263,3 +263,24 @@ def test_price_view_flags_no_outlier_on_a_thin_history(client):
     assert not thin, f"outliers on a thin history: {thin}"
     weak = [s.category for s in response.sweet_spots if s.f_on_condition < MIN_SWEET_SPOT_SUPPORT]
     assert not weak, f"sweet spots on thin support: {weak}"
+
+
+# ── Product Insights: one product's funnel and buyers (ADR 0028) ─────
+
+
+def test_product_insights_funnel_is_monotone_and_relate_counts_its_lines(client):
+    """For the default product: the funnel never grows step to step, the
+    surfaces cover every impression (the service asserts that), and the
+    "who buys it" `_relate` conditions on exactly this product's order
+    lines (`fCondition` equals a plain count)."""
+    from src.product_insights_service import DEFAULT_SKU, get_product_insights
+
+    result = get_product_insights(client, DEFAULT_SKU)
+
+    counts = [step.count for step in result.funnel]
+    assert counts[0] > 0, "no impressions for the default product"
+    assert counts == sorted(counts, reverse=True), counts
+    lines = client.search("order_lines", where={"product_sku": DEFAULT_SKU}, limit=0)["total"]
+    assert result.buyers, "no buyer profiles for the default product"
+    assert all(b.lines_total == lines for b in result.buyers), (lines, result.buyers[:2])
+    assert result.monthly, "no monthly_sales rows for the default product"

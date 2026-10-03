@@ -35,6 +35,7 @@ from src.basket_rules_service import get_basket_rules
 from src.filling_service import get_filling
 from src.eval_service import run_evaluation
 from src.analytics_service import get_analytics
+from src.product_insights_service import UnknownProductError, get_product_insights
 from src.pattern_service import get_patterns
 from src.feedback_service import get_feedback
 from src.churn_service import get_churn
@@ -354,6 +355,21 @@ def purchase_analytics_endpoint():
     """Monthly orders + top products + per-segment KPIs. See ADR 0011."""
     try:
         return get_analytics(aito).to_dict()
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/product-insights")
+def product_insights_endpoint(sku: str | None = None):
+    """One product's funnel, surfaces, buyers (`_relate` over its order
+    lines), monthly units and reviews. See ADR 0028."""
+    try:
+        return get_product_insights(aito, sku=sku).to_dict()
+    except UnknownProductError as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
     except AitoError as exc:
         return JSONResponse(
             status_code=502,
