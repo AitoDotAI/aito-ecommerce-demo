@@ -517,6 +517,9 @@ among churners, everyone, churners). The lift is the same ratio
 lift = (churners in band / churners) / (customers in band / customers)
 ```
 
+Reported to Aito core as td-20261003142449808722. Switch back to `_relate`
+when it can relate a band.
+
 See `src/churn_drivers.py`. When counting, a band with two bounds is an
 `$and` (`{"$and": [{"tenure_months": {"$gte": 6}}, {"tenure_months":
 {"$lt": 18}}]}`), and "band among churners" wraps both:
