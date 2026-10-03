@@ -24,6 +24,7 @@ the demo abstracts away.
 | 14 | [Markdown Decision](14-markdown.md) | `_estimate units_sold` × 5 markdown levels per overstock SKU + clearance-revenue picker |
 | 15 | [Cart Completion](15-cart-completion.md) | `_relate` over `orders.line_categories` × 4 preset checkout carts + `_search` for popular products in top related category |
 | 16 | [Win-back Campaigns](16-winback.md) | `_recommend product_sku from winback_campaigns goal {responded: true}` + `_estimate order_value_eur` per suggestion; Netigate action+impact pattern ported |
+| 17 | [Product Insights](17-product-insights.md) | `_relate` over one product's `order_lines` per customer column; funnel, surface and review counts in one `_batch` |
 
 Each guide is self-contained — read in any order. Prerequisites
 (running demo, loaded data) are listed in the project

@@ -63,6 +63,7 @@ const LINKS = [
   { view: "pattern-explorer", query: "anchor=cat_wetfood", api: "/api/pattern-explorer", expect: { anchor: "cat_wetfood" } },
   { view: "product-filling", query: "sku=SKU-PT-0042", api: "/api/product-filling", expect: { sku: "SKU-PT-0042" } },
   { view: "feedback", query: "review=REV-00042", api: "/api/feedback", expect: { review: "REV-00042" } },
+  { view: "product-insights", query: "sku=SKU-PT-0042", api: "/api/product-insights", expect: { sku: "SKU-PT-0042" } },
 ];
 
 // Views whose picker is filled from the API response: pick an option by
@@ -72,6 +73,7 @@ const PICKERS = [
   { view: "pattern-explorer", select: "#anchor-picker", key: "anchor", api: "/api/pattern-explorer" },
   { view: "product-filling", select: "#sku-picker", key: "sku", api: "/api/product-filling" },
   { view: "feedback", select: "#rev-picker", key: "review", api: "/api/feedback" },
+  { view: "product-insights", select: "#sku-picker", key: "sku", api: "/api/product-insights" },
 ];
 
 // Two options per picker, so there is something to pick. The selected entity
@@ -104,6 +106,16 @@ function stubResponse(apiPath, params) {
                          actual_churn_within_90d: false },
                fields: [], candidate_reviews: OPTIONS.review.map((r) => ({ review_id: r, rating: 4, text_short: `Review ${r}` })),
                last_query: STUB_QUERY, last_response_ms: 1 };
+    }
+    case "/api/product-insights": {
+      const sku = params.get("sku") ?? OPTIONS.sku[0];
+      return { product: { sku, name: `Product ${sku}`, brand: "PetNord", pet_type: "dog", category: "treats", price_eur: 3 },
+               funnel: [{ step: "impressions", count: 10 }, { step: "clicked", count: 5 },
+                        { step: "added_to_cart", count: 3 }, { step: "purchased", count: 2 }],
+               surfaces: [], buyers: [], monthly: [], ratings: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+               sentiments: { positive: 0, neutral: 0, negative: 0 },
+               candidate_products: OPTIONS.sku.map((s) => ({ sku: s, name: `Product ${s}`, category: "treats", pet_type: "dog" })),
+               bought_together_anchor: null, last_query: STUB_QUERY };
     }
     case "/api/evaluation":
       return JSON.parse(fs.readFileSync(EVAL_SNAPSHOT, "utf8")).data;

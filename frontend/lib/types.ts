@@ -767,3 +767,26 @@ export interface PriceDetail {
   last_query: { endpoint: string; body: Record<string, unknown> };
   last_response_ms: number;
 }
+
+/* ─── Product Insights (/api/product-insights) ─── */
+
+export interface ProductInsightsBuyerRow {
+  field: string;          // "customer_segment", ...
+  value: string;
+  lift: number;           // share among this product's lines / among all lines
+  lines: number;          // this product's order lines with this profile
+  lines_total: number;    // this product's order lines
+}
+
+export interface ProductInsightsResponse {
+  product: { sku: string; name: string; brand: string; pet_type: string; category: string; price_eur: number };
+  funnel: Array<{ step: "impressions" | "clicked" | "added_to_cart" | "purchased"; count: number }>;
+  surfaces: Array<{ surface: string; impressions: number; purchased: number }>;
+  buyers: ProductInsightsBuyerRow[];
+  monthly: Array<{ month: string; units_sold: number }>;
+  ratings: Record<string, number>;      // "1".."5"
+  sentiments: Record<string, number>;   // "positive" | "neutral" | "negative"
+  candidate_products: Array<{ sku: string; name: string; category: string; pet_type: string }>;
+  bought_together_anchor: string | null;
+  last_query: { endpoint: string; body: Record<string, unknown> };
+}
