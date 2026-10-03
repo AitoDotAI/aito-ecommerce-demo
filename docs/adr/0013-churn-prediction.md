@@ -98,6 +98,10 @@ of that field — "small_animal_owner segment → 1.8× lift in the
 churned subset". The latest-review fields surface the feedback↔
 churn correlation: "latest_sentiment=negative → 2.4× lift".
 
+*Superseded by "Amendment 2026-10-03" below: the drivers now relate the
+customer profile once per customer, and the review fields are dropped.
+On the data, negative reviews came out protective, not 2.4×.*
+
 **4. Accuracy** — one `_evaluate` over a 300-row sample of
 customer_months:
 
@@ -338,3 +342,116 @@ rather than the main RNG is a deliberate signal-engineering
 choice — see ADR 0002 §"Engineered signal" for the precedent.
 Future churn-signal tuning should follow the same isolation
 pattern so the existing demo moments don't drift.
+
+## Amendment 2026-10-03: profile drivers, counted per customer
+
+**Status:** Proposed
+
+### Context
+
+The drivers list asked five questions over `customer_months` rows:
+segment, region, pet size, and the latest review's category and
+sentiment. Three problems showed once v2's bare `related` values were
+read correctly (#37):
+
+- **The profile was half asked.** Lifestyle, health focus, treat
+  affinity and brand loyalty are on every row and were never related.
+  Tenure was skipped because it is a number: `_relate` over a number
+  returns one row per value (14 months, 15 months…), which doesn't read
+  as a driver.
+- **Customers were counted once per month.** A customer who stayed two
+  years weighed 24 times as much as one who left after a month. Profile
+  questions are about people, so they read cleaner on `customers`.
+- **The review rows read backwards.** Negative reviews came out
+  protective (0.67×), because a review comes with an order, and
+  customers who order don't churn. The page carried a note explaining
+  this away, which is the wrong fix.
+
+Measured on master (read-only, 2026-10-03), `customers` with
+`where {"churned": true}`, one row per tenure value before banding:
+
+| Profile | Lift among churners |
+|---|---|
+| tenure 28 months / 25 / 19 / 3 / 4 | 1.73 / 1.51 / 1.38 / 0.36 / 0.41 |
+| segment aquarium / small animal / cat | 1.38 / 1.21 / 0.89 |
+| region Oulu / Helsinki | 1.34 / 0.91 |
+| lifestyle, health focus, treat affinity, brand loyalty | all 0.95–1.05 |
+
+### Decision
+
+The drivers list relates churn to the **whole customer profile, once
+per customer**:
+
+```json
+{ "from": "customers", "where": { "churned": true }, "relate": "lifestyle" }
+```
+
+one call per profile field (segment, region, pet size, lifestyle,
+health focus, treat affinity, brand loyalty).
+
+Tenure is shown as three bands: under 6 months, 6–17 months, and 18
+months or more. API v2's `_relate` can't relate a band (see Aito usage),
+so each band's lift is computed from `_search limit=0` counts:
+
+```
+lift = (churners in band / churners) / (customers in band / customers)
+```
+
+That's the same ratio `_relate` reports for a field value.
+
+- The **review fields are dropped** from the list, and so is the note
+  explaining them away. Review experiences come back as drivers when the
+  data makes churn follow them (event-driven churn, a separate change).
+- **Order count is left out.** Churners stop ordering, so "1 order" is
+  partly the outcome, not a cause.
+- Profile fields with no effect are **named, not hidden.** The page
+  lists the fields it checked that showed no effect (lift within
+  0.85–1.15), so "lifestyle doesn't predict churn here" is visible
+  rather than silently absent.
+
+The drivers move from `churn_service.py` to `churn_drivers.py`.
+
+### Aito usage
+
+- `_relate` with a field name, over `customers` (already in the
+  cheatsheet). Verified live: a value's `fOnCondition` and `f` equal
+  the `_search` counts of that value among churners and among everyone,
+  so the `where` acts as the condition.
+- `_search limit=0` counts for the tenure bands (already used for KPI
+  counts).
+- **What doesn't work on v2** (probed 2026-10-03, added to the
+  cheatsheet):
+  - A range as `relate` (`{"tenure_months": {"$gte": 18}}`) is refused
+    with a 400 ("…is a combinator").
+  - The array form (`[{"tenure_months": {"$gte": 18}}]`) is accepted but
+    flips the question: it relates `band ∧ churned` to other fields.
+  - Relating the field and summing hits into bands undercounts: values
+    with no churners are left out (under 6 months came out 0.44× instead
+    of 0.23×).
+
+### Acceptance criteria
+
+- The drivers list shows profile drivers, each with its churn rate,
+  the baseline and the number of customers behind it.
+- Long tenure (18 months or more) appears as a driver, and short tenure
+  (under 6 months) as protective. On master: 1.71× and 0.23×.
+- No review-derived row appears in the list.
+- Under the list, the page names the profile fields that showed no
+  effect.
+- `./do aito-check` asserts that the list is non-empty, that the tenure
+  effect points the right way, and that `_relate`'s counts over churned
+  customers match `_search` counts.
+
+### Demo impact
+
+`docs/demo-script.md` has no Churn step, so the script doesn't change.
+The use-case guide (`docs/use-cases/10-churn.md`) is rewritten around
+the profile drivers, with lifestyle's lack of effect stated rather than
+skipped.
+
+### Out of scope
+
+- Event-driven churn in the generator (stock-outs, price rises, bad
+  reviews, late deliveries, missed refills) and the month-level
+  behaviour drivers that would show it.
+- Making the latent traits matter more in the generator.

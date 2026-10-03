@@ -13,8 +13,9 @@ Four blocks per request, all live against Aito:
   1. KPI strip       — current totals from the customers table
   2. At-risk         — `_predict churned_in_3_months` per active
                        customer's *latest* customer_month row
-  3. Drivers         — parallel `_relate` calls on customer_months
-                       filtered to `churned_in_3_months=true`
+  3. Drivers         — `_relate` per profile field over churned
+                       customers, tenure bands from `_search` counts
+                       (churn_drivers.py)
   4. Accuracy        — one `_evaluate churned_in_3_months` over
                        the panel with the full feature set
 
@@ -29,8 +30,8 @@ from dataclasses import dataclass, asdict
 from typing import Any
 
 from src.aito_client import AitoClient
-from src.aito_compat import related_value
 from src import cache
+from src.churn_drivers import DriverRow, get_churn_drivers
 from src.why_processor import process_why
 
 
@@ -51,16 +52,6 @@ _PREDICT_FEATURES: list[str] = [
     "tenure_months_at_month",
     "visits", "purchases", "spent_eur",
     "latest_rating", "latest_sentiment", "latest_category",
-]
-
-
-# Discrete features `_relate` can naturally surface drivers for.
-# Continuous columns (visits, spent_eur) would need binning;
-# `_relate` over those returns per-value rows that don't read as
-# "drivers". Discrete profile / review fields work cleanly.
-_DRIVER_RELATE_FIELDS: list[str] = [
-    "segment", "region", "pet_size",
-    "latest_category", "latest_sentiment",
 ]
 
 
@@ -95,16 +86,6 @@ class AtRiskCustomer:
 
 
 @dataclass(frozen=True)
-class DriverRow:
-    field: str                 # "segment", "region", "latest_category", ...
-    value: str
-    lift: float
-    support_f: int
-    p_churn: float
-    p_overall: float
-
-
-@dataclass(frozen=True)
 class EvalSummary:
     accuracy: float
     base_accuracy: float
@@ -117,6 +98,7 @@ class ChurnResponse:
     kpis: list[Kpi]
     at_risk: list[AtRiskCustomer]
     drivers: list[DriverRow]
+    driver_fields_without_effect: list[str]
     evaluation: EvalSummary
     last_query: dict
     last_response_ms: int
@@ -126,6 +108,7 @@ class ChurnResponse:
             "kpis":       [asdict(k) for k in self.kpis],
             "at_risk":    [asdict(a) for a in self.at_risk],
             "drivers":    [asdict(d) for d in self.drivers],
+            "driver_fields_without_effect": self.driver_fields_without_effect,
             "evaluation": asdict(self.evaluation),
             "last_query":       self.last_query,
             "last_response_ms": self.last_response_ms,
@@ -265,49 +248,6 @@ def _at_risk_leaderboard(client: AitoClient, top_n: int) -> list[AtRiskCustomer]
     ]
 
 
-def _drivers(client: AitoClient) -> list[DriverRow]:
-    """Parallel `_relate` calls — one per discrete feature — over
-    the churned-row subset of customer_months.
-
-    Each returns lift per value of that field; we merge, drop
-    neutral lifts (|lift-1| < 0.15), sort by |lift-1| descending,
-    take top 10.
-    """
-
-    def fetch(field: str) -> tuple[str, dict]:
-        res = client.relate(
-            table="customer_months",
-            where={"churned_in_3_months": True},
-            relate_field=field,
-            limit=12,
-        )
-        return field, res
-
-    with ThreadPoolExecutor(max_workers=len(_DRIVER_RELATE_FIELDS)) as pool:
-        results = list(pool.map(fetch, _DRIVER_RELATE_FIELDS))
-
-    rows: list[DriverRow] = []
-    for field, res in results:
-        for hit in res.get("hits", []):
-            value = related_value(hit, field)
-            lift = float(hit.get("lift", 0))
-            if abs(lift - 1.0) < 0.15:
-                continue
-            ps = hit.get("ps", {}) or {}
-            fs = hit.get("fs", {}) or {}
-            rows.append(DriverRow(
-                field=field,
-                value=str(value),
-                lift=round(lift, 2),
-                support_f=int(fs.get("fOnCondition", 0)),
-                p_churn=round(float(ps.get("pOnCondition", 0)), 4),
-                p_overall=round(float(ps.get("p", 0)), 4),
-            ))
-
-    rows.sort(key=lambda r: abs(r.lift - 1.0), reverse=True)
-    return rows[:10]
-
-
 def _evaluate_churn(client: AitoClient) -> EvalSummary:
     """One `_evaluate churned_in_3_months` over the panel.
 
@@ -348,7 +288,9 @@ def get_churn(
     top_n: int = 20,
 ) -> ChurnResponse:
     """Compose the full Churn payload. Cached for 30 minutes."""
-    cache_key = f"churn:panel:{top_n}"
+    # Keyed on the drivers' shape, so an entry cached before the profile
+    # drivers (no `driver_fields_without_effect`) is never read back.
+    cache_key = f"churn:profile-drivers:{top_n}"
     cached = cache.get(cache_key)
     if cached:
         return _from_dict(cached)
@@ -356,7 +298,7 @@ def get_churn(
     started = time.perf_counter()
     kpis = _kpi_counts(client)
     at_risk = _at_risk_leaderboard(client, top_n)
-    drivers = _drivers(client)
+    drivers = get_churn_drivers(client)
     evaluation = _evaluate_churn(client)
     elapsed = int((time.perf_counter() - started) * 1000)
 
@@ -372,7 +314,8 @@ def get_churn(
     resp = ChurnResponse(
         kpis=kpis,
         at_risk=at_risk,
-        drivers=drivers,
+        drivers=drivers.drivers,
+        driver_fields_without_effect=drivers.fields_without_effect,
         evaluation=evaluation,
         last_query={"endpoint": "_predict", "body": sample_body},
         last_response_ms=elapsed,
@@ -389,6 +332,7 @@ def _from_dict(d: dict) -> ChurnResponse:
         kpis=[Kpi(**k) for k in d["kpis"]],
         at_risk=[AtRiskCustomer(**a) for a in d["at_risk"]],
         drivers=[DriverRow(**dr) for dr in d["drivers"]],
+        driver_fields_without_effect=d["driver_fields_without_effect"],
         evaluation=EvalSummary(**d["evaluation"]),
         last_query=d["last_query"],
         last_response_ms=d["last_response_ms"],

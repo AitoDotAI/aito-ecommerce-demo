@@ -267,8 +267,8 @@ lights up a red risk chip; positive praise stays green.
 Panel-data churn prediction: one row per customer per month with
 visits, purchases, spend, profile, and the latest review snapshot.
 Each active customer's *latest row* scored with `_predict
-churned_in_3_months`; drivers via `_relate` × 5 (incl. latest
-review fields); held-out accuracy via `_evaluate`. The killer
+churned_in_3_months`; drivers via `_relate` over churned
+customers, per profile field and tenure band; held-out accuracy via `_evaluate`. The killer
 feature of the Understand section.
 [→ Implementation](src/churn_service.py) | [Use case guide](docs/use-cases/10-churn.md) | [ADR](docs/adr/0013-churn-prediction.md)
 
@@ -633,7 +633,7 @@ Browser → Next.js (port 8500) → fetch("/api/...") → FastAPI (port 8501)
 | `_search` | Retrieve rows / count via `limit=0`; rank by `$similarity` or `$multiply` | Dashboard KPIs, Smart Search (both columns), Purchase Analytics, Bought Together sample SKUs, Price aggregation, Inventory snapshot |
 | `_match` (via `$match`) | Token match on Text columns | Bought Together (`line_categories`), Pattern Explorer |
 | `_recommend` | Rank rows by `P(goal | row)` | For You |
-| `_relate` | Co-occurrence with lift / support / `pOnCondition` | Dashboard top patterns, Bought Together, Pattern Explorer, Churn drivers × 5 parallel, Demand seasonality × 4 parallel, Price sweet-spot × 3 parallel |
+| `_relate` | Co-occurrence with lift / support / `pOnCondition` | Dashboard top patterns, Bought Together, Pattern Explorer, Churn profile drivers (fields + tenure bands), Demand seasonality × 4 parallel, Price sweet-spot × 3 parallel |
 | `_predict` | Predict a field with `$p` + `$why` factor tree | Product Filling × 5 parallel, Feedback × 4 parallel, Churn at-risk × N parallel, Demand × 25 parallel, Inventory × 25 parallel |
 | `_evaluate` | Cross-validation accuracy + baseline + per-row results | Evaluation × 4 parallel, Churn × 1, Demand × 1 |
 

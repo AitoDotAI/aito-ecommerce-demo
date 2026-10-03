@@ -263,3 +263,38 @@ def test_price_view_flags_no_outlier_on_a_thin_history(client):
     assert not thin, f"outliers on a thin history: {thin}"
     weak = [s.category for s in response.sweet_spots if s.f_on_condition < MIN_SWEET_SPOT_SUPPORT]
     assert not weak, f"sweet spots on thin support: {weak}"
+
+
+# ── Churn: profile drivers, one row per customer (ADR 0013 amendment) ─
+
+
+def test_relate_over_churned_customers_counts_match_a_search(client):
+    """`_relate` with churn as `where`: a value's counts must be the plain
+    `_search` counts of that value among churners (`fOnCondition`) and among
+    everyone (`f`), so the `where` is known to act as the condition."""
+    from src.aito_compat import related_value
+    from src.churn_drivers import CHURNED
+
+    hits = client.relate(table="customers", where=CHURNED, relate_field="segment", limit=20)["hits"]
+    aquarium = next(h for h in hits if related_value(h, "segment") == "aquarium_owner")
+
+    def count(where: dict) -> int:
+        return client.search("customers", where=where, limit=0)["total"]
+
+    assert aquarium["fs"]["fOnCondition"] == count({**CHURNED, "segment": "aquarium_owner"})
+    assert aquarium["fs"]["f"] == count({"segment": "aquarium_owner"})
+
+
+def test_churn_profile_drivers_name_long_tenure_and_skip_reviews(client):
+    """The drivers list is non-empty, long tenure raises churn and short
+    tenure lowers it (the generator's tenure effect), and no review-derived
+    field appears: those read backwards on this data (ADR 0013)."""
+    from src.churn_drivers import get_churn_drivers
+
+    result = get_churn_drivers(client)
+
+    assert result.drivers, "no churn drivers on the loaded data"
+    tenure = {d.value: d.lift for d in result.drivers if d.field == "tenure"}
+    assert tenure.get("18 months or more", 0) > 1.15, tenure
+    assert tenure.get("under 6 months", 2) < 0.85, tenure
+    assert not any(d.field.startswith("latest_") for d in result.drivers)

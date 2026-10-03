@@ -393,7 +393,8 @@ def feedback_endpoint(review: str | None = None):
 @app.get("/api/churn")
 def churn_endpoint():
     """KPI strip + at-risk leaderboard (per-customer `_predict
-    churned`) + drivers (`_relate` × 3) + honest accuracy
+    churned`) + profile drivers (`_relate` per profile field and
+    tenure band, over churned customers) + honest accuracy
     (`_evaluate`). See ADR 0013."""
     try:
         return precompute_store.serve("churn", lambda: get_churn(aito).to_dict())

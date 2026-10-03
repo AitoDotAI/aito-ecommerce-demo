@@ -146,7 +146,7 @@ export default function ChurnPage() {
             {/* Drivers */}
             <div className="card">
               <div className="card-sub" style={{ marginBottom: 6 }}>
-                Drivers · `_relate` × 3 over churned subset
+                Drivers · `_relate` per profile field · tenure from `_search` counts
               </div>
               <div className="page-title" style={{ fontSize: 17, margin: "4px 0 12px" }}>
                 What predicts churn
@@ -161,6 +161,12 @@ export default function ChurnPage() {
               {!loading && data?.drivers.map((d, i) => (
                 <DriverChip key={`${d.field}-${d.value}-${i}`} d={d} />
               ))}
+              {!loading && data && data.driver_fields_without_effect.length > 0 && (
+                <div className="card-sub" style={{ marginTop: 8 }}>
+                  Also checked, no effect on churn:{" "}
+                  {data.driver_fields_without_effect.map((f) => f.replace(/_/g, " ")).join(", ")}
+                </div>
+              )}
             </div>
 
             {/* Evaluation */}
@@ -268,14 +274,6 @@ function AtRiskRow({ c }: { c: ChurnAtRiskCustomer }) {
 }
 
 
-// Drivers read from a customer's latest review. On this data, having a
-// recent review at all marks an engaged customer, so every sentiment,
-// negative included, lowers churn. Without this note a buyer reads it as
-// "unhappy customers stay".
-const REVIEW_DRIVER_NOTE =
-  "Recent reviewers are engaged customers: this reflects activity, not sentiment.";
-const REVIEW_FIELDS = new Set(["latest_sentiment", "latest_category"]);
-
 function DriverChip({ d }: { d: ChurnDriverRow }) {
   const up = d.lift >= 1;
   const bg = up ? "var(--red-bg)" : "var(--green-bg)";
@@ -291,18 +289,13 @@ function DriverChip({ d }: { d: ChurnDriverRow }) {
         <div style={{ fontWeight: 700, fontSize: 13 }}>
           <span style={{ color: "var(--text-muted)", fontWeight: 500 }}>{d.field}</span>
           {" = "}
-          <span>{d.value.replace("_", " ")}</span>
+          <span>{d.value.replace(/_/g, " ")}</span>
         </div>
         <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2 }}>
-          {Math.round(d.p_churn * 100)}% churn vs {Math.round(d.p_overall * 100)}% baseline
-          {" · "}
-          {d.support_f} customers
+          {Math.round(d.churn_rate * 100)}% of {d.customers} customers churned
+          {" vs "}
+          {Math.round(d.churn_rate_overall * 100)}% overall
         </div>
-        {REVIEW_FIELDS.has(d.field) && (
-          <div style={{ fontSize: 11, color: "var(--text-muted)", marginTop: 2, fontStyle: "italic" }}>
-            {REVIEW_DRIVER_NOTE}
-          </div>
-        )}
       </div>
       <div style={{ fontWeight: 800, fontSize: 14, color: fg }}>
         {arrow} {d.lift.toFixed(2)}×
