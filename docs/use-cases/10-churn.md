@@ -6,8 +6,8 @@
 active customer's latest row — carrying this-month visits,
 purchases, spend, denormalised profile, and the latest review
 snapshot — gets scored by `_predict churned_in_3_months`.
-Parallel `_relate` calls surface the drivers (segment, region,
-latest review category / sentiment). `_evaluate` reports
+Parallel `_relate` calls over churned customers surface the profile
+drivers (tenure, segment, region). `_evaluate` reports
 held-out accuracy.*
 
 ## Overview
@@ -93,44 +93,62 @@ d") and a real classifier ("visits dropped 60%, last review was
 a 2-star shipping complaint, segment is small_animal_owner — 78%
 churn risk").
 
-### Block 3: Drivers — five parallel `_relate` calls
+### Block 3: Drivers — the customer profile, once per customer
 
 ```python
-# src/churn_service.py — _drivers()
-relate_fields = [
+# src/churn_drivers.py — get_churn_drivers()
+PROFILE_FIELDS = [
     "segment", "region", "pet_size",
-    "latest_category", "latest_sentiment",
+    "lifestyle", "health_focus", "treat_affinity", "brand_loyalty",
 ]
 
-def fetch(field):
-    return field, client.relate(
-        table="customer_months",
-        where={"churned_in_3_months": True},
-        relate_field=field,
-        limit=12,
-    )
-
-with ThreadPoolExecutor(max_workers=5) as pool:
-    results = list(pool.map(fetch, relate_fields))
+client.relate(
+    table="customers",
+    where={"churned": True},
+    relate_field="segment",
+    limit=20,
+)
 ```
 
-Each `_relate` returns lift per value of that field over the
-churned-row subset. For example:
+One `_relate` per profile field. Each returns, for every value of the
+field, how much more common it is among churned customers than among
+all customers (`lift`), plus the counts behind it (`fs`). It runs on
+`customers`, not the monthly panel, so each customer counts once: a
+customer who stayed two years doesn't weigh 24 times as much as one
+who left after a month.
+
+Tenure is a number, and the list shows it as three bands. API v2's
+`_relate` can't relate a band (see the cheatsheet, "A number's bands
+can't be related on v2"), so each band's lift comes from `_search
+limit=0` counts: the band's share of churners over its share of
+everyone.
+
+On master (2026-10-03):
 
 ```
-segment=small_animal_owner   → lift 1.7× (drives churn)
-region=oulu                  → lift 1.5×
-latest_sentiment=negative    → lift 2.4× (feedback↔churn signal)
-latest_category=shipping     → lift 1.9×
-pet_size=large               → lift 0.7× (mild protective)
+tenure   under 6 months      → 0.23×  (new customers stay)
+tenure   18 months or more   → 1.71×  (long-standing customers drift)
+segment  aquarium_owner      → 1.38×
+region   oulu                → 1.34×
+tenure   6–17 months         → 1.27×
+segment  small_animal_owner  → 1.21×
 ```
 
-The two `latest_*` rows are the key new signal — they connect
-feedback to churn. A customer whose last review was negative is
-~2.4× more likely to be in the churned subset.
+Filtered to |lift - 1| ≥ 0.15, sorted by |lift - 1| descending, top
+10. Red chips for `lift > 1`, green for `lift < 1`.
 
-Filtered to |lift - 1| ≥ 0.15, sorted by |lift - 1| descending,
-top 10. Red chips for `lift > 1`, green for `lift < 1`.
+Fields whose every value stays inside that band are listed by name
+under the chips: "Also checked, no effect on churn: pet size,
+lifestyle, health focus, treat affinity, brand loyalty". That is a
+finding too. On this data, a budget shopper is no likelier to leave
+than a premium one.
+
+**Left out on purpose:**
+- **Order count.** Churners stop ordering, so a low count is partly
+  the outcome, not a cause.
+- **The latest review.** A review comes with an order, so any recent
+  review marks an active customer, and even negative reviews came out
+  protective (0.67×).
 
 ### Block 4: Honest accuracy via `_evaluate`
 
@@ -199,8 +217,8 @@ ranking.
 
 ### 4. Drivers + accuracy together
 
-The drivers section answers "why" — which segments / regions /
-pet sizes correlate with churn. The accuracy section answers
+The drivers section answers "why": which tenures, segments and
+regions go with churn, and which profile traits don't. The accuracy section answers
 "how well does Aito predict on held-out data". A reviewer
 reading both together gets the full picture: *Aito predicts
 at X% accuracy, and the dominant features are these.*
@@ -304,6 +322,5 @@ for 30 minutes after.
 ```
 
 Watch the at-risk leaderboard: high-confidence rows (red chip)
-tend to cluster on `small_animal_owner` + `oulu` + low total
-orders — the drivers section on the right makes the pattern
-explicit.
+can be read against the drivers section on the right, which says
+which profiles churn more across all customers.

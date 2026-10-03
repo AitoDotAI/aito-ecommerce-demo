@@ -468,10 +468,11 @@ export interface ChurnAtRiskCustomer {
 export interface ChurnDriverRow {
   field: string;
   value: string;
-  lift: number;
-  support_f: number;
-  p_churn: number;
-  p_overall: number;
+  lift: number;                // churn_rate / churn_rate_overall
+  customers: number;           // customers with this profile
+  churners: number;            // of whom churned
+  churn_rate: number;
+  churn_rate_overall: number;
 }
 
 export interface ChurnEvalSummary {
@@ -485,6 +486,8 @@ export interface ChurnResponse {
   kpis: ChurnKpi[];
   at_risk: ChurnAtRiskCustomer[];
   drivers: ChurnDriverRow[];
+  /** Profile fields related to churn whose every value stayed near lift 1. */
+  driver_fields_without_effect: string[];
   evaluation: ChurnEvalSummary;
   last_query: { endpoint: string; body: Record<string, unknown> };
   last_response_ms: number;

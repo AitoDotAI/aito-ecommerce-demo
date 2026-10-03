@@ -493,6 +493,37 @@ risk).
 
 ---
 
+## A number's bands can't be related on v2 — count them
+
+**Verified live, 2026-10-03**, API v2, `shared.aito.ai`. The Churn
+drivers' tenure bands (ADR 0013 amendment).
+
+`_relate` answers "how much more common is this value among the
+churners?" for each value of a field. For a number you usually want
+bands (tenure under 6 months, 18 months or more), and v2 has no way to
+relate one:
+
+| Request | Result |
+|:--|:--|
+| `"relate": {"tenure_months": {"$gte": 18}}` | 400: "`tenure_months.$gte(18)` is a combinator" |
+| `"relate": [{"tenure_months": {"$gte": 18}}]` | 200, but answers another question: `related` is `{"$on": [band, where]}` and the hits are *other* fields that predict it |
+| `"relate": ["tenure_months"]`, hits summed per band | Undercounts: values no churner has are left out, so under 6 months came out 0.44× instead of 0.23× |
+
+Count the band instead, with four `_search limit=0` calls (band, band
+among churners, everyone, churners). The lift is the same ratio
+`_relate` reports:
+
+```
+lift = (churners in band / churners) / (customers in band / customers)
+```
+
+See `src/churn_drivers.py`. When counting, a band with two bounds is an
+`$and` (`{"$and": [{"tenure_months": {"$gte": 6}}, {"tenure_months":
+{"$lt": 18}}]}`), and "band among churners" wraps both:
+`{"$and": [{"churned": true}, band]}`.
+
+---
+
 ## Order-level co-occurrence — denormalised Text + `_relate`
 
 **Verified live, 2026-05-11.** The Bought Together pattern.
