@@ -333,3 +333,24 @@ def test_demand_time_split_honours_the_train_proposition(client):
     everything_before = accuracy({"month": {"$not": LATEST_MONTH}})
     oldest_only = accuracy({"month": "2024-05"})
     assert everything_before != oldest_only
+
+
+# ── Product Insights: one product's funnel and buyers (ADR 0028) ─────
+
+
+def test_product_insights_funnel_is_monotone_and_relate_counts_its_lines(client):
+    """For the default product: the funnel never grows step to step, the
+    surfaces cover every impression (the service asserts that), and the
+    "who buys it" `_relate` conditions on exactly this product's order
+    lines (`fCondition` equals a plain count)."""
+    from src.product_insights_service import DEFAULT_SKU, get_product_insights
+
+    result = get_product_insights(client, DEFAULT_SKU)
+
+    counts = [step.count for step in result.funnel]
+    assert counts[0] > 0, "no impressions for the default product"
+    assert counts == sorted(counts, reverse=True), counts
+    lines = client.search("order_lines", where={"product_sku": DEFAULT_SKU}, limit=0)["total"]
+    assert result.buyers, "no buyer profiles for the default product"
+    assert all(b.lines_total == lines for b in result.buyers), (lines, result.buyers[:2])
+    assert result.monthly, "no monthly_sales rows for the default product"

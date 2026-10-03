@@ -175,6 +175,21 @@ export function purchaseAnalyticsPanel(): AitoPanelConfig {
 }
 
 
+export function productInsightsPanel(): AitoPanelConfig {
+  return {
+    operation: "Product Insights",
+    endpoints: ["_relate", "_batch", "_search"],
+    description:
+      `One product, live. <code style="color:var(--aito-teal);">_relate</code> over its ` +
+      `order lines shows which customer profiles buy it more than average; ` +
+      `the funnel, surfaces and reviews are counts in one ` +
+      `<code style="color:var(--aito-teal);">_batch</code>. The query below is the one sent.`,
+    query: "",
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
 export function patternExplorerPanel(): AitoPanelConfig {
   return {
     operation: "Pattern Explorer",
