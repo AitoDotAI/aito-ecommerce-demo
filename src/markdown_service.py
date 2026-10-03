@@ -25,10 +25,10 @@ from __future__ import annotations
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, asdict
-from typing import Any
 
 from src.aito_client import AitoClient
 from src import cache
+from src.demand_forecast import SEASON_BY_MONTH, FORECAST_MONTH, last_month_units, units_at_price
 
 
 # Same anchor as Inventory / Price. The markdown horizon is "the
@@ -119,57 +119,6 @@ def _is_overstock(current: int, reorder_point: int) -> bool:
     return current > reorder_point * 5
 
 
-def _avg_monthly_units(sales: list[dict]) -> float:
-    """Mean units sold per month from the SKU's recent sales rows.
-    Anchor for the demand-curve baseline when Aito's `_estimate`
-    doesn't have a recent observation at that price."""
-    if not sales:
-        return 0.0
-    return sum(int(s.get("units_sold", 0) or 0) for s in sales) / len(sales)
-
-
-_SEASON_BY_MONTH = {
-    1: "winter", 2: "winter", 3: "spring", 4: "spring",
-    5: "spring", 6: "summer", 7: "summer", 8: "summer",
-    9: "autumn", 10: "autumn", 11: "autumn", 12: "winter",
-}
-
-
-def _estimate_at_price(
-    client: AitoClient,
-    sku: str,
-    base_price: float,
-    discount_pct: int,
-    recent: dict,
-    forecast_month: str,
-) -> tuple[float, float]:
-    """Run `_estimate units_sold` for one (SKU, price) point.
-
-    Returns (adjusted_price, expected_monthly_units). Same shape as
-    Price view's `_estimate_one_curve_point` — kept separate so the
-    two views can evolve independently.
-    """
-    adjusted = round(base_price * (1.0 - discount_pct / 100.0), 2)
-    where = {
-        "product_sku": sku,
-        "month":       forecast_month,
-        "pet_type":    recent.get("pet_type", ""),
-        "category":    recent.get("category", ""),
-        "brand":       recent.get("brand", ""),
-        "season":      _SEASON_BY_MONTH[int(forecast_month.split("-")[1])],
-        "price_eur":   adjusted,
-    }
-    try:
-        res = client.estimate("monthly_sales", where=where,
-                              estimate_field="units_sold", with_why=False)
-    except Exception:
-        return adjusted, 0.0
-    estimate = res.get("estimate")
-    if estimate is None:
-        return adjusted, 0.0
-    return adjusted, max(0.0, float(estimate))
-
-
 def _pick_best_markdown(curve: list[MarkdownCurvePoint]) -> MarkdownCurvePoint:
     """Pick the discount that maximises recoverable revenue across
     the clearance horizon, with a soft preference for clearing ≥
@@ -215,21 +164,16 @@ def _score_sku(
     if excess_units <= 0:
         return None
 
-    recent = max(recent_sales, key=lambda r: r["month"]) if recent_sales else {}
-    # Use the next month as the forecast anchor — same convention as
-    # Inventory and Demand views.
-    forecast_month = "2026-05"
+    # Pet type, category and brand: from the latest sales row, or from
+    # the catalogue when the SKU has never sold.
+    profile = max(recent_sales, key=lambda r: r["month"]) if recent_sales else product
+    units_last_month = last_month_units(recent_sales)
 
     def probe(pct: int) -> MarkdownCurvePoint:
-        price, units = _estimate_at_price(
-            client, sku, list_price, pct, recent, forecast_month,
-        )
-        # Aito's `_estimate` returns null when K-NN finds no neighbor
-        # for the (sku, price) combo — common at deeper discounts
-        # where the SKU never sold below this price. Fall back to
-        # the SKU's mean monthly units so the row is still useful.
-        if units == 0.0:
-            units = _avg_monthly_units(recent_sales)
+        # Same question as the Price view's demand curve: units next
+        # month at this price, given last month's units.
+        price = round(list_price * (1.0 - pct / 100.0), 2)
+        units = units_at_price(client, sku, profile, units_last_month, price)
         weekly_units = units / 4.33   # ~weeks per month
         weeks_to_clear = (
             excess_units / weekly_units if weekly_units > 0 else 999.0
@@ -362,9 +306,13 @@ def get_markdowns(client: AitoClient) -> MarkdownResponse:
             "body": {
                 "from":     "monthly_sales",
                 "where":    {
-                    "product_sku": "<each overstock SKU>",
-                    "month":       "2026-05",
-                    "price_eur":   "<discounted price>",
+                    "product_sku":      "<each overstock SKU>",
+                    "units_last_month": "<its units in the latest month>",
+                    "pet_type":         "<its pet type>",
+                    "category":         "<its category>",
+                    "brand":            "<its brand>",
+                    "season":           SEASON_BY_MONTH[int(FORECAST_MONTH.split("-")[1])],
+                    "price_eur":        "<discounted price>",
                 },
                 "estimate": "units_sold",
             },
