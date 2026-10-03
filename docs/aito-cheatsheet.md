@@ -673,6 +673,11 @@ For `units_sold` on the `monthly_sales` panel:
 }
 ```
 
+`"month": "2026-05"` above is a month no training row has, so it is no
+evidence: the estimate falls back to the SKU's all-time average. The
+forecasts condition on `units_last_month` instead (ADR 0014,
+`src/demand_forecast.py`).
+
 Response:
 
 ```json

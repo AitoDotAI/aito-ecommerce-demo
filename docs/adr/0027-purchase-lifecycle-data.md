@@ -134,3 +134,27 @@ before.
   if this lands well.
 - **Customer churn behaviour.** The churn engineering stays as is.
 - **New products or categories.**
+
+## Status note 2026-10-03: Price, the code half
+
+The Price view's unhide criteria (the extension's "Unhide criteria, per
+view") are about the data. Two code defects would have undermined them
+on any data, so they're fixed first, on top of the Demand correction
+(ADR 0014):
+
+- **The demand curve asked about an unseen month.** Each `_estimate`
+  conditioned on `month: "2026-05"`, which no training row has, so the
+  curve fell back to the SKU's all-time average. It now uses the Demand
+  forecast's evidence (last month's units and the profile) plus the
+  price, through the shared `units_at_price`. Markdown asked the same
+  question the same wrong way, and it also swapped in the SKU's average
+  whenever an estimate was missing. It now uses the same helper and
+  fails loudly instead.
+- **Each band shows its observation count** next to the band, so "n ≥ 12"
+  can be read off the page.
+
+Still waiting on the data (the lifecycle generator, then a master
+reload): ≥ 3 outliers with n ≥ 12, and ≥ 1 band × category lift whose
+95 % interval excludes 1. Offline, the lifecycle fixtures give 13 and
+14. Today's master gives 0 and 2. `/price` stays hidden until the
+live check passes.

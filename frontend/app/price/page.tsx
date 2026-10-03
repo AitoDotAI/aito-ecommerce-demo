@@ -272,7 +272,7 @@ function FairBandRowView({
       <td>
         <div style={{ fontWeight: 700, fontSize: 12 }}>{f.name}</div>
         <div style={{ color: "var(--text-muted)", fontSize: 10.5 }}>
-          {f.pet_type} · {f.category} · n={f.observation_count}
+          {f.pet_type} · {f.category}
         </div>
       </td>
       <td style={{ textAlign: "right" }}>
@@ -285,6 +285,11 @@ function FairBandRowView({
       </td>
       <td style={{ textAlign: "right", fontSize: 11 }}>
         {fmtEur(f.band_lower_eur)}–{fmtEur(f.band_upper_eur)}
+        {/* The band is mean ± 1.5σ of these prices: its count says how
+            much to trust it (outliers need ≥ 6, ADR 0027 asks for 12). */}
+        <div style={{ fontSize: 10, color: "var(--text-muted)" }}>
+          from {f.observation_count} prices
+        </div>
       </td>
       <td style={{ textAlign: "right", fontSize: 11, color: "var(--text-muted)" }}>
         {fmtEur(f.min_price_eur)} … {fmtEur(f.max_price_eur)}
