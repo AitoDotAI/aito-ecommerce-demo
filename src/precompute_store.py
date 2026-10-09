@@ -52,6 +52,7 @@ Mirrors `aito-accounting-demo/src/precompute_store.py`.
 from __future__ import annotations
 
 import json
+import logging
 import threading
 import time
 from pathlib import Path
@@ -60,6 +61,8 @@ from typing import Any, Callable
 from src.aito_client import AitoClient, AitoError
 from src import timing
 from src.config import current_api_namespace
+
+logger = logging.getLogger(__name__)
 
 PRECOMPUTE_TABLE = "precompute_entries"
 PRECOMPUTE_SCHEMA = {
@@ -161,10 +164,14 @@ def get(name: str) -> Any | None:
 
     if _aito is not None:
         try:
-            r = _aito.search(PRECOMPUTE_TABLE, where={"name": key}, limit=1)
+            r = _aito.search(PRECOMPUTE_TABLE, where={"name": key}, limit=10)
             hits = r.get("hits", [])
             if hits:
-                value = json.loads(hits[0]["payload"])
+                # `put`'s delete can fail and leave older snapshots of the
+                # same name behind, so take the newest rather than the
+                # first hit.
+                newest = max(hits, key=lambda hit: hit["computed_at"])
+                value = json.loads(newest["payload"])
                 with _l1_mutex:
                     _l1[key] = value
                 return value
@@ -189,8 +196,9 @@ def put(name: str, value: Any) -> None:
     """Upsert one snapshot entry into Aito. Caller is `./do precompute`.
 
     Raises `AitoError` so the precompute driver can tell "wrote" from
-    "failed". No native upsert primitive yet, so delete-by-name then
-    insert keeps the table at one row per name.
+    "failed". No native upsert primitive yet, so this deletes by name and
+    then inserts. When the delete fails (Aito answers 500 if it matches
+    rows) the old row stays, and `get` reads the newest row of the name.
     """
     if _aito is None:
         raise RuntimeError("precompute_store.init() not called")
@@ -201,9 +209,16 @@ def put(name: str, value: Any) -> None:
             "POST", "/data/_delete",
             json={"from": PRECOMPUTE_TABLE, "where": {"name": key}},
         )
-    except AitoError:
-        # Best-effort: a first-time write has nothing to delete.
-        pass
+    except AitoError as exc:
+        # A first-time write deletes nothing and succeeds, so an error
+        # here is real: Aito answers 500 when `_delete` matches rows. The
+        # insert below still goes ahead and `get` reads the newest row,
+        # but the old row stays in the table.
+        logger.warning(
+            "Could not delete the previous snapshot %r (HTTP %s); "
+            "stale rows remain in %s: %s",
+            key, exc.status_code, PRECOMPUTE_TABLE, exc,
+        )
     _aito._request(
         "POST", f"/data/{PRECOMPUTE_TABLE}",
         json={"name": key, "payload": payload, "computed_at": int(time.time())},
