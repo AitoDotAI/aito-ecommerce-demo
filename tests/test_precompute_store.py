@@ -15,13 +15,28 @@ import pytest
 
 from src import precompute_store as store
 from src import timing
+from src.aito_client import AitoError
 
 
 class FakeAito:
-    """Records requests; returns a canned `_search` hit if seeded."""
+    """Records requests; returns canned `_search` hits if seeded.
 
-    def __init__(self, search_hit: dict | None = None):
-        self.search_hit = search_hit
+    `search_hit` seeds one row; `search_hits` seeds several (a table that
+    holds stale duplicates of one name). `fail_delete` makes the
+    delete-by-name raise, as Aito's `/data/_delete` does when it matches
+    rows (HTTP 500).
+    """
+
+    def __init__(
+        self,
+        search_hit: dict | None = None,
+        search_hits: list[dict] | None = None,
+        fail_delete: bool = False,
+    ):
+        self.search_hits = search_hits if search_hits is not None else (
+            [{"computed_at": 1, **search_hit}] if search_hit else []
+        )
+        self.fail_delete = fail_delete
         self.requests: list[tuple] = []
 
     def search(self, table, *, where=None, limit=10):
@@ -30,10 +45,12 @@ class FakeAito:
         # mimic that so tests can assert the store's own lookup is kept
         # off the latency pill.
         timing.record_call("_search", 9.9)
-        return {"hits": [self.search_hit] if self.search_hit else []}
+        return {"hits": self.search_hits}
 
     def _request(self, method, path, json=None):
         self.requests.append((method, path, json))
+        if self.fail_delete and path == "/data/_delete":
+            raise AitoError("Aito returned 500 for POST /data/_delete", status_code=500)
         return {}
 
     def get_schema(self):
@@ -75,6 +92,16 @@ def test_get_reads_aito_and_backfills_l1():
     assert store._l1[store._scoped("churn")] == {"data": {"v": 1}}
 
 
+def test_get_serves_the_newest_row_when_stale_duplicates_exist():
+    # Aito's delete can fail, leaving the previous snapshot beside the new
+    # one. The reader must not depend on which row the search returns first.
+    def row(computed_at: int, marker: str) -> dict:
+        return {"computed_at": computed_at, "payload": json.dumps({"data": {"v": marker}})}
+
+    store._aito = FakeAito(search_hits=[row(100, "stale"), row(300, "newest"), row(200, "older")])
+    assert store.get("churn") == {"data": {"v": "newest"}}
+
+
 def test_get_falls_back_to_committed_json(tmp_path):
     # Aito misses (no hit); the committed JSON bootstrap serves.
     ns_dir = tmp_path / "v1-master"
@@ -111,6 +138,17 @@ def test_put_upserts_delete_then_insert():
     assert json.loads(insert_body["payload"]) == {"data": {"x": 1}, "timings": []}
     # L1 is refreshed so the writing process sees the new value.
     assert store._l1[store._scoped("churn")] == {"data": {"x": 1}, "timings": []}
+
+
+def test_put_reports_a_failed_delete_and_still_inserts(caplog):
+    # Aito answers 500 when `_delete` matches rows. The failure used to be
+    # swallowed, so stale rows piled up unnoticed; it must be reported.
+    store._aito = FakeAito(fail_delete=True)
+    with caplog.at_level("WARNING", logger="src.precompute_store"):
+        store.put("churn", {"data": {"x": 1}, "timings": []})
+    assert "v1@master|churn" in caplog.text
+    assert "500" in caplog.text
+    assert [(m, p) for (m, p, _) in store._aito.requests][-1] == ("POST", "/data/precompute_entries")
 
 
 # ── Latency-pill honesty: capture + serve ─────────────────────────
