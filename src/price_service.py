@@ -24,8 +24,9 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, asdict
 
-from src.aito_client import AitoClient, AitoError
+from src.aito_client import AitoClient
 from src.aito_compat import related_value
+from src.demand_forecast import last_month_units, price_where, units_at_price
 from src.price_bands import is_price_outlier, is_real_lift
 from src import cache
 
@@ -408,38 +409,19 @@ def _fetch_product(client: AitoClient, sku: str) -> dict | None:
 def _curve_one(
     client: AitoClient,
     sku: str,
-    recent: dict,
+    profile: dict,
+    units_last_month: int,
     base_price: float,
     pct: int,
-    *,
-    forecast_month: str = "2026-05",
 ) -> CurvePoint:
-    """One `_estimate` call at the price adjusted by `pct %`."""
+    """Expected units next month at the price adjusted by `pct %`. Same
+    evidence as the Demand forecast (last month's units, not the unseen
+    month), plus the price."""
     adjusted = round(base_price * (1.0 + pct / 100.0), 2)
-    season_map = {
-        1: "winter", 2: "winter", 3: "spring", 4: "spring",
-        5: "spring", 6: "summer", 7: "summer", 8: "summer",
-        9: "autumn", 10: "autumn", 11: "autumn", 12: "winter",
-    }
-    where = {
-        "product_sku": sku,
-        "month":       forecast_month,
-        "pet_type":    recent.get("pet_type", ""),
-        "category":    recent.get("category", ""),
-        "brand":       recent.get("brand", ""),
-        "season":      season_map[int(forecast_month.split("-")[1])],
-        "price_eur":   adjusted,
-    }
-    res = client.estimate(
-        "monthly_sales", where=where,
-        estimate_field="units_sold", with_why=False,
-    )
-    units = res.get("estimate")
-    if units is None:
-        raise AitoError(f"_estimate units_sold returned no estimate for {sku} at {adjusted}: {res}")
+    units = units_at_price(client, sku, profile, units_last_month, adjusted)
     return CurvePoint(
         price_eur=adjusted,
-        units_sold=round(float(units), 2),
+        units_sold=round(units, 2),
         profit_eur=0.0,   # filled in below with unit_cost
         adjustment_pct=pct,
     )
@@ -521,20 +503,17 @@ def get_price_detail(client: AitoClient, sku: str) -> PriceDetail | None:
         if historical else list_price
     )
 
-    # Central `_estimate` with why for neighbors.
-    recent = max(sales, key=lambda r: r["month"]) if sales else {
-        "pet_type": prod.get("pet_type", ""),
-        "category": prod.get("category", ""),
-        "brand":    prod.get("brand", ""),
-    }
-    central_call = _curve_one(client, sku, recent, mean_price, 0)
-    central_units = central_call.units_sold
+    # The product's pet type, category and brand: from its latest sales
+    # row, or from the catalogue when it has never sold.
+    profile = max(sales, key=lambda r: r["month"]) if sales else prod
+    units_last_month = last_month_units(sales)
+    central_call = _curve_one(client, sku, profile, units_last_month, mean_price, 0)
 
     # Six adjusted-price `_estimate` calls (parallel).
     other_adjustments = [a for a in _CURVE_ADJUSTMENTS_PCT if a != 0]
 
     def fetch_curve(pct: int) -> CurvePoint:
-        return _curve_one(client, sku, recent, mean_price, pct)
+        return _curve_one(client, sku, profile, units_last_month, mean_price, pct)
 
     with ThreadPoolExecutor(max_workers=6) as pool:
         adjusted_results = list(pool.map(fetch_curve, other_adjustments))
@@ -563,13 +542,10 @@ def get_price_detail(client: AitoClient, sku: str) -> PriceDetail | None:
 
     elapsed = int((time.perf_counter() - started) * 1000)
 
+    # The central point's body, exactly as sent.
     sample_body = {
         "from": "monthly_sales",
-        "where": {
-            "product_sku": sku,
-            "month":       "2026-05",
-            "price_eur":   round(mean_price * 1.10, 2),
-        },
+        "where": price_where(sku, profile, units_last_month, central_call.price_eur),
         "estimate": "units_sold",
     }
 
