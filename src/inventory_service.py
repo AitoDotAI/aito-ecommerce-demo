@@ -246,7 +246,7 @@ def get_inventory(
     if critical:
         with ThreadPoolExecutor(max_workers=8) as pool:
             scored = list(pool.map(score, critical))
-        for r, forecast_units, why in scored:
+        for r, forecast, why in scored:
             prod = products.get(r["sku"], {})
             sales_for_sku = sales.get(r["sku"], [])
             avg_monthly = _avg_monthly(sales_for_sku)
@@ -256,11 +256,11 @@ def get_inventory(
             # rebuild safety buffer.
             suggested = max(
                 0,
-                int(forecast_units) + int(r["safety_stock"]) - int(r["current_stock"]),
+                forecast + int(r["safety_stock"]) - int(r["current_stock"]),
             )
             # Revenue at risk = forecast units we *can't* satisfy ×
             # retail price.
-            shortfall = max(0, int(forecast_units) - int(r["current_stock"]))
+            shortfall = max(0, forecast - int(r["current_stock"]))
             retail = float(prod.get("price_eur", 0) or 0)
             rev_at_risk = shortfall * retail
             revenue_at_risk_total += rev_at_risk
@@ -273,7 +273,7 @@ def get_inventory(
                 reorder_point=int(r["reorder_point"]),
                 days_of_supply=round(days_of_supply, 1),
                 avg_monthly_units=avg_monthly,
-                forecast_units=int(forecast_units),
+                forecast_units=forecast,
                 suggested_reorder_qty=suggested,
                 unit_cost_eur=round(float(r["unit_cost_eur"]), 2),
                 revenue_at_risk_eur=round(rev_at_risk, 2),
