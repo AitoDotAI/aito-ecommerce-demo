@@ -9,13 +9,18 @@
         "category": "dental-treats",
         "avg_monthly_units": 10,
         "last_month_units": 22,
-        "forecast_units": 7,
+        "forecast_units": 21,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 7.452,
+          "estimate": 21.35,
           "field_label": "units_sold",
           "components": [
+            {
+              "name": "units_last_month=22",
+              "value": 1.217,
+              "type": "regression"
+            },
             {
               "name": "column mean (log)",
               "value": 1.0995,
@@ -27,28 +32,28 @@
               "type": "regression"
             },
             {
+              "name": "neighbor residual",
+              "value": 0.2855,
+              "type": "residual"
+            },
+            {
               "name": "category=dental-treats",
-              "value": 0.0759,
+              "value": -0.2271,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "neighbor residual",
-              "value": -0.023,
-              "type": "residual"
-            },
-            {
-              "name": "brand=PetNord",
-              "value": 0.0112,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": -0.0294,
               "type": "regression"
             }
           ]
@@ -61,11 +66,11 @@
         "category": "dental-treats",
         "avg_monthly_units": 10,
         "last_month_units": 30,
-        "forecast_units": 6,
+        "forecast_units": 9,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 6.438,
+          "estimate": 8.705,
           "field_label": "units_sold",
           "components": [
             {
@@ -79,28 +84,33 @@
               "type": "regression"
             },
             {
+              "name": "units_last_month=30",
+              "value": 0.6725,
+              "type": "regression"
+            },
+            {
               "name": "neighbor residual",
-              "value": -0.3875,
+              "value": -0.2624,
               "type": "residual"
             },
             {
               "name": "category=dental-treats",
-              "value": 0.0759,
+              "value": -0.2271,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=PetNord",
-              "value": 0.0112,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": -0.0294,
               "type": "regression"
             }
           ]
@@ -113,11 +123,11 @@
         "category": "treats",
         "avg_monthly_units": 10,
         "last_month_units": 24,
-        "forecast_units": 7,
+        "forecast_units": 17,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 6.639,
+          "estimate": 16.771,
           "field_label": "units_sold",
           "components": [
             {
@@ -126,33 +136,38 @@
               "type": "mean"
             },
             {
+              "name": "units_last_month=24",
+              "value": 1.0851,
+              "type": "regression"
+            },
+            {
               "name": "product_sku=SKU-PT-0176",
               "value": 0.7843,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": -0.1453,
+              "value": -0.2708,
               "type": "residual"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=PetNord",
-              "value": 0.0112,
-              "type": "regression"
-            },
-            {
-              "name": "category=treats",
-              "value": 0.0107,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "category=treats",
+              "value": -0.0469,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": -0.0294,
               "type": "regression"
             }
           ]
@@ -165,11 +180,11 @@
         "category": "dental-treats",
         "avg_monthly_units": 9,
         "last_month_units": 17,
-        "forecast_units": 7,
+        "forecast_units": 17,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 7.207,
+          "estimate": 16.823,
           "field_label": "units_sold",
           "components": [
             {
@@ -178,33 +193,38 @@
               "type": "mean"
             },
             {
+              "name": "units_last_month=17",
+              "value": 1.0572,
+              "type": "regression"
+            },
+            {
               "name": "product_sku=SKU-PT-0192",
               "value": 0.779,
               "type": "regression"
             },
             {
+              "name": "category=dental-treats",
+              "value": -0.2271,
+              "type": "regression"
+            },
+            {
               "name": "neighbor residual",
-              "value": -0.5158,
+              "value": -0.2261,
               "type": "residual"
             },
             {
-              "name": "category=dental-treats",
-              "value": 0.0759,
-              "type": "regression"
-            },
-            {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=PetNord",
-              "value": 0.0112,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": -0.0294,
               "type": "regression"
             }
           ]
@@ -217,11 +237,11 @@
         "category": "dental-treats",
         "avg_monthly_units": 9,
         "last_month_units": 26,
-        "forecast_units": 7,
+        "forecast_units": 17,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 7.087,
+          "estimate": 16.67,
           "field_label": "units_sold",
           "components": [
             {
@@ -230,33 +250,38 @@
               "type": "mean"
             },
             {
+              "name": "units_last_month=26",
+              "value": 1.0598,
+              "type": "regression"
+            },
+            {
               "name": "product_sku=SKU-PT-0186",
               "value": 0.765,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": -0.0894,
+              "value": 0.3947,
               "type": "residual"
             },
             {
               "name": "category=dental-treats",
-              "value": 0.0759,
+              "value": -0.2271,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=Whimzees",
-              "value": 0.0043,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Whimzees",
+              "value": 0.0078,
               "type": "regression"
             }
           ]
@@ -269,11 +294,11 @@
         "category": "dental-treats",
         "avg_monthly_units": 9,
         "last_month_units": 23,
-        "forecast_units": 7,
+        "forecast_units": 16,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 6.796,
+          "estimate": 15.845,
           "field_label": "units_sold",
           "components": [
             {
@@ -282,33 +307,38 @@
               "type": "mean"
             },
             {
+              "name": "units_last_month=23",
+              "value": 1.0906,
+              "type": "regression"
+            },
+            {
               "name": "product_sku=SKU-PT-0199",
               "value": 0.7276,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": -0.4415,
+              "value": 0.5214,
               "type": "residual"
             },
             {
               "name": "category=dental-treats",
-              "value": 0.0759,
+              "value": -0.2271,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=PetNord",
-              "value": 0.0112,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": -0.0294,
               "type": "regression"
             }
           ]
@@ -321,13 +351,18 @@
         "category": "dental-treats",
         "avg_monthly_units": 9,
         "last_month_units": 21,
-        "forecast_units": 7,
+        "forecast_units": 18,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 7.35,
+          "estimate": 18.247,
           "field_label": "units_sold",
           "components": [
+            {
+              "name": "units_last_month=21",
+              "value": 1.1257,
+              "type": "regression"
+            },
             {
               "name": "column mean (log)",
               "value": 1.0995,
@@ -340,27 +375,27 @@
             },
             {
               "name": "neighbor residual",
-              "value": 0.1767,
+              "value": 0.4692,
               "type": "residual"
             },
             {
               "name": "category=dental-treats",
-              "value": 0.0759,
+              "value": -0.2271,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=PetNord",
-              "value": 0.0112,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": -0.0294,
               "type": "regression"
             }
           ]
@@ -373,11 +408,11 @@
         "category": "dental-treats",
         "avg_monthly_units": 9,
         "last_month_units": 20,
-        "forecast_units": 6,
+        "forecast_units": 15,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 5.983,
+          "estimate": 15.384,
           "field_label": "units_sold",
           "components": [
             {
@@ -386,33 +421,38 @@
               "type": "mean"
             },
             {
+              "name": "units_last_month=20",
+              "value": 1.0485,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": 0.9703,
+              "type": "residual"
+            },
+            {
               "name": "product_sku=SKU-PT-0193",
               "value": 0.5707,
               "type": "regression"
             },
             {
-              "name": "neighbor residual",
-              "value": -0.2846,
-              "type": "residual"
-            },
-            {
               "name": "category=dental-treats",
-              "value": 0.0759,
+              "value": -0.2271,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=PetNord",
-              "value": 0.0112,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": -0.0294,
               "type": "regression"
             }
           ]
@@ -425,11 +465,11 @@
         "category": "treats",
         "avg_monthly_units": 9,
         "last_month_units": 13,
-        "forecast_units": 6,
+        "forecast_units": 16,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 6.266,
+          "estimate": 15.704,
           "field_label": "units_sold",
           "components": [
             {
@@ -438,33 +478,38 @@
               "type": "mean"
             },
             {
+              "name": "units_last_month=13",
+              "value": 0.7783,
+              "type": "regression"
+            },
+            {
               "name": "product_sku=SKU-PT-0180",
               "value": 0.7004,
               "type": "regression"
             },
             {
-              "name": "neighbor residual",
-              "value": 0.6318,
-              "type": "residual"
-            },
-            {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=PetNord",
-              "value": 0.0112,
-              "type": "regression"
-            },
-            {
-              "name": "category=treats",
-              "value": 0.0107,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "category=treats",
+              "value": -0.0469,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": 0.0381,
+              "type": "residual"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": -0.0294,
               "type": "regression"
             }
           ]
@@ -477,11 +522,11 @@
         "category": "dental-treats",
         "avg_monthly_units": 8,
         "last_month_units": 16,
-        "forecast_units": 6,
+        "forecast_units": 17,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 6.371,
+          "estimate": 16.651,
           "field_label": "units_sold",
           "components": [
             {
@@ -490,33 +535,38 @@
               "type": "mean"
             },
             {
+              "name": "units_last_month=16",
+              "value": 0.9833,
+              "type": "regression"
+            },
+            {
               "name": "product_sku=SKU-PT-0185",
               "value": 0.6568,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": 0.4835,
+              "value": 0.3937,
               "type": "residual"
             },
             {
               "name": "category=dental-treats",
-              "value": 0.0759,
+              "value": -0.2271,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=Whimzees",
-              "value": 0.0043,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Whimzees",
+              "value": 0.0078,
               "type": "regression"
             }
           ]
@@ -529,11 +579,11 @@
         "category": "dental-treats",
         "avg_monthly_units": 8,
         "last_month_units": 25,
-        "forecast_units": 6,
+        "forecast_units": 8,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 6.007,
+          "estimate": 8.475,
           "field_label": "units_sold",
           "components": [
             {
@@ -543,8 +593,13 @@
             },
             {
               "name": "neighbor residual",
-              "value": -1.0269,
+              "value": -0.9752,
               "type": "residual"
+            },
+            {
+              "name": "units_last_month=25",
+              "value": 0.6601,
+              "type": "regression"
             },
             {
               "name": "product_sku=SKU-PT-0195",
@@ -553,22 +608,22 @@
             },
             {
               "name": "category=dental-treats",
-              "value": 0.0759,
+              "value": -0.2271,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=PetNord",
-              "value": 0.0112,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": -0.0294,
               "type": "regression"
             }
           ]
@@ -581,11 +636,11 @@
         "category": "dental-treats",
         "avg_monthly_units": 8,
         "last_month_units": 13,
-        "forecast_units": 7,
+        "forecast_units": 14,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 6.514,
+          "estimate": 14.271,
           "field_label": "units_sold",
           "components": [
             {
@@ -594,8 +649,13 @@
               "type": "mean"
             },
             {
+              "name": "units_last_month=13",
+              "value": 0.7783,
+              "type": "regression"
+            },
+            {
               "name": "neighbor residual",
-              "value": -1.0695,
+              "value": 0.6658,
               "type": "residual"
             },
             {
@@ -605,22 +665,22 @@
             },
             {
               "name": "category=dental-treats",
-              "value": 0.0759,
+              "value": -0.2271,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=Whimzees",
-              "value": 0.0043,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Whimzees",
+              "value": 0.0078,
               "type": "regression"
             }
           ]
@@ -633,13 +693,18 @@
         "category": "dental-treats",
         "avg_monthly_units": 8,
         "last_month_units": 22,
-        "forecast_units": 6,
+        "forecast_units": 19,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 6.239,
+          "estimate": 18.549,
           "field_label": "units_sold",
           "components": [
+            {
+              "name": "units_last_month=22",
+              "value": 1.217,
+              "type": "regression"
+            },
             {
               "name": "column mean (log)",
               "value": 1.0995,
@@ -651,28 +716,28 @@
               "type": "regression"
             },
             {
-              "name": "neighbor residual",
-              "value": 0.6317,
-              "type": "residual"
-            },
-            {
               "name": "category=dental-treats",
-              "value": 0.0759,
+              "value": -0.2271,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=Whimzees",
-              "value": 0.0043,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.0364,
+              "type": "residual"
+            },
+            {
+              "name": "brand=Whimzees",
+              "value": 0.0078,
               "type": "regression"
             }
           ]
@@ -685,11 +750,11 @@
         "category": "wet-food",
         "avg_monthly_units": 8,
         "last_month_units": 14,
-        "forecast_units": 6,
+        "forecast_units": 20,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 6.302,
+          "estimate": 20.366,
           "field_label": "units_sold",
           "components": [
             {
@@ -698,9 +763,9 @@
               "type": "mean"
             },
             {
-              "name": "neighbor residual",
-              "value": -1.0488,
-              "type": "residual"
+              "name": "units_last_month=14",
+              "value": 0.9041,
+              "type": "regression"
             },
             {
               "name": "product_sku=SKU-PT-0151",
@@ -708,23 +773,28 @@
               "type": "regression"
             },
             {
-              "name": "category=wet-food",
-              "value": 0.0331,
-              "type": "regression"
+              "name": "neighbor residual",
+              "value": 0.4958,
+              "type": "residual"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
+              "value": -0.098,
               "type": "regression"
             },
             {
-              "name": "brand=Eukanuba",
-              "value": -0.0032,
+              "name": "category=wet-food",
+              "value": -0.0764,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Eukanuba",
+              "value": -0.0038,
               "type": "regression"
             }
           ]
@@ -737,11 +807,11 @@
         "category": "treats",
         "avg_monthly_units": 8,
         "last_month_units": 12,
-        "forecast_units": 6,
+        "forecast_units": 14,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 6.112,
+          "estimate": 14.162,
           "field_label": "units_sold",
           "components": [
             {
@@ -750,33 +820,38 @@
               "type": "mean"
             },
             {
+              "name": "units_last_month=12",
+              "value": 0.7594,
+              "type": "regression"
+            },
+            {
               "name": "product_sku=SKU-PT-0175",
               "value": 0.6774,
               "type": "regression"
             },
             {
-              "name": "neighbor residual",
-              "value": -0.349,
-              "type": "residual"
-            },
-            {
               "name": "pet_type=dog",
-              "value": 0.0331,
+              "value": -0.098,
               "type": "regression"
             },
             {
-              "name": "brand=PetNord",
-              "value": 0.0112,
+              "name": "neighbor residual",
+              "value": 0.0798,
+              "type": "residual"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.068,
               "type": "regression"
             },
             {
               "name": "category=treats",
-              "value": 0.0107,
+              "value": -0.0469,
               "type": "regression"
             },
             {
-              "name": "season=spring",
-              "value": 0.0014,
+              "name": "brand=PetNord",
+              "value": -0.0294,
               "type": "regression"
             }
           ]
@@ -789,13 +864,18 @@
         "category": "dental-treats",
         "avg_monthly_units": 8,
         "last_month_units": 21,
-        "forecast_units": 7,
+        "forecast_units": 17,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 6.85,
+          "estimate": 16.568,
           "field_label": "units_sold",
           "components": [
+            {
+              "name": "units_last_month=21",
+              "value": 1.1257,
+              "type": "regression"
+            },
             {
               "name": "column mean (log)",
               "value": 1.0995,
@@ -808,27 +888,27 @@
             },
             {
               "name": "neighbor residual",
-              "value": 0.4274,
+              "value": 0.4692,
               "type": "residual"
             },
             {
               "name": "category=dental-treats",
-              "value": 0.0759,
+              "value": -0.2271,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=PetNord",
-              "value": 0.0112,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": -0.0294,
               "type": "regression"
             }
           ]
@@ -841,11 +921,11 @@
         "category": "dental-treats",
         "avg_monthly_units": 8,
         "last_month_units": 17,
-        "forecast_units": 6,
+        "forecast_units": 15,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 6.039,
+          "estimate": 14.686,
           "field_label": "units_sold",
           "components": [
             {
@@ -854,33 +934,38 @@
               "type": "mean"
             },
             {
+              "name": "units_last_month=17",
+              "value": 1.0572,
+              "type": "regression"
+            },
+            {
               "name": "product_sku=SKU-PT-0188",
               "value": 0.606,
               "type": "regression"
             },
             {
-              "name": "neighbor residual",
-              "value": -0.313,
-              "type": "residual"
-            },
-            {
               "name": "category=dental-treats",
-              "value": 0.0759,
+              "value": -0.2271,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
+              "value": -0.098,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.0903,
+              "type": "residual"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.068,
               "type": "regression"
             },
             {
               "name": "brand=Whimzees",
-              "value": 0.0043,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.0078,
               "type": "regression"
             }
           ]
@@ -893,13 +978,18 @@
         "category": "dental-treats",
         "avg_monthly_units": 8,
         "last_month_units": 31,
-        "forecast_units": 6,
+        "forecast_units": 22,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 6.445,
+          "estimate": 22.324,
           "field_label": "units_sold",
           "components": [
+            {
+              "name": "units_last_month=31",
+              "value": 1.628,
+              "type": "regression"
+            },
             {
               "name": "column mean (log)",
               "value": 1.0995,
@@ -912,27 +1002,27 @@
             },
             {
               "name": "neighbor residual",
-              "value": -0.347,
+              "value": 0.2865,
               "type": "residual"
             },
             {
               "name": "category=dental-treats",
-              "value": 0.0759,
+              "value": -0.2271,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=Whimzees",
-              "value": 0.0043,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Whimzees",
+              "value": 0.0078,
               "type": "regression"
             }
           ]
@@ -945,22 +1035,22 @@
         "category": "dental-treats",
         "avg_monthly_units": 8,
         "last_month_units": 21,
-        "forecast_units": 6,
+        "forecast_units": 14,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 5.773,
+          "estimate": 13.969,
           "field_label": "units_sold",
           "components": [
+            {
+              "name": "units_last_month=21",
+              "value": 1.1257,
+              "type": "regression"
+            },
             {
               "name": "column mean (log)",
               "value": 1.0995,
               "type": "mean"
-            },
-            {
-              "name": "neighbor residual",
-              "value": -0.9653,
-              "type": "residual"
             },
             {
               "name": "product_sku=SKU-PT-0197",
@@ -968,23 +1058,28 @@
               "type": "regression"
             },
             {
+              "name": "neighbor residual",
+              "value": 0.4692,
+              "type": "residual"
+            },
+            {
               "name": "category=dental-treats",
-              "value": 0.0759,
+              "value": -0.2271,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=PetNord",
-              "value": 0.0112,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": -0.0294,
               "type": "regression"
             }
           ]
@@ -997,11 +1092,11 @@
         "category": "dental-treats",
         "avg_monthly_units": 8,
         "last_month_units": 25,
-        "forecast_units": 6,
+        "forecast_units": 8,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 5.94,
+          "estimate": 7.837,
           "field_label": "units_sold",
           "components": [
             {
@@ -1010,33 +1105,38 @@
               "type": "mean"
             },
             {
+              "name": "units_last_month=25",
+              "value": 0.6601,
+              "type": "regression"
+            },
+            {
               "name": "product_sku=SKU-PT-0202",
               "value": 0.5354,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": 0.4209,
+              "value": 0.4725,
               "type": "residual"
             },
             {
               "name": "category=dental-treats",
-              "value": 0.0759,
+              "value": -0.2271,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=PetNord",
-              "value": 0.0112,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": -0.0294,
               "type": "regression"
             }
           ]
@@ -1049,17 +1149,27 @@
         "category": "dental-treats",
         "avg_monthly_units": 8,
         "last_month_units": 19,
-        "forecast_units": 6,
+        "forecast_units": 20,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 5.967,
+          "estimate": 20.349,
           "field_label": "units_sold",
           "components": [
+            {
+              "name": "units_last_month=19",
+              "value": 1.1758,
+              "type": "regression"
+            },
             {
               "name": "column mean (log)",
               "value": 1.0995,
               "type": "mean"
+            },
+            {
+              "name": "neighbor residual",
+              "value": 0.6263,
+              "type": "residual"
             },
             {
               "name": "product_sku=SKU-PT-0191",
@@ -1067,28 +1177,23 @@
               "type": "regression"
             },
             {
-              "name": "neighbor residual",
-              "value": -0.323,
-              "type": "residual"
-            },
-            {
               "name": "category=dental-treats",
-              "value": 0.0759,
+              "value": -0.2271,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=Whimzees",
-              "value": 0.0043,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Whimzees",
+              "value": 0.0078,
               "type": "regression"
             }
           ]
@@ -1101,11 +1206,11 @@
         "category": "dental-treats",
         "avg_monthly_units": 8,
         "last_month_units": 25,
-        "forecast_units": 6,
+        "forecast_units": 8,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 6.128,
+          "estimate": 8.145,
           "field_label": "units_sold",
           "components": [
             {
@@ -1114,33 +1219,38 @@
               "type": "mean"
             },
             {
+              "name": "units_last_month=25",
+              "value": 0.6601,
+              "type": "regression"
+            },
+            {
               "name": "product_sku=SKU-PT-0183",
               "value": 0.5666,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": -0.2965,
+              "value": -0.2889,
               "type": "residual"
             },
             {
               "name": "category=dental-treats",
-              "value": 0.0759,
+              "value": -0.2271,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=Whimzees",
-              "value": 0.0043,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Whimzees",
+              "value": 0.0078,
               "type": "regression"
             }
           ]
@@ -1153,22 +1263,22 @@
         "category": "dental-treats",
         "avg_monthly_units": 8,
         "last_month_units": 22,
-        "forecast_units": 6,
+        "forecast_units": 16,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 5.637,
+          "estimate": 15.779,
           "field_label": "units_sold",
           "components": [
+            {
+              "name": "units_last_month=22",
+              "value": 1.217,
+              "type": "regression"
+            },
             {
               "name": "column mean (log)",
               "value": 1.0995,
               "type": "mean"
-            },
-            {
-              "name": "neighbor residual",
-              "value": -0.9475,
-              "type": "residual"
             },
             {
               "name": "product_sku=SKU-PT-0200",
@@ -1177,22 +1287,27 @@
             },
             {
               "name": "category=dental-treats",
-              "value": 0.0759,
+              "value": -0.2271,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=PetNord",
-              "value": 0.0112,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.0364,
+              "type": "residual"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": -0.0294,
               "type": "regression"
             }
           ]
@@ -1205,11 +1320,11 @@
         "category": "treats",
         "avg_monthly_units": 8,
         "last_month_units": 18,
-        "forecast_units": 5,
+        "forecast_units": 15,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 5.079,
+          "estimate": 14.546,
           "field_label": "units_sold",
           "components": [
             {
@@ -1218,33 +1333,38 @@
               "type": "mean"
             },
             {
+              "name": "units_last_month=18",
+              "value": 1.0596,
+              "type": "regression"
+            },
+            {
               "name": "product_sku=SKU-PT-0169",
               "value": 0.4364,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": -0.085,
+              "value": 0.3409,
               "type": "residual"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=PetNord",
-              "value": 0.0112,
-              "type": "regression"
-            },
-            {
-              "name": "category=treats",
-              "value": 0.0107,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "category=treats",
+              "value": -0.0469,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": -0.0294,
               "type": "regression"
             }
           ]
@@ -1257,11 +1377,11 @@
         "category": "treats",
         "avg_monthly_units": 8,
         "last_month_units": 10,
-        "forecast_units": 5,
+        "forecast_units": 11,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 5.147,
+          "estimate": 11.483,
           "field_label": "units_sold",
           "components": [
             {
@@ -1270,56 +1390,81 @@
               "type": "mean"
             },
             {
+              "name": "units_last_month=10",
+              "value": 0.6833,
+              "type": "regression"
+            },
+            {
               "name": "product_sku=SKU-PT-0177",
               "value": 0.5305,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": -0.1792,
+              "value": 0.5117,
               "type": "residual"
             },
             {
               "name": "pet_type=dog",
-              "value": 0.0331,
-              "type": "regression"
-            },
-            {
-              "name": "brand=PetNord",
-              "value": 0.0112,
-              "type": "regression"
-            },
-            {
-              "name": "category=treats",
-              "value": 0.0107,
+              "value": -0.098,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.0014,
+              "value": 0.068,
+              "type": "regression"
+            },
+            {
+              "name": "category=treats",
+              "value": -0.0469,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": -0.0294,
               "type": "regression"
             }
           ]
         }
       }
     ],
-    "seasonality": [],
+    "seasonality": [
+      {
+        "season": "summer",
+        "pet_type": "",
+        "category": "grooming",
+        "lift": 0.88,
+        "f_on_condition": 14,
+        "p_on_condition": 0.0058,
+        "p_overall": 0.0075
+      },
+      {
+        "season": "spring",
+        "pet_type": "",
+        "category": "grooming",
+        "lift": 1.1,
+        "f_on_condition": 26,
+        "p_on_condition": 0.009,
+        "p_overall": 0.0075
+      }
+    ],
     "evaluation": {
-      "accuracy": 0.2433,
-      "base_accuracy": 0.27,
-      "accuracy_gain_pp": -2.67,
-      "n": 300
+      "accuracy": 0.4277,
+      "naive_accuracy": 0.4054,
+      "base_accuracy": 0.1049,
+      "n": 629,
+      "method": "Scores Aito predicting each month's sales range (0, 1, 2-3, 4-7, 8-15, 16-31, 32+) from last month's range and the product, not the unit forecast in the table. Time split: trained on months before 2026-04, tested on 2026-04."
     },
     "last_query": {
       "endpoint": "_estimate",
       "body": {
         "from": "monthly_sales",
         "where": {
-          "product_sku": "<sku>",
-          "month": "2026-05",
-          "pet_type": "<from monthly_sales row>",
-          "category": "<from monthly_sales row>",
-          "brand": "<from monthly_sales row>",
+          "product_sku": "SKU-PT-0196",
+          "units_last_month": 22,
+          "pet_type": "dog",
+          "category": "dental-treats",
+          "brand": "PetNord",
           "season": "spring"
         },
         "estimate": "units_sold",
@@ -1329,28 +1474,32 @@
         ]
       }
     },
-    "last_response_ms": 33162
+    "last_response_ms": 11877
   },
   "timings": [
     [
       "_search",
-      40.1
+      95.45
     ],
     [
       "_search",
-      45.92
+      92.72
     ],
     [
       "_search",
-      11.28
+      45.22
     ],
     [
       "_search",
-      8.01
+      31.39
     ],
     [
       "_evaluate",
-      3631.53
+      5313.68
+    ],
+    [
+      "_search",
+      2.48
     ]
   ]
 }
