@@ -33,6 +33,7 @@ export default function PricePage() {
   const [detail, setDetail] = useState<PriceDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [selectedSku, setSelectedSku] = useState<string | null>(null);
+  const hasSweetSpots = !loading && data !== null && data.sweet_spots.length > 0;
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -183,8 +184,11 @@ export default function PricePage() {
         );
       })()}
 
+      {/* The sweet-spots card is shown only when Aito finds a category
+          that is discounted more or less than the rest; on today's data
+          every lift's interval includes 1 (ADR 0016, 2026-10-11). */}
       {!error && (
-        <div className="two-col">
+        <div className={hasSweetSpots ? "two-col" : undefined}>
           <div className="card">
             <div className="card-sub" style={{ marginBottom: 6 }}>
               Fair-band table · click a row to chart it
@@ -221,26 +225,19 @@ export default function PricePage() {
             )}
           </div>
 
-          <div className="card" style={{ borderTop: "3px solid var(--cta)" }}>
-            <div className="card-sub" style={{ marginBottom: 6 }}>
-              Sweet spots · `_relate` per discount band
-            </div>
-            <div className="page-title" style={{ fontSize: 17, margin: "4px 0 12px" }}>
-              Which categories over-index at which price
-            </div>
-            {(loading || !data) && (
-              <div style={{ height: 400, background: "var(--border-light)", borderRadius: 4 }} />
-            )}
-            {!loading && data?.sweet_spots.map((s, i) => (
-              <SweetSpotChip key={`${s.discount_band}-${s.category}-${i}`} s={s} />
-            ))}
-            {!loading && data && data.sweet_spots.length === 0 && (
-              <div className="card-sub">
-                No category is discounted more or less than the others: every
-                band × category lift has a 95 % interval that includes 1.
+          {hasSweetSpots && (
+            <div className="card" style={{ borderTop: "3px solid var(--cta)" }}>
+              <div className="card-sub" style={{ marginBottom: 6 }}>
+                Sweet spots · `_relate` per discount band
               </div>
-            )}
-          </div>
+              <div className="page-title" style={{ fontSize: 17, margin: "4px 0 12px" }}>
+                Which categories over-index at which price
+              </div>
+              {data.sweet_spots.map((s, i) => (
+                <SweetSpotChip key={`${s.discount_band}-${s.category}-${i}`} s={s} />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

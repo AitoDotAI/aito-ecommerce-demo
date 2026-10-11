@@ -18,8 +18,6 @@ export const HIDDEN_ROUTES: Record<string, string> = {
     "It showed a raw purchase probability as a campaign response rate (96 %).",
   "/markdown":
     "Its proposals lost margin on every row with today's synthetic prices.",
-  "/price":
-    "It opened on a price point backed by only two sales.",
   "/cart-completion":
     "Its suggestions ignored basket size (a €108 bag for a €1.68 cart).",
 };

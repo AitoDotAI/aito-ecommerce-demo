@@ -89,6 +89,8 @@ Without the outlier flag the table would be a 700-SKU stats dump.
 
 ### 2. Sweet-spot lifts in both directions
 
+*On today's data no lift passes the filter, so the page leaves this card out (ADR 0016 amendment, 2026-10-11).*
+
 Lifts > 1.15 (red chip ↑) = "this band over-indexes for this
 category — discount-sensitive". Lifts < 0.85 (green chip ↓) =
 "this band under-indexes — list-price-loyal customers". Both are

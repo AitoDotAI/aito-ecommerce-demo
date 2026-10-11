@@ -197,3 +197,19 @@ when you want `_relate` over a continuous column, slice it into
 ~3-5 bands with `$where` and run parallel calls. The merged
 results give you "lift per band" without trying to make Aito
 quantise on its own.
+
+## Amendment 2026-10-11: the sweet-spots card shows only when it has a finding
+
+On the current data no category is discounted more or less than the
+others. Every band × category lift is between 0.81× and 1.05× on the
+large cells; the larger lifts (grooming 1.66× in the mild band) rest on
+11–48 rows, and their 95 % intervals include 1. The card used to fill a
+third of the page with "nothing found", so the page now leaves it out
+when `sweet_spots` is empty and shows it again when the data has a
+category effect. The `_relate` calls and their filter are unchanged.
+
+The question itself is weak: which categories the store discounts is
+its own pricing policy, not customer behaviour. The useful question is
+which categories sell more when discounted. That needs prices that move
+independently of demand, planned in ADR 0027's extension; the card is
+rewritten then.
