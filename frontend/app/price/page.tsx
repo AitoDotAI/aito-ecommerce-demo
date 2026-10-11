@@ -21,8 +21,8 @@ export default function PricePage() {
   usePagePanel(pricePanel(), {
     title: "Price",
     description:
-      "Per-SKU fair-price band from history + `_relate` over " +
-      "discount band ↔ category for sweet-spot discovery.",
+      "Per-SKU fair-price band from history, and a demand curve " +
+      "from `_estimate` at seven prices.",
     breadcrumb: "Price",
   });
 
@@ -93,8 +93,8 @@ export default function PricePage() {
         <div className="page-title">Price</div>
         <div className="page-desc">
           Per-SKU fair-price band (mean ± 1.5σ over price_history)
-          with outliers flagged, plus Aito's <code>_relate</code>
-          for "categories that over-index at each discount band".
+          with outliers flagged, and each SKU's demand curve: Aito's
+          <code>_estimate</code> of next month's units at seven prices.
         </div>
       </div>
 
