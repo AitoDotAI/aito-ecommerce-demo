@@ -17,7 +17,7 @@ import os
 
 from pathlib import Path
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -510,15 +510,13 @@ def price_endpoint():
 
 
 @app.get("/api/price/what-if")
-def price_what_if_endpoint(sku: str, price: float):
+def price_what_if_endpoint(sku: str, price: float = Query(gt=0, allow_inf_nan=False)):
     """Units, revenue and profit next month at `price`, with the factors
     behind the estimate (regression `_estimate`). See ADR 0029."""
     try:
         return get_price_what_if(aito, sku, price).to_dict()
     except UnknownProductError as exc:
         return JSONResponse(status_code=404, content={"error": str(exc)})
-    except ValueError as exc:
-        return JSONResponse(status_code=400, content={"error": str(exc)})
     except AitoError as exc:
         return JSONResponse(
             status_code=502,

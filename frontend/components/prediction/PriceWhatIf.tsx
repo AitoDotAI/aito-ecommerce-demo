@@ -34,12 +34,20 @@ export default function PriceWhatIf({
   // The slider moves freely; the price is committed (URL, request) once it
   // rests, so a drag is one history step and one `_estimate`.
   const [draft, setDraft] = useState(asked);
-  useEffect(() => setDraft(asked), [asked]);
+  // The number field keeps its own text while typing; it commits on Enter
+  // or when the field loses focus, never half-typed.
+  const [typed, setTyped] = useState(asked.toFixed(2));
+  useEffect(() => { setDraft(asked); setTyped(asked.toFixed(2)); }, [asked]);
   useEffect(() => {
     if (draft === asked) return;
     const timer = setTimeout(() => onPrice(draft), 300);
     return () => clearTimeout(timer);
   }, [draft, asked, onPrice]);
+  const commitTyped = () => {
+    const value = Number(typed);
+    if (Number.isFinite(value) && value > 0) onPrice(value);
+    else setTyped(asked.toFixed(2));
+  };
 
   const [result, setResult] = useState<PriceWhatIfResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -57,6 +65,8 @@ export default function PriceWhatIf({
   }, [detail.sku, asked, onQuery]);
 
   const shown = result && result.sku === detail.sku ? result : null;
+  // Older numbers stay readable but dimmed until the new price's answer lands.
+  const stale = !!shown && Math.abs(shown.price_eur - asked) > 0.005;
 
   return (
     <div className="card" style={{ marginBottom: 20 }}>
@@ -67,11 +77,14 @@ export default function PriceWhatIf({
         <label htmlFor="what-if-price" style={{ fontWeight: 600 }}>Price</label>
         <input
           id="what-if-price" type="range" min={min} max={max} step={0.01} value={draft}
-          onChange={(e) => setDraft(Number(e.target.value))} style={{ flex: 1, minWidth: 180 }}
+          onChange={(e) => { setDraft(Number(e.target.value)); setTyped(Number(e.target.value).toFixed(2)); }}
+          style={{ flex: 1, minWidth: 180 }}
         />
         <input
-          aria-label="Price in euros" type="number" min={0.01} step={0.01} value={draft.toFixed(2)}
-          onChange={(e) => { const v = Number(e.target.value); if (v > 0) setDraft(v); }}
+          aria-label="Price in euros" type="number" min={0.01} step={0.01} value={typed}
+          onChange={(e) => setTyped(e.target.value)}
+          onBlur={commitTyped}
+          onKeyDown={(e) => { if (e.key === "Enter") commitTyped(); }}
           className="search-input" style={{ width: 96, paddingLeft: 8 }}
         />
       </div>
@@ -79,7 +92,7 @@ export default function PriceWhatIf({
       {error && <div className="card-sub" style={{ color: "var(--red)" }}>Couldn&apos;t estimate: {error}</div>}
       {!error && !shown && <div style={{ height: 160, background: "var(--border-light)", borderRadius: 4 }} />}
       {!error && shown && (
-        <div className="two-col">
+        <div className="two-col" style={{ opacity: stale ? 0.5 : 1 }} aria-busy={stale}>
           <div>
             <Kpi label="Units next month" value={shown.units.toFixed(1)} />
             <Kpi label="Revenue" value={fmtEur(shown.revenue_eur, 2)} />
@@ -106,7 +119,8 @@ function Waterfall({ result }: { result: PriceWhatIfResult }) {
   let running = result.base_units;
   return (
     <div style={{ fontSize: 13 }}>
-      <Row label="An average month" change="" total={running} />
+      <Row label="" change="Effect" total={null} muted />
+      <Row label="A typical month" change="" total={running} />
       {result.factors.map((f) => {
         running *= f.multiplier;
         const pct = (f.multiplier - 1) * 100;
@@ -121,18 +135,26 @@ function Waterfall({ result }: { result: PriceWhatIfResult }) {
         );
       })}
       <Row label="Estimate" change="" total={result.units} strong />
+      <div className="card-sub" style={{ marginTop: 6 }}>
+        Each effect multiplies the units above it. They compare with a typical
+        month in the data, not with this product&apos;s current price: move the
+        price to see what changing it does.
+      </div>
     </div>
   );
 }
 
-function Row({ label, change, total, color, strong }: {
-  label: string; change: string; total: number; color?: string; strong?: boolean;
+function Row({ label, change, total, color, strong, muted }: {
+  label: string; change: string; total: number | null; color?: string; strong?: boolean; muted?: boolean;
 }) {
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "1fr 72px 64px", gap: 8, padding: "4px 0", fontWeight: strong ? 700 : 400 }}>
+    <div style={{
+      display: "grid", gridTemplateColumns: "1fr 72px 64px", gap: 8, padding: "4px 0",
+      fontWeight: strong ? 700 : 400, color: muted ? "var(--text-muted)" : undefined, fontSize: muted ? 11 : undefined,
+    }}>
       <span>{label}</span>
-      <span style={{ textAlign: "right", color }}>{change}</span>
-      <span style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{total.toFixed(1)}</span>
+      <span style={{ textAlign: "right", color: muted ? undefined : color }}>{change}</span>
+      <span style={{ textAlign: "right", fontFamily: "var(--mono)" }}>{total === null ? "Units" : total.toFixed(1)}</span>
     </div>
   );
 }

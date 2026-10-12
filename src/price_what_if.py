@@ -47,8 +47,9 @@ class PriceWhatIf:
 
 
 def get_price_what_if(client: AitoClient, sku: str, price_eur: float) -> PriceWhatIf:
-    if price_eur <= 0:
-        raise ValueError(f"price must be positive, got {price_eur}")
+    # The endpoint refuses these with a 422; this guards other callers.
+    if not (math.isfinite(price_eur) and price_eur > 0):
+        raise ValueError(f"price must be a positive number, got {price_eur}")
     products = client.search("products", where={"sku": sku}, limit=1)["hits"]
     if not products:
         raise UnknownProductError(f"No product {sku} in the catalogue")
@@ -70,7 +71,7 @@ def get_price_what_if(client: AitoClient, sku: str, price_eur: float) -> PriceWh
     base, factors = waterfall(res.get("why"), estimate)
 
     # Revenue and profit follow the units shown, so the three agree on screen.
-    units = round(max(0.0, estimate), 2)
+    units = round(estimate, 2)
     return PriceWhatIf(
         sku=sku,
         name=product["name"],
@@ -79,7 +80,7 @@ def get_price_what_if(client: AitoClient, sku: str, price_eur: float) -> PriceWh
         units=units,
         revenue_eur=round(price_eur * units, 2),
         profit_eur=round((price_eur - cost) * units, 2),
-        base_units=round(base, 2),
+        base_units=base,   # unrounded: the page multiplies the factors onto it
         factors=factors,
         last_query={"endpoint": "_estimate", "body": {
             "from": "monthly_sales", "where": where, "estimate": "units_sold",
@@ -111,7 +112,7 @@ def waterfall(why: object, estimate: float) -> tuple[float, list[Factor]]:
             shown.append(factor)
     shown.sort(key=lambda f: -abs(math.log(f.multiplier)))
     if folded != 1.0:
-        shown.append(Factor("other", "Other factors", folded))
+        shown.append(Factor("other", "Other factors, each under 0.5 %", folded))
 
     product = base * math.prod(f.multiplier for f in shown)
     if not math.isclose(product, estimate, rel_tol=1e-6):
@@ -136,7 +137,10 @@ def _factor(term: dict) -> Factor | None:
         return Factor("residual", "Not explained by the fields", math.exp(term["value"]))
     if term["type"] != "regression":
         raise AitoError(f"unexpected term in _estimate why: {term}")
-    [(field, value)] = term["proposition"].items()
+    proposition = term.get("proposition")
+    if not (isinstance(proposition, dict) and len(proposition) == 1):
+        raise AitoError(f"unexpected regression term, expected one field: {term}")
+    [(field, value)] = proposition.items()
     return Factor(field, _label(field, value), math.exp(term["value"]))
 
 

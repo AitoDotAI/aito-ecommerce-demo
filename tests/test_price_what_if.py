@@ -115,6 +115,15 @@ def test_an_unknown_sku_raises():
         get_price_what_if(FakeClient(), "SKU-NO-SUCH", 4.0)
 
 
-def test_a_price_that_is_not_positive_is_refused():
-    with pytest.raises(ValueError, match="positive"):
-        get_price_what_if(FakeClient(), SKU, 0)
+@pytest.mark.parametrize("price", [0, -1, float("nan"), float("inf")])
+def test_a_price_that_is_not_a_positive_number_is_refused(price):
+    with pytest.raises(ValueError, match="positive number"):
+        get_price_what_if(FakeClient(), SKU, price)
+
+
+def test_a_term_with_two_fields_is_reported_as_an_aito_problem():
+    why = regression_why()
+    why["power"]["terms"][1]["proposition"] = {"price_eur": 4.68, "season": "spring"}
+
+    with pytest.raises(AitoError, match="expected one field"):
+        waterfall(why, ESTIMATE)

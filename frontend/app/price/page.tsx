@@ -37,12 +37,17 @@ function PriceView() {
   // The SKU and the what-if price live in the URL, so a link opens the same
   // product at the same price. No SKU means the table's first row.
   const [skuParam] = useUrlState("sku", "");
-  const [priceParam, setPriceParam] = useUrlState("price", "");
+  const [priceParam] = useUrlState("price", "");
   const setUrl = useSetUrlParams();
   const selectedSku = skuParam || data?.fair_bands[0]?.sku || null;
   const setSelectedSku = (sku: string) => setUrl({ sku, price: null });
   const whatIfPrice = priceParam ? Number(priceParam) : null;
-  const pickPrice = useCallback((p: number) => setPriceParam(p.toFixed(2)), [setPriceParam]);
+  // Commit the SKU with the price, so the link reopens this product even
+  // when the page fell back to the table's first row.
+  const pickPrice = useCallback(
+    (p: number) => { if (selectedSku) setUrl({ sku: selectedSku, price: p.toFixed(2) }); },
+    [selectedSku, setUrl],
+  );
   const showQuery = useCallback(
     (body: Record<string, unknown>) => setPanel({ ...pricePanel(), query: highlightQuery(body) }),
     [setPanel],
@@ -196,7 +201,7 @@ function PriceView() {
         );
       })()}
 
-      {!error && detail && detail.sku === selectedSku && (
+      {!error && detail && detail.sku === selectedSku && data?.fair_bands.some((f) => f.sku === selectedSku) && (
         <PriceWhatIf detail={detail} price={whatIfPrice} onPrice={pickPrice} onQuery={showQuery} />
       )}
 
