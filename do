@@ -34,7 +34,23 @@ _source_env_files() {
   done
   for kv in ${explicit[@]+"${explicit[@]}"}; do export "$kv"; done
 }
-_source_env_files "$SCRIPT_DIR/.env" "$SCRIPT_DIR/.env.local"
+# A git worktree is a fresh checkout without the gitignored .env, so it
+# borrows the main checkout's credentials. A worktree's own .env still wins,
+# and its own .env.local overrides either; _show_target says which was used.
+_credentials_dir() {
+  [[ -f "$SCRIPT_DIR/.env" ]] && { echo "$SCRIPT_DIR"; return; }
+  local common
+  common="$(git -C "$SCRIPT_DIR" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" \
+    || { echo "$SCRIPT_DIR"; return; }
+  local main_checkout="${common%/.git}"
+  if [[ -f "$main_checkout/.env" ]]; then echo "$main_checkout"; else echo "$SCRIPT_DIR"; fi
+}
+CREDENTIALS_DIR="$(_credentials_dir)"
+if [[ "$CREDENTIALS_DIR" == "$SCRIPT_DIR" ]]; then
+  _source_env_files "$SCRIPT_DIR/.env" "$SCRIPT_DIR/.env.local"
+else
+  _source_env_files "$CREDENTIALS_DIR/.env" "$CREDENTIALS_DIR/.env.local" "$SCRIPT_DIR/.env.local"
+fi
 
 # Print the Aito instance a data command is about to touch, so you never
 # load/clear the wrong environment. Loud when it's the shared prod DB.
@@ -44,6 +60,9 @@ _show_target() {
     echo "⚠️  Target Aito: $url  (SHARED / prod)"
   else
     echo "Target Aito: $url"
+  fi
+  if [[ "$CREDENTIALS_DIR" != "$SCRIPT_DIR" ]]; then
+    echo "   credentials from the main checkout: $CREDENTIALS_DIR/.env"
   fi
 }
 
@@ -103,6 +122,7 @@ Data
   reset-data        Drop and reload all Aito tables + warm the cache
   optimize          Merge batch segments on all tables for faster reads
   clear-cache       Clear in-memory + Aito persistent prediction cache
+  target            Show which Aito instance commands use, and whose credentials
   warm-cache        Pre-compute every cacheable endpoint once
   precompute        Snapshot the six heavy endpoints to Aito + git JSON (ADR 0024)
   workbook          (Re)create the console workbook from docs/aito-workbook-ecommerce-demo.json
@@ -578,6 +598,7 @@ cmd_teaser() {
 
 case "${1:-help}" in
   help)              cmd_help ;;
+  target)            _show_target ;;
   dev)               cmd_dev ;;
   backend-dev)       cmd_backend_dev ;;
   frontend-dev)      cmd_frontend_dev ;;
