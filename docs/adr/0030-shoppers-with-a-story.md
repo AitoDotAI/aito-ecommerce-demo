@@ -1,6 +1,6 @@
 # ADR 0030: Shoppers with a story — personas, guided kits, seasons, routines
 
-**Status:** Proposed
+**Status:** Accepted (2026-10-12)
 **Date:** 2026-10-12
 **Deciders:** Antti
 
