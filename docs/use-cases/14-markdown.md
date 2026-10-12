@@ -43,24 +43,25 @@ way to zero).
 ### Demand curve via `_estimate`
 
 ```python
-res = client.estimate(
-    "monthly_sales",
-    where={
-        "product_sku": sku,
-        "month":       "2026-05",
-        "price_eur":   adjusted,          # ← the markdown price
-        "pet_type":    recent.pet_type,
-        "category":    recent.category,
-        "brand":       recent.brand,
-        "season":      _season_for(month),
-    },
-    estimate_field="units_sold",
-)
+# src/demand_forecast.py — units_at_price(), shared with the Price view
+where = {
+    "product_sku":      sku,
+    "units_last_month": units_last_month,   # the SKU's units in 2026-04
+    "pet_type":         profile["pet_type"],
+    "category":         profile["category"],
+    "brand":            profile["brand"],
+    "season":           "spring",           # the forecast month's season
+    "price_eur":        adjusted,           # ← the markdown price
+}
+client.estimate("monthly_sales", where=where, estimate_field="units_sold")
 ```
 
-Same body as the Price view's interactive chart. The `price_eur`
-field is what shifts the K-NN's neighborhood — without it Aito
-returns the SKU's unconditional expected demand.
+Same body as the Price view's demand curve, and the same evidence as
+the Demand forecast: last month's units, not the forecast month (no
+training row has 2026-05, so it was no evidence at all). The
+`price_eur` field is what shifts the K-NN's neighbourhood. Without it
+Aito returns the SKU's expected demand at any price. A probe with no
+estimate is an error, not the SKU's average.
 
 ### Picker
 
