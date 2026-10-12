@@ -80,7 +80,63 @@ Each result, pass or fail, is recorded below with the date and the env.
   factor alone barely moves the December share. In December an order adds
   one treat or toy with P 0.35; in November with P 0.15. The thresholds
   are unchanged.
+- **S5 and S6 odds apply at two funnel steps**, add-to-cart and purchase,
+  not purchase alone: for an item that already converts well, doubling
+  only the last step's odds moves its overall rate by far less than 2×.
+  The thresholds are unchanged.
+
+## Amendments after the first generation (2026-10-12, data checks only, before any Aito run)
+
+The first generation passed S1a, S1b, S4a, S5a and S7a and missed five.
+None of these are Aito checks, so strengthening a plant to meet its
+pre-registered data threshold is building the effect, not tuning to a
+result. **Thresholds are unchanged.**
+
+| check | first generation | cause | change |
+|:--|:--|:--|:--|
+| S2a | 66 % (40/61) | random basket draws also pick add-on types out of order | next add-on P 0.75 → 0.90 |
+| S4b | 1.27 | staples dilute a ×1.7 pick weight | a summer care line (grooming or health) with P 0.25 in June–August, like the December gift line |
+| S5b | 0.73 | ×0.5 odds at two steps | ×0.35 odds |
+| S5c | a band "2" | `round(2.5)` is 2 in Python | bug fix: bands by threshold (< 2.5, < 3.5, < 4.5) |
+| S6a | 1.19 on search (14.8 % vs 12.4 %) | complements already convert near the ceiling after the click; the click is the real gate | a complement also doubles the click odds |
+| S6a, second generation | 1.54 on search (18.6 % vs 12.1 %); all other checks pass | the comparison group holds the customer's best-fitting items | complement odds ×2 → ×3 at each step |
+| D7 (ADR 0027) | 1.88× against all non-staple sends | the test compared against every non-staple send; D7 is registered against never-bought sends (5.1×) | test fixed to the registered definition |
+| D8 persona Saara | churned | her last order month was a random draw; the shifted RNG moved it | a persona's history reaches the latest month by rule |
+| D5 (ADR 0027) | −0.91 | gift, care and diet-substitute picks ignored promotions | they are weighted by this month's promotions, like every basket draw |
+| S2a, S5a after that | 69.8 % (37/53); 0.82 | both were seed-sensitive, so too weak | a random out-of-order add-on is skipped with P 0.8; poor staple switch 0.30 → 0.50 |
+
+Also before any Aito run: someone leaving a poorly made staple moves to one
+that isn't (S5), which keeps D1 where it was before ADR 0030 (50.8 %).
 
 ## Results
 
-*(none yet)*
+### Data checks, 2026-10-12 (seed 42, the committed fixtures)
+
+All ten S checks pass, and the full offline suite (213 tests) with them.
+
+| check | value | bar |
+|:--|:--|:--|
+| S1a / S1b | 0 rule-breaking food lines; rule share in range | 0; 15–25 % |
+| S2a | ≥ 70 % | ≥ 70 % |
+| S4a / S4b | pass | ≥ 1.6 / ≥ 1.4 |
+| S5a / S5b / S5c | pass | ≤ 0.8 / ≤ 0.7 / bands valid |
+| S6a | pass on every surface with ≥ 200 complement impressions | ≥ 1.6 |
+| S7a | pass | ≥ 90 % multi-word, ≥ 3 matches each |
+| D1 (ADR 0027) | 50.8 % (unchanged from before ADR 0030) | ≥ 50 % |
+| D5 (ADR 0027) | −1.31 | [−2, −1] |
+
+### Seed robustness (seeds 7 and 99, not committed)
+
+All ten S checks pass on both seeds. Three older checks are seed-sensitive
+and are reported, not tuned:
+
+- **D6** (planted mispricings) fails on seeds 7 and 99 **before** ADR 0030
+  too: an ADR 0027 margin.
+- **D1** sits on its floor by design (50.8 % on seeds 42 and 99 before ADR
+  0030); with ADR 0030 it is 49.9 % on seed 99.
+- **Signal 3** (Maija and Olli's top-5 pairs) fails on seed 7 because Maija
+  buys only 4 distinct pairs there; the test assumes 5.
+
+### Aito checks
+
+*(not run yet: the next step is loading these fixtures into a non-master env)*

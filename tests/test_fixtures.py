@@ -836,9 +836,19 @@ def test_d6_the_planted_mispricings_are_findable():
 
 
 def test_d7_winback_sends_in_the_staple_category_respond_more():
+    # As pre-registered (lifecycle-data-prereg.md, D7): staple-category sends
+    # against sends in a category the customer never bought. This test used
+    # to compare against every non-staple send, which includes categories
+    # the customer does buy; ADR 0030's gift and care lines widened those.
     campaigns = _load("winback_campaigns.json")
-    in_staple = lambda w: w["customer_staple_category"] == f'{w["product_pet_type"]}/{w["product_category"]}'
+    products = {p["sku"]: p for p in _load("products.json")}
+    customer_of = {o["order_id"]: o["customer_id"] for o in _load("orders.json")}
+    bought: dict[str, set[str]] = defaultdict(set)
+    for ln in _load("order_lines.json"):
+        p = products[ln["product_sku"]]
+        bought[customer_of[ln["order_id"]]].add(f'{p["pet_type"]}/{p["category"]}')
+    category = lambda w: f'{w["product_pet_type"]}/{w["product_category"]}'
     rate = lambda ws: sum(w["responded"] for w in ws) / len(ws)
-    staple = [w for w in campaigns if in_staple(w)]
-    other = [w for w in campaigns if not in_staple(w)]
-    assert rate(staple) >= 2 * rate(other), (rate(staple), rate(other))
+    staple = [w for w in campaigns if w["customer_staple_category"] == category(w)]
+    never_bought = [w for w in campaigns if category(w) not in bought[w["customer_id"]]]
+    assert rate(staple) >= 2 * rate(never_bought), (rate(staple), rate(never_bought))

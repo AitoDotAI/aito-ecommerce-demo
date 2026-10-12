@@ -45,6 +45,10 @@ SCHEMAS: dict[str, dict] = {
             # token-level priors. ~5-8 tags per product. See ADR 0017.
             "tags":      {"type": "Text",    "nullable": False,
                           "analyzer": "whitespace"},
+            # From the product's reviews (ADR 0030): null and "unrated"
+            # when nobody reviewed it.
+            "avg_rating":  {"type": "Decimal", "nullable": True},
+            "rating_band": {"type": "String",  "nullable": False},
         },
     },
     # 2. customers — link target for orders.customer_id.
@@ -81,6 +85,9 @@ SCHEMAS: dict[str, dict] = {
             "total_spent_eur":  {"type": "Decimal", "nullable": False},
             "last_order_month": {"type": "String",  "nullable": True},
             "churned":          {"type": "Boolean", "nullable": False},
+            # grain-free | sensitive | senior | puppy, for the dog and cat
+            # households that keep one kind of food (ADR 0030).
+            "diet_rule":        {"type": "String",  "nullable": True},
         },
     },
     # 3. orders — links to customers.
@@ -133,6 +140,7 @@ SCHEMAS: dict[str, dict] = {
             "customer_health_focus":   {"type": "String", "nullable": False},
             "customer_treat_affinity": {"type": "String", "nullable": False},
             "customer_brand_loyalty":  {"type": "String", "nullable": False},
+            "customer_diet_rule":      {"type": "String", "nullable": True},
         },
     },
     # 4b. impressions — one product shown to a customer in a browsing
@@ -160,6 +168,11 @@ SCHEMAS: dict[str, dict] = {
             # `where {search_query: {$match: "food"}}` token-matches.
             "search_query":  {"type": "Text",   "nullable": True,
                               "analyzer": "whitespace"},
+            # The basket that month as tokens ("dog_dryfood
+            # small_animal_cage"), so `$match` conditions on what is in it
+            # (ADR 0030). Null when nothing was bought that month.
+            "basket_categories": {"type": "Text", "nullable": True,
+                                  "analyzer": "whitespace"},
             # Denormalised customer profile — single-hop conditioning.
             "customer_segment":      {"type": "String", "nullable": False},
             "customer_pet_size":     {"type": "String", "nullable": True},
@@ -167,6 +180,7 @@ SCHEMAS: dict[str, dict] = {
             "customer_health_focus": {"type": "String", "nullable": False},
             "customer_treat_affinity":{"type": "String", "nullable": False},
             "customer_brand_loyalty":{"type": "String", "nullable": False},
+            "customer_diet_rule":    {"type": "String", "nullable": True},
             # Denormalised product attributes for `basedOn` priors.
             "product_pet_type": {"type": "String", "nullable": False},
             "product_category": {"type": "String", "nullable": False},
