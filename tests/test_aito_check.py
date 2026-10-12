@@ -354,3 +354,28 @@ def test_product_insights_funnel_is_monotone_and_relate_counts_its_lines(client)
     assert result.buyers, "no buyer profiles for the default product"
     assert all(b.lines_total == lines for b in result.buyers), (lines, result.buyers[:2])
     assert result.monthly, "no monthly_sales rows for the default product"
+
+
+# ── v2 engine behaviour the views rely on (checked on 2.11.4) ────────
+
+
+def test_recommend_where_on_a_linked_product_field_filters_the_candidates(client):
+    """On v2, a `where` on the candidate's own fields was reported to stop
+    filtering `_recommend` candidates (aito-shopify notes). For You relies
+    on it filtering, so every candidate must be a cat product here."""
+    hits = client.recommend(
+        "impressions", {"product_sku.pet_type": "cat"}, "product_sku", {"purchased": True}, limit=10,
+    )["hits"]
+
+    assert hits, "no recommendations for cat products"
+    assert all(h["pet_type"] == "cat" for h in hits), [h.get("pet_type") for h in hits]
+
+
+def test_match_on_a_text_column_matches_a_token_not_the_whole_value(client):
+    """`$match` must keep token semantics on v2 tables: an order whose
+    categories are "dog_wetfood cat_litter" matches "dog_wetfood". If it fell
+    back to whole-value equality the two counts would be equal."""
+    token = client.search("orders", where={"line_categories": {"$match": "dog_wetfood"}}, limit=0)["total"]
+    whole_value = client.search("orders", where={"line_categories": "dog_wetfood"}, limit=0)["total"]
+
+    assert token > whole_value > 0, (token, whole_value)
