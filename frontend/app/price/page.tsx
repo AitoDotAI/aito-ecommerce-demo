@@ -132,7 +132,7 @@ export default function PricePage() {
       )}
 
       {/* Price ↔ Demand / Profit scatter chart for the selected SKU.
-          Driven by `_estimate units_sold` at +/-15 % adjusted prices
+          Driven by `_estimate units_sold` at ±10 % adjusted prices
           (7-point curve) over the SKU's historical monthly_sales.
 
           Two-stage render so the title swap on click feels instant:

@@ -1,20 +1,20 @@
-"""Price Intelligence — fair-band display + price-band ↔ units
-sweet-spot discovery.
+"""Price Intelligence — fair-band table, sweet-spot `_relate`, and a
+per-SKU demand curve.
 
-Two blocks:
+  1. Fair-band table — per-SKU price stats from one bulk `_search` of
+                       `price_history`, computed in Python (658
+                       parallel `_aggregate` calls trip the rate
+                       limit). Outliers are flagged when the list price
+                       falls outside mean ± 1.5σ. One `_aggregate` runs
+                       for the drilldown SKU, shown in the Aito panel.
+  2. Sweet-spot       — `_relate` over discount band ↔ category: which
+                       categories are discounted more than others. On
+                       today's data none passes the filter.
+  3. Demand curve     — `get_price_detail`: `_estimate units_sold` at
+                       seven prices within ±10 % of the SKU's average
+                       selling price.
 
-  1. Fair-band table — per-SKU price stats via Aito's
-                       `_aggregate` (mean / std / min / max
-                       computed server-side, one call per SKU).
-                       Outliers flagged when the SKU's list price
-                       falls outside mean ± 1.5σ.
-  2. Sweet-spot       — `_relate` over discount band ↔ category,
-                       surfacing "categories where promo prices
-                       sell N× more units".
-
-Cached 30 min. `_aggregate` per SKU is parallelised across a
-thread pool — much cheaper than fetching all 11k rows and
-aggregating client-side.
+Cached 30 min.
 """
 
 from __future__ import annotations
@@ -333,7 +333,7 @@ class CurvePoint:
     price_eur: float
     units_sold: float       # _estimate returns a float
     profit_eur: float
-    adjustment_pct: int     # -15, -10, -5, 0, +5, +10, +15
+    adjustment_pct: int     # one of _CURVE_ADJUSTMENTS_PCT
 
 
 @dataclass(frozen=True)
@@ -462,8 +462,9 @@ def get_price_detail(client: AitoClient, sku: str) -> PriceDetail | None:
 
     Pulls historical (price, units) pairs from `monthly_sales`, the
     SKU's unit cost from `inventory`, then walks Aito's
-    `_estimate units_sold` at seven price adjustments (-15 % …
-    +15 %) to build the demand / profit curve. Neighbors are
+    `_estimate units_sold` at seven price adjustments (-10 % …
+    +10 % around the average selling price) to build the demand /
+    profit curve. Neighbors are
     extracted from the central `_estimate`'s `why` tree.
 
     Cached 30 min per SKU.
