@@ -1,6 +1,6 @@
 # ADR 0029: Price what-if — set a price, see units, profit and why
 
-**Status:** Proposed
+**Status:** Accepted (2026-10-12, after the live checks below)
 **Date:** 2026-10-11
 **Deciders:** Antti
 
@@ -69,6 +69,27 @@ popovers through `process_estimate_why` (`src/why_processor.py`).
 
 The result of each check goes into this ADR before code.
 
+**Results, 2026-10-12** (SKU-PT-0133 on shared, read-only):
+
+1. **Price is a factor.** `price_eur` is a linear factor in both
+   models: −0.728 on the log scale at €4.68. Units fall from 12.1 at
+   €3.90 to 5.8 at €4.68 and 3.0 at €5.50.
+2. **The factors add up only with `model: "regression"`.** Its `why` is
+   `exp(mean + Σ factors)`: 1.0995 (mean) − 0.728 (price) + 0.068
+   (season) + 0.001 (brand) − 0.076 (category) − 0.098 (pet type) +
+   1.091 (last month's units) + 0.407 (SKU) = 1.764, and e^1.764 = 5.835,
+   the estimate exactly; the residual term is 0. The default k-NN model
+   averages 8 neighbours, each with its own terms, so its rows cannot
+   chain to the estimate.
+3. **So the curve and the what-if both use the regression model.** Same
+   body plus `"model": "regression"` (in the cheatsheet), so a point on
+   the curve and the what-if at that price give the same number.
+
+Found on the way: `units_last_month` comes back as a *categorical*
+factor although it is an Int. The schema reports the three columns
+added in place on 2026-10-10 as type `Unknown`; reported to core with
+that bug.
+
 ## Decision
 
 A **what-if panel** under the demand curve on the Price view:
@@ -77,8 +98,9 @@ A **what-if panel** under the demand curve on the Price view:
   number field. The curve's points are clickable and set it too.
 - **Outputs.** Units next month, revenue (price × units) and profit
   ((price − cost) × units), using the cost the page already shows.
-- **Waterfall.** From the base through each factor to the estimate,
-  as percentages. Factors below 0.5 % are folded into one "other
+- **Waterfall.** From the base (e^mean, 3.0 units here) through each
+  factor as a multiplier (e^value, shown as a percentage) to the
+  estimate; the rows multiply out to it exactly. Factors below 0.5 % are folded into one "other
   factors" row, so no row reads +0.0 %.
 - **Query pane.** Shows the body actually sent, as every view does.
 - **Shareable.** The SKU and price live in the URL (`useUrlState`).
@@ -97,8 +119,7 @@ answers 404 for an unknown SKU. It is not precomputed: it is one
 - Every waterfall row is labelled with a field and value, or with a
   plain-language name for Aito's terms (e.g. "similar past months").
   No row reads +0.0 %.
-- The waterfall either adds up to the estimate, or says it shows one
-  comparable month (per verification step 2).
+- The waterfall's rows multiply out to the estimate (to rounding).
 - The copied URL reopens the same SKU and price.
 - `./do aito-check` asserts that `price_eur` is a factor in the `why`
   and that the estimate is non-negative.
