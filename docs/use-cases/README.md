@@ -18,8 +18,8 @@ the demo abstracts away.
 | 8 | [Evaluation](08-evaluation.md) | `_evaluate` × 4 parallel on a seeded `$sample` hold-out + `$get` substitution, honest failure |
 | 9 | [Feedback](09-feedback.md) | `_predict` × 4 parallel over review `text` — category, sentiment, assigned_to, churn_within_90d |
 | 10 | [Churn](10-churn.md) | `_predict` × N parallel over customer_months panel for at-risk leaderboard, `_relate` × 5 for drivers (incl. latest review fields), `_evaluate` for accuracy |
-| 11 | [Demand Forecast](11-demand-forecast.md) | `_predict units_sold` per top-mover SKU over the `monthly_sales` panel + 4 parallel `_relate` for seasonality + `_evaluate` |
-| 12 | [Inventory Intelligence](12-inventory-intelligence.md) | `_predict units_sold` per critical SKU + days-of-supply arithmetic; reorder queue ranked by revenue at risk in € |
+| 11 | [Demand Forecast](11-demand-forecast.md) | `_estimate units_sold` per top-mover SKU over the `monthly_sales` panel + 4 parallel `_relate` for seasonality + `_evaluate` |
+| 12 | [Inventory Intelligence](12-inventory-intelligence.md) | `_estimate units_sold` per critical SKU + days-of-supply arithmetic; reorder queue ranked by revenue at risk in € |
 | 13 | [Price Intelligence](13-price.md) | Per-SKU fair-band from `price_history` + 3 parallel `_relate` over discount band ↔ `product_sku.category` |
 | 14 | [Markdown Decision](14-markdown.md) | `_estimate units_sold` × 5 markdown levels per overstock SKU + clearance-revenue picker |
 | 15 | [Cart Completion](15-cart-completion.md) | `_relate` over `orders.line_categories` × 4 preset checkout carts + `_search` for popular products in top related category |

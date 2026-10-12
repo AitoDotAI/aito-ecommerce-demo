@@ -228,6 +228,13 @@ SCHEMAS: dict[str, dict] = {
             # view's demand curve via `_estimate units_sold` with
             # `price_eur` in the where clause.
             "price_eur":        {"type": "Decimal", "nullable": False},
+            # Last month's units and both months as sales ranges
+            # ("0", "1", "2-3" … "32+"). The Demand forecast conditions
+            # on last month; its accuracy is scored on ranges against
+            # the naive "same range as last month". See ADR 0014.
+            "units_last_month":        {"type": "Int",    "nullable": False},
+            "units_bucket":            {"type": "String", "nullable": False},
+            "units_last_month_bucket": {"type": "String", "nullable": False},
         },
     },
     # 8. inventory — per-SKU stock snapshot. Drives the Inventory

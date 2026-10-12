@@ -19,7 +19,7 @@ Three blocks per request:
                        `$why`.
   3. Overstock list — top tied-capital SKUs (compactly displayed)
 
-Cached for 30 minutes. The reorder queue's per-row `_predict`
+Cached for 30 minutes. The reorder queue's per-row `_estimate`
 for next-month demand is the expensive piece.
 """
 
@@ -32,16 +32,15 @@ from typing import Any
 
 from src.aito_client import AitoClient
 from src import cache
-from src.why_processor import process_estimate_why
+from src.demand_forecast import forecast_units, forecast_where, last_month_units
 
 
 # Frozen "today" — every demand forecast is for the NEXT month
 # from this anchor. Mirrors `data/generate_fixtures.py`.
 DEMO_TODAY_YYYYMM = "2026-04"
-FORECAST_MONTH = "2026-05"   # the month we're predicting demand for
 
 
-# How many critical SKUs to deep-score with a `_predict` call.
+# How many critical SKUs to deep-score with an `_estimate` call.
 # Each predict is ~50 ms — 25 critical × ~50 ms ≈ 1.2 s.
 REORDER_TOP_N = 25
 
@@ -175,48 +174,6 @@ def _fetch_recent_sales(client: AitoClient) -> dict[str, list[dict]]:
     return out
 
 
-def _predict_demand(client: AitoClient, sku: str, sales_history: list[dict]) -> tuple[int, dict | None]:
-    """Estimate next-month units_sold for one SKU via `_estimate`.
-
-    Uses `_estimate` (expected-value regression) rather than
-    `_predict` because we want the *mean* of next-month units, not
-    the most-probable specific integer. Same shape as Demand
-    Forecast's `_estimate_units`. See ADR 0015 §"_estimate switch".
-    """
-    if not sales_history:
-        return 0, None
-    # Use the most recent row to extract denormalised features.
-    recent = max(sales_history, key=lambda r: r["month"])
-    forecast_month_int = int(FORECAST_MONTH.split("-")[1])
-    season_map = {
-        1: "winter", 2: "winter", 3: "spring", 4: "spring",
-        5: "spring", 6: "summer", 7: "summer", 8: "summer",
-        9: "autumn", 10: "autumn", 11: "autumn", 12: "winter",
-    }
-    where = {
-        "product_sku": sku,
-        "month":       FORECAST_MONTH,
-        "pet_type":    recent.get("pet_type", ""),
-        "category":    recent.get("category", ""),
-        "brand":       recent.get("brand", ""),
-        "season":      season_map[forecast_month_int],
-    }
-    try:
-        res = client.estimate("monthly_sales", where=where,
-                              estimate_field="units_sold")
-    except Exception:
-        return 0, None
-    estimate = res.get("estimate")
-    if estimate is None:
-        return 0, None
-    units = max(0, int(round(float(estimate))))
-    why = process_estimate_why(
-        res.get("why"), float(estimate),
-        field_label="units_sold",
-    )
-    return units, why
-
-
 # ── Public entry point ─────────────────────────────────────────────
 
 
@@ -236,7 +193,7 @@ def get_inventory(
     sales = _fetch_recent_sales(client)
 
     # Classify every SKU first; we'll deep-score only the critical
-    # ones with `_predict` (the expensive call).
+    # ones with `_estimate` (the expensive call).
     band_counts: dict[str, int] = {"critical": 0, "low": 0, "ok": 0, "overstock": 0}
     classified: list[dict] = []
     for r in inv_rows:
@@ -273,12 +230,15 @@ def get_inventory(
     overstock_rows.sort(key=lambda o: -o.tied_capital_eur)
     overstock_rows = overstock_rows[:20]
 
-    # Deep-score critical SKUs with `_predict` (parallel).
+    # Deep-score critical SKUs with `_estimate` (parallel).
     critical = [r for r in classified if r["_band"] == "critical"]
     critical = critical[:top_n]   # cap the predict fan-out
 
     def score(r: dict) -> tuple[dict, int, dict | None]:
-        units, why = _predict_demand(client, r["sku"], sales.get(r["sku"], []))
+        history = sales.get(r["sku"], [])
+        if not history:
+            return r, 0, None   # never sold: there is nothing to forecast from
+        units, why = forecast_units(client, r["sku"], history)
         return r, units, why
 
     reorder_rows: list[ReorderRow] = []
@@ -286,7 +246,7 @@ def get_inventory(
     if critical:
         with ThreadPoolExecutor(max_workers=8) as pool:
             scored = list(pool.map(score, critical))
-        for r, forecast_units, why in scored:
+        for r, forecast, why in scored:
             prod = products.get(r["sku"], {})
             sales_for_sku = sales.get(r["sku"], [])
             avg_monthly = _avg_monthly(sales_for_sku)
@@ -296,11 +256,11 @@ def get_inventory(
             # rebuild safety buffer.
             suggested = max(
                 0,
-                int(forecast_units) + int(r["safety_stock"]) - int(r["current_stock"]),
+                forecast + int(r["safety_stock"]) - int(r["current_stock"]),
             )
             # Revenue at risk = forecast units we *can't* satisfy ×
             # retail price.
-            shortfall = max(0, int(forecast_units) - int(r["current_stock"]))
+            shortfall = max(0, forecast - int(r["current_stock"]))
             retail = float(prod.get("price_eur", 0) or 0)
             rev_at_risk = shortfall * retail
             revenue_at_risk_total += rev_at_risk
@@ -313,7 +273,7 @@ def get_inventory(
                 reorder_point=int(r["reorder_point"]),
                 days_of_supply=round(days_of_supply, 1),
                 avg_monthly_units=avg_monthly,
-                forecast_units=int(forecast_units),
+                forecast_units=forecast,
                 suggested_reorder_qty=suggested,
                 unit_cost_eur=round(float(r["unit_cost_eur"]), 2),
                 revenue_at_risk_eur=round(rev_at_risk, 2),
@@ -336,19 +296,15 @@ def get_inventory(
             "€ if criticals stock out"),
     ]
 
+    # The body actually sent for the first scored SKU, not a lookalike.
+    first = next((r["sku"] for r in critical if sales.get(r["sku"])), None)
     sample_body = {
         "from": "monthly_sales",
-        "where": {
-            "product_sku": "<sku>",
-            "month":       FORECAST_MONTH,
-            "pet_type":    "<from product>",
-            "category":    "<from product>",
-            "brand":       "<from product>",
-            "season":      "spring",
-        },
+        "where": forecast_where(first, max(sales[first], key=lambda r: r["month"]),
+                                last_month_units(sales[first])),
         "estimate": "units_sold",
         "select":   ["estimate", "why"],
-    }
+    } if first else {"note": "No critical SKU has sales history, so no _estimate was sent."}
 
     resp = InventoryResponse(
         kpis=kpis,

@@ -11,16 +11,17 @@ import type { DemandResponse, DemandTopMover, DemandSeasonRow } from "@/lib/type
 
 
 /**
- * Demand Forecast — per-SKU `_predict units_sold` for next month
- * + seasonality drivers via parallel `_relate` + honest accuracy
- * via `_evaluate`. See `docs/adr/0014-demand.md`.
+ * Demand Forecast — per-SKU `_estimate units_sold` for next month
+ * + seasonality drivers via parallel `_relate` + a time-split
+ * `_evaluate` shown next to the naive "same as last month" forecast.
+ * See `docs/adr/0014-demand.md` §Correction.
  */
 export default function DemandPage() {
   usePagePanel(demandPanel(), {
     title: "Demand Forecast",
     description:
-      "Per-SKU `_predict units_sold` over the monthly_sales panel " +
-      "with seasonality + accuracy on a held-out sample.",
+      "Per-SKU `_estimate units_sold` over the monthly_sales panel, " +
+      "with seasonality, and accuracy on the latest month against the naive forecast.",
     breadcrumb: "Demand Forecast",
   });
 
@@ -73,7 +74,7 @@ export default function DemandPage() {
         <div className="two-col">
           <div className="card">
             <div className="card-sub" style={{ marginBottom: 6 }}>
-              Top movers · `_predict units_sold` per SKU
+              Top movers · `_estimate units_sold` per SKU
             </div>
             <div className="page-title" style={{ fontSize: 17, margin: "4px 0 12px" }}>
               Highest-volume SKUs
@@ -123,29 +124,12 @@ export default function DemandPage() {
 
             <div className="card" style={{ borderTop: "3px solid var(--cta)" }}>
               <div className="card-sub" style={{ marginBottom: 6 }}>
-                Accuracy · `_evaluate units_sold`
+                Accuracy · `_evaluate units_bucket` vs the naive forecast
               </div>
-              <div className="page-title" style={{ fontSize: 17, margin: "4px 0 12px" }}>
-                {data && (
-                  <>
-                    {Math.round(data.evaluation.accuracy * 100)}%
-                    <span style={{
-                      marginLeft: 10, fontSize: 13, fontWeight: 500,
-                      color: data.evaluation.accuracy_gain_pp >= 10 ? "var(--green)" : "var(--red)",
-                    }}>
-                      {data.evaluation.accuracy_gain_pp >= 0 ? "+" : ""}
-                      {data.evaluation.accuracy_gain_pp.toFixed(1)} pp vs baseline
-                    </span>
-                  </>
-                )}
-                {!data && "—"}
-              </div>
-              {data && (
-                <div className="card-sub" style={{ lineHeight: 1.6 }}>
-                  Baseline {Math.round(data.evaluation.base_accuracy * 100)}% ·
-                  Tested on {data.evaluation.n} held-out monthly_sales rows
-                </div>
+              {(loading || !data) && (
+                <div style={{ height: 90, background: "var(--border-light)", borderRadius: 4 }} />
               )}
+              {!loading && data && <DemandAccuracy e={data.evaluation} />}
             </div>
           </div>
         </div>
@@ -243,4 +227,35 @@ function highlightQuery(body: Record<string, unknown>): string {
 
 function escape(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+
+function DemandAccuracy({ e }: { e: DemandResponse["evaluation"] }) {
+  // The naive forecast is the bar to clear, so it sits next to the model
+  // whichever way the comparison falls.
+  const rows: [string, number][] = [
+    ["Aito forecast", e.accuracy],
+    ["Naive: same range as last month", e.naive_accuracy],
+    ["Always the most common range", e.base_accuracy],
+  ];
+  return (
+    <>
+      <table className="recent-table" style={{ width: "100%", fontSize: 13 }}>
+        <tbody>
+          {rows.map(([label, value], i) => (
+            <tr key={label}>
+              <td style={{ fontWeight: i === 0 ? 600 : 400 }}>{label}</td>
+              <td style={{ textAlign: "right", fontWeight: i === 0 ? 600 : 400 }}>
+                {Math.round(value * 100)}%
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div className="card-sub" style={{ lineHeight: 1.6, marginTop: 8 }}>
+        {e.method} {e.n} test rows. Interim metric: the next step scores the
+        table's unit forecast directly, by its error against the naive forecast.
+      </div>
+    </>
+  );
 }

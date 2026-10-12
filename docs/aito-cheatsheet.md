@@ -466,6 +466,35 @@ still redundant, but the engineering doesn't hurt anything.
   `"name": {"$get": "name"}` (returns 400). Plain equality `where`
   columns use the unwrapped form.
 
+### Choosing the held-out rows: `test` and `train`
+
+- **Random rows:** `"test": {"$sample": {"n": 200, "seed": 0}}`. Never
+  `testSource.limit`, which takes the HEAD of the table. Ordered
+  tables make the head unrepresentative (here it turned a working
+  model into "accuracy 0.06, baseline 0.0").
+- **Time series:** hold out the latest period and train on the rest.
+  Otherwise the model learns from a SKU's later months while predicting
+  an earlier one:
+
+  ```json
+  {"train": {"month": {"$not": "2026-04"}},
+   "test":  {"month": "2026-04"},
+   "evaluate": {"from": "monthly_sales", "where": {…}, "predict": "units_bucket"},
+   "select": ["accuracy", "baseAccuracy", "n"]}
+  ```
+
+  `train` is honoured: training on one old month changes the score
+  on the same test rows (`tests/test_aito_check.py` pins it). Leave
+  the time column itself out of `where`. The test month is a value no
+  training row has, so it carries no evidence.
+- **Numeric targets:** the API spec documents `_evaluate` over
+  `estimate` (`select: ["mae", "rmse", "r2"]`), but v2.10.3 rejects it
+  on `/api/v1` and `/api/v2` alike with 400 "missing
+  'evaluate.predict'". Until it lands, bucket the number into ranges
+  and `predict` the range. Don't score `_estimate` against rows
+  still in the table: `_estimate` has no train filter, so a
+  held-out row informs its own forecast.
+
 ---
 
 ## Reading a `_relate` hit — one shape on v1 and v2

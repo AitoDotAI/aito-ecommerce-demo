@@ -11,10 +11,13 @@ Three blocks per request:
                        a forecast + suggested reorder hint
   2. Seasonality    — `_relate` over `(season, category)` showing
                        which categories peak in which season
-  3. Accuracy       — one `_evaluate units_sold` over a 300-row
-                       held-out monthly_sales sample
+  3. Accuracy       — a time-split `_evaluate`, shown next to the
+                       naive "same as last month" forecast
+                       (see `demand_evaluation.py`)
 
-Cached 30 min. The 25 parallel `_predict` calls are the hot path.
+A failed Aito call raises: the endpoint answers 502 rather than a
+page of zero forecasts. Cached 30 min. The 25 parallel `_estimate`
+calls are the hot path.
 """
 
 from __future__ import annotations
@@ -24,11 +27,14 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, asdict
 
 from src.aito_client import AitoClient
+from src.aito_compat import related_value
 from src import cache
-from src.why_processor import process_estimate_why
+from src.demand_evaluation import EvalSummary, evaluate_demand
+from src.demand_forecast import (
+    FORECAST_MONTH, LATEST_MONTH, forecast_units, forecast_where, last_month_units,
+)
 
 
-FORECAST_MONTH = "2026-05"   # the month we predict for
 TOP_N = 25
 
 
@@ -59,14 +65,6 @@ class SeasonRow:
     p_overall: float
 
 
-@dataclass(frozen=True)
-class EvalSummary:
-    accuracy: float
-    base_accuracy: float
-    accuracy_gain_pp: float
-    n: int
-
-
 @dataclass
 class DemandResponse:
     forecast_month: str
@@ -88,13 +86,6 @@ class DemandResponse:
 
 
 # ── Helpers ───────────────────────────────────────────────────────
-
-
-_SEASON_BY_MONTH = {
-    1: "winter", 2: "winter", 3: "spring", 4: "spring",
-    5: "spring", 6: "summer", 7: "summer", 8: "summer",
-    9: "autumn", 10: "autumn", 11: "autumn", 12: "winter",
-}
 
 
 def _fetch_sales(client: AitoClient) -> list[dict]:
@@ -130,45 +121,6 @@ def _fetch_products(client: AitoClient) -> dict[str, dict]:
     return out
 
 
-def _estimate_units(client: AitoClient, sku: str, recent: dict, month: str) -> tuple[int, dict | None]:
-    """`_estimate units_sold` for one SKU + month. Returns the
-    expected units (rounded) and the popover-shaped why payload.
-
-    Switched from `_predict` to `_estimate` because the question is
-    "what's the expected number of units" (continuous regression),
-    not "what's the most-probable integer count" (discrete
-    classification). `_estimate` returns a single mean; `_predict`
-    on an Int column returns ranked specific values with low per-
-    value probabilities.
-
-    See aito-demo's `src/12-price-estimation.js` for the canonical
-    `_estimate` pattern this mirrors.
-    """
-    month_int = int(month.split("-")[1])
-    where = {
-        "product_sku": sku,
-        "month":       month,
-        "pet_type":    recent.get("pet_type", ""),
-        "category":    recent.get("category", ""),
-        "brand":       recent.get("brand", ""),
-        "season":      _SEASON_BY_MONTH[month_int],
-    }
-    try:
-        res = client.estimate("monthly_sales", where=where,
-                              estimate_field="units_sold")
-    except Exception:
-        return 0, None
-    estimate = res.get("estimate")
-    if estimate is None:
-        return 0, None
-    units = max(0, int(round(float(estimate))))
-    why = process_estimate_why(
-        res.get("why"), float(estimate),
-        field_label="units_sold",
-    )
-    return units, why
-
-
 def _seasonality(client: AitoClient) -> list[SeasonRow]:
     """`_relate` per season — which categories over-index in each
     season? Parallel calls: spring / summer / autumn / winter.
@@ -176,15 +128,12 @@ def _seasonality(client: AitoClient) -> list[SeasonRow]:
     seasons = ["spring", "summer", "autumn", "winter"]
 
     def fetch(season: str) -> tuple[str, dict]:
-        try:
-            res = client.relate(
-                table="monthly_sales",
-                where={"season": season},
-                relate_field="category",
-                limit=8,
-            )
-        except Exception:
-            return season, {}
+        res = client.relate(
+            table="monthly_sales",
+            where={"season": season},
+            relate_field="category",
+            limit=8,
+        )
         return season, res
 
     with ThreadPoolExecutor(max_workers=4) as pool:
@@ -193,10 +142,7 @@ def _seasonality(client: AitoClient) -> list[SeasonRow]:
     rows: list[SeasonRow] = []
     for season, res in results:
         for hit in res.get("hits", []):
-            rel = hit.get("related", {}).get("category", {})
-            value = rel.get("$has") if isinstance(rel, dict) else None
-            if value is None:
-                continue
+            value = related_value(hit, "category")
             lift = float(hit.get("lift", 0))
             if abs(lift - 1.0) < 0.08:
                 continue
@@ -213,35 +159,6 @@ def _seasonality(client: AitoClient) -> list[SeasonRow]:
             ))
     rows.sort(key=lambda r: -abs(r.lift - 1.0))
     return rows[:12]
-
-
-def _evaluate_demand(client: AitoClient) -> EvalSummary:
-    where = {
-        "product_sku": {"$get": "product_sku"},
-        "month":       {"$get": "month"},
-        "pet_type":    {"$get": "pet_type"},
-        "category":    {"$get": "category"},
-        "brand":       {"$get": "brand"},
-        "season":      {"$get": "season"},
-    }
-    try:
-        res = client.evaluate(
-            table="monthly_sales",
-            where=where,
-            predict_field="units_sold",
-            test_n=300,
-        )
-    except Exception:
-        return EvalSummary(0.0, 0.0, 0.0, 0)
-    accuracy = float(res.get("accuracy", 0) or 0)
-    base = float(res.get("baseAccuracy", 0) or 0)
-    gain = float(res.get("accuracyGain", accuracy - base) or 0)
-    return EvalSummary(
-        accuracy=round(accuracy, 4),
-        base_accuracy=round(base, 4),
-        accuracy_gain_pp=round(gain * 100, 2),
-        n=int(res.get("n", 0)),
-    )
 
 
 # ── Public entry point ─────────────────────────────────────────────
@@ -268,54 +185,39 @@ def get_demand(
 
     # Sort SKUs by average monthly units (descending) — that's the
     # top-movers list.
-    sku_stats: list[tuple[str, float, int, dict]] = []
-    for sku, rows in by_sku.items():
-        avg = sum(int(r.get("units_sold", 0)) for r in rows) / len(rows)
-        latest = max(rows, key=lambda r: r["month"])
-        last_units = int(latest.get("units_sold", 0))
-        sku_stats.append((sku, avg, last_units, latest))
-    sku_stats.sort(key=lambda t: -t[1])
-    sku_stats = sku_stats[:top_n]
+    movers = sorted(by_sku.items(),
+                    key=lambda item: -sum(r["units_sold"] for r in item[1]) / len(item[1]))[:top_n]
 
     # Parallel _estimate for next month per SKU.
-    def estimate_one(t):
-        sku, avg, last_units, latest = t
-        units, why = _estimate_units(client, sku, latest, FORECAST_MONTH)
-        return sku, avg, last_units, latest, units, why
-
     with ThreadPoolExecutor(max_workers=8) as pool:
-        scored = list(pool.map(estimate_one, sku_stats))
+        forecasts = list(pool.map(lambda item: forecast_units(client, *item), movers))
 
     top_movers: list[TopMover] = []
-    for sku, avg, last_units, latest, forecast_units, why in scored:
-        prod = products.get(sku, {})
+    for (sku, rows), (units, why) in zip(movers, forecasts):
+        latest = max(rows, key=lambda r: r["month"])
         top_movers.append(TopMover(
             sku=sku,
-            name=prod.get("name", sku),
-            pet_type=latest.get("pet_type", ""),
-            category=latest.get("category", ""),
-            avg_monthly_units=int(round(avg)),
-            last_month_units=last_units,
-            forecast_units=int(forecast_units),
+            name=products[sku]["name"],
+            pet_type=latest["pet_type"],
+            category=latest["category"],
+            avg_monthly_units=round(sum(r["units_sold"] for r in rows) / len(rows)),
+            last_month_units=last_month_units(rows),
+            forecast_units=units,
             forecast_p=0.0,   # _estimate returns expected value, not a probability
             why_explanation=why,
         ))
 
     seasonality = _seasonality(client)
-    evaluation = _evaluate_demand(client)
+    evaluation = evaluate_demand(client, LATEST_MONTH)
 
     elapsed = int((time.perf_counter() - started) * 1000)
 
+    # The body actually sent for the first top mover, not a lookalike.
+    first_sku, first_rows = movers[0]
     sample_body = {
         "from": "monthly_sales",
-        "where": {
-            "product_sku": "<sku>",
-            "month":       FORECAST_MONTH,
-            "pet_type":    "<from monthly_sales row>",
-            "category":    "<from monthly_sales row>",
-            "brand":       "<from monthly_sales row>",
-            "season":      "spring",
-        },
+        "where": forecast_where(first_sku, max(first_rows, key=lambda r: r["month"]),
+                                last_month_units(first_rows)),
         "estimate": "units_sold",
         "select":   ["estimate", "why"],
     }

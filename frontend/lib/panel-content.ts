@@ -285,13 +285,14 @@ export function demandPanel(): AitoPanelConfig {
       `from the <code style="color:var(--aito-teal);">monthly_sales</code> panel — ` +
       `expected-value regression (K-NN under the hood), not most-probable-integer ` +
       `prediction. Seasonality via parallel <code style="color:var(--aito-teal);">_relate</code> ` +
-      `over (season, category). Held-out accuracy via <code style="color:var(--aito-teal);">_evaluate</code>.`,
+      `over (season, category). Accuracy via a time-split <code style="color:var(--aito-teal);">_evaluate</code>, ` +
+      `shown next to the naive "same as last month" forecast.`,
     query:
 `${k('"estimate"')}: {
   ${n('"from"')}: ${s('"monthly_sales"')},
   ${n('"where"')}: {
     ${n('"product_sku"')}: ${s('"SKU-PT-0001"')},
-    ${n('"month"')}: ${s('"2026-05"')},
+    ${n('"units_last_month"')}: ${s('14')},
     ${n('"pet_type"')}: ${s('"dog"')},
     ${n('"category"')}: ${s('"dry-food"')},
     ${n('"season"')}: ${s('"spring"')}

@@ -4,7 +4,7 @@
 
 *KPI strip with critical / overstock counts + tied capital € +
 revenue at risk € · reorder queue ranked by revenue at risk, each
-row scored by `_predict units_sold` for next month · overstock
+row scored by `_estimate units_sold` for next month · overstock
 list with tied-capital figures. The merchandiser's daily
 dashboard.*
 
@@ -20,7 +20,7 @@ Three blocks per page load:
 
 1. **KPI strip** — total SKUs / critical / overstock / tied
    capital € / revenue at risk €
-2. **Reorder queue** — critical SKUs deep-scored with `_predict
+2. **Reorder queue** — critical SKUs deep-scored with `_estimate
    units_sold`, sorted by revenue at risk descending
 3. **Overstock list** — top tied-capital SKUs with months-of-supply
 
@@ -39,26 +39,25 @@ def _band(current, reorder_point):
 Pure arithmetic; runs over the fetched `inventory` table rows
 without any Aito calls.
 
-### Reorder queue — `_predict` per critical SKU
+### Reorder queue — `_estimate` per critical SKU
 
 ```python
-# src/inventory_service.py — _predict_demand()
+# src/demand_forecast.py — forecast_units(), shared with Demand
 where = {
-    "product_sku": sku,
-    "month":       "2026-05",        # next month
-    "pet_type":    recent["pet_type"],
-    "category":    recent["category"],
-    "brand":       recent["brand"],
-    "season":      "spring",
+    "product_sku":      sku,
+    "units_last_month": 14,            # sales in the latest month; 0 if none
+    "pet_type":         recent["pet_type"],
+    "category":         recent["category"],
+    "brand":            recent["brand"],
+    "season":           "spring",      # the forecast month's season
 }
-res = client.predict("monthly_sales", where=where,
-                     predict_field="units_sold", limit=3)
-top = res["hits"][0]
-forecast_units = int(top["feature"])
+res = client.estimate("monthly_sales", where=where, estimate_field="units_sold")
+forecast_units = round(res["estimate"])
 ```
 
-Same query body Demand Forecast runs. Inventory consumes the
-forecast as input.
+The same function Demand Forecast calls, so both pages agree on
+every SKU. The forecast month itself is not in `where`: no training
+row has it, so it would carry no evidence (ADR 0014 §Correction).
 
 ### Revenue at risk
 
@@ -111,8 +110,8 @@ season=spring (lift 0.95×)…". The decision is auditable.
 
 ### 3. Reuses Demand's query shape
 
-Same `_predict units_sold` body, just filtered to the critical
-band. Cache keys differ; the underlying Aito work overlaps. A
+Same `_estimate units_sold` body (`src/demand_forecast.py`), just
+filtered to the critical band. Cache keys differ; the underlying Aito work overlaps. A
 warm Demand cache makes Inventory cold-loads faster (the L2
 Aito-table layer holds the predict results).
 
