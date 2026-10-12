@@ -183,7 +183,7 @@ export function productInsightsPanel(): AitoPanelConfig {
       `One product, live. <code style="color:var(--aito-teal);">_relate</code> over its ` +
       `order lines shows which customer profiles buy it more than average; ` +
       `the funnel, surfaces and reviews are counts in one ` +
-      `<code style="color:var(--aito-teal);">_batch</code>. The query below is the one sent.`,
+      `<code style="color:var(--aito-teal);">_batch</code>. The query below is one of the six <code style="color:var(--aito-teal);">_relate</code> bodies sent.`,
     query: "",
     links: LEARN_MORE_LINKS,
   };

@@ -35,7 +35,7 @@ from src.basket_rules_service import get_basket_rules
 from src.filling_service import get_filling
 from src.eval_service import run_evaluation
 from src.analytics_service import get_analytics
-from src.product_insights_service import UnknownProductError, get_product_insights
+from src.product_insights_service import get_product_insights
 from src.pattern_service import get_patterns
 from src.feedback_service import get_feedback
 from src.lookup_errors import UnknownProductError, UnknownReviewError

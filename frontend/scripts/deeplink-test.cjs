@@ -115,6 +115,7 @@ function stubResponse(apiPath, params) {
                last_query: STUB_QUERY, last_response_ms: 1 };
     }
     case "/api/product-insights": {
+      if (params.get("sku") === UNKNOWN.sku) return notFound(`No product ${UNKNOWN.sku} in the catalogue`);
       const sku = params.get("sku") ?? OPTIONS.sku[0];
       return { product: { sku, name: `Product ${sku}`, brand: "PetNord", pet_type: "dog", category: "treats", price_eur: 3 },
                funnel: [{ step: "impressions", count: 10 }, { step: "clicked", count: 5 },
@@ -288,6 +289,7 @@ async function main() {
 
     // A link to an id that no longer exists says so, and offers the way back.
     for (const [view, key, api, label] of [["product-filling", "sku", "/api/product-filling", "Show the default product"],
+                                           ["product-insights", "sku", "/api/product-insights", "Show the default product"],
                                            ["feedback", "review", "/api/feedback", "Show the default review"]]) {
       const { context, page, requests } = await openFresh(browser, `${BASE}/${view}/?${key}=${UNKNOWN[key]}`);
       const notice = page.getByText(`No ${key === "sku" ? "product" : "review"} ${UNKNOWN[key]}`);

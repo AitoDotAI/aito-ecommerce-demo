@@ -24,6 +24,7 @@ from pathlib import Path
 
 from src import cache
 from src.aito_client import AitoClient, AitoError
+from src.lookup_errors import UnknownProductError
 from src.aito_compat import related_value
 from src.bought_together_service import ANCHORS
 
@@ -48,9 +49,12 @@ BUYER_FIELDS = [
     "customer_health_focus", "customer_treat_affinity", "customer_brand_loyalty",
 ]
 
-
-class UnknownProductError(LookupError):
-    """The requested SKU isn't in the catalog."""
+# A lift on fewer lines than this is shown, but ranked after the rest:
+# Aito smooths thin counts toward 1, and one line is not a finding.
+MIN_SUPPORT_LINES = 10
+# Higher than any customer column's number of values, so a full page of
+# hits means values may have been cut off.
+RELATE_LIMIT = 50
 
 
 @dataclass(frozen=True)
@@ -144,7 +148,9 @@ def _counts(client: AitoClient, sku: str) -> tuple[list[FunnelStep], list[Surfac
 
 def _buyer_rows(client: AitoClient, sku: str, field: str) -> list[BuyerRow]:
     body = buyers_relate_body(sku, field)
-    hits = client.relate(table=body["from"], where=body["where"], relate_field=field, limit=10)["hits"]
+    hits = client.relate(table=body["from"], where=body["where"], relate_field=field, limit=RELATE_LIMIT)["hits"]
+    if len(hits) == RELATE_LIMIT:
+        raise AitoError(f"{sku}: _relate {field} returned {RELATE_LIMIT} values, so some may have been cut off")
     return [
         BuyerRow(
             field=field,
@@ -183,7 +189,7 @@ def get_product_insights(client: AitoClient, sku: str | None = None) -> ProductI
     catalog = load_catalog()
     sku = sku or DEFAULT_SKU
     if sku not in catalog:
-        raise UnknownProductError(f"unknown product {sku!r}")
+        raise UnknownProductError(f"No product {sku} in the catalogue")
 
     cache_key = f"product-insights:{sku}"
     cached = cache.get(cache_key)
@@ -203,7 +209,7 @@ def get_product_insights(client: AitoClient, sku: str | None = None) -> ProductI
         product={k: product[k] for k in ("sku", "name", "brand", "pet_type", "category", "price_eur")},
         funnel=funnel,
         surfaces=surfaces,
-        buyers=sorted(buyers, key=lambda b: abs(b.lift - 1.0), reverse=True),
+        buyers=sorted(buyers, key=lambda b: (b.lines < MIN_SUPPORT_LINES, -abs(b.lift - 1.0))),
         monthly=monthly,
         ratings=ratings,
         sentiments=sentiments,

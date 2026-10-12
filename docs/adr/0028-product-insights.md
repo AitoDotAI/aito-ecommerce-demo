@@ -85,7 +85,7 @@ order lines and 18 reviews on master.
   each rate is labelled with the step it divides by.
 - Every lift in "Who buys it" shows its counts: the product's lines with
   that profile, and all of its lines.
-- The query pane shows the body that was sent.
+- The query pane shows one of the `_relate` bodies that were sent.
 - `./do aito-check` asserts that the funnel is monotone and that the
   relate's `fCondition` equals the product's order-line count.
 

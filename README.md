@@ -223,7 +223,7 @@ Pick any product. The page shows:
 - the customer profiles that buy it more or less than average, each with its counts;
 - units per month and its reviews.
 
-The ~20 counts go in one `_batch`. The `_relate` calls run in parallel, and the query pane shows the one sent. Puppy Cheese Treats: dog owners 1.42× (99 of 117 lines).
+The ~20 counts go in one `_batch`. The `_relate` calls run in parallel, and the query pane shows one of the `_relate` bodies sent (the customer-segment one). Puppy Cheese Treats: dog owners 1.42× (99 of 117 lines).
 [→ Implementation](src/product_insights_service.py) | [Use case guide](docs/use-cases/17-product-insights.md) | [ADR](docs/adr/0028-product-insights.md)
 
 ### 7. 🔗 Pattern Explorer — the full lift band

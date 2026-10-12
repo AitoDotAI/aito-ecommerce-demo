@@ -1,12 +1,13 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
-import { apiFetch, fmtEur } from "@/lib/api";
+import { ApiError, apiFetch, fmtEur } from "@/lib/api";
 import { highlightQuery } from "@/lib/highlight-query";
 import { productInsightsPanel } from "@/lib/panel-content";
 import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
+import NotFoundNotice from "@/components/shell/NotFoundNotice";
 import { useUrlState } from "@/lib/use-url-state";
 import type { ProductInsightsBuyerRow, ProductInsightsResponse } from "@/lib/types";
 
@@ -28,24 +29,31 @@ function ProductInsightsView() {
   const [sku, setSku] = useUrlState("sku", "");
   const [data, setData] = useState<ProductInsightsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  const fetchData = useCallback(async (forSku: string) => {
-    setError(null);
-    setData(null);
-    try {
-      const res = await apiFetch<ProductInsightsResponse>(
-        forSku ? `/api/product-insights?sku=${encodeURIComponent(forSku)}` : "/api/product-insights",
-      );
-      setData(res);
-      setPanel({ ...productInsightsPanel(), query: highlightQuery(res.last_query.body) });
-    } catch (e) {
-      setError(String(e));
-    }
-  }, [setPanel]);
+  const [notFound, setNotFound] = useState<string | null>(null);
+  // Kept across a failed load, so the picker still works after a bad link.
+  const [candidates, setCandidates] = useState<ProductInsightsResponse["candidate_products"]>([]);
 
   useEffect(() => {
-    fetchData(sku);
-  }, [fetchData, sku]);
+    // Picking quickly can leave an older request finishing last; only the
+    // request for the product now in the URL may update the page.
+    let current = true;
+    setError(null);
+    setNotFound(null);
+    setData(null);
+    apiFetch<ProductInsightsResponse>(
+      sku ? `/api/product-insights?sku=${encodeURIComponent(sku)}` : "/api/product-insights",
+    ).then((res) => {
+      if (!current) return;
+      setData(res);
+      setCandidates(res.candidate_products);
+      setPanel({ ...productInsightsPanel(), query: highlightQuery(res.last_query.body) });
+    }, (e) => {
+      if (!current) return;
+      if (e instanceof ApiError && e.status === 404) setNotFound(e.serverMessage ?? e.message);
+      else setError(String(e));
+    });
+    return () => { current = false; };
+  }, [sku, setPanel]);
 
   return (
     <div className="fade-in">
@@ -68,7 +76,7 @@ function ProductInsightsView() {
           value={sku || data?.product.sku || ""}
           onChange={(e) => setSku(e.target.value)}
         >
-          {groupByCategory(data?.candidate_products ?? []).map(([group, products]) => (
+          {groupByCategory(candidates).map(([group, products]) => (
             <optgroup key={group} label={group}>
               {products.map((p) => <option key={p.sku} value={p.sku}>{p.name}</option>)}
             </optgroup>
@@ -81,11 +89,15 @@ function ProductInsightsView() {
         )}
       </div>
 
+      {notFound && (
+        <NotFoundNotice message={notFound} resetLabel="Show the default product" onReset={() => setSku("")} />
+      )}
+
       {error && (
         <ErrorState title="Couldn't load Product Insights" message={`Aito returned an error. ${error}`} command="./do load-data" />
       )}
 
-      {!error && !data && <div className="card" style={{ height: 240, background: "var(--border-light)" }} />}
+      {!error && !notFound && !data && <div className="card" style={{ height: 240, background: "var(--border-light)" }} />}
 
       {!error && data && (
         <>
@@ -136,7 +148,7 @@ function SurfacesCard({ surfaces }: { surfaces: ProductInsightsResponse["surface
 
 function BuyersCard({ buyers }: { buyers: ProductInsightsBuyerRow[] }) {
   return (
-    <Card title="Who buys it" sub="Profiles over- or under-represented in its order lines vs all order lines">
+    <Card title="Who buys it" sub="Profiles over- or under-represented in its order lines vs all order lines. Order lines include purchases with no tracked impression, so they can outnumber the funnel's purchases.">
       {buyers.slice(0, 8).map((b) => (
         <div key={`${b.field}-${b.value}`} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", fontSize: 13 }}>
           <span>
@@ -144,7 +156,7 @@ function BuyersCard({ buyers }: { buyers: ProductInsightsBuyerRow[] }) {
             {" = "}{b.value.replace(/_/g, " ")}
             <span style={{ color: "var(--text-muted)", fontSize: 11 }}> · {b.lines} of {b.lines_total} lines</span>
           </span>
-          <strong style={{ color: liftColor(b.lift) }}>{b.lift.toFixed(2)}×</strong>
+          <strong style={{ color: liftColor(b) }}>{b.lift.toFixed(2)}×</strong>
         </div>
       ))}
     </Card>
@@ -207,10 +219,11 @@ function Bar({ label, value, share, note }: { label: string; value: number; shar
   );
 }
 
-// Within ±0.15 of 1 is "no difference", the same band the Churn drivers use.
-function liftColor(lift: number): string {
-  if (Math.abs(lift - 1) < 0.15) return "var(--text-muted)";
-  return lift > 1 ? "var(--green)" : "var(--red)";
+// Within ±0.15 of 1 is "no difference", the same band the Churn drivers
+// use; so is a lift on fewer than 10 lines (the service ranks those last).
+function liftColor(b: ProductInsightsBuyerRow): string {
+  if (Math.abs(b.lift - 1) < 0.15 || b.lines < 10) return "var(--text-muted)";
+  return b.lift > 1 ? "var(--green)" : "var(--red)";
 }
 
 function pct(part: number, whole: number): string {

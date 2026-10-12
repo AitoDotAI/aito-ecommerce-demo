@@ -13,9 +13,8 @@ import pytest
 
 from src import cache
 from src.aito_client import AitoError
-from src.product_insights_service import (
-    BUYER_FIELDS, DEFAULT_SKU, UnknownProductError, get_product_insights,
-)
+from src.lookup_errors import UnknownProductError
+from src.product_insights_service import BUYER_FIELDS, DEFAULT_SKU, get_product_insights
 
 
 @pytest.fixture(autouse=True)
@@ -109,8 +108,9 @@ def test_who_buys_it_relates_each_customer_column_over_the_products_order_lines(
     assert sorted(r["relate"] for r in client.relates) == sorted(BUYER_FIELDS)
     assert all(r == {"from": "order_lines", "where": {"product_sku": DEFAULT_SKU}, "relate": r["relate"]}
                for r in client.relates)
-    # Strongest effects first, each with the counts behind it.
-    cat, dog = result.buyers[0], result.buyers[1]
+    # Each lift comes with the counts behind it.
+    segment = {b.value: b for b in result.buyers if b.field == "customer_segment"}
+    cat, dog = segment["cat_owner"], segment["dog_owner"]
     assert (cat.value, cat.lift, cat.lines, cat.lines_total) == ("cat_owner", 0.52, 1, 117)
     assert (dog.value, dog.lift, dog.lines) == ("dog_owner", 1.42, 99)
 
@@ -152,3 +152,20 @@ def test_links_to_bought_together_for_the_products_category():
     result = get_product_insights(FakeClient())
 
     assert result.bought_together_anchor is None
+
+
+def test_a_lift_on_a_handful_of_lines_ranks_below_well_supported_lifts():
+    # cat_owner is 0.52× on 1 of 117 lines: further from 1 than dog_owner's
+    # 1.42× on 99 lines, but one line is not a finding. It goes after.
+    buyers = get_product_insights(FakeClient()).buyers
+
+    assert [b.value for b in buyers if b.field == "customer_segment"] == ["dog_owner", "cat_owner"]
+
+
+def test_a_relate_that_fills_its_limit_fails_instead_of_dropping_values():
+    class FullPageClient(FakeClient):
+        def relate(self, *, table, where, relate_field, limit):
+            return {"hits": [_hit(relate_field, f"v{i}", 1.0, 5) for i in range(limit)]}
+
+    with pytest.raises(AitoError, match="may have been cut off"):
+        get_product_insights(FullPageClient())
