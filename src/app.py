@@ -45,6 +45,7 @@ from src.cart_completion_service import get_cart_completion
 from src.inventory_service import get_inventory
 from src.markdown_service import get_markdowns
 from src.price_service import get_prices, get_price_detail
+from src.price_what_if import get_price_what_if
 from src.winback_service import get_winback
 
 
@@ -501,6 +502,23 @@ def price_endpoint():
     discount band ↔ category. See ADR 0016."""
     try:
         return get_prices(aito).to_dict()
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/price/what-if")
+def price_what_if_endpoint(sku: str, price: float):
+    """Units, revenue and profit next month at `price`, with the factors
+    behind the estimate (regression `_estimate`). See ADR 0029."""
+    try:
+        return get_price_what_if(aito, sku, price).to_dict()
+    except UnknownProductError as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
+    except ValueError as exc:
+        return JSONResponse(status_code=400, content={"error": str(exc)})
     except AitoError as exc:
         return JSONResponse(
             status_code=502,

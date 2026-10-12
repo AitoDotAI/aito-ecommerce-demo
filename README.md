@@ -366,7 +366,13 @@ prices within ±10 % of its average selling price. Three parallel
 are discounted more than others; on today's data none is, so that card
 stays hidden (ADR 0016 amendment). The `_relate`-via-banding pattern
 transfers to any continuous column.
-[→ Implementation](src/price_service.py) | [Use case guide](docs/use-cases/13-price.md) | [ADR](docs/adr/0016-price.md)
+
+**What if:** click a curve point or drag the slider to see next month's
+units, revenue and profit at that price, and why: one regression
+`_estimate` explains the estimate as a typical month times one factor
+per fact ("sold 23 last month ×2.98", "price €4.68 ×0.48"), and the
+rows multiply out to it exactly. The SKU and price are in the URL.
+[→ Implementation](src/price_service.py) · [What-if](src/price_what_if.py) | [Use case guide](docs/use-cases/13-price.md) | [ADR](docs/adr/0016-price.md) · [ADR 0029](docs/adr/0029-price-what-if.md)
 
 ### 13. ✂️ Markdown — Inventory + Demand + Price, one workflow
 

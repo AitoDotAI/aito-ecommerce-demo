@@ -1,12 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
 import { apiFetch, fmtEur } from "@/lib/api";
 import { pricePanel } from "@/lib/panel-content";
 import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
 import PriceScatterChart from "@/components/prediction/PriceScatterChart";
+import PriceWhatIf from "@/components/prediction/PriceWhatIf";
+import { useSetUrlParams, useUrlState } from "@/lib/use-url-state";
 import type {
   PriceResponse, PriceFairBandRow, PriceSweetSpotRow, PriceDetail,
 } from "@/lib/types";
@@ -17,7 +19,7 @@ import type {
  * + sweet-spot `_relate` over discount band ↔ category. See
  * `docs/adr/0016-price.md`.
  */
-export default function PricePage() {
+function PriceView() {
   usePagePanel(pricePanel(), {
     title: "Price",
     description:
@@ -31,8 +33,20 @@ export default function PricePage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [detail, setDetail] = useState<PriceDetail | null>(null);
-  const [detailLoading, setDetailLoading] = useState(false);
-  const [selectedSku, setSelectedSku] = useState<string | null>(null);
+  const [detailError, setDetailError] = useState<string | null>(null);
+  // The SKU and the what-if price live in the URL, so a link opens the same
+  // product at the same price. No SKU means the table's first row.
+  const [skuParam] = useUrlState("sku", "");
+  const [priceParam, setPriceParam] = useUrlState("price", "");
+  const setUrl = useSetUrlParams();
+  const selectedSku = skuParam || data?.fair_bands[0]?.sku || null;
+  const setSelectedSku = (sku: string) => setUrl({ sku, price: null });
+  const whatIfPrice = priceParam ? Number(priceParam) : null;
+  const pickPrice = useCallback((p: number) => setPriceParam(p.toFixed(2)), [setPriceParam]);
+  const showQuery = useCallback(
+    (body: Record<string, unknown>) => setPanel({ ...pricePanel(), query: highlightQuery(body) }),
+    [setPanel],
+  );
   const hasSweetSpots = !loading && data !== null && data.sweet_spots.length > 0;
 
   const fetchData = useCallback(async () => {
@@ -46,11 +60,6 @@ export default function PricePage() {
         ...pricePanel(),
         query: highlightQuery(res.last_query.body),
       });
-      // Default the chart to the first fair-band row (typically a
-      // surfaced outlier).
-      if (res.fair_bands.length > 0 && !selectedSku) {
-        setSelectedSku(res.fair_bands[0].sku);
-      }
     } catch (e) {
       setError(String(e));
     } finally {
@@ -64,7 +73,7 @@ export default function PricePage() {
     // immediately on click instead of the stale chart lingering
     // until the new _estimate returns.
     setDetail(null);
-    setDetailLoading(true);
+    setDetailError(null);
     try {
       const res = await apiFetch<PriceDetail>(
         `/api/price/detail?sku=${encodeURIComponent(sku)}`,
@@ -75,10 +84,8 @@ export default function PricePage() {
         ...pricePanel(),
         query: highlightQuery(res.last_query.body),
       });
-    } catch {
-      setDetail(null);
-    } finally {
-      setDetailLoading(false);
+    } catch (e) {
+      setDetailError(String(e));
     }
   }, [setPanel]);
 
@@ -162,7 +169,12 @@ export default function PricePage() {
                 Click a SKU in the fair-band table to load its demand curve.
               </div>
             )}
-            {selectedFair && !detailMatches && (
+            {selectedFair && detailError && (
+              <div className="card-sub" style={{ color: "var(--red)" }}>
+                Couldn&apos;t estimate the demand curve: {detailError}
+              </div>
+            )}
+            {selectedFair && !detailMatches && !detailError && (
               <div
                 aria-busy="true"
                 style={{
@@ -179,10 +191,14 @@ export default function PricePage() {
                 Estimating demand curve…
               </div>
             )}
-            {selectedFair && detailMatches && <PriceScatterChart detail={detail} />}
+            {selectedFair && detailMatches && <PriceScatterChart detail={detail} onPickPrice={pickPrice} />}
           </div>
         );
       })()}
+
+      {!error && detail && detail.sku === selectedSku && (
+        <PriceWhatIf detail={detail} price={whatIfPrice} onPrice={pickPrice} onQuery={showQuery} />
+      )}
 
       {/* The sweet-spots card is shown only when Aito finds a category
           that is discounted more or less than the rest; on today's data
@@ -329,6 +345,16 @@ function SweetSpotChip({ s }: { s: PriceSweetSpotRow }) {
   );
 }
 
+
+// The view reads its state from the URL (`useUrlState`), which the static
+// export only allows under a Suspense boundary.
+export default function PricePage() {
+  return (
+    <Suspense>
+      <PriceView />
+    </Suspense>
+  );
+}
 
 function highlightQuery(body: Record<string, unknown>): string {
   function fmt(value: unknown, indent: number): string {

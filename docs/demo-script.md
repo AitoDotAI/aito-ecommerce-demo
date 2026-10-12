@@ -195,8 +195,9 @@ Markdown's proposals lose margin on every row, and Win-back showed a
 raw purchase probability as a 96 % campaign response rate. The beats
 are in git history for when the views return. Demand Forecast and Cart
 Completion are hidden for the same reason and had no beat. Price is
-back (its demand curve now conditions on last month's units) and has no
-beat yet.
+back (its demand curve now conditions on last month's units). An
+optional beat there: drag the what-if price and watch the waterfall and
+the profit move (ADR 0029).
 
 ---
 

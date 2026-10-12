@@ -64,14 +64,17 @@ def price_where(sku: str, profile: dict, units_last_month: int, price_eur: float
 
 
 def units_at_price(client: AitoClient, sku: str, profile: dict,
-                   units_last_month: int, price_eur: float) -> float:
+                   units_last_month: int, price_eur: float, *, model: str | None = None) -> float:
     """Expected units next month if the SKU sells at `price_eur`.
 
     `profile` carries pet_type, category and brand: the SKU's latest
     monthly_sales row, or its products row when it has no sales history.
+    `model="regression"` asks Aito's linear model instead of k-NN; the
+    Price view uses it so its curve matches the what-if (ADR 0029).
     """
     where = price_where(sku, profile, units_last_month, price_eur)
-    res = client.estimate("monthly_sales", where=where, estimate_field="units_sold", with_why=False)
+    res = client.estimate("monthly_sales", where=where, estimate_field="units_sold",
+                          model=model, with_why=False)
     estimate = res.get("estimate")
     if estimate is None:
         raise AitoError(f"_estimate units_sold returned no estimate for {sku} at €{price_eur}: {res}")

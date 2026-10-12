@@ -418,7 +418,7 @@ def _curve_one(
     evidence as the Demand forecast (last month's units, not the unseen
     month), plus the price."""
     adjusted = round(base_price * (1.0 + pct / 100.0), 2)
-    units = units_at_price(client, sku, profile, units_last_month, adjusted)
+    units = units_at_price(client, sku, profile, units_last_month, adjusted, model="regression")
     return CurvePoint(
         price_eur=adjusted,
         units_sold=round(units, 2),
@@ -548,6 +548,7 @@ def get_price_detail(client: AitoClient, sku: str) -> PriceDetail | None:
         "from": "monthly_sales",
         "where": price_where(sku, profile, units_last_month, central_call.price_eur),
         "estimate": "units_sold",
+        "model": "regression",
     }
 
     resp = PriceDetail(
