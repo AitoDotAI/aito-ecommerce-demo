@@ -137,6 +137,16 @@ and are reported, not tuned:
 - **Signal 3** (Maija and Olli's top-5 pairs) fails on seed 7 because Maija
   buys only 4 distinct pairs there; the test assumes 5.
 
-### Aito checks
+### Aito checks, 2026-10-12, test env `shoppers` on shared (master untouched)
 
-*(not run yet: the next step is loading these fixtures into a non-master env)*
+The env was cloned from master and reloaded with these fixtures (238,451
+rows); the reloaded tables are on the v2 engine, and the new columns
+have their declared types (`units_last_month` is `Int`, not `Unknown`).
+All 23 earlier live checks pass on it.
+
+| # | result | notes |
+|:--|:--|:--|
+| A4 | **pass**: December treats and toys, summer grooming, each interval above 1 (toys 2.65×, treats 1.89×, grooming 3.76×) | The registered shape, `_relate` on `monthly_sales`, failed (intervals 0.73–0.84 at the low end). It can't work: `monthly_sales` has one row per SKU and month whatever it sold, so a category's share of rows doesn't move with the season. Re-run over `order_lines` (`order_id.month` in the season), which counts purchases. The same flaw makes Demand's seasonality panel empty on any data. |
+| A5 | **pass**: the 1–2 star band's interval is below 1 | |
+| A1 | **fail, twice** | Run 1: `where` on `product_category` doesn't filter `_recommend` candidates (only `product_sku.*` does), so both queries returned health and toy products: a query error. Run 2 (`product_sku.category`): 0 of 10 grain-free. Cause: the generator kept the rule in orders but not in impression purchases (1,444 rule-breaking purchases), a bug against S1's registration, fixed and impressions reloaded. Run 3: 1 of 10. Rule households saw 640 dog dry-food impressions, only 48 grain-free, and bought 3: too few for Aito to learn from. Stopped here for a decision (CLAUDE.md: two failed attempts). |
+| A2, A3, A6, A7 | not run | A2 needs a way to say what a customer owns before an order; A6 and A7 need the Smart Search changes. |

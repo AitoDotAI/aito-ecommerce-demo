@@ -3022,6 +3022,9 @@ def gen_impressions(
 
             for position, product in enumerate(shown):
                 odds = click_odds = 1.0
+                if not shoppers.keeps_diet_rule(product.name, product.pet_type, product.category,
+                                                customer.diet_rule):
+                    odds = 0.0   # a rule household looks, but never buys it (S1)
                 if shoppers.is_poorly_made(product.sku):
                     odds *= shoppers.POOR_CONVERSION_ODDS
                 if basket and shoppers.complements_basket(row_of[product.sku], basket):

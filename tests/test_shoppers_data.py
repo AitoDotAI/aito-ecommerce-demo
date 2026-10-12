@@ -58,6 +58,17 @@ def test_s1_diet_rule_households_only_ever_buy_food_that_keeps_the_rule(data):
     assert broken == [], broken[:5]
 
 
+def test_s1_diet_rule_households_never_buy_rule_breaking_food_from_an_impression(data, impressions):
+    products, *_ = data
+    broken = [
+        i["impression_id"] for i in impressions
+        if (rule := i.get("customer_diet_rule")) and i["purchased"]
+        and (p := products[i["product_sku"]])["pet_type"] in ("dog", "cat") and p["category"] in FOOD
+        and RULE_WORDS[rule] not in p["name"]
+    ]
+    assert broken == [], f"{len(broken)} rule-breaking purchases, e.g. {broken[:3]}"
+
+
 def test_s1_a_fifth_of_dog_and_cat_households_have_a_rule(data):
     _, customers, *_ = data
     households = [c for c in customers.values() if c["segment"] in ("dog_owner", "cat_owner", "multi_pet")]

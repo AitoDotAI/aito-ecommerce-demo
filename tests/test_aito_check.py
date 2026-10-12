@@ -399,3 +399,63 @@ def test_price_what_if_explains_the_estimate_with_price_as_a_factor(client):
     assert what_if.units >= 0
     assert "price_eur" in {f.field for f in what_if.factors}, what_if.factors
     assert what_if.units == centre.units_sold, (what_if.units, centre.units_sold)
+
+
+# ── ADR 0030: shoppers with a story (docs/verification/shoppers-data-prereg.md) ──
+
+
+def _keeps_grain_free(hit: dict) -> bool:
+    """A recommended product keeps a grain-free household's rule when it
+    is grain-free, or isn't dog or cat food at all (S1 covers food only)."""
+    food = hit.get("category") in ("dry-food", "wet-food") and hit.get("pet_type") in ("dog", "cat")
+    return not food or "Grain Free" in hit["name"]
+
+
+def test_a1_recommend_keeps_a_grain_free_households_rule(client):
+    """A1: with the rule in the `where`, ≥ 9 of the top 10 keep it; the same
+    query without the rule keeps it ≤ 7 times."""
+    # `product_sku.category` filters the candidates; the impression's own
+    # `product_category` would only be context (first run, 2026-10-12).
+    household = {"customer_segment": "dog_owner", "customer_diet_rule": "grain-free",
+                 "product_sku.category": "dry-food"}
+    without_rule = {k: v for k, v in household.items() if k != "customer_diet_rule"}
+
+    def kept(where: dict) -> int:
+        hits = client.recommend("impressions", where, "product_sku", {"purchased": True}, limit=10)["hits"]
+        assert len(hits) == 10, hits
+        return sum(map(_keeps_grain_free, hits))
+
+    assert kept(household) >= 9, kept(household)
+    assert kept(without_rule) <= 7, kept(without_rule)
+
+
+def _relate_interval(client, table: str, where: dict, field: str, value: str) -> tuple[float, float]:
+    from src.aito_compat import related_value
+    from src.price_bands import lift_interval
+
+    hits = client.relate(table=table, where=where, relate_field=field, limit=50)["hits"]
+    hit = next(h for h in hits if related_value(h, field) == value)
+    fs = hit["fs"]
+    return lift_interval(float(hit["lift"]), fs["fOnCondition"], fs["fCondition"], fs["f"], fs["n"])
+
+
+DECEMBERS = ["2024-12", "2025-12"]
+SUMMERS = ["2024-06", "2024-07", "2024-08", "2025-06", "2025-07", "2025-08"]
+
+
+@pytest.mark.parametrize("months, category", [(DECEMBERS, "treats"), (DECEMBERS, "toys"), (SUMMERS, "grooming")])
+def test_a4_the_season_lifts_its_categories(client, months, category):
+    """A4: the planted month × category cells have a lift whose 95 % interval
+    sits above 1. Related over order lines, which count what was bought;
+    monthly_sales has one row per SKU and month whatever it sold, so a
+    category's share of its rows can't move with the season."""
+    low, _ = _relate_interval(client, "order_lines", {"order_id.month": {"$or": months}},
+                              "product_sku.category", category)
+    assert low > 1, (months[0], category, low)
+
+
+def test_a5_the_lowest_rated_products_are_bought_less(client):
+    """A5: among purchased impressions, the 1–2 star band's lift has its
+    95 % interval below 1."""
+    _, high = _relate_interval(client, "impressions", {"purchased": True}, "product_sku.rating_band", "1-2")
+    assert high < 1, high
