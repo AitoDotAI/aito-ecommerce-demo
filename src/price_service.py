@@ -379,9 +379,8 @@ class PriceDetail:
 
 # Price adjustments for the demand curve, in order. Constrained to
 # ±10 % because the fixture's price observations span ±18 % at most
-# — probing beyond that range pushes Aito's K-NN into extrapolation
-# territory where the regression slope is steepest and least
-# reliable. The narrower range also keeps the chart honest: a 10 %
+# — probing beyond that range asks the regression model to
+# extrapolate, where its price slope is least supported by data. The narrower range also keeps the chart honest: a 10 %
 # move is the kind of pricing decision a retail manager would
 # actually consider.
 _CURVE_ADJUSTMENTS_PCT: list[int] = [-10, -7, -3, 0, 3, 7, 10]
@@ -418,7 +417,7 @@ def _curve_one(
     evidence as the Demand forecast (last month's units, not the unseen
     month), plus the price."""
     adjusted = round(base_price * (1.0 + pct / 100.0), 2)
-    units = units_at_price(client, sku, profile, units_last_month, adjusted)
+    units = units_at_price(client, sku, profile, units_last_month, adjusted, model="regression")
     return CurvePoint(
         price_eur=adjusted,
         units_sold=round(units, 2),
@@ -548,6 +547,7 @@ def get_price_detail(client: AitoClient, sku: str) -> PriceDetail | None:
         "from": "monthly_sales",
         "where": price_where(sku, profile, units_last_month, central_call.price_eur),
         "estimate": "units_sold",
+        "model": "regression",
     }
 
     resp = PriceDetail(

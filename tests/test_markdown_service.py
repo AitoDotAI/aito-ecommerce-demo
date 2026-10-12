@@ -37,7 +37,7 @@ class MarkdownAito:
                 "monthly_sales": [_sales("2026-03", 25), _sales(LATEST_MONTH, 18)]}[table]
         return {"hits": rows[offset:offset + limit], "total": len(rows)}
 
-    def estimate(self, table, where, estimate_field, with_why=True):
+    def estimate(self, table, where, estimate_field, model=None, with_why=True):
         self.estimate_wheres.append(where)
         return {"estimate": self.estimate_value}
 

@@ -36,3 +36,23 @@ export function useUrlState(key: string, fallback: string): [string, (next: stri
 
   return [value, set];
 }
+
+/**
+ * Change several URL keys in one history step: `{ sku: "X", price: null }`
+ * sets `sku` and removes `price`. Two `useUrlState` setters called in a row
+ * would each build on the URL as it was rendered, so the second would undo
+ * the first.
+ */
+export function useSetUrlParams(): (changes: Record<string, string | null>) => void {
+  const params = useSearchParams();
+  const pathname = usePathname();
+  return useCallback((changes: Record<string, string | null>) => {
+    const query = new URLSearchParams(params.toString());
+    for (const [key, next] of Object.entries(changes)) {
+      if (next === null) query.delete(key);
+      else query.set(key, next);
+    }
+    const qs = query.toString();
+    window.history.pushState(null, "", qs ? `${pathname}?${qs}` : pathname);
+  }, [params, pathname]);
+}

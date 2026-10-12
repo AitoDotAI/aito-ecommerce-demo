@@ -379,3 +379,23 @@ def test_match_on_a_text_column_matches_a_token_not_the_whole_value(client):
     whole_value = client.search("orders", where={"line_categories": "dog_wetfood"}, limit=0)["total"]
 
     assert token > whole_value > 0, (token, whole_value)
+
+
+# ── Price what-if: the regression model's why (ADR 0029) ─────────────
+
+
+def test_price_what_if_explains_the_estimate_with_price_as_a_factor(client):
+    """The waterfall's rows multiply out to the estimate (`waterfall` raises
+    otherwise), price is one of them, and the what-if agrees with the demand
+    curve's point at the same price, since both ask the regression model."""
+    from src.price_service import get_price_detail
+    from src.price_what_if import get_price_what_if
+
+    detail = get_price_detail(client, "SKU-PT-0133")
+    centre = next(p for p in detail.curve if p.adjustment_pct == 0)
+
+    what_if = get_price_what_if(client, "SKU-PT-0133", centre.price_eur)
+
+    assert what_if.units >= 0
+    assert "price_eur" in {f.field for f in what_if.factors}, what_if.factors
+    assert what_if.units == centre.units_sold, (what_if.units, centre.units_sold)

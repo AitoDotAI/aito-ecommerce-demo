@@ -178,6 +178,26 @@ because the unit-cost floor truncates the margin.
 Mirrors `aito-demo`'s `PricingPage` scatter, adapted to our
 two-table layout (monthly_sales + inventory).
 
+## What if — one price, and why that many units
+
+Below the curve, a what-if panel asks one `_estimate` at the price you
+choose (a curve point, the slider, or `?price=` in the URL):
+
+```json
+{ "from": "monthly_sales",
+  "where": { "product_sku": "SKU-PT-0133", "units_last_month": 23, "pet_type": "dog",
+             "category": "wet-food", "brand": "Hill's Science Plan", "season": "spring",
+             "price_eur": 4.68 },
+  "estimate": "units_sold", "model": "regression", "select": ["estimate", "why"] }
+```
+
+With `model: "regression"` the `why` is `exp(mean + Σ factors)`, so the
+panel shows a typical month (e^mean, 3.0 units here) times one factor
+per field, and the rows multiply out to the estimate (5.8 units). Factors
+under 0.5 % fold into "Other factors". The curve asks the same model, so
+a point on it and the what-if at that price agree; `./do aito-check`
+pins that.
+
 ## Try it live
 
 [**Open Price**](http://localhost:8500/price/). Cold load ~1 s

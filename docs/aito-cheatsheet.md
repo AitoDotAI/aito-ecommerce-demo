@@ -740,6 +740,25 @@ regression model with cleaner per-field contribution explanations
 (no nested per-neighbor scaffold). Less neighbor-style "this is
 like that case", more "field X shifts the estimate by Y%".
 
+Its `why` is exactly `exp(sum(terms))` (verified on shared, 2.11.4):
+
+```json
+{ "type": "exponent", "base": { "type": "constant", "value": 2.718… },
+  "power": { "type": "sum", "terms": [
+    { "type": "input", "name": "residual", "value": 0.0 },
+    { "type": "regression", "proposition": { "price_eur": 4.68 }, "value": -0.728 },
+    …,
+    { "type": "mean centering", "name": "mean", "value": 1.0995 } ] } }
+```
+
+So `e^mean × Π e^value` equals the estimate, and each term is a
+multiplier: a waterfall from "a typical month" to the estimate that adds
+up (`src/price_what_if.py:waterfall`, ADR 0029). The k-NN default can't
+give that: it averages ~8 neighbours, each with its own terms. Gotcha: a
+column added in place with v2 `PUT /schema/{table}/{column}` reports type
+`Unknown` and is modelled as *categorical* even when it holds Ints
+(`units_last_month`; core ticket td-20261012085637124211).
+
 **Caching is important** — K-NN `_estimate` scans the whole table
 per call. For our Demand view (25 SKUs × ~80 ms each warm =
 ~2 s) the 30-min cache is essential. Cold-load batches without

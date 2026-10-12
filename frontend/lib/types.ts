@@ -772,6 +772,27 @@ export interface PriceDetail {
   last_response_ms: number;
 }
 
+/* ─── Price what-if (/api/price/what-if, ADR 0029) ─── */
+
+export interface PriceWhatIfFactor {
+  field: string;        // the `where` field, or "other" / "residual"
+  label: string;        // "Price €4.68", "Sold 23 last month", ...
+  multiplier: number;   // units = base_units × every multiplier
+}
+
+export interface PriceWhatIf {
+  sku: string;
+  name: string;
+  price_eur: number;
+  cost_eur: number;
+  units: number;
+  revenue_eur: number;
+  profit_eur: number;
+  base_units: number;
+  factors: PriceWhatIfFactor[];
+  last_query: { endpoint: string; body: Record<string, unknown> };
+}
+
 /* ─── Product Insights (/api/product-insights) ─── */
 
 export interface ProductInsightsBuyerRow {

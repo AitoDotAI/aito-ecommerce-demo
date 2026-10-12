@@ -27,7 +27,14 @@ import type { PriceDetail } from "@/lib/types";
  * curve and points update in place. Profit = (price - unit_cost)
  * × units; max-profit point on the curve gets emphasised.
  */
-export default function PriceScatterChart({ detail }: { detail: PriceDetail }) {
+export default function PriceScatterChart({
+  detail,
+  onPickPrice,
+}: {
+  detail: PriceDetail;
+  /** Called with a curve point's price when the user clicks it. */
+  onPickPrice?: (priceEur: number) => void;
+}) {
   const [yMode, setYMode] = useState<"demand" | "profit">("demand");
 
   const historical = detail.historical.map((h) => ({
@@ -168,7 +175,14 @@ export default function PriceScatterChart({ detail }: { detail: PriceDetail }) {
               dataKey="y"
               stroke="var(--cta)"
               strokeWidth={2.5}
-              dot={{ fill: "var(--cta)", r: 4 }}
+              dot={(props: { cx?: number; cy?: number; index?: number; payload?: { price: number } }) => (
+                <circle
+                  key={`curve-dot-${props.index}`}
+                  cx={props.cx} cy={props.cy} r={onPickPrice ? 5 : 4} fill="var(--cta)"
+                  style={onPickPrice ? { cursor: "pointer" } : undefined}
+                  onClick={() => { if (onPickPrice && props.payload) onPickPrice(props.payload.price); }}
+                />
+              )}
               isAnimationActive={false}
             />
           )}

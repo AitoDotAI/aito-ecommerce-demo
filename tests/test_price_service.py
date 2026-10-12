@@ -123,6 +123,7 @@ class CurveAito:
         self.sales = sales
         self.estimate_value = estimate
         self.estimate_wheres: list[dict] = []
+        self.estimate_models: list[str | None] = []
 
     def search(self, table, where=None, limit=10, offset=0, **_):
         rows = {"monthly_sales": self.sales,
@@ -130,9 +131,10 @@ class CurveAito:
                 "products": [p for p in PRODUCTS if p["sku"] == "REAL"]}[table]
         return {"hits": rows[offset:offset + limit], "total": len(rows)}
 
-    def estimate(self, table, where, estimate_field, with_why=True):
+    def estimate(self, table, where, estimate_field, model=None, with_why=True):
         assert (table, estimate_field) == ("monthly_sales", "units_sold")
         self.estimate_wheres.append(where)
+        self.estimate_models.append(model)
         return {"estimate": self.estimate_value}
 
 
@@ -170,3 +172,13 @@ def test_demand_curve_panel_shows_a_query_that_was_actually_sent():
 def test_demand_curve_fails_loudly_when_aito_returns_no_estimate():
     with pytest.raises(AitoError, match="no estimate"):
         get_price_detail(CurveAito(estimate=None), "REAL")
+
+
+def test_demand_curve_uses_the_regression_model_like_the_what_if():
+    # ADR 0029: the what-if explains a price with the regression model, so
+    # the curve asks the same model and a point on it matches the what-if.
+    client = CurveAito()
+
+    get_price_detail(client, "REAL")
+
+    assert client.estimate_models and set(client.estimate_models) == {"regression"}
