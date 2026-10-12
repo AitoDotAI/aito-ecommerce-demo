@@ -79,6 +79,11 @@ const PICKERS = [
 const OPTIONS = { anchor: ["dog_dryfood", "cat_wetfood"], sku: ["SKU-PT-0001", "SKU-PT-0042"], review: ["REV-00001", "REV-00042"] };
 const STUB_QUERY = { endpoint: "_relate", body: {} };
 
+// Ids the stub backend doesn't know: it answers 404 with the endpoint's
+// own message, as the real API does for a stale link.
+const UNKNOWN = { sku: "SKU-NO-SUCH", review: "REV-NO-SUCH" };
+const notFound = (message) => ({ notFoundStatus: 404, error: message });
+
 function stubResponse(apiPath, params) {
   const anchor = params.get("anchor") ?? OPTIONS.anchor[0];
   const anchors = OPTIONS.anchor.map((id) => ({ id, display: `Anchor ${id}` }));
@@ -91,6 +96,7 @@ function stubResponse(apiPath, params) {
                patterns: [], available_anchors: anchors, last_query: STUB_QUERY, last_response_ms: 1 };
     case "/api/product-filling": {
       const sku = params.get("sku") ?? OPTIONS.sku[0];
+      if (sku === UNKNOWN.sku) return notFound(`No product ${sku} in the catalogue`);
       return { product: { sku, name: `Product ${sku}`, brand: "PetNord", pet_type: "dog", category: "dry-food",
                           weight_kg: null, dietary: null, tax_class: null, price_eur: 10 },
                fields: [], candidate_skus: OPTIONS.sku.map((s) => ({ sku: s, name: `Product ${s}` })),
@@ -98,6 +104,7 @@ function stubResponse(apiPath, params) {
     }
     case "/api/feedback": {
       const review = params.get("review") ?? OPTIONS.review[0];
+      if (review === UNKNOWN.review) return notFound(`No review ${review} in the data`);
       return { review: { review_id: review, customer_id: "CUST-00001", customer_short: "Maija", product_sku: "SKU-PT-0001",
                          product_name: "Product", rating: 4, text: `Review ${review}`, created_at: "2026-01-01",
                          actual_category: "quality", actual_sentiment: "positive", actual_assigned_to: "Anna",
@@ -124,9 +131,12 @@ async function openFresh(browser, url) {
     const requested = new URL(route.request().url());
     requests.push(requested);
     const body = stubResponse(apiPathOf(requested), requested.searchParams);
-    return body === null
-      ? route.fulfill({ status: 503, body: "test: no backend" })
-      : route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(body) });
+    if (body === null) return route.fulfill({ status: 503, body: "test: no backend" });
+    if (body.notFoundStatus) {
+      return route.fulfill({ status: body.notFoundStatus, contentType: "application/json",
+                             body: JSON.stringify({ error: body.error }) });
+    }
+    return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(body) });
   });
   await page.goto(url);
   return { context, page, requests };
@@ -254,6 +264,26 @@ async function main() {
       await page.goBack();
       const back = await urlMatches(page, /model=dietary_from_name/) && await appears(focusedDietary);
       check(forward && back, "evaluation: segment → back restores the dietary focus");
+      await context.close();
+    }
+
+    {
+      const { context, page } = await openFresh(browser, `${BASE}/evaluation/?model=no_such_model`);
+      check(await appears(page.getByText("No model “no_such_model” in this evaluation")),
+            "evaluation?model=no_such_model says the model isn't in the evaluation");
+      await context.close();
+    }
+
+    // A link to an id that no longer exists says so, and offers the way back.
+    for (const [view, key, api, label] of [["product-filling", "sku", "/api/product-filling", "Show the default product"],
+                                           ["feedback", "review", "/api/feedback", "Show the default review"]]) {
+      const { context, page, requests } = await openFresh(browser, `${BASE}/${view}/?${key}=${UNKNOWN[key]}`);
+      const notice = page.getByText(`No ${key === "sku" ? "product" : "review"} ${UNKNOWN[key]}`);
+      check(await appears(notice), `${view}?${key}=${UNKNOWN[key]} says it isn't in the data`);
+      await page.getByRole("button", { name: label }).click();
+      const reset = await urlMatches(page, new RegExp(`/${view}/?$`));
+      const defaultAsked = requests.some((u) => apiPathOf(u) === api && !u.searchParams.has(key));
+      check(reset && defaultAsked, `${view}: "${label}" clears the bad id and loads the default`);
       await context.close();
     }
   } finally {

@@ -95,7 +95,7 @@ function SmartSearchView() {
             key={p.id}
             type="button"
             className={`customer-chip${persona === p.id ? " selected" : ""}`}
-            onClick={() => setPersona(p.id)}
+            onClick={() => { setQuery(submitted); setPersona(p.id); }}
             style={{ border: "1px solid var(--border)" }}
           >
             <span aria-hidden="true">{p.emoji}</span>

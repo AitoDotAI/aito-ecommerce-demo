@@ -2,11 +2,12 @@
 
 import { Suspense, useCallback, useEffect, useState } from "react";
 
-import { apiFetch, confClass, fmtEur } from "@/lib/api";
+import { ApiError, apiFetch, confClass, fmtEur } from "@/lib/api";
 import { productFillingPanel } from "@/lib/panel-content";
 import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import WhyPopover from "@/components/prediction/WhyPopover";
 import ErrorState from "@/components/shell/ErrorState";
+import NotFoundNotice from "@/components/shell/NotFoundNotice";
 import type { FillingResponse, FillingFieldOut } from "@/lib/types";
 import { useUrlState } from "@/lib/use-url-state";
 
@@ -33,11 +34,15 @@ function ProductFillingView() {
   const setSku = (next: string | undefined) => setSkuParam(next ?? "");
   const [data, setData] = useState<FillingResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [notFound, setNotFound] = useState<string | null>(null);
+  // Kept across a failed load, so the picker still works after a bad link.
+  const [candidates, setCandidates] = useState<FillingResponse["candidate_skus"]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchData = useCallback(async (forSku?: string) => {
     setLoading(true);
     setError(null);
+    setNotFound(null);
     setData(null);   // see B1 fix in bought-together/page.tsx
     try {
       const url = forSku
@@ -45,6 +50,7 @@ function ProductFillingView() {
         : "/api/product-filling";
       const res = await apiFetch<FillingResponse>(url);
       setData(res);
+      setCandidates(res.candidate_skus);
       setPanel({
         ...productFillingPanel(),
         endpoints: ["_predict"],
@@ -54,7 +60,8 @@ function ProductFillingView() {
         }),
       });
     } catch (e) {
-      setError(String(e));
+      if (e instanceof ApiError && e.status === 404) setNotFound(e.serverMessage ?? e.message);
+      else setError(String(e));
     } finally {
       setLoading(false);
     }
@@ -91,12 +98,16 @@ function ProductFillingView() {
           value={sku ?? data?.product.sku ?? ""}
           onChange={(e) => setSku(e.target.value || undefined)}
         >
-          {(data?.candidate_skus ?? []).map((c) => (
+          {candidates.map((c) => (
             <option key={c.sku} value={c.sku}>{c.name}</option>
           ))}
         </select>
         {/* Latency pill moved to the TopBar — see LatencyBadge. */}
       </div>
+
+      {notFound && (
+        <NotFoundNotice message={notFound} resetLabel="Show the default product" onReset={() => setSku(undefined)} />
+      )}
 
       {error && (
         <ErrorState
@@ -106,7 +117,7 @@ function ProductFillingView() {
         />
       )}
 
-      {!error && (
+      {!error && !notFound && (
         <div className="two-col">
           {/* Input card */}
           <div className="card">

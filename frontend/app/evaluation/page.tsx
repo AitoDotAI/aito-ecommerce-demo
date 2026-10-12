@@ -65,6 +65,10 @@ function EvaluationView() {
     ?? data?.models.find((m) => m.verdict === "fail")
     ?? data?.models[0];
   const focusedId = focused?.id ?? null;
+  // A link naming a model that isn't in the evaluation says so, rather
+  // than quietly focusing another row.
+  const unknownModel = data && modelParam && !data.models.some((m) => m.id === modelParam)
+    ? modelParam : null;
   useEffect(() => {
     if (focused) updatePanel(focused);
   }, [focused, updatePanel]);
@@ -81,6 +85,11 @@ function EvaluationView() {
           <strong>Fail</strong> means Aito is honestly telling you it
           doesn't know — even when the raw accuracy is high.
         </div>
+        {unknownModel && (
+          <div className="card-sub" role="status" style={{ marginTop: 8, color: "var(--red)" }}>
+            No model “{unknownModel}” in this evaluation; showing {focused?.id} instead.
+          </div>
+        )}
       </div>
 
       {error && (

@@ -2,11 +2,12 @@
 
 import { Suspense, useCallback, useEffect, useState } from "react";
 
-import { apiFetch, confClass } from "@/lib/api";
+import { ApiError, apiFetch, confClass } from "@/lib/api";
 import { feedbackPanel } from "@/lib/panel-content";
 import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import WhyPopover from "@/components/prediction/WhyPopover";
 import ErrorState from "@/components/shell/ErrorState";
+import NotFoundNotice from "@/components/shell/NotFoundNotice";
 import type { FeedbackResponse } from "@/lib/types";
 import { useUrlState } from "@/lib/use-url-state";
 
@@ -34,11 +35,15 @@ function FeedbackView() {
   const setReviewId = (next: string | undefined) => setReviewParam(next ?? "");
   const [data, setData] = useState<FeedbackResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [notFound, setNotFound] = useState<string | null>(null);
+  // Kept across a failed load, so the picker still works after a bad link.
+  const [candidates, setCandidates] = useState<FeedbackResponse["candidate_reviews"]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchData = useCallback(async (forReview?: string) => {
     setLoading(true);
     setError(null);
+    setNotFound(null);
     setData(null);
     try {
       const url = forReview
@@ -46,6 +51,7 @@ function FeedbackView() {
         : "/api/feedback";
       const res = await apiFetch<FeedbackResponse>(url);
       setData(res);
+      setCandidates(res.candidate_reviews);
       setPanel({
         ...feedbackPanel(),
         endpoints: ["_predict"],
@@ -55,7 +61,8 @@ function FeedbackView() {
         }),
       });
     } catch (e) {
-      setError(String(e));
+      if (e instanceof ApiError && e.status === 404) setNotFound(e.serverMessage ?? e.message);
+      else setError(String(e));
     } finally {
       setLoading(false);
     }
@@ -93,13 +100,17 @@ function FeedbackView() {
           value={reviewId ?? data?.review.review_id ?? ""}
           onChange={(e) => setReviewId(e.target.value || undefined)}
         >
-          {(data?.candidate_reviews ?? []).map((c) => (
+          {candidates.map((c) => (
             <option key={c.review_id} value={c.review_id}>
               {"★".repeat(c.rating)}  {c.text_short}
             </option>
           ))}
         </select>
       </div>
+
+      {notFound && (
+        <NotFoundNotice message={notFound} resetLabel="Show the default review" onReset={() => setReviewId(undefined)} />
+      )}
 
       {error && (
         <ErrorState
@@ -109,7 +120,7 @@ function FeedbackView() {
         />
       )}
 
-      {!error && (
+      {!error && !notFound && (
         <div className="two-col">
           {/* Incoming review */}
           <div className="card">
