@@ -26,6 +26,26 @@ WHERE = {"product_sku": SKU, "units_last_month": 23, "pet_type": "dog", "categor
          "brand": "Hill's Science Plan", "season": "spring", "price_eur": 4.68}
 
 
+# On data with zero-sale months (ADR 0027's lifecycle data) the regression
+# is linear instead: estimate = mean + Σ terms. SKU-PT-0133 at €4.52 on the
+# test env `shoppers`, 2026-10-12.
+ADDITIVE_TERMS = {
+    "price_eur": 0.064, "season": 0.463, "brand": 0.086, "category": 0.185,
+    "pet_type": -0.224, "units_last_month": 1.734, "product_sku": -0.628,
+}
+ADDITIVE_MEAN = 3.128
+ADDITIVE_ESTIMATE = ADDITIVE_MEAN + sum(ADDITIVE_TERMS.values())
+
+
+def additive_why(terms=ADDITIVE_TERMS, mean=ADDITIVE_MEAN) -> dict:
+    return {"type": "sum", "terms": [
+        {"type": "input", "name": "residual", "value": 0.0},
+        *[{"type": "regression", "proposition": {field: WHERE[field]}, "value": value}
+          for field, value in terms.items()],
+        {"type": "mean centering", "name": "mean", "value": mean},
+    ]}
+
+
 def regression_why(terms=TERMS, mean=MEAN, residual=0.0) -> dict:
     return {
         "type": "exponent",
@@ -46,6 +66,7 @@ class FakeClient:
             {"sku": SKU, "name": "Lamb Dog Food 400g", "pet_type": "dog", "category": "wet-food",
              "brand": "Hill's Science Plan"}]
         self.estimates: list[dict] = []
+        self.estimate_value = ESTIMATE
 
     def search(self, table, *, where, limit=10, **_):
         if table == "products":
@@ -58,36 +79,62 @@ class FakeClient:
 
     def estimate(self, table, where, estimate_field, *, model=None, with_why=True):
         self.estimates.append({"from": table, "where": where, "estimate": estimate_field, "model": model})
-        return {"estimate": ESTIMATE, "why": self.why}
+        return {"estimate": self.estimate_value, "why": self.why}
 
 
 def test_the_factors_multiply_out_to_the_estimate():
-    base, factors = waterfall(regression_why(), ESTIMATE)
+    form, base, factors = waterfall(regression_why(), ESTIMATE)
 
+    assert form == "multiply"
     assert base == pytest.approx(math.exp(MEAN))
-    assert base * math.prod(f.multiplier for f in factors) == pytest.approx(ESTIMATE)
+    assert base * math.prod(f.effect for f in factors) == pytest.approx(ESTIMATE)
 
 
 def test_factors_that_change_less_than_half_a_percent_fold_into_one_row():
     # brand is ×1.001: shown alone it would read "+0.1 %", which looks like
     # evidence and isn't.
-    _, factors = waterfall(regression_why(), ESTIMATE)
+    _, _, factors = waterfall(regression_why(), ESTIMATE)
 
     assert "brand" not in [f.field for f in factors]
     assert factors[-1].field == "other"
 
 
 def test_the_price_factor_is_labelled_with_the_price_asked_about():
-    _, factors = waterfall(regression_why(), ESTIMATE)
+    _, _, factors = waterfall(regression_why(), ESTIMATE)
     price = next(f for f in factors if f.field == "price_eur")
 
     assert price.label == "Price €4.68"
-    assert price.multiplier == pytest.approx(math.exp(-0.7279))
+    assert price.effect == pytest.approx(math.exp(-0.7279))
 
 
 def test_a_why_that_does_not_multiply_out_to_the_estimate_raises():
     with pytest.raises(AitoError, match="does not multiply out"):
         waterfall(regression_why(), ESTIMATE * 1.5)
+
+
+def test_a_linear_why_adds_up_to_the_estimate():
+    form, base, factors = waterfall(additive_why(), ADDITIVE_ESTIMATE)
+
+    assert form == "add"
+    assert base == pytest.approx(ADDITIVE_MEAN)
+    assert base + sum(f.effect for f in factors) == pytest.approx(ADDITIVE_ESTIMATE)
+    assert next(f for f in factors if f.field == "units_last_month").effect == pytest.approx(1.734)
+
+
+def test_a_linear_why_that_does_not_add_up_raises():
+    with pytest.raises(AitoError, match="does not add up"):
+        waterfall(additive_why(), ADDITIVE_ESTIMATE + 1)
+
+
+def test_a_linear_estimate_below_zero_shows_zero_units_and_says_so():
+    terms = {**ADDITIVE_TERMS, "price_eur": -9.0}
+    client = FakeClient(why=additive_why(terms))
+    client.estimate_value = ADDITIVE_MEAN + sum(terms.values())
+
+    result = get_price_what_if(client, SKU, 4.68)
+
+    assert result.below_zero
+    assert result.units == 0 and result.revenue_eur == 0 and result.profit_eur == 0
 
 
 def test_a_why_in_another_shape_raises_instead_of_drawing_a_wrong_chart():
@@ -127,3 +174,13 @@ def test_a_term_with_two_fields_is_reported_as_an_aito_problem():
 
     with pytest.raises(AitoError, match="expected one field"):
         waterfall(why, ESTIMATE)
+
+
+def test_the_price_row_is_shown_even_when_its_effect_is_small():
+    # The what-if is about price, so its row never folds into "other
+    # factors", even where the price's term is near zero.
+    terms = {**ADDITIVE_TERMS, "price_eur": 0.001}
+
+    _, _, factors = waterfall(additive_why(terms), ADDITIVE_MEAN + sum(terms.values()))
+
+    assert "price_eur" in [f.field for f in factors]

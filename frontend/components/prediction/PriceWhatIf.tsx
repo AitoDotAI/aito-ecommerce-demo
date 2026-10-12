@@ -95,6 +95,11 @@ export default function PriceWhatIf({
         <div className="two-col" style={{ opacity: stale ? 0.5 : 1 }} aria-busy={stale}>
           <div>
             <Kpi label="Units next month" value={shown.units.toFixed(1)} />
+            {shown.below_zero && (
+              <div className="card-sub" style={{ color: "var(--red)" }}>
+                The linear model goes below zero at this price; shown as 0 units.
+              </div>
+            )}
             <Kpi label="Revenue" value={fmtEur(shown.revenue_eur, 2)} />
             <Kpi label={`Profit (cost ${fmtEur(shown.cost_eur, 2)})`} value={fmtEur(shown.profit_eur, 2)} />
           </div>
@@ -114,31 +119,35 @@ function Kpi({ label, value }: { label: string; value: string }) {
   );
 }
 
-// Base × each factor, with the running total, ending at the estimate.
+// The base and each factor, with the running total, ending at the estimate.
+// Aito's regression answers in one of two forms (see src/price_what_if.py):
+// factors that multiply the units, or effects that add units.
 function Waterfall({ result }: { result: PriceWhatIfResult }) {
+  const multiply = result.form === "multiply";
   let running = result.base_units;
   return (
     <div style={{ fontSize: 13 }}>
       <Row label="" change="Effect" total={null} muted />
       <Row label="A typical month" change="" total={running} />
       {result.factors.map((f) => {
-        running *= f.multiplier;
-        const pct = (f.multiplier - 1) * 100;
+        running = multiply ? running * f.effect : running + f.effect;
+        const up = multiply ? f.effect >= 1 : f.effect >= 0;
+        const size = multiply ? `${Math.abs((f.effect - 1) * 100).toFixed(1)} %` : `${Math.abs(f.effect).toFixed(2)} units`;
         return (
           <Row
             key={f.field}
             label={f.label}
-            change={`${pct >= 0 ? "+" : "−"}${Math.abs(pct).toFixed(1)} %`}
-            color={pct >= 0 ? "var(--green)" : "var(--red)"}
+            change={`${up ? "+" : "−"}${size}`}
+            color={up ? "var(--green)" : "var(--red)"}
             total={running}
           />
         );
       })}
       <Row label="Estimate" change="" total={result.units} strong />
       <div className="card-sub" style={{ marginTop: 6 }}>
-        Each effect multiplies the units above it. They compare with a typical
-        month in the data, not with this product&apos;s current price: move the
-        price to see what changing it does.
+        Each effect {multiply ? "multiplies" : "adds to"} the units above it. They
+        compare with a typical month in the data, not with this product&apos;s
+        current price: move the price to see what changing it does.
       </div>
     </div>
   );
