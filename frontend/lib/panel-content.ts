@@ -410,12 +410,13 @@ export function markdownPanel(): AitoPanelConfig {
 export function pricePanel(): AitoPanelConfig {
   return {
     operation: "Price",
-    endpoints: ["_aggregate", "_relate"],
+    endpoints: ["_search", "_aggregate", "_estimate", "_relate"],
     description:
-      `Per-SKU price stats from Aito's <code style="color:var(--aito-teal);">_aggregate</code> ` +
-      `(mean / std / min / max computed server-side, one call per SKU). ` +
-      `Sweet-spot <code style="color:var(--aito-teal);">_relate</code> over ` +
-      `discount band ↔ category surfaces "promo-priced toys lift 2.4×".`,
+      `Fair bands from one bulk <code style="color:var(--aito-teal);">_search</code> of ` +
+      `price_history, with the stats computed in Python; the selected SKU also gets an ` +
+      `<code style="color:var(--aito-teal);">_aggregate</code>. The demand curve asks ` +
+      `<code style="color:var(--aito-teal);">_estimate units_sold</code> for next month at ` +
+      `seven prices within ±10 % of its average selling price.`,
     query:
 `${k('"aggregate"')}: {
   ${n('"from"')}: ${s('"price_history"')},

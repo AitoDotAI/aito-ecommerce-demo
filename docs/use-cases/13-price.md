@@ -3,9 +3,10 @@
 ![Price](../../screenshots/13-price.png)
 
 *Per-SKU price stats over `price_history` (mean ± 1.5σ, outlier
-flag, observation count) + Aito `_relate` over discount band ↔
-category surfacing "promo-priced toys sell 2.4× more units than
-list-priced toys" patterns.*
+flag, observation count), a demand curve from `_estimate units_sold`,
+and `_relate` over discount band ↔ category, which on today's data
+finds no category discounted more than another (see the ADR 0016
+amendment).*
 
 ## Overview
 
@@ -88,6 +89,8 @@ Sort by `outlier ↓ then observation_count ↓`. The user lands on
 Without the outlier flag the table would be a 700-SKU stats dump.
 
 ### 2. Sweet-spot lifts in both directions
+
+*On today's data no lift passes the filter, so the page leaves this card out (ADR 0016 amendment, 2026-10-11).*
 
 Lifts > 1.15 (red chip ↑) = "this band over-indexes for this
 category — discount-sensitive". Lifts < 0.85 (green chip ↓) =

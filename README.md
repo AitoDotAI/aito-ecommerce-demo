@@ -72,8 +72,8 @@ Each is in its own view, each builds on the previous:
 The two-minute narrated walkthrough is in
 [`docs/demo-script.md`](docs/demo-script.md).
 
-**Hidden for now:** Demand Forecast, Price, Markdown, Cart Completion
-and Win-back. On today's synthetic purchase data they contradict
+**Hidden for now:** Demand Forecast, Markdown, Cart Completion and
+Win-back. On today's synthetic purchase data they contradict
 themselves (a forecast that loses to "same as last month", margin-losing
 markdowns, a purchase probability shown as a campaign response rate).
 They return when the data is regenerated with realistic purchase
@@ -338,10 +338,12 @@ prediction underneath.
 ```
 
 Per-SKU fair-band stats from `price_history` (mean ± 1.5σ, outliers
-flagged). Three parallel `_relate` calls over discount bands ↔
-category surface sweet-spot patterns — "promo-priced toys lift
-2.4× vs list price". The continuous-feature `_relate`-via-banding
-pattern transfers to any banded analysis.
+flagged), and a demand curve per SKU: `_estimate units_sold` at seven
+prices within ±10 % of its average selling price. Three parallel
+`_relate` calls over discount bands ↔ category look for categories that
+are discounted more than others; on today's data none is, so that card
+stays hidden (ADR 0016 amendment). The `_relate`-via-banding pattern
+transfers to any continuous column.
 [→ Implementation](src/price_service.py) | [Use case guide](docs/use-cases/13-price.md) | [ADR](docs/adr/0016-price.md)
 
 ### 12. ✂️ Markdown — Inventory + Demand + Price, one workflow

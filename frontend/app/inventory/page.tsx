@@ -100,7 +100,7 @@ export default function InventoryPage() {
         <div className="two-col">
           <div className="card">
             <div className="card-sub" style={{ marginBottom: 6 }}>
-              Reorder queue · `_predict units_sold` per critical SKU
+              Reorder queue · `_estimate units_sold` per critical SKU
             </div>
             <div className="page-title" style={{ fontSize: 17, margin: "4px 0 12px" }}>
               Reorder now
