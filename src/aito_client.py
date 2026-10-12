@@ -387,7 +387,7 @@ class AitoClient:
             client.estimate(
                 table="monthly_sales",
                 where={"product_sku": "SKU-PT-0042",
-                       "month": "2026-05", "season": "spring"},
+                       "units_last_month": 12, "season": "spring"},
                 estimate_field="units_sold",
             )
             # → {"estimate": 3.76, "why": {...weightedAverage tree...}}

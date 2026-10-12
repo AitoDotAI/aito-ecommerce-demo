@@ -9,8 +9,10 @@ three numbers on the SAME held-out rows (see ADR 0014 §Correction):
   - naive    — "this month lands in last month's range";
   - majority — always the most common range (Aito's `baseAccuracy`).
 
-The split is by time: train on every month before the latest, test on
-the latest, so the model never learns from the month it predicts.
+The split is by time: test on the latest month, train on every other
+month. That is "every earlier month" only because the latest month is the
+last one in the data; `test_the_test_month_is_the_last_month_in_the_data`
+pins that, so the model never learns from the future.
 
 Ranges, not exact units, because `_evaluate` scores classification. The
 right score for a numeric forecast is the error size against naive; the
@@ -35,8 +37,8 @@ _FEATURES = ("units_last_month_bucket", "product_sku", "pet_type",
 # cannot score yet (see the module docstring).
 METHOD = ("Scores Aito predicting each month's sales range (0, 1, 2-3, 4-7, "
           "8-15, 16-31, 32+) from last month's range and the product, not the "
-          "unit forecast in the table. Time split: trained on months before "
-          "{test_month}, tested on {test_month}.")
+          "unit forecast in the table. Time split: trained on every month "
+          "before {test_month}, tested on {test_month}.")
 
 
 @dataclass(frozen=True)

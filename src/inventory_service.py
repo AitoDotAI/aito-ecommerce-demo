@@ -19,7 +19,7 @@ Three blocks per request:
                        `$why`.
   3. Overstock list — top tied-capital SKUs (compactly displayed)
 
-Cached for 30 minutes. The reorder queue's per-row `_predict`
+Cached for 30 minutes. The reorder queue's per-row `_estimate`
 for next-month demand is the expensive piece.
 """
 
@@ -40,7 +40,7 @@ from src.demand_forecast import forecast_units, forecast_where, last_month_units
 DEMO_TODAY_YYYYMM = "2026-04"
 
 
-# How many critical SKUs to deep-score with a `_predict` call.
+# How many critical SKUs to deep-score with an `_estimate` call.
 # Each predict is ~50 ms — 25 critical × ~50 ms ≈ 1.2 s.
 REORDER_TOP_N = 25
 
@@ -193,7 +193,7 @@ def get_inventory(
     sales = _fetch_recent_sales(client)
 
     # Classify every SKU first; we'll deep-score only the critical
-    # ones with `_predict` (the expensive call).
+    # ones with `_estimate` (the expensive call).
     band_counts: dict[str, int] = {"critical": 0, "low": 0, "ok": 0, "overstock": 0}
     classified: list[dict] = []
     for r in inv_rows:
@@ -230,7 +230,7 @@ def get_inventory(
     overstock_rows.sort(key=lambda o: -o.tied_capital_eur)
     overstock_rows = overstock_rows[:20]
 
-    # Deep-score critical SKUs with `_predict` (parallel).
+    # Deep-score critical SKUs with `_estimate` (parallel).
     critical = [r for r in classified if r["_band"] == "critical"]
     critical = critical[:top_n]   # cap the predict fan-out
 
@@ -304,7 +304,7 @@ def get_inventory(
                                 last_month_units(sales[first])),
         "estimate": "units_sold",
         "select":   ["estimate", "why"],
-    } if first else "No critical SKU has sales history, so no _estimate was sent."
+    } if first else {"note": "No critical SKU has sales history, so no _estimate was sent."}
 
     resp = InventoryResponse(
         kpis=kpis,

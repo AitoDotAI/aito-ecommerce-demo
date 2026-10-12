@@ -11,7 +11,7 @@ average, far below the current level of a growing SKU.
 
 from __future__ import annotations
 
-from src.aito_client import AitoClient
+from src.aito_client import AitoClient, AitoError
 from src.why_processor import process_estimate_why
 
 FORECAST_MONTH = "2026-05"   # the month we predict for
@@ -51,6 +51,7 @@ def forecast_units(client: AitoClient, sku: str, sales_rows: list[dict]) -> tupl
     where = forecast_where(sku, profile, last_month_units(sales_rows))
     res = client.estimate("monthly_sales", where=where, estimate_field="units_sold")
     estimate = res.get("estimate")
-    assert estimate is not None, f"_estimate returned no estimate for {sku}: {res}"
+    if estimate is None:
+        raise AitoError(f"_estimate units_sold returned no estimate for {sku}: {res}")
     why = process_estimate_why(res.get("why"), float(estimate), field_label="units_sold")
     return max(0, int(round(float(estimate)))), why

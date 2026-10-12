@@ -123,3 +123,14 @@ def test_naive_score_refuses_a_test_set_that_disagrees_with_aitos():
 
     with pytest.raises(AssertionError, match="test rows"):
         get_demand(Mismatched(), top_n=2)
+
+
+def test_the_test_month_is_the_last_month_in_the_data():
+    # The accuracy trains on every month except LATEST_MONTH. That is a
+    # time split only while no month in the data comes after it.
+    import json
+    from pathlib import Path
+
+    rows = json.loads((Path(__file__).parent.parent / "data" / "monthly_sales.json").read_text())
+
+    assert max(row["month"] for row in rows) == LATEST_MONTH
