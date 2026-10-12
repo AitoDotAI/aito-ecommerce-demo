@@ -751,7 +751,14 @@ Its `why` is exactly `exp(sum(terms))` (verified on shared, 2.11.4):
     { "type": "mean centering", "name": "mean", "value": 1.0995 } ] } }
 ```
 
-So `e^mean × Π e^value` equals the estimate, and each term is a
+**Its form depends on the data.** On data where every row sold
+something, the why is `exp(sum(terms))`, as above. On data with
+zero-sale months (ADR 0027's lifecycle fixtures, test env `shoppers`,
+2026-10-12) it is a plain `{"type": "sum", "terms": [...]}`: the model is
+linear, `mean + Σ terms` in units, and an estimate can go below zero.
+Parse both, and check whichever one you got chains to the estimate.
+
+In the exponent form, `e^mean × Π e^value` equals the estimate, and each term is a
 multiplier: a waterfall from "a typical month" to the estimate that adds
 up (`src/price_what_if.py:waterfall`, ADR 0029). The k-NN default can't
 give that: it averages ~8 neighbours, each with its own terms. Gotcha: a

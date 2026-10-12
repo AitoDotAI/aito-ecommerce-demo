@@ -777,7 +777,7 @@ export interface PriceDetail {
 export interface PriceWhatIfFactor {
   field: string;        // the `where` field, or "other" / "residual"
   label: string;        // "Price €4.68", "Sold 23 last month", ...
-  multiplier: number;   // units = base_units × every multiplier
+  effect: number;       // a multiplier (form "multiply") or units added (form "add")
 }
 
 export interface PriceWhatIf {
@@ -786,8 +786,10 @@ export interface PriceWhatIf {
   price_eur: number;
   cost_eur: number;
   units: number;
+  below_zero: boolean;  // a linear estimate under 0, shown as 0 units
   revenue_eur: number;
   profit_eur: number;
+  form: "multiply" | "add";   // how the factors combine onto base_units
   base_units: number;
   factors: PriceWhatIfFactor[];
   last_query: { endpoint: string; body: Record<string, unknown> };
