@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
 import { apiFetch } from "@/lib/api";
 import { evaluationPanel } from "@/lib/panel-content";
 import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
 import type { EvalResponse, EvalModelResult } from "@/lib/types";
+import { useUrlState } from "@/lib/use-url-state";
 
 
 /**
@@ -18,7 +19,7 @@ import type { EvalResponse, EvalModelResult } from "@/lib/types";
  * model's actual `_evaluate` body — so a viewer can see which
  * features were held out for which target.
  */
-export default function EvaluationPage() {
+function EvaluationView() {
   usePagePanel(evaluationPanel(), {
     title: "Evaluation",
     description:
@@ -31,7 +32,7 @@ export default function EvaluationPage() {
   const [data, setData] = useState<EvalResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [focusedId, setFocusedId] = useState<string | null>(null);
+  const [modelParam, setModelParam] = useUrlState("model", "");
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -39,14 +40,6 @@ export default function EvaluationPage() {
     try {
       const res = await apiFetch<EvalResponse>("/api/evaluation");
       setData(res);
-      // Default focus: the failing row. That's the load-bearing
-      // demo moment and the one a sales viewer should land on.
-      const failing = res.models.find((m) => m.verdict === "fail");
-      const focus = failing ?? res.models[0];
-      if (focus) {
-        setFocusedId(focus.id);
-        updatePanel(focus);
-      }
     } catch (e) {
       setError(String(e));
     } finally {
@@ -66,6 +59,20 @@ export default function EvaluationPage() {
     fetchData();
   }, [fetchData]);
 
+  // The focused row: the one named in the URL, else the failing row (the
+  // load-bearing demo moment a sales viewer should land on), else the first.
+  const focused = data?.models.find((m) => m.id === modelParam)
+    ?? data?.models.find((m) => m.verdict === "fail")
+    ?? data?.models[0];
+  const focusedId = focused?.id ?? null;
+  // A link naming a model that isn't in the evaluation says so, rather
+  // than quietly focusing another row.
+  const unknownModel = data && modelParam && !data.models.some((m) => m.id === modelParam)
+    ? modelParam : null;
+  useEffect(() => {
+    if (focused) updatePanel(focused);
+  }, [focused, updatePanel]);
+
   return (
     <div className="fade-in">
       <div className="page-header">
@@ -78,6 +85,11 @@ export default function EvaluationPage() {
           <strong>Fail</strong> means Aito is honestly telling you it
           doesn't know — even when the raw accuracy is high.
         </div>
+        {unknownModel && (
+          <div className="card-sub" role="status" style={{ marginTop: 8, color: "var(--red)" }}>
+            No model “{unknownModel}” in this evaluation; showing {focused?.id} instead.
+          </div>
+        )}
       </div>
 
       {error && (
@@ -124,10 +136,7 @@ export default function EvaluationPage() {
                 <tr
                   key={m.id}
                   className={m.verdict === "pass" ? "eval-row-pass" : "eval-row-fail"}
-                  onClick={() => {
-                    setFocusedId(m.id);
-                    updatePanel(m);
-                  }}
+                  onClick={() => setModelParam(m.id)}
                   style={{
                     cursor: "pointer",
                     outline: focusedId === m.id ? "2px solid var(--cta)" : undefined,
@@ -230,4 +239,15 @@ function highlightQuery(body: Record<string, unknown>): string {
 
 function escape(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+
+// The view reads its state from the URL (`useUrlState`), which the static
+// export only allows under a Suspense boundary.
+export default function EvaluationPage() {
+  return (
+    <Suspense>
+      <EvaluationView />
+    </Suspense>
+  );
 }

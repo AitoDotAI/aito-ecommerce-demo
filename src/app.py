@@ -37,6 +37,7 @@ from src.eval_service import run_evaluation
 from src.analytics_service import get_analytics
 from src.pattern_service import get_patterns
 from src.feedback_service import get_feedback
+from src.lookup_errors import UnknownProductError, UnknownReviewError
 from src.churn_service import get_churn
 from src.demand_service import get_demand
 from src.cart_completion_service import get_cart_completion
@@ -329,6 +330,8 @@ def product_filling_endpoint(sku: str | None = None):
     """Multi-field `_predict` for catalog enrichment. See ADR 0009."""
     try:
         return get_filling(aito, sku=sku).to_dict()
+    except UnknownProductError as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
     except AitoError as exc:
         return JSONResponse(
             status_code=502,
@@ -383,6 +386,8 @@ def feedback_endpoint(review: str | None = None):
     See ADR 0012."""
     try:
         return get_feedback(aito, review_id=review).to_dict()
+    except UnknownReviewError as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
     except AitoError as exc:
         return JSONResponse(
             status_code=502,

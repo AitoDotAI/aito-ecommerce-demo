@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Any
 
 from src.aito_client import AitoClient
+from src.lookup_errors import UnknownReviewError
 from src import cache
 from src.why_processor import process_why
 
@@ -255,9 +256,9 @@ def get_feedback(
     reviews = _load_reviews()
     products = _load_products()
     by_id = {r["review_id"]: r for r in reviews}
-    review = by_id.get(review_id) if review_id else None
-    if review is None:
-        review = by_id.get(_DEFAULT_REVIEW_ID) or reviews[0]
+    if review_id and review_id not in by_id:
+        raise UnknownReviewError(f"No review {review_id} in the data")
+    review = by_id[review_id] if review_id else by_id.get(_DEFAULT_REVIEW_ID) or reviews[0]
 
     # Both `text` AND `rating` are predictors. The text drives
     # category / assigned_to (tokens decide which support team takes

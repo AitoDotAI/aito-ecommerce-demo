@@ -1,13 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
-import { apiFetch, confClass, fmtEur } from "@/lib/api";
+import { ApiError, apiFetch, confClass, fmtEur } from "@/lib/api";
 import { productFillingPanel } from "@/lib/panel-content";
 import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import WhyPopover from "@/components/prediction/WhyPopover";
 import ErrorState from "@/components/shell/ErrorState";
+import NotFoundNotice from "@/components/shell/NotFoundNotice";
 import type { FillingResponse, FillingFieldOut } from "@/lib/types";
+import { useUrlState } from "@/lib/use-url-state";
 
 
 /**
@@ -15,7 +17,7 @@ import type { FillingResponse, FillingFieldOut } from "@/lib/types";
  * Aito-filled five fields (right). Data layer:
  * `src/filling_service.py`; see `docs/adr/0009-product-filling.md`.
  */
-export default function ProductFillingPage() {
+function ProductFillingView() {
   usePagePanel(productFillingPanel(), {
     title: "Product Filling",
     description:
@@ -26,14 +28,21 @@ export default function ProductFillingPage() {
   });
 
   const { setPanel } = useShell();
-  const [sku, setSku] = useState<string | undefined>(undefined);
+  // No `sku` in the URL means the backend's default product.
+  const [skuParam, setSkuParam] = useUrlState("sku", "");
+  const sku = skuParam || undefined;
+  const setSku = (next: string | undefined) => setSkuParam(next ?? "");
   const [data, setData] = useState<FillingResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [notFound, setNotFound] = useState<string | null>(null);
+  // Kept across a failed load, so the picker still works after a bad link.
+  const [candidates, setCandidates] = useState<FillingResponse["candidate_skus"]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchData = useCallback(async (forSku?: string) => {
     setLoading(true);
     setError(null);
+    setNotFound(null);
     setData(null);   // see B1 fix in bought-together/page.tsx
     try {
       const url = forSku
@@ -41,6 +50,7 @@ export default function ProductFillingPage() {
         : "/api/product-filling";
       const res = await apiFetch<FillingResponse>(url);
       setData(res);
+      setCandidates(res.candidate_skus);
       setPanel({
         ...productFillingPanel(),
         endpoints: ["_predict"],
@@ -50,7 +60,8 @@ export default function ProductFillingPage() {
         }),
       });
     } catch (e) {
-      setError(String(e));
+      if (e instanceof ApiError && e.status === 404) setNotFound(e.serverMessage ?? e.message);
+      else setError(String(e));
     } finally {
       setLoading(false);
     }
@@ -87,12 +98,16 @@ export default function ProductFillingPage() {
           value={sku ?? data?.product.sku ?? ""}
           onChange={(e) => setSku(e.target.value || undefined)}
         >
-          {(data?.candidate_skus ?? []).map((c) => (
+          {candidates.map((c) => (
             <option key={c.sku} value={c.sku}>{c.name}</option>
           ))}
         </select>
         {/* Latency pill moved to the TopBar — see LatencyBadge. */}
       </div>
+
+      {notFound && (
+        <NotFoundNotice message={notFound} resetLabel="Show the default product" onReset={() => setSku(undefined)} />
+      )}
 
       {error && (
         <ErrorState
@@ -102,7 +117,7 @@ export default function ProductFillingPage() {
         />
       )}
 
-      {!error && (
+      {!error && !notFound && (
         <div className="two-col">
           {/* Input card */}
           <div className="card">
@@ -269,4 +284,15 @@ function highlightQuery(body: Record<string, unknown>): string {
 
 function escape(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+
+// The view reads its state from the URL (`useUrlState`), which the static
+// export only allows under a Suspense boundary.
+export default function ProductFillingPage() {
+  return (
+    <Suspense>
+      <ProductFillingView />
+    </Suspense>
+  );
 }

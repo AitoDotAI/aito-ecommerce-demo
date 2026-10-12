@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from src.aito_client import AitoClient
+from src.lookup_errors import UnknownProductError
 from src import cache
 from src.why_processor import process_why
 
@@ -229,9 +230,9 @@ def get_filling(
 
     products = _load_products()
     by_sku = {p["sku"]: p for p in products}
-    product = by_sku.get(sku) if sku else None
-    if product is None:
-        product = by_sku.get(_DEFAULT_SKU) or _fillable_products(products)[0]
+    if sku and sku not in by_sku:
+        raise UnknownProductError(f"No product {sku} in the catalogue")
+    product = by_sku[sku] if sku else by_sku.get(_DEFAULT_SKU) or _fillable_products(products)[0]
 
     where = {"name": product["name"], "brand": product.get("brand", "")}
 

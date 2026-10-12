@@ -73,6 +73,19 @@ function parseAitoCalls(header: string | null): AitoCall[] {
     });
 }
 
+/** A non-2xx answer from the demo's API. `status` tells a view "not in
+ *  the data" (404) apart from "Aito failed" (502); `serverMessage` is the
+ *  endpoint's own `error` text when it sent one. */
+export class ApiError extends Error {
+  constructor(
+    readonly status: number,
+    path: string,
+    readonly serverMessage: string | null,
+  ) {
+    super(`API ${status}: ${path}${serverMessage ? ` — ${serverMessage}` : ""}`);
+  }
+}
+
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const headers = new Headers(init?.headers);
   if (!headers.has("Content-Type")) {
@@ -106,7 +119,13 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
     };
     window.dispatchEvent(new CustomEvent(AITO_CALLS_EVENT, { detail }));
   }
-  if (!res.ok) throw new Error(`API ${res.status}: ${path}`);
+  if (!res.ok) {
+    // The endpoints answer errors as JSON `{"error": …}`; anything else
+    // (a proxy's HTML page) has no message to show.
+    const isJson = res.headers.get("Content-Type")?.includes("application/json");
+    const serverMessage = isJson ? (await res.json()).error ?? null : null;
+    throw new ApiError(res.status, path, serverMessage);
+  }
   return res.json();
 }
 

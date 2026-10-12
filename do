@@ -115,6 +115,7 @@ Quality
   verify <feature>  Run the adversary Playwright agent for one feature
   verify-demo       End-to-end demo-path check
   verify-mobile     Mobile-viewport screenshot sweep of every sidebar view
+  test-urls         Build the static export; check every view's link opens as shared
   check             Pre-merge gate (test + fmt + aito-check)
   fmt               Format code
 
@@ -429,6 +430,15 @@ cmd_verify_demo() {
   python3 scripts/live_smoke.py "$@"
 }
 
+cmd_test_urls() {
+  # A pasted link must open a view exactly as shared, and back/forward must
+  # step through choices. Serves the static export and intercepts the API, so
+  # it needs no backend and never touches Aito. frontend/scripts/deeplink-test.cjs
+  cd "$SCRIPT_DIR/frontend"
+  npx next build --webpack
+  node scripts/deeplink-test.cjs
+}
+
 cmd_verify_mobile() {
   # Mobile layout sanity-check — runs `frontend/scripts/inspect-mobile.cjs`
   # against the already-running dev server (./do dev). Captures every
@@ -590,6 +600,7 @@ case "${1:-help}" in
   verify)            shift; cmd_verify "$@" ;;
   verify-demo)       cmd_verify_demo ;;
   verify-mobile)     cmd_verify_mobile ;;
+  test-urls)         cmd_test_urls ;;
   check)             cmd_check ;;
   fmt)               cmd_fmt ;;
   npm-install)       cmd_npm_install ;;

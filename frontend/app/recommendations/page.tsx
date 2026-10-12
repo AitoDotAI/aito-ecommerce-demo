@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
 import { apiFetch, fmtEur } from "@/lib/api";
 import { recommendationsPanel } from "@/lib/panel-content";
 import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
 import type { ForYouResponse, ForYouTile } from "@/lib/types";
+import { useUrlState } from "@/lib/use-url-state";
 
 
 const PERSONAS = [
@@ -24,7 +25,7 @@ const PERSONAS = [
  * `customer_segment` in `goal`. Same data, three crisply different
  * shoppers. See `docs/adr/0007-for-you.md`.
  */
-export default function ForYouPage() {
+function ForYouView() {
   usePagePanel(recommendationsPanel(), {
     title: "For You",
     description:
@@ -34,7 +35,7 @@ export default function ForYouPage() {
   });
 
   const { setPanel } = useShell();
-  const [persona, setPersona] = useState("maija");
+  const [persona, setPersona] = useUrlState("customer", "maija");
   const [data, setData] = useState<ForYouResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -198,4 +199,15 @@ function highlightQuery(body: Record<string, unknown>): string {
 
 function escape(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+
+// The view reads its state from the URL (`useUrlState`), which the static
+// export only allows under a Suspense boundary.
+export default function ForYouPage() {
+  return (
+    <Suspense>
+      <ForYouView />
+    </Suspense>
+  );
 }

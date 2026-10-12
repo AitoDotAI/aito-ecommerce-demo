@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
 import { apiFetch, fmtEur } from "@/lib/api";
 import { boughtTogetherPanel } from "@/lib/panel-content";
 import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import LiftHint from "@/components/prediction/LiftHint";
 import ErrorState from "@/components/shell/ErrorState";
+import { useUrlState } from "@/lib/use-url-state";
 import type {
   BoughtTogetherResponse,
   BoughtTogetherCrossSell,
@@ -25,7 +26,7 @@ import type {
  * dental-treats moment lands as the top cross-sell of the
  * default anchor.
  */
-export default function BoughtTogetherPage() {
+function BoughtTogetherView() {
   usePagePanel(boughtTogetherPanel(), {
     title: "Bought Together",
     description:
@@ -35,7 +36,7 @@ export default function BoughtTogetherPage() {
   });
 
   const { setPanel } = useShell();
-  const [anchor, setAnchor] = useState("dog_dryfood");
+  const [anchor, setAnchor] = useUrlState("anchor", "dog_dryfood");
   const [data, setData] = useState<BoughtTogetherResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -307,4 +308,15 @@ function highlightQuery(body: Record<string, unknown>): string {
 
 function escape(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+
+// The view reads its state from the URL (`useUrlState`), which the static
+// export only allows under a Suspense boundary.
+export default function BoughtTogetherPage() {
+  return (
+    <Suspense>
+      <BoughtTogetherView />
+    </Suspense>
+  );
 }
