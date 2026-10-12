@@ -66,6 +66,21 @@ written into `docs/aito-cheatsheet.md` before a view uses it:
 
 Each result, pass or fail, is recorded below with the date and the env.
 
+## Amendments (2026-10-12, while writing the data tests, before any generation)
+
+- **S1 covers food only** (dry and wet food), not treats. The catalogue
+  has no sensitive or senior treats, so a treat rule could not be kept.
+  `puppy` goes only to dog-only households (there is no puppy cat food).
+  S1a reads "food lines of rule households that break the rule: 0".
+- **S2's sequence is durables only**: small animal hideout → exercise
+  wheel → tunnel. A wooden chew is consumable and re-bought, so it can't
+  mark a step. With three steps a uniform pick of the second already gives
+  50 %, so S2a's bar becomes **≥ 70 %**.
+- **S4 adds a gift line**: staples fill most lines, so a pick-weight
+  factor alone barely moves the December share. In December an order adds
+  one treat or toy with P 0.35; in November with P 0.15. The thresholds
+  are unchanged.
+
 ## Results
 
 *(none yet)*
