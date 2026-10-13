@@ -210,6 +210,16 @@ cart and watch the grid move. Switch to Janne: "a grain-free household;
 the rule is a filter, Aito ranks within it." Switch to Helena and press
 "Fill my usual basket".
 
+## Optional beat — the owner's view (30 s)
+
+Open `/shop-analytics/`. "The same data, from the owner's side." Point at
+dog dry food with dental treats (about 2.8× more often together than
+chance), the 1–2 star products bought less, and summer health care.
+Then the footnote under a section: "every lift has its counts, an
+interval widened because one shopper's rows aren't independent, and a
+bar for the whole section. What doesn't clear it is listed as no clear
+effect, not hidden."
+
 ## Beat 7 — close (10 s)
 
 > "A dozen views, one Aito DB. No retraining, no MLOps, no
