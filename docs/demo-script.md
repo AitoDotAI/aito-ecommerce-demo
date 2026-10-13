@@ -203,9 +203,9 @@ the profit move (ADR 0029).
 
 ## Optional beat — the Shop (40 s)
 
-Open `/shop/?shopper=sofia`. "Sofia just got a guinea pig." Point at
-"What's next for their pet": the exercise wheel, because shoppers who
-owned a cage, a bottle and a hideout bought that next. Add a cage to the
+Open `/shop/?shopper=sofia`. "Sofia just got a guinea pig: a cage and a
+bottle so far." Point at "What's next for their pet": the hideout, because
+shoppers who owned a cage and a bottle bought that next. Add a cage to the
 cart and watch the grid move. Switch to Janne: "a grain-free household;
 the rule is a filter, Aito ranks within it." Switch to Helena and press
 "Fill my usual basket".

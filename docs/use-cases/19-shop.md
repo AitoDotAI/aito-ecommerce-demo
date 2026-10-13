@@ -11,12 +11,14 @@ sees what's next for the kit.*
 The other views each show one Aito query. The Shop puts them in front of
 a shopper, the way a store would use them. Its six shoppers are real
 customers in the data, and each card's story is checked against their
-history (`tests/test_shop_personas.py`): Sofia just got a guinea pig,
+history (`tests/test_shop_personas.py`): Sofia just got a guinea pig (a cage and a bottle so far),
 Janne's household only buys grain-free food, Helena buys the same cat
 food every few weeks.
 
 Shopper, month, cart and the open product are all in the URL, so a link
-opens the same shop.
+opens the same shop. The month is "now": every panel uses only the
+shopper's orders before it (`src/shop_history.py`), so picking an earlier
+month shows the shop as it was then.
 
 ## How it works
 
@@ -77,7 +79,8 @@ they just bought (ADR 0030, check A8); the card shows the drop, e.g.
 - **What's next for their pet:** `_predict product_sku` on `order_lines`
   whose order already owned what the shopper owns
   (`order_id.owned_before` matching each item). For Sofia, with a cage,
-  bottle and hideout, the exercise wheel comes first.
+  bottle as of April 2026, the hideout comes first (the kit's next step); a
+  shopper who owned a cage, bottle and hideout gets the exercise wheel.
 
 ## Data schema
 

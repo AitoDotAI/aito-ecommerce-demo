@@ -17,6 +17,7 @@ from src.aito_client import AitoClient
 from src.aito_compat import related_value
 from src.lookup_errors import UnknownProductError
 from src.price_bands import lift_interval
+from src.shop_history import orders_before
 from src.shop_personas import shopper
 
 PAIRS = 6
@@ -45,7 +46,7 @@ class ProductDrawer:
         return asdict(self)
 
 
-def get_product_drawer(client: AitoClient, sku: str, shopper_key: str) -> ProductDrawer:
+def get_product_drawer(client: AitoClient, sku: str, shopper_key: str, month: str) -> ProductDrawer:
     found = client.search("products", where={"sku": sku}, limit=1)["hits"]
     if not found:
         raise UnknownProductError(f"No product {sku} in the catalogue")
@@ -65,11 +66,12 @@ def get_product_drawer(client: AitoClient, sku: str, shopper_key: str) -> Produc
                               int(h["fs"]["fOnCondition"]), int(h["fs"]["fCondition"]))
                    for other, h in pairs]
 
-    customer_id = shopper(shopper_key).customer_id
-    mine = client.search("orders", where={"customer_id": customer_id, "skus": {"$match": sku}}, limit=100)["hits"]
+    # Their own orders before the picked month that held it: history, as of then.
+    mine = [o["month"] for o in orders_before(client, shopper(shopper_key).customer_id, month)
+            if sku in o["skus"].split()]
     return ProductDrawer(
         product=found[0], same_basket=same_basket,
-        your_orders=sorted(o["month"] for o in mine),
+        your_orders=mine,
         last_query={"endpoint": "_relate", "body": body},
     )
 

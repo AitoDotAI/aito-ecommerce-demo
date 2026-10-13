@@ -48,6 +48,7 @@ function ShopView() {
   const [suggestions, setSuggestions] = useState<ShopSuggestions | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState<string | null>(null);
+  const [suggestionsError, setSuggestionsError] = useState<string | null>(null);
 
   useEffect(() => {
     apiFetch<{ shoppers: ShopShopper[] }>("/api/shop/shoppers").then((r) => setShoppers(r.shoppers), (e) => setError(String(e)));
@@ -71,12 +72,14 @@ function ShopView() {
   }, [shopperKey, month, cartParam, setPanel]);
 
   useEffect(() => {
+    // As of the picked month, like the grid: later orders haven't happened yet.
     let current = true;
     setSuggestions(null);
-    apiFetch<ShopSuggestions>(`/api/shop/suggestions?shopper=${shopperKey}`)
-      .then((s) => { if (current) setSuggestions(s); }, (e) => { if (current) setError(String(e)); });
+    setSuggestionsError(null);
+    apiFetch<ShopSuggestions>(`/api/shop/suggestions?shopper=${shopperKey}&month=${month}`)
+      .then((s) => { if (current) setSuggestions(s); }, (e) => { if (current) setSuggestionsError(String(e)); });
     return () => { current = false; };
-  }, [shopperKey]);
+  }, [shopperKey, month]);
 
   const shown = grid && grid.shopper.key === shopperKey ? grid : null;
   const stale = !!shown && (shown.month !== month || shown.cart.map((p) => p.sku).join(",") !== cartParam);
@@ -112,7 +115,10 @@ function ShopView() {
         </div>
       )}
 
-      {notFound && <NotFoundNotice message={notFound} resetLabel="Empty the cart" onReset={() => setCart([])} />}
+      {notFound && (
+        <NotFoundNotice message={notFound} resetLabel="Start over as Sofia, with an empty cart"
+                        onReset={() => setUrl({ shopper: null, cart: null, product: null })} />
+      )}
       {error && <ErrorState title="Couldn't load the shop" message={error} />}
 
       {!error && !notFound && (
@@ -131,14 +137,19 @@ function ShopView() {
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <CartPanel cart={shown?.cart ?? []} onRemove={(sku) => setCart(cart.filter((s) => s !== sku))}
                        onClear={() => setCart([])} />
-            {suggestions && <SuggestionsPanel suggestions={suggestions} onAdd={(sku) => addToCart([sku])}
-                                              onAddAll={addToCart} />}
+            {suggestionsError && (
+              <div className="card card-sub" style={{ color: "var(--red)" }}>
+                Couldn&apos;t load their suggestions: {suggestionsError}
+              </div>
+            )}
+            {suggestions && <SuggestionsPanel suggestions={suggestions} month={monthLabel(month)}
+                                              onAdd={(sku) => addToCart([sku])} onAddAll={addToCart} />}
           </div>
         </div>
       )}
 
       {openSku && (
-        <ProductDrawer sku={openSku} shopper={shopperKey} onClose={() => setUrl({ product: null })}
+        <ProductDrawer sku={openSku} shopper={shopperKey} month={month} onClose={() => setUrl({ product: null })}
                        onAdd={(sku) => addToCart([sku])} />
       )}
     </div>

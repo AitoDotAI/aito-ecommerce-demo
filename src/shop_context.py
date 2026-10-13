@@ -52,11 +52,14 @@ def shopper_where(customer: dict, cart: list[dict], month: str) -> dict:
 
 def rule_filter(rule: str | None) -> dict | None:
     """A household rule as a filter on the candidates: anything that isn't
-    food, or food whose name carries the rule's word. A rule is a filter,
+    dog or cat food, or food whose name carries the rule's word. A rule is a filter,
     not a prediction: 14 purchases can't teach it (ADR 0031, check A1)."""
     if rule is None:
         return None
+    # As the generator's rule: dog and cat food only. A grain-free household's
+    # guinea-pig food isn't covered by it.
     return {"$or": [
         {"product_sku.category": {"$not": {"$or": FOOD}}},
+        {"product_sku.pet_type": {"$not": {"$or": ["dog", "cat"]}}},
         {"product_sku.name": {"$match": RULE_WORDS[rule]}},
     ]}

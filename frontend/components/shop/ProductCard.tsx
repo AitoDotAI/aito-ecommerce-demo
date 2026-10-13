@@ -22,11 +22,11 @@ export default function ProductCard({ item, onAdd, onOpen }: {
       <div className="card-sub">
         {item.pet_type.replace("_", " ")} · {item.category.replace("-", " ")} · {fmtEur(item.price_eur, 2)}
       </div>
-      <div title="Aito's probability that this shopper buys it, now">
+      <div title="Aito's probability that this shopper buys it when it is shown to them">
         <div style={{ height: 5, background: "var(--border-light)", borderRadius: 3 }}>
           <div style={{ width: `${Math.round(item.p * 100)}%`, height: "100%", background: "var(--cta)", borderRadius: 3 }} />
         </div>
-        <div className="card-sub" style={{ marginTop: 2 }}>{Math.round(item.p * 100)} % likely to buy</div>
+        <div className="card-sub" style={{ marginTop: 2 }}>{Math.round(item.p * 100)} % buy it when shown</div>
       </div>
       {item.p_if_new !== null && (
         <div className="card-sub" style={{ color: "var(--red)" }}>

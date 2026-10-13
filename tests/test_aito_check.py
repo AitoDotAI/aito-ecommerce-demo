@@ -505,11 +505,13 @@ def test_shop_an_item_bought_last_order_scores_lower_as_just_bought(client):
     assert p({"just_bought": True}) < p({})
 
 
-def test_shop_suggests_the_exercise_wheel_next_after_cage_bottle_and_hideout(client):
-    """A2's shop form, for Sofia."""
+def test_shop_suggests_the_hideout_next_for_a_cage_and_a_bottle(client):
+    """A2's shop form, for Sofia as of April 2026: she owns a cage and a
+    bottle, and the kit's next item is the hideout."""
     from src.shop_suggestions import get_suggestions
 
-    result = get_suggestions(client, "sofia")
+    result = get_suggestions(client, "sofia", "2026-04")
 
-    assert result.next_for_pet and "Exercise Wheel" in result.next_for_pet[0].name, result.next_for_pet
+    assert result.owned == {"small_animal": ["cage", "water_bottle"]}, result.owned
+    assert result.next_for_pet and "Hideout" in result.next_for_pet[0].name, result.next_for_pet
     assert result.usual, "no usual basket for a shopper with orders"

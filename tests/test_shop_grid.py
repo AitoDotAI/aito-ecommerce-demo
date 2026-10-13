@@ -37,7 +37,8 @@ class FakeAito:
             return {"hits": [CUSTOMERS[where["customer_id"]]]}
         if table == "products":
             return {"hits": [product(s) for s in where["sku"]["$or"] if s.startswith("SKU-")]}
-        return {"hits": [{"month": "2026-03", "skus": self.last_order}, {"month": "2025-11", "skus": "SKU-OLD"}]}
+        orders = [{"month": "2026-03", "skus": self.last_order}, {"month": "2025-11", "skus": "SKU-OLD"}]
+        return {"hits": orders, "total": len(orders)}
 
     def recommend(self, table, where, recommend_field, goal, limit=8):
         self.recommends.append(where)
@@ -65,6 +66,7 @@ def test_the_carts_items_are_context_and_are_not_recommended_again():
 
     where = fake.recommends[0]
     assert where["product_sku"] == {"$not": {"$or": ["SKU-C"]}}
+    assert where["just_bought"] is False   # ranked as not just bought; the re-ask handles those
     assert where["basket_skus"] == {"$and": [{"$match": "SKU-C"}]}
 
 
@@ -99,3 +101,8 @@ def test_a_predict_without_a_true_answer_raises():
 
     with pytest.raises(AitoError, match="no `true` hit"):
         get_shop_grid(fake, "helena", "2026-04", [])
+
+
+def test_a_cart_listing_a_product_twice_is_refused():
+    with pytest.raises(ValueError, match="twice"):
+        get_shop_grid(FakeAito([]), "helena", "2026-04", ["SKU-C", "SKU-C"])

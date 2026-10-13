@@ -35,9 +35,12 @@ def test_an_empty_cart_adds_no_basket_context():
     assert "basket_skus" not in where and "basket_categories" not in where
 
 
-def test_a_rule_keeps_non_food_and_food_that_names_it():
+def test_a_rule_keeps_non_food_other_pets_food_and_food_that_names_it():
+    # As the generator's rule: it covers dog and cat food only, so a
+    # grain-free household's guinea-pig food stays on offer.
     assert rule_filter("grain-free") == {"$or": [
         {"product_sku.category": {"$not": {"$or": ["dry-food", "wet-food"]}}},
+        {"product_sku.pet_type": {"$not": {"$or": ["dog", "cat"]}}},
         {"product_sku.name": {"$match": "Grain"}},
     ]}
     assert rule_filter(None) is None

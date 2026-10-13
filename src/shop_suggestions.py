@@ -16,6 +16,7 @@ from dataclasses import asdict, dataclass
 
 from src.aito_client import AitoClient
 from src.shop_context import DURABLE_TYPES, item_type
+from src.shop_history import orders_before
 from src.shop_personas import shopper
 
 USUAL_ITEMS = 8
@@ -43,27 +44,26 @@ class Suggestions:
         return asdict(self)
 
 
-def get_suggestions(client: AitoClient, shopper_key: str) -> Suggestions:
+def get_suggestions(client: AitoClient, shopper_key: str, month: str) -> Suggestions:
+    """As of `month`: only the shopper's orders before it count."""
     customer_id = shopper(shopper_key).customer_id
-    orders = sorted(client.search("orders", where={"customer_id": customer_id}, limit=200)["hits"],
-                    key=lambda o: o["month"])
+    orders = orders_before(client, customer_id, month)
     if not orders:
         return Suggestions([], [], {}, True, [])
 
-    usual_body = {"from": {"from": "orders", "where": {"customer_id": customer_id}},
-                  "predict": "skus.$feature", "limit": USUAL_ITEMS + 6}
-    usual_hits = client._request("POST", "/_predict", json=usual_body)["hits"]
+    # Their orders before the month, as the population (a nested `from`).
+    population = {"from": "orders", "where": {"order_id": {"$or": [o["order_id"] for o in orders]}}}
+    usual_hits = client.predict_rows(population, "skus.$feature", limit=USUAL_ITEMS + 6)["hits"]
+    usual_body = {"from": population, "predict": "skus.$feature", "limit": USUAL_ITEMS + 6}
 
     owned = _owned(client, orders[-1])        # {"small_animal": {"cage", "water_bottle"}}
     next_hits, next_bodies = [], []
     for pet, kinds in sorted(owned.items()):
-        body = {"from": "order_lines",
-                "where": {"order_id.owned_before": {"$and": [{"$match": f"{pet}_{k}"} for k in sorted(kinds)]},
-                          "product_sku.pet_type": pet,
-                          "product_sku.category": {"$or": ["accessories", "toys"]}},
-                "predict": "product_sku", "limit": 12}
-        next_bodies.append(body)
-        next_hits += [(pet, h) for h in client._request("POST", "/_predict", json=body)["hits"]]
+        where = {"order_id.owned_before": {"$and": [{"$match": f"{pet}_{k}"} for k in sorted(kinds)]},
+                 "product_sku.pet_type": pet,
+                 "product_sku.category": {"$or": ["accessories", "toys"]}}
+        next_bodies.append({"from": "order_lines", "where": where, "predict": "product_sku", "limit": 12})
+        next_hits += [(pet, h) for h in client.predict_rows("order_lines", "product_sku", where=where, limit=12)["hits"]]
     # What they already own isn't next.
     fresh = [h for pet, h in next_hits
              if _kind(h["name"], h["brand"]) not in owned[pet] and h["$p"] >= MIN_NEXT_P]

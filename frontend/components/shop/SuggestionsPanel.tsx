@@ -4,13 +4,17 @@ import type { ShopSuggestions } from "@/lib/types";
 
 /** "Fill my usual basket" and "What's next for your pet": both predicted
  *  from this shopper's own history (src/shop_suggestions.py). */
-export default function SuggestionsPanel({ suggestions, onAdd, onAddAll }: {
+// "Fill my usual basket" adds what they buy at least this often.
+const FILL_AT = 0.15;
+
+export default function SuggestionsPanel({ suggestions, month, onAdd, onAddAll }: {
   suggestions: ShopSuggestions;
+  month: string;
   onAdd: (sku: string) => void;
   onAddAll: (skus: string[]) => void;
 }) {
   if (suggestions.no_history) {
-    return <div className="card card-sub">No orders yet, so nothing to suggest from their history.</div>;
+    return <div className="card card-sub">No orders before {month}, so nothing to suggest from their history.</div>;
   }
   const owned = Object.entries(suggestions.owned)
     .map(([pet, kinds]) => `${pet.replace("_", " ")}: ${kinds.map((k) => k.replace("_", " ")).join(", ")}`);
@@ -18,16 +22,20 @@ export default function SuggestionsPanel({ suggestions, onAdd, onAddAll }: {
     <div className="card">
       <div className="page-title" style={{ fontSize: 16, margin: 0 }}>Their usual basket</div>
       <div className="card-sub" style={{ marginBottom: 6 }}>
-        What they buy again, each with Aito&apos;s probability (`skus.$feature` over their own orders)
+        From their orders before {month}: what they buy again, each with Aito&apos;s probability
+        (`skus.$feature` over those orders)
       </div>
       {suggestions.usual.map((s) => (
         <Row key={s.sku} name={s.name} p={s.p} onAdd={() => onAdd(s.sku)} />
       ))}
       {suggestions.usual.length > 0 && (
-        <button className="btn" style={{ marginTop: 8 }}
-                onClick={() => onAddAll(suggestions.usual.filter((s) => s.p >= 0.15).map((s) => s.sku))}>
+        <div style={{ marginTop: 8 }}>
+        <button className="btn"
+                onClick={() => onAddAll(suggestions.usual.filter((s) => s.p >= FILL_AT).map((s) => s.sku))}>
           Fill my usual basket
         </button>
+        <span className="card-sub" style={{ marginLeft: 8 }}>adds those at {Math.round(FILL_AT * 100)} % or more</span>
+        </div>
       )}
 
       <div className="page-title" style={{ fontSize: 16, margin: "16px 0 0" }}>What&apos;s next for their pet</div>

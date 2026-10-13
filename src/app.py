@@ -382,6 +382,8 @@ def _shop(compute):
         return compute().to_dict()
     except (UnknownShopperError, UnknownProductError) as exc:
         return JSONResponse(status_code=404, content={"error": str(exc)})
+    except ValueError as exc:    # a malformed request, e.g. a product twice in the cart
+        return JSONResponse(status_code=400, content={"error": str(exc)})
     except AitoError as exc:
         return JSONResponse(status_code=502, content={"error": str(exc), "status_code": exc.status_code})
 
@@ -401,15 +403,15 @@ def shop_grid_endpoint(shopper: str, month: str = Query(pattern=MONTH), cart: st
 
 
 @app.get("/api/shop/product")
-def shop_product_endpoint(sku: str, shopper: str):
-    """A product's drawer: often in the same basket, and in your orders."""
-    return _shop(lambda: get_product_drawer(aito, sku, shopper))
+def shop_product_endpoint(sku: str, shopper: str, month: str = Query(pattern=MONTH)):
+    """A product's drawer: often in the same basket, and in your orders before `month`."""
+    return _shop(lambda: get_product_drawer(aito, sku, shopper, month))
 
 
 @app.get("/api/shop/suggestions")
-def shop_suggestions_endpoint(shopper: str):
-    """The usual basket, and what's next for the shopper's pet."""
-    return _shop(lambda: get_suggestions(aito, shopper))
+def shop_suggestions_endpoint(shopper: str, month: str = Query(pattern=MONTH)):
+    """The usual basket, and what's next for the shopper's pet, as of `month`."""
+    return _shop(lambda: get_suggestions(aito, shopper, month))
 
 
 @app.get("/api/product-insights")

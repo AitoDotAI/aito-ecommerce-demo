@@ -17,6 +17,7 @@ from dataclasses import asdict, dataclass
 from src.aito_client import AitoClient, AitoError
 from src.lookup_errors import UnknownProductError
 from src.shop_context import rule_filter, shopper_where
+from src.shop_history import orders_before
 from src.shop_personas import shopper
 
 GRID_SIZE = 12
@@ -56,7 +57,8 @@ def get_shop_grid(client: AitoClient, shopper_key: str, month: str, cart_skus: l
     rule = customer.get("diet_rule")
 
     context = shopper_where(customer, cart, month)
-    where = dict(context)
+    # Ranked as if not just bought; items from the last order are re-asked below.
+    where = {**context, "just_bought": False}
     if (keeps_rule := rule_filter(rule)) is not None:
         where.update(keeps_rule)
     if cart_skus:
@@ -79,6 +81,8 @@ def get_shop_grid(client: AitoClient, shopper_key: str, month: str, cart_skus: l
 def _cart(client: AitoClient, skus: list[str]) -> list[dict]:
     if not skus:
         return []
+    if len(set(skus)) != len(skus):
+        raise ValueError(f"The cart lists a product twice: {', '.join(skus)}")
     found = {p["sku"]: p for p in client.search("products", where={"sku": {"$or": skus}}, limit=len(skus))["hits"]}
     missing = [s for s in skus if s not in found]
     if missing:
@@ -88,8 +92,7 @@ def _cart(client: AitoClient, skus: list[str]) -> list[dict]:
 
 def _last_order_skus(client: AitoClient, customer_id: str, month: str) -> list[str]:
     """The shopper's last order before `month`, as the generator defines it."""
-    orders = client.search("orders", where={"customer_id": customer_id}, limit=200)["hits"]
-    earlier = sorted((o for o in orders if o["month"] < month), key=lambda o: o["month"])
+    earlier = orders_before(client, customer_id, month)
     return earlier[-1]["skus"].split() if earlier else []
 
 

@@ -21,7 +21,9 @@ class FakeAito:
         if table == "products":
             skus = where["sku"]["$or"] if isinstance(where["sku"], dict) else [where["sku"]]
             return {"hits": [{"sku": s, "name": f"Name {s}"} for s in skus if s != "NOPE"]}
-        return {"hits": [{"month": "2026-02"}, {"month": "2025-11"}]}
+        orders = [{"month": "2026-02", "skus": "SKU-A SKU-Z"}, {"month": "2025-11", "skus": "SKU-A"},
+                  {"month": "2025-06", "skus": "SKU-Z"}, {"month": "2026-05", "skus": "SKU-A"}]
+        return {"hits": orders, "total": len(orders)}
 
     def relate(self, table, where, relate_field, limit=10):
         assert (table, relate_field, where) == ("orders", "skus", {"skus": {"$match": "SKU-A"}})
@@ -31,22 +33,23 @@ class FakeAito:
 def test_same_basket_keeps_well_supported_pairs_and_drops_the_product_itself():
     fake = FakeAito([pair("SKU-A", 126.0, 92), pair("SKU-B", 4.0, 30), pair("SKU-C", 6.5, 3)])
 
-    drawer = get_product_drawer(fake, "SKU-A", "helena")
+    drawer = get_product_drawer(fake, "SKU-A", "helena", "2026-04")
 
     # SKU-C's 6.5× rests on 3 orders: too few to call "often", whatever the interval.
     assert [(p.sku, p.together, p.orders_with_it) for p in drawer.same_basket] == [("SKU-B", 30, 92)]
     assert drawer.same_basket[0].name == "Name SKU-B"
 
 
-def test_your_orders_are_the_shoppers_own_history_in_time_order():
+def test_your_orders_are_the_shoppers_own_history_before_the_month():
     fake = FakeAito([])
 
-    drawer = get_product_drawer(fake, "SKU-A", "helena")
+    drawer = get_product_drawer(fake, "SKU-A", "helena", "2026-04")
 
-    assert ("orders", {"customer_id": "CUST-00053", "skus": {"$match": "SKU-A"}}) in fake.searches
+    # The 2026-05 order hasn't happened yet in April 2026; the 2025-06 one didn't hold it.
+    assert ("orders", {"customer_id": "CUST-00053"}) in fake.searches
     assert drawer.your_orders == ["2025-11", "2026-02"]
 
 
 def test_an_unknown_product_is_refused():
     with pytest.raises(UnknownProductError, match="NOPE"):
-        get_product_drawer(FakeAito([]), "NOPE", "helena")
+        get_product_drawer(FakeAito([]), "NOPE", "helena", "2026-04")

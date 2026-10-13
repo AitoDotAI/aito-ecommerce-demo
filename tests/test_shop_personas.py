@@ -42,12 +42,13 @@ def test_every_shopper_is_an_active_customer(history):
         assert orders.get(s.customer_id), s
 
 
-def test_sofia_is_a_new_guinea_pig_owner_with_a_cage_bottle_and_hideout(history):
+def test_sofia_is_a_new_guinea_pig_owner_with_a_cage_and_a_bottle_by_april(history):
     products, _, orders = history
     sofia = orders[shopper("sofia").customer_id]
-    kinds = {lifecycle.item_type(p["name"], p["brand"]) for p in _bought(products, sofia)}
+    before_april = [o for o in sofia if o["month"] < "2026-04"]
+    kinds = {lifecycle.item_type(p["name"], p["brand"]) for p in _bought(products, before_april)}
     assert len(sofia) <= 3
-    assert {"Cage", "Water Bottle", "Hideout"} <= kinds
+    assert {"Cage", "Water Bottle"} <= kinds and "Hideout" not in kinds
     assert {p["pet_type"] for p in _bought(products, sofia)} == {"small_animal"}
     food = [p["name"] for p in _bought(products, sofia) if p["category"] == "dry-food"]
     assert food and all("Guinea Pig" in name for name in food)
