@@ -29,8 +29,9 @@ def is_price_outlier(list_price: float, mean: float, std: float, observations: i
 
 
 def lift_interval(lift: float, f_on_condition: float, f_condition: float,
-                  f: float, n: float) -> tuple[float, float]:
+                  f: float, n: float, z: float = _Z95) -> tuple[float, float]:
     """95 % interval for a `_relate` lift, from the counts Aito returns in `fs`.
+    A larger `z` gives a wider interval (Shop analytics passes a Bonferroni z).
 
     Lift is P(category | band) / P(category), a ratio of two proportions.
     The width uses the relative-risk standard error for two independent
@@ -44,7 +45,7 @@ def lift_interval(lift: float, f_on_condition: float, f_condition: float,
         return 0.0, math.inf
     se = math.sqrt(max(1 / f_on_condition - 1 / f_condition + 1 / f - 1 / n, 0.0))
     log_lift = math.log(lift)
-    return math.exp(log_lift - _Z95 * se), math.exp(log_lift + _Z95 * se)
+    return math.exp(log_lift - z * se), math.exp(log_lift + z * se)
 
 
 def is_real_lift(lift: float, fs: dict) -> bool:

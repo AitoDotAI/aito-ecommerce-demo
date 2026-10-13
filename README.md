@@ -62,12 +62,12 @@ Each is in its own view, each builds on the previous:
 | 1 | Smart Search rank flip — same query, cat food for a cat owner, dog food for a dog owner | [Smart Search](#2-smart-search--purchase-probability--text-relevance) | `_search` × 2 (`$similarity`, `$multiply`) |
 | 2 | For You persona switch — grid re-ranks in <300 ms on pill click | [For You](#3-for-you--personalised-tile-grid) | `_recommend` |
 | 3 | Bought Together 2.72× — dog dry-food → dental treats, live | [Bought Together](#4-bought-together--co-purchase-lift) | `_relate` |
-| 4 | Product Filling 5 fields — multi-`_predict` in ~480 ms | [Product Filling](#15-product-filling--catalog-enrichment) | `_predict` × 5 |
-| 5 | Evaluation honest failure — Return Risk +0.0 pp gain | [Evaluation](#16-evaluation--honest-passfail) | `_evaluate` × 4 |
-| 6 | Churn ranking — 100 active customers scored by P(churn in 3 mo) from the time-series panel | [Churn](#8-churn--time-series-prediction-over-the-panel) | `_predict` × N + `_relate` × 5 + `_evaluate` |
-| 7 | **Inventory reorder workflow** — critical SKUs ranked by revenue at risk in €, per-row `$why` decomposing the demand forecast | [Inventory](#10-inventory--the-killer-operate-view) | `_estimate` × 25 + `_search` |
-| 8 | *Paused:* Markdown decision — the discount that clears overstock at the highest recoverable margin | [Markdown](#12-markdown--inventory--demand--price-one-workflow) | `_estimate` × 5 per SKU |
-| 9 | *Paused:* Win-back — products a churned customer is likely to respond to | [Win-back](#14-winback--empirical-revenue-impact-per-send) | `_recommend` + `_estimate` |
+| 4 | Product Filling 5 fields — multi-`_predict` in ~480 ms | [Product Filling](#17-product-filling--catalog-enrichment) | `_predict` × 5 |
+| 5 | Evaluation honest failure — Return Risk +0.0 pp gain | [Evaluation](#18-evaluation--honest-passfail) | `_evaluate` × 4 |
+| 6 | Churn ranking — 100 active customers scored by P(churn in 3 mo) from the time-series panel | [Churn](#10-churn--time-series-prediction-over-the-panel) | `_predict` × N + `_relate` × 5 + `_evaluate` |
+| 7 | **Inventory reorder workflow** — critical SKUs ranked by revenue at risk in €, per-row `$why` decomposing the demand forecast | [Inventory](#12-inventory--the-killer-operate-view) | `_estimate` × 25 + `_search` |
+| 8 | *Paused:* Markdown decision — the discount that clears overstock at the highest recoverable margin | [Markdown](#14-markdown--inventory--demand--price-one-workflow) | `_estimate` × 5 per SKU |
+| 9 | *Paused:* Win-back — products a churned customer is likely to respond to | [Win-back](#16-win-back--empirical-revenue-impact-per-send) | `_recommend` + `_estimate` |
 
 The two-minute narrated walkthrough is in
 [`docs/demo-script.md`](docs/demo-script.md).
@@ -226,7 +226,28 @@ Pick any product. The page shows:
 The ~20 counts go in one `_batch`. The `_relate` calls run in parallel, and the query pane shows one of the `_relate` bodies sent (the customer-segment one). Puppy Cheese Treats: dog owners 1.42× (99 of 117 lines).
 [→ Implementation](src/product_insights_service.py) | [Use case guide](docs/use-cases/17-product-insights.md) | [ADR](docs/adr/0028-product-insights.md)
 
-### 7. 🔗 Pattern Explorer — the full lift band
+### 7. 🏪 Shop analytics — the patterns behind the shop
+
+```python
+# What goes with a purchase: one field-form `_relate` per field, in
+# parallel. Each hit's `fs` gives the counts behind its interval.
+client.relate(
+    table="impressions",
+    where={"purchased": True},
+    relate_field="product_sku.rating_band",
+)
+```
+
+Four sections, each its own endpoint and a set of parallel `_relate`s:
+- what goes with a purchase or a click (rating, category, segment, diet rule, "in their last order", surface);
+- who buys what, and when: categories and dietary lines for a season, segment or diet rule;
+- category pairs that share a basket;
+- the search words that convert above and below the average search.
+
+Each lift is shown with its counts and an interval that accounts for two things: one customer's rows are not independent (a design effect measured from `_relate`s on the customer column), and a section tests dozens of lifts at once (Bonferroni, 95 % for the section). A lift is shown only if that interval excludes 1 and it rests on 30 or more independent rows. 1–2 star products sell at 0.79× (923 of 12,135 purchases); summer order lines hold 4.0× the usual share of health products. Needs ADR 0030's data (test env `shoppers` for now).
+[→ Implementation](src/shop_analytics_service.py) | [Use case guide](docs/use-cases/18-shop-analytics.md) | [ADR](docs/adr/0031-interactive-shop-and-owner-analytics.md)
+
+### 8. 🔗 Pattern Explorer — the full lift band
 
 ![Pattern Explorer](screenshots/06-pattern-explorer.png)
 
@@ -246,7 +267,7 @@ side of the equation, plus richer fields per row (lift, support
 counts, p_given vs. p_overall).
 [→ Implementation](src/pattern_service.py) | [Use case guide](docs/use-cases/06-pattern-explorer.md) | [ADR](docs/adr/0011-analytics-and-patterns.md)
 
-### 8. 💬 Feedback — review triage + churn risk from text
+### 9. 💬 Feedback — review triage + churn risk from text
 
 ![Feedback](screenshots/09-feedback.png)
 
@@ -266,7 +287,7 @@ connects feedback to retention: a complaint about late delivery
 lights up a red risk chip; positive praise stays green.
 [→ Implementation](src/feedback_service.py) | [Use case guide](docs/use-cases/09-feedback.md) | [ADR](docs/adr/0012-feedback-multi-predict.md)
 
-### 9. 📉 Churn — time-series prediction over the panel
+### 10. 📉 Churn — time-series prediction over the panel
 
 ![Churn](screenshots/10-churn.png)
 
@@ -294,7 +315,7 @@ customers, per profile field and tenure band; held-out accuracy via `_evaluate`.
 feature of the Understand section.
 [→ Implementation](src/churn_service.py) | [Use case guide](docs/use-cases/10-churn.md) | [ADR](docs/adr/0013-churn-prediction.md)
 
-### 10. 📦 Demand Forecast — `_estimate units_sold`, judged against naive
+### 11. 📦 Demand Forecast — `_estimate units_sold`, judged against naive
 
 ![Demand](screenshots/11-demand.png)
 
@@ -322,7 +343,7 @@ the bar a forecast has to clear. Forecasts feed the Inventory view's
 reorder workflow directly.
 [→ Implementation](src/demand_service.py) | [Use case guide](docs/use-cases/11-demand-forecast.md) | [ADR](docs/adr/0014-demand.md)
 
-### 11. 🏷️ Inventory — the killer Operate view
+### 12. 🏷️ Inventory — the killer Operate view
 
 ![Inventory](screenshots/12-inventory.png)
 
@@ -347,7 +368,7 @@ figures. The merchandiser's daily dashboard, with Aito doing the
 prediction underneath.
 [→ Implementation](src/inventory_service.py) | [Use case guide](docs/use-cases/12-inventory-intelligence.md) | [ADR](docs/adr/0015-inventory.md)
 
-### 12. 💶 Price Intelligence — fair-band + sweet-spot `_relate`
+### 13. 💶 Price Intelligence — fair-band + sweet-spot `_relate`
 
 ![Price](screenshots/13-price.png)
 
@@ -374,7 +395,7 @@ per fact ("sold 23 last month ×2.98", "price €4.68 ×0.48"), and the
 rows multiply out to it exactly. The SKU and price are in the URL.
 [→ Implementation](src/price_service.py) · [What-if](src/price_what_if.py) | [Use case guide](docs/use-cases/13-price.md) | [ADR](docs/adr/0016-price.md) · [ADR 0029](docs/adr/0029-price-what-if.md)
 
-### 13. ✂️ Markdown — Inventory + Demand + Price, one workflow
+### 14. ✂️ Markdown — Inventory + Demand + Price, one workflow
 
 ![Markdown](screenshots/inspect/14-markdown-default.png)
 
@@ -419,7 +440,7 @@ falls. A product opens with what's often in the same basket, and a
 routine buyer fills their usual basket in one click.
 [→ Implementation](src/shop_grid.py) | [Use case guide](docs/use-cases/19-shop.md) | [ADR](docs/adr/0031-interactive-shop-and-owner-analytics.md)
 
-### 14. 🛒 Cart Completion — checkout-funnel personalisation
+### 15. 🛒 Cart Completion — checkout-funnel personalisation
 
 ![Cart Completion](screenshots/inspect/15-cart-completion-default.png)
 
@@ -438,7 +459,7 @@ with confidence + expected uplift €. Same engine as Bought
 Together, surfaced at the checkout funnel.
 [→ Implementation](src/cart_completion_service.py) | [Use case guide](docs/use-cases/15-cart-completion.md) | [ADR](docs/adr/0019-cart-completion.md)
 
-### 15. ↩️ Win-back — empirical revenue impact per send
+### 16. ↩️ Win-back — empirical revenue impact per send
 
 ![Win-back](screenshots/inspect/16-winback-default.png)
 
@@ -466,7 +487,7 @@ send cost — 45× ROI. Demo moment #9.** Ports the Netigate
 action+impact pattern.
 [→ Implementation](src/winback_service.py) | [Use case guide](docs/use-cases/16-winback.md) | [ADR](docs/adr/0020-winback.md)
 
-### 16. ⚡ Product Filling — catalog enrichment
+### 17. ⚡ Product Filling — catalog enrichment
 
 ![Product Filling](screenshots/07-product-filling.png)
 
@@ -486,7 +507,7 @@ alternatives + `$why` factor tooltip. **Demo moment #4** — all
 five at ≥ 0.87 in ~480 ms.
 [→ Implementation](src/filling_service.py) | [Use case guide](docs/use-cases/07-product-filling.md) | [ADR](docs/adr/0009-product-filling.md)
 
-### 17. 🧪 Evaluation — honest pass/fail
+### 18. 🧪 Evaluation — honest pass/fail
 
 ![Evaluation](screenshots/08-evaluation.png)
 

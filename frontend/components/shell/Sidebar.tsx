@@ -46,6 +46,7 @@ const ALL_SECTIONS: NavSection[] = [
     items: [
       { href: "/purchase-analytics", label: "Purchase Analytics", icon: "📈" },
       { href: "/product-insights",   label: "Product Insights",   icon: "🔍", badge: { text: "New" } },
+      { href: "/shop-analytics",     label: "Shop analytics",     icon: "🏪", badge: { text: "New" } },
       { href: "/pattern-explorer",   label: "Pattern Explorer",   icon: "🔗" },
       { href: "/basket-rules",       label: "Basket Rules",       icon: "🧺", badge: { text: "New" } },
     ],

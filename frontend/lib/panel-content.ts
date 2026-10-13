@@ -206,6 +206,25 @@ export function productInsightsPanel(): AitoPanelConfig {
 }
 
 
+export function shopAnalyticsPanel(queriesSent?: number): AitoPanelConfig {
+  const c = (t: string) => `<code style="color:var(--aito-teal);">${t}</code>`;
+  return {
+    operation: "Shop analytics",
+    endpoints: ["_relate", "_search"],
+    description:
+      `Each section is ${c("_relate")}, sent in parallel: which values are over- or ` +
+      `under-represented among purchases (or clicks), in a group's order lines, in baskets with a ` +
+      `category, and in searches that convert. Two more ${c("_relate")}s on the customer column ` +
+      `measure how clustered the rows are, which widens every interval. A lift is shown when its ` +
+      `interval excludes 1 at 95 % for the whole section (Bonferroni) and it rests on 30 or more ` +
+      `independent rows. ${c("_search")} checks which search words are always searched together. ` +
+      `The query below is one of the ${queriesSent ?? "…"} sent.`,
+    query: "",
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
 export function patternExplorerPanel(): AitoPanelConfig {
   return {
     operation: "Pattern Explorer",

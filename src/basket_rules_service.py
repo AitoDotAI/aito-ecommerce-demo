@@ -49,7 +49,7 @@ from src import cache
 # high-volume pairs so the sweep is fast and every anchor has the
 # support to yield real rules. NOT an exhaustive itemset enumeration —
 # we surface strong pairwise rules; see ADR 0022 §"Out of scope".
-_ANCHORS: list[tuple[str, str]] = [
+MINED_ANCHORS: list[tuple[str, str]] = [
     ("dog", "dry-food"), ("dog", "wet-food"), ("dog", "treats"),
     ("dog", "dental-treats"), ("dog", "accessories"),
     ("cat", "dry-food"), ("cat", "wet-food"), ("cat", "litter"),
@@ -74,13 +74,13 @@ _CATEGORIES = (
 _CLEAN_TO_HYPHENATED: dict[str, str] = {c.replace("-", ""): c for c in _CATEGORIES}
 
 
-def _token(pet_type: str, category: str) -> str:
+def category_token(pet_type: str, category: str) -> str:
     """`("dog", "dry-food")` → `"dog_dryfood"` — the hyphen-stripped
     Text token used in `orders.line_categories` (ADR 0008)."""
     return f"{pet_type}_{category.replace('-', '')}"
 
 
-def _decode(token: str) -> tuple[str, str] | None:
+def decode_token(token: str) -> tuple[str, str] | None:
     """`"dog_dryfood"` → `("dog", "dry-food")`. `rpartition` splits on
     the LAST `_` because pet types like `small_animal` carry one."""
     pet, _, clean_cat = token.rpartition("_")
@@ -89,7 +89,7 @@ def _decode(token: str) -> tuple[str, str] | None:
     return pet, _CLEAN_TO_HYPHENATED.get(clean_cat, clean_cat)
 
 
-def _humanise(pet_type: str, category: str) -> str:
+def humanise(pet_type: str, category: str) -> str:
     if pet_type == "aquarium" and category == "aquarium":
         return "Aquarium products"
     label_pet = "Aquarium" if pet_type == "aquarium" else pet_type.replace("_", " ").capitalize()
@@ -137,7 +137,7 @@ def _mine_anchor(
     total_orders: int,
 ) -> list[BasketRule]:
     """One order-level `_relate` for a single anchor → its rules."""
-    anchor_token = _token(pet_type, category)
+    anchor_token = category_token(pet_type, category)
     res = client.relate(
         table="orders",
         where={"line_categories": {"$match": anchor_token}},
@@ -161,12 +161,12 @@ def _mine_anchor(
         if lift <= MIN_LIFT or confidence < MIN_CONFIDENCE or f_on < MIN_COUNT:
             continue
 
-        decoded = _decode(token)
+        decoded = decode_token(token)
         if decoded is None:
             continue
         rules.append(BasketRule(
-            antecedent=_humanise(pet_type, category),
-            consequent=_humanise(*decoded),
+            antecedent=humanise(pet_type, category),
+            consequent=humanise(*decoded),
             confidence=round(confidence, 3),
             lift=round(lift, 2),
             support_orders=int(f_on),
@@ -189,9 +189,9 @@ def get_basket_rules(client: AitoClient) -> BasketRulesResponse:
     )
 
     # Mine every anchor in parallel (cf. the Dashboard's relate fan-out).
-    with ThreadPoolExecutor(max_workers=min(8, len(_ANCHORS))) as pool:
+    with ThreadPoolExecutor(max_workers=min(8, len(MINED_ANCHORS))) as pool:
         per_anchor = pool.map(
-            lambda pc: _mine_anchor(client, pc[0], pc[1], total_orders), _ANCHORS
+            lambda pc: _mine_anchor(client, pc[0], pc[1], total_orders), MINED_ANCHORS
         )
     all_rules = [r for rules in per_anchor for r in rules]
 
@@ -200,17 +200,17 @@ def get_basket_rules(client: AitoClient) -> BasketRulesResponse:
     elapsed = int((time.perf_counter() - started) * 1000)
 
     # Representative query body for the Aito panel (the first anchor's).
-    sample_pet, sample_cat = _ANCHORS[0]
+    sample_pet, sample_cat = MINED_ANCHORS[0]
     body = {
         "from": "orders",
-        "where": {"line_categories": {"$match": _token(sample_pet, sample_cat)}},
+        "where": {"line_categories": {"$match": category_token(sample_pet, sample_cat)}},
         "relate": "line_categories",
         "limit": 12,
     }
 
     resp = BasketRulesResponse(
         rules=all_rules[:MAX_RULES],
-        anchors_mined=len(_ANCHORS),
+        anchors_mined=len(MINED_ANCHORS),
         total_orders=total_orders,
         last_query={"endpoint": "_relate", "body": body},
         last_response_ms=elapsed,
