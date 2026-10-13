@@ -516,63 +516,82 @@ def test_shop_suggests_the_hideout_next_for_a_cage_and_a_bottle(client):
     assert result.next_for_pet and "Hideout" in result.next_for_pet[0].name, result.next_for_pet
     assert result.usual, "no usual basket for a shopper with orders"
 # ── Shop analytics (ADR 0031): each section shows rows and a planted pattern ──
+# Rows are judged with clustering by customer and a Bonferroni level per
+# section (src/lift_rows.py), so a planted effect on few customers can
+# fall short: just-bought products under purchases (40 purchases, about 20
+# independent) and summer grooming (157 lines, about 28) do, on 2026-10-13.
 
 
 @pytest.fixture(scope="module")
 def shop_analytics(client):
-    from src.shop_analytics_service import get_shop_analytics
+    from src.basket_pairs import get_basket_section
+    from src.search_words import get_search_words_section
+    from src.shop_analytics_service import get_funnel_section, get_who_section
 
-    return {who: get_shop_analytics(client, who=who)
-            for who in ("summer", "grain-free")}
+    return {
+        "purchased": get_funnel_section(client, "purchased"),
+        "clicked": get_funnel_section(client, "clicked"),
+        "summer": get_who_section(client, "summer"),
+        "grain-free": get_who_section(client, "grain-free"),
+        "baskets": get_basket_section(client),
+        "words": get_search_words_section(client),
+    }
 
 
 def _row(rows, field, value):
     return next((r for r in rows if (r.field, r.value) == (field, value)), None)
 
 
-def test_shop_analytics_no_row_has_an_interval_that_includes_1(shop_analytics):
-    result = shop_analytics["summer"]
-    rows = result.funnel_rows + result.who_rows + result.basket_pairs + result.search_words.rows
-    assert rows
-    assert all(r.interval_low > 1 or r.interval_high < 1 for r in rows), rows
+def test_shop_analytics_shown_rows_clear_1_and_rest_on_30_independent_rows(shop_analytics):
+    for name in ("purchased", "clicked", "summer", "grain-free"):
+        section = shop_analytics[name]
+        assert section.clustering.design_effect >= 1, name
+        for r in section.rows:
+            assert r.interval_low > 1 or r.interval_high < 1, (name, r)
+            assert r.rows_with_value / section.clustering.design_effect >= 30, (name, r)
+    pairs = shop_analytics["baskets"].pairs
+    assert pairs and all(p.interval_low > 1 or p.interval_high < 1 for p in pairs)
 
 
-def test_shop_analytics_low_rated_and_just_bought_products_sell_less(shop_analytics):
-    """S5 and S8: the 1–2 star band and a product in the last order are
-    both under-represented among purchased impressions."""
-    rows = shop_analytics["summer"].funnel_rows
-    low_rated = _row(rows, "product_sku.rating_band", "1-2")
-    just_bought = _row(rows, "just_bought", "true")
-    assert low_rated and low_rated.interval_high < 1, low_rated
-    assert just_bought and just_bought.interval_high < 1, just_bought
+def test_shop_analytics_low_rated_products_sell_less(shop_analytics):
+    """S5: the 1–2 star band is under-represented among purchases."""
+    row = _row(shop_analytics["purchased"].rows, "product_sku.rating_band", "1-2")
+    assert row and row.interval_high < 1, row
 
 
-def test_shop_analytics_summer_sells_grooming_and_health(shop_analytics):
-    """S4: grooming and health are bought more in June–August."""
-    rows = shop_analytics["summer"].who_rows
-    for category in ("grooming", "health"):
-        row = _row(rows, "product_sku.category", category)
-        assert row and row.interval_low > 1, (category, row)
+def test_shop_analytics_just_bought_products_are_clicked_less(shop_analytics):
+    """S8: a product in the last order draws fewer clicks (109 of 24,950)."""
+    row = _row(shop_analytics["clicked"].rows, "just_bought", "true")
+    assert row and row.interval_high < 1, row
+
+
+def test_shop_analytics_summer_sells_health(shop_analytics):
+    """S4: health is bought more in June–August."""
+    row = _row(shop_analytics["summer"].rows, "product_sku.category", "health")
+    assert row and row.interval_low > 1, row
 
 
 def test_shop_analytics_a_grain_free_household_buys_grain_free_food(shop_analytics):
-    """S1: the rule shows in what the household buys."""
-    row = _row(shop_analytics["grain-free"].who_rows, "product_sku.dietary", "grain-free")
+    """S1: the rule shows in what the household buys, even counting each
+    household as one cluster (design effect ≈ 20 lines)."""
+    row = _row(shop_analytics["grain-free"].rows, "product_sku.dietary", "grain-free")
     assert row and row.interval_low > 1, row
 
 
 def test_shop_analytics_dog_dry_food_goes_with_dental_treats(shop_analytics):
     """The engineered basket complement (ADR 0002), at category level."""
-    pairs = {(p.first, p.second): p for p in shop_analytics["summer"].basket_pairs}
+    pairs = {(p.first, p.second): p for p in shop_analytics["baskets"].pairs}
     pair = pairs.get(("Dog dry-food", "Dog dental-treats"))
     assert pair and pair.interval_low > 1, sorted(pairs)
 
 
-def test_shop_analytics_search_words_convert_above_and_below_the_search_average(client, shop_analytics):
-    """Words on both sides of 1. The lift is against search impressions,
-    which is right only if no other surface carries a query: check that."""
-    words = shop_analytics["summer"].search_words
-    assert any(w.lift > 1 for w in words.rows) and any(w.lift < 1 for w in words.rows), words.rows
+def test_shop_analytics_search_words_against_the_search_average(client, shop_analytics):
+    """Some words convert above the search average. The lift is against
+    search impressions, which is right only if no other surface carries a
+    query: check that."""
+    words = shop_analytics["words"]
+    assert any(w.lift > 1 for w in words.rows), words.rows
+    assert words.significance.tested <= words.words
     anywhere = client.search("impressions", where={"search_query": {"$match": "food"}}, limit=0)["total"]
     on_search = client.search("impressions", where={"surface": "search", "search_query": {"$match": "food"}},
                               limit=0)["total"]
