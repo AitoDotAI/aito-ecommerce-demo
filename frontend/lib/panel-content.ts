@@ -207,16 +207,18 @@ export function productInsightsPanel(): AitoPanelConfig {
 
 
 export function shopAnalyticsPanel(queriesSent?: number): AitoPanelConfig {
-  const one = queriesSent ? `one of the ${queriesSent} ` : "one of the ";
+  const c = (t: string) => `<code style="color:var(--aito-teal);">${t}</code>`;
   return {
     operation: "Shop analytics",
-    endpoints: ["_relate"],
+    endpoints: ["_relate", "_search"],
     description:
-      `Every section is <code style="color:var(--aito-teal);">_relate</code>, sent in parallel: ` +
-      `which values are over- or under-represented among purchases (or clicks), among a group's ` +
-      `order lines, in baskets with a category, and in searches that convert. Each lift's 95 % ` +
-      `interval comes from the counts Aito returns; a lift whose interval includes 1 is not shown. ` +
-      `The query below is ${one}<code style="color:var(--aito-teal);">_relate</code> bodies sent.`,
+      `Each section is ${c("_relate")}, sent in parallel: which values are over- or ` +
+      `under-represented among purchases (or clicks), in a group's order lines, in baskets with a ` +
+      `category, and in searches that convert. Two more ${c("_relate")}s on the customer column ` +
+      `measure how clustered the rows are, which widens every interval. A lift is shown when its ` +
+      `interval excludes 1 at 95 % for the whole section (Bonferroni) and it rests on 30 or more ` +
+      `independent rows. ${c("_search")} checks which search words are always searched together. ` +
+      `The query below is one of the ${queriesSent ?? "…"} sent.`,
     query: "",
     links: LEARN_MORE_LINKS,
   };

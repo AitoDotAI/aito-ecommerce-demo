@@ -66,7 +66,8 @@ const LINKS = [
   { view: "product-insights", query: "sku=SKU-PT-0042", api: "/api/product-insights", expect: { sku: "SKU-PT-0042" } },
   { view: "shop", query: "shopper=janne&month=2025-12&cart=SKU-PT-0001", api: "/api/shop/grid",
     expect: { shopper: "janne", month: "2025-12", cart: "SKU-PT-0001" } },
-  { view: "shop-analytics", query: "kpi=clicked&who=grain-free", api: "/api/shop-analytics", expect: { kpi: "clicked", who: "grain-free" } },
+  { view: "shop-analytics", query: "kpi=clicked&who=grain-free", api: "/api/shop-analytics/funnel", expect: { kpi: "clicked" } },
+  { view: "shop-analytics", query: "kpi=clicked&who=grain-free", api: "/api/shop-analytics/who", expect: { who: "grain-free" } },
 ];
 
 // Views whose picker is filled from the API response: pick an option by
@@ -77,7 +78,7 @@ const PICKERS = [
   { view: "product-filling", select: "#sku-picker", key: "sku", api: "/api/product-filling" },
   { view: "feedback", select: "#rev-picker", key: "review", api: "/api/feedback" },
   { view: "product-insights", select: "#sku-picker", key: "sku", api: "/api/product-insights" },
-  { view: "shop-analytics", select: "#who-picker", key: "who", api: "/api/shop-analytics" },
+  { view: "shop-analytics", select: "#who-picker", key: "who", api: "/api/shop-analytics/who" },
 ];
 
 // Two options per picker, so there is something to pick. The selected entity
@@ -90,6 +91,10 @@ const STUB_QUERY = { endpoint: "_relate", body: {} };
 // own message, as the real API does for a stale link.
 const UNKNOWN = { sku: "SKU-NO-SUCH", review: "REV-NO-SUCH" };
 const notFound = (message) => ({ notFoundStatus: 404, error: message });
+const badRequest = (message) => ({ notFoundStatus: 400, error: message });
+
+const EMPTY_SECTION = { significance: { tested: 0, z: 0, family_confidence: 0.95 }, queries_sent: 1, example_query: STUB_QUERY };
+const CLUSTERING = { customers: 1, rows_per_customer: 1, intra_customer_correlation: 0, design_effect: 1 };
 
 function stubResponse(apiPath, params) {
   const anchor = params.get("anchor") ?? OPTIONS.anchor[0];
@@ -142,13 +147,19 @@ function stubResponse(apiPath, params) {
     }
     case "/api/shop/suggestions":
       return { usual: [], next_for_pet: [], owned: {}, no_history: true, queries: [] };
-    case "/api/shop-analytics":
-      return { kpi: params.get("kpi") ?? "purchased", funnel_rows: [], funnel_fields_without_effect: [],
-               who: params.get("who") ?? OPTIONS.who[0],
-               who_options: OPTIONS.who.map((id) => ({ id, label: `Group ${id}`, group: "Test" })),
-               who_rows: [], who_fields_without_effect: [], basket_pairs: [],
-               search_words: { rows: [], words_checked: 0, search_impressions: 1, search_purchases: 0 },
-               last_query: { ...STUB_QUERY, of: 1 } };
+    case "/api/shop-analytics/funnel":
+    case "/api/shop-analytics/who": {
+      const isFunnel = apiPath.endsWith("/funnel");
+      const selected = isFunnel ? params.get("kpi") ?? "purchased" : params.get("who") ?? OPTIONS.who[0];
+      if (selected === "bogus") return badRequest(`Unknown ${isFunnel ? "kpi" : "who"} 'bogus'`);
+      return { ...EMPTY_SECTION, selected, rows: [], fields_without_clear_effect: [], clustering: CLUSTERING,
+               options: isFunnel ? [] : OPTIONS.who.map((id) => ({ id, label: `Group ${id}`, group: "Test" })) };
+    }
+    case "/api/shop-analytics/baskets":
+      return { ...EMPTY_SECTION, pairs: [], design_effects: { "Dog dry-food": 1 } };
+    case "/api/shop-analytics/search-words":
+      return { ...EMPTY_SECTION, rows: [], never_bought: [], words: 0, search_impressions: 1, search_purchases: 0,
+               clustering: CLUSTERING };
     case "/api/evaluation":
       return JSON.parse(fs.readFileSync(EVAL_SNAPSHOT, "utf8")).data;
     default:
@@ -182,9 +193,13 @@ async function openFresh(browser, url) {
 // The first request to `apiPath`, once one arrives. Polls rather than waiting
 // for networkidle, which never settles on pages that poll.
 async function firstRequest(requests, apiPath) {
+  return requestMatching(requests, (u) => apiPathOf(u) === apiPath);
+}
+
+async function requestMatching(requests, matches) {
   const deadline = Date.now() + TIMEOUT;
   while (Date.now() < deadline) {
-    const found = requests.find((u) => apiPathOf(u) === apiPath);
+    const found = requests.find(matches);
     if (found) return found;
     await new Promise((r) => setTimeout(r, 100));
   }
@@ -265,14 +280,21 @@ async function main() {
 
     {
       const visit = await openFresh(browser, `${BASE}/shop-analytics/`);
+      await firstRequest(visit.requests, "/api/shop-analytics/baskets");
       await visit.page.locator("#kpi-clicked").click();
       const followed = await urlMatches(visit.page, /kpi=clicked/);
+      const refetched = await requestMatching(visit.requests,
+        (u) => apiPathOf(u) === "/api/shop-analytics/funnel" && u.searchParams.get("kpi") === "clicked");
+      const others = ["/baskets", "/search-words", "/who"].map((p) =>
+        visit.requests.filter((u) => apiPathOf(u) === `/api/shop-analytics${p}`).length);
       const copied = visit.page.url();
       await visit.context.close();
       check(followed, `shop-analytics: the Clicks toggle puts the KPI in the address bar (${copied})`);
+      check(refetched && others.every((n) => n === 1),
+            `shop-analytics: the toggle re-asks only its section (baskets, words, who asked ${others.join(", ")} times)`);
 
       const reopened = await openFresh(browser, copied);
-      const first = await firstRequest(reopened.requests, "/api/shop-analytics");
+      const first = await firstRequest(reopened.requests, "/api/shop-analytics/funnel");
       const toggle = await appears(reopened.page.locator("#kpi-clicked.selected"));
       check(carries(first, { kpi: "clicked" }) && toggle, "shop-analytics: the copied URL reopens the Clicks KPI");
       await reopened.context.close();
@@ -337,6 +359,16 @@ async function main() {
       const reset = await urlMatches(page, new RegExp(`/${view}/?$`));
       const defaultAsked = requests.some((u) => apiPathOf(u) === api && !u.searchParams.has(key));
       check(reset && defaultAsked, `${view}: "${label}" clears the bad id and loads the default`);
+      await context.close();
+    }
+    {
+      const { context, page, requests } = await openFresh(browser, `${BASE}/shop-analytics/?kpi=bogus`);
+      check(await appears(page.getByText("Unknown kpi 'bogus'")), "shop-analytics?kpi=bogus says the link is bad");
+      await page.getByRole("button", { name: "Show purchases" }).click();
+      const reset = await urlMatches(page, /\/shop-analytics\/?$/);
+      const defaultAsked = await requestMatching(requests,
+        (u) => apiPathOf(u) === "/api/shop-analytics/funnel" && u.searchParams.get("kpi") === "purchased");
+      check(reset && defaultAsked, 'shop-analytics: "Show purchases" clears the bad KPI and loads purchases');
       await context.close();
     }
   } finally {

@@ -880,20 +880,49 @@ export interface ShopSuggestions {
   owned: Record<string, string[]>;   // kit owned per pet: {"small_animal": ["cage", …]}
   no_history: boolean;
   queries: Array<{ endpoint: string; body: Record<string, unknown> }>;
-/* ─── Shop analytics (/api/shop-analytics) ─── */
+}
 
-/** One `_relate` lift whose 95 % interval excludes 1 (src/lift_rows.py). */
+/* ─── Shop analytics (/api/shop-analytics/*) ─── */
+
+/** One `_relate` lift whose interval excludes 1 (src/lift_rows.py). */
 export interface ShopLiftRow {
-  field: string;            // "product_sku.rating_band"
+  field: string;            // "product_sku.rating_band"; for a basket pair, the first category
   value: string;            // "1-2"; a Boolean reads "true" / "false"
   lift: number;
-  interval_low: number;
+  interval_low: number;     // family-wise, widened for clustering by customer
   interval_high: number;
   rows_with_value: number;  // the condition's rows with the value
   condition_rows: number;   // the condition's rows, e.g. all purchases
 }
 
-export interface ShopBasketPair {
+export interface ShopSignificance {
+  tested: number;           // lifts with ≥ 30 independent rows
+  z: number;                // Bonferroni z for `tested` tests
+  family_confidence: number;
+}
+
+export interface ShopClustering {
+  customers: number;
+  rows_per_customer: number;
+  intra_customer_correlation: number;
+  design_effect: number;
+}
+
+interface ShopSectionBase {
+  significance: ShopSignificance;
+  queries_sent: number;
+  example_query: { endpoint: string; body: Record<string, unknown> };
+}
+
+export interface ShopLiftSection extends ShopSectionBase {
+  selected: string;         // "purchased" / "clicked", or "summer", "dog_owner", "grain-free"
+  options: Array<{ id: string; label: string; group: string }>;
+  rows: ShopLiftRow[];
+  fields_without_clear_effect: string[];
+  clustering: ShopClustering;
+}
+
+export interface ShopAnalyticsPair {
   first: string;            // "Dog dry-food"
   second: string;           // "Dog dental-treats"
   lift: number;
@@ -903,8 +932,13 @@ export interface ShopBasketPair {
   orders_with_first: number;
 }
 
+export interface ShopBasketSection extends ShopSectionBase {
+  pairs: ShopAnalyticsPair[];
+  design_effects: Record<string, number>;   // per anchor category
+}
+
 export interface ShopSearchWordRow {
-  word: string;
+  word: string;             // a word, or a phrase always searched together
   lift: number;             // conversion with the word / conversion of all searches
   interval_low: number;
   interval_high: number;
@@ -912,20 +946,11 @@ export interface ShopSearchWordRow {
   impressions: number;
 }
 
-export interface ShopAnalyticsResponse {
-  kpi: "purchased" | "clicked";
-  funnel_rows: ShopLiftRow[];
-  funnel_fields_without_effect: string[];
-  who: string;              // "summer", "dog_owner", "grain-free"
-  who_options: Array<{ id: string; label: string; group: string }>;
-  who_rows: ShopLiftRow[];
-  who_fields_without_effect: string[];
-  basket_pairs: ShopBasketPair[];
-  search_words: {
-    rows: ShopSearchWordRow[];
-    words_checked: number;
-    search_impressions: number;
-    search_purchases: number;
-  };
-  last_query: { endpoint: string; body: Record<string, unknown>; of: number };
+export interface ShopSearchWordSection extends ShopSectionBase {
+  rows: ShopSearchWordRow[];
+  never_bought: Array<{ word: string; impressions: number; expected_purchases: number }>;
+  words: number;
+  search_impressions: number;
+  search_purchases: number;
+  clustering: ShopClustering;
 }
