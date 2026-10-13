@@ -38,6 +38,7 @@ class FakeAito:
     def __init__(self, *, fail_on: str | None = None):
         self.fail_on = fail_on
         self.calls: list[tuple[str, dict]] = []
+        self.relate_hits: list[dict] = []
 
     def _record(self, name: str, **kwargs):
         self.calls.append((name, kwargs))
@@ -56,8 +57,8 @@ class FakeAito:
         return {"estimate": 11.0, "why": None}
 
     def relate(self, table, where, relate_field, limit=10):
-        self._record("relate", where=where)
-        return {"hits": []}
+        self._record("relate", table=table, where=where, relate_field=relate_field)
+        return {"hits": self.relate_hits}
 
     def evaluate(self, table, where, predict_field, **kwargs):
         self._record("evaluate", where=where, predict_field=predict_field, **kwargs)
@@ -134,3 +135,30 @@ def test_the_test_month_is_the_last_month_in_the_data():
     rows = json.loads((Path(__file__).parent.parent / "data" / "monthly_sales.json").read_text())
 
     assert max(row["month"] for row in rows) == LATEST_MONTH
+
+
+def test_seasonality_relates_over_the_seasons_order_lines():
+    # monthly_sales has one row per SKU and month whatever it sold, so a
+    # category's share of its rows can't move with the season; order lines
+    # count what was bought.
+    fake = FakeAito()
+
+    get_demand(fake)
+
+    winter = next(c for c in _calls(fake, "relate") if "2025-12" in str(c["where"]))
+    assert winter["table"] == "order_lines"
+    assert winter["relate_field"] == "product_sku.category"
+    assert set(winter["where"]["order_id.month"]["$or"]) >= {"2024-12", "2025-01", "2025-02", "2025-12", "2026-01"}
+
+
+def test_seasonality_keeps_only_lifts_whose_interval_excludes_one():
+    fake = FakeAito()
+    fs = lambda on: {"fOnCondition": on, "fCondition": 4000, "f": 3000, "n": 36000}
+    fake.relate_hits = [
+        {"related": {"product_sku.category": {"$has": "toys"}}, "lift": 2.6, "fs": fs(214), "ps": {}},
+        {"related": {"product_sku.category": {"$has": "health"}}, "lift": 1.4, "fs": fs(6), "ps": {}},
+    ]
+
+    rows = get_demand(fake).seasonality
+
+    assert {r.category for r in rows} == {"toys"}

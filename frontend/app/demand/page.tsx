@@ -106,7 +106,7 @@ export default function DemandPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <div className="card">
               <div className="card-sub" style={{ marginBottom: 6 }}>
-                Seasonality · `_relate` × 4 (one per season)
+                Seasonality · `_relate` over each season's order lines
               </div>
               <div className="page-title" style={{ fontSize: 17, margin: "4px 0 12px" }}>
                 Which categories peak when
