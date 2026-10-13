@@ -40,6 +40,7 @@ from src.shop_grid import get_shop_grid
 from src.shop_personas import SHOPPERS, UnknownShopperError
 from src.shop_product import get_product_drawer
 from src.shop_suggestions import get_suggestions
+from src.shop_analytics_service import get_shop_analytics
 from src.pattern_service import get_patterns
 from src.feedback_service import get_feedback
 from src.lookup_errors import UnknownProductError, UnknownReviewError
@@ -422,6 +423,22 @@ def product_insights_endpoint(sku: str | None = None):
         return get_product_insights(aito, sku=sku).to_dict()
     except UnknownProductError as exc:
         return JSONResponse(status_code=404, content={"error": str(exc)})
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/shop-analytics")
+def shop_analytics_endpoint(kpi: str = "purchased", who: str = "summer"):
+    """The owner's view of the patterns: what goes with a click or a
+    purchase, who buys what and when, baskets, and search words, each a
+    set of parallel `_relate`s. See ADR 0031."""
+    try:
+        return get_shop_analytics(aito, kpi=kpi, who=who).to_dict()
+    except ValueError as exc:
+        return JSONResponse(status_code=400, content={"error": str(exc)})
     except AitoError as exc:
         return JSONResponse(
             status_code=502,
