@@ -30,8 +30,9 @@ from src.aito_client import AitoClient
 from src.aito_compat import related_value
 from src import cache
 from src.demand_evaluation import EvalSummary, evaluate_demand
+from src.price_bands import is_real_lift
 from src.demand_forecast import (
-    FORECAST_MONTH, LATEST_MONTH, forecast_units, forecast_where, last_month_units,
+    FORECAST_MONTH, LATEST_MONTH, SEASON_BY_MONTH, forecast_units, forecast_where, last_month_units,
 )
 
 
@@ -121,18 +122,37 @@ def _fetch_products(client: AitoClient) -> dict[str, dict]:
     return out
 
 
+DATA_MONTHS = 24   # the panel's window, ending at LATEST_MONTH
+
+
+def season_months(season: str) -> list[str]:
+    """The window's months ("2025-12", …) that fall in `season`."""
+    year, month = map(int, LATEST_MONTH.split("-"))
+    months = []
+    for _ in range(DATA_MONTHS):
+        if SEASON_BY_MONTH[month] == season:
+            months.append(f"{year}-{month:02d}")
+        year, month = (year, month - 1) if month > 1 else (year - 1, 12)
+    return months
+
+
 def _seasonality(client: AitoClient) -> list[SeasonRow]:
-    """`_relate` per season — which categories over-index in each
-    season? Parallel calls: spring / summer / autumn / winter.
+    """`_relate` per season over that season's order lines: which categories
+    are bought more then? One call per season, in parallel.
+
+    Order lines, not `monthly_sales`: that table has one row per SKU and
+    month whatever it sold, so a category's share of its rows can't move
+    with the season. Lifts whose 95 % interval includes 1 are dropped
+    (`is_real_lift`, as in Price), so no noise is shown as a season.
     """
     seasons = ["spring", "summer", "autumn", "winter"]
 
     def fetch(season: str) -> tuple[str, dict]:
         res = client.relate(
-            table="monthly_sales",
-            where={"season": season},
-            relate_field="category",
-            limit=8,
+            table="order_lines",
+            where={"order_id.month": {"$or": season_months(season)}},
+            relate_field="product_sku.category",
+            limit=12,
         )
         return season, res
 
@@ -142,18 +162,16 @@ def _seasonality(client: AitoClient) -> list[SeasonRow]:
     rows: list[SeasonRow] = []
     for season, res in results:
         for hit in res.get("hits", []):
-            value = related_value(hit, "category")
-            lift = float(hit.get("lift", 0))
-            if abs(lift - 1.0) < 0.08:
+            lift = float(hit["lift"])
+            if not is_real_lift(lift, hit["fs"]):
                 continue
             ps = hit.get("ps", {}) or {}
-            fs = hit.get("fs", {}) or {}
             rows.append(SeasonRow(
                 season=season,
                 pet_type="",   # not in this query; left blank
-                category=str(value),
+                category=str(related_value(hit, "product_sku.category")),
                 lift=round(lift, 2),
-                f_on_condition=int(fs.get("fOnCondition", 0)),
+                f_on_condition=int(hit["fs"]["fOnCondition"]),
                 p_on_condition=round(float(ps.get("pOnCondition", 0)), 4),
                 p_overall=round(float(ps.get("p", 0)), 4),
             ))
