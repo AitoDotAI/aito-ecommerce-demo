@@ -175,6 +175,22 @@ export function purchaseAnalyticsPanel(): AitoPanelConfig {
 }
 
 
+export function shopPanel(): AitoPanelConfig {
+  return {
+    operation: "Shop",
+    endpoints: ["_recommend", "_predict", "_batch", "_relate", "_search"],
+    description:
+      `Be a shopper. The grid is one <code style="color:var(--aito-teal);">_recommend</code> ` +
+      `with who they are, the month and the cart as context; a household's diet rule is a ` +
+      `filter, not a prediction. Anything from their last order is re-asked in one ` +
+      `<code style="color:var(--aito-teal);">_batch</code> as "just bought", and falls. ` +
+      `The query below is the grid's, as sent.`,
+    query: "",
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
 export function productInsightsPanel(): AitoPanelConfig {
   return {
     operation: "Product Insights",
@@ -184,6 +200,25 @@ export function productInsightsPanel(): AitoPanelConfig {
       `order lines shows which customer profiles buy it more than average; ` +
       `the funnel, surfaces and reviews are counts in one ` +
       `<code style="color:var(--aito-teal);">_batch</code>. The query below is one of the six <code style="color:var(--aito-teal);">_relate</code> bodies sent.`,
+    query: "",
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
+export function shopAnalyticsPanel(queriesSent?: number): AitoPanelConfig {
+  const c = (t: string) => `<code style="color:var(--aito-teal);">${t}</code>`;
+  return {
+    operation: "Shop analytics",
+    endpoints: ["_relate", "_search"],
+    description:
+      `Each section is ${c("_relate")}, sent in parallel: which values are over- or ` +
+      `under-represented among purchases (or clicks), in a group's order lines, in baskets with a ` +
+      `category, and in searches that convert. Two more ${c("_relate")}s on the customer column ` +
+      `measure how clustered the rows are, which widens every interval. A lift is shown when its ` +
+      `interval excludes 1 at 95 % for the whole section (Bonferroni) and it rests on 30 or more ` +
+      `independent rows. ${c("_search")} checks which search words are always searched together. ` +
+      `The query below is one of the ${queriesSent ?? "…"} sent.`,
     query: "",
     links: LEARN_MORE_LINKS,
   };

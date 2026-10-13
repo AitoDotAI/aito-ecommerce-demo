@@ -36,6 +36,13 @@ from src.filling_service import get_filling
 from src.eval_service import run_evaluation
 from src.analytics_service import get_analytics
 from src.product_insights_service import get_product_insights
+from src.shop_grid import get_shop_grid
+from src.shop_personas import SHOPPERS, UnknownShopperError
+from src.shop_product import get_product_drawer
+from src.shop_suggestions import get_suggestions
+from src.basket_pairs import get_basket_section
+from src.search_words import get_search_words_section
+from src.shop_analytics_service import get_funnel_section, get_who_section
 from src.pattern_service import get_patterns
 from src.feedback_service import get_feedback
 from src.lookup_errors import UnknownProductError, UnknownReviewError
@@ -366,6 +373,50 @@ def purchase_analytics_endpoint():
         )
 
 
+# ── Shop (ADR 0031) ─────────────────────────────────────────────────
+
+MONTH = r"^\d{4}-(0[1-9]|1[0-2])$"
+
+
+def _shop(compute):
+    """The Shop endpoints' shared error mapping: an unknown shopper or
+    product is a 404 with its message, an Aito failure a 502."""
+    try:
+        return compute().to_dict()
+    except (UnknownShopperError, UnknownProductError) as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
+    except ValueError as exc:    # a malformed request, e.g. a product twice in the cart
+        return JSONResponse(status_code=400, content={"error": str(exc)})
+    except AitoError as exc:
+        return JSONResponse(status_code=502, content={"error": str(exc), "status_code": exc.status_code})
+
+
+@app.get("/api/shop/shoppers")
+def shop_shoppers_endpoint():
+    """The shoppers the Shop view lets you be, each with a story."""
+    return {"shoppers": [s.to_dict() for s in SHOPPERS]}
+
+
+@app.get("/api/shop/grid")
+def shop_grid_endpoint(shopper: str, month: str = Query(pattern=MONTH), cart: str = ""):
+    """What to show this shopper now: `_recommend` with profile, month and
+    cart as context, the household rule as a filter, recency re-asked."""
+    skus = [s for s in cart.split(",") if s]
+    return _shop(lambda: get_shop_grid(aito, shopper, month, skus))
+
+
+@app.get("/api/shop/product")
+def shop_product_endpoint(sku: str, shopper: str, month: str = Query(pattern=MONTH)):
+    """A product's drawer: often in the same basket, and in your orders before `month`."""
+    return _shop(lambda: get_product_drawer(aito, sku, shopper, month))
+
+
+@app.get("/api/shop/suggestions")
+def shop_suggestions_endpoint(shopper: str, month: str = Query(pattern=MONTH)):
+    """The usual basket, and what's next for the shopper's pet, as of `month`."""
+    return _shop(lambda: get_suggestions(aito, shopper, month))
+
+
 @app.get("/api/product-insights")
 def product_insights_endpoint(sku: str | None = None):
     """One product's funnel, surfaces, buyers (`_relate` over its order
@@ -379,6 +430,49 @@ def product_insights_endpoint(sku: str | None = None):
             status_code=502,
             content={"error": str(exc), "status_code": exc.status_code},
         )
+
+
+def _shop_analytics_section(cache_key: str, load):
+    """Shop analytics sections share their caching and error mapping.
+
+    Cached for 30 minutes, as Product Insights is: a section takes 1.5–3 s
+    alone but 4–8 s when the page asks all four at once (measured on
+    `shoppers`, 2026-10-13). A bad `kpi` or `who` in a link is a 400, an
+    unexpected Aito answer a 502."""
+    try:
+        return cache.get_or_compute(f"shop-analytics:{cache_key}", lambda: load().to_dict(), ttl=1800)
+    except ValueError as exc:
+        return JSONResponse(status_code=400, content={"error": str(exc)})
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/shop-analytics/funnel")
+def shop_analytics_funnel_endpoint(kpi: str = "purchased"):
+    """What goes with a purchase (or click): parallel `_relate`s on
+    impressions. See ADR 0031."""
+    return _shop_analytics_section(f"funnel:{kpi}", lambda: get_funnel_section(aito, kpi=kpi))
+
+
+@app.get("/api/shop-analytics/who")
+def shop_analytics_who_endpoint(who: str = "summer"):
+    """Which categories a season, segment or diet rule buys more or less."""
+    return _shop_analytics_section(f"who:{who}", lambda: get_who_section(aito, who=who))
+
+
+@app.get("/api/shop-analytics/baskets")
+def shop_analytics_baskets_endpoint():
+    """Category pairs bought together more or less often than chance."""
+    return _shop_analytics_section("baskets", lambda: get_basket_section(aito))
+
+
+@app.get("/api/shop-analytics/search-words")
+def shop_analytics_search_words_endpoint():
+    """Search words that convert above or below the average search."""
+    return _shop_analytics_section("search-words", lambda: get_search_words_section(aito))
 
 
 @app.get("/api/pattern-explorer")

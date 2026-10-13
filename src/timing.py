@@ -15,7 +15,9 @@ is blocking — so the recording call happens in whichever event-loop
 thread served the request, and the contextvar binding is per-task).
 """
 
-from contextvars import ContextVar
+from collections.abc import Callable
+from concurrent.futures import Executor, Future
+from contextvars import ContextVar, copy_context
 
 
 _calls: ContextVar[list[tuple[str, float]] | None] = ContextVar(
@@ -78,3 +80,16 @@ def render_header() -> str:
     """
     return ",".join(f"{name}:{ms:.1f}"
                     for name, ms in current_calls())
+
+
+def submit_in_request(pool: Executor, fn: Callable, *args) -> Future:
+    """`pool.submit(fn, *args)`, with `fn` recording into this request's
+    call list.
+
+    A worker thread starts with an empty context, so without this its Aito
+    calls never reach the `X-Aito-Calls` header. Each job gets its own copy
+    of the context (one context can't be entered by two threads at once);
+    the copies share the request's list object, as `replace_calls`
+    explains, so every call lands on it.
+    """
+    return pool.submit(copy_context().run, fn, *args)

@@ -86,12 +86,12 @@ export default function AitoPanel() {
 
         <div className="aito-section-title">Endpoints</div>
         <div className="aito-tags">
-          {/* Active endpoints first (teal), then the rest greyed (purple) */}
+          {/* The endpoints this page sends. A page that names none gets the
+              known ones greyed, so the strip never reads empty. */}
           {activeEndpoints.map((ep) => (
             <span className="aito-tag active" key={ep}>{ep}</span>
           ))}
-          {KNOWN_ENDPOINTS
-            .filter((e) => !activeEndpoints.includes(e))
+          {activeEndpoints.length === 0 && KNOWN_ENDPOINTS
             .map((ep) => (
               <span className="aito-tag" key={ep}>{ep}</span>
             ))}

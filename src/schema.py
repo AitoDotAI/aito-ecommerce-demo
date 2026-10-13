@@ -45,6 +45,10 @@ SCHEMAS: dict[str, dict] = {
             # token-level priors. ~5-8 tags per product. See ADR 0017.
             "tags":      {"type": "Text",    "nullable": False,
                           "analyzer": "whitespace"},
+            # From the product's reviews (ADR 0030): null and "unrated"
+            # when nobody reviewed it.
+            "avg_rating":  {"type": "Decimal", "nullable": True},
+            "rating_band": {"type": "String",  "nullable": False},
         },
     },
     # 2. customers — link target for orders.customer_id.
@@ -81,6 +85,9 @@ SCHEMAS: dict[str, dict] = {
             "total_spent_eur":  {"type": "Decimal", "nullable": False},
             "last_order_month": {"type": "String",  "nullable": True},
             "churned":          {"type": "Boolean", "nullable": False},
+            # grain-free | sensitive | senior | puppy, for the dog and cat
+            # households that keep one kind of food (ADR 0030).
+            "diet_rule":        {"type": "String",  "nullable": True},
         },
     },
     # 3. orders — links to customers.
@@ -102,6 +109,11 @@ SCHEMAS: dict[str, dict] = {
             # co-occurrence `_relate` without needing a reverse-link
             # traversal back into `order_lines`. See ADR 0008.
             "line_categories": {"type": "Text", "nullable": False},
+            # ADR 0030, interactive shop: this order's SKUs, the previous
+            # order's (recency), and the kit durables owned before it.
+            "skus":         {"type": "Text", "nullable": False, "analyzer": "whitespace"},
+            "prev_skus":    {"type": "Text", "nullable": True,  "analyzer": "whitespace"},
+            "owned_before": {"type": "Text", "nullable": True,  "analyzer": "whitespace"},
         },
     },
     # 4. order_lines — links to orders AND products. Load last.
@@ -133,6 +145,7 @@ SCHEMAS: dict[str, dict] = {
             "customer_health_focus":   {"type": "String", "nullable": False},
             "customer_treat_affinity": {"type": "String", "nullable": False},
             "customer_brand_loyalty":  {"type": "String", "nullable": False},
+            "customer_diet_rule":      {"type": "String", "nullable": True},
         },
     },
     # 4b. impressions — one product shown to a customer in a browsing
@@ -160,6 +173,18 @@ SCHEMAS: dict[str, dict] = {
             # `where {search_query: {$match: "food"}}` token-matches.
             "search_query":  {"type": "Text",   "nullable": True,
                               "analyzer": "whitespace"},
+            # The basket that month as tokens ("dog_dryfood
+            # small_animal_cage"), so `$match` conditions on what is in it
+            # (ADR 0030). Null when nothing was bought that month.
+            "basket_categories": {"type": "Text", "nullable": True,
+                                  "analyzer": "whitespace"},
+            "basket_skus":       {"type": "Text", "nullable": True,
+                                  "analyzer": "whitespace"},
+            # The customer's last order before this month, and whether the
+            # shown product was in it: recency (ADR 0030, S8).
+            "last_order_skus":   {"type": "Text", "nullable": True,
+                                  "analyzer": "whitespace"},
+            "just_bought":       {"type": "Boolean", "nullable": False},
             # Denormalised customer profile — single-hop conditioning.
             "customer_segment":      {"type": "String", "nullable": False},
             "customer_pet_size":     {"type": "String", "nullable": True},
@@ -167,6 +192,7 @@ SCHEMAS: dict[str, dict] = {
             "customer_health_focus": {"type": "String", "nullable": False},
             "customer_treat_affinity":{"type": "String", "nullable": False},
             "customer_brand_loyalty":{"type": "String", "nullable": False},
+            "customer_diet_rule":    {"type": "String", "nullable": True},
             # Denormalised product attributes for `basedOn` priors.
             "product_pet_type": {"type": "String", "nullable": False},
             "product_category": {"type": "String", "nullable": False},
@@ -288,6 +314,9 @@ SCHEMAS: dict[str, dict] = {
             "customer_pet_size":    {"type": "String", "nullable": True},
             "customer_lifestyle":   {"type": "String", "nullable": False},
             "customer_health_focus":{"type": "String", "nullable": False},
+            # The customer's staple "pet/category" ("none" if none): a send
+            # in it responds 2.5x as often (ADR 0027).
+            "customer_staple_category": {"type": "String", "nullable": False},
             "product_pet_type":     {"type": "String", "nullable": False},
             "product_category":     {"type": "String", "nullable": False},
             "product_brand":        {"type": "String", "nullable": False},

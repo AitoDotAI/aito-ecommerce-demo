@@ -399,3 +399,200 @@ def test_price_what_if_explains_the_estimate_with_price_as_a_factor(client):
     assert what_if.units >= 0
     assert "price_eur" in {f.field for f in what_if.factors}, what_if.factors
     assert what_if.units == centre.units_sold, (what_if.units, centre.units_sold)
+
+
+# ── ADR 0030: shoppers with a story (docs/verification/shoppers-data-prereg.md) ──
+
+
+def _keeps_grain_free(hit: dict) -> bool:
+    """A recommended product keeps a grain-free household's rule when it
+    is grain-free, or isn't dog or cat food at all (S1 covers food only)."""
+    food = hit.get("category") in ("dry-food", "wet-food") and hit.get("pet_type") in ("dog", "cat")
+    return not food or "Grain Free" in hit["name"]
+
+
+@pytest.mark.xfail(strict=True, reason=(
+    "Pre-registered A1 failed on 2026-10-13 (shoppers-data-prereg.md): rule households "
+    "made 14 purchases, too few for _recommend to learn a rule. The Shop applies the rule "
+    "as a filter instead (ADR 0031). Strict: if this starts passing, say so."))
+def test_a1_recommend_keeps_a_grain_free_households_rule(client):
+    """A1: with the rule in the `where`, ≥ 9 of the top 10 keep it; the same
+    query without the rule keeps it ≤ 7 times."""
+    # `product_sku.category` filters the candidates; the impression's own
+    # `product_category` would only be context (first run, 2026-10-12).
+    household = {"customer_segment": "dog_owner", "customer_diet_rule": "grain-free",
+                 "product_sku.category": "dry-food"}
+    without_rule = {k: v for k, v in household.items() if k != "customer_diet_rule"}
+
+    def kept(where: dict) -> int:
+        hits = client.recommend("impressions", where, "product_sku", {"purchased": True}, limit=10)["hits"]
+        assert len(hits) == 10, hits
+        return sum(map(_keeps_grain_free, hits))
+
+    assert kept(household) >= 9, kept(household)
+    assert kept(without_rule) <= 7, kept(without_rule)
+
+
+def _relate_interval(client, table: str, where: dict, field: str, value: str) -> tuple[float, float]:
+    from src.aito_compat import related_value
+    from src.price_bands import lift_interval
+
+    hits = client.relate(table=table, where=where, relate_field=field, limit=50)["hits"]
+    hit = next(h for h in hits if related_value(h, field) == value)
+    fs = hit["fs"]
+    return lift_interval(float(hit["lift"]), fs["fOnCondition"], fs["fCondition"], fs["f"], fs["n"])
+
+
+DECEMBERS = ["2024-12", "2025-12"]
+SUMMERS = ["2024-06", "2024-07", "2024-08", "2025-06", "2025-07", "2025-08"]
+
+
+@pytest.mark.parametrize("months, category", [(DECEMBERS, "treats"), (DECEMBERS, "toys"), (SUMMERS, "grooming")])
+def test_a4_the_season_lifts_its_categories(client, months, category):
+    """A4: the planted month × category cells have a lift whose 95 % interval
+    sits above 1. Related over order lines, which count what was bought;
+    monthly_sales has one row per SKU and month whatever it sold, so a
+    category's share of its rows can't move with the season."""
+    low, _ = _relate_interval(client, "order_lines", {"order_id.month": {"$or": months}},
+                              "product_sku.category", category)
+    assert low > 1, (months[0], category, low)
+
+
+def test_a5_the_lowest_rated_products_are_bought_less(client):
+    """A5: among purchased impressions, the 1–2 star band's lift has its
+    95 % interval below 1."""
+    _, high = _relate_interval(client, "impressions", {"purchased": True}, "product_sku.rating_band", "1-2")
+    assert high < 1, high
+
+
+# ── Shop (ADR 0031), on ADR 0030's data ─────────────────────────────
+
+
+def test_shop_grid_for_a_grain_free_household_holds_no_rule_breaking_food(client):
+    from src.shop_grid import get_shop_grid
+
+    grid = get_shop_grid(client, "janne", "2026-04", [])
+
+    assert grid.rule == "grain-free" and grid.items
+    food = [i for i in grid.items if i.category in ("dry-food", "wet-food")]
+    assert all("Grain Free" in i.name for i in food), [i.name for i in food]
+
+
+def test_shop_a_cage_in_the_cart_changes_what_is_recommended(client):
+    """A6's shop form: the cart is context, so the ranking moves with it."""
+    from src.shop_grid import get_shop_grid
+
+    empty = [i.sku for i in get_shop_grid(client, "sofia", "2026-04", []).items[:5]]
+    with_cage = [i.sku for i in get_shop_grid(client, "sofia", "2026-04", ["SKU-PT-0555"]).items[:5]]
+
+    assert empty != with_cage, empty
+
+
+def test_shop_an_item_bought_last_order_scores_lower_as_just_bought(client):
+    """A8's shop form: re-asked with just_bought: true, a product's purchase
+    probability drops below what it was before the shopper bought it."""
+    from src.shop_context import shopper_where
+
+    customer = client.search("customers", where={"customer_id": "CUST-00053"}, limit=1)["hits"][0]
+    context = shopper_where(customer, [], "2026-04")
+    sku = "SKU-PT-0278"   # in Helena's last order
+
+    def p(extra: dict) -> float:
+        hits = client._request("POST", "/_predict", json={
+            "from": "impressions", "where": {**context, "product_sku": sku, **extra}, "predict": "purchased"})["hits"]
+        return next(h["$p"] for h in hits if h.get("feature", h.get("$value")) is True)
+
+    assert p({"just_bought": True}) < p({})
+
+
+def test_shop_suggests_the_hideout_next_for_a_cage_and_a_bottle(client):
+    """A2's shop form, for Sofia as of April 2026: she owns a cage and a
+    bottle, and the kit's next item is the hideout."""
+    from src.shop_suggestions import get_suggestions
+
+    result = get_suggestions(client, "sofia", "2026-04")
+
+    assert result.owned == {"small_animal": ["cage", "water_bottle"]}, result.owned
+    assert result.next_for_pet and "Hideout" in result.next_for_pet[0].name, result.next_for_pet
+    assert result.usual, "no usual basket for a shopper with orders"
+# ── Shop analytics (ADR 0031): each section shows rows and a planted pattern ──
+# Rows are judged with clustering by customer and a Bonferroni level per
+# section (src/lift_rows.py), so a planted effect on few customers can
+# fall short: just-bought products under purchases (40 purchases, about 20
+# independent) and summer grooming (157 lines, about 28) do, on 2026-10-13.
+
+
+@pytest.fixture(scope="module")
+def shop_analytics(client):
+    from src.basket_pairs import get_basket_section
+    from src.search_words import get_search_words_section
+    from src.shop_analytics_service import get_funnel_section, get_who_section
+
+    return {
+        "purchased": get_funnel_section(client, "purchased"),
+        "clicked": get_funnel_section(client, "clicked"),
+        "summer": get_who_section(client, "summer"),
+        "grain-free": get_who_section(client, "grain-free"),
+        "baskets": get_basket_section(client),
+        "words": get_search_words_section(client),
+    }
+
+
+def _row(rows, field, value):
+    return next((r for r in rows if (r.field, r.value) == (field, value)), None)
+
+
+def test_shop_analytics_shown_rows_clear_1_and_rest_on_30_independent_rows(shop_analytics):
+    for name in ("purchased", "clicked", "summer", "grain-free"):
+        section = shop_analytics[name]
+        assert section.clustering.design_effect >= 1, name
+        for r in section.rows:
+            assert r.interval_low > 1 or r.interval_high < 1, (name, r)
+            assert r.rows_with_value / section.clustering.design_effect >= 30, (name, r)
+    pairs = shop_analytics["baskets"].pairs
+    assert pairs and all(p.interval_low > 1 or p.interval_high < 1 for p in pairs)
+
+
+def test_shop_analytics_low_rated_products_sell_less(shop_analytics):
+    """S5: the 1–2 star band is under-represented among purchases."""
+    row = _row(shop_analytics["purchased"].rows, "product_sku.rating_band", "1-2")
+    assert row and row.interval_high < 1, row
+
+
+def test_shop_analytics_just_bought_products_are_clicked_less(shop_analytics):
+    """S8: a product in the last order draws fewer clicks (109 of 24,950)."""
+    row = _row(shop_analytics["clicked"].rows, "just_bought", "true")
+    assert row and row.interval_high < 1, row
+
+
+def test_shop_analytics_summer_sells_health(shop_analytics):
+    """S4: health is bought more in June–August."""
+    row = _row(shop_analytics["summer"].rows, "product_sku.category", "health")
+    assert row and row.interval_low > 1, row
+
+
+def test_shop_analytics_a_grain_free_household_buys_grain_free_food(shop_analytics):
+    """S1: the rule shows in what the household buys, even counting each
+    household as one cluster (design effect ≈ 20 lines)."""
+    row = _row(shop_analytics["grain-free"].rows, "product_sku.dietary", "grain-free")
+    assert row and row.interval_low > 1, row
+
+
+def test_shop_analytics_dog_dry_food_goes_with_dental_treats(shop_analytics):
+    """The engineered basket complement (ADR 0002), at category level."""
+    pairs = {(p.first, p.second): p for p in shop_analytics["baskets"].pairs}
+    pair = pairs.get(("Dog dry-food", "Dog dental-treats"))
+    assert pair and pair.interval_low > 1, sorted(pairs)
+
+
+def test_shop_analytics_search_words_against_the_search_average(client, shop_analytics):
+    """Some words convert above the search average. The lift is against
+    search impressions, which is right only if no other surface carries a
+    query: check that."""
+    words = shop_analytics["words"]
+    assert any(w.lift > 1 for w in words.rows), words.rows
+    assert words.significance.tested <= words.words
+    anywhere = client.search("impressions", where={"search_query": {"$match": "food"}}, limit=0)["total"]
+    on_search = client.search("impressions", where={"surface": "search", "search_query": {"$match": "food"}},
+                              limit=0)["total"]
+    assert anywhere == on_search > 0, (anywhere, on_search)
