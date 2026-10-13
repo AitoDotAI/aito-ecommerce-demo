@@ -25,6 +25,7 @@ the demo abstracts away.
 | 15 | [Cart Completion](15-cart-completion.md) | `_relate` over `orders.line_categories` × 4 preset checkout carts + `_search` for popular products in top related category |
 | 16 | [Win-back Campaigns](16-winback.md) | `_recommend product_sku from winback_campaigns goal {responded: true}` + `_estimate order_value_eur` per suggestion; Netigate action+impact pattern ported |
 | 17 | [Product Insights](17-product-insights.md) | `_relate` over one product's `order_lines` per customer column; funnel, surface and review counts in one `_batch` |
+| 19 | [Shop](19-shop.md) | `_recommend` with the shopper, month and cart as context; a household rule as a candidate filter; just-bought re-asked in a `_batch`; same-basket `_relate` over `orders.skus`; usual basket by `skus.$feature` |
 
 Each guide is self-contained — read in any order. Prerequisites
 (running demo, loaded data) are listed in the project

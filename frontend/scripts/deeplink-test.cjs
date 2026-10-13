@@ -64,6 +64,8 @@ const LINKS = [
   { view: "product-filling", query: "sku=SKU-PT-0042", api: "/api/product-filling", expect: { sku: "SKU-PT-0042" } },
   { view: "feedback", query: "review=REV-00042", api: "/api/feedback", expect: { review: "REV-00042" } },
   { view: "product-insights", query: "sku=SKU-PT-0042", api: "/api/product-insights", expect: { sku: "SKU-PT-0042" } },
+  { view: "shop", query: "shopper=janne&month=2025-12&cart=SKU-PT-0001", api: "/api/shop/grid",
+    expect: { shopper: "janne", month: "2025-12", cart: "SKU-PT-0001" } },
 ];
 
 // Views whose picker is filled from the API response: pick an option by
@@ -125,6 +127,18 @@ function stubResponse(apiPath, params) {
                candidate_products: OPTIONS.sku.map((s) => ({ sku: s, name: `Product ${s}`, category: "treats", pet_type: "dog" })),
                bought_together_anchor: null, last_query: STUB_QUERY };
     }
+    case "/api/shop/shoppers":
+      return { shoppers: [{ key: "sofia", customer_id: "C1", name: "Sofia", emoji: "", story: "s" },
+                          { key: "janne", customer_id: "C2", name: "Janne", emoji: "", story: "j" }] };
+    case "/api/shop/grid": {
+      const cart = (params.get("cart") ?? "").split(",").filter(Boolean)
+        .map((sku) => ({ sku, name: `Product ${sku}`, brand: "B", pet_type: "dog", category: "toys", price_eur: 1 }));
+      const shopper = params.get("shopper") ?? "sofia";
+      return { shopper: { key: shopper, customer_id: "C", name: shopper, emoji: "", story: "" },
+               month: params.get("month"), rule: null, cart, items: [], last_order_skus: [], last_query: STUB_QUERY };
+    }
+    case "/api/shop/suggestions":
+      return { usual: [], next_for_pet: [], owned: {}, no_history: true, queries: [] };
     case "/api/evaluation":
       return JSON.parse(fs.readFileSync(EVAL_SNAPSHOT, "utf8")).data;
     default:
