@@ -40,7 +40,9 @@ from src.shop_grid import get_shop_grid
 from src.shop_personas import SHOPPERS, UnknownShopperError
 from src.shop_product import get_product_drawer
 from src.shop_suggestions import get_suggestions
-from src.shop_analytics_service import get_shop_analytics
+from src.basket_pairs import get_basket_section
+from src.search_words import get_search_words_section
+from src.shop_analytics_service import get_funnel_section, get_who_section
 from src.pattern_service import get_patterns
 from src.feedback_service import get_feedback
 from src.lookup_errors import UnknownProductError, UnknownReviewError
@@ -430,13 +432,11 @@ def product_insights_endpoint(sku: str | None = None):
         )
 
 
-@app.get("/api/shop-analytics")
-def shop_analytics_endpoint(kpi: str = "purchased", who: str = "summer"):
-    """The owner's view of the patterns: what goes with a click or a
-    purchase, who buys what and when, baskets, and search words, each a
-    set of parallel `_relate`s. See ADR 0031."""
+def _shop_analytics_section(load):
+    """Shop analytics sections share their error mapping: a bad `kpi` or
+    `who` in a link is a 400, an unexpected Aito answer a 502."""
     try:
-        return get_shop_analytics(aito, kpi=kpi, who=who).to_dict()
+        return load().to_dict()
     except ValueError as exc:
         return JSONResponse(status_code=400, content={"error": str(exc)})
     except AitoError as exc:
@@ -444,6 +444,31 @@ def shop_analytics_endpoint(kpi: str = "purchased", who: str = "summer"):
             status_code=502,
             content={"error": str(exc), "status_code": exc.status_code},
         )
+
+
+@app.get("/api/shop-analytics/funnel")
+def shop_analytics_funnel_endpoint(kpi: str = "purchased"):
+    """What goes with a purchase (or click): parallel `_relate`s on
+    impressions. See ADR 0031."""
+    return _shop_analytics_section(lambda: get_funnel_section(aito, kpi=kpi))
+
+
+@app.get("/api/shop-analytics/who")
+def shop_analytics_who_endpoint(who: str = "summer"):
+    """Which categories a season, segment or diet rule buys more or less."""
+    return _shop_analytics_section(lambda: get_who_section(aito, who=who))
+
+
+@app.get("/api/shop-analytics/baskets")
+def shop_analytics_baskets_endpoint():
+    """Category pairs bought together more or less often than chance."""
+    return _shop_analytics_section(lambda: get_basket_section(aito))
+
+
+@app.get("/api/shop-analytics/search-words")
+def shop_analytics_search_words_endpoint():
+    """Search words that convert above or below the average search."""
+    return _shop_analytics_section(lambda: get_search_words_section(aito))
 
 
 @app.get("/api/pattern-explorer")
