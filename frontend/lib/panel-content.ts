@@ -175,6 +175,22 @@ export function purchaseAnalyticsPanel(): AitoPanelConfig {
 }
 
 
+export function shopPanel(): AitoPanelConfig {
+  return {
+    operation: "Shop",
+    endpoints: ["_recommend", "_predict", "_batch", "_relate", "_search"],
+    description:
+      `Be a shopper. The grid is one <code style="color:var(--aito-teal);">_recommend</code> ` +
+      `with who they are, the month and the cart as context; a household's diet rule is a ` +
+      `filter, not a prediction. Anything from their last order is re-asked in one ` +
+      `<code style="color:var(--aito-teal);">_batch</code> as "just bought", and falls. ` +
+      `The query below is the grid's, as sent.`,
+    query: "",
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
 export function productInsightsPanel(): AitoPanelConfig {
   return {
     operation: "Product Insights",

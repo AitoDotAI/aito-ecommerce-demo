@@ -24,7 +24,7 @@ class Shopper:
 
 SHOPPERS = [
     Shopper("sofia", "CUST-00090", "Sofia Kallio", "🐹",
-            "Just got a hamster: a cage and a water bottle so far."),
+            "Just got a guinea pig: a cage, a water bottle and a hideout so far."),
     Shopper("janne", "CUST-00049", "Janne Hämäläinen", "🐕",
             "A grain-free dog household: never any other food."),
     Shopper("helena", "CUST-00053", "Helena Heinonen", "🐈",

@@ -35,6 +35,7 @@ const ALL_SECTIONS: NavSection[] = [
   {
     label: "Assist Customers",
     items: [
+      { href: "/shop",             label: "Shop",             icon: "🛍️", badge: { text: "New" } },
       { href: "/smart-search",     label: "Smart Search",     icon: "🔍" },
       { href: "/recommendations",  label: "For You",          icon: "✨", badge: { text: "Live" } },
       { href: "/bought-together",  label: "Bought Together",  icon: "🛒" },
