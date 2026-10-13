@@ -110,6 +110,51 @@ that isn't (S5), which keeps D1 where it was before ADR 0030 (50.8 %).
 
 ## Results
 
+## Amendment after an Aito result (2026-10-13, decided by Antti)
+
+A1 failed because rule households browse food at random: 48 of their 640
+dog dry-food impressions were grain-free. A real grain-free household
+mostly looks at grain-free food, by search or filter. **This change is
+made after seeing A1's result**, which the rule above says not to do;
+Antti chose it (option 1 of two) over leaving A1 failed. A1 is re-run
+once and reported whichever way it falls.
+
+- **S1, browsing:** for a rule household, a food that keeps the rule is
+  shown with 8× the weight and one that breaks it with 0.25×, in browse
+  and in the products their searches start from.
+- **New data check S1d:** at least 60 % of rule households' food
+  impressions keep the rule.
+
+## Amendment for the interactive shop (2026-10-13, before the reload)
+
+Antti asked for an interactive shop and owner analytics on top of this
+data (cart recommendations, a product page, autofill, "not what you
+just bought"). Four columns and one new effect, so it all lands in one
+reload. All in the initial schema.
+
+| column | holds |
+|:--|:--|
+| `orders.skus` (Text) | the order's product SKUs |
+| `orders.prev_skus` (Text) | the customer's previous order's SKUs |
+| `orders.owned_before` (Text) | kit durables owned before this order (`small_animal_cage …`), for A2 |
+| `impressions.basket_skus` (Text) | the SKUs in that month's basket, beside `basket_categories` |
+
+**S8, recency, as first registered:** a staple restocked in the previous
+order is restocked with P 0.45, one skipped with P 0.85. *Amended before
+any Aito run:* in orders this fights ADR 0027's routine by construction
+(fewer restocks means fewer re-buys; D1 fell to 43–47 % while S8a sat at
+0.66–0.67 across three settings), and the ketchup case is about what to
+**recommend**. So S8 moves to impressions: a product in the customer's
+last order converts at 0.25× the odds in a later session, and the
+impression carries that order's SKUs (`impressions.last_order_skus`,
+Text). Orders keep ADR 0027's restocking unchanged.
+
+| # | check | pass when |
+|:--|:--|:--|
+| S8a (data) | purchase rate of impressions whose product was in the last order ÷ that of products the same customer bought earlier but not in the last order (*amended before any Aito run: against "the rest" it was 0.79, because just-bought products are ones the customer likes; the control now holds that constant*). First generation with the control: 0.55 (8.2 % vs 14.8 %); the 0.25× odds then also apply to the click, as the complement odds do | ≤ 0.5 |
+| A8 (Aito) | `_relate` on `impressions` with `purchased: true` and `last_order_skus` holding the shown product … (shape probed first); simpler form: `_relate` where `purchased: true`, related to a boolean `just_bought` | the just-bought lift's 95 % interval below 1 |
+| A2 (Aito, now specified) | next add-on for owners of `small_animal_cage small_animal_water_bottle small_animal_hideout`: query shape probed first on the test env | an Exercise Wheel product in the top 3 |
+
 ### Data checks, 2026-10-12 (seed 42, the committed fixtures)
 
 All ten S checks pass, and the full offline suite (213 tests) with them.

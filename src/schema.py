@@ -109,6 +109,11 @@ SCHEMAS: dict[str, dict] = {
             # co-occurrence `_relate` without needing a reverse-link
             # traversal back into `order_lines`. See ADR 0008.
             "line_categories": {"type": "Text", "nullable": False},
+            # ADR 0030, interactive shop: this order's SKUs, the previous
+            # order's (recency), and the kit durables owned before it.
+            "skus":         {"type": "Text", "nullable": False, "analyzer": "whitespace"},
+            "prev_skus":    {"type": "Text", "nullable": True,  "analyzer": "whitespace"},
+            "owned_before": {"type": "Text", "nullable": True,  "analyzer": "whitespace"},
         },
     },
     # 4. order_lines — links to orders AND products. Load last.
@@ -173,6 +178,13 @@ SCHEMAS: dict[str, dict] = {
             # (ADR 0030). Null when nothing was bought that month.
             "basket_categories": {"type": "Text", "nullable": True,
                                   "analyzer": "whitespace"},
+            "basket_skus":       {"type": "Text", "nullable": True,
+                                  "analyzer": "whitespace"},
+            # The customer's last order before this month, and whether the
+            # shown product was in it: recency (ADR 0030, S8).
+            "last_order_skus":   {"type": "Text", "nullable": True,
+                                  "analyzer": "whitespace"},
+            "just_bought":       {"type": "Boolean", "nullable": False},
             # Denormalised customer profile — single-hop conditioning.
             "customer_segment":      {"type": "String", "nullable": False},
             "customer_pet_size":     {"type": "String", "nullable": True},

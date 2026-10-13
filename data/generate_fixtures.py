@@ -636,6 +636,11 @@ class Impression:
     # The basket that month as words ("dog_dry-food small_animal_cage"), or
     # None when the customer bought nothing that month (ADR 0030, S6).
     basket_categories: str | None = None
+    basket_skus: str | None = None          # the same basket's SKUs
+    # The customer's last order before this month (recency, S8), and whether
+    # the shown product was in it.
+    last_order_skus: str | None = None
+    just_bought: bool = False
     # Denormalised customer profile — single-hop conditioning, same
     # rationale as order_lines (ADR 0006/0017).
     customer_segment: str = "dog_owner"
@@ -668,6 +673,11 @@ class Order:
     # a join-via-reverse-link that Aito's `_relate` doesn't expose.
     # See ADR 0008.
     line_categories: str = ""
+    # ADR 0030, for the interactive shop: this order's SKUs, the previous
+    # order's SKUs (recency, S8), and the kit durables owned before it.
+    skus: str = ""
+    prev_skus: str | None = None
+    owned_before: str | None = None
 
 
 @dataclass
@@ -1615,10 +1625,14 @@ def gen_orders_and_lines(
 
     for customer in customers:
         persona = persona_ids.get(customer.customer_id)
+        # How many orders, and in which months, from the customer's own RNG:
+        # `churned` follows from the months, so it must not shift whenever a
+        # change upstream changes how many draws the shared RNG has made.
+        months_rng = random.Random(f"months:{customer.customer_id}")
         if persona is not None:
             n_orders = persona.target_orders
         else:
-            n_orders = _orders_per_customer(rng, customer)
+            n_orders = _orders_per_customer(months_rng, customer)
 
         if persona is not None and persona.pet_type_weights is not None:
             pet_type_weights = persona.pet_type_weights
@@ -1653,7 +1667,7 @@ def gen_orders_and_lines(
         # At most one order a month: a heavy customer's orders are capped by
         # the months they were a customer (churners' windows are shorter).
         n_orders = min(n_orders, len(eligible_months))
-        order_months = _order_months(rng, eligible_months, n_orders)
+        order_months = _order_months(months_rng, eligible_months, n_orders)
         if persona is not None and order_months[-1] != eligible_months[-1]:
             # A persona anchors the demo's default views, so it must not read
             # as churned: its history reaches the latest month by rule, not by
@@ -1669,10 +1683,13 @@ def gen_orders_and_lines(
         staple_cats = {pet: lifecycle.staple_categories(rng, pet) for pet in pets}
         staples: dict[tuple[str, str], Product] = {}
         owned_durables: set[str] = set()
+        owned_tokens: set[str] = set()            # per pet: "small_animal_cage"
+        prev_skus: str | None = None
 
         for order_index, month in enumerate(order_months):
             order_id = f"ORD-{order_counter:05d}"
             order_counter += 1
+            owned_before = " ".join(sorted(owned_tokens)) or None
 
             # 1-6 lines, mode at 2-3. The lifecycle lines count towards it.
             n_lines = rng.choices(
@@ -1692,6 +1709,7 @@ def gen_orders_and_lines(
                 kind = lifecycle.item_type(product.name, product.brand)
                 if kind in lifecycle.DURABLE_TYPES:
                     owned_durables.add(kind)
+                    owned_tokens.add(shoppers.token(product.pet_type, kind))
                 qty = rng.choices([1, 2, 3], weights=[0.78, 0.18, 0.04])[0]
                 if stock_up:
                     # A promoted staple: stock up, (price / list)^ε the usual.
@@ -1874,7 +1892,11 @@ def gen_orders_and_lines(
                 month=month,
                 total_eur=_round_eur(order_total),
                 line_categories=" ".join(line_tokens),
+                skus=" ".join(ln.product_sku for ln in this_orders_lines),
+                prev_skus=prev_skus,
+                owned_before=owned_before,
             ))
+            prev_skus = " ".join(ln.product_sku for ln in this_orders_lines)
 
     return orders, lines
 
@@ -2808,7 +2830,8 @@ def _search_query(
     candidates = [p for p in products if p.sku in phrases_of]
     weights = [max(pet_type_weights.get(p.pet_type, 0.003)
                    * (0.5 + 5 * (cat_bias.get(p.category, 0.05) if cat_bias else 0.1))
-                   * _customer_product_score(p, customer), 1e-4)
+                   * _customer_product_score(p, customer)
+                   * shoppers.browse_weight(p.name, p.pet_type, p.category, customer.diet_rule), 1e-4)
                for p in candidates]
     target = rng.choices(candidates, weights=weights, k=1)[0]
     return rng.choice(phrases_of[target.sku])
@@ -2937,6 +2960,10 @@ def gen_impressions(
     for ln in lines:
         basket_products.setdefault(customer_of_order[ln.order_id], []).append(by_sku[ln.product_sku])
     baskets = {key: shoppers.basket_tokens(ps) for key, ps in basket_products.items()}
+    # Each customer's orders in time order, to find the last one before a session.
+    order_history: dict[str, list[tuple[str, str]]] = {}
+    for o in sorted(orders, key=lambda o: o.month):
+        order_history.setdefault(o.customer_id, []).append((o.month, o.skus))
     phrases = shoppers.query_phrases(products)
     phrases_of: dict[str, list[str]] = {}
     for phrase, matching in phrases.items():
@@ -2970,6 +2997,10 @@ def gen_impressions(
                 weights=list(_SURFACE_WEIGHTS.values()),
             )[0]
             basket = baskets.get((customer.customer_id, month), [])
+            basket_skus = " ".join(sorted(p.sku for p in basket_products.get((customer.customer_id, month), []))) or None
+            earlier = [skus for m, skus in order_history.get(customer.customer_id, []) if m < month]
+            last_order_skus = earlier[-1] if earlier else None
+            just_bought_skus = set(last_order_skus.split()) if last_order_skus else set()
 
             # Build the candidate pool for this session + the query.
             query: str | None = None
@@ -2998,7 +3029,12 @@ def gen_impressions(
             for p in pool:
                 pt = pet_type_weights.get(p.pet_type, 0.003)
                 cb = cat_bias.get(p.category, 0.05) if cat_bias else 0.1
-                weights.append(max(pt * (0.5 + 5 * cb) * _customer_product_score(p, customer), 1e-4))
+                weights.append(max(pt * (0.5 + 5 * cb) * _customer_product_score(p, customer)
+                                   * shoppers.browse_weight(p.name, p.pet_type, p.category, customer.diet_rule), 1e-4))
+            # Filler (the funnel's negatives) is uniform, except that a rule
+            # household still mostly sees food that keeps its rule (S1).
+            filler_weights = [shoppers.browse_weight(p.name, p.pet_type, p.category, customer.diet_rule)
+                              for p in pool]
 
             shown: list[Product] = []
             seen: set[str] = set()
@@ -3014,7 +3050,7 @@ def gen_impressions(
                 if rng.random() < 0.65:
                     pick = rng.choices(pool, weights=weights, k=1)[0]
                 else:
-                    pick = rng.choice(pool)
+                    pick = rng.choices(pool, weights=filler_weights, k=1)[0]
                 if pick.sku in seen:
                     continue
                 seen.add(pick.sku)
@@ -3027,9 +3063,14 @@ def gen_impressions(
                     odds = 0.0   # a rule household looks, but never buys it (S1)
                 if shoppers.is_poorly_made(product.sku):
                     odds *= shoppers.POOR_CONVERSION_ODDS
+                if product.sku in just_bought_skus:
+                    # Still stocked up (S8): less likely to look, or to buy.
+                    odds *= shoppers.JUST_BOUGHT_ODDS
                 if basket and shoppers.complements_basket(row_of[product.sku], basket):
                     odds *= shoppers.COMPLEMENT_ODDS
-                    click_odds = shoppers.COMPLEMENT_ODDS
+                    click_odds *= shoppers.COMPLEMENT_ODDS
+                if product.sku in just_bought_skus:
+                    click_odds *= shoppers.JUST_BOUGHT_ODDS
                 clicked, added, purchased = _impression_funnel(
                     rng, product, customer, pet_type_weights, cat_bias, odds, click_odds,
                 )
@@ -3043,6 +3084,9 @@ def gen_impressions(
                     position=position,
                     search_query=query,
                     basket_categories=" ".join(basket) or None,
+                    basket_skus=basket_skus,
+                    last_order_skus=last_order_skus,
+                    just_bought=product.sku in just_bought_skus,
                     customer_segment=customer.segment,
                     customer_pet_size=customer.pet_size,
                     customer_lifestyle=customer.lifestyle,

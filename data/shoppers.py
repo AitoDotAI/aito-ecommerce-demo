@@ -41,6 +41,19 @@ def assign_diet_rule(rng: random.Random, pets: list[str]) -> str | None:
     return rng.choice(options)
 
 
+# A rule household looks mostly at food that keeps its rule (amendment
+# after A1, 2026-10-13): it searches and filters for it.
+RULE_KEEPING_BROWSE_WEIGHT = 8.0
+RULE_BREAKING_BROWSE_WEIGHT = 0.25
+
+
+def browse_weight(name: str, pet_type: str, category: str, rule: str | None) -> float:
+    """How much more (or less) often a rule household is shown this product."""
+    if rule is None or pet_type not in ("dog", "cat") or category not in FOOD:
+        return 1.0
+    return RULE_KEEPING_BROWSE_WEIGHT if RULE_WORDS[rule] in name else RULE_BREAKING_BROWSE_WEIGHT
+
+
 def keeps_diet_rule(name: str, pet_type: str, category: str, rule: str | None) -> bool:
     """The rule covers dog and cat food only; anything else keeps it."""
     if rule is None or pet_type not in ("dog", "cat") or category not in FOOD:
@@ -122,10 +135,17 @@ def rating_band(avg_rating: float | None) -> str:
 
 # ── S6: basket context ──────────────────────────────────────────────
 
+# ── S8: recency ─────────────────────────────────────────────────────
+
+# Shown again soon after buying it, a product converts at these odds: the
+# shopper is still stocked up ("don't suggest the ketchup bought
+# yesterday"). Applied to impressions, where recommendations learn from.
+JUST_BOUGHT_ODDS = 0.25
+
 COMPLEMENT_ODDS = 3.0           # on the click, the add-to-cart and the purchase
 
 
-def _token(pet: str, word: str) -> str:
+def token(pet: str, word: str) -> str:
     # Aito's Text analyzers split on hyphens and spaces, so a token keeps
     # neither: "dog_dryfood", "small_animal_water_bottle" (as
     # orders.line_categories does).
@@ -137,10 +157,10 @@ def basket_tokens(products: list) -> list[str]:
     for each durable kit item, so a Text column can `$match` either."""
     tokens: list[str] = []
     for p in products:
-        tokens.append(_token(p.pet_type, p.category))
+        tokens.append(token(p.pet_type, p.category))
         kind = lifecycle.item_type(p.name, p.brand)
         if kind in lifecycle.DURABLE_TYPES:
-            tokens.append(_token(p.pet_type, kind))
+            tokens.append(token(p.pet_type, kind))
     return sorted(set(tokens))
 
 
@@ -151,7 +171,7 @@ def complements_basket(product: dict, basket: list[str]) -> bool:
     kind = lifecycle.item_type(product["name"], product["brand"])
     if kind in lifecycle.ADD_ONS.get(pet, ()):
         kit = lifecycle.STARTER_KITS.get(pet, ())
-        return any(_token(pet, k) in basket for k in kit)
+        return any(token(pet, k) in basket for k in kit)
     return pet == "dog" and product["category"] == "dental-treats" and "dog_dryfood" in basket
 
 

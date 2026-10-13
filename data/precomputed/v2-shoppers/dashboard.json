@@ -1,0 +1,227 @@
+{
+  "data": {
+    "kpis": {
+      "products": {
+        "value": 658,
+        "delta_label": null
+      },
+      "orders_12mo": {
+        "value": 9838,
+        "delta_label": null
+      },
+      "customers": {
+        "value": 3000,
+        "delta_label": null
+      },
+      "avg_basket_eur": {
+        "value": 80.8,
+        "delta_label": null
+      }
+    },
+    "top_patterns": [
+      {
+        "label": "Dog dry-food → Dental treats",
+        "lift": 2.86,
+        "bar_pct": 81.8,
+        "available": true
+      },
+      {
+        "label": "Dog dry-food → Dog treats",
+        "lift": 1.78,
+        "bar_pct": 51.0,
+        "available": true
+      },
+      {
+        "label": "Dog dry-food → Dog accessories",
+        "lift": 1.66,
+        "bar_pct": 47.5,
+        "available": true
+      },
+      {
+        "label": "Cat wet-food → Cat litter",
+        "lift": 2.14,
+        "bar_pct": 61.2,
+        "available": true
+      },
+      {
+        "label": "Cat dry-food → Cat wet-food",
+        "lift": 2.12,
+        "bar_pct": 60.6,
+        "available": true
+      },
+      {
+        "label": "Aquarium food → Aquarium health",
+        "lift": 13.99,
+        "bar_pct": 100.0,
+        "available": true
+      }
+    ],
+    "segments": [
+      {
+        "id": "dog_owner",
+        "emoji": "🐕",
+        "label": "Dog owners",
+        "share_pct": 42.1,
+        "avg_basket_eur": 69.57,
+        "note": "monthly food reorder · highest LTV",
+        "pill_text": "Highest LTV",
+        "pill_tone": "orange"
+      },
+      {
+        "id": "cat_owner",
+        "emoji": "🐈",
+        "label": "Cat owners",
+        "share_pct": 29.8,
+        "avg_basket_eur": 77.82,
+        "note": "bi-weekly litter · steady frequency",
+        "pill_text": "High frequency",
+        "pill_tone": "blue"
+      },
+      {
+        "id": "multi_pet",
+        "emoji": "🐾",
+        "label": "Multi-pet households",
+        "share_pct": 15.2,
+        "avg_basket_eur": 112.57,
+        "note": "dog + cat · cross-sell sweet spot",
+        "pill_text": "Cross-sell",
+        "pill_tone": "purple"
+      },
+      {
+        "id": "small_animal_owner",
+        "emoji": "🐹",
+        "label": "Small animals",
+        "share_pct": 7.3,
+        "avg_basket_eur": 121.19,
+        "note": "weekly bedding · growing segment",
+        "pill_text": "Growing",
+        "pill_tone": "grey"
+      },
+      {
+        "id": "aquarium_owner",
+        "emoji": "🐟",
+        "label": "Aquarium / exotic",
+        "share_pct": 5.6,
+        "avg_basket_eur": 63.05,
+        "note": "monthly · high AOV",
+        "pill_text": "High AOV",
+        "pill_tone": "purple"
+      }
+    ],
+    "insight": {
+      "headline": "Insight",
+      "body": "<strong>Dog dry-food → Dental treats</strong> co-occurs at <strong>2.86×</strong> baseline — Aito flags this as the demo's headline cross-sell signal. Drill into individual SKU pairs on Bought Together; live-rank the pattern's customer segments on Pattern Explorer."
+    },
+    "recent_orders": [
+      {
+        "order_id": "ORD-11832",
+        "customer_short": "Sari M.",
+        "month": "2026-04",
+        "line_summary": "PetNord Silica Crystals Cat Litter 7kg + 2 more",
+        "total_eur": 94.42
+      },
+      {
+        "order_id": "ORD-11829",
+        "customer_short": "Mikko M.",
+        "month": "2026-04",
+        "line_summary": "Hill's Science Plan Senior Lamb Dog Food 400g + 1 more",
+        "total_eur": 6.38
+      },
+      {
+        "order_id": "ORD-11826",
+        "customer_short": "Petra L.",
+        "month": "2026-04",
+        "line_summary": "Eukanuba Turkey Dog Food 400g + 1 more",
+        "total_eur": 25.28
+      },
+      {
+        "order_id": "ORD-11814",
+        "customer_short": "Joonas L.",
+        "month": "2026-04",
+        "line_summary": "Orijen Sensitive Salmon Cat Food 15kg + 6 more",
+        "total_eur": 291.62
+      },
+      {
+        "order_id": "ORD-11813",
+        "customer_short": "Maria L.",
+        "month": "2026-04",
+        "line_summary": "Whiskas Indoor Chicken Cat Food 85g + 2 more",
+        "total_eur": 29.05
+      },
+      {
+        "order_id": "ORD-11807",
+        "customer_short": "Pekka L.",
+        "month": "2026-04",
+        "line_summary": "Royal Canin Puppy Duck Dog Food 400g + 3 more",
+        "total_eur": 123.97
+      }
+    ],
+    "last_query": {
+      "endpoint": "_search",
+      "body": {
+        "from": "orders",
+        "where": {
+          "month": {
+            "$gte": "2025-04"
+          }
+        },
+        "limit": 0
+      }
+    },
+    "last_response_ms": 578
+  },
+  "timings": [
+    [
+      "_search",
+      4.29
+    ],
+    [
+      "_search",
+      9.07
+    ],
+    [
+      "_search",
+      31.8
+    ],
+    [
+      "_search",
+      29.14
+    ],
+    [
+      "_search",
+      18.47
+    ],
+    [
+      "_batch",
+      1.52
+    ],
+    [
+      "_aggregate",
+      21.89
+    ],
+    [
+      "_aggregate",
+      16.38
+    ],
+    [
+      "_aggregate",
+      9.59
+    ],
+    [
+      "_aggregate",
+      4.84
+    ],
+    [
+      "_aggregate",
+      4.03
+    ],
+    [
+      "_search",
+      2.14
+    ],
+    [
+      "_batch",
+      20.95
+    ]
+  ]
+}

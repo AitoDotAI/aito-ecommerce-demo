@@ -69,6 +69,14 @@ def test_s1_diet_rule_households_never_buy_rule_breaking_food_from_an_impression
     assert broken == [], f"{len(broken)} rule-breaking purchases, e.g. {broken[:3]}"
 
 
+def test_s1_rule_households_mostly_browse_food_that_keeps_the_rule(data, impressions):
+    products, *_ = data
+    food = [(i, p) for i in impressions if (rule := i.get("customer_diet_rule"))
+            and (p := products[i["product_sku"]])["pet_type"] in ("dog", "cat") and p["category"] in FOOD]
+    kept = sum(RULE_WORDS[i["customer_diet_rule"]] in p["name"] for i, p in food)
+    assert kept / len(food) >= 0.60, f"{kept}/{len(food)}"
+
+
 def test_s1_a_fifth_of_dog_and_cat_households_have_a_rule(data):
     _, customers, *_ = data
     households = [c for c in customers.values() if c["segment"] in ("dog_owner", "cat_owner", "multi_pet")]
@@ -172,3 +180,29 @@ def test_s7_search_queries_are_words_from_the_products(data, impressions):
     for q in queries:
         matching = sum(all(word in name for word in q.split()) for name in names)
         assert matching >= 3, f"{q!r} matches {matching} products"
+
+
+def test_s8_a_product_just_bought_converts_less_when_shown_again(data, impressions):
+    # Against products the same customer bought earlier but not in the last
+    # order: both are things they like, so only "just bought" differs.
+    *_, orders_by_customer = data
+    rates = {True: [0, 0], False: [0, 0]}   # just bought? → [purchased, shown]
+    for i in impressions:
+        earlier = [o for o in orders_by_customer.get(i["customer_id"], []) if o["month"] < i["month"]]
+        bought_before = {sku for o in earlier[:-1] for sku in o["skus"].split()}
+        if i["just_bought"] or i["product_sku"] in bought_before:
+            tally = rates[i["just_bought"]]
+            tally[0] += i["purchased"]
+            tally[1] += 1
+    assert min(rates[True][1], rates[False][1]) >= 1000, rates
+    just, earlier_bought = (rates[k][0] / rates[k][1] for k in (True, False))
+    assert just / earlier_bought <= 0.5, f"just bought {just:.1%} vs bought earlier {earlier_bought:.1%}"
+
+
+def test_orders_carry_their_skus_and_the_previous_orders(data):
+    _, _, orders, lines_by_order, orders_by_customer = data
+    for o in orders[:500]:
+        assert set(o["skus"].split()) == {p["sku"] for p in lines_by_order[o["order_id"]]}
+    for customer_orders in list(orders_by_customer.values())[:200]:
+        for prev, this in zip(customer_orders, customer_orders[1:]):
+            assert this["prev_skus"] == prev["skus"]

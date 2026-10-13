@@ -1,0 +1,1080 @@
+{
+  "data": {
+    "kpis": [
+      {
+        "label": "Targets identified",
+        "value": 20.0,
+        "sub": "churned customers worth re-engaging"
+      },
+      {
+        "label": "Predicted recoverable revenue",
+        "value": 1832.85,
+        "sub": "sum of response_p × AOV − €0.50/email across 60 sends"
+      },
+      {
+        "label": "Average response rate",
+        "value": 0.736,
+        "sub": "across all proposed (customer × product) sends"
+      },
+      {
+        "label": "Campaign cost",
+        "value": 30.0,
+        "sub": "€0.50 × 60 emails"
+      }
+    ],
+    "targets": [
+      {
+        "customer_id": "CUST-00036",
+        "customer_name": "Helmi Heinonen",
+        "segment": "multi_pet",
+        "pet_size": "large",
+        "lifestyle": "mid",
+        "health_focus": "medium",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-11",
+        "total_spent_eur": 505.13,
+        "total_orders": 4,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0490",
+            "name": "PetNord Silica Crystals Cat Litter 7kg",
+            "pet_type": "cat",
+            "category": "litter",
+            "brand": "PetNord",
+            "price_eur": 10.85,
+            "response_p": 0.873,
+            "predicted_aov_eur": 33.43,
+            "expected_revenue_eur": 28.7,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0488",
+            "name": "PetNord Silica Crystals Cat Litter 5kg",
+            "pet_type": "cat",
+            "category": "litter",
+            "brand": "PetNord",
+            "price_eur": 8.58,
+            "response_p": 0.797,
+            "predicted_aov_eur": 35.39,
+            "expected_revenue_eur": 27.7,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0019",
+            "name": "Hill's Science Plan Chicken Dog Food 15kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Hill's Science Plan",
+            "price_eur": 93.98,
+            "response_p": 0.789,
+            "predicted_aov_eur": 201.08,
+            "expected_revenue_eur": 158.12,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 214.52
+      },
+      {
+        "customer_id": "CUST-00187",
+        "customer_name": "Riitta Laitinen",
+        "segment": "dog_owner",
+        "pet_size": "large",
+        "lifestyle": "budget",
+        "health_focus": "high",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-12",
+        "total_spent_eur": 301.04,
+        "total_orders": 3,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0019",
+            "name": "Hill's Science Plan Chicken Dog Food 15kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Hill's Science Plan",
+            "price_eur": 93.98,
+            "response_p": 0.864,
+            "predicted_aov_eur": 195.81,
+            "expected_revenue_eur": 168.67,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0200",
+            "name": "PetNord Grain Free Fresh Breath Dental Treats 80g",
+            "pet_type": "dog",
+            "category": "dental-treats",
+            "brand": "PetNord",
+            "price_eur": 1.85,
+            "response_p": 0.848,
+            "predicted_aov_eur": 9.96,
+            "expected_revenue_eur": 7.95,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0127",
+            "name": "Hill's Science Plan Grain Free Chicken Dog Food 150g",
+            "pet_type": "dog",
+            "category": "wet-food",
+            "brand": "Hill's Science Plan",
+            "price_eur": 1.67,
+            "response_p": 0.815,
+            "predicted_aov_eur": 10.49,
+            "expected_revenue_eur": 8.05,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 184.67
+      },
+      {
+        "customer_id": "CUST-00014",
+        "customer_name": "Jukka Anttila",
+        "segment": "small_animal_owner",
+        "pet_size": null,
+        "lifestyle": "mid",
+        "health_focus": "high",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-12",
+        "total_spent_eur": 735.09,
+        "total_orders": 5,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0531",
+            "name": "PetNord Rabbit Pellets Food 15kg",
+            "pet_type": "small_animal",
+            "category": "dry-food",
+            "brand": "PetNord",
+            "price_eur": 103.46,
+            "response_p": 0.821,
+            "predicted_aov_eur": 120.75,
+            "expected_revenue_eur": 98.7,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0532",
+            "name": "PetNord Senior Rabbit Pellets Food 12kg",
+            "pet_type": "small_animal",
+            "category": "dry-food",
+            "brand": "PetNord",
+            "price_eur": 87.33,
+            "response_p": 0.431,
+            "predicted_aov_eur": 113.13,
+            "expected_revenue_eur": 48.3,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0556",
+            "name": "PetNord Water Bottle",
+            "pet_type": "small_animal",
+            "category": "accessories",
+            "brand": "PetNord",
+            "price_eur": 19.93,
+            "response_p": 0.383,
+            "predicted_aov_eur": 68.83,
+            "expected_revenue_eur": 25.89,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 172.89
+      },
+      {
+        "customer_id": "CUST-00039",
+        "customer_name": "Eeva Kinnunen",
+        "segment": "dog_owner",
+        "pet_size": "large",
+        "lifestyle": "premium",
+        "health_focus": "low",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-11",
+        "total_spent_eur": 678.47,
+        "total_orders": 5,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0181",
+            "name": "PetNord Mixed Reward Treats 500g",
+            "pet_type": "dog",
+            "category": "treats",
+            "brand": "PetNord",
+            "price_eur": 9.09,
+            "response_p": 0.771,
+            "predicted_aov_eur": 40.15,
+            "expected_revenue_eur": 30.45,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0166",
+            "name": "PetNord Puppy Bacon Treats 100g",
+            "pet_type": "dog",
+            "category": "treats",
+            "brand": "PetNord",
+            "price_eur": 1.89,
+            "response_p": 0.745,
+            "predicted_aov_eur": 36.3,
+            "expected_revenue_eur": 26.54,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0084",
+            "name": "Orijen Senior Chicken Dog Food 15kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Orijen",
+            "price_eur": 94.86,
+            "response_p": 0.713,
+            "predicted_aov_eur": 159.29,
+            "expected_revenue_eur": 113.07,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 170.06
+      },
+      {
+        "customer_id": "CUST-00040",
+        "customer_name": "Tapio Heikkilä",
+        "segment": "small_animal_owner",
+        "pet_size": null,
+        "lifestyle": "mid",
+        "health_focus": "low",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-10",
+        "total_spent_eur": 372.84,
+        "total_orders": 2,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0556",
+            "name": "PetNord Water Bottle",
+            "pet_type": "small_animal",
+            "category": "accessories",
+            "brand": "PetNord",
+            "price_eur": 19.93,
+            "response_p": 0.664,
+            "predicted_aov_eur": 68.83,
+            "expected_revenue_eur": 45.23,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0560",
+            "name": "Trixie Cage",
+            "pet_type": "small_animal",
+            "category": "accessories",
+            "brand": "Trixie",
+            "price_eur": 20.44,
+            "response_p": 0.629,
+            "predicted_aov_eur": 76.94,
+            "expected_revenue_eur": 47.88,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0531",
+            "name": "PetNord Rabbit Pellets Food 15kg",
+            "pet_type": "small_animal",
+            "category": "dry-food",
+            "brand": "PetNord",
+            "price_eur": 103.46,
+            "response_p": 0.629,
+            "predicted_aov_eur": 120.75,
+            "expected_revenue_eur": 75.4,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 168.51
+      },
+      {
+        "customer_id": "CUST-00076",
+        "customer_name": "Riitta Vuori",
+        "segment": "dog_owner",
+        "pet_size": "small",
+        "lifestyle": "premium",
+        "health_focus": "low",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-10",
+        "total_spent_eur": 234.03,
+        "total_orders": 1,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0166",
+            "name": "PetNord Puppy Bacon Treats 100g",
+            "pet_type": "dog",
+            "category": "treats",
+            "brand": "PetNord",
+            "price_eur": 1.89,
+            "response_p": 0.797,
+            "predicted_aov_eur": 30.3,
+            "expected_revenue_eur": 23.65,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0181",
+            "name": "PetNord Mixed Reward Treats 500g",
+            "pet_type": "dog",
+            "category": "treats",
+            "brand": "PetNord",
+            "price_eur": 9.09,
+            "response_p": 0.772,
+            "predicted_aov_eur": 35.91,
+            "expected_revenue_eur": 27.22,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0084",
+            "name": "Orijen Senior Chicken Dog Food 15kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Orijen",
+            "price_eur": 94.86,
+            "response_p": 0.723,
+            "predicted_aov_eur": 156.73,
+            "expected_revenue_eur": 112.79,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 163.66
+      },
+      {
+        "customer_id": "CUST-00099",
+        "customer_name": "Mervi Niemelä",
+        "segment": "small_animal_owner",
+        "pet_size": null,
+        "lifestyle": "budget",
+        "health_focus": "medium",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-11",
+        "total_spent_eur": 769.27,
+        "total_orders": 8,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0539",
+            "name": "PetNord Senior Hamster Mix Food 4kg",
+            "pet_type": "small_animal",
+            "category": "dry-food",
+            "brand": "PetNord",
+            "price_eur": 25.42,
+            "response_p": 0.651,
+            "predicted_aov_eur": 66.6,
+            "expected_revenue_eur": 42.83,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0562",
+            "name": "Trixie Water Bottle",
+            "pet_type": "small_animal",
+            "category": "accessories",
+            "brand": "Trixie",
+            "price_eur": 19.97,
+            "response_p": 0.64,
+            "predicted_aov_eur": 63.57,
+            "expected_revenue_eur": 40.16,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0531",
+            "name": "PetNord Rabbit Pellets Food 15kg",
+            "pet_type": "small_animal",
+            "category": "dry-food",
+            "brand": "PetNord",
+            "price_eur": 103.46,
+            "response_p": 0.591,
+            "predicted_aov_eur": 127.96,
+            "expected_revenue_eur": 75.11,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 158.1
+      },
+      {
+        "customer_id": "CUST-00155",
+        "customer_name": "Petri Turunen",
+        "segment": "dog_owner",
+        "pet_size": "large",
+        "lifestyle": "premium",
+        "health_focus": "medium",
+        "recency_bucket": "0-90d",
+        "last_order_month": "2026-01",
+        "total_spent_eur": 617.91,
+        "total_orders": 6,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0136",
+            "name": "Hill's Science Plan Beef Dog Food 150g",
+            "pet_type": "dog",
+            "category": "wet-food",
+            "brand": "Hill's Science Plan",
+            "price_eur": 1.8,
+            "response_p": 0.81,
+            "predicted_aov_eur": 45.52,
+            "expected_revenue_eur": 36.36,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0218",
+            "name": "Trixie Bowl",
+            "pet_type": "dog",
+            "category": "accessories",
+            "brand": "Trixie",
+            "price_eur": 21.95,
+            "response_p": 0.781,
+            "predicted_aov_eur": 65.85,
+            "expected_revenue_eur": 50.92,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0177",
+            "name": "PetNord Puppy Cheese Treats 100g",
+            "pet_type": "dog",
+            "category": "treats",
+            "brand": "PetNord",
+            "price_eur": 2.19,
+            "response_p": 0.704,
+            "predicted_aov_eur": 44.76,
+            "expected_revenue_eur": 31.01,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 118.29
+      },
+      {
+        "customer_id": "CUST-00084",
+        "customer_name": "Inkeri Ojala",
+        "segment": "cat_owner",
+        "pet_size": null,
+        "lifestyle": "mid",
+        "health_focus": "high",
+        "recency_bucket": "180d+",
+        "last_order_month": "2025-08",
+        "total_spent_eur": 887.67,
+        "total_orders": 4,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0488",
+            "name": "PetNord Silica Crystals Cat Litter 5kg",
+            "pet_type": "cat",
+            "category": "litter",
+            "brand": "PetNord",
+            "price_eur": 8.58,
+            "response_p": 0.823,
+            "predicted_aov_eur": 33.25,
+            "expected_revenue_eur": 26.86,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0400",
+            "name": "Whiskas Salmon Cat Food 400g",
+            "pet_type": "cat",
+            "category": "wet-food",
+            "brand": "Whiskas",
+            "price_eur": 4.76,
+            "response_p": 0.775,
+            "predicted_aov_eur": 25.88,
+            "expected_revenue_eur": 19.56,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0306",
+            "name": "Acana Sensitive Chicken Cat Food 15kg",
+            "pet_type": "cat",
+            "category": "dry-food",
+            "brand": "Acana",
+            "price_eur": 95.08,
+            "response_p": 0.694,
+            "predicted_aov_eur": 34.6,
+            "expected_revenue_eur": 23.51,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 69.93
+      },
+      {
+        "customer_id": "CUST-00056",
+        "customer_name": "Toivo Ahonen",
+        "segment": "cat_owner",
+        "pet_size": null,
+        "lifestyle": "mid",
+        "health_focus": "high",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-11",
+        "total_spent_eur": 283.48,
+        "total_orders": 3,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0400",
+            "name": "Whiskas Salmon Cat Food 400g",
+            "pet_type": "cat",
+            "category": "wet-food",
+            "brand": "Whiskas",
+            "price_eur": 4.76,
+            "response_p": 0.827,
+            "predicted_aov_eur": 30.88,
+            "expected_revenue_eur": 25.05,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0411",
+            "name": "Whiskas Liver Cat Food 400g",
+            "pet_type": "cat",
+            "category": "wet-food",
+            "brand": "Whiskas",
+            "price_eur": 4.3,
+            "response_p": 0.685,
+            "predicted_aov_eur": 26.57,
+            "expected_revenue_eur": 17.71,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0444",
+            "name": "Sheba Senior Beef Cat Food 85g",
+            "pet_type": "cat",
+            "category": "wet-food",
+            "brand": "Sheba",
+            "price_eur": 0.96,
+            "response_p": 0.649,
+            "predicted_aov_eur": 25.87,
+            "expected_revenue_eur": 16.28,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 59.04
+      },
+      {
+        "customer_id": "CUST-00184",
+        "customer_name": "Lotta Virtanen",
+        "segment": "multi_pet",
+        "pet_size": "medium",
+        "lifestyle": "mid",
+        "health_focus": "medium",
+        "recency_bucket": "180d+",
+        "last_order_month": "2025-08",
+        "total_spent_eur": 251.3,
+        "total_orders": 1,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0539",
+            "name": "PetNord Senior Hamster Mix Food 4kg",
+            "pet_type": "small_animal",
+            "category": "dry-food",
+            "brand": "PetNord",
+            "price_eur": 25.42,
+            "response_p": 0.81,
+            "predicted_aov_eur": 28.0,
+            "expected_revenue_eur": 22.17,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0143",
+            "name": "Hill's Science Plan Sensitive Turkey Dog Food 150g",
+            "pet_type": "dog",
+            "category": "wet-food",
+            "brand": "Hill's Science Plan",
+            "price_eur": 1.83,
+            "response_p": 0.778,
+            "predicted_aov_eur": 14.28,
+            "expected_revenue_eur": 10.61,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0488",
+            "name": "PetNord Silica Crystals Cat Litter 5kg",
+            "pet_type": "cat",
+            "category": "litter",
+            "brand": "PetNord",
+            "price_eur": 8.58,
+            "response_p": 0.776,
+            "predicted_aov_eur": 30.23,
+            "expected_revenue_eur": 22.96,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 55.74
+      },
+      {
+        "customer_id": "CUST-00068",
+        "customer_name": "Anna Nieminen",
+        "segment": "cat_owner",
+        "pet_size": null,
+        "lifestyle": "mid",
+        "health_focus": "medium",
+        "recency_bucket": "0-90d",
+        "last_order_month": "2026-01",
+        "total_spent_eur": 259.09,
+        "total_orders": 5,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0488",
+            "name": "PetNord Silica Crystals Cat Litter 5kg",
+            "pet_type": "cat",
+            "category": "litter",
+            "brand": "PetNord",
+            "price_eur": 8.58,
+            "response_p": 0.697,
+            "predicted_aov_eur": 30.11,
+            "expected_revenue_eur": 20.49,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0404",
+            "name": "Whiskas Indoor Chicken Cat Food 85g",
+            "pet_type": "cat",
+            "category": "wet-food",
+            "brand": "Whiskas",
+            "price_eur": 1.04,
+            "response_p": 0.631,
+            "predicted_aov_eur": 18.92,
+            "expected_revenue_eur": 11.44,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0487",
+            "name": "PetNord Silica Crystals Cat Litter 7kg",
+            "pet_type": "cat",
+            "category": "litter",
+            "brand": "PetNord",
+            "price_eur": 12.49,
+            "response_p": 0.605,
+            "predicted_aov_eur": 26.31,
+            "expected_revenue_eur": 15.42,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 47.35
+      },
+      {
+        "customer_id": "CUST-00170",
+        "customer_name": "Iida Kallio",
+        "segment": "dog_owner",
+        "pet_size": "large",
+        "lifestyle": "mid",
+        "health_focus": "high",
+        "recency_bucket": "180d+",
+        "last_order_month": "2025-04",
+        "total_spent_eur": 261.84,
+        "total_orders": 3,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0038",
+            "name": "Hill's Science Plan Sensitive Turkey Dog Food 2kg",
+            "pet_type": "dog",
+            "category": "dry-food",
+            "brand": "Hill's Science Plan",
+            "price_eur": 14.35,
+            "response_p": 0.901,
+            "predicted_aov_eur": 23.49,
+            "expected_revenue_eur": 20.66,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0131",
+            "name": "Hill's Science Plan Grain Free Lamb Dog Food 400g",
+            "pet_type": "dog",
+            "category": "wet-food",
+            "brand": "Hill's Science Plan",
+            "price_eur": 4.54,
+            "response_p": 0.873,
+            "predicted_aov_eur": 11.39,
+            "expected_revenue_eur": 9.44,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0187",
+            "name": "Whimzees Grain Free Puppy Dental Treats 200g",
+            "pet_type": "dog",
+            "category": "dental-treats",
+            "brand": "Whimzees",
+            "price_eur": 4.91,
+            "response_p": 0.846,
+            "predicted_aov_eur": 13.74,
+            "expected_revenue_eur": 11.13,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 41.23
+      },
+      {
+        "customer_id": "CUST-00183",
+        "customer_name": "Eeva Hakala",
+        "segment": "dog_owner",
+        "pet_size": "medium",
+        "lifestyle": "mid",
+        "health_focus": "medium",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-10",
+        "total_spent_eur": 240.91,
+        "total_orders": 5,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0214",
+            "name": "Trixie Leash",
+            "pet_type": "dog",
+            "category": "accessories",
+            "brand": "Trixie",
+            "price_eur": 22.14,
+            "response_p": 0.763,
+            "predicted_aov_eur": 35.59,
+            "expected_revenue_eur": 26.65,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0139",
+            "name": "Hill's Science Plan Puppy Beef Dog Food 150g",
+            "pet_type": "dog",
+            "category": "wet-food",
+            "brand": "Hill's Science Plan",
+            "price_eur": 1.62,
+            "response_p": 0.717,
+            "predicted_aov_eur": 7.9,
+            "expected_revenue_eur": 5.17,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0160",
+            "name": "Eukanuba Turkey Dog Food 400g",
+            "pet_type": "dog",
+            "category": "wet-food",
+            "brand": "Eukanuba",
+            "price_eur": 4.68,
+            "response_p": 0.66,
+            "predicted_aov_eur": 13.12,
+            "expected_revenue_eur": 8.16,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 39.98
+      },
+      {
+        "customer_id": "CUST-00107",
+        "customer_name": "Marja Mikkonen",
+        "segment": "multi_pet",
+        "pet_size": "medium",
+        "lifestyle": "mid",
+        "health_focus": "low",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-12",
+        "total_spent_eur": 645.82,
+        "total_orders": 7,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0374",
+            "name": "Royal Canin Indoor Beef Cat Food 150g",
+            "pet_type": "cat",
+            "category": "wet-food",
+            "brand": "Royal Canin",
+            "price_eur": 1.71,
+            "response_p": 0.863,
+            "predicted_aov_eur": 15.45,
+            "expected_revenue_eur": 12.83,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0400",
+            "name": "Whiskas Salmon Cat Food 400g",
+            "pet_type": "cat",
+            "category": "wet-food",
+            "brand": "Whiskas",
+            "price_eur": 4.76,
+            "response_p": 0.832,
+            "predicted_aov_eur": 17.18,
+            "expected_revenue_eur": 13.8,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0446",
+            "name": "Sheba Sensitive Beef Cat Food 150g",
+            "pet_type": "cat",
+            "category": "wet-food",
+            "brand": "Sheba",
+            "price_eur": 1.57,
+            "response_p": 0.806,
+            "predicted_aov_eur": 13.98,
+            "expected_revenue_eur": 10.76,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 37.39
+      },
+      {
+        "customer_id": "CUST-00153",
+        "customer_name": "Matti Niemi",
+        "segment": "dog_owner",
+        "pet_size": "medium",
+        "lifestyle": "mid",
+        "health_focus": "high",
+        "recency_bucket": "0-90d",
+        "last_order_month": "2026-01",
+        "total_spent_eur": 1664.52,
+        "total_orders": 13,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0176",
+            "name": "PetNord Cheese Treats 200g",
+            "pet_type": "dog",
+            "category": "treats",
+            "brand": "PetNord",
+            "price_eur": 3.44,
+            "response_p": 0.906,
+            "predicted_aov_eur": 17.52,
+            "expected_revenue_eur": 15.37,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0104",
+            "name": "Royal Canin Senior Chicken Dog Food 150g",
+            "pet_type": "dog",
+            "category": "wet-food",
+            "brand": "Royal Canin",
+            "price_eur": 1.59,
+            "response_p": 0.832,
+            "predicted_aov_eur": 13.29,
+            "expected_revenue_eur": 10.55,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0155",
+            "name": "Eukanuba Puppy Lamb Dog Food 400g",
+            "pet_type": "dog",
+            "category": "wet-food",
+            "brand": "Eukanuba",
+            "price_eur": 4.25,
+            "response_p": 0.791,
+            "predicted_aov_eur": 13.6,
+            "expected_revenue_eur": 10.26,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 36.18
+      },
+      {
+        "customer_id": "CUST-00094",
+        "customer_name": "Satu Aaltonen",
+        "segment": "dog_owner",
+        "pet_size": "small",
+        "lifestyle": "budget",
+        "health_focus": "high",
+        "recency_bucket": "0-90d",
+        "last_order_month": "2026-01",
+        "total_spent_eur": 481.28,
+        "total_orders": 4,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0196",
+            "name": "PetNord Puppy Dental Treats 200g",
+            "pet_type": "dog",
+            "category": "dental-treats",
+            "brand": "PetNord",
+            "price_eur": 4.58,
+            "response_p": 0.974,
+            "predicted_aov_eur": 10.41,
+            "expected_revenue_eur": 9.64,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0200",
+            "name": "PetNord Grain Free Fresh Breath Dental Treats 80g",
+            "pet_type": "dog",
+            "category": "dental-treats",
+            "brand": "PetNord",
+            "price_eur": 1.85,
+            "response_p": 0.955,
+            "predicted_aov_eur": 10.42,
+            "expected_revenue_eur": 9.45,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0197",
+            "name": "PetNord Grain Free Puppy Dental Treats 200g",
+            "pet_type": "dog",
+            "category": "dental-treats",
+            "brand": "PetNord",
+            "price_eur": 4.44,
+            "response_p": 0.941,
+            "predicted_aov_eur": 12.5,
+            "expected_revenue_eur": 11.26,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 30.35
+      },
+      {
+        "customer_id": "CUST-00185",
+        "customer_name": "Janne Nurmi",
+        "segment": "aquarium_owner",
+        "pet_size": null,
+        "lifestyle": "budget",
+        "health_focus": "low",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-11",
+        "total_spent_eur": 389.8,
+        "total_orders": 5,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0648",
+            "name": "PetNord Cichlid Pellets",
+            "pet_type": "aquarium",
+            "category": "aquarium",
+            "brand": "PetNord",
+            "price_eur": 24.65,
+            "response_p": 0.384,
+            "predicted_aov_eur": 41.35,
+            "expected_revenue_eur": 15.39,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0630",
+            "name": "Tetra Tropical Flakes",
+            "pet_type": "aquarium",
+            "category": "aquarium",
+            "brand": "Tetra",
+            "price_eur": 24.5,
+            "response_p": 0.273,
+            "predicted_aov_eur": 34.27,
+            "expected_revenue_eur": 8.84,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0178",
+            "name": "PetNord Cheese Treats 500g",
+            "pet_type": "dog",
+            "category": "treats",
+            "brand": "PetNord",
+            "price_eur": 8.78,
+            "response_p": 0.16,
+            "predicted_aov_eur": 22.38,
+            "expected_revenue_eur": 3.08,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 27.31
+      },
+      {
+        "customer_id": "CUST-00196",
+        "customer_name": "Heikki Rinne",
+        "segment": "dog_owner",
+        "pet_size": "small",
+        "lifestyle": "budget",
+        "health_focus": "high",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-11",
+        "total_spent_eur": 805.34,
+        "total_orders": 6,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0200",
+            "name": "PetNord Grain Free Fresh Breath Dental Treats 80g",
+            "pet_type": "dog",
+            "category": "dental-treats",
+            "brand": "PetNord",
+            "price_eur": 1.85,
+            "response_p": 0.929,
+            "predicted_aov_eur": 9.23,
+            "expected_revenue_eur": 8.07,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0126",
+            "name": "Hill's Science Plan Grain Free Chicken Dog Food 85g",
+            "pet_type": "dog",
+            "category": "wet-food",
+            "brand": "Hill's Science Plan",
+            "price_eur": 0.91,
+            "response_p": 0.834,
+            "predicted_aov_eur": 8.51,
+            "expected_revenue_eur": 6.59,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0178",
+            "name": "PetNord Cheese Treats 500g",
+            "pet_type": "dog",
+            "category": "treats",
+            "brand": "PetNord",
+            "price_eur": 8.78,
+            "response_p": 0.807,
+            "predicted_aov_eur": 9.16,
+            "expected_revenue_eur": 6.89,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 21.55
+      },
+      {
+        "customer_id": "CUST-00075",
+        "customer_name": "Lotta Mattila",
+        "segment": "dog_owner",
+        "pet_size": "medium",
+        "lifestyle": "budget",
+        "health_focus": "medium",
+        "recency_bucket": "90-180d",
+        "last_order_month": "2025-11",
+        "total_spent_eur": 859.8,
+        "total_orders": 13,
+        "suggestions": [
+          {
+            "sku": "SKU-PT-0178",
+            "name": "PetNord Cheese Treats 500g",
+            "pet_type": "dog",
+            "category": "treats",
+            "brand": "PetNord",
+            "price_eur": 8.78,
+            "response_p": 0.786,
+            "predicted_aov_eur": 9.01,
+            "expected_revenue_eur": 6.58,
+            "rank": 1
+          },
+          {
+            "sku": "SKU-PT-0212",
+            "name": "Trixie Collar",
+            "pet_type": "dog",
+            "category": "accessories",
+            "brand": "Trixie",
+            "price_eur": 21.85,
+            "response_p": 0.694,
+            "predicted_aov_eur": 14.34,
+            "expected_revenue_eur": 9.45,
+            "rank": 2
+          },
+          {
+            "sku": "SKU-PT-0105",
+            "name": "Royal Canin Grain Free Lamb Dog Food 150g",
+            "pet_type": "dog",
+            "category": "wet-food",
+            "brand": "Royal Canin",
+            "price_eur": 1.84,
+            "response_p": 0.666,
+            "predicted_aov_eur": 0.85,
+            "expected_revenue_eur": 0.07,
+            "rank": 3
+          }
+        ],
+        "expected_recovered_eur": 16.1
+      }
+    ],
+    "last_query": {
+      "endpoint": "_recommend",
+      "body": {
+        "from": "winback_campaigns",
+        "where": {
+          "customer_lifestyle": "premium",
+          "customer_segment": "dog_owner",
+          "recency_bucket": "0-90d"
+        },
+        "recommend": "product_sku",
+        "goal": {
+          "responded": true
+        },
+        "basedOn": [
+          "pet_type",
+          "category",
+          "brand"
+        ],
+        "limit": 8
+      }
+    },
+    "last_response_ms": 9053
+  },
+  "timings": [
+    [
+      "_search",
+      11.98
+    ],
+    [
+      "_search",
+      34.67
+    ]
+  ]
+}
