@@ -206,6 +206,23 @@ export function productInsightsPanel(): AitoPanelConfig {
 }
 
 
+export function shopAnalyticsPanel(queriesSent?: number): AitoPanelConfig {
+  const one = queriesSent ? `one of the ${queriesSent} ` : "one of the ";
+  return {
+    operation: "Shop analytics",
+    endpoints: ["_relate"],
+    description:
+      `Every section is <code style="color:var(--aito-teal);">_relate</code>, sent in parallel: ` +
+      `which values are over- or under-represented among purchases (or clicks), among a group's ` +
+      `order lines, in baskets with a category, and in searches that convert. Each lift's 95 % ` +
+      `interval comes from the counts Aito returns; a lift whose interval includes 1 is not shown. ` +
+      `The query below is ${one}<code style="color:var(--aito-teal);">_relate</code> bodies sent.`,
+    query: "",
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
 export function patternExplorerPanel(): AitoPanelConfig {
   return {
     operation: "Pattern Explorer",

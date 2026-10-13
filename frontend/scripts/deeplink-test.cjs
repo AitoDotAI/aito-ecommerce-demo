@@ -66,6 +66,7 @@ const LINKS = [
   { view: "product-insights", query: "sku=SKU-PT-0042", api: "/api/product-insights", expect: { sku: "SKU-PT-0042" } },
   { view: "shop", query: "shopper=janne&month=2025-12&cart=SKU-PT-0001", api: "/api/shop/grid",
     expect: { shopper: "janne", month: "2025-12", cart: "SKU-PT-0001" } },
+  { view: "shop-analytics", query: "kpi=clicked&who=grain-free", api: "/api/shop-analytics", expect: { kpi: "clicked", who: "grain-free" } },
 ];
 
 // Views whose picker is filled from the API response: pick an option by
@@ -76,11 +77,13 @@ const PICKERS = [
   { view: "product-filling", select: "#sku-picker", key: "sku", api: "/api/product-filling" },
   { view: "feedback", select: "#rev-picker", key: "review", api: "/api/feedback" },
   { view: "product-insights", select: "#sku-picker", key: "sku", api: "/api/product-insights" },
+  { view: "shop-analytics", select: "#who-picker", key: "who", api: "/api/shop-analytics" },
 ];
 
 // Two options per picker, so there is something to pick. The selected entity
 // echoes the request, as the real backend does.
-const OPTIONS = { anchor: ["dog_dryfood", "cat_wetfood"], sku: ["SKU-PT-0001", "SKU-PT-0042"], review: ["REV-00001", "REV-00042"] };
+const OPTIONS = { anchor: ["dog_dryfood", "cat_wetfood"], sku: ["SKU-PT-0001", "SKU-PT-0042"], review: ["REV-00001", "REV-00042"],
+                  who: ["summer", "grain-free"] };
 const STUB_QUERY = { endpoint: "_relate", body: {} };
 
 // Ids the stub backend doesn't know: it answers 404 with the endpoint's
@@ -139,6 +142,13 @@ function stubResponse(apiPath, params) {
     }
     case "/api/shop/suggestions":
       return { usual: [], next_for_pet: [], owned: {}, no_history: true, queries: [] };
+    case "/api/shop-analytics":
+      return { kpi: params.get("kpi") ?? "purchased", funnel_rows: [], funnel_fields_without_effect: [],
+               who: params.get("who") ?? OPTIONS.who[0],
+               who_options: OPTIONS.who.map((id) => ({ id, label: `Group ${id}`, group: "Test" })),
+               who_rows: [], who_fields_without_effect: [], basket_pairs: [],
+               search_words: { rows: [], words_checked: 0, search_impressions: 1, search_purchases: 0 },
+               last_query: { ...STUB_QUERY, of: 1 } };
     case "/api/evaluation":
       return JSON.parse(fs.readFileSync(EVAL_SNAPSHOT, "utf8")).data;
     default:
@@ -250,6 +260,21 @@ async function main() {
       const first = await firstRequest(reopened.requests, "/api/for-you");
       const chip = await appears(reopened.page.locator("button.customer-chip.selected", { hasText: /olli/i }));
       check(carries(first, { customer: "olli" }) && chip, "recommendations: the copied URL reopens Olli");
+      await reopened.context.close();
+    }
+
+    {
+      const visit = await openFresh(browser, `${BASE}/shop-analytics/`);
+      await visit.page.locator("#kpi-clicked").click();
+      const followed = await urlMatches(visit.page, /kpi=clicked/);
+      const copied = visit.page.url();
+      await visit.context.close();
+      check(followed, `shop-analytics: the Clicks toggle puts the KPI in the address bar (${copied})`);
+
+      const reopened = await openFresh(browser, copied);
+      const first = await firstRequest(reopened.requests, "/api/shop-analytics");
+      const toggle = await appears(reopened.page.locator("#kpi-clicked.selected"));
+      check(carries(first, { kpi: "clicked" }) && toggle, "shop-analytics: the copied URL reopens the Clicks KPI");
       await reopened.context.close();
     }
 

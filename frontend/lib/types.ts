@@ -880,4 +880,52 @@ export interface ShopSuggestions {
   owned: Record<string, string[]>;   // kit owned per pet: {"small_animal": ["cage", …]}
   no_history: boolean;
   queries: Array<{ endpoint: string; body: Record<string, unknown> }>;
+/* ─── Shop analytics (/api/shop-analytics) ─── */
+
+/** One `_relate` lift whose 95 % interval excludes 1 (src/lift_rows.py). */
+export interface ShopLiftRow {
+  field: string;            // "product_sku.rating_band"
+  value: string;            // "1-2"; a Boolean reads "true" / "false"
+  lift: number;
+  interval_low: number;
+  interval_high: number;
+  rows_with_value: number;  // the condition's rows with the value
+  condition_rows: number;   // the condition's rows, e.g. all purchases
+}
+
+export interface ShopBasketPair {
+  first: string;            // "Dog dry-food"
+  second: string;           // "Dog dental-treats"
+  lift: number;
+  interval_low: number;
+  interval_high: number;
+  orders_with_both: number;
+  orders_with_first: number;
+}
+
+export interface ShopSearchWordRow {
+  word: string;
+  lift: number;             // conversion with the word / conversion of all searches
+  interval_low: number;
+  interval_high: number;
+  purchases: number;
+  impressions: number;
+}
+
+export interface ShopAnalyticsResponse {
+  kpi: "purchased" | "clicked";
+  funnel_rows: ShopLiftRow[];
+  funnel_fields_without_effect: string[];
+  who: string;              // "summer", "dog_owner", "grain-free"
+  who_options: Array<{ id: string; label: string; group: string }>;
+  who_rows: ShopLiftRow[];
+  who_fields_without_effect: string[];
+  basket_pairs: ShopBasketPair[];
+  search_words: {
+    rows: ShopSearchWordRow[];
+    words_checked: number;
+    search_impressions: number;
+    search_purchases: number;
+  };
+  last_query: { endpoint: string; body: Record<string, unknown>; of: number };
 }
