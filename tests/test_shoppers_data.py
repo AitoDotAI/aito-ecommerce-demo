@@ -23,7 +23,11 @@ RULE_WORDS = {"grain-free": "Grain Free", "sensitive": "Sensitive", "senior": "S
 
 
 def _load(name: str) -> list[dict]:
-    with (DATA_DIR / name).open(encoding="utf-8") as fh:
+    path = DATA_DIR / name
+    if not path.exists():
+        # impressions.json is gitignored (77 MB); `./do generate-fixtures` makes it.
+        pytest.skip(f"{name} missing: run `./do generate-fixtures`.")
+    with path.open(encoding="utf-8") as fh:
         return json.load(fh)
 
 
