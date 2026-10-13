@@ -411,6 +411,10 @@ def _keeps_grain_free(hit: dict) -> bool:
     return not food or "Grain Free" in hit["name"]
 
 
+@pytest.mark.xfail(strict=True, reason=(
+    "Pre-registered A1 failed on 2026-10-13 (shoppers-data-prereg.md): rule households "
+    "made 14 purchases, too few for _recommend to learn a rule. The Shop applies the rule "
+    "as a filter instead (ADR 0031). Strict: if this starts passing, say so."))
 def test_a1_recommend_keeps_a_grain_free_households_rule(client):
     """A1: with the rule in the `where`, ≥ 9 of the top 10 keep it; the same
     query without the rule keeps it ≤ 7 times."""
