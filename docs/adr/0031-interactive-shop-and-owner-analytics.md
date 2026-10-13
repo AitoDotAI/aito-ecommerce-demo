@@ -1,6 +1,6 @@
 # ADR 0031: An interactive shop, and the owner's view of its patterns
 
-**Status:** Proposed
+**Status:** Accepted (2026-10-13)
 **Date:** 2026-10-13
 **Deciders:** Antti
 
@@ -78,12 +78,35 @@ its view uses it:
 3. **`$match` on a Text column of SKUs** as `_relate` / `_recommend`
    context on the v2 engine.
 
+### Findings from the probes (2026-10-13, test env `shoppers`)
+
+These change the design above; details in
+`docs/verification/shoppers-data-prereg.md`.
+
+- **A hard rule is a filter, not a prediction.** Grain-free households
+  bought only grain-free food, but 14 purchases is too few for
+  `_recommend` to learn the rule (check A1 failed). The Shop filters
+  the candidates by the shopper's rule (`product_sku.name` matching its
+  words) and lets Aito rank within it, and says so on screen.
+- **"In your baskets" is history, not inference.** `_relate` with a
+  nested `from` answers 501 on 2.11.4 ("not supported with relate
+  yet"), so it is a `_search` of the shopper's own orders, labelled as
+  their history.
+- **Same-basket pairs are thin per product** (3–8 shared orders), so
+  the drawer shows the counts, and the owner's basket section works at
+  category level (`orders.line_categories`) as Basket Rules does.
+- **Autofill** is `_predict` with `predict: "skus.$feature"` from the
+  shopper's own orders (nested `from`): one probability per product.
+- **"What's next for your pet"** is `_predict product_sku` on
+  `order_lines` with `order_id.owned_before` matching each owned item
+  (check A2: the exercise wheel comes top after cage, bottle, hideout).
+
 ## Acceptance criteria
 
 - A user can pick "new hamster owner", add a cage to the cart, and see
   the hideout or water bottle rise in the grid, with why.
 - A product just bought by the shopper ranks lower than before buying it.
-- A grain-free household's grid holds no rule-breaking food.
+- A grain-free household's grid holds no rule-breaking food, and the page says the rule is applied as a filter.
 - "Fill my usual basket" proposes a routine buyer's staples, each with a
   probability, and nothing for a shopper with no history (said plainly).
 - The product drawer shows "often in the same basket" and "in your
