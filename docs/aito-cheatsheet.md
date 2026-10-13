@@ -1002,6 +1002,31 @@ traversal for a SKU-token bag (`orders.line_skus`, a future field).
 
 ---
 
+## The Shop's query shapes (ADR 0031), probed on 2.11.4
+
+Each was run on the test env `shoppers` (2026-10-13) before a view used it.
+
+- **A filter on the candidates of `_recommend`** goes on the linked
+  table's fields: `"product_sku.category": "dry-food"` filters;
+  `"product_category": "dry-food"` (the impression's own copy) does not,
+  it is only context. An `$or` over candidate fields works:
+  `{"$or": [{"product_sku.category": {"$not": {"$or": [...]}}},
+  {"product_sku.name": {"$match": "Grain"}}]}` keeps non-food, and food
+  whose name says grain-free.
+- **A Text column of SKUs** (`orders.skus`, whitespace analyzer) works for
+  co-occurrence: `_relate` from `orders` where `skus: {"$match": SKU}`,
+  related to `skus`. Hits come back as `{"skus": {"$has": "SKU-…"}}`.
+- **One probability per item from one person's history**:
+  `_predict` with `"predict": "skus.$feature"` and
+  `"from": {"from": "orders", "where": {"customer_id": …}}`. The plain
+  `"predict": "skus"` returns whole past baskets at p 0.1 each.
+- **Nested `from` with `_relate` is unsupported** on 2.11.4: 501,
+  `"nested from (population restriction) is not supported with relate
+  yet"`. Use `_search` over the person's rows, and say it is history.
+- **A Boolean on the row as a what-if**: `_predict purchased` with
+  `"just_bought": true` added to the `where` gives the probability as if
+  just bought (0.085 → 0.022 for one product).
+
 ## `AitoClient` method ↔ endpoint cheat reference
 
 | Method | Endpoint | First view that uses it |

@@ -150,6 +150,28 @@ class AitoClient:
     # the wrong pattern to a reader of this code (CLAUDE.md prime
     # directive #2).
 
+    def predict_rows(
+        self,
+        population: str | dict,
+        predict_field: str,
+        *,
+        where: dict | None = None,
+        limit: int = 10,
+    ) -> dict:
+        """`_predict` whose hits carry the predicted row's own fields.
+
+        `population` is a table name, or a nested `from` that restricts the
+        rows, e.g. one customer's orders:
+        ``{"from": "orders", "where": {"order_id": {"$or": [...]}}}``.
+        With no `select`, a prediction of a link (`product_sku`) returns the
+        linked product's columns, and `skus.$feature` returns one hit per
+        token of a Text column, the token in `feature`.
+        """
+        body: dict = {"from": population, "predict": predict_field, "limit": limit}
+        if where is not None:
+            body["where"] = where
+        return self._request("POST", "/_predict", json=body)
+
     def predict(
         self,
         table: str,

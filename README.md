@@ -400,6 +400,25 @@ flagged "won't clear in horizon" — honest signal.
 **Demo moment #8.**
 [→ Implementation](src/markdown_service.py) | [Use case guide](docs/use-cases/14-markdown.md) | [ADR](docs/adr/0018-markdown.md)
 
+### Shop — be a shopper, and watch Aito re-rank
+
+```json
+{
+  "from": "impressions",
+  "where": { "customer_segment": "small_animal_owner", "month": "2026-04",
+             "basket_categories": { "$match": "small_animal_cage" } },
+  "recommend": "product_sku",
+  "goal": { "purchased": true }
+}
+```
+
+Six shoppers, each a real customer whose story the data backs. The cart,
+the month and their last order change the grid; a household's diet rule
+is a filter, not a prediction; what they just bought is re-asked and
+falls. A product opens with what's often in the same basket, and a
+routine buyer fills their usual basket in one click.
+[→ Implementation](src/shop_grid.py) | [Use case guide](docs/use-cases/19-shop.md) | [ADR](docs/adr/0031-interactive-shop-and-owner-analytics.md)
+
 ### 14. 🛒 Cart Completion — checkout-funnel personalisation
 
 ![Cart Completion](screenshots/inspect/15-cart-completion-default.png)

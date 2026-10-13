@@ -817,3 +817,67 @@ export interface ProductInsightsResponse {
   bought_together_anchor: string | null;
   last_query: { endpoint: string; body: Record<string, unknown> };
 }
+
+
+/* ─── Shop (/api/shop/*, ADR 0031) ─── */
+
+export interface ShopShopper {
+  key: string;            // URL value: /shop/?shopper=sofia
+  customer_id: string;
+  name: string;
+  emoji: string;
+  story: string;
+}
+
+export interface ShopProduct {
+  sku: string;
+  name: string;
+  brand: string;
+  pet_type: string;
+  category: string;
+  price_eur: number;
+}
+
+export interface ShopItem extends ShopProduct {
+  p: number;                   // P(purchased) for this shopper, now
+  p_if_new: number | null;     // bought last order: its P before Aito was told so
+}
+
+export interface ShopGrid {
+  shopper: ShopShopper;
+  month: string;
+  rule: string | null;          // the household's diet rule, applied as a filter
+  cart: ShopProduct[];
+  items: ShopItem[];
+  last_order_skus: string[];
+  last_query: { endpoint: string; body: Record<string, unknown> };
+}
+
+export interface ShopBasketPair {
+  sku: string;
+  name: string;
+  lift: number;
+  together: number;        // orders holding both
+  orders_with_it: number;  // orders holding the drawer's product
+}
+
+export interface ShopProductDrawer {
+  product: ShopProduct;
+  same_basket: ShopBasketPair[];
+  your_orders: string[];   // months of this shopper's orders that held it
+  last_query: { endpoint: string; body: Record<string, unknown> };
+}
+
+export interface ShopSuggestion {
+  sku: string;
+  name: string;
+  p: number;
+}
+
+export interface ShopSuggestions {
+  usual: ShopSuggestion[];
+  next_for_pet: ShopSuggestion[];
+  owned: Record<string, string[]>;   // kit owned per pet: {"small_animal": ["cage", …]}
+  no_history: boolean;
+  queries: Array<{ endpoint: string; body: Record<string, unknown> }>;
+}
