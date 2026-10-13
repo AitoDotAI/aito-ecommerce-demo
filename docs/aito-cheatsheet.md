@@ -522,6 +522,77 @@ risk).
 
 ---
 
+## Field-form `_relate` through a link, on a Boolean, and on Text
+
+**Verified live, 2026-10-13**, API v2, test env `shoppers` on
+`shared.aito.ai` (2.11.4). The Shop analytics view (ADR 0031).
+
+```json
+POST /_relate
+{"from": "impressions", "where": {"purchased": true},
+ "relate": ["product_sku.rating_band"], "limit": 50}
+```
+
+| `relate` | column type | a hit's `related` | example |
+|:--|:--|:--|:--|
+| `product_sku.rating_band` (through the link) | String on `products` | `{"product_sku.rating_band": {"$has": "1-2"}}` | 0.789×, `fOnCondition` 923 of `fCondition` 12,135; `f` 11,525 of `n` 115,690 |
+| `product_category` (denormalised copy) | String | `{"product_category": {"$has": "dry-food"}}` | identical hits and counts to `product_sku.category` |
+| `just_bought` | Boolean | `{"just_bought": {"$has": true}}`, and a second hit for `false` | 0.483× on 40 of 12,135 |
+| `customer_diet_rule` | nullable String | one hit per non-null value; no hit for null | 4 hits (grain-free, sensitive, senior, puppy) |
+| `search_query` | Text, whitespace | `{"search_query": {"$has": "food"}}`, one hit per word | 99 words on search impressions |
+
+So the link form works on v2, and on every column type the hit reads as
+`related.<field>.$has` once `normalize_response` has wrapped the bare
+String form; `related_value` reads all of them. Over `order_lines`, a
+season is `order_id.month: {"$or": [months]}` (see Demand) and the
+product's dietary line is `product_sku.dietary`: grain-free households'
+lines are 3.08× grain-free (1,171 of 2,003).
+
+The 95 % interval comes from the four counts (`lift_interval` in
+`src/price_bands.py`); `src/lift_rows.py` keeps a lift only when the
+interval, rounded outward to two decimals, excludes 1.
+
+---
+
+## A sub-population's lift: two `_relate`s, divided
+
+**Verified live, 2026-10-13**, test env `shoppers`. Shop analytics'
+search words.
+
+`_relate`'s lift always compares against the whole table. Restricting
+the `where` to a sub-population (`surface: "search"`) changes the
+numerator, not the baseline:
+
+```json
+{"from": "impressions", "where": {"surface": "search", "purchased": true},
+ "relate": ["search_query"], "limit": 500}
+```
+
+Every word comes out about 2.5× ("food" 2.76×, `f` 17,087 of `n`
+115,690), because only search impressions carry a query: a `_search`
+for `search_query: {$match: "food"}` counts 17,087 with or without
+`surface: "search"`. "food" actually converts at 11.2 % against the
+search average of 11.7 %.
+
+A nested `from` would set the population, but `_relate` answers 501 to it
+on 2.11.4 (see `docs/verification/shoppers-data-prereg.md`). So send the
+same `_relate` without `purchased` too, and divide the counts:
+
+```
+bought = where {surface: search, purchased: true}  → fOnCondition_w, fCondition = search purchases (4,697)
+shown  = where {surface: search}                   → fOnCondition_w, fCondition = search impressions (40,278)
+
+lift_w = (bought_w / 4,697) / (shown_w / 40,278)
+```
+
+`lift_interval(lift_w, bought_w, 4697, shown_w, 40278)` gives its
+interval. "food": 0.96× (0.93–1.00, not shown); "veggie": 2.30× (53 of
+198); "whitefish": 0.62× (78 of 1,078). Every word bought from search
+must also be in `shown`, or `src/search_words.py` raises. Use `limit`
+above the vocabulary and treat a full page as an error.
+
+---
+
 ## A number's bands can't be related on v2 — count them
 
 **Verified live, 2026-10-03**, API v2, `shared.aito.ai`. The Churn
