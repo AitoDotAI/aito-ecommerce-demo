@@ -230,7 +230,7 @@ The ~20 counts go in one `_batch`. The `_relate` calls run in parallel, and the 
 
 ```python
 # What goes with a purchase: one field-form `_relate` per field, in
-# parallel. Each hit's `fs` gives the counts for a 95 % interval.
+# parallel. Each hit's `fs` gives the counts behind its interval.
 client.relate(
     table="impressions",
     where={"purchased": True},
@@ -238,13 +238,13 @@ client.relate(
 )
 ```
 
-Four sections, about 21 `_relate`s in parallel:
+Four sections, each its own endpoint and a set of parallel `_relate`s:
 - what goes with a purchase or a click (rating, category, segment, diet rule, "in their last order", surface);
 - who buys what, and when: categories and dietary lines for a season, segment or diet rule;
 - category pairs that share a basket;
 - the search words that convert above and below the average search.
 
-Each lift is shown with its counts and 95 % interval, and a lift whose interval includes 1 is left out. Products in the shopper's last order sell at 0.48× (40 of 12,135 purchases); summer order lines hold 3.9× the usual share of grooming. Needs ADR 0030's data (test env `shoppers` for now).
+Each lift is shown with its counts and an interval that accounts for two things: one customer's rows are not independent (a design effect measured from `_relate`s on the customer column), and a section tests dozens of lifts at once (Bonferroni, 95 % for the section). A lift is shown only if that interval excludes 1 and it rests on 30 or more independent rows. 1–2 star products sell at 0.79× (923 of 12,135 purchases); summer order lines hold 4.0× the usual share of health products. Needs ADR 0030's data (test env `shoppers` for now).
 [→ Implementation](src/shop_analytics_service.py) | [Use case guide](docs/use-cases/18-shop-analytics.md) | [ADR](docs/adr/0031-interactive-shop-and-owner-analytics.md)
 
 ### 8. 🔗 Pattern Explorer — the full lift band

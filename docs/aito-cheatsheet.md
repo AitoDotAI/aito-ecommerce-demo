@@ -548,9 +548,11 @@ season is `order_id.month: {"$or": [months]}` (see Demand) and the
 product's dietary line is `product_sku.dietary`: grain-free households'
 lines are 3.08× grain-free (1,171 of 2,003).
 
-The 95 % interval comes from the four counts (`lift_interval` in
-`src/price_bands.py`); `src/lift_rows.py` keeps a lift only when the
-interval, rounded outward to two decimals, excludes 1.
+The interval comes from the four counts (`lift_interval` in
+`src/price_bands.py`). These counts are rows, and one customer's rows
+are not independent, so Shop analytics divides them by a design effect
+before use (see "Rows per customer" below). It also tests a section's
+lifts at a Bonferroni level (`src/lift_rows.py`).
 
 ---
 
@@ -586,10 +588,61 @@ lift_w = (bought_w / 4,697) / (shown_w / 40,278)
 ```
 
 `lift_interval(lift_w, bought_w, 4697, shown_w, 40278)` gives its
-interval. "food": 0.96× (0.93–1.00, not shown); "veggie": 2.30× (53 of
-198); "whitefish": 0.62× (78 of 1,078). Every word bought from search
-must also be in `shown`, or `src/search_words.py` raises. Use `limit`
-above the vocabulary and treat a full page as an error.
+interval, before the clustering and multiple-test corrections below.
+"food": 0.96×; "cheese": 2.24× (71 of 272); "whitefish": 0.62× (78 of
+1,078). Every word bought from search must also be in `shown`, or
+`src/search_words.py` raises. Use `limit` above the vocabulary and treat
+a full page as an error.
+
+Words with identical counts may be one phrase. A `_search` with `$and`
+of `$match`es on the same Text column counts the searches holding all of
+them, and `select` returns one to read the word order from:
+
+```json
+{"from": "impressions", "limit": 1, "select": ["search_query"],
+ "where": {"$and": [{"surface": "search"},
+                    {"search_query": {"$match": "algae"}},
+                    {"search_query": {"$match": "wafers"}}]}}
+```
+
+"algae" 154, "wafers" 154, both 154: one phrase. "blend" and "budgie"
+(20 each) share no search.
+
+---
+
+## Rows per customer, for a design effect — `_relate` on the customer column
+
+**Verified live, 2026-10-13**, test env `shoppers`. Shop analytics'
+intervals (`src/design_effect.py`).
+
+A `_relate` hit counts rows, and rows of one customer are not
+independent. To widen an interval by the design effect, each section
+needs, per customer, their rows and their rows meeting the condition.
+Relating the customer column gives both:
+
+```json
+{"from": "impressions", "where": {"purchased": true},
+ "relate": ["customer_id"], "limit": 10000}
+```
+
+| observation | value |
+|:--|:--|
+| one hit per customer with **at least one** row meeting the `where` | 2,657 of 3,000 customers; no hit has `fOnCondition` 0 |
+| a hit's `fOnCondition` | that customer's rows meeting the `where` |
+| a hit's `f` | that customer's rows in the whole table |
+| `"where": {}` | **no hits at all** |
+| on `order_lines`, `relate: "customer_id"` | 400 "relate field(s) not found"; use the link `order_id.customer_id` |
+| time | 0.3–1.9 s for 2,500–3,000 hits |
+
+Because customers with no matching row are left out, a second `_relate`
+whose `where` selects every row gives the population:
+`{"month": {"$or": [every month of the data window]}}` on `impressions`
+and `orders`, `{"order_id.month": {"$or": …}}` on `order_lines`. Check
+that its `fOnCondition`s sum to `n` (they do: 115,690 impressions,
+38,906 lines, 11,919 orders). From the two, the one-way ANOVA estimator
+gives the intra-customer correlation ρ of the condition. For purchases
+it is 0.021, with 48.5 impressions per customer (size-weighted), so the
+design effect is 1 + 47.5 · 0.021 ≈ 2.0.
 
 ---
 
