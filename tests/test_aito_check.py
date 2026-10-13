@@ -463,3 +463,53 @@ def test_a5_the_lowest_rated_products_are_bought_less(client):
     95 % interval below 1."""
     _, high = _relate_interval(client, "impressions", {"purchased": True}, "product_sku.rating_band", "1-2")
     assert high < 1, high
+
+
+# ── Shop (ADR 0031), on ADR 0030's data ─────────────────────────────
+
+
+def test_shop_grid_for_a_grain_free_household_holds_no_rule_breaking_food(client):
+    from src.shop_grid import get_shop_grid
+
+    grid = get_shop_grid(client, "janne", "2026-04", [])
+
+    assert grid.rule == "grain-free" and grid.items
+    food = [i for i in grid.items if i.category in ("dry-food", "wet-food")]
+    assert all("Grain Free" in i.name for i in food), [i.name for i in food]
+
+
+def test_shop_a_cage_in_the_cart_changes_what_is_recommended(client):
+    """A6's shop form: the cart is context, so the ranking moves with it."""
+    from src.shop_grid import get_shop_grid
+
+    empty = [i.sku for i in get_shop_grid(client, "sofia", "2026-04", []).items[:5]]
+    with_cage = [i.sku for i in get_shop_grid(client, "sofia", "2026-04", ["SKU-PT-0555"]).items[:5]]
+
+    assert empty != with_cage, empty
+
+
+def test_shop_an_item_bought_last_order_scores_lower_as_just_bought(client):
+    """A8's shop form: re-asked with just_bought: true, a product's purchase
+    probability drops below what it was before the shopper bought it."""
+    from src.shop_context import shopper_where
+
+    customer = client.search("customers", where={"customer_id": "CUST-00053"}, limit=1)["hits"][0]
+    context = shopper_where(customer, [], "2026-04")
+    sku = "SKU-PT-0278"   # in Helena's last order
+
+    def p(extra: dict) -> float:
+        hits = client._request("POST", "/_predict", json={
+            "from": "impressions", "where": {**context, "product_sku": sku, **extra}, "predict": "purchased"})["hits"]
+        return next(h["$p"] for h in hits if h.get("feature", h.get("$value")) is True)
+
+    assert p({"just_bought": True}) < p({})
+
+
+def test_shop_suggests_the_exercise_wheel_next_after_cage_bottle_and_hideout(client):
+    """A2's shop form, for Sofia."""
+    from src.shop_suggestions import get_suggestions
+
+    result = get_suggestions(client, "sofia")
+
+    assert result.next_for_pet and "Exercise Wheel" in result.next_for_pet[0].name, result.next_for_pet
+    assert result.usual, "no usual basket for a shopper with orders"
