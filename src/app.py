@@ -432,11 +432,15 @@ def product_insights_endpoint(sku: str | None = None):
         )
 
 
-def _shop_analytics_section(load):
-    """Shop analytics sections share their error mapping: a bad `kpi` or
-    `who` in a link is a 400, an unexpected Aito answer a 502."""
+def _shop_analytics_section(cache_key: str, load):
+    """Shop analytics sections share their caching and error mapping.
+
+    Cached for 30 minutes, as Product Insights is: a section takes 1.5–3 s
+    alone but 4–8 s when the page asks all four at once (measured on
+    `shoppers`, 2026-10-13). A bad `kpi` or `who` in a link is a 400, an
+    unexpected Aito answer a 502."""
     try:
-        return load().to_dict()
+        return cache.get_or_compute(f"shop-analytics:{cache_key}", lambda: load().to_dict(), ttl=1800)
     except ValueError as exc:
         return JSONResponse(status_code=400, content={"error": str(exc)})
     except AitoError as exc:
@@ -450,25 +454,25 @@ def _shop_analytics_section(load):
 def shop_analytics_funnel_endpoint(kpi: str = "purchased"):
     """What goes with a purchase (or click): parallel `_relate`s on
     impressions. See ADR 0031."""
-    return _shop_analytics_section(lambda: get_funnel_section(aito, kpi=kpi))
+    return _shop_analytics_section(f"funnel:{kpi}", lambda: get_funnel_section(aito, kpi=kpi))
 
 
 @app.get("/api/shop-analytics/who")
 def shop_analytics_who_endpoint(who: str = "summer"):
     """Which categories a season, segment or diet rule buys more or less."""
-    return _shop_analytics_section(lambda: get_who_section(aito, who=who))
+    return _shop_analytics_section(f"who:{who}", lambda: get_who_section(aito, who=who))
 
 
 @app.get("/api/shop-analytics/baskets")
 def shop_analytics_baskets_endpoint():
     """Category pairs bought together more or less often than chance."""
-    return _shop_analytics_section(lambda: get_basket_section(aito))
+    return _shop_analytics_section("baskets", lambda: get_basket_section(aito))
 
 
 @app.get("/api/shop-analytics/search-words")
 def shop_analytics_search_words_endpoint():
     """Search words that convert above or below the average search."""
-    return _shop_analytics_section(lambda: get_search_words_section(aito))
+    return _shop_analytics_section("search-words", lambda: get_search_words_section(aito))
 
 
 @app.get("/api/pattern-explorer")

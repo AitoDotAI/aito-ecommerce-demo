@@ -18,9 +18,9 @@ judged by the rules in `src/lift_rows.py`: clustering, support, and a
 Bonferroni level for the section's number of tests. A field that keeps
 no row is listed as "no clear effect".
 
-Not cached: each section answers in about 1–2 s (measured on
-`shoppers`, 2026-10-13), under the ~3 s at which heavier views are
-precomputed.
+Each section answers in 1.5–3 s alone, 4–8 s when the page asks all
+four at once (`shoppers`, 2026-10-13), so the endpoints cache them for
+30 minutes as Product Insights does (`src/app.py`).
 """
 
 from __future__ import annotations
