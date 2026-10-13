@@ -515,3 +515,65 @@ def test_shop_suggests_the_hideout_next_for_a_cage_and_a_bottle(client):
     assert result.owned == {"small_animal": ["cage", "water_bottle"]}, result.owned
     assert result.next_for_pet and "Hideout" in result.next_for_pet[0].name, result.next_for_pet
     assert result.usual, "no usual basket for a shopper with orders"
+# ── Shop analytics (ADR 0031): each section shows rows and a planted pattern ──
+
+
+@pytest.fixture(scope="module")
+def shop_analytics(client):
+    from src.shop_analytics_service import get_shop_analytics
+
+    return {who: get_shop_analytics(client, who=who)
+            for who in ("summer", "grain-free")}
+
+
+def _row(rows, field, value):
+    return next((r for r in rows if (r.field, r.value) == (field, value)), None)
+
+
+def test_shop_analytics_no_row_has_an_interval_that_includes_1(shop_analytics):
+    result = shop_analytics["summer"]
+    rows = result.funnel_rows + result.who_rows + result.basket_pairs + result.search_words.rows
+    assert rows
+    assert all(r.interval_low > 1 or r.interval_high < 1 for r in rows), rows
+
+
+def test_shop_analytics_low_rated_and_just_bought_products_sell_less(shop_analytics):
+    """S5 and S8: the 1–2 star band and a product in the last order are
+    both under-represented among purchased impressions."""
+    rows = shop_analytics["summer"].funnel_rows
+    low_rated = _row(rows, "product_sku.rating_band", "1-2")
+    just_bought = _row(rows, "just_bought", "true")
+    assert low_rated and low_rated.interval_high < 1, low_rated
+    assert just_bought and just_bought.interval_high < 1, just_bought
+
+
+def test_shop_analytics_summer_sells_grooming_and_health(shop_analytics):
+    """S4: grooming and health are bought more in June–August."""
+    rows = shop_analytics["summer"].who_rows
+    for category in ("grooming", "health"):
+        row = _row(rows, "product_sku.category", category)
+        assert row and row.interval_low > 1, (category, row)
+
+
+def test_shop_analytics_a_grain_free_household_buys_grain_free_food(shop_analytics):
+    """S1: the rule shows in what the household buys."""
+    row = _row(shop_analytics["grain-free"].who_rows, "product_sku.dietary", "grain-free")
+    assert row and row.interval_low > 1, row
+
+
+def test_shop_analytics_dog_dry_food_goes_with_dental_treats(shop_analytics):
+    """The engineered basket complement (ADR 0002), at category level."""
+    pairs = {(p.first, p.second): p for p in shop_analytics["summer"].basket_pairs}
+    pair = pairs.get(("Dog dry-food", "Dog dental-treats"))
+    assert pair and pair.interval_low > 1, sorted(pairs)
+
+
+def test_shop_analytics_search_words_convert_above_and_below_the_search_average(client, shop_analytics):
+    """Words on both sides of 1. The lift is against search impressions,
+    which is right only if no other surface carries a query: check that."""
+    words = shop_analytics["summer"].search_words
+    assert any(w.lift > 1 for w in words.rows) and any(w.lift < 1 for w in words.rows), words.rows
+    anywhere = client.search("impressions", where={"search_query": {"$match": "food"}}, limit=0)["total"]
+    on_search = client.search("impressions", where={"surface": "search", "search_query": {"$match": "food"}},
+                              limit=0)["total"]
+    assert anywhere == on_search > 0, (anywhere, on_search)
