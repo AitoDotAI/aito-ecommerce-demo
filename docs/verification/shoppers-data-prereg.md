@@ -195,3 +195,23 @@ All 23 earlier live checks pass on it.
 | A5 | **pass**: the 1–2 star band's interval is below 1 | |
 | A1 | **fail, twice** | Run 1: `where` on `product_category` doesn't filter `_recommend` candidates (only `product_sku.*` does), so both queries returned health and toy products: a query error. Run 2 (`product_sku.category`): 0 of 10 grain-free. Cause: the generator kept the rule in orders but not in impression purchases (1,444 rule-breaking purchases), a bug against S1's registration, fixed and impressions reloaded. Run 3: 1 of 10. Rule households saw 640 dog dry-food impressions, only 48 grain-free, and bought 3: too few for Aito to learn from. Stopped here for a decision (CLAUDE.md: two failed attempts). |
 | A2, A3, A6, A7 | not run | A2 needs a way to say what a customer owns before an order; A6 and A7 need the Smart Search changes. |
+
+### Aito checks, 2026-10-13, test env `shoppers` reloaded with the interactive-shop columns
+
+All 27 earlier and ADR 0030 live checks pass except A1 (run at 19:56 after
+a first attempt at 10:01 was lost to this machine's DNS failures).
+
+| # | result | notes |
+|:--|:--|:--|
+| A1, the agreed re-run after the browsing amendment | **fail**: 0 of 10 grain-free | Rule households bought only grain-free dog food (14 purchases, all grain-free), but 14 purchases is too little for `_recommend` to learn a rule from, so it ranks what dog owners buy in general (p ≈ 0.27). **Design lesson for the views:** a household's hard rule is a filter on the candidates (`product_sku.name` matching the rule's words), and Aito ranks within it. Reported as failed; not re-tuned. |
+| A2 | **pass**: for owners of cage, water bottle and hideout, two Exercise Wheels top `_predict product_sku` on `order_lines` (p 0.25, 0.23), then tunnels | `where order_id.owned_before: {$and: [{$match: token}…]}` plus the pet and accessory/toy categories. |
+| A4, A5 | **pass** again | |
+| A8 | **pass**: `_relate` on `impressions` where `purchased`, related to `just_bought`: lift 0.48 on 40 of 12,135 purchases; 95 % interval about 0.36–0.66 | |
+| A3 | pending: runs after 22:00, one query at a time | Six parallel nested-`from` predictions (3.5 s each, ~36,000-row populations) drew a 502 from the shared instance at 19:57; prod stayed at 200. |
+| A6, A7 | not run | need the Smart Search changes (ADR 0031) |
+
+### Query-pattern probes (ADR 0031), 2026-10-13, `shoppers`
+
+- **Same basket:** `_relate` on `orders` with `skus: {$match: SKU}`, related to `skus`, works on v2 (hits come back as `{"skus": {"$has": …}}`). It is thin at product level: SKU-PT-0177 is in 92 orders, and its partners appear 3–8 times each. Show counts and filter by interval.
+- **Nested `from` with `_relate`: unsupported on 2.11.4** (501, "nested from (population restriction) is not supported with relate yet"). "In your baskets" is therefore a `_search` of the shopper's own orders: history, not inference.
+- **Autofill:** `_predict` with `predict: "skus.$feature"` from a nested `from` of the shopper's orders works and returns one probability per SKU. The plain `predict: "skus"` returns whole SKU lists, each p = 0.1, which is useless for autofill.

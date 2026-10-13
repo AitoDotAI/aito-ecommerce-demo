@@ -3,280 +3,114 @@
     "forecast_month": "2026-05",
     "top_movers": [
       {
-        "sku": "SKU-PT-0488",
-        "name": "PetNord Silica Crystals Cat Litter 5kg",
-        "pet_type": "cat",
-        "category": "litter",
-        "avg_monthly_units": 24,
-        "last_month_units": 71,
-        "forecast_units": 53,
-        "forecast_p": 0.0,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 53.093,
-          "field_label": "units_sold",
-          "components": [
-            {
-              "name": "units_last_month=71",
-              "value": 38.4167,
-              "type": "regression"
-            },
-            {
-              "name": "product_sku=SKU-PT-0488",
-              "value": 20.7886,
-              "type": "regression"
-            },
-            {
-              "name": "category=litter",
-              "value": -6.5557,
-              "type": "regression"
-            },
-            {
-              "name": "neighbor residual",
-              "value": 6.2686,
-              "type": "residual"
-            },
-            {
-              "name": "column mean (log)",
-              "value": 3.128,
-              "type": "mean"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.4628,
-              "type": "regression"
-            },
-            {
-              "name": "brand=PetNord",
-              "value": -0.1145,
-              "type": "regression"
-            },
-            {
-              "name": "pet_type=cat",
-              "value": -0.0612,
-              "type": "regression"
-            }
-          ]
-        }
-      },
-      {
         "sku": "SKU-PT-0490",
         "name": "PetNord Silica Crystals Cat Litter 7kg",
         "pet_type": "cat",
         "category": "litter",
-        "avg_monthly_units": 24,
-        "last_month_units": 52,
-        "forecast_units": 25,
+        "avg_monthly_units": 25,
+        "last_month_units": 60,
+        "forecast_units": 39,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 24.612,
+          "estimate": 38.953,
           "field_label": "units_sold",
           "components": [
             {
               "name": "product_sku=SKU-PT-0490",
-              "value": 20.4553,
+              "value": 21.4581,
               "type": "regression"
             },
             {
-              "name": "units_last_month=52",
-              "value": 8.4583,
+              "name": "units_last_month=60",
+              "value": 21.3056,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": -8.2873,
+              "value": 20.2438,
               "type": "residual"
             },
             {
               "name": "category=litter",
-              "value": -6.5557,
+              "value": -6.4994,
               "type": "regression"
             },
             {
               "name": "column mean (log)",
-              "value": 3.128,
+              "value": 3.1669,
               "type": "mean"
             },
             {
               "name": "season=spring",
-              "value": 0.4628,
+              "value": 0.4599,
               "type": "regression"
             },
             {
               "name": "brand=PetNord",
-              "value": -0.1145,
+              "value": -0.0883,
               "type": "regression"
             },
             {
               "name": "pet_type=cat",
-              "value": -0.0612,
+              "value": -0.0466,
               "type": "regression"
             }
           ]
         }
       },
       {
-        "sku": "SKU-PT-0492",
-        "name": "PetNord Recycled Paper Cat Litter 5kg",
-        "pet_type": "cat",
-        "category": "litter",
-        "avg_monthly_units": 24,
-        "last_month_units": 79,
-        "forecast_units": 17,
-        "forecast_p": 0.0,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 17.163,
-          "field_label": "units_sold",
-          "components": [
-            {
-              "name": "product_sku=SKU-PT-0492",
-              "value": 20.4553,
-              "type": "regression"
-            },
-            {
-              "name": "neighbor residual",
-              "value": -12.2873,
-              "type": "residual"
-            },
-            {
-              "name": "category=litter",
-              "value": -6.5557,
-              "type": "regression"
-            },
-            {
-              "name": "column mean (log)",
-              "value": 3.128,
-              "type": "mean"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.4628,
-              "type": "regression"
-            },
-            {
-              "name": "brand=PetNord",
-              "value": -0.1145,
-              "type": "regression"
-            },
-            {
-              "name": "pet_type=cat",
-              "value": -0.0612,
-              "type": "regression"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0211",
+        "sku": "SKU-PT-0212",
         "name": "Trixie Collar",
         "pet_type": "dog",
         "category": "accessories",
-        "avg_monthly_units": 23,
-        "last_month_units": 22,
-        "forecast_units": 26,
+        "avg_monthly_units": 24,
+        "last_month_units": 20,
+        "forecast_units": 22,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 26.116,
+          "estimate": 22.444,
           "field_label": "units_sold",
           "components": [
             {
-              "name": "product_sku=SKU-PT-0211",
-              "value": 20.3303,
+              "name": "product_sku=SKU-PT-0212",
+              "value": 20.5831,
               "type": "regression"
             },
             {
-              "name": "units_last_month=22",
-              "value": 8.5028,
+              "name": "neighbor residual",
+              "value": -9.4723,
+              "type": "residual"
+            },
+            {
+              "name": "units_last_month=20",
+              "value": 9.3095,
               "type": "regression"
             },
             {
               "name": "column mean (log)",
-              "value": 3.128,
+              "value": 3.1669,
               "type": "mean"
             },
             {
               "name": "category=accessories",
-              "value": -2.4216,
+              "value": -2.5313,
               "type": "regression"
             },
             {
-              "name": "neighbor residual",
-              "value": 0.7934,
-              "type": "residual"
-            },
-            {
               "name": "season=spring",
-              "value": 0.4628,
+              "value": 0.4599,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": -0.2241,
+              "value": -0.2467,
               "type": "regression"
             },
             {
               "name": "brand=Trixie",
-              "value": -0.0414,
-              "type": "regression"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0203",
-        "name": "PetNord Collar",
-        "pet_type": "dog",
-        "category": "accessories",
-        "avg_monthly_units": 23,
-        "last_month_units": 13,
-        "forecast_units": 10,
-        "forecast_p": 0.0,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 9.907,
-          "field_label": "units_sold",
-          "components": [
-            {
-              "name": "product_sku=SKU-PT-0203",
-              "value": 19.7886,
-              "type": "regression"
-            },
-            {
-              "name": "neighbor residual",
-              "value": -18.595,
-              "type": "residual"
-            },
-            {
-              "name": "column mean (log)",
-              "value": 3.128,
-              "type": "mean"
-            },
-            {
-              "name": "category=accessories",
-              "value": -2.4216,
-              "type": "regression"
-            },
-            {
-              "name": "units_last_month=13",
-              "value": 1.6191,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.4628,
-              "type": "regression"
-            },
-            {
-              "name": "pet_type=dog",
-              "value": -0.2241,
-              "type": "regression"
-            },
-            {
-              "name": "brand=PetNord",
-              "value": -0.1145,
+              "value": -0.1671,
               "type": "regression"
             }
           ]
@@ -288,52 +122,109 @@
         "pet_type": "dog",
         "category": "accessories",
         "avg_monthly_units": 23,
-        "last_month_units": 22,
-        "forecast_units": 25,
+        "last_month_units": 14,
+        "forecast_units": 19,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 24.793,
+          "estimate": 19.134,
           "field_label": "units_sold",
           "components": [
             {
               "name": "product_sku=SKU-PT-0213",
-              "value": 19.622,
-              "type": "regression"
-            },
-            {
-              "name": "units_last_month=22",
-              "value": 8.5028,
+              "value": 20.1247,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": 7.6149,
+              "value": -15.3073,
               "type": "residual"
             },
             {
+              "name": "units_last_month=14",
+              "value": 3.6029,
+              "type": "regression"
+            },
+            {
               "name": "column mean (log)",
-              "value": 3.128,
+              "value": 3.1669,
               "type": "mean"
             },
             {
               "name": "category=accessories",
-              "value": -2.4216,
+              "value": -2.5313,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.4628,
+              "value": 0.4599,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": -0.2241,
+              "value": -0.2467,
               "type": "regression"
             },
             {
               "name": "brand=Trixie",
-              "value": -0.0414,
+              "value": -0.1671,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0211",
+        "name": "Trixie Collar",
+        "pet_type": "dog",
+        "category": "accessories",
+        "avg_monthly_units": 22,
+        "last_month_units": 31,
+        "forecast_units": 25,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 24.907,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "product_sku=SKU-PT-0211",
+              "value": 19.1664,
+              "type": "regression"
+            },
+            {
+              "name": "units_last_month=31",
+              "value": 10.5357,
+              "type": "regression"
+            },
+            {
+              "name": "column mean (log)",
+              "value": 3.1669,
+              "type": "mean"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -2.8285,
+              "type": "residual"
+            },
+            {
+              "name": "category=accessories",
+              "value": -2.5313,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.4599,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": -0.2467,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Trixie",
+              "value": -0.1671,
               "type": "regression"
             }
           ]
@@ -345,166 +236,52 @@
         "pet_type": "cat",
         "category": "litter",
         "avg_monthly_units": 22,
-        "last_month_units": 41,
-        "forecast_units": 48,
+        "last_month_units": 55,
+        "forecast_units": 46,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 48.061,
+          "estimate": 46.497,
           "field_label": "units_sold",
           "components": [
             {
-              "name": "units_last_month=41",
-              "value": 28.2292,
+              "name": "neighbor residual",
+              "value": 44.9521,
+              "type": "residual"
+            },
+            {
+              "name": "units_last_month=55",
+              "value": 30.8472,
               "type": "regression"
             },
             {
               "name": "product_sku=SKU-PT-0484",
-              "value": 19.0803,
+              "value": 18.6664,
               "type": "regression"
             },
             {
-              "name": "neighbor residual",
-              "value": -19.052,
-              "type": "residual"
-            },
-            {
               "name": "category=litter",
-              "value": -6.5557,
+              "value": -6.4994,
               "type": "regression"
             },
             {
               "name": "column mean (log)",
-              "value": 3.128,
+              "value": 3.1669,
               "type": "mean"
             },
             {
               "name": "season=spring",
-              "value": 0.4628,
+              "value": 0.4599,
               "type": "regression"
             },
             {
               "name": "brand=PetNord",
-              "value": -0.1145,
+              "value": -0.0883,
               "type": "regression"
             },
             {
               "name": "pet_type=cat",
-              "value": -0.0612,
-              "type": "regression"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0489",
-        "name": "PetNord Silica Crystals Cat Litter 12kg",
-        "pet_type": "cat",
-        "category": "litter",
-        "avg_monthly_units": 22,
-        "last_month_units": 64,
-        "forecast_units": 14,
-        "forecast_p": 0.0,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 14.363,
-          "field_label": "units_sold",
-          "components": [
-            {
-              "name": "product_sku=SKU-PT-0489",
-              "value": 19.0386,
-              "type": "regression"
-            },
-            {
-              "name": "neighbor residual",
-              "value": -10.8706,
-              "type": "residual"
-            },
-            {
-              "name": "category=litter",
-              "value": -6.5557,
-              "type": "regression"
-            },
-            {
-              "name": "column mean (log)",
-              "value": 3.128,
-              "type": "mean"
-            },
-            {
-              "name": "units_last_month=64",
-              "value": -0.75,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.4628,
-              "type": "regression"
-            },
-            {
-              "name": "brand=PetNord",
-              "value": -0.1145,
-              "type": "regression"
-            },
-            {
-              "name": "pet_type=cat",
-              "value": -0.0612,
-              "type": "regression"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0212",
-        "name": "Trixie Collar",
-        "pet_type": "dog",
-        "category": "accessories",
-        "avg_monthly_units": 22,
-        "last_month_units": 21,
-        "forecast_units": 21,
-        "forecast_p": 0.0,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 20.507,
-          "field_label": "units_sold",
-          "components": [
-            {
-              "name": "neighbor residual",
-              "value": -21.1909,
-              "type": "residual"
-            },
-            {
-              "name": "product_sku=SKU-PT-0212",
-              "value": 18.4136,
-              "type": "regression"
-            },
-            {
-              "name": "units_last_month=21",
-              "value": 4.9904,
-              "type": "regression"
-            },
-            {
-              "name": "column mean (log)",
-              "value": 3.128,
-              "type": "mean"
-            },
-            {
-              "name": "category=accessories",
-              "value": -2.4216,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.4628,
-              "type": "regression"
-            },
-            {
-              "name": "pet_type=dog",
-              "value": -0.2241,
-              "type": "regression"
-            },
-            {
-              "name": "brand=Trixie",
-              "value": -0.0414,
+              "value": -0.0466,
               "type": "regression"
             }
           ]
@@ -515,100 +292,157 @@
         "name": "PetNord Silica Crystals Cat Litter 7kg",
         "pet_type": "cat",
         "category": "litter",
-        "avg_monthly_units": 20,
+        "avg_monthly_units": 21,
         "last_month_units": 91,
-        "forecast_units": 14,
+        "forecast_units": 15,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 13.792,
+          "estimate": 15.046,
           "field_label": "units_sold",
           "components": [
             {
               "name": "product_sku=SKU-PT-0487",
-              "value": 17.0803,
+              "value": 18.2081,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": -7.9123,
+              "value": -10.1811,
               "type": "residual"
             },
             {
               "name": "category=litter",
-              "value": -6.5557,
+              "value": -6.4994,
               "type": "regression"
             },
             {
               "name": "column mean (log)",
-              "value": 3.128,
+              "value": 3.1669,
               "type": "mean"
             },
             {
               "name": "season=spring",
-              "value": 0.4628,
+              "value": 0.4599,
               "type": "regression"
             },
             {
               "name": "brand=PetNord",
-              "value": -0.1145,
+              "value": -0.0883,
               "type": "regression"
             },
             {
               "name": "pet_type=cat",
-              "value": -0.0612,
+              "value": -0.0466,
               "type": "regression"
             }
           ]
         }
       },
       {
-        "sku": "SKU-PT-0493",
-        "name": "PetNord Recycled Paper Cat Litter 7kg",
+        "sku": "SKU-PT-0488",
+        "name": "PetNord Silica Crystals Cat Litter 5kg",
         "pet_type": "cat",
         "category": "litter",
-        "avg_monthly_units": 20,
-        "last_month_units": 48,
-        "forecast_units": 13,
+        "avg_monthly_units": 21,
+        "last_month_units": 50,
+        "forecast_units": 27,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 13.187,
+          "estimate": 26.79,
           "field_label": "units_sold",
           "components": [
             {
-              "name": "product_sku=SKU-PT-0493",
-              "value": 16.9136,
+              "name": "product_sku=SKU-PT-0488",
+              "value": 17.9164,
+              "type": "regression"
+            },
+            {
+              "name": "units_last_month=50",
+              "value": 13.0,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": -7.7456,
+              "value": -7.8895,
               "type": "residual"
             },
             {
               "name": "category=litter",
-              "value": -6.5557,
+              "value": -6.4994,
               "type": "regression"
             },
             {
               "name": "column mean (log)",
-              "value": 3.128,
+              "value": 3.1669,
               "type": "mean"
             },
             {
               "name": "season=spring",
-              "value": 0.4628,
+              "value": 0.4599,
               "type": "regression"
             },
             {
               "name": "brand=PetNord",
-              "value": -0.1145,
+              "value": -0.0883,
               "type": "regression"
             },
             {
               "name": "pet_type=cat",
-              "value": -0.0612,
+              "value": -0.0466,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0492",
+        "name": "PetNord Recycled Paper Cat Litter 5kg",
+        "pet_type": "cat",
+        "category": "litter",
+        "avg_monthly_units": 21,
+        "last_month_units": 63,
+        "forecast_units": 15,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 15.108,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "product_sku=SKU-PT-0492",
+              "value": 17.5414,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -11.5145,
+              "type": "residual"
+            },
+            {
+              "name": "category=litter",
+              "value": -6.4994,
+              "type": "regression"
+            },
+            {
+              "name": "column mean (log)",
+              "value": 3.1669,
+              "type": "mean"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.4599,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": -0.0883,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=cat",
+              "value": -0.0466,
               "type": "regression"
             }
           ]
@@ -619,53 +453,53 @@
         "name": "PetNord Recycled Paper Cat Litter 7kg",
         "pet_type": "cat",
         "category": "litter",
-        "avg_monthly_units": 20,
-        "last_month_units": 52,
-        "forecast_units": 22,
+        "avg_monthly_units": 21,
+        "last_month_units": 50,
+        "forecast_units": 28,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 22.214,
+          "estimate": 28.191,
           "field_label": "units_sold",
           "components": [
             {
+              "name": "neighbor residual",
+              "value": 20.6951,
+              "type": "residual"
+            },
+            {
               "name": "product_sku=SKU-PT-0491",
-              "value": 16.747,
+              "value": 17.3747,
               "type": "regression"
             },
             {
-              "name": "units_last_month=52",
-              "value": 8.4583,
+              "name": "units_last_month=50",
+              "value": 13.0,
               "type": "regression"
             },
             {
               "name": "category=litter",
-              "value": -6.5557,
+              "value": -6.4994,
               "type": "regression"
             },
             {
-              "name": "neighbor residual",
-              "value": -4.5789,
-              "type": "residual"
-            },
-            {
               "name": "column mean (log)",
-              "value": 3.128,
+              "value": 3.1669,
               "type": "mean"
             },
             {
               "name": "season=spring",
-              "value": 0.4628,
+              "value": 0.4599,
               "type": "regression"
             },
             {
               "name": "brand=PetNord",
-              "value": -0.1145,
+              "value": -0.0883,
               "type": "regression"
             },
             {
               "name": "pet_type=cat",
-              "value": -0.0612,
+              "value": -0.0466,
               "type": "regression"
             }
           ]
@@ -676,53 +510,281 @@
         "name": "Trixie Bowl",
         "pet_type": "dog",
         "category": "accessories",
-        "avg_monthly_units": 19,
-        "last_month_units": 15,
-        "forecast_units": 15,
+        "avg_monthly_units": 20,
+        "last_month_units": 19,
+        "forecast_units": 22,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 14.925,
+          "estimate": 21.915,
           "field_label": "units_sold",
           "components": [
             {
               "name": "product_sku=SKU-PT-0217",
-              "value": 16.122,
+              "value": 17.2914,
               "type": "regression"
             },
             {
-              "name": "neighbor residual",
-              "value": -9.9982,
-              "type": "residual"
-            },
-            {
-              "name": "units_last_month=15",
-              "value": 3.1959,
+              "name": "units_last_month=19",
+              "value": 7.5396,
               "type": "regression"
             },
             {
               "name": "column mean (log)",
-              "value": 3.128,
+              "value": 3.1669,
               "type": "mean"
             },
             {
               "name": "category=accessories",
-              "value": -2.4216,
+              "value": -2.5313,
               "type": "regression"
             },
             {
+              "name": "neighbor residual",
+              "value": -1.8374,
+              "type": "residual"
+            },
+            {
               "name": "season=spring",
-              "value": 0.4628,
+              "value": 0.4599,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": -0.2241,
+              "value": -0.2467,
               "type": "regression"
             },
             {
               "name": "brand=Trixie",
-              "value": -0.0414,
+              "value": -0.1671,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0203",
+        "name": "PetNord Collar",
+        "pet_type": "dog",
+        "category": "accessories",
+        "avg_monthly_units": 20,
+        "last_month_units": 19,
+        "forecast_units": 22,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 21.982,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "product_sku=SKU-PT-0203",
+              "value": 17.1247,
+              "type": "regression"
+            },
+            {
+              "name": "units_last_month=19",
+              "value": 7.5396,
+              "type": "regression"
+            },
+            {
+              "name": "column mean (log)",
+              "value": 3.1669,
+              "type": "mean"
+            },
+            {
+              "name": "category=accessories",
+              "value": -2.5313,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.4599,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": -0.2467,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": 0.1343,
+              "type": "residual"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": -0.0883,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0493",
+        "name": "PetNord Recycled Paper Cat Litter 7kg",
+        "pet_type": "cat",
+        "category": "litter",
+        "avg_monthly_units": 19,
+        "last_month_units": 37,
+        "forecast_units": 37,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 36.929,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "units_last_month=37",
+              "value": 18.1083,
+              "type": "regression"
+            },
+            {
+              "name": "product_sku=SKU-PT-0493",
+              "value": 15.9997,
+              "type": "regression"
+            },
+            {
+              "name": "category=litter",
+              "value": -6.4994,
+              "type": "regression"
+            },
+            {
+              "name": "column mean (log)",
+              "value": 3.1669,
+              "type": "mean"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.4599,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -0.2673,
+              "type": "residual"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": -0.0883,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=cat",
+              "value": -0.0466,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0501",
+        "name": "Trixie Bowl",
+        "pet_type": "cat",
+        "category": "accessories",
+        "avg_monthly_units": 19,
+        "last_month_units": 12,
+        "forecast_units": 16,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 16.138,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "product_sku=SKU-PT-0501",
+              "value": 15.9164,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -9.8057,
+              "type": "residual"
+            },
+            {
+              "name": "column mean (log)",
+              "value": 3.1669,
+              "type": "mean"
+            },
+            {
+              "name": "units_last_month=12",
+              "value": 3.0075,
+              "type": "regression"
+            },
+            {
+              "name": "category=accessories",
+              "value": -2.5313,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.4599,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Trixie",
+              "value": -0.1671,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=cat",
+              "value": -0.0466,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0209",
+        "name": "PetNord Bowl",
+        "pet_type": "dog",
+        "category": "accessories",
+        "avg_monthly_units": 19,
+        "last_month_units": 14,
+        "forecast_units": 17,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 17.238,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "product_sku=SKU-PT-0209",
+              "value": 15.8331,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -5.0945,
+              "type": "residual"
+            },
+            {
+              "name": "units_last_month=14",
+              "value": 3.6029,
+              "type": "regression"
+            },
+            {
+              "name": "column mean (log)",
+              "value": 3.1669,
+              "type": "mean"
+            },
+            {
+              "name": "category=accessories",
+              "value": -2.5313,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.4599,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": -0.2467,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": -0.0883,
               "type": "regression"
             }
           ]
@@ -734,52 +796,52 @@
         "pet_type": "cat",
         "category": "litter",
         "avg_monthly_units": 19,
-        "last_month_units": 52,
-        "forecast_units": 23,
+        "last_month_units": 49,
+        "forecast_units": 47,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 22.546,
+          "estimate": 47.294,
           "field_label": "units_sold",
           "components": [
             {
+              "name": "units_last_month=49",
+              "value": 32.5278,
+              "type": "regression"
+            },
+            {
               "name": "product_sku=SKU-PT-0483",
-              "value": 15.9136,
+              "value": 15.5831,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": -8.7456,
+              "value": 7.7618,
               "type": "residual"
             },
             {
-              "name": "units_last_month=52",
-              "value": 8.4583,
-              "type": "regression"
-            },
-            {
               "name": "category=litter",
-              "value": -6.5557,
+              "value": -6.4994,
               "type": "regression"
             },
             {
               "name": "column mean (log)",
-              "value": 3.128,
+              "value": 3.1669,
               "type": "mean"
             },
             {
               "name": "season=spring",
-              "value": 0.4628,
+              "value": 0.4599,
               "type": "regression"
             },
             {
               "name": "brand=PetNord",
-              "value": -0.1145,
+              "value": -0.0883,
               "type": "regression"
             },
             {
               "name": "pet_type=cat",
-              "value": -0.0612,
+              "value": -0.0466,
               "type": "regression"
             }
           ]
@@ -791,166 +853,161 @@
         "pet_type": "cat",
         "category": "accessories",
         "avg_monthly_units": 19,
-        "last_month_units": 16,
-        "forecast_units": 13,
+        "last_month_units": 10,
+        "forecast_units": 16,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 13.186,
+          "estimate": 15.891,
           "field_label": "units_sold",
           "components": [
             {
               "name": "product_sku=SKU-PT-0495",
-              "value": 15.4553,
+              "value": 15.4581,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": -3.4213,
+              "value": -14.4304,
               "type": "residual"
             },
             {
               "name": "column mean (log)",
-              "value": 3.128,
+              "value": 3.1669,
               "type": "mean"
             },
             {
               "name": "category=accessories",
-              "value": -2.4216,
+              "value": -2.5313,
+              "type": "regression"
+            },
+            {
+              "name": "units_last_month=10",
+              "value": 2.0117,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.4628,
-              "type": "regression"
-            },
-            {
-              "name": "units_last_month=16",
-              "value": 0.3039,
+              "value": 0.4599,
               "type": "regression"
             },
             {
               "name": "brand=PetNord",
-              "value": -0.1145,
+              "value": -0.0883,
               "type": "regression"
             },
             {
               "name": "pet_type=cat",
-              "value": -0.0612,
+              "value": -0.0466,
               "type": "regression"
             }
           ]
         }
       },
       {
-        "sku": "SKU-PT-0208",
-        "name": "PetNord Bowl",
-        "pet_type": "dog",
-        "category": "accessories",
+        "sku": "SKU-PT-0489",
+        "name": "PetNord Silica Crystals Cat Litter 12kg",
+        "pet_type": "cat",
+        "category": "litter",
         "avg_monthly_units": 18,
-        "last_month_units": 14,
-        "forecast_units": 13,
+        "last_month_units": 38,
+        "forecast_units": 27,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 13.002,
+          "estimate": 27.284,
           "field_label": "units_sold",
           "components": [
             {
-              "name": "product_sku=SKU-PT-0208",
-              "value": 14.8303,
-              "type": "regression"
-            },
-            {
-              "name": "column mean (log)",
-              "value": 3.128,
-              "type": "mean"
-            },
-            {
-              "name": "category=accessories",
-              "value": -2.4216,
+              "name": "product_sku=SKU-PT-0489",
+              "value": 15.2497,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": -1.6335,
+              "value": 14.1187,
               "type": "residual"
             },
             {
+              "name": "units_last_month=38",
+              "value": 13.7014,
+              "type": "regression"
+            },
+            {
+              "name": "category=litter",
+              "value": -6.4994,
+              "type": "regression"
+            },
+            {
+              "name": "column mean (log)",
+              "value": 3.1669,
+              "type": "mean"
+            },
+            {
               "name": "season=spring",
-              "value": 0.4628,
-              "type": "regression"
-            },
-            {
-              "name": "units_last_month=14",
-              "value": 0.2656,
-              "type": "regression"
-            },
-            {
-              "name": "pet_type=dog",
-              "value": -0.2241,
+              "value": 0.4599,
               "type": "regression"
             },
             {
               "name": "brand=PetNord",
-              "value": -0.1145,
+              "value": -0.0883,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=cat",
+              "value": -0.0466,
               "type": "regression"
             }
           ]
         }
       },
       {
-        "sku": "SKU-PT-0209",
-        "name": "PetNord Bowl",
-        "pet_type": "dog",
+        "sku": "SKU-PT-0494",
+        "name": "PetNord Scratching Post",
+        "pet_type": "cat",
         "category": "accessories",
         "avg_monthly_units": 18,
-        "last_month_units": 23,
-        "forecast_units": 22,
+        "last_month_units": 65,
+        "forecast_units": 12,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 21.831,
+          "estimate": 12.445,
           "field_label": "units_sold",
           "components": [
             {
-              "name": "product_sku=SKU-PT-0209",
-              "value": 14.747,
-              "type": "regression"
-            },
-            {
-              "name": "units_last_month=23",
-              "value": 9.3924,
+              "name": "product_sku=SKU-PT-0494",
+              "value": 14.5831,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": -5.5501,
+              "value": -14.5242,
               "type": "residual"
             },
             {
               "name": "column mean (log)",
-              "value": 3.128,
+              "value": 3.1669,
               "type": "mean"
             },
             {
               "name": "category=accessories",
-              "value": -2.4216,
+              "value": -2.5313,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.4628,
-              "type": "regression"
-            },
-            {
-              "name": "pet_type=dog",
-              "value": -0.2241,
+              "value": 0.4599,
               "type": "regression"
             },
             {
               "name": "brand=PetNord",
-              "value": -0.1145,
+              "value": -0.0883,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=cat",
+              "value": -0.0466,
               "type": "regression"
             }
           ]
@@ -962,109 +1019,52 @@
         "pet_type": "dog",
         "category": "accessories",
         "avg_monthly_units": 18,
-        "last_month_units": 15,
-        "forecast_units": 16,
+        "last_month_units": 23,
+        "forecast_units": 22,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 16.135,
+          "estimate": 21.551,
           "field_label": "units_sold",
           "components": [
             {
               "name": "product_sku=SKU-PT-0218",
-              "value": 14.7053,
-              "type": "regression"
-            },
-            {
-              "name": "units_last_month=15",
-              "value": 3.1959,
-              "type": "regression"
-            },
-            {
-              "name": "column mean (log)",
-              "value": 3.128,
-              "type": "mean"
-            },
-            {
-              "name": "category=accessories",
-              "value": -2.4216,
+              "value": 14.4581,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": 1.4184,
+              "value": 9.9684,
               "type": "residual"
             },
             {
+              "name": "units_last_month=23",
+              "value": 8.5671,
+              "type": "regression"
+            },
+            {
+              "name": "column mean (log)",
+              "value": 3.1669,
+              "type": "mean"
+            },
+            {
+              "name": "category=accessories",
+              "value": -2.5313,
+              "type": "regression"
+            },
+            {
               "name": "season=spring",
-              "value": 0.4628,
+              "value": 0.4599,
               "type": "regression"
             },
             {
               "name": "pet_type=dog",
-              "value": -0.2241,
+              "value": -0.2467,
               "type": "regression"
             },
             {
               "name": "brand=Trixie",
-              "value": -0.0414,
-              "type": "regression"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0207",
-        "name": "PetNord Bowl",
-        "pet_type": "dog",
-        "category": "accessories",
-        "avg_monthly_units": 18,
-        "last_month_units": 10,
-        "forecast_units": 15,
-        "forecast_p": 0.0,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 14.94,
-          "field_label": "units_sold",
-          "components": [
-            {
-              "name": "product_sku=SKU-PT-0207",
-              "value": 14.4136,
-              "type": "regression"
-            },
-            {
-              "name": "neighbor residual",
-              "value": 3.7832,
-              "type": "residual"
-            },
-            {
-              "name": "column mean (log)",
-              "value": 3.128,
-              "type": "mean"
-            },
-            {
-              "name": "units_last_month=10",
-              "value": 2.7072,
-              "type": "regression"
-            },
-            {
-              "name": "category=accessories",
-              "value": -2.4216,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.4628,
-              "type": "regression"
-            },
-            {
-              "name": "pet_type=dog",
-              "value": -0.2241,
-              "type": "regression"
-            },
-            {
-              "name": "brand=PetNord",
-              "value": -0.1145,
+              "value": -0.1671,
               "type": "regression"
             }
           ]
@@ -1076,166 +1076,109 @@
         "pet_type": "cat",
         "category": "accessories",
         "avg_monthly_units": 17,
-        "last_month_units": 17,
-        "forecast_units": 17,
+        "last_month_units": 12,
+        "forecast_units": 15,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 17.034,
+          "estimate": 14.516,
           "field_label": "units_sold",
           "components": [
-            {
-              "name": "neighbor residual",
-              "value": 18.7037,
-              "type": "residual"
-            },
             {
               "name": "product_sku=SKU-PT-0497",
-              "value": 14.3303,
-              "type": "regression"
-            },
-            {
-              "name": "units_last_month=17",
-              "value": 4.4328,
+              "value": 14.0414,
               "type": "regression"
             },
             {
               "name": "column mean (log)",
-              "value": 3.128,
+              "value": 3.1669,
               "type": "mean"
             },
             {
-              "name": "category=accessories",
-              "value": -2.4216,
+              "name": "units_last_month=12",
+              "value": 3.0075,
               "type": "regression"
             },
             {
+              "name": "category=accessories",
+              "value": -2.5313,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": -2.0095,
+              "type": "residual"
+            },
+            {
               "name": "season=spring",
-              "value": 0.4628,
+              "value": 0.4599,
               "type": "regression"
             },
             {
               "name": "brand=PetNord",
-              "value": -0.1145,
+              "value": -0.0883,
               "type": "regression"
             },
             {
               "name": "pet_type=cat",
-              "value": -0.0612,
+              "value": -0.0466,
               "type": "regression"
             }
           ]
         }
       },
       {
-        "sku": "SKU-PT-0501",
-        "name": "Trixie Bowl",
-        "pet_type": "cat",
+        "sku": "SKU-PT-0207",
+        "name": "PetNord Bowl",
+        "pet_type": "dog",
         "category": "accessories",
         "avg_monthly_units": 17,
-        "last_month_units": 29,
-        "forecast_units": 26,
+        "last_month_units": 15,
+        "forecast_units": 15,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 25.653,
+          "estimate": 14.816,
           "field_label": "units_sold",
           "components": [
             {
-              "name": "product_sku=SKU-PT-0501",
-              "value": 14.0803,
-              "type": "regression"
-            },
-            {
-              "name": "units_last_month=29",
-              "value": 12.9074,
+              "name": "product_sku=SKU-PT-0207",
+              "value": 13.9581,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": -8.1194,
+              "value": -6.3962,
               "type": "residual"
             },
             {
               "name": "column mean (log)",
-              "value": 3.128,
+              "value": 3.1669,
               "type": "mean"
             },
             {
+              "name": "units_last_month=15",
+              "value": 2.74,
+              "type": "regression"
+            },
+            {
               "name": "category=accessories",
-              "value": -2.4216,
+              "value": -2.5313,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.4628,
+              "value": 0.4599,
               "type": "regression"
             },
             {
-              "name": "pet_type=cat",
-              "value": -0.0612,
-              "type": "regression"
-            },
-            {
-              "name": "brand=Trixie",
-              "value": -0.0414,
-              "type": "regression"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0494",
-        "name": "PetNord Scratching Post",
-        "pet_type": "cat",
-        "category": "accessories",
-        "avg_monthly_units": 17,
-        "last_month_units": 58,
-        "forecast_units": 41,
-        "forecast_p": 0.0,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 40.869,
-          "field_label": "units_sold",
-          "components": [
-            {
-              "name": "neighbor residual",
-              "value": -24.7543,
-              "type": "residual"
-            },
-            {
-              "name": "units_last_month=58",
-              "value": 24.3056,
-              "type": "regression"
-            },
-            {
-              "name": "product_sku=SKU-PT-0494",
-              "value": 13.5803,
-              "type": "regression"
-            },
-            {
-              "name": "column mean (log)",
-              "value": 3.128,
-              "type": "mean"
-            },
-            {
-              "name": "category=accessories",
-              "value": -2.4216,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.4628,
+              "name": "pet_type=dog",
+              "value": -0.2467,
               "type": "regression"
             },
             {
               "name": "brand=PetNord",
-              "value": -0.1145,
-              "type": "regression"
-            },
-            {
-              "name": "pet_type=cat",
-              "value": -0.0612,
+              "value": -0.0883,
               "type": "regression"
             }
           ]
@@ -1246,110 +1189,53 @@
         "name": "PetNord Bowl",
         "pet_type": "cat",
         "category": "accessories",
-        "avg_monthly_units": 16,
-        "last_month_units": 9,
-        "forecast_units": 11,
+        "avg_monthly_units": 17,
+        "last_month_units": 12,
+        "forecast_units": 14,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 10.691,
+          "estimate": 13.921,
           "field_label": "units_sold",
           "components": [
             {
               "name": "product_sku=SKU-PT-0496",
-              "value": 13.372,
+              "value": 13.7497,
               "type": "regression"
             },
             {
               "name": "neighbor residual",
-              "value": -10.4173,
+              "value": -5.6159,
               "type": "residual"
             },
             {
               "name": "column mean (log)",
-              "value": 3.128,
+              "value": 3.1669,
               "type": "mean"
             },
             {
-              "name": "category=accessories",
-              "value": -2.4216,
+              "name": "units_last_month=12",
+              "value": 3.0075,
               "type": "regression"
             },
             {
-              "name": "units_last_month=9",
-              "value": 2.1687,
+              "name": "category=accessories",
+              "value": -2.5313,
               "type": "regression"
             },
             {
               "name": "season=spring",
-              "value": 0.4628,
+              "value": 0.4599,
               "type": "regression"
             },
             {
               "name": "brand=PetNord",
-              "value": -0.1145,
+              "value": -0.0883,
               "type": "regression"
             },
             {
               "name": "pet_type=cat",
-              "value": -0.0612,
-              "type": "regression"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0500",
-        "name": "Trixie Scratching Post",
-        "pet_type": "cat",
-        "category": "accessories",
-        "avg_monthly_units": 15,
-        "last_month_units": 52,
-        "forecast_units": 19,
-        "forecast_p": 0.0,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 19.297,
-          "field_label": "units_sold",
-          "components": [
-            {
-              "name": "neighbor residual",
-              "value": -12.0778,
-              "type": "residual"
-            },
-            {
-              "name": "product_sku=SKU-PT-0500",
-              "value": 12.0386,
-              "type": "regression"
-            },
-            {
-              "name": "units_last_month=52",
-              "value": 8.4583,
-              "type": "regression"
-            },
-            {
-              "name": "column mean (log)",
-              "value": 3.128,
-              "type": "mean"
-            },
-            {
-              "name": "category=accessories",
-              "value": -2.4216,
-              "type": "regression"
-            },
-            {
-              "name": "season=spring",
-              "value": 0.4628,
-              "type": "regression"
-            },
-            {
-              "name": "pet_type=cat",
-              "value": -0.0612,
-              "type": "regression"
-            },
-            {
-              "name": "brand=Trixie",
-              "value": -0.0414,
+              "value": -0.0466,
               "type": "regression"
             }
           ]
@@ -1360,53 +1246,167 @@
         "name": "PetNord Silica Crystals Cat Litter 7kg",
         "pet_type": "cat",
         "category": "litter",
-        "avg_monthly_units": 13,
-        "last_month_units": 41,
-        "forecast_units": 39,
+        "avg_monthly_units": 17,
+        "last_month_units": 47,
+        "forecast_units": 30,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 38.728,
+          "estimate": 30.091,
           "field_label": "units_sold",
           "components": [
             {
-              "name": "units_last_month=41",
-              "value": 28.2292,
+              "name": "units_last_month=47",
+              "value": 17.8333,
               "type": "regression"
             },
             {
-              "name": "neighbor residual",
-              "value": 18.1645,
-              "type": "residual"
-            },
-            {
               "name": "product_sku=SKU-PT-0486",
-              "value": 9.747,
+              "value": 13.6664,
               "type": "regression"
             },
             {
               "name": "category=litter",
-              "value": -6.5557,
+              "value": -6.4994,
               "type": "regression"
             },
             {
+              "name": "neighbor residual",
+              "value": 6.1744,
+              "type": "residual"
+            },
+            {
               "name": "column mean (log)",
-              "value": 3.128,
+              "value": 3.1669,
               "type": "mean"
             },
             {
               "name": "season=spring",
-              "value": 0.4628,
+              "value": 0.4599,
               "type": "regression"
             },
             {
               "name": "brand=PetNord",
-              "value": -0.1145,
+              "value": -0.0883,
               "type": "regression"
             },
             {
               "name": "pet_type=cat",
-              "value": -0.0612,
+              "value": -0.0466,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0500",
+        "name": "Trixie Scratching Post",
+        "pet_type": "cat",
+        "category": "accessories",
+        "avg_monthly_units": 17,
+        "last_month_units": 51,
+        "forecast_units": 48,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 48.139,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "units_last_month=51",
+              "value": 36.0208,
+              "type": "regression"
+            },
+            {
+              "name": "product_sku=SKU-PT-0500",
+              "value": 13.6247,
+              "type": "regression"
+            },
+            {
+              "name": "column mean (log)",
+              "value": 3.1669,
+              "type": "mean"
+            },
+            {
+              "name": "category=accessories",
+              "value": -2.5313,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": 0.4726,
+              "type": "residual"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.4599,
+              "type": "regression"
+            },
+            {
+              "name": "brand=Trixie",
+              "value": -0.1671,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=cat",
+              "value": -0.0466,
+              "type": "regression"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0208",
+        "name": "PetNord Bowl",
+        "pet_type": "dog",
+        "category": "accessories",
+        "avg_monthly_units": 17,
+        "last_month_units": 10,
+        "forecast_units": 15,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 14.895,
+          "field_label": "units_sold",
+          "components": [
+            {
+              "name": "product_sku=SKU-PT-0208",
+              "value": 13.4164,
+              "type": "regression"
+            },
+            {
+              "name": "neighbor residual",
+              "value": 3.8426,
+              "type": "residual"
+            },
+            {
+              "name": "column mean (log)",
+              "value": 3.1669,
+              "type": "mean"
+            },
+            {
+              "name": "category=accessories",
+              "value": -2.5313,
+              "type": "regression"
+            },
+            {
+              "name": "units_last_month=10",
+              "value": 2.0117,
+              "type": "regression"
+            },
+            {
+              "name": "season=spring",
+              "value": 0.4599,
+              "type": "regression"
+            },
+            {
+              "name": "pet_type=dog",
+              "value": -0.2467,
+              "type": "regression"
+            },
+            {
+              "name": "brand=PetNord",
+              "value": -0.0883,
               "type": "regression"
             }
           ]
@@ -1415,9 +1415,9 @@
     ],
     "seasonality": [],
     "evaluation": {
-      "accuracy": 0.4331,
-      "naive_accuracy": 0.4757,
-      "base_accuracy": 0.0988,
+      "accuracy": 0.4149,
+      "naive_accuracy": 0.4453,
+      "base_accuracy": 0.0912,
       "n": 658,
       "method": "Scores Aito predicting each month's sales range (0, 1, 2-3, 4-7, 8-15, 16-31, 32+) from last month's range and the product, not the unit forecast in the table. Time split: trained on every month before 2026-04, tested on 2026-04."
     },
@@ -1426,8 +1426,8 @@
       "body": {
         "from": "monthly_sales",
         "where": {
-          "product_sku": "SKU-PT-0488",
-          "units_last_month": 71,
+          "product_sku": "SKU-PT-0490",
+          "units_last_month": 60,
           "pet_type": "cat",
           "category": "litter",
           "brand": "PetNord",
@@ -1440,40 +1440,40 @@
         ]
       }
     },
-    "last_response_ms": 18751
+    "last_response_ms": 23308
   },
   "timings": [
     [
       "_search",
-      5.44
+      5.55
     ],
     [
       "_search",
-      89.06
+      99.69
     ],
     [
       "_search",
-      87.83
+      82.39
     ],
     [
       "_search",
-      93.97
+      141.22
     ],
     [
       "_search",
-      55.25
+      63.11
     ],
     [
       "_search",
-      26.68
+      27.7
     ],
     [
       "_evaluate",
-      7540.88
+      9641.47
     ],
     [
       "_search",
-      2.29
+      2.26
     ]
   ]
 }

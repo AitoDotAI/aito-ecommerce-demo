@@ -4,725 +4,312 @@
       {
         "label": "Overstock targeted",
         "value": 15.0,
-        "sub": "611 excess units"
+        "sub": "686 excess units"
       },
       {
         "label": "Tied capital",
-        "value": 16753.94,
+        "value": 20858.33,
         "sub": "stuck in excess inventory today"
       },
       {
         "label": "Margin recoverable",
-        "value": 3244.58,
+        "value": 2568.43,
         "sub": "(price − cost) × units cleared at proposed markdowns"
       }
     ],
     "proposals": [
       {
-        "sku": "SKU-PT-0056",
-        "name": "Eukanuba Turkey Dog Food 15kg",
-        "pet_type": "dog",
-        "category": "dry-food",
-        "current_stock": 24,
-        "reorder_point": 3,
-        "list_price_eur": 91.62,
-        "unit_cost_eur": 65.97,
-        "excess_units": 18,
-        "tied_capital_eur": 1187.46,
-        "proposed_discount_pct": 0,
-        "proposed_price_eur": 91.62,
-        "proposed_weeks_to_clear": 11.9,
-        "proposed_recoverable_revenue_eur": 461.7,
-        "proposed_margin_lost_eur": 0.0,
-        "curve": [
-          {
-            "discount_pct": 0,
-            "price_eur": 91.62,
-            "monthly_units": 6.54,
-            "weeks_to_clear": 11.9,
-            "margin_per_unit_eur": 25.65,
-            "recoverable_revenue_eur": 461.7
-          },
-          {
-            "discount_pct": 5,
-            "price_eur": 87.04,
-            "monthly_units": 6.72,
-            "weeks_to_clear": 11.6,
-            "margin_per_unit_eur": 21.07,
-            "recoverable_revenue_eur": 379.26
-          },
-          {
-            "discount_pct": 10,
-            "price_eur": 82.46,
-            "monthly_units": 6.91,
-            "weeks_to_clear": 11.3,
-            "margin_per_unit_eur": 16.49,
-            "recoverable_revenue_eur": 296.82
-          },
-          {
-            "discount_pct": 15,
-            "price_eur": 77.88,
-            "monthly_units": 7.03,
-            "weeks_to_clear": 11.1,
-            "margin_per_unit_eur": 11.91,
-            "recoverable_revenue_eur": 214.38
-          },
-          {
-            "discount_pct": 20,
-            "price_eur": 73.3,
-            "monthly_units": 7.4,
-            "weeks_to_clear": 10.5,
-            "margin_per_unit_eur": 7.33,
-            "recoverable_revenue_eur": 131.94
-          }
-        ]
-      },
-      {
         "sku": "SKU-PT-0358",
         "name": "Whiskas Grain Free Whitefish Cat Food 15kg",
         "pet_type": "cat",
         "category": "dry-food",
-        "current_stock": 22,
+        "current_stock": 23,
         "reorder_point": 3,
         "list_price_eur": 98.67,
         "unit_cost_eur": 71.04,
-        "excess_units": 16,
-        "tied_capital_eur": 1136.64,
-        "proposed_discount_pct": 5,
-        "proposed_price_eur": 93.74,
-        "proposed_weeks_to_clear": 12.7,
-        "proposed_recoverable_revenue_eur": 363.2,
-        "proposed_margin_lost_eur": 78.88,
+        "excess_units": 17,
+        "tied_capital_eur": 1207.68,
+        "proposed_discount_pct": 0,
+        "proposed_price_eur": 98.67,
+        "proposed_weeks_to_clear": 10.0,
+        "proposed_recoverable_revenue_eur": 469.71,
+        "proposed_margin_lost_eur": 0.0,
         "curve": [
           {
             "discount_pct": 0,
             "price_eur": 98.67,
-            "monthly_units": 4.66,
-            "weeks_to_clear": 14.9,
+            "monthly_units": 7.38,
+            "weeks_to_clear": 10.0,
             "margin_per_unit_eur": 27.63,
-            "recoverable_revenue_eur": 386.0
+            "recoverable_revenue_eur": 469.71
           },
           {
             "discount_pct": 5,
             "price_eur": 93.74,
-            "monthly_units": 5.47,
-            "weeks_to_clear": 12.7,
+            "monthly_units": 7.52,
+            "weeks_to_clear": 9.8,
             "margin_per_unit_eur": 22.7,
-            "recoverable_revenue_eur": 363.2
+            "recoverable_revenue_eur": 385.9
           },
           {
             "discount_pct": 10,
             "price_eur": 88.8,
-            "monthly_units": 5.03,
-            "weeks_to_clear": 13.8,
+            "monthly_units": 7.82,
+            "weeks_to_clear": 9.4,
             "margin_per_unit_eur": 17.76,
-            "recoverable_revenue_eur": 267.9
+            "recoverable_revenue_eur": 301.92
           },
           {
             "discount_pct": 15,
             "price_eur": 83.87,
-            "monthly_units": 5.23,
-            "weeks_to_clear": 13.2,
+            "monthly_units": 7.84,
+            "weeks_to_clear": 9.4,
             "margin_per_unit_eur": 12.83,
-            "recoverable_revenue_eur": 201.28
+            "recoverable_revenue_eur": 218.11
           },
           {
             "discount_pct": 20,
             "price_eur": 78.94,
-            "monthly_units": 5.44,
-            "weeks_to_clear": 12.7,
+            "monthly_units": 7.94,
+            "weeks_to_clear": 9.3,
             "margin_per_unit_eur": 7.9,
-            "recoverable_revenue_eur": 126.4
+            "recoverable_revenue_eur": 134.3
           }
         ]
       },
       {
-        "sku": "SKU-PT-0209",
-        "name": "PetNord Bowl",
-        "pet_type": "dog",
-        "category": "accessories",
-        "current_stock": 178,
-        "reorder_point": 16,
-        "list_price_eur": 20.06,
-        "unit_cost_eur": 11.03,
-        "excess_units": 146,
-        "tied_capital_eur": 1610.38,
-        "proposed_discount_pct": 20,
-        "proposed_price_eur": 16.05,
-        "proposed_weeks_to_clear": 28.1,
-        "proposed_recoverable_revenue_eur": 338.41,
-        "proposed_margin_lost_eur": 270.31,
+        "sku": "SKU-PT-0540",
+        "name": "PetNord Hamster Mix Food 12kg",
+        "pet_type": "small_animal",
+        "category": "dry-food",
+        "current_stock": 24,
+        "reorder_point": 3,
+        "list_price_eur": 77.68,
+        "unit_cost_eur": 55.93,
+        "excess_units": 18,
+        "tied_capital_eur": 1006.74,
+        "proposed_discount_pct": 0,
+        "proposed_price_eur": 77.68,
+        "proposed_weeks_to_clear": 8.8,
+        "proposed_recoverable_revenue_eur": 391.5,
+        "proposed_margin_lost_eur": 0.0,
         "curve": [
           {
             "discount_pct": 0,
-            "price_eur": 20.06,
-            "monthly_units": 21.68,
-            "weeks_to_clear": 29.2,
-            "margin_per_unit_eur": 9.03,
-            "recoverable_revenue_eur": 587.44
+            "price_eur": 77.68,
+            "monthly_units": 8.89,
+            "weeks_to_clear": 8.8,
+            "margin_per_unit_eur": 21.75,
+            "recoverable_revenue_eur": 391.5
           },
           {
             "discount_pct": 5,
-            "price_eur": 19.06,
-            "monthly_units": 21.87,
-            "weeks_to_clear": 28.9,
-            "margin_per_unit_eur": 8.03,
-            "recoverable_revenue_eur": 526.73
+            "price_eur": 73.8,
+            "monthly_units": 8.62,
+            "weeks_to_clear": 9.0,
+            "margin_per_unit_eur": 17.87,
+            "recoverable_revenue_eur": 321.66
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 69.91,
+            "monthly_units": 8.83,
+            "weeks_to_clear": 8.8,
+            "margin_per_unit_eur": 13.98,
+            "recoverable_revenue_eur": 251.64
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 66.03,
+            "monthly_units": 8.92,
+            "weeks_to_clear": 8.7,
+            "margin_per_unit_eur": 10.1,
+            "recoverable_revenue_eur": 181.8
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 62.14,
+            "monthly_units": 9.17,
+            "weeks_to_clear": 8.5,
+            "margin_per_unit_eur": 6.21,
+            "recoverable_revenue_eur": 111.78
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0211",
+        "name": "Trixie Collar",
+        "pet_type": "dog",
+        "category": "accessories",
+        "current_stock": 228,
+        "reorder_point": 20,
+        "list_price_eur": 20.05,
+        "unit_cost_eur": 11.03,
+        "excess_units": 188,
+        "tied_capital_eur": 2073.64,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 16.04,
+        "proposed_weeks_to_clear": 31.8,
+        "proposed_recoverable_revenue_eur": 384.38,
+        "proposed_margin_lost_eur": 307.61,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 20.05,
+            "monthly_units": 24.94,
+            "weeks_to_clear": 32.6,
+            "margin_per_unit_eur": 9.02,
+            "recoverable_revenue_eur": 674.86
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 19.05,
+            "monthly_units": 25.08,
+            "weeks_to_clear": 32.5,
+            "margin_per_unit_eur": 8.02,
+            "recoverable_revenue_eur": 603.54
           },
           {
             "discount_pct": 10,
             "price_eur": 18.05,
-            "monthly_units": 22.06,
-            "weeks_to_clear": 28.7,
+            "monthly_units": 25.24,
+            "weeks_to_clear": 32.3,
             "margin_per_unit_eur": 7.02,
-            "recoverable_revenue_eur": 464.52
+            "recoverable_revenue_eur": 531.52
           },
           {
             "discount_pct": 15,
-            "price_eur": 17.05,
-            "monthly_units": 22.26,
-            "weeks_to_clear": 28.4,
-            "margin_per_unit_eur": 6.02,
-            "recoverable_revenue_eur": 401.98
+            "price_eur": 17.04,
+            "monthly_units": 25.4,
+            "weeks_to_clear": 32.0,
+            "margin_per_unit_eur": 6.01,
+            "recoverable_revenue_eur": 458.0
           },
           {
             "discount_pct": 20,
-            "price_eur": 16.05,
-            "monthly_units": 22.47,
-            "weeks_to_clear": 28.1,
-            "margin_per_unit_eur": 5.02,
-            "recoverable_revenue_eur": 338.41
+            "price_eur": 16.04,
+            "monthly_units": 25.57,
+            "weeks_to_clear": 31.8,
+            "margin_per_unit_eur": 5.01,
+            "recoverable_revenue_eur": 384.38
           }
         ]
       },
       {
-        "sku": "SKU-PT-0005",
-        "name": "Royal Canin Sensitive Lamb Dog Food 15kg",
+        "sku": "SKU-PT-0204",
+        "name": "PetNord Leash",
         "pet_type": "dog",
-        "category": "dry-food",
-        "current_stock": 18,
-        "reorder_point": 3,
-        "list_price_eur": 97.88,
-        "unit_cost_eur": 70.47,
-        "excess_units": 12,
-        "tied_capital_eur": 845.64,
-        "proposed_discount_pct": 0,
-        "proposed_price_eur": 97.88,
-        "proposed_weeks_to_clear": 7.4,
-        "proposed_recoverable_revenue_eur": 328.92,
-        "proposed_margin_lost_eur": 0.0,
+        "category": "accessories",
+        "current_stock": 112,
+        "reorder_point": 10,
+        "list_price_eur": 21.99,
+        "unit_cost_eur": 12.09,
+        "excess_units": 92,
+        "tied_capital_eur": 1112.28,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 17.59,
+        "proposed_weeks_to_clear": 21.5,
+        "proposed_recoverable_revenue_eur": 305.09,
+        "proposed_margin_lost_eur": 244.07,
         "curve": [
           {
             "discount_pct": 0,
-            "price_eur": 97.88,
-            "monthly_units": 7.03,
-            "weeks_to_clear": 7.4,
-            "margin_per_unit_eur": 27.41,
-            "recoverable_revenue_eur": 328.92
+            "price_eur": 21.99,
+            "monthly_units": 17.86,
+            "weeks_to_clear": 22.3,
+            "margin_per_unit_eur": 9.9,
+            "recoverable_revenue_eur": 530.3
           },
           {
             "discount_pct": 5,
-            "price_eur": 92.99,
-            "monthly_units": 6.98,
-            "weeks_to_clear": 7.4,
-            "margin_per_unit_eur": 22.52,
-            "recoverable_revenue_eur": 270.24
+            "price_eur": 20.89,
+            "monthly_units": 18.0,
+            "weeks_to_clear": 22.1,
+            "margin_per_unit_eur": 8.8,
+            "recoverable_revenue_eur": 475.23
           },
           {
             "discount_pct": 10,
-            "price_eur": 88.09,
-            "monthly_units": 7.4,
-            "weeks_to_clear": 7.0,
-            "margin_per_unit_eur": 17.62,
-            "recoverable_revenue_eur": 211.44
+            "price_eur": 19.79,
+            "monthly_units": 18.16,
+            "weeks_to_clear": 21.9,
+            "margin_per_unit_eur": 7.7,
+            "recoverable_revenue_eur": 419.38
           },
           {
             "discount_pct": 15,
-            "price_eur": 83.2,
-            "monthly_units": 7.39,
-            "weeks_to_clear": 7.0,
-            "margin_per_unit_eur": 12.73,
-            "recoverable_revenue_eur": 152.76
+            "price_eur": 18.69,
+            "monthly_units": 18.32,
+            "weeks_to_clear": 21.7,
+            "margin_per_unit_eur": 6.6,
+            "recoverable_revenue_eur": 362.69
           },
           {
             "discount_pct": 20,
-            "price_eur": 78.3,
-            "monthly_units": 7.82,
-            "weeks_to_clear": 6.6,
-            "margin_per_unit_eur": 7.83,
-            "recoverable_revenue_eur": 93.96
+            "price_eur": 17.59,
+            "monthly_units": 18.49,
+            "weeks_to_clear": 21.5,
+            "margin_per_unit_eur": 5.5,
+            "recoverable_revenue_eur": 305.09
           }
         ]
       },
       {
-        "sku": "SKU-PT-0049",
-        "name": "Eukanuba Grain Free Salmon Dog Food 12kg",
-        "pet_type": "dog",
-        "category": "dry-food",
-        "current_stock": 19,
-        "reorder_point": 3,
-        "list_price_eur": 82.8,
-        "unit_cost_eur": 59.62,
-        "excess_units": 13,
-        "tied_capital_eur": 775.06,
-        "proposed_discount_pct": 0,
-        "proposed_price_eur": 82.8,
-        "proposed_weeks_to_clear": 8.1,
-        "proposed_recoverable_revenue_eur": 301.34,
-        "proposed_margin_lost_eur": 0.0,
-        "curve": [
-          {
-            "discount_pct": 0,
-            "price_eur": 82.8,
-            "monthly_units": 6.97,
-            "weeks_to_clear": 8.1,
-            "margin_per_unit_eur": 23.18,
-            "recoverable_revenue_eur": 301.34
-          },
-          {
-            "discount_pct": 5,
-            "price_eur": 78.66,
-            "monthly_units": 7.15,
-            "weeks_to_clear": 7.9,
-            "margin_per_unit_eur": 19.04,
-            "recoverable_revenue_eur": 247.52
-          },
-          {
-            "discount_pct": 10,
-            "price_eur": 74.52,
-            "monthly_units": 7.34,
-            "weeks_to_clear": 7.7,
-            "margin_per_unit_eur": 14.9,
-            "recoverable_revenue_eur": 193.7
-          },
-          {
-            "discount_pct": 15,
-            "price_eur": 70.38,
-            "monthly_units": 7.54,
-            "weeks_to_clear": 7.5,
-            "margin_per_unit_eur": 10.76,
-            "recoverable_revenue_eur": 139.88
-          },
-          {
-            "discount_pct": 20,
-            "price_eur": 66.24,
-            "monthly_units": 7.76,
-            "weeks_to_clear": 7.3,
-            "margin_per_unit_eur": 6.62,
-            "recoverable_revenue_eur": 86.06
-          }
-        ]
-      },
-      {
-        "sku": "SKU-PT-0023",
-        "name": "Hill's Science Plan Weight Control Lamb Dog Food 15kg",
-        "pet_type": "dog",
-        "category": "dry-food",
-        "current_stock": 16,
-        "reorder_point": 3,
-        "list_price_eur": 99.44,
-        "unit_cost_eur": 71.6,
-        "excess_units": 10,
-        "tied_capital_eur": 716.0,
-        "proposed_discount_pct": 0,
-        "proposed_price_eur": 99.44,
-        "proposed_weeks_to_clear": 10.5,
-        "proposed_recoverable_revenue_eur": 278.4,
-        "proposed_margin_lost_eur": 0.0,
-        "curve": [
-          {
-            "discount_pct": 0,
-            "price_eur": 99.44,
-            "monthly_units": 4.13,
-            "weeks_to_clear": 10.5,
-            "margin_per_unit_eur": 27.84,
-            "recoverable_revenue_eur": 278.4
-          },
-          {
-            "discount_pct": 5,
-            "price_eur": 94.47,
-            "monthly_units": 4.63,
-            "weeks_to_clear": 9.4,
-            "margin_per_unit_eur": 22.87,
-            "recoverable_revenue_eur": 228.7
-          },
-          {
-            "discount_pct": 10,
-            "price_eur": 89.5,
-            "monthly_units": 5.59,
-            "weeks_to_clear": 7.7,
-            "margin_per_unit_eur": 17.9,
-            "recoverable_revenue_eur": 179.0
-          },
-          {
-            "discount_pct": 15,
-            "price_eur": 84.52,
-            "monthly_units": 5.79,
-            "weeks_to_clear": 7.5,
-            "margin_per_unit_eur": 12.92,
-            "recoverable_revenue_eur": 129.2
-          },
-          {
-            "discount_pct": 20,
-            "price_eur": 79.55,
-            "monthly_units": 6.01,
-            "weeks_to_clear": 7.2,
-            "margin_per_unit_eur": 7.95,
-            "recoverable_revenue_eur": 79.5
-          }
-        ]
-      },
-      {
-        "sku": "SKU-PT-0497",
+        "sku": "SKU-PT-0495",
         "name": "PetNord Bowl",
         "pet_type": "cat",
         "category": "accessories",
-        "current_stock": 142,
-        "reorder_point": 14,
-        "list_price_eur": 20.29,
-        "unit_cost_eur": 11.16,
-        "excess_units": 114,
-        "tied_capital_eur": 1272.24,
+        "current_stock": 168,
+        "reorder_point": 17,
+        "list_price_eur": 19.06,
+        "unit_cost_eur": 10.48,
+        "excess_units": 134,
+        "tied_capital_eur": 1404.32,
         "proposed_discount_pct": 20,
-        "proposed_price_eur": 16.23,
-        "proposed_weeks_to_clear": 27.8,
-        "proposed_recoverable_revenue_eur": 270.43,
-        "proposed_margin_lost_eur": 216.56,
+        "proposed_price_eur": 15.25,
+        "proposed_weeks_to_clear": 35.4,
+        "proposed_recoverable_revenue_eur": 234.57,
+        "proposed_margin_lost_eur": 187.34,
         "curve": [
           {
             "discount_pct": 0,
-            "price_eur": 20.29,
-            "monthly_units": 16.99,
-            "weeks_to_clear": 29.0,
-            "margin_per_unit_eur": 9.13,
-            "recoverable_revenue_eur": 465.44
+            "price_eur": 19.06,
+            "monthly_units": 12.84,
+            "weeks_to_clear": 45.2,
+            "margin_per_unit_eur": 8.58,
+            "recoverable_revenue_eur": 330.61
           },
           {
             "discount_pct": 5,
-            "price_eur": 19.28,
-            "monthly_units": 17.17,
-            "weeks_to_clear": 28.7,
-            "margin_per_unit_eur": 8.12,
-            "recoverable_revenue_eur": 418.33
+            "price_eur": 18.11,
+            "monthly_units": 15.9,
+            "weeks_to_clear": 36.5,
+            "margin_per_unit_eur": 7.63,
+            "recoverable_revenue_eur": 364.03
           },
           {
             "discount_pct": 10,
-            "price_eur": 18.26,
-            "monthly_units": 17.36,
-            "weeks_to_clear": 28.4,
-            "margin_per_unit_eur": 7.1,
-            "recoverable_revenue_eur": 369.86
+            "price_eur": 17.15,
+            "monthly_units": 16.06,
+            "weeks_to_clear": 36.1,
+            "margin_per_unit_eur": 6.67,
+            "recoverable_revenue_eur": 321.33
           },
           {
             "discount_pct": 15,
-            "price_eur": 17.25,
-            "monthly_units": 17.56,
-            "weeks_to_clear": 28.1,
-            "margin_per_unit_eur": 6.09,
-            "recoverable_revenue_eur": 320.91
+            "price_eur": 16.2,
+            "monthly_units": 16.22,
+            "weeks_to_clear": 35.8,
+            "margin_per_unit_eur": 5.72,
+            "recoverable_revenue_eur": 278.34
           },
           {
             "discount_pct": 20,
-            "price_eur": 16.23,
-            "monthly_units": 17.78,
-            "weeks_to_clear": 27.8,
-            "margin_per_unit_eur": 5.07,
-            "recoverable_revenue_eur": 270.43
-          }
-        ]
-      },
-      {
-        "sku": "SKU-PT-0214",
-        "name": "Trixie Leash",
-        "pet_type": "dog",
-        "category": "accessories",
-        "current_stock": 86,
-        "reorder_point": 9,
-        "list_price_eur": 22.14,
-        "unit_cost_eur": 12.18,
-        "excess_units": 68,
-        "tied_capital_eur": 828.24,
-        "proposed_discount_pct": 20,
-        "proposed_price_eur": 17.71,
-        "proposed_weeks_to_clear": 24.8,
-        "proposed_recoverable_revenue_eur": 197.3,
-        "proposed_margin_lost_eur": 158.02,
-        "curve": [
-          {
-            "discount_pct": 0,
-            "price_eur": 22.14,
-            "monthly_units": 11.11,
-            "weeks_to_clear": 26.5,
-            "margin_per_unit_eur": 9.96,
-            "recoverable_revenue_eur": 331.85
-          },
-          {
-            "discount_pct": 5,
-            "price_eur": 21.03,
-            "monthly_units": 11.29,
-            "weeks_to_clear": 26.1,
-            "margin_per_unit_eur": 8.85,
-            "recoverable_revenue_eur": 299.68
-          },
-          {
-            "discount_pct": 10,
-            "price_eur": 19.93,
-            "monthly_units": 11.48,
-            "weeks_to_clear": 25.7,
-            "margin_per_unit_eur": 7.75,
-            "recoverable_revenue_eur": 266.83
-          },
-          {
-            "discount_pct": 15,
-            "price_eur": 18.82,
-            "monthly_units": 11.68,
-            "weeks_to_clear": 25.2,
-            "margin_per_unit_eur": 6.64,
-            "recoverable_revenue_eur": 232.64
-          },
-          {
-            "discount_pct": 20,
-            "price_eur": 17.71,
-            "monthly_units": 11.89,
-            "weeks_to_clear": 24.8,
-            "margin_per_unit_eur": 5.53,
-            "recoverable_revenue_eur": 197.3
-          }
-        ]
-      },
-      {
-        "sku": "SKU-PT-0205",
-        "name": "PetNord Harness",
-        "pet_type": "dog",
-        "category": "accessories",
-        "current_stock": 88,
-        "reorder_point": 9,
-        "list_price_eur": 20.0,
-        "unit_cost_eur": 11.0,
-        "excess_units": 70,
-        "tied_capital_eur": 770.0,
-        "proposed_discount_pct": 20,
-        "proposed_price_eur": 16.0,
-        "proposed_weeks_to_clear": 25.9,
-        "proposed_recoverable_revenue_eur": 175.23,
-        "proposed_margin_lost_eur": 140.16,
-        "curve": [
-          {
-            "discount_pct": 0,
-            "price_eur": 20.0,
-            "monthly_units": 10.9,
-            "weeks_to_clear": 27.8,
-            "margin_per_unit_eur": 9.0,
-            "recoverable_revenue_eur": 294.18
-          },
-          {
-            "discount_pct": 5,
-            "price_eur": 19.0,
-            "monthly_units": 11.08,
-            "weeks_to_clear": 27.4,
-            "margin_per_unit_eur": 8.0,
-            "recoverable_revenue_eur": 265.83
-          },
-          {
-            "discount_pct": 10,
-            "price_eur": 18.0,
-            "monthly_units": 11.27,
-            "weeks_to_clear": 26.9,
-            "margin_per_unit_eur": 7.0,
-            "recoverable_revenue_eur": 236.61
-          },
-          {
-            "discount_pct": 15,
-            "price_eur": 17.0,
-            "monthly_units": 11.47,
-            "weeks_to_clear": 26.4,
-            "margin_per_unit_eur": 6.0,
-            "recoverable_revenue_eur": 206.43
-          },
-          {
-            "discount_pct": 20,
-            "price_eur": 16.0,
-            "monthly_units": 11.68,
-            "weeks_to_clear": 25.9,
-            "margin_per_unit_eur": 5.0,
-            "recoverable_revenue_eur": 175.23
-          }
-        ]
-      },
-      {
-        "sku": "SKU-PT-0279",
-        "name": "Hill's Science Plan Indoor Chicken Cat Food 15kg",
-        "pet_type": "cat",
-        "category": "dry-food",
-        "current_stock": 34,
-        "reorder_point": 3,
-        "list_price_eur": 104.83,
-        "unit_cost_eur": 75.48,
-        "excess_units": 28,
-        "tied_capital_eur": 2113.44,
-        "proposed_discount_pct": 20,
-        "proposed_price_eur": 83.86,
-        "proposed_weeks_to_clear": 19.0,
-        "proposed_recoverable_revenue_eur": 160.06,
-        "proposed_margin_lost_eur": 400.74,
-        "curve": [
-          {
-            "discount_pct": 0,
-            "price_eur": 104.83,
-            "monthly_units": 5.58,
-            "weeks_to_clear": 21.7,
-            "margin_per_unit_eur": 29.35,
-            "recoverable_revenue_eur": 491.33
-          },
-          {
-            "discount_pct": 5,
-            "price_eur": 99.59,
-            "monthly_units": 5.53,
-            "weeks_to_clear": 21.9,
-            "margin_per_unit_eur": 24.11,
-            "recoverable_revenue_eur": 399.78
-          },
-          {
-            "discount_pct": 10,
-            "price_eur": 94.35,
-            "monthly_units": 5.99,
-            "weeks_to_clear": 20.2,
-            "margin_per_unit_eur": 18.87,
-            "recoverable_revenue_eur": 339.35
-          },
-          {
-            "discount_pct": 15,
-            "price_eur": 89.11,
-            "monthly_units": 6.15,
-            "weeks_to_clear": 19.7,
-            "margin_per_unit_eur": 13.63,
-            "recoverable_revenue_eur": 251.58
-          },
-          {
-            "discount_pct": 20,
-            "price_eur": 83.86,
-            "monthly_units": 6.37,
-            "weeks_to_clear": 19.0,
-            "margin_per_unit_eur": 8.38,
-            "recoverable_revenue_eur": 160.06
-          }
-        ]
-      },
-      {
-        "sku": "SKU-PT-0352",
-        "name": "Whiskas Turkey Cat Food 12kg",
-        "pet_type": "cat",
-        "category": "dry-food",
-        "current_stock": 25,
-        "reorder_point": 3,
-        "list_price_eur": 90.54,
-        "unit_cost_eur": 65.19,
-        "excess_units": 19,
-        "tied_capital_eur": 1238.61,
-        "proposed_discount_pct": 20,
-        "proposed_price_eur": 72.43,
-        "proposed_weeks_to_clear": 13.4,
-        "proposed_recoverable_revenue_eur": 133.67,
-        "proposed_margin_lost_eur": 334.13,
-        "curve": [
-          {
-            "discount_pct": 0,
-            "price_eur": 90.54,
-            "monthly_units": 5.5,
-            "weeks_to_clear": 15.0,
-            "margin_per_unit_eur": 25.35,
-            "recoverable_revenue_eur": 418.4
-          },
-          {
-            "discount_pct": 5,
-            "price_eur": 86.01,
-            "monthly_units": 5.68,
-            "weeks_to_clear": 14.5,
-            "margin_per_unit_eur": 20.82,
-            "recoverable_revenue_eur": 354.93
-          },
-          {
-            "discount_pct": 10,
-            "price_eur": 81.49,
-            "monthly_units": 5.87,
-            "weeks_to_clear": 14.0,
-            "margin_per_unit_eur": 16.3,
-            "recoverable_revenue_eur": 287.18
-          },
-          {
-            "discount_pct": 15,
-            "price_eur": 76.96,
-            "monthly_units": 6.07,
-            "weeks_to_clear": 13.5,
-            "margin_per_unit_eur": 11.77,
-            "recoverable_revenue_eur": 214.48
-          },
-          {
-            "discount_pct": 20,
-            "price_eur": 72.43,
-            "monthly_units": 6.15,
-            "weeks_to_clear": 13.4,
-            "margin_per_unit_eur": 7.24,
-            "recoverable_revenue_eur": 133.67
-          }
-        ]
-      },
-      {
-        "sku": "SKU-PT-0093",
-        "name": "Orijen Puppy Salmon Dog Food 12kg",
-        "pet_type": "dog",
-        "category": "dry-food",
-        "current_stock": 26,
-        "reorder_point": 3,
-        "list_price_eur": 80.85,
-        "unit_cost_eur": 58.21,
-        "excess_units": 20,
-        "tied_capital_eur": 1164.2,
-        "proposed_discount_pct": 20,
-        "proposed_price_eur": 64.68,
-        "proposed_weeks_to_clear": 14.2,
-        "proposed_recoverable_revenue_eur": 118.49,
-        "proposed_margin_lost_eur": 295.91,
-        "curve": [
-          {
-            "discount_pct": 0,
-            "price_eur": 80.85,
-            "monthly_units": 5.32,
-            "weeks_to_clear": 16.3,
-            "margin_per_unit_eur": 22.64,
-            "recoverable_revenue_eur": 361.2
-          },
-          {
-            "discount_pct": 5,
-            "price_eur": 76.81,
-            "monthly_units": 5.5,
-            "weeks_to_clear": 15.7,
-            "margin_per_unit_eur": 18.6,
-            "recoverable_revenue_eur": 306.82
-          },
-          {
-            "discount_pct": 10,
-            "price_eur": 72.77,
-            "monthly_units": 5.66,
-            "weeks_to_clear": 15.3,
-            "margin_per_unit_eur": 14.56,
-            "recoverable_revenue_eur": 247.2
-          },
-          {
-            "discount_pct": 15,
-            "price_eur": 68.72,
-            "monthly_units": 5.89,
-            "weeks_to_clear": 14.7,
-            "margin_per_unit_eur": 10.51,
-            "recoverable_revenue_eur": 185.74
-          },
-          {
-            "discount_pct": 20,
-            "price_eur": 64.68,
-            "monthly_units": 6.1,
-            "weeks_to_clear": 14.2,
-            "margin_per_unit_eur": 6.47,
-            "recoverable_revenue_eur": 118.49
+            "price_eur": 15.25,
+            "monthly_units": 16.39,
+            "weeks_to_clear": 35.4,
+            "margin_per_unit_eur": 4.77,
+            "recoverable_revenue_eur": 234.57
           }
         ]
       },
@@ -731,175 +318,588 @@
         "name": "Royal Canin Salmon Dog Food 12kg",
         "pet_type": "dog",
         "category": "dry-food",
-        "current_stock": 29,
+        "current_stock": 33,
         "reorder_point": 3,
         "list_price_eur": 77.4,
         "unit_cost_eur": 55.73,
-        "excess_units": 23,
-        "tied_capital_eur": 1281.79,
+        "excess_units": 27,
+        "tied_capital_eur": 1504.71,
         "proposed_discount_pct": 20,
         "proposed_price_eur": 61.92,
-        "proposed_weeks_to_clear": 25.8,
-        "proposed_recoverable_revenue_eur": 71.69,
-        "proposed_margin_lost_eur": 179.26,
+        "proposed_weeks_to_clear": 16.4,
+        "proposed_recoverable_revenue_eur": 132.6,
+        "proposed_margin_lost_eur": 331.58,
         "curve": [
           {
             "discount_pct": 0,
             "price_eur": 77.4,
-            "monthly_units": 3.07,
-            "weeks_to_clear": 32.4,
+            "monthly_units": 5.93,
+            "weeks_to_clear": 19.7,
             "margin_per_unit_eur": 21.67,
-            "recoverable_revenue_eur": 199.83
+            "recoverable_revenue_eur": 385.32
           },
           {
             "discount_pct": 5,
             "price_eur": 73.53,
-            "monthly_units": 3.25,
-            "weeks_to_clear": 30.6,
+            "monthly_units": 6.26,
+            "weeks_to_clear": 18.7,
             "margin_per_unit_eur": 17.8,
-            "recoverable_revenue_eur": 173.8
+            "recoverable_revenue_eur": 334.08
           },
           {
             "discount_pct": 10,
             "price_eur": 69.66,
-            "monthly_units": 3.23,
-            "weeks_to_clear": 30.8,
+            "monthly_units": 6.81,
+            "weeks_to_clear": 17.2,
             "margin_per_unit_eur": 13.93,
-            "recoverable_revenue_eur": 135.19
+            "recoverable_revenue_eur": 284.41
           },
           {
             "discount_pct": 15,
             "price_eur": 65.79,
-            "monthly_units": 3.65,
-            "weeks_to_clear": 27.3,
+            "monthly_units": 6.97,
+            "weeks_to_clear": 16.8,
             "margin_per_unit_eur": 10.06,
-            "recoverable_revenue_eur": 110.06
+            "recoverable_revenue_eur": 210.3
           },
           {
             "discount_pct": 20,
             "price_eur": 61.92,
-            "monthly_units": 3.86,
-            "weeks_to_clear": 25.8,
+            "monthly_units": 7.14,
+            "weeks_to_clear": 16.4,
             "margin_per_unit_eur": 6.19,
-            "recoverable_revenue_eur": 71.69
+            "recoverable_revenue_eur": 132.6
           }
         ]
       },
       {
-        "sku": "SKU-PT-0015",
-        "name": "Royal Canin Weight Control Beef Dog Food 7kg",
-        "pet_type": "dog",
+        "sku": "SKU-PT-0338",
+        "name": "Whiskas Indoor Salmon Cat Food 12kg",
+        "pet_type": "cat",
+        "category": "dry-food",
+        "current_stock": 28,
+        "reorder_point": 3,
+        "list_price_eur": 80.72,
+        "unit_cost_eur": 58.12,
+        "excess_units": 22,
+        "tied_capital_eur": 1278.64,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 64.58,
+        "proposed_weeks_to_clear": 16.7,
+        "proposed_recoverable_revenue_eur": 110.82,
+        "proposed_margin_lost_eur": 276.96,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 80.72,
+            "monthly_units": 5.08,
+            "weeks_to_clear": 18.7,
+            "margin_per_unit_eur": 22.6,
+            "recoverable_revenue_eur": 344.67
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 76.68,
+            "monthly_units": 5.23,
+            "weeks_to_clear": 18.2,
+            "margin_per_unit_eur": 18.56,
+            "recoverable_revenue_eur": 291.19
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 72.65,
+            "monthly_units": 5.38,
+            "weeks_to_clear": 17.7,
+            "margin_per_unit_eur": 14.53,
+            "recoverable_revenue_eur": 234.66
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 68.61,
+            "monthly_units": 5.55,
+            "weeks_to_clear": 17.2,
+            "margin_per_unit_eur": 10.49,
+            "recoverable_revenue_eur": 174.53
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 64.58,
+            "monthly_units": 5.72,
+            "weeks_to_clear": 16.7,
+            "margin_per_unit_eur": 6.46,
+            "recoverable_revenue_eur": 110.82
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0278",
+        "name": "Hill's Science Plan Tuna Cat Food 15kg",
+        "pet_type": "cat",
+        "category": "dry-food",
+        "current_stock": 33,
+        "reorder_point": 3,
+        "list_price_eur": 108.69,
+        "unit_cost_eur": 78.26,
+        "excess_units": 27,
+        "tied_capital_eur": 2113.02,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 86.95,
+        "proposed_weeks_to_clear": 29.8,
+        "proposed_recoverable_revenue_eur": 102.42,
+        "proposed_margin_lost_eur": 256.31,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 108.69,
+            "monthly_units": 3.29,
+            "weeks_to_clear": 35.5,
+            "margin_per_unit_eur": 30.43,
+            "recoverable_revenue_eur": 300.71
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 103.26,
+            "monthly_units": 3.44,
+            "weeks_to_clear": 34.0,
+            "margin_per_unit_eur": 25.0,
+            "recoverable_revenue_eur": 257.98
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 97.82,
+            "monthly_units": 3.59,
+            "weeks_to_clear": 32.5,
+            "margin_per_unit_eur": 19.56,
+            "recoverable_revenue_eur": 210.88
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 92.39,
+            "monthly_units": 3.4,
+            "weeks_to_clear": 34.4,
+            "margin_per_unit_eur": 14.13,
+            "recoverable_revenue_eur": 144.24
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 86.95,
+            "monthly_units": 3.93,
+            "weeks_to_clear": 29.8,
+            "margin_per_unit_eur": 8.69,
+            "recoverable_revenue_eur": 102.42
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0583",
+        "name": "PetNord Canary Seed Food 15kg",
+        "pet_type": "bird",
         "category": "dry-food",
         "current_stock": 34,
         "reorder_point": 3,
-        "list_price_eur": 49.45,
-        "unit_cost_eur": 35.6,
+        "list_price_eur": 94.31,
+        "unit_cost_eur": 67.9,
         "excess_units": 28,
-        "tied_capital_eur": 996.8,
-        "proposed_discount_pct": 20,
-        "proposed_price_eur": 39.56,
-        "proposed_weeks_to_clear": 49.6,
-        "proposed_recoverable_revenue_eur": 29.05,
-        "proposed_margin_lost_eur": 72.69,
+        "tied_capital_eur": 1901.2,
+        "proposed_discount_pct": 15,
+        "proposed_price_eur": 80.16,
+        "proposed_weeks_to_clear": 52.0,
+        "proposed_recoverable_revenue_eur": 85.76,
+        "proposed_margin_lost_eur": 98.91,
         "curve": [
           {
             "discount_pct": 0,
-            "price_eur": 49.45,
-            "monthly_units": 1.55,
-            "weeks_to_clear": 78.4,
-            "margin_per_unit_eur": 13.85,
-            "recoverable_revenue_eur": 64.22
+            "price_eur": 94.31,
+            "monthly_units": 1.79,
+            "weeks_to_clear": 67.6,
+            "margin_per_unit_eur": 26.41,
+            "recoverable_revenue_eur": 142.03
           },
           {
             "discount_pct": 5,
-            "price_eur": 46.98,
-            "monthly_units": 1.97,
-            "weeks_to_clear": 61.4,
-            "margin_per_unit_eur": 11.38,
-            "recoverable_revenue_eur": 67.43
+            "price_eur": 89.59,
+            "monthly_units": 1.94,
+            "weeks_to_clear": 62.5,
+            "margin_per_unit_eur": 21.69,
+            "recoverable_revenue_eur": 126.15
           },
           {
             "discount_pct": 10,
-            "price_eur": 44.51,
-            "monthly_units": 2.03,
-            "weeks_to_clear": 59.7,
-            "margin_per_unit_eur": 8.91,
-            "recoverable_revenue_eur": 54.27
+            "price_eur": 84.88,
+            "monthly_units": 2.09,
+            "weeks_to_clear": 57.9,
+            "margin_per_unit_eur": 16.98,
+            "recoverable_revenue_eur": 106.58
           },
           {
             "discount_pct": 15,
-            "price_eur": 42.03,
-            "monthly_units": 1.97,
-            "weeks_to_clear": 61.6,
-            "margin_per_unit_eur": 6.43,
-            "recoverable_revenue_eur": 37.98
+            "price_eur": 80.16,
+            "monthly_units": 2.33,
+            "weeks_to_clear": 52.0,
+            "margin_per_unit_eur": 12.26,
+            "recoverable_revenue_eur": 85.76
           },
           {
             "discount_pct": 20,
-            "price_eur": 39.56,
-            "monthly_units": 2.45,
-            "weeks_to_clear": 49.6,
-            "margin_per_unit_eur": 3.96,
-            "recoverable_revenue_eur": 29.05
+            "price_eur": 75.45,
+            "monthly_units": 2.33,
+            "weeks_to_clear": 52.0,
+            "margin_per_unit_eur": 7.55,
+            "recoverable_revenue_eur": 52.82
           }
         ]
       },
       {
-        "sku": "SKU-PT-0274",
-        "name": "Hill's Science Plan Salmon Cat Food 7kg",
+        "sku": "SKU-PT-0329",
+        "name": "Orijen Grain Free Chicken Cat Food 7kg",
         "pet_type": "cat",
         "category": "dry-food",
-        "current_stock": 32,
+        "current_stock": 30,
         "reorder_point": 3,
-        "list_price_eur": 43.67,
-        "unit_cost_eur": 31.44,
-        "excess_units": 26,
-        "tied_capital_eur": 817.44,
+        "list_price_eur": 44.7,
+        "unit_cost_eur": 32.18,
+        "excess_units": 24,
+        "tied_capital_eur": 772.32,
         "proposed_discount_pct": 20,
-        "proposed_price_eur": 34.94,
-        "proposed_weeks_to_clear": 70.8,
-        "proposed_recoverable_revenue_eur": 16.69,
-        "proposed_margin_lost_eur": 41.64,
+        "proposed_price_eur": 35.76,
+        "proposed_weeks_to_clear": 13.5,
+        "proposed_recoverable_revenue_eur": 82.69,
+        "proposed_margin_lost_eur": 206.51,
         "curve": [
           {
             "discount_pct": 0,
-            "price_eur": 43.67,
-            "monthly_units": 0.8,
-            "weeks_to_clear": 140.1,
-            "margin_per_unit_eur": 12.23,
-            "recoverable_revenue_eur": 29.48
+            "price_eur": 44.7,
+            "monthly_units": 7.3,
+            "weeks_to_clear": 14.2,
+            "margin_per_unit_eur": 12.52,
+            "recoverable_revenue_eur": 274.1
           },
           {
             "discount_pct": 5,
-            "price_eur": 41.49,
-            "monthly_units": 0.98,
-            "weeks_to_clear": 114.4,
-            "margin_per_unit_eur": 10.05,
-            "recoverable_revenue_eur": 29.67
+            "price_eur": 42.47,
+            "monthly_units": 7.21,
+            "weeks_to_clear": 14.4,
+            "margin_per_unit_eur": 10.29,
+            "recoverable_revenue_eur": 222.59
           },
           {
             "discount_pct": 10,
-            "price_eur": 39.3,
-            "monthly_units": 1.18,
-            "weeks_to_clear": 95.8,
-            "margin_per_unit_eur": 7.86,
-            "recoverable_revenue_eur": 27.71
+            "price_eur": 40.23,
+            "monthly_units": 7.36,
+            "weeks_to_clear": 14.1,
+            "margin_per_unit_eur": 8.05,
+            "recoverable_revenue_eur": 177.86
           },
           {
             "discount_pct": 15,
-            "price_eur": 37.12,
-            "monthly_units": 1.38,
-            "weeks_to_clear": 81.8,
-            "margin_per_unit_eur": 5.68,
-            "recoverable_revenue_eur": 23.45
+            "price_eur": 38.0,
+            "monthly_units": 7.53,
+            "weeks_to_clear": 13.8,
+            "margin_per_unit_eur": 5.82,
+            "recoverable_revenue_eur": 131.42
           },
           {
             "discount_pct": 20,
-            "price_eur": 34.94,
-            "monthly_units": 1.59,
-            "weeks_to_clear": 70.8,
-            "margin_per_unit_eur": 3.5,
-            "recoverable_revenue_eur": 16.69
+            "price_eur": 35.76,
+            "monthly_units": 7.7,
+            "weeks_to_clear": 13.5,
+            "margin_per_unit_eur": 3.58,
+            "recoverable_revenue_eur": 82.69
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0285",
+        "name": "Hill's Science Plan Turkey Cat Food 12kg",
+        "pet_type": "cat",
+        "category": "dry-food",
+        "current_stock": 34,
+        "reorder_point": 3,
+        "list_price_eur": 77.47,
+        "unit_cost_eur": 55.78,
+        "excess_units": 28,
+        "tied_capital_eur": 1561.84,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 61.98,
+        "proposed_weeks_to_clear": 33.1,
+        "proposed_recoverable_revenue_eur": 68.1,
+        "proposed_margin_lost_eur": 170.08,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 77.47,
+            "monthly_units": 3.03,
+            "weeks_to_clear": 40.1,
+            "margin_per_unit_eur": 21.69,
+            "recoverable_revenue_eur": 196.94
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 73.6,
+            "monthly_units": 3.39,
+            "weeks_to_clear": 35.8,
+            "margin_per_unit_eur": 17.82,
+            "recoverable_revenue_eur": 181.29
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 69.72,
+            "monthly_units": 3.33,
+            "weeks_to_clear": 36.4,
+            "margin_per_unit_eur": 13.94,
+            "recoverable_revenue_eur": 139.11
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 65.85,
+            "monthly_units": 3.49,
+            "weeks_to_clear": 34.8,
+            "margin_per_unit_eur": 10.07,
+            "recoverable_revenue_eur": 105.4
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 61.98,
+            "monthly_units": 3.66,
+            "weeks_to_clear": 33.1,
+            "margin_per_unit_eur": 6.2,
+            "recoverable_revenue_eur": 68.1
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0267",
+        "name": "Royal Canin Turkey Cat Food 12kg",
+        "pet_type": "cat",
+        "category": "dry-food",
+        "current_stock": 22,
+        "reorder_point": 3,
+        "list_price_eur": 74.57,
+        "unit_cost_eur": 53.69,
+        "excess_units": 16,
+        "tied_capital_eur": 859.04,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 59.66,
+        "proposed_weeks_to_clear": 18.5,
+        "proposed_recoverable_revenue_eur": 67.2,
+        "proposed_margin_lost_eur": 167.74,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 74.57,
+            "monthly_units": 3.52,
+            "weeks_to_clear": 19.7,
+            "margin_per_unit_eur": 20.88,
+            "recoverable_revenue_eur": 220.38
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 70.84,
+            "monthly_units": 3.26,
+            "weeks_to_clear": 21.2,
+            "margin_per_unit_eur": 17.15,
+            "recoverable_revenue_eur": 167.91
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 67.11,
+            "monthly_units": 3.42,
+            "weeks_to_clear": 20.3,
+            "margin_per_unit_eur": 13.42,
+            "recoverable_revenue_eur": 137.58
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 63.38,
+            "monthly_units": 3.58,
+            "weeks_to_clear": 19.4,
+            "margin_per_unit_eur": 9.69,
+            "recoverable_revenue_eur": 104.07
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 59.66,
+            "monthly_units": 3.75,
+            "weeks_to_clear": 18.5,
+            "margin_per_unit_eur": 5.97,
+            "recoverable_revenue_eur": 67.2
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0306",
+        "name": "Acana Sensitive Chicken Cat Food 15kg",
+        "pet_type": "cat",
+        "category": "dry-food",
+        "current_stock": 19,
+        "reorder_point": 3,
+        "list_price_eur": 95.08,
+        "unit_cost_eur": 68.46,
+        "excess_units": 13,
+        "tied_capital_eur": 889.98,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 76.06,
+        "proposed_weeks_to_clear": 22.3,
+        "proposed_recoverable_revenue_eur": 57.61,
+        "proposed_margin_lost_eur": 144.36,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 95.08,
+            "monthly_units": 1.89,
+            "weeks_to_clear": 29.8,
+            "margin_per_unit_eur": 26.62,
+            "recoverable_revenue_eur": 151.08
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 90.33,
+            "monthly_units": 2.04,
+            "weeks_to_clear": 27.6,
+            "margin_per_unit_eur": 21.87,
+            "recoverable_revenue_eur": 133.69
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 85.57,
+            "monthly_units": 1.67,
+            "weeks_to_clear": 33.7,
+            "margin_per_unit_eur": 17.11,
+            "recoverable_revenue_eur": 85.82
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 80.82,
+            "monthly_units": 2.35,
+            "weeks_to_clear": 23.9,
+            "margin_per_unit_eur": 12.36,
+            "recoverable_revenue_eur": 87.29
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 76.06,
+            "monthly_units": 2.53,
+            "weeks_to_clear": 22.3,
+            "margin_per_unit_eur": 7.6,
+            "recoverable_revenue_eur": 57.61
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0074",
+        "name": "Acana Sensitive Beef Dog Food 15kg",
+        "pet_type": "dog",
+        "category": "dry-food",
+        "current_stock": 30,
+        "reorder_point": 3,
+        "list_price_eur": 95.87,
+        "unit_cost_eur": 69.03,
+        "excess_units": 24,
+        "tied_capital_eur": 1656.72,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 76.7,
+        "proposed_weeks_to_clear": 57.1,
+        "proposed_recoverable_revenue_eur": 41.85,
+        "proposed_margin_lost_eur": 104.67,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 95.87,
+            "monthly_units": 1.18,
+            "weeks_to_clear": 87.7,
+            "margin_per_unit_eur": 26.84,
+            "recoverable_revenue_eur": 95.36
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 91.08,
+            "monthly_units": 1.66,
+            "weeks_to_clear": 62.6,
+            "margin_per_unit_eur": 22.05,
+            "recoverable_revenue_eur": 109.81
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 86.28,
+            "monthly_units": 1.48,
+            "weeks_to_clear": 70.0,
+            "margin_per_unit_eur": 17.25,
+            "recoverable_revenue_eur": 76.8
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 81.49,
+            "monthly_units": 1.65,
+            "weeks_to_clear": 63.1,
+            "margin_per_unit_eur": 12.46,
+            "recoverable_revenue_eur": 61.55
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 76.7,
+            "monthly_units": 1.82,
+            "weeks_to_clear": 57.1,
+            "margin_per_unit_eur": 7.67,
+            "recoverable_revenue_eur": 41.85
+          }
+        ]
+      },
+      {
+        "sku": "SKU-PT-0296",
+        "name": "Acana Weight Control Salmon Cat Food 12kg",
+        "pet_type": "cat",
+        "category": "dry-food",
+        "current_stock": 34,
+        "reorder_point": 3,
+        "list_price_eur": 75.21,
+        "unit_cost_eur": 54.15,
+        "excess_units": 28,
+        "tied_capital_eur": 1516.2,
+        "proposed_discount_pct": 20,
+        "proposed_price_eur": 60.17,
+        "proposed_weeks_to_clear": 64.2,
+        "proposed_recoverable_revenue_eur": 34.13,
+        "proposed_margin_lost_eur": 85.28,
+        "curve": [
+          {
+            "discount_pct": 0,
+            "price_eur": 75.21,
+            "monthly_units": 1.0,
+            "weeks_to_clear": 121.8,
+            "margin_per_unit_eur": 21.06,
+            "recoverable_revenue_eur": 62.9
+          },
+          {
+            "discount_pct": 5,
+            "price_eur": 71.45,
+            "monthly_units": 1.58,
+            "weeks_to_clear": 76.8,
+            "margin_per_unit_eur": 17.3,
+            "recoverable_revenue_eur": 81.9
+          },
+          {
+            "discount_pct": 10,
+            "price_eur": 67.69,
+            "monthly_units": 1.55,
+            "weeks_to_clear": 78.0,
+            "margin_per_unit_eur": 13.54,
+            "recoverable_revenue_eur": 63.16
+          },
+          {
+            "discount_pct": 15,
+            "price_eur": 63.93,
+            "monthly_units": 1.72,
+            "weeks_to_clear": 70.6,
+            "margin_per_unit_eur": 9.78,
+            "recoverable_revenue_eur": 50.39
+          },
+          {
+            "discount_pct": 20,
+            "price_eur": 60.17,
+            "monthly_units": 1.89,
+            "weeks_to_clear": 64.2,
+            "margin_per_unit_eur": 6.02,
+            "recoverable_revenue_eur": 34.13
           }
         ]
       }
@@ -920,36 +920,36 @@
         "estimate": "units_sold"
       }
     },
-    "last_response_ms": 20486
+    "last_response_ms": 26435
   },
   "timings": [
     [
       "_search",
-      11.17
+      12.17
     ],
     [
       "_search",
-      10.59
+      10.57
     ],
     [
       "_search",
-      26.52
+      27.92
     ],
     [
       "_search",
-      91.38
+      95.01
     ],
     [
       "_search",
-      97.17
+      83.11
     ],
     [
       "_search",
-      99.0
+      134.37
     ],
     [
       "_search",
-      59.96
+      63.44
     ]
   ]
 }

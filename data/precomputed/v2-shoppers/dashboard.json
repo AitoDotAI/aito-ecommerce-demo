@@ -6,7 +6,7 @@
         "delta_label": null
       },
       "orders_12mo": {
-        "value": 9838,
+        "value": 9965,
         "delta_label": null
       },
       "customers": {
@@ -14,21 +14,21 @@
         "delta_label": null
       },
       "avg_basket_eur": {
-        "value": 80.8,
+        "value": 79.23,
         "delta_label": null
       }
     },
     "top_patterns": [
       {
         "label": "Dog dry-food → Dental treats",
-        "lift": 2.86,
-        "bar_pct": 81.8,
+        "lift": 2.79,
+        "bar_pct": 79.8,
         "available": true
       },
       {
         "label": "Dog dry-food → Dog treats",
         "lift": 1.78,
-        "bar_pct": 51.0,
+        "bar_pct": 50.9,
         "available": true
       },
       {
@@ -39,19 +39,19 @@
       },
       {
         "label": "Cat wet-food → Cat litter",
-        "lift": 2.14,
-        "bar_pct": 61.2,
+        "lift": 2.19,
+        "bar_pct": 62.5,
         "available": true
       },
       {
         "label": "Cat dry-food → Cat wet-food",
-        "lift": 2.12,
-        "bar_pct": 60.6,
+        "lift": 2.14,
+        "bar_pct": 61.3,
         "available": true
       },
       {
         "label": "Aquarium food → Aquarium health",
-        "lift": 13.99,
+        "lift": 13.58,
         "bar_pct": 100.0,
         "available": true
       }
@@ -62,7 +62,7 @@
         "emoji": "🐕",
         "label": "Dog owners",
         "share_pct": 42.1,
-        "avg_basket_eur": 69.57,
+        "avg_basket_eur": 67.63,
         "note": "monthly food reorder · highest LTV",
         "pill_text": "Highest LTV",
         "pill_tone": "orange"
@@ -72,7 +72,7 @@
         "emoji": "🐈",
         "label": "Cat owners",
         "share_pct": 29.8,
-        "avg_basket_eur": 77.82,
+        "avg_basket_eur": 73.8,
         "note": "bi-weekly litter · steady frequency",
         "pill_text": "High frequency",
         "pill_tone": "blue"
@@ -82,7 +82,7 @@
         "emoji": "🐾",
         "label": "Multi-pet households",
         "share_pct": 15.2,
-        "avg_basket_eur": 112.57,
+        "avg_basket_eur": 110.58,
         "note": "dog + cat · cross-sell sweet spot",
         "pill_text": "Cross-sell",
         "pill_tone": "purple"
@@ -92,7 +92,7 @@
         "emoji": "🐹",
         "label": "Small animals",
         "share_pct": 7.3,
-        "avg_basket_eur": 121.19,
+        "avg_basket_eur": 121.21,
         "note": "weekly bedding · growing segment",
         "pill_text": "Growing",
         "pill_tone": "grey"
@@ -102,7 +102,7 @@
         "emoji": "🐟",
         "label": "Aquarium / exotic",
         "share_pct": 5.6,
-        "avg_basket_eur": 63.05,
+        "avg_basket_eur": 63.0,
         "note": "monthly · high AOV",
         "pill_text": "High AOV",
         "pill_tone": "purple"
@@ -110,50 +110,50 @@
     ],
     "insight": {
       "headline": "Insight",
-      "body": "<strong>Dog dry-food → Dental treats</strong> co-occurs at <strong>2.86×</strong> baseline — Aito flags this as the demo's headline cross-sell signal. Drill into individual SKU pairs on Bought Together; live-rank the pattern's customer segments on Pattern Explorer."
+      "body": "<strong>Dog dry-food → Dental treats</strong> co-occurs at <strong>2.79×</strong> baseline — Aito flags this as the demo's headline cross-sell signal. Drill into individual SKU pairs on Bought Together; live-rank the pattern's customer segments on Pattern Explorer."
     },
     "recent_orders": [
       {
-        "order_id": "ORD-11832",
+        "order_id": "ORD-11897",
         "customer_short": "Sari M.",
         "month": "2026-04",
-        "line_summary": "PetNord Silica Crystals Cat Litter 7kg + 2 more",
-        "total_eur": 94.42
+        "line_summary": "Orijen Indoor Whitefish Cat Food 4kg + 1 more",
+        "total_eur": 35.31
       },
       {
-        "order_id": "ORD-11829",
-        "customer_short": "Mikko M.",
-        "month": "2026-04",
-        "line_summary": "Hill's Science Plan Senior Lamb Dog Food 400g + 1 more",
-        "total_eur": 6.38
-      },
-      {
-        "order_id": "ORD-11826",
+        "order_id": "ORD-11890",
         "customer_short": "Petra L.",
         "month": "2026-04",
-        "line_summary": "Eukanuba Turkey Dog Food 400g + 1 more",
-        "total_eur": 25.28
+        "line_summary": "Eukanuba Turkey Dog Food 85g + 1 more",
+        "total_eur": 4.56
       },
       {
-        "order_id": "ORD-11814",
-        "customer_short": "Joonas L.",
+        "order_id": "ORD-11888",
+        "customer_short": "Henrik L.",
         "month": "2026-04",
-        "line_summary": "Orijen Sensitive Salmon Cat Food 15kg + 6 more",
-        "total_eur": 291.62
+        "line_summary": "PetNord Silica Crystals Cat Litter 7kg + 1 more",
+        "total_eur": 24.1
       },
       {
-        "order_id": "ORD-11813",
+        "order_id": "ORD-11875",
         "customer_short": "Maria L.",
         "month": "2026-04",
-        "line_summary": "Whiskas Indoor Chicken Cat Food 85g + 2 more",
-        "total_eur": 29.05
+        "line_summary": "PetNord Clumping Clay Cat Litter 7kg + 1 more",
+        "total_eur": 14.88
       },
       {
-        "order_id": "ORD-11807",
+        "order_id": "ORD-11869",
         "customer_short": "Pekka L.",
         "month": "2026-04",
-        "line_summary": "Royal Canin Puppy Duck Dog Food 400g + 3 more",
-        "total_eur": 123.97
+        "line_summary": "Hill's Science Plan Puppy Beef Dog Food 150g",
+        "total_eur": 3.24
+      },
+      {
+        "order_id": "ORD-11866",
+        "customer_short": "Sari M.",
+        "month": "2026-04",
+        "line_summary": "Trixie Bowl + 2 more",
+        "total_eur": 45.75
       }
     ],
     "last_query": {
@@ -168,60 +168,60 @@
         "limit": 0
       }
     },
-    "last_response_ms": 578
+    "last_response_ms": 1066
   },
   "timings": [
     [
       "_search",
-      4.29
+      4.49
     ],
     [
       "_search",
-      9.07
+      10.17
     ],
     [
       "_search",
-      31.8
+      37.93
     ],
     [
       "_search",
-      29.14
+      18.07
     ],
     [
       "_search",
-      18.47
+      46.43
     ],
     [
       "_batch",
-      1.52
+      1.89
     ],
     [
       "_aggregate",
-      21.89
+      24.69
     ],
     [
       "_aggregate",
-      16.38
+      17.66
     ],
     [
       "_aggregate",
-      9.59
+      11.12
     ],
     [
       "_aggregate",
-      4.84
+      5.27
     ],
     [
       "_aggregate",
-      4.03
+      4.98
     ],
     [
       "_search",
-      2.14
+      2.64
     ],
     [
       "_batch",
-      20.95
+      28.22
     ]
   ]
 }
