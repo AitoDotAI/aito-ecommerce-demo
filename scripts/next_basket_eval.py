@@ -86,7 +86,9 @@ def main() -> None:
     def hit(skus: list[str], customer: str) -> int:
         return int(bool(set(skus) & {l["product_sku"] for l in lines_by_order[last_order[customer]]}))
 
-    with ThreadPoolExecutor(max_workers=6) as pool:
+    # One at a time: each query builds a ~36 000-row population, and six in
+    # parallel drew a 502 from the shared instance that also serves the demos.
+    with ThreadPoolExecutor(max_workers=1) as pool:
         model = list(pool.map(lambda c: hit(predicted(client, c, last_order[c]), c), sample))
         control = list(pool.map(lambda c: hit(predicted(client, stranger[c], last_order[c]), c), sample))
     baseline = [hit(popular[segment[c]], c) for c in sample]
