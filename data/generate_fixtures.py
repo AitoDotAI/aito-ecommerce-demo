@@ -1726,10 +1726,22 @@ def gen_orders_and_lines(
                         # A poorly made staple is dropped more often (S5).
                         poor = shoppers.is_poorly_made(staples[key].sku)
                         switch_p = shoppers.POOR_SWITCH_P if poor else lifecycle.SWITCH_P
+                        # ADR 0032: a price rise or a rival's launch makes regulars reconsider.
+                        switch_p = min(1.0, switch_p * events.reconsider_factor(staples[key].sku, month))
                         if rng.random() < switch_p:
-                            staples[key] = _pick_staple(rng, products_by_pet_cat, pet, category, customer,
-                                                        exclude=staples[key].sku, novelty=novelty,
-                                                        avoid_poorly_made=poor)
+                            # Reconsidering because a rival launched, they try the rival.
+                            rivals = [product_of[r] for r in events.rivals(staples[key].sku, month)
+                                      if catalogue_events.SWITCH_TO_RIVAL
+                                      and lifecycle.is_staple(product_of[r], pet)
+                                      and shoppers.keeps_diet_rule(product_of[r].name, pet, category,
+                                                                   customer.diet_rule)]
+                            if rivals:
+                                staples[key] = rng.choices(
+                                    rivals, weights=[_customer_product_score(p, customer) for p in rivals], k=1)[0]
+                            else:
+                                staples[key] = _pick_staple(rng, products_by_pet_cat, pet, category, customer,
+                                                            exclude=staples[key].sku, novelty=novelty,
+                                                            avoid_poorly_made=poor)
                     else:
                         continue
                     add(staples[key], stock_up=True)

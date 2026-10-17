@@ -90,6 +90,31 @@ SCHEMAS: dict[str, dict] = {
             "diet_rule":        {"type": "String",  "nullable": True},
         },
     },
+    # 2b. product_states — each product as it was in each month on sale
+    # (ADR 0032): what a shopper saw. Replaces `price_history` (same id and
+    # price columns). Impressions, order lines and monthly sales link here,
+    # so `_recommend product_state` can rank this month's products and an
+    # offer, the stars or being new can be a reason in `$why`. A link
+    # target, so it loads before the tables that link to it.
+    "product_states": {
+        "type": "table",
+        "columns": {
+            "product_state_id": {"type": "String",  "nullable": False},
+            "product_sku":      {"type": "String",  "nullable": False,
+                                 "link": "products.sku"},
+            "month":            {"type": "String",  "nullable": False},
+            "price_eur":        {"type": "Decimal", "nullable": False},
+            "list_price_eur":   {"type": "Decimal", "nullable": False},
+            "discount_pct":     {"type": "Decimal", "nullable": False},
+            "on_offer":         {"type": "Boolean", "nullable": False},
+            # Bands, because a number's bands can't be related on v2.
+            "discount_band":    {"type": "String",  "nullable": False},
+            "rating_band":      {"type": "String",  "nullable": False},
+            "age":              {"type": "String",  "nullable": False},
+            "rival_launched":   {"type": "Boolean", "nullable": False},
+            "price_change":     {"type": "String",  "nullable": False},
+        },
+    },
     # 3. orders — links to customers.
     "orders": {
         "type": "table",
@@ -116,7 +141,7 @@ SCHEMAS: dict[str, dict] = {
             "owned_before": {"type": "Text", "nullable": True,  "analyzer": "whitespace"},
         },
     },
-    # 4. order_lines — links to orders AND products. Load last.
+    # 4. order_lines — links to orders, products and product_states.
     "order_lines": {
         "type": "table",
         "columns": {
@@ -286,30 +311,6 @@ SCHEMAS: dict[str, dict] = {
             "safety_stock":        {"type": "Int",     "nullable": False},
             "supplier":            {"type": "String",  "nullable": False},
             "last_received_month": {"type": "String",  "nullable": False},
-        },
-    },
-    # 9. product_states — each product as it was in each month on sale
-    # (ADR 0032): what a shopper saw. Replaces `price_history` (same id and
-    # price columns). Impressions, order lines and monthly sales link here,
-    # so `_recommend product_state` can rank this month's products and an
-    # offer, the stars or being new can be a reason in `$why`.
-    "product_states": {
-        "type": "table",
-        "columns": {
-            "product_state_id": {"type": "String",  "nullable": False},
-            "product_sku":      {"type": "String",  "nullable": False,
-                                 "link": "products.sku"},
-            "month":            {"type": "String",  "nullable": False},
-            "price_eur":        {"type": "Decimal", "nullable": False},
-            "list_price_eur":   {"type": "Decimal", "nullable": False},
-            "discount_pct":     {"type": "Decimal", "nullable": False},
-            "on_offer":         {"type": "Boolean", "nullable": False},
-            # Bands, because a number's bands can't be related on v2.
-            "discount_band":    {"type": "String",  "nullable": False},
-            "rating_band":      {"type": "String",  "nullable": False},
-            "age":              {"type": "String",  "nullable": False},
-            "rival_launched":   {"type": "Boolean", "nullable": False},
-            "price_change":     {"type": "String",  "nullable": False},
         },
     },
     # 6b. winback_campaigns — historical re-engagement emails sent to

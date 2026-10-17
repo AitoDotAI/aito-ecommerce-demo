@@ -12,7 +12,7 @@ from dataclasses import asdict, dataclass
 
 @dataclass(frozen=True)
 class Shopper:
-    key: str            # the URL value: /shop/?shopper=sofia
+    key: str            # the URL value: /shop/?shopper=paivi
     customer_id: str
     name: str
     emoji: str
@@ -24,8 +24,8 @@ class Shopper:
 
 # Stories read as of the Shop's default month, April 2026.
 SHOPPERS = [
-    Shopper("sofia", "CUST-00090", "Sofia Kallio", "🐹",
-            "Just got a guinea pig: a cage and a water bottle so far."),
+    Shopper("paivi", "CUST-01177", "Päivi Salminen", "🐹",
+            "Got a guinea pig in February: a cage and a water bottle so far."),
     Shopper("janne", "CUST-00049", "Janne Hämäläinen", "🐕",
             "A grain-free dog household: never any other food."),
     Shopper("helena", "CUST-00053", "Helena Heinonen", "🐈",
@@ -37,7 +37,7 @@ SHOPPERS = [
     Shopper("saara", "CUST-00003", "Saara Virtanen", "🐕",
             "A large dog, premium and brand-loyal."),
 ]
-DEFAULT_SHOPPER = "sofia"
+DEFAULT_SHOPPER = "paivi"
 
 
 class UnknownShopperError(LookupError):

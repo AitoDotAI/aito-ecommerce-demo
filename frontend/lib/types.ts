@@ -822,7 +822,7 @@ export interface ProductInsightsResponse {
 /* ─── Shop (/api/shop/*, ADR 0031) ─── */
 
 export interface ShopShopper {
-  key: string;            // URL value: /shop/?shopper=sofia
+  key: string;            // URL value: /shop/?shopper=paivi
   customer_id: string;
   name: string;
   emoji: string;

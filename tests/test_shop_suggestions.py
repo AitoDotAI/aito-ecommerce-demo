@@ -31,7 +31,7 @@ class FakeAito:
 
 
 # As the generator writes them: owned_before lists what earlier orders bought.
-SOFIA_ORDERS = [
+PAIVI_ORDERS = [
     {"order_id": "O1", "month": "2026-01", "skus": "SKU-CAGE SKU-FOOD", "owned_before": None},
     {"order_id": "O2", "month": "2026-02", "skus": "SKU-FOOD SKU-HIDE", "owned_before": "small_animal_cage"},
     {"order_id": "O3", "month": "2026-06", "skus": "SKU-FOOD", "owned_before": "small_animal_cage small_animal_hideout"},
@@ -39,9 +39,9 @@ SOFIA_ORDERS = [
 
 
 def test_the_usual_basket_is_one_probability_per_product_from_the_shoppers_own_orders():
-    fake = FakeAito(SOFIA_ORDERS)
+    fake = FakeAito(PAIVI_ORDERS)
 
-    result = get_suggestions(fake, "sofia", "2026-04")
+    result = get_suggestions(fake, "paivi", "2026-04")
 
     usual_query = fake.predicts[0]
     # Her orders before April 2026, not the June one.
@@ -52,9 +52,9 @@ def test_the_usual_basket_is_one_probability_per_product_from_the_shoppers_own_o
 
 
 def test_whats_next_conditions_on_everything_owned_and_skips_what_is_owned():
-    fake = FakeAito(SOFIA_ORDERS)
+    fake = FakeAito(PAIVI_ORDERS)
 
-    result = get_suggestions(fake, "sofia", "2026-04")
+    result = get_suggestions(fake, "paivi", "2026-04")
 
     next_query = fake.predicts[1]
     assert next_query["where"]["order_id.owned_before"] == {"$and": [
@@ -65,20 +65,20 @@ def test_whats_next_conditions_on_everything_owned_and_skips_what_is_owned():
 
 
 def test_a_shopper_without_orders_gets_no_suggestions_and_is_told_why():
-    result = get_suggestions(FakeAito([]), "sofia", "2026-04")
+    result = get_suggestions(FakeAito([]), "paivi", "2026-04")
 
     assert result.no_history and result.usual == [] and result.next_for_pet == []
 
 
 def test_whats_next_says_nothing_when_only_noise_is_left():
-    fake = FakeAito(SOFIA_ORDERS)
+    fake = FakeAito(PAIVI_ORDERS)
     real = fake.predict_rows
     fake.predict_rows = lambda population, field, where=None, limit=10: (
         real(population, field, where=where, limit=limit) if field == "skus.$feature"
         else {"hits": [{"sku": "SKU-T", "name": "Trixie Tunnel", "brand": "Trixie", "$p": 0.005}]})
 
-    assert get_suggestions(fake, "sofia", "2026-04").next_for_pet == []
+    assert get_suggestions(fake, "paivi", "2026-04").next_for_pet == []
 
 
 def test_a_month_before_any_order_has_no_history_yet():
-    assert get_suggestions(FakeAito(SOFIA_ORDERS), "sofia", "2025-12").no_history
+    assert get_suggestions(FakeAito(PAIVI_ORDERS), "paivi", "2025-12").no_history

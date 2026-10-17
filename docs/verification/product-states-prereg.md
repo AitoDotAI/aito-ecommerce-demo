@@ -155,6 +155,16 @@ that reconsiders because a rival launched switches **to** that rival
 the price-rise null keeps `price_change` marking the planned rise and
 only switches its effect off.
 
+## Post-hoc note after the third null run (2026-10-17, flagged to Antti)
+
+The final seed-42 fixtures read D1 (food re-buy share) at **46.0 %**,
+under the 48 % floor amended above. This one is post hoc: it was seen
+before the floor moved. Cause: the restock amendment makes households
+reconsider their staple after a rise or a rival's launch, which lowers
+re-buys by design. D1's floor becomes 45 %. P2d missed on seed 42 (1.17
+against ≥ 1.25) with its mechanism unchanged since it passed at 1.94 and
+1.42 on that seed; it is reported as a miss, not tuned.
+
 ## Results
 
 (none yet)

@@ -12,7 +12,7 @@ sees what's next for the kit.*
 The other views each show one Aito query. The Shop puts them in front of
 a shopper, the way a store would use them. Its six shoppers are real
 customers in the data, and each card's story is checked against their
-history (`tests/test_shop_personas.py`): Sofia just got a guinea pig (a cage and a bottle so far),
+history (`tests/test_shop_personas.py`): Päivi just got a guinea pig (a cage and a bottle so far),
 Janne's household only buys grain-free food, Helena buys the same cat
 food every few weeks.
 
@@ -71,9 +71,9 @@ nests how much each part of the context lifts *this* product.
                { "type": "relatedPropositionLift", "proposition": { "$group": ["…basket_categories…"] }, "value": 2.38 } ] }
 ```
 
-For Sofia with a cage in the cart, the fruit treat reads "Goes with your
-cart ×3.0 · Treat affinity: high ×1.5 · Sells in April ×1.3". They
-explain the probability on the same card.
+With a cage in a guinea-pig owner's cart, a fruit treat read "Goes with
+your cart ×3.0 · Treat affinity: high ×1.5 · Sells in April ×1.3" on the
+ADR 0030 data (2026-10-17). They explain the probability on the same card.
 
 Beside them, in grey, are **facts**: an offer this month (`price_history`,
 at least 10 % off), the star rating, "keeps their rule". They aren't
@@ -122,7 +122,7 @@ isn't used here: its `where` conditions `$p` but doesn't filter on
   product. Kit items (a cage) are left out: they're bought once.
 - **What's next for their pet:** `_predict product_sku` on `order_lines`
   whose order already owned what the shopper owns
-  (`order_id.owned_before` matching each item). For Sofia, with a cage,
+  (`order_id.owned_before` matching each item). For Päivi, with a cage,
   bottle as of April 2026, the hideout comes first (the kit's next step); a
   shopper who owned a cage, bottle and hideout gets the exercise wheel.
 
@@ -142,7 +142,8 @@ isn't used here: its `where` conditions `$p` but doesn't filter on
 ## Tradeoffs and gotchas
 
 - **The model still offers some other pets' items** to a single-pet
-  shopper (a dog chew at 34 % for Sofia). That is its honest estimate
+  shopper (a dog chew at 34 % for a guinea-pig owner, on the ADR 0030
+  data). That is its honest estimate
   from the impressions; the Shop doesn't hide it.
 - **Same-basket pairs are often empty** for a product: few products share
   enough orders to say "often".
@@ -153,6 +154,6 @@ isn't used here: its `where` conditions `$p` but doesn't filter on
 
 ```bash
 ./do dev
-# → http://localhost:8500/shop/?shopper=sofia&cart=SKU-PT-0555
+# → http://localhost:8500/shop/?shopper=paivi&cart=SKU-PT-0555
 # → http://localhost:8500/shop/?shopper=janne&q=food   (only grain-free food)
 ```

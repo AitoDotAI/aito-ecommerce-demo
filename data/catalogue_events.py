@@ -29,6 +29,12 @@ LAUNCH_CATEGORIES = frozenset({"dry-food", "wet-food", "treats", "dental-treats"
 NEW_MONTHS = 3               # a product is "new" for its first 3 months on sale
 LAUNCH_PICK_FACTOR = 2.0     # how much more often a new product is picked in orders
 RIVAL_PICK_FACTOR = 0.75     # how much less often its rivals are, for RECENT_MONTHS after
+# A household reconsiders its staple after a price rise or a rival's launch:
+# its switch probability is this much higher for RECENT_MONTHS. Two
+# constants so each effect's null can switch off its own half.
+RECONSIDER_AFTER_RISE = 3.0
+RECONSIDER_AFTER_RIVAL = 3.0
+SWITCH_TO_RIVAL = True       # one who reconsiders because of a rival switches to it
 N_RISES = 60
 RISE_WINDOW = ("2024-11", "2026-01")
 RISE_RANGE = (1.08, 1.15)
@@ -85,6 +91,20 @@ class CatalogueEvents:
     def rival_launched(self, sku: str, month: str) -> bool:
         """Another product of the same pet and category launched in the last 3 months."""
         return bool(self.recent_launches.get((self.slice_of[sku], month), frozenset()) - {sku})
+
+    def reconsider_factor(self, sku: str, month: str) -> float:
+        """How much likelier a household is to switch away from this staple now."""
+        factor = 1.0
+        # The price-rise null keeps the planned rise (×1.0) marked; it isn't a rise to react to.
+        if self.recently_raised(sku, month) and self.rise[sku][1] > 1.0:
+            factor *= RECONSIDER_AFTER_RISE
+        if self.rival_launched(sku, month):
+            factor *= RECONSIDER_AFTER_RIVAL
+        return factor
+
+    def rivals(self, sku: str, month: str) -> list[str]:
+        """The products of its pet and category launched in the last 3 months."""
+        return sorted(self.recent_launches.get((self.slice_of[sku], month), frozenset()) - {sku})
 
     def pick_factor(self, sku: str, month: str) -> float:
         """How much more (or less) often an order picks this product this month,
