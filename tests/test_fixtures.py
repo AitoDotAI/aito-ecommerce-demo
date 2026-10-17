@@ -763,7 +763,9 @@ def test_d1_customers_rebuy_their_food():
             total += len(foods)
             rebuy += sum(p["sku"] in seen for p in foods)
             seen |= {p["sku"] for p in foods}
-    assert 0.50 <= rebuy / total <= 0.90, f"food re-buy share {rebuy / total:.1%}"
+    # 48 %, not 50 %: launches give switchers and new customers new food to
+    # settle on (ADR 0032; product-states-prereg.md, second amendment).
+    assert 0.48 <= rebuy / total <= 0.90, f"food re-buy share {rebuy / total:.1%}"
 
 
 def test_d2_a_small_animal_starts_with_its_kit():

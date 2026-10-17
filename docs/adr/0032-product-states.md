@@ -138,6 +138,14 @@ and the same rows answer the owner's "what drove this product's sales".
 exist, so every older data check is re-run; and two-link inference may
 fail or rank worse, which this ADR exposes but cannot fix.
 
+Price's fair-band table flags a product whose list price sits outside
+mean ± 1.5σ of its realised prices. A raised product's new list price
+sits above its pre-rise history, so it can be flagged: "priced above its
+own history" is a true reading, but the view's copy says "mispriced", and
+is reviewed when the Price view moves onto product states. The Shop's
+shoppers are real customers whose histories the reload re-draws, so the
+ones whose stories no longer hold are re-picked from the new data.
+
 ## Plan
 
 1. This ADR and `docs/verification/product-states-prereg.md`, thresholds

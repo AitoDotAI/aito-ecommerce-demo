@@ -15,7 +15,7 @@ import type {
 
 
 /**
- * Price Intelligence — per-SKU fair-band stats from price_history
+ * Price Intelligence — per-SKU fair-band stats from product_states
  * + sweet-spot `_relate` over discount band ↔ category. See
  * `docs/adr/0016-price.md`.
  */
@@ -104,7 +104,7 @@ function PriceView() {
       <div className="page-header">
         <div className="page-title">Price</div>
         <div className="page-desc">
-          Per-SKU fair-price band (mean ± 1.5σ over price_history)
+          Per-SKU fair-price band (mean ± 1.5σ over product_states)
           with outliers flagged, and each SKU's demand curve: Aito's
           <code>_estimate</code> of next month's units at seven prices.
         </div>
@@ -128,7 +128,7 @@ function PriceView() {
           <div className="card kpi-card">
             <div className="kpi-label">Observations</div>
             <div className="kpi-val">{data.summary.observations.toLocaleString()}</div>
-            <div className="kpi-sub">price_history rows</div>
+            <div className="kpi-sub">product_states rows</div>
           </div>
           <div className="card kpi-card">
             <div className="kpi-label">Outlier SKUs</div>

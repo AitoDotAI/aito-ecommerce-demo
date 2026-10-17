@@ -879,7 +879,7 @@ export interface ShopBasketPair {
 
 export interface ShopProductDrawer {
   product: ShopProduct & { avg_rating: number | null; dietary: string | null; tags: string };
-  offer_pct: number | null;    // this month's offer, from price_history
+  offer_pct: number | null;    // this month's offer, from product_states
   alternatives: ShopItem[];    // the same kind of product, ranked for this shopper
   same_basket: ShopBasketPair[];
   your_orders: string[];   // months of this shopper's orders that held it

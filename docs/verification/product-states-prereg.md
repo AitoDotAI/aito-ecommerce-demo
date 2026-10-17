@@ -116,6 +116,21 @@ its state) and stay in `tests/test_product_states_data.py`.
 switchers and new customers new products to settle on. Its floor becomes
 48 %, with that reason. No other D or S range moved.
 
+## Amendment after the first null run (2026-10-17, before the second)
+
+The first null run (`product-states-data.md` as of commit time; 17 of 27
+pass) exposed two mechanisms that don't plant what the table above says.
+Margins are **not** changed.
+
+| check | planted ÷ null (seeds 42, 7, 99) | cause | change |
+|:--|:--|:--|:--|
+| P4a | 1.08, 1.12, 1.04 | The funnel's cart and purchase steps sit near their caps, so odds applied there saturate: even ×4.0 for 5 stars gave ×1.41 (probe, seed 42). Offers and novelty also scale the click (≈ 0.24) and show; stars didn't. | Stars scale the click too: shoppers see them before clicking. Strength unchanged. |
+| P2c | 1.00, 1.00, 1.00 | Nothing planted it: the new product's ×2.0 pull barely dents its rivals (a slice holds ~20 products, and staples are kept). The state's `rival_launched` had no effect. | An incumbent's pick weight is ×0.75 for 3 months after a rival of its pet and category launches (`RIVAL_PICK_FACTOR`); the null switches it off with the launch pull. |
+
+Left as they are, and reported as they come out: P1b on seed 99 (premium
+1.305 against ≤ 1.3), P2b on seeds 7 and 99 (1.08, 1.26 against ≥ 1.3)
+and P3a on seed 7 (0.935 against ≤ 0.92).
+
 ## Results
 
 (none yet)

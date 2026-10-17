@@ -2,7 +2,7 @@
 per-SKU demand curve.
 
   1. Fair-band table — per-SKU price stats from one bulk `_search` of
-                       `price_history`, computed in Python (658
+                       `product_states`, computed in Python (658
                        parallel `_aggregate` calls trip the rate
                        limit). Outliers are flagged when the list price
                        falls outside mean ± 1.5σ. One `_aggregate` runs
@@ -83,7 +83,7 @@ class PriceResponse:
 
 
 def _fetch_prices(client: AitoClient) -> list[dict]:
-    """Page through `price_history` once for the bulk fair-band scan.
+    """Page through `product_states` once for the bulk fair-band scan.
 
     Catalog-wide outlier detection needs stats for every SKU.
     Fanning out 658 parallel `_aggregate` calls trips Aito's rate
@@ -99,7 +99,7 @@ def _fetch_prices(client: AitoClient) -> list[dict]:
     offset = 0
     page = 5000
     while True:
-        res = client.search("price_history", limit=page, offset=offset)
+        res = client.search("product_states", limit=page, offset=offset)
         hits = res.get("hits", [])
         if not hits:
             break
@@ -120,7 +120,7 @@ def _aggregate_one_sku(client: AitoClient, sku: str) -> dict:
     it returns a 400.
     """
     return client.aggregate(
-        table="price_history",
+        table="product_states",
         where={"product_sku": sku},
         aggregate_fields=[
             "price_eur.$mean",
@@ -168,7 +168,7 @@ def _sweet_spots(client: AitoClient) -> list[SweetSpotRow]:
 
     def fetch(band_name: str, where: dict) -> tuple[str, dict]:
         res = client.relate(
-            table="price_history",
+            table="product_states",
             where=where,
             relate_field="product_sku.category",
             limit=8,
@@ -216,7 +216,7 @@ def get_prices(
     prices = _fetch_prices(client)
     products = _fetch_products(client)
 
-    # Per-SKU stats from price_history — bulk-fetched + Python
+    # Per-SKU stats from product_states — bulk-fetched + Python
     # aggregation for the catalog-wide outlier scan (658 parallel
     # `_aggregate` calls would trip Aito's rate limit).
     by_sku: dict[str, list[dict]] = {}
@@ -299,7 +299,7 @@ def get_prices(
     # body is shown separately in the use-case guide; one panel
     # query at a time.
     sample_body = {
-        "from": "price_history",
+        "from": "product_states",
         "where": {"product_sku": drilldown_sku or "<sku>"},
         "aggregate": [
             "price_eur.$mean",

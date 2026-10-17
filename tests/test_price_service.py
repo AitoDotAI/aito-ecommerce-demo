@@ -48,7 +48,7 @@ def _relate_hit(category: str, lift: float, f_on: int, f_cond: int, f: int, n: i
 
 class FakeAito:
     def search(self, table, where=None, limit=10, offset=0, **_):
-        rows = {"price_history": HISTORY, "products": PRODUCTS}[table]
+        rows = {"product_states": HISTORY, "products": PRODUCTS}[table]
         return {"hits": rows[offset:offset + limit], "total": len(rows)}
 
     def aggregate(self, table, where, aggregate_fields):

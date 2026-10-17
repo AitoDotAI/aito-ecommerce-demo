@@ -136,6 +136,7 @@ Quality
   verify-demo       End-to-end demo-path check
   verify-mobile     Mobile-viewport screenshot sweep of every sidebar view
   test-urls         Build the static export; check every view's link opens as shared
+  planted-effects   Generate planted and null fixtures for 3 seeds; judge ADR 0032's effects (~5 min)
   check             Pre-merge gate (test + fmt + aito-check)
   fmt               Format code
 
@@ -459,6 +460,13 @@ cmd_test_urls() {
   node scripts/deeplink-test.cjs
 }
 
+cmd_planted_effects() {
+  # Each ADR 0032 effect against the same seed's generation without it, for
+  # three seeds. Writes docs/verification/product-states-data.md; leaves data/ alone.
+  cd "$SCRIPT_DIR"
+  PYTHONPATH=. uv run python scripts/planted_effects.py
+}
+
 cmd_verify_mobile() {
   # Mobile layout sanity-check — runs `frontend/scripts/inspect-mobile.cjs`
   # against the already-running dev server (./do dev). Captures every
@@ -622,6 +630,7 @@ case "${1:-help}" in
   verify-demo)       cmd_verify_demo ;;
   verify-mobile)     cmd_verify_mobile ;;
   test-urls)         cmd_test_urls ;;
+  planted-effects)   cmd_planted_effects ;;
   check)             cmd_check ;;
   fmt)               cmd_fmt ;;
   npm-install)       cmd_npm_install ;;

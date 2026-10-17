@@ -208,7 +208,7 @@ def test_estimate_carries_model_when_set(client, httpx_mock: HTTPXMock):
         json={"estimate": 5.0},
     )
     client.estimate(
-        table="price_history",
+        table="product_states",
         where={"product_sku": "SKU-PT-0001"},
         estimate_field="price_eur",
         model="regression",
@@ -240,12 +240,12 @@ def test_aggregate_emits_expected_body(client, httpx_mock: HTTPXMock):
         json={"mean": 5.9, "min": 4.5, "max": 6.6},
     )
     client.aggregate(
-        table="price_history",
+        table="product_states",
         where={"product_sku": "SKU-PT-0001"},
         aggregate_fields=["price_eur.$mean", "price_eur.$min"],
     )
     body = _last_body(httpx_mock)
-    assert body["from"] == "price_history"
+    assert body["from"] == "product_states"
     assert body["where"] == {"product_sku": "SKU-PT-0001"}
     assert body["aggregate"] == ["price_eur.$mean", "price_eur.$min"]
 
