@@ -134,3 +134,59 @@ same data, with the patterns visible on both sides.
 
 **Bad:** two more views to keep honest; three new query patterns to
 verify first; both views need ADR 0030's data on master.
+
+## Amendment (2026-10-17): search in the Shop, alternatives, and why each product
+
+Antti asked (2026-10-17) for search inside the Shop, for a product to open
+with its details, alternatives and same-basket products, and for search
+and recommendations alike to show what makes a product likely to be
+clicked or bought: relevant details, discounts, good reviews.
+
+### Decision
+
+- **Search in the Shop.** A query re-ranks the grid's own `where` (the
+  shopper, month, cart, household rule, just-bought re-ask). Products
+  whose name matches no query word are left out, as in Smart Search's
+  baseline (`_search products` by `$similarity`, `$score > 1`); the rest
+  are ranked by Smart Search's blend, `$multiply [$p{purchased},
+  $similarity{name}]`, restricted to them with `product_sku: {"$or": …}`.
+  Each result then gets its `$p` and reasons from the grid's
+  `_recommend` restricted to the same products.
+- **The product drawer** gains its details (price this month and any
+  offer, stars, diet, tags) and **alternatives**: the grid's
+  `_recommend` with `product_sku.category` and `product_sku.pet_type`
+  equal to the open product's, the product itself and the cart left out.
+- **Why this product, from Aito.** Each product's `$why` holds the lift
+  of the product itself, and nested under it the shopper's and the
+  cart's lifts *for this product*: "a cage in your cart ×2.4", "treat
+  lovers ×1.5", "April ×1.3". A card shows the largest (at least ×1.15,
+  at most three). They explain the probability the card shows.
+- **Facts, labelled as facts.** An offer this month (`price_history`,
+  at least 10 % below list), the star rating, and "keeps your rule" are
+  shown as facts, not as Aito reasons: the data can't yet say how much
+  they lift a purchase (below).
+
+### Findings from the probes (2026-10-17, master, read-only)
+
+- **`basedOn` is not used.** With `basedOn: [rating_band, dietary,
+  category, tags, brand]` the `$why` gains a lift per product feature
+  (grain-free ×1.28, Whimzees ×1.31), but `$p` roughly doubles
+  (0.46 → 0.87 for the same product and shopper) and the top 12 become
+  one category. The plain `$why` already holds per-product reasons.
+- **Offers don't reach the impressions.** Promotions lift orders, but
+  `impressions` has no offer column, so no query can learn that an offer
+  sells. Ratings do reach them (Shop analytics: 1–2 stars 0.79× among
+  purchases), but `rating_band` lifts in `$why` were small and mixed
+  (×0.84 for a 5-star product). A data change for both is a separate
+  proposal: an `on_offer` column on impressions and a planted rating
+  effect, needing a full reload.
+
+### Acceptance criteria
+
+- A user can type "dental" in the Shop and get only products whose name
+  matches, ranked for the chosen shopper, with the same cart and rule.
+- A query that matches no product name says so, and shows no products.
+- Every card in the grid and in search shows up to three Aito reasons,
+  each with its lift, and an offer or rating only as a fact.
+- An opened product shows its details, alternatives from its own
+  category for this shopper, and the same-basket products.
