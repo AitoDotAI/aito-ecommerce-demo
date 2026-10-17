@@ -6,30 +6,30 @@ switched off). Design and margins: `product-states-prereg.md`.
 
 | check | seed | planted | null | planted ÷ null | margin | result |
 |:--|--:|--:|--:|--:|:--|:--|
-| P1a budget shoppers buy on offer | 42 | 2.872 | 1.196 | 2.402 | ≥ 1.5 | pass |
-| P1b premium shoppers barely | 42 | 1.137 | 0.983 | 1.157 | ≤ 1.3 | pass |
-| P2b a new product's pull | 42 | 1.216 | 0.844 | 1.441 | ≥ 1.3 | pass |
-| P2c incumbents lose to a launch | 42 | 1.397 | 1.401 | 0.997 | ≤ 0.95 | **fail** |
-| P2d flexible shoppers take to new | 42 | 1.942 | 0.980 | 1.981 | ≥ 1.25 | pass |
-| P3a a price rise lowers sales | 42 | 0.832 | 1.112 | 0.748 | ≤ 0.92 | pass |
-| P4a stars sell | 42 | 1.075 | 1.000 | 1.075 | ≥ 1.15 | **fail** |
-| P5a big bags for big dogs | 42 | 2.599 | 0.869 | 2.989 | ≥ 1.8 | pass |
-| P1a budget shoppers buy on offer | 7 | 2.606 | 1.181 | 2.207 | ≥ 1.5 | pass |
-| P1b premium shoppers barely | 7 | 1.242 | 1.029 | 1.206 | ≤ 1.3 | pass |
-| P2b a new product's pull | 7 | 1.161 | 1.073 | 1.082 | ≥ 1.3 | **fail** |
-| P2c incumbents lose to a launch | 7 | 1.397 | 1.401 | 0.997 | ≤ 0.95 | **fail** |
-| P2d flexible shoppers take to new | 7 | 1.480 | 1.031 | 1.435 | ≥ 1.25 | pass |
-| P3a a price rise lowers sales | 7 | 0.956 | 1.023 | 0.935 | ≤ 0.92 | **fail** |
-| P4a stars sell | 7 | 1.141 | 1.019 | 1.121 | ≥ 1.15 | **fail** |
-| P5a big bags for big dogs | 7 | 2.624 | 0.923 | 2.843 | ≥ 1.8 | pass |
-| P1a budget shoppers buy on offer | 99 | 2.613 | 1.139 | 2.294 | ≥ 1.5 | pass |
-| P1b premium shoppers barely | 99 | 1.286 | 0.985 | 1.305 | ≤ 1.3 | **fail** |
-| P2b a new product's pull | 99 | 1.230 | 0.979 | 1.257 | ≥ 1.3 | **fail** |
-| P2c incumbents lose to a launch | 99 | 1.387 | 1.389 | 0.999 | ≤ 0.95 | **fail** |
-| P2d flexible shoppers take to new | 99 | 1.480 | 1.166 | 1.269 | ≥ 1.25 | pass |
-| P3a a price rise lowers sales | 99 | 0.978 | 1.089 | 0.898 | ≤ 0.92 | pass |
-| P4a stars sell | 99 | 0.994 | 0.952 | 1.044 | ≥ 1.15 | **fail** |
-| P5a big bags for big dogs | 99 | 2.414 | 1.060 | 2.277 | ≥ 1.8 | pass |
-| P1b budget's lift ÷ premium's | 42 | 2.402 | 1.157 | 2.076 | ≥ 1.4 | pass |
-| P1b budget's lift ÷ premium's | 7 | 2.207 | 1.206 | 1.830 | ≥ 1.4 | pass |
-| P1b budget's lift ÷ premium's | 99 | 2.294 | 1.305 | 1.758 | ≥ 1.4 | pass |
+| P1a budget shoppers buy on offer | 42 | 2.712 | 1.200 | 2.260 | ≥ 1.5 | pass |
+| P1b premium shoppers barely | 42 | 1.148 | 0.960 | 1.196 | ≤ 1.3 | pass |
+| P2b a new product's pull | 42 | 2.584 | 0.844 | 3.063 | ≥ 1.3 | pass |
+| P2c incumbents lose to a launch | 42 | 1.390 | 1.401 | 0.992 | ≤ 0.95 | **fail** |
+| P2d flexible shoppers take to new | 42 | 1.508 | 0.776 | 1.944 | ≥ 1.25 | pass |
+| P3a a price rise lowers sales | 42 | 0.899 | 1.008 | 0.892 | ≤ 0.92 | pass |
+| P4a stars sell | 42 | 1.178 | 0.960 | 1.227 | ≥ 1.15 | pass |
+| P5a big bags for big dogs | 42 | 2.318 | 1.092 | 2.123 | ≥ 1.8 | pass |
+| P1a budget shoppers buy on offer | 7 | 2.702 | 1.119 | 2.415 | ≥ 1.5 | pass |
+| P1b premium shoppers barely | 7 | 1.268 | 1.024 | 1.238 | ≤ 1.3 | pass |
+| P2b a new product's pull | 7 | 1.537 | 1.073 | 1.433 | ≥ 1.3 | pass |
+| P2c incumbents lose to a launch | 7 | 1.385 | 1.401 | 0.988 | ≤ 0.95 | **fail** |
+| P2d flexible shoppers take to new | 7 | 1.608 | 0.908 | 1.770 | ≥ 1.25 | pass |
+| P3a a price rise lowers sales | 7 | 0.986 | 1.002 | 0.984 | ≤ 0.92 | **fail** |
+| P4a stars sell | 7 | 1.161 | 0.890 | 1.305 | ≥ 1.15 | pass |
+| P5a big bags for big dogs | 7 | 2.386 | 0.966 | 2.472 | ≥ 1.8 | pass |
+| P1a budget shoppers buy on offer | 99 | 2.562 | 1.165 | 2.200 | ≥ 1.5 | pass |
+| P1b premium shoppers barely | 99 | 1.168 | 0.977 | 1.196 | ≤ 1.3 | pass |
+| P2b a new product's pull | 99 | 1.320 | 0.979 | 1.349 | ≥ 1.3 | pass |
+| P2c incumbents lose to a launch | 99 | 1.370 | 1.389 | 0.987 | ≤ 0.95 | **fail** |
+| P2d flexible shoppers take to new | 99 | 1.460 | 0.838 | 1.742 | ≥ 1.25 | pass |
+| P3a a price rise lowers sales | 99 | 0.997 | 1.023 | 0.975 | ≤ 0.92 | **fail** |
+| P4a stars sell | 99 | 1.156 | 0.910 | 1.270 | ≥ 1.15 | pass |
+| P5a big bags for big dogs | 99 | 2.357 | 1.016 | 2.321 | ≥ 1.8 | pass |
+| P1b budget's lift ÷ premium's | 42 | 2.260 | 1.196 | 1.890 | ≥ 1.4 | pass |
+| P1b budget's lift ÷ premium's | 7 | 2.415 | 1.238 | 1.951 | ≥ 1.4 | pass |
+| P1b budget's lift ÷ premium's | 99 | 2.200 | 1.196 | 1.840 | ≥ 1.4 | pass |

@@ -5,7 +5,7 @@ against `docs/verification/product-states-prereg.md`:
 
   P1  An offer converts an impression, most for budget shoppers.
   P2  Launches: 50 products appear mid-window; new, they are picked more,
-      and flexible shoppers take to them.
+      take share from their rivals, and flexible shoppers take to them.
   P3  Price rises: 60 products get one list-price rise; demand follows
       the product's elasticity.
   P4  Stars sell: an impression converts by the stars shown that month.
@@ -28,6 +28,7 @@ LAUNCH_WINDOW = ("2024-11", "2026-01")
 LAUNCH_CATEGORIES = frozenset({"dry-food", "wet-food", "treats", "dental-treats", "toys", "accessories"})
 NEW_MONTHS = 3               # a product is "new" for its first 3 months on sale
 LAUNCH_PICK_FACTOR = 2.0     # how much more often a new product is picked in orders
+RIVAL_PICK_FACTOR = 0.75     # how much less often its rivals are, for RECENT_MONTHS after
 N_RISES = 60
 RISE_WINDOW = ("2024-11", "2026-01")
 RISE_RANGE = (1.08, 1.15)
@@ -57,6 +58,8 @@ class CatalogueEvents:
     rise: dict[str, tuple[str, float]]      # sku → (month of the rise, factor)
     original_list: dict[str, float]         # sku → list price before any rise
     slice_of: dict[str, tuple[str, str]]    # sku → (pet_type, category)
+    # ((pet_type, category), month) → the products launched in it in the last 3 months.
+    recent_launches: dict[tuple[tuple[str, str], str], frozenset[str]]
 
     def on_sale(self, sku: str, month: str) -> bool:
         return month >= self.launch_month.get(sku, "")
@@ -81,13 +84,14 @@ class CatalogueEvents:
 
     def rival_launched(self, sku: str, month: str) -> bool:
         """Another product of the same pet and category launched in the last 3 months."""
-        return any(other != sku and self.slice_of[other] == self.slice_of[sku]
-                   and launch <= month < add_months(launch, RECENT_MONTHS)
-                   for other, launch in self.launch_month.items())
+        return bool(self.recent_launches.get((self.slice_of[sku], month), frozenset()) - {sku})
 
     def pick_factor(self, sku: str, month: str) -> float:
-        """How much more often an order picks this product this month, besides price."""
-        return LAUNCH_PICK_FACTOR if self.is_new(sku, month) else 1.0
+        """How much more (or less) often an order picks this product this month,
+        besides price: a new product pulls (P2), and takes share from its rivals."""
+        if self.is_new(sku, month):
+            return LAUNCH_PICK_FACTOR
+        return RIVAL_PICK_FACTOR if self.rival_launched(sku, month) else 1.0
 
 
 def plan_catalogue_events(rng: random.Random, products: list, months: list[str],
@@ -108,8 +112,13 @@ def plan_catalogue_events(rng: random.Random, products: list, months: list[str],
     rise = {p.sku: (rng.choice(rise_window), rng.uniform(*RISE_RANGE)) for p in rng.sample(raisable, N_RISES)}
 
     original_list = {p.sku: p.price_eur for p in products}
-    events = CatalogueEvents(launch_month, rise, original_list,
-                             {p.sku: (p.pet_type, p.category) for p in products})
+    slice_of = {p.sku: (p.pet_type, p.category) for p in products}
+    recent: dict[tuple[tuple[str, str], str], set[str]] = {}
+    for sku, launch in launch_month.items():
+        for i in range(RECENT_MONTHS):
+            recent.setdefault((slice_of[sku], add_months(launch, i)), set()).add(sku)
+    events = CatalogueEvents(launch_month, rise, original_list, slice_of,
+                             {key: frozenset(skus) for key, skus in recent.items()})
     for p in products:
         p.price_eur = events.list_price(p.sku, months[-1])
     return events
@@ -174,7 +183,10 @@ def impression_odds(state, customer) -> tuple[float, float]:
     if state.age == "new":
         odds *= NEW_ODDS[customer.brand_loyalty]
         click_odds *= NEW_ODDS[customer.brand_loyalty]
+    # Stars are seen before the click. On the cart and purchase steps alone
+    # they saturate: those sit near their caps (prereg, first null run).
     odds *= STARS_ODDS[state.rating_band]
+    click_odds *= STARS_ODDS[state.rating_band]
     return odds, click_odds
 
 

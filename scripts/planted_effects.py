@@ -31,7 +31,8 @@ REPORT = Path(__file__).resolve().parent.parent / "docs/verification/product-sta
 # Each null switches one planted effect off by setting its constants to "no effect".
 NULLS = {
     "offers": {"OFFER_ODDS": {k: 1.0 for k in events.OFFER_ODDS}},
-    "launch pull": {"LAUNCH_PICK_FACTOR": 1.0, "NEW_ODDS": {k: 1.0 for k in events.NEW_ODDS}},
+    "launch pull": {"LAUNCH_PICK_FACTOR": 1.0, "RIVAL_PICK_FACTOR": 1.0,
+                    "NEW_ODDS": {k: 1.0 for k in events.NEW_ODDS}},
     "price rise": {"RISE_RANGE": (1.0, 1.0)},
     "stars": {"STARS_ODDS": {k: 1.0 for k in events.STARS_ODDS}},
     "pack size": {"PACK_FIT": 1.0},
