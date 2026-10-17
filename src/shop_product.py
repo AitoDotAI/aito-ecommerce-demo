@@ -47,7 +47,7 @@ class BasketPair:
 @dataclass(frozen=True)
 class ProductDrawer:
     product: dict
-    offer_pct: float | None  # this month's offer, a fact from price_history
+    offer_pct: float | None  # this month's offer, a fact from product_states
     alternatives: list[ShopItem]
     same_basket: list[BasketPair]
     your_orders: list[str]   # months of the shopper's orders that held it

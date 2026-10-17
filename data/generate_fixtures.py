@@ -24,7 +24,7 @@ from datetime import date
 from pathlib import Path
 from typing import Callable, Iterable
 
-from data import lifecycle, shoppers
+from data import catalogue_events, lifecycle, shoppers
 
 RNG_SEED = 42
 DATA_DIR = Path(__file__).resolve().parent
@@ -94,49 +94,6 @@ DIETARIES: list[str] = [
     "grain-free", "senior", "puppy", "large-breed",
     "sensitive", "indoor", "weight-control",
 ]
-
-
-# ── Segment-level affinity (within-pet_type signal) ───────────────
-#
-# These tables drive `_apply_segment_affinity` (see below). They
-# inject within-pet_type, between-segment differentiation in brand
-# and dietary so `_recommend` over `goal: customer_segment` with
-# `basedOn: [brand, dietary, pet_type]` actually has signal to rank
-# on. Without this, pet_type is already implied by the where clause
-# (customer_pet_size correlates ~98 % with pet_type), and brand is
-# largely pet_type-determined (Whiskas = cat, JBL = aquarium etc.),
-# so `basedOn` rounds to no-op. Cf. `docs/aito-cheatsheet.md`
-# §"Does `basedOn: []` cost accuracy?".
-#
-# Affinity is applied via a per-customer-per-line sub-RNG, so the
-# existing demo signals (large-breed cat share, dog-food→dental
-# lift, persona top-5 overlaps) stay byte-identical.
-
-# Each segment's "preferred" brands inside its dominant pet_type.
-# Picked from the BRAND_CATEGORIES table above so we don't bias
-# toward brands that don't sell in those segments anyway.
-BRAND_AFFINITY_BY_SEGMENT: dict[str, set[str]] = {
-    "dog_owner":   {"Royal Canin", "Hill's Science Plan", "Acana", "Orijen"},
-    "multi_pet":   {"PetNord", "Eukanuba", "Whimzees", "Kong", "Trixie"},
-    "cat_owner":   {"Royal Canin", "Hill's Science Plan", "Acana", "Sheba"},
-    # aquarium_owner / small_animal_owner already concentrate on a
-    # small brand set (JBL/Tetra, Trixie/Beaphar respectively); no
-    # additional affinity needed.
-}
-
-# Dietary tags each segment over-indexes on. Subset of DIETARIES.
-DIETARY_AFFINITY_BY_SEGMENT: dict[str, set[str]] = {
-    "dog_owner":   {"large-breed", "grain-free"},
-    "multi_pet":   {"sensitive", "senior"},
-    "cat_owner":   {"indoor", "weight-control"},
-}
-
-# Probability that a given line gets substituted with an affinity-
-# aligned product from the same (pet_type, category) slice. Tuned
-# to lift segment ↔ brand and segment ↔ dietary correlations into
-# `_recommend basedOn` territory without distorting category
-# distributions (substitution stays in the same category).
-SEGMENT_AFFINITY_SUB_RATE: float = 0.50
 
 
 # ── Brand tier ────────────────────────────────────────────────────
@@ -540,6 +497,7 @@ class MonthlySale:
     units_last_month: int
     units_bucket: str
     units_last_month_bucket: str
+    product_state: str          # link → product_states: this product in this month (ADR 0032)
 
 
 @dataclass
@@ -558,20 +516,6 @@ class InventoryRow:
     safety_stock: int              # ~1 week buffer
     supplier: str                  # "S-01" … "S-12"
     last_received_month: str       # most recent restock month
-
-
-@dataclass
-class PriceObservation:
-    """Per-SKU per-month price snapshot. Powers the Price
-    Intelligence view's fair-band computation + Aito's `_relate`
-    over price-band ↔ units_sold sweet spots. Synthesised from
-    list price with occasional promotional drops. See ADR 0016."""
-    price_observation_id: str      # "SKU-PT-0001-2025-03"
-    product_sku: str               # link → products.sku
-    month: str
-    price_eur: float
-    list_price_eur: float          # the SKU's current retail price
-    discount_pct: float            # (list_price - price) / list_price × 100
 
 
 @dataclass
@@ -658,6 +602,8 @@ class Impression:
     clicked: bool = False
     added_to_cart: bool = False
     purchased: bool = False
+    # ADR 0032: link → product_states, the product as shown that month.
+    product_state: str | None = None
 
 
 @dataclass
@@ -707,6 +653,8 @@ class OrderLine:
     customer_treat_affinity: str = "medium"
     customer_brand_loyalty: str = "flexible"
     customer_diet_rule: str | None = None
+    # ADR 0032: link → product_states, the product as it was that month.
+    product_state: str | None = None
 
 
 # ── Generation ──────────────────────────────────────────────────────
@@ -1211,6 +1159,9 @@ def _customer_product_score(
     if customer.brand_loyalty == "loyal" and product.brand in customer.favorite_brands:
         score *= 6.0
 
+    # ADR 0032, P5: a large dog's household buys big bags, a small dog's small ones.
+    score *= catalogue_events.pack_fit(product, customer.pet_size)
+
     return score
 
 
@@ -1566,17 +1517,28 @@ def _pick_staple(
     category: str,
     customer: Customer,
     exclude: str | None,
+    novelty: Callable[[str], float],
     avoid_poorly_made: bool = False,
 ) -> Product:
     """The consumable a customer settles on for one pet and category,
     keeping the household's diet rule (ADR 0030, S1). Someone leaving a
-    poorly made one moves to one that isn't (S5)."""
+    poorly made one moves to one that isn't (S5). A product new this month
+    draws new customers and switchers (`novelty`, ADR 0032 P2)."""
     pool = [p for p in products_by_pet_cat.get((pet, category), [])
             if lifecycle.is_staple(p, pet) and p.sku != exclude
             and shoppers.keeps_diet_rule(p.name, pet, category, customer.diet_rule)
             and not (avoid_poorly_made and shoppers.is_poorly_made(p.sku))]
     assert pool, f"no staple products for {pet}/{category}"
-    return rng.choices(pool, weights=[_customer_product_score(p, customer) for p in pool], k=1)[0]
+    return rng.choices(pool, weights=[_customer_product_score(p, customer) * novelty(p.sku) for p in pool], k=1)[0]
+
+
+def _price_factor(promotions: lifecycle.Promotions, events: catalogue_events.CatalogueEvents,
+                  sku: str, month: str) -> float:
+    """How much more (or less) of a SKU is bought at this month's price than
+    at its original list price: (price / original list)^ε, for this month's
+    offer and any list-price rise (ADR 0027, ADR 0032 P3)."""
+    ratio = (1.0 - promotions.discount.get((sku, month), 0.0)) * events.raised_since(sku, month)
+    return ratio ** promotions.elasticity[sku] if ratio != 1.0 else 1.0
 
 
 def gen_orders_and_lines(
@@ -1584,6 +1546,7 @@ def gen_orders_and_lines(
     customers: list[Customer],
     products: list[Product],
     promotions: lifecycle.Promotions,
+    events: catalogue_events.CatalogueEvents,
 ) -> tuple[list[Order], list[OrderLine]]:
     """Generate orders + lines with the engineered signal baked in.
 
@@ -1607,16 +1570,19 @@ def gen_orders_and_lines(
     order_counter = 1
     line_counter = 1
 
-    products_by_pet: dict[str, list[Product]] = {pt: [] for pt in PET_TYPES}
-    for p in products:
-        products_by_pet[p.pet_type].append(p)
-
-    # (pet_type, category) → products. Lookup for the segment-affinity
-    # substitution that runs after `_pick_product`. Built once.
-    products_by_pet_cat: dict[tuple[str, str], list[Product]] = {}
-    for p in products:
-        products_by_pet_cat.setdefault((p.pet_type, p.category), []).append(p)
+    # ADR 0032: each month's catalogue holds only what is on sale then, so
+    # no draw below can pick a product before its launch.
+    by_pet_in: dict[str, dict[str, list[Product]]] = {}
+    by_pet_cat_in: dict[str, dict[tuple[str, str], list[Product]]] = {}
+    for m in _MONTH_WINDOW:
+        by_pet_in[m] = {pt: [] for pt in PET_TYPES}
+        by_pet_cat_in[m] = {}
+        for p in products:
+            if events.on_sale(p.sku, m):
+                by_pet_in[m][p.pet_type].append(p)
+                by_pet_cat_in[m].setdefault((p.pet_type, p.category), []).append(p)
     category_of = {p.sku: p.category for p in products}
+    product_of = {p.sku: p for p in products}
 
     # Persona orders first so they get the lowest ids (CUST-00001's
     # orders are ORD-00001..). Nice for debugging in the JSON.
@@ -1689,6 +1655,9 @@ def gen_orders_and_lines(
         for order_index, month in enumerate(order_months):
             order_id = f"ORD-{order_counter:05d}"
             order_counter += 1
+            products_by_pet = by_pet_in[month]
+            products_by_pet_cat = by_pet_cat_in[month]
+            novelty = lambda sku, m=month: events.pick_factor(sku, m)
             owned_before = " ".join(sorted(owned_tokens)) or None
 
             # 1-6 lines, mode at 2-3. The lifecycle lines count towards it.
@@ -1713,7 +1682,7 @@ def gen_orders_and_lines(
                 qty = rng.choices([1, 2, 3], weights=[0.78, 0.18, 0.04])[0]
                 if stock_up:
                     # A promoted staple: stock up, (price / list)^ε the usual.
-                    wanted = qty * promotions.demand_factor(product.sku, month)
+                    wanted = qty * _price_factor(promotions, events, product.sku, month)
                     qty = int(wanted) + (rng.random() < wanted - int(wanted))
                 # Returned rate modulated by lifestyle — budget customers
                 # return more (price-sensitive, less satisfied), premium
@@ -1733,9 +1702,10 @@ def gen_orders_and_lines(
                     customer_treat_affinity=customer.treat_affinity,
                     customer_brand_loyalty=customer.brand_loyalty,
                     customer_diet_rule=customer.diet_rule,
+                    product_state=f"{product.sku}-{month}",
                 ))
                 line_counter += 1
-                order_total += product.price_eur * qty
+                order_total += events.list_price(product.sku, month) * qty
 
             # Starter kit, first order only.
             if order_index == 0:
@@ -1750,14 +1720,28 @@ def gen_orders_and_lines(
                 for category in staple_cats[pet]:
                     key = (pet, category)
                     if key not in staples:
-                        staples[key] = _pick_staple(rng, products_by_pet_cat, pet, category, customer, exclude=None)
+                        staples[key] = _pick_staple(rng, products_by_pet_cat, pet, category, customer,
+                                                    exclude=None, novelty=novelty)
                     elif rng.random() < lifecycle.RESTOCK_P:
                         # A poorly made staple is dropped more often (S5).
                         poor = shoppers.is_poorly_made(staples[key].sku)
                         switch_p = shoppers.POOR_SWITCH_P if poor else lifecycle.SWITCH_P
+                        # ADR 0032: a price rise or a rival's launch makes regulars reconsider.
+                        switch_p = min(1.0, switch_p * events.reconsider_factor(staples[key].sku, month))
                         if rng.random() < switch_p:
-                            staples[key] = _pick_staple(rng, products_by_pet_cat, pet, category, customer,
-                                                        exclude=staples[key].sku, avoid_poorly_made=poor)
+                            # Reconsidering because a rival launched, they try the rival.
+                            rivals = [product_of[r] for r in events.rivals(staples[key].sku, month)
+                                      if catalogue_events.SWITCH_TO_RIVAL
+                                      and lifecycle.is_staple(product_of[r], pet)
+                                      and shoppers.keeps_diet_rule(product_of[r].name, pet, category,
+                                                                   customer.diet_rule)]
+                            if rivals:
+                                staples[key] = rng.choices(
+                                    rivals, weights=[_customer_product_score(p, customer) for p in rivals], k=1)[0]
+                            else:
+                                staples[key] = _pick_staple(rng, products_by_pet_cat, pet, category, customer,
+                                                            exclude=staples[key].sku, novelty=novelty,
+                                                            avoid_poorly_made=poor)
                     else:
                         continue
                     add(staples[key], stock_up=True)
@@ -1775,8 +1759,9 @@ def gen_orders_and_lines(
                         add(add_on)
 
             # The rest of the basket: the segment- and trait-driven draw, where
-            # this month's promotions lift what's on offer.
-            demand = lambda sku, m=month: (promotions.demand_factor(sku, m)
+            # this month's price, the season and a new product's pull move it.
+            demand = lambda sku, m=month: (_price_factor(promotions, events, sku, m)
+                                           * events.pick_factor(sku, m)
                                            * shoppers.season_factor(category_of[sku], m))
             for _line_i in range(max(0, n_lines - len(this_orders_lines))):
                 # Pick a pet_type for this line, then a category-biased product.
@@ -1786,7 +1771,11 @@ def gen_orders_and_lines(
                 )[0]
                 if not products_by_pet[pet_type]:
                     pet_type = rng.choice(list(products_by_pet.keys()))
-                product = _pick_product(rng, products_by_pet, pet_type, cat_bias, demand)
+                # P5: the pack size fits the dog. The re-pick below already
+                # weighs it, through the customer's score.
+                product = _pick_product(rng, products_by_pet, pet_type, cat_bias,
+                                        lambda sku: demand(sku) * catalogue_events.pack_fit(product_of[sku],
+                                                                                            customer.pet_size))
                 # Customer-preference substitution within (pet_type,
                 # category), sub-RNG keyed on (customer_id, line_counter).
                 product = _customer_preference_substitute(
@@ -1862,10 +1851,11 @@ def gen_orders_and_lines(
                             customer_treat_affinity=customer.treat_affinity,
                             customer_brand_loyalty=customer.brand_loyalty,
                             customer_diet_rule=customer.diet_rule,
+                            product_state=f"{product.sku}-{month}",
                         )
                         line_counter += 1
                         this_orders_lines.append(line)
-                        order_total += product.price_eur * qty
+                        order_total += events.list_price(product.sku, month) * qty
 
             if not this_orders_lines:
                 # Edge case: every line we tried collided. Skip the
@@ -2344,7 +2334,7 @@ def gen_customer_months(
     return out
 
 
-# ── Operate section: monthly_sales + inventory + price_history ─────
+# ── Operate section: monthly_sales + inventory ─────────────────────
 
 
 _SEASON_BY_MONTH: dict[int, str] = {
@@ -2419,6 +2409,7 @@ def gen_monthly_sales(
     products: list[Product],
     orders: list[Order],
     lines: list[OrderLine],
+    events: catalogue_events.CatalogueEvents,
 ) -> list[MonthlySale]:
     """Roll `order_lines` into per-SKU per-month aggregates.
 
@@ -2457,7 +2448,8 @@ def gen_monthly_sales(
     # turned from no sales into some.
     empty = {"units": 0, "revenue": 0.0, "customers": set()}
     out: list[MonthlySale] = []
-    for sku, month in sorted((p.sku, m) for p in products for m in _MONTH_WINDOW):
+    for sku, month in sorted((p.sku, m) for p in products for m in _MONTH_WINDOW
+                             if events.on_sale(p.sku, m)):
         prod = sku_to_product[sku]
         data = agg.get((sku, month), empty)
         month_int = int(month.split("-")[1])
@@ -2481,6 +2473,7 @@ def gen_monthly_sales(
             units_last_month=units_last_month,
             units_bucket=units_range(units),
             units_last_month_bucket=units_range(units_last_month),
+            product_state=f"{sku}-{month}",
         ))
     return out
 
@@ -2561,65 +2554,19 @@ def gen_inventory(
     return out
 
 
-def gen_price_history(
-    rng: random.Random,
-    products: list[Product],
-    monthly_sales: list[MonthlySale],
-    promotions: lifecycle.Promotions,
-) -> list[PriceObservation]:
-    """Per-SKU per-month realised prices, from the promotion calendar.
-
-    ADR 0027: the calendar is decided before any order and the orders
-    respond to it, so a promoted month sells more *because* it's cheaper.
-    (The previous version set each month's price from that month's demand,
-    which put the causation backwards: Markdown then read a price
-    sensitivity of about −3.7.) A ±2 % noise keeps Aito's k-NN from reading
-    a crisp ridge. Rows exist only for months with sales, like
-    monthly_sales.
-    """
-    out: list[PriceObservation] = []
-    list_price = {p.sku: p.price_eur for p in products}
-    for ms in monthly_sales:
-        discount = promotions.discount.get((ms.product_sku, ms.month), 0.0)
-        ratio = (1.0 - discount) * (1.0 + rng.uniform(-0.02, 0.02))
-        out.append(PriceObservation(
-            price_observation_id=f"{ms.product_sku}-{ms.month}",
-            product_sku=ms.product_sku,
-            month=ms.month,
-            price_eur=_round_eur(list_price[ms.product_sku] * ratio),
-            list_price_eur=_round_eur(list_price[ms.product_sku]),
-            discount_pct=round((1.0 - ratio) * 100, 1),
-        ))
-    return out
-
-
 def backfill_monthly_sales_prices(
     monthly_sales: list[MonthlySale],
-    price_history: list[PriceObservation],
+    states: list[catalogue_events.ProductState],
 ) -> None:
-    """Overwrite `monthly_sales.price_eur` with the realised price
-    from `price_history`, recompute `revenue_eur = price × units`.
-
-    `gen_monthly_sales` initially sets `price_eur = list price`
-    (a placeholder). After `gen_price_history` assigns discounts /
-    premiums based on demand rank, this pass writes the realised
-    price back so monthly_sales reflects the same price Aito's
-    `_estimate` will be conditioned on.
-
-    Required for the price-demand correlation to surface in
-    `_estimate units_sold` — without this backfill, monthly_sales
-    keeps the list price and price_history sits parallel with
-    no signal between them.
-    """
-    price_by_key: dict[tuple[str, str], PriceObservation] = {
-        (po.product_sku, po.month): po for po in price_history
-    }
+    """Overwrite `monthly_sales.price_eur` with the month's realised price
+    from its product state, and recompute `revenue_eur = price × units`, so
+    `_estimate units_sold` conditions on the price shoppers paid (ADR 0016,
+    ADR 0032). `gen_monthly_sales` sets the list price as a placeholder."""
+    state_by_id = {st.product_state_id: st for st in states}
     for ms in monthly_sales:
-        po = price_by_key.get((ms.product_sku, ms.month))
-        if po is None:
-            continue
-        ms.price_eur = po.price_eur
-        ms.revenue_eur = _round_eur(po.price_eur * ms.units_sold)
+        state = state_by_id[ms.product_state]   # every sales month is a month on sale
+        ms.price_eur = state.price_eur
+        ms.revenue_eur = _round_eur(state.price_eur * ms.units_sold)
 
 
 def gen_winback_campaigns(
@@ -2628,6 +2575,7 @@ def gen_winback_campaigns(
     products: list[Product],
     orders: list[Order],
     lines: list[OrderLine],
+    events: catalogue_events.CatalogueEvents,
 ) -> list[WinbackCampaign]:
     """Synthesise ~3000 historical re-engagement email campaigns
     sent to customers who had been inactive at send time. Drives the
@@ -2731,6 +2679,7 @@ def gen_winback_campaigns(
                 pool = [p for p in universe if p.pet_type in preferred_pets]
             else:
                 pool = universe
+            pool = [p for p in pool if events.on_sale(p.sku, sent_month)]
             if not pool:
                 continue
             product = rng.choice(pool)
@@ -2929,6 +2878,7 @@ def gen_impressions(
     products: list[Product],
     orders: list[Order],
     lines: list[OrderLine],
+    states: list[catalogue_events.ProductState],
 ) -> list[Impression]:
     """Product impressions with the funnel outcome baked in.
 
@@ -2946,9 +2896,17 @@ def gen_impressions(
     imp_counter = 1
     session_counter = 1
 
-    products_by_cat: dict[str, list[Product]] = {}
-    for p in products:
-        products_by_cat.setdefault(p.category, []).append(p)
+    # ADR 0032: a session shows only what is on sale that month, and a
+    # product's state that month (an offer, being new, its stars) moves
+    # whether it converts.
+    state_of = {(st.product_sku, st.month): st for st in states}
+    on_sale_in: dict[str, list[Product]] = {
+        m: [p for p in products if (p.sku, m) in state_of] for m in _MONTH_WINDOW}
+    by_cat_in: dict[str, dict[str, list[Product]]] = {}
+    for m, on_sale in on_sale_in.items():
+        by_cat_in[m] = {}
+        for p in on_sale:
+            by_cat_in[m].setdefault(p.category, []).append(p)
 
     # ADR 0030: the basket a customer had each month (S6), the rows the
     # complement rule reads, and the search phrases with their products (S7).
@@ -2992,6 +2950,8 @@ def gen_impressions(
             session_id = f"SESS-{session_counter:06d}"
             session_counter += 1
             month = rng.choice(eligible_months)
+            catalogue = on_sale_in[month]
+            products_by_cat = by_cat_in[month]
             surface = rng.choices(
                 list(_SURFACE_WEIGHTS.keys()),
                 weights=list(_SURFACE_WEIGHTS.values()),
@@ -3006,19 +2966,19 @@ def gen_impressions(
             query: str | None = None
             if surface == "search":
                 # A phrase from a product this customer is drawn to (S7).
-                query = _search_query(story_rng, products, phrases_of, pet_type_weights, cat_bias, customer)
-                pool = list(phrases[query])
+                query = _search_query(story_rng, catalogue, phrases_of, pet_type_weights, cat_bias, customer)
+                pool = [p for p in phrases[query] if (p.sku, month) in state_of]
             elif surface == "category":
                 # One category the customer leans toward, across pet types.
-                cat = _pick_product(rng, {"x": products}, "x", cat_bias).category \
+                cat = _pick_product(rng, {"x": catalogue}, "x", cat_bias).category \
                     if cat_bias else rng.choice(list(products_by_cat))
                 pool = list(products_by_cat.get(cat, []))
             else:
                 # for_you / bought_together — personalised: the whole
                 # catalogue, sampled affinity-weighted below.
-                pool = list(products)
+                pool = list(catalogue)
             if not pool:
-                pool = list(products)
+                pool = list(catalogue)
 
             # Show 6-14 distinct products: ~65% affinity-weighted (what a
             # good recommender would surface) + ~35% uniform filler (so
@@ -3071,6 +3031,10 @@ def gen_impressions(
                     click_odds *= shoppers.COMPLEMENT_ODDS
                 if product.sku in just_bought_skus:
                     click_odds *= shoppers.JUST_BOUGHT_ODDS
+                state = state_of[(product.sku, month)]
+                state_odds, state_click_odds = catalogue_events.impression_odds(state, customer)
+                odds *= state_odds
+                click_odds *= state_click_odds
                 clicked, added, purchased = _impression_funnel(
                     rng, product, customer, pet_type_weights, cat_bias, odds, click_odds,
                 )
@@ -3100,6 +3064,7 @@ def gen_impressions(
                     clicked=clicked,
                     added_to_cart=added,
                     purchased=purchased,
+                    product_state=state.product_state_id,
                 ))
                 imp_counter += 1
 
@@ -3157,7 +3122,10 @@ def main() -> None:
     # ADR 0027: promotions are decided before any order, on their own
     # RNG, so demand can respond to price rather than price to demand.
     promotions = lifecycle.plan_promotions(random.Random(RNG_SEED + 27), products, _MONTH_WINDOW)
-    orders, lines = gen_orders_and_lines(rng, customers, products, promotions)
+    # ADR 0032: launches and price rises, decided before any order too.
+    events = catalogue_events.plan_catalogue_events(random.Random(RNG_SEED + 32), products, _MONTH_WINDOW,
+                                                    promotions.mispriced)
+    orders, lines = gen_orders_and_lines(rng, customers, products, promotions, events)
 
     # Post-pass: derive customer-level aggregates from the order
     # history (total_orders, total_spent_eur, last_order_month,
@@ -3185,25 +3153,25 @@ def main() -> None:
     # stock snapshot (Inventory's reorder workflow), and price-history
     # observations (Price Intelligence's fair-band + sweet-spot
     # `_relate`). See ADRs 0014 / 0015 / 0016.
-    monthly_sales = gen_monthly_sales(products, orders, lines)
+    monthly_sales = gen_monthly_sales(products, orders, lines, events)
     inventory = gen_inventory(rng, products, monthly_sales)
-    price_history = gen_price_history(rng, products, monthly_sales, promotions)
-    # Now that prices reflect demand-rank discounts/premiums, write
-    # the realised price back onto monthly_sales so Aito's
-    # `_estimate units_sold` conditions on the same price column.
-    # See ADR 0016 §"Price ↔ demand scatter chart".
-    backfill_monthly_sales_prices(monthly_sales, price_history)
+    # ADR 0032: each product as it was each month on sale: price, offer, the
+    # stars its reviews gave by then, new or not, a rival's launch, a rise.
+    product_states = catalogue_events.gen_product_states(
+        rng, products, _MONTH_WINDOW, events, promotions.discount,
+        catalogue_events.ratings_by_month(reviews, _MONTH_WINDOW))
+    backfill_monthly_sales_prices(monthly_sales, product_states)
     # Historical re-engagement campaigns — drives the Win-back
     # view's `_predict responded` per current-churned customer.
     # See ADR 0020.
-    winback_campaigns = gen_winback_campaigns(rng, customers, products, orders, lines)
+    winback_campaigns = gen_winback_campaigns(rng, customers, products, orders, lines, events)
 
     # Product impressions with the funnel outcome — gives the
     # recommendation surfaces a real conversion KPI to rank on
     # (`_recommend goal: {purchased: true}`). Generated after the
     # customer-aggregate backfill so `_sessions_for` can scale session
     # count by purchase activity. See ADR 0021.
-    impressions = gen_impressions(rng, customers, products, orders, lines)
+    impressions = gen_impressions(rng, customers, products, orders, lines, product_states)
 
     write_json(DATA_DIR / "products.json", products)
     write_json(DATA_DIR / "customers.json", customers)
@@ -3213,7 +3181,7 @@ def main() -> None:
     write_json(DATA_DIR / "customer_months.json", customer_months)
     write_json(DATA_DIR / "monthly_sales.json", monthly_sales)
     write_json(DATA_DIR / "inventory.json", inventory)
-    write_json(DATA_DIR / "price_history.json", price_history)
+    write_json(DATA_DIR / "product_states.json", product_states)
     write_json(DATA_DIR / "winback_campaigns.json", winback_campaigns)
     write_json(DATA_DIR / "impressions.json", impressions)
 
@@ -3227,7 +3195,7 @@ def main() -> None:
     print(f"  monthly_sales   {len(monthly_sales):>6}")
     print(f"  inventory       {len(inventory):>6}")
     print(f"  winback         {len(winback_campaigns):>6}")
-    print(f"  price_history   {len(price_history):>6}")
+    print(f"  product_states  {len(product_states):>6}")
     print(f"  impressions     {len(impressions):>6}")
     _print_impression_funnel(impressions)
 

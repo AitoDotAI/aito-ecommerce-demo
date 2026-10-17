@@ -445,7 +445,7 @@ class AitoClient:
 
         Example (Price Intelligence fair band):
             client.aggregate(
-                table="price_history",
+                table="product_states",
                 where={"product_sku": "SKU-PT-0001"},
                 aggregate_fields=[
                     "price_eur.$mean", "price_eur.$min",

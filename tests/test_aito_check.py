@@ -482,8 +482,8 @@ def test_shop_a_cage_in_the_cart_changes_what_is_recommended(client):
     """A6's shop form: the cart is context, so the ranking moves with it."""
     from src.shop_grid import get_shop_grid
 
-    empty = [i.sku for i in get_shop_grid(client, "sofia", "2026-04", []).items[:5]]
-    with_cage = [i.sku for i in get_shop_grid(client, "sofia", "2026-04", ["SKU-PT-0555"]).items[:5]]
+    empty = [i.sku for i in get_shop_grid(client, "paivi", "2026-04", []).items[:5]]
+    with_cage = [i.sku for i in get_shop_grid(client, "paivi", "2026-04", ["SKU-PT-0555"]).items[:5]]
 
     assert empty != with_cage, empty
 
@@ -506,21 +506,21 @@ def test_shop_an_item_bought_last_order_scores_lower_as_just_bought(client):
 
 
 def test_shop_suggests_the_hideout_next_for_a_cage_and_a_bottle(client):
-    """A2's shop form, for Sofia as of April 2026: she owns a cage and a
+    """A2's shop form, for Päivi as of April 2026: she owns a cage and a
     bottle, and the kit's next item is the hideout."""
     from src.shop_suggestions import get_suggestions
 
-    result = get_suggestions(client, "sofia", "2026-04")
+    result = get_suggestions(client, "paivi", "2026-04")
 
     assert result.owned == {"small_animal": ["cage", "water_bottle"]}, result.owned
     assert result.next_for_pet and "Hideout" in result.next_for_pet[0].name, result.next_for_pet
     assert result.usual, "no usual basket for a shopper with orders"
 def test_shop_a_cage_in_the_cart_is_a_reason_given_for_the_bottle(client):
-    """`$why` nested under the product's own lift names the cart: for Sofia
+    """`$why` nested under the product's own lift names the cart: for Päivi
     with a cage, the water bottle's reasons include it (ADR 0031, 2026-10-17)."""
     from src.shop_grid import get_shop_grid
 
-    grid = get_shop_grid(client, "sofia", "2026-04", ["SKU-PT-0555"])
+    grid = get_shop_grid(client, "paivi", "2026-04", ["SKU-PT-0555"])
 
     bottles = [i for i in grid.items if "Water Bottle" in i.name]
     assert bottles, [i.name for i in grid.items]
@@ -543,7 +543,7 @@ def test_shop_search_keeps_the_household_rule(client):
 def test_shop_search_for_words_no_name_holds_returns_nothing(client):
     from src.shop_search import search_shop
 
-    found = search_shop(client, "sofia", "2026-04", [], "zzqx")
+    found = search_shop(client, "paivi", "2026-04", [], "zzqx")
 
     assert (found.text_matched, found.items) == (False, [])
 

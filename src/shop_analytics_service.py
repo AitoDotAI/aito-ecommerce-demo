@@ -5,7 +5,8 @@ re-asks only its section:
 
   1. What goes with a click and a purchase — field-form `_relate` on
      `impressions`, `where {purchased: true}` (or `{clicked: true}`),
-     one per product, shopper, context and recency field. (This module.)
+     one per product, product-state, shopper, context and recency field.
+     (This module.)
   2. Who buys what, and when — `_relate` on `order_lines` over the
      product's category and dietary line, for one season, segment or
      diet rule. (This module.)
@@ -43,6 +44,9 @@ KPIS = ("purchased", "clicked")
 # same hits (probe, 2026-10-13), so it would show every row twice.
 FUNNEL_FIELDS = [
     "product_sku.rating_band", "product_sku.category",
+    # ADR 0032: the product as it was that month (one link, as product_sku.*).
+    "product_state.on_offer", "product_state.discount_band", "product_state.age",
+    "product_state.rival_launched", "product_state.price_change",
     "customer_segment", "customer_lifestyle", "customer_diet_rule",
     "just_bought", "surface",
 ]

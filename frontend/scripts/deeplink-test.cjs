@@ -136,12 +136,12 @@ function stubResponse(apiPath, params) {
                bought_together_anchor: null, last_query: STUB_QUERY };
     }
     case "/api/shop/shoppers":
-      return { shoppers: [{ key: "sofia", customer_id: "C1", name: "Sofia", emoji: "", story: "s" },
+      return { shoppers: [{ key: "paivi", customer_id: "C1", name: "Päivi", emoji: "", story: "s" },
                           { key: "janne", customer_id: "C2", name: "Janne", emoji: "", story: "j" }] };
     case "/api/shop/grid": {
       const cart = (params.get("cart") ?? "").split(",").filter(Boolean)
         .map((sku) => ({ sku, name: `Product ${sku}`, brand: "B", pet_type: "dog", category: "toys", price_eur: 1 }));
-      const shopper = params.get("shopper") ?? "sofia";
+      const shopper = params.get("shopper") ?? "paivi";
       return { shopper: { key: shopper, customer_id: "C", name: shopper, emoji: "", story: "" },
                month: params.get("month"), rule: null, cart, items: [], last_order_skus: [], last_query: STUB_QUERY };
     }

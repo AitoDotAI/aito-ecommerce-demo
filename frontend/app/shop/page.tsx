@@ -34,7 +34,7 @@ function ShopView() {
     breadcrumb: "Shop",
   });
   const { setPanel } = useShell();
-  const [shopperKey, setShopperKey] = useUrlState("shopper", "sofia");
+  const [shopperKey, setShopperKey] = useUrlState("shopper", "paivi");
   const [month, setMonth] = useUrlState("month", "2026-04");
   const [cartParam] = useUrlState("cart", "");
   const [openSku] = useUrlState("product", "");
@@ -148,7 +148,7 @@ function ShopView() {
       </form>
 
       {notFound && (
-        <NotFoundNotice message={notFound} resetLabel="Start over as Sofia, with an empty cart"
+        <NotFoundNotice message={notFound} resetLabel="Start over as Päivi, with an empty cart"
                         onReset={() => setUrl({ shopper: null, cart: null, product: null })} />
       )}
       {error && <ErrorState title="Couldn't load the shop" message={error} />}

@@ -90,6 +90,31 @@ SCHEMAS: dict[str, dict] = {
             "diet_rule":        {"type": "String",  "nullable": True},
         },
     },
+    # 2b. product_states — each product as it was in each month on sale
+    # (ADR 0032): what a shopper saw. Replaces `price_history` (same id and
+    # price columns). Impressions, order lines and monthly sales link here,
+    # so `_recommend product_state` can rank this month's products and an
+    # offer, the stars or being new can be a reason in `$why`. A link
+    # target, so it loads before the tables that link to it.
+    "product_states": {
+        "type": "table",
+        "columns": {
+            "product_state_id": {"type": "String",  "nullable": False},
+            "product_sku":      {"type": "String",  "nullable": False,
+                                 "link": "products.sku"},
+            "month":            {"type": "String",  "nullable": False},
+            "price_eur":        {"type": "Decimal", "nullable": False},
+            "list_price_eur":   {"type": "Decimal", "nullable": False},
+            "discount_pct":     {"type": "Decimal", "nullable": False},
+            "on_offer":         {"type": "Boolean", "nullable": False},
+            # Bands, because a number's bands can't be related on v2.
+            "discount_band":    {"type": "String",  "nullable": False},
+            "rating_band":      {"type": "String",  "nullable": False},
+            "age":              {"type": "String",  "nullable": False},
+            "rival_launched":   {"type": "Boolean", "nullable": False},
+            "price_change":     {"type": "String",  "nullable": False},
+        },
+    },
     # 3. orders — links to customers.
     "orders": {
         "type": "table",
@@ -116,7 +141,7 @@ SCHEMAS: dict[str, dict] = {
             "owned_before": {"type": "Text", "nullable": True,  "analyzer": "whitespace"},
         },
     },
-    # 4. order_lines — links to orders AND products. Load last.
+    # 4. order_lines — links to orders, products and product_states.
     "order_lines": {
         "type": "table",
         "columns": {
@@ -146,6 +171,9 @@ SCHEMAS: dict[str, dict] = {
             "customer_treat_affinity": {"type": "String", "nullable": False},
             "customer_brand_loyalty":  {"type": "String", "nullable": False},
             "customer_diet_rule":      {"type": "String", "nullable": True},
+            # ADR 0032: the product as it was that month (price, offer, stars, new).
+            "product_state":           {"type": "String", "nullable": False,
+                                        "link": "product_states.product_state_id"},
         },
     },
     # 4b. impressions — one product shown to a customer in a browsing
@@ -201,6 +229,9 @@ SCHEMAS: dict[str, dict] = {
             "clicked":       {"type": "Boolean", "nullable": False},
             "added_to_cart": {"type": "Boolean", "nullable": False},
             "purchased":     {"type": "Boolean", "nullable": False},
+            # ADR 0032: the product as it was that month (price, offer, stars, new).
+            "product_state":           {"type": "String", "nullable": False,
+                                        "link": "product_states.product_state_id"},
         },
     },
     # 5. reviews — links to customers AND products. Powers the
@@ -261,6 +292,9 @@ SCHEMAS: dict[str, dict] = {
             "units_last_month":        {"type": "Int",    "nullable": False},
             "units_bucket":            {"type": "String", "nullable": False},
             "units_last_month_bucket": {"type": "String", "nullable": False},
+            # ADR 0032: the product as it was that month (price, offer, stars, new).
+            "product_state":           {"type": "String", "nullable": False,
+                                        "link": "product_states.product_state_id"},
         },
     },
     # 8. inventory — per-SKU stock snapshot. Drives the Inventory
@@ -277,21 +311,6 @@ SCHEMAS: dict[str, dict] = {
             "safety_stock":        {"type": "Int",     "nullable": False},
             "supplier":            {"type": "String",  "nullable": False},
             "last_received_month": {"type": "String",  "nullable": False},
-        },
-    },
-    # 9. price_history — per-SKU per-month price snapshots. Drives
-    # the Price Intelligence view's fair-band display + `_relate`
-    # for price-band ↔ units_sold sweet spots.
-    "price_history": {
-        "type": "table",
-        "columns": {
-            "price_observation_id": {"type": "String",  "nullable": False},
-            "product_sku":          {"type": "String",  "nullable": False,
-                                     "link": "products.sku"},
-            "month":                {"type": "String",  "nullable": False},
-            "price_eur":            {"type": "Decimal", "nullable": False},
-            "list_price_eur":       {"type": "Decimal", "nullable": False},
-            "discount_pct":         {"type": "Decimal", "nullable": False},
         },
     },
     # 6b. winback_campaigns — historical re-engagement emails sent to
