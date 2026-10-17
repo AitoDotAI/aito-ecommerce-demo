@@ -131,6 +131,20 @@ Left as they are, and reported as they come out: P1b on seed 99 (premium
 1.305 against ≤ 1.3), P2b on seeds 7 and 99 (1.08, 1.26 against ≥ 1.3)
 and P3a on seed 7 (0.935 against ≤ 0.92).
 
+## Amendment after the second null run (2026-10-17, decided by Antti, before the third)
+
+The second null run passed 22 of 27: P4a now passes on every seed; P2c
+read 0.99 on every seed and P3a missed on seeds 7 and 99 (0.98, 0.98).
+Cause: both effects reached fresh picks only, while most of a food's
+sales are restocks of a staple chosen long before, which ignore rivals
+and scale only their quantity with price.
+
+**Change:** a household reconsiders its staple when it has just risen in
+price or a rival has just launched in its slice: for `RECENT_MONTHS`
+after either, the staple's switch probability is ×3 (`RECONSIDER_FACTOR`).
+The nulls switch it off with their effect (price rise, launch pull).
+Margins unchanged.
+
 ## Results
 
 (none yet)
