@@ -122,9 +122,8 @@ function ShopView() {
       {error && <ErrorState title="Couldn't load the shop" message={error} />}
 
       {!error && !notFound && (
-        <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 320px", gap: 16, alignItems: "start" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 12,
-                        opacity: stale ? 0.5 : 1 }} aria-busy={!shown || stale}>
+        <div className="shop-layout">
+          <div className="shop-grid" style={{ opacity: stale ? 0.5 : 1 }} aria-busy={!shown || stale}>
             {!shown && Array.from({ length: 8 }, (_, i) => (
               <div key={i} className="card" style={{ height: 170, background: "var(--border-light)" }} />
             ))}
@@ -134,7 +133,7 @@ function ShopView() {
                            onOpen={() => setUrl({ product: item.sku })} />
             ))}
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div className="shop-side">
             <CartPanel cart={shown?.cart ?? []} onRemove={(sku) => setCart(cart.filter((s) => s !== sku))}
                        onClear={() => setCart([])} />
             {suggestionsError && (
