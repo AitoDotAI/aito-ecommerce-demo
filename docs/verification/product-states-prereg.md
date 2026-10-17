@@ -145,6 +145,16 @@ after either, the staple's switch probability is ×3 (`RECONSIDER_FACTOR`).
 The nulls switch it off with their effect (price rise, launch pull).
 Margins unchanged.
 
+*Addendum, same evening, before any complete run:* the first attempt
+crashed in the price-rise null (it no longer marked which products were
+due to rise, so P3a had nothing to measure), and its one finished seed
+showed P2c at 0.97: a household that switches mostly lands on *another
+incumbent*, so incumbents as a group keep their sales. So a household
+that reconsiders because a rival launched switches **to** that rival
+(when it keeps the household's diet rule and is a staple for the pet);
+the price-rise null keeps `price_change` marking the planned rise and
+only switches its effect off.
+
 ## Results
 
 (none yet)
