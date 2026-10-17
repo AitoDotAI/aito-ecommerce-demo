@@ -78,7 +78,7 @@ Each failure was diagnosed before anything changed:
 | P2d | 1.17 | Confounded: loyal shoppers' purchase rate differs from flexible shoppers' on every product (favourite brands ×6), so the raw ratio isn't the planted effect. | **Check:** for launched products, (flexible ÷ loyal purchase rate while new) ÷ (the same ratio once established); ≥ 1.3. |
 | P3a | 0.96 | A bug in the check: the comparison group (unraised products of the category) included launched products, whose units go from 0 to some. | **Check:** the comparison group leaves out launched products. Threshold unchanged. |
 | P4a | 1.03 | Confounded across products: those with few early reviews have extreme bands (5 or 1–2) and are the less-bought ones. | **Check:** within product: for each product with impressions in months it showed 5 stars and months it showed 3, its purchase rate at 5 ÷ at 3, pooled (impressions-weighted); ≥ 1.15. If fewer than 15 products qualify, ≥ 4 stars vs ≤ 3 instead, ≥ 1.1. |
-| P5a | 1.79 | The pack fit entered the customer score, which reaches the staple choice and 65 % of basket re-picks only. | **Generator:** the pack fit also weights the basket draw and the seasonal lines (the per-customer `demand`). Strength unchanged. |
+| P5a | 1.79 | The pack fit entered the customer score, which reaches the staple choice and 65 % of basket re-picks only. | **Generator:** the pack fit also weights the basket draw's first pick (the seasonal lines hold no food). Strength unchanged. |
 
 ## Results
 
