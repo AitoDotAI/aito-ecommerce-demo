@@ -80,6 +80,42 @@ Each failure was diagnosed before anything changed:
 | P4a | 1.03 | Confounded across products: those with few early reviews have extreme bands (5 or 1–2) and are the less-bought ones. | **Check:** within product: for each product with impressions in months it showed 5 stars and months it showed 3, its purchase rate at 5 ÷ at 3, pooled (impressions-weighted); ≥ 1.15. If fewer than 15 products qualify, ≥ 4 stars vs ≤ 3 instead, ≥ 1.1. |
 | P5a | 1.79 | The pack fit entered the customer score, which reaches the staple choice and 65 % of basket re-picks only. | **Generator:** the pack fit also weights the basket draw's first pick (the seasonal lines hold no food). Strength unchanged. |
 
+## Amendment after the second generation (2026-10-17, decided by Antti, before any null run)
+
+The second generation still failed P2b (1.22), P3a and P4a, and D1 fell
+to 49.9 % (floor 50 %). Generating the same seed with one effect switched
+off showed why fixed thresholds can't judge them: with the stars effect
+off, P4a's within-product ratio read 1.16, and with it on 1.05 (changing
+one impression's odds re-draws every later impression, so a check on 52
+products swings by ±0.1); with the price rise off, raised products'
+pooled sales ratio read 1.11, and with it on 0.83 (the randomly chosen
+products drift up by themselves).
+
+**The rule from here.** Each planted effect is judged against a **null
+generation**: the same seed with that effect switched off, so that time
+trends, selection and every confound show up in both. For seeds 42, 7
+and 99, a check passes only if `metric(planted) ÷ metric(null)` clears
+its margin on **every** seed. `scripts/planted_effects.py` runs it
+(`./do planted-effects`) and writes `docs/verification/product-states-data.md`.
+
+| # | null generation | metric | pass when planted ÷ null |
+|:--|:--|:--|:--|
+| P1a | `OFFER_ODDS` all 1 | budget: purchase rate on offer ÷ not | ≥ 1.5 |
+| P1b | the same | premium: the same ratio; and budget's planted÷null over premium's | premium ≤ 1.3; budget ÷ premium ≥ 1.4 |
+| P2b | `LAUNCH_PICK_FACTOR` 1, `NEW_ODDS` all 1 | launched products' slice share, first 3 months ÷ months 4–9, pooled | ≥ 1.3 |
+| P2c | the same | incumbents' units 3 months after a launch ÷ 3 before, pooled | ≤ 0.95 |
+| P2d | the same | on launched products, (flexible ÷ loyal purchase rate) new ÷ established | ≥ 1.25 |
+| P3a | `RISE_RANGE` (1, 1) | raised products' units 6 months after ÷ 6 before, over the same for products neither raised nor launched | ≤ 0.92 |
+| P4a | `STARS_ODDS` all 1 | purchase rate at 5 stars ÷ at 3, products not poorly made (across products: the null carries the confound) | ≥ 1.15 |
+| P5a | `PACK_FIT` 1 | share of dog-food lines ≥ 7 kg, large-dog ÷ small-dog households | ≥ 1.8 |
+
+P2a and P6 stay absolute (nothing before a launch; every row links to
+its state) and stay in `tests/test_product_states_data.py`.
+
+**D1** (food re-buy share, floor 50 %) read 49.9 %: launches give
+switchers and new customers new products to settle on. Its floor becomes
+48 %, with that reason. No other D or S range moved.
+
 ## Results
 
 (none yet)
