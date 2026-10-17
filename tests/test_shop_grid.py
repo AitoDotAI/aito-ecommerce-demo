@@ -1,54 +1,12 @@
-"""The Shop grid (src/shop_grid.py), against a fake Aito.
-
-The live behaviour of the same queries is checked in test_aito_check.py
-on the ADR 0030 test env.
-"""
+"""The Shop grid (src/shop_grid.py, src/shop_ranking.py), against a fake Aito."""
 
 import pytest
 
 from src.aito_client import AitoError
 from src.lookup_errors import UnknownProductError
 from src.shop_grid import get_shop_grid
-
-CUSTOMERS = {
-    "CUST-00049": {"customer_id": "CUST-00049", "segment": "dog_owner", "lifestyle": "mid",
-                   "health_focus": "high", "treat_affinity": "low", "brand_loyalty": "loyal",
-                   "diet_rule": "grain-free"},
-    "CUST-00053": {"customer_id": "CUST-00053", "segment": "cat_owner", "lifestyle": "mid",
-                   "health_focus": "medium", "treat_affinity": "medium", "brand_loyalty": "flexible"},
-}
-
-
-def product(sku, p=0.0, category="dry-food"):
-    return {"sku": sku, "name": f"Brand {sku}", "brand": "Brand", "pet_type": "cat",
-            "category": category, "price_eur": 4.0, "$p": p}
-
-
-class FakeAito:
-    def __init__(self, ranked, last_order="SKU-B SKU-X", reasked_p=0.02):
-        self.ranked = ranked
-        self.last_order = last_order
-        self.reasked_p = reasked_p
-        self.recommends: list[dict] = []
-        self.batches: list[list[dict]] = []
-
-    def search(self, table, *, where, limit=10, **_):
-        if table == "customers":
-            return {"hits": [CUSTOMERS[where["customer_id"]]]}
-        if table == "products":
-            return {"hits": [product(s) for s in where["sku"]["$or"] if s.startswith("SKU-")]}
-        orders = [{"month": "2026-03", "skus": self.last_order}, {"month": "2025-11", "skus": "SKU-OLD"}]
-        return {"hits": orders, "total": len(orders)}
-
-    def recommend(self, table, where, recommend_field, goal, limit=8):
-        self.recommends.append(where)
-        return {"hits": self.ranked}
-
-    def batch(self, queries):
-        self.batches.append(queries)
-        return [{"hits": [{"feature": False, "$p": 1 - self.reasked_p}, {"feature": True, "$p": self.reasked_p}]}
-                for _ in queries]
-
+from src.shop_reasons import Reason
+from tests.fake_shop_aito import FakeShopAito as FakeAito, product
 
 def test_a_household_rule_is_a_filter_on_the_candidates():
     fake = FakeAito([product("SKU-A", 0.5)])
@@ -106,3 +64,13 @@ def test_a_predict_without_a_true_answer_raises():
 def test_a_cart_listing_a_product_twice_is_refused():
     with pytest.raises(ValueError, match="twice"):
         get_shop_grid(FakeAito([]), "helena", "2026-04", ["SKU-C", "SKU-C"])
+
+
+def test_each_item_carries_aitos_reasons_and_the_facts_beside_them():
+    fake = FakeAito([product("SKU-A", 0.5, category="dry-food", pet_type="dog")], offers={"SKU-A": 17.5})
+
+    [item] = get_shop_grid(fake, "janne", "2026-04", []).items
+
+    assert item.reasons == [Reason("Lifestyle: mid", 1.3)]
+    # Facts, not reasons: the offer this month, the stars, and the rule kept.
+    assert (item.offer_pct, item.avg_rating, item.keeps_rule) == (17.5, 4.2, True)
