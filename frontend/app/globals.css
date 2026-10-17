@@ -579,10 +579,22 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 900px) {
   .shop-layout { grid-template-columns: minmax(0, 1fr); }
   .shop-side   { order: -1; }
+  /* Searching, the results come first; the cart follows them. */
+  .shop-searching .shop-side { order: 0; }
 }
 @media (max-width: 520px) {
   .shop-grid   { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 }
+.shop-card-name { all: unset; cursor: pointer; font-weight: 600; font-size: 13px; line-height: 1.3; }
+.shop-card-name:hover { text-decoration: underline; }
+.shop-card-name:focus-visible { outline: 2px solid var(--aito-teal); outline-offset: 2px; }
+/* Aito's reasons (teal) and plain facts (grey) look different on purpose. */
+.shop-reason, .shop-fact {
+  font-size: 11px; line-height: 1.4; padding: 1px 6px; border-radius: 10px; white-space: nowrap;
+}
+.shop-reason { color: var(--aito-teal); border: 1px solid var(--aito-teal); }
+.shop-fact   { color: var(--text-2); background: var(--border-light); }
+.shop-fact-offer { color: var(--green); background: var(--green-bg); }
 
 .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .data-table th {

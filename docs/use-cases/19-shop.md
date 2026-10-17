@@ -2,7 +2,8 @@
 
 *Pick a shopper and a month, fill a cart, and the grid follows: who they
 are, the season, what's in the cart and what they bought last time all
-change what Aito suggests. A product opens to show what goes with it; a
+change what Aito suggests, and each card says why. Search ranks the same
+way. A product opens to show its alternatives and what goes with it; a
 routine buyer can fill their usual basket in one click; a new pet owner
 sees what's next for the kit.*
 
@@ -57,9 +58,52 @@ added to the same context. Aito learned that a shopper rarely re-buys what
 they just bought (ADR 0030, check A8); the card shows the drop, e.g.
 "Bought last order: 8 % → 2 %".
 
-### The product drawer — same basket, and your orders
+### Why each product — the lifts in its `$why`
+
+`src/shop_reasons.py`. Each card shows up to three reasons, read from the
+grid's own `_recommend` hit: under the product's own lift in `$why`, Aito
+nests how much each part of the context lifts *this* product.
+
+```json
+{ "type": "hitPropositionLift", "proposition": { "product_sku": { "$has": "SKU-PT-0553" } },
+  "factors": [ { "type": "relatedPropositionLift", "proposition": { "customer_treat_affinity": "high" }, "value": 1.49 },
+               { "type": "relatedPropositionLift", "proposition": { "month": "2026-04" }, "value": 1.32 },
+               { "type": "relatedPropositionLift", "proposition": { "$group": ["…basket_categories…"] }, "value": 2.38 } ] }
+```
+
+For Sofia with a cage in the cart, the fruit treat reads "Goes with your
+cart ×3.0 · Treat affinity: high ×1.5 · Sells in April ×1.3". They
+explain the probability on the same card.
+
+Beside them, in grey, are **facts**: an offer this month (`price_history`,
+at least 10 % off), the star rating, "keeps their rule". They aren't
+shown as reasons because the data can't weigh them yet: `impressions`
+records no offer, and the rating's lift in `$why` is small and mixed.
+
+### Search — the grid's ranking over the products the words name
+
+`src/shop_search.py`. A query keeps the shopper, month, cart and rule:
+
+1. `_search products` by `$similarity` on the name: which products the
+   words name, each with its text lift (`$score > 1`).
+2. `_recommend` as the grid, restricted to them (`product_sku: {"$or": …}`),
+   selecting `$p` only.
+3. Ranked by `$p` × text lift (Smart Search's blend); the top 12 are asked
+   once more for their reasons, facts and the just-bought re-ask.
+
+Smart Search's one-query blend (`_search impressions get product_sku`)
+isn't used here: its `where` conditions `$p` but doesn't filter on
+`product_sku.*`, so a grain-free household would see grain food.
+
+### The product drawer — details, alternatives, same basket, your orders
 
 `src/shop_product.py`.
+
+- **Details:** brand, price, this month's offer, stars, diet and tags.
+- **Instead, this shopper might buy:** the grid's ranking over the same
+  category for the same pet, with reasons. A kit item's category
+  ("accessories") holds cages and bottles alike, so a kit item's name
+  must also hold its type: a bottle's alternatives are bottles.
 
 - **Often in the same basket:** `_relate` on `orders` where
   `skus: {"$match": SKU}`, related to `skus`. Product pairs are thin (a
@@ -86,7 +130,9 @@ they just bought (ADR 0030, check A8); the card shows the drop, e.g.
 
 | Panel | Table | Columns |
 |---|---|---|
-| Grid | `impressions` | `customer_*`, `month`, `basket_categories`, `basket_skus`, `just_bought`, `purchased` |
+| Grid, search, alternatives | `impressions` | `customer_*`, `month`, `basket_categories`, `basket_skus`, `just_bought`, `purchased` |
+| Search words | `products` | `name` |
+| Offers | `price_history` | `month`, `discount_pct` |
 | Rule filter | `products` (link) | `category`, `name` |
 | Same basket | `orders` | `skus` |
 | Your orders | `orders` | `customer_id`, `skus`, `month` |
@@ -107,5 +153,6 @@ they just bought (ADR 0030, check A8); the card shows the drop, e.g.
 
 ```bash
 ./do dev
-# → http://localhost:8500/shop/?shopper=sofia
+# → http://localhost:8500/shop/?shopper=sofia&cart=SKU-PT-0555
+# → http://localhost:8500/shop/?shopper=janne&q=food   (only grain-free food)
 ```

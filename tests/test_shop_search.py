@@ -55,6 +55,7 @@ def test_a_query_no_product_name_matches_says_so_and_returns_nothing():
 
     assert (found.text_matched, found.items) == (False, [])
     assert fake.recommends == []
+    assert found.last_query["body"]["from"] == "products"   # the page shows the query that found nothing
 
 
 def test_an_empty_query_is_refused():

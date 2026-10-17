@@ -838,9 +838,25 @@ export interface ShopProduct {
   price_eur: number;
 }
 
+export interface ShopReason {
+  label: string;   // "Goes with your cart", "Sells in April", "Treat affinity: high"
+  lift: number;    // how much it multiplies this product's odds of a purchase
+}
+
 export interface ShopItem extends ShopProduct {
   p: number;                   // P(purchased) for this shopper, now
+  reasons: ShopReason[];       // Aito's: what lifts this product for this shopper
+  avg_rating: number | null;   // facts, shown beside the reasons, not as reasons
+  offer_pct: number | null;
+  keeps_rule: boolean;
   p_if_new: number | null;     // bought last order: its P before Aito was told so
+}
+
+export interface ShopSearch {
+  query: string;
+  text_matched: boolean;       // false: no product name holds any query word
+  items: ShopItem[];
+  last_query: { endpoint: string; body: Record<string, unknown> };
 }
 
 export interface ShopGrid {
@@ -862,7 +878,9 @@ export interface ShopBasketPair {
 }
 
 export interface ShopProductDrawer {
-  product: ShopProduct;
+  product: ShopProduct & { avg_rating: number | null; dietary: string | null; tags: string };
+  offer_pct: number | null;    // this month's offer, from price_history
+  alternatives: ShopItem[];    // the same kind of product, ranked for this shopper
   same_basket: ShopBasketPair[];
   your_orders: string[];   // months of this shopper's orders that held it
   last_query: { endpoint: string; body: Record<string, unknown> };

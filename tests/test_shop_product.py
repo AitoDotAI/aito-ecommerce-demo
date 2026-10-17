@@ -69,3 +69,16 @@ def test_alternatives_are_the_same_kind_of_product_ranked_for_this_shopper():
     assert where["product_sku"] == {"$not": {"$or": ["SKU-C", "SKU-A"]}}   # the cart, and itself
     assert [a.sku for a in drawer.alternatives] == ["SKU-ALT"]
     assert drawer.offer_pct == 17.5
+
+
+def test_a_kit_items_alternatives_are_the_same_kind_of_kit():
+    # "accessories" holds cages and bottles alike: a bottle's alternatives are bottles.
+    fake = FakeAito([])
+    fake.search = lambda table, *, where=None, limit=10, **kw: (
+        {"hits": [{**product("SKU-A", category="accessories", pet_type="small_animal"),
+                   "name": "PetNord Water Bottle 500ml", "brand": "PetNord"}]}
+        if table == "products" and where == {"sku": "SKU-A"} else FakeAito.search(fake, table, where=where, limit=limit, **kw))
+
+    get_product_drawer(fake, "SKU-A", "helena", "2026-04", [])
+
+    assert fake.recommends[0]["product_sku.name"] == {"$match": "Water Bottle"}

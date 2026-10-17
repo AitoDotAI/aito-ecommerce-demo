@@ -4,7 +4,9 @@ with it (ADR 0031).
 - **Details**: the catalogue row, and this month's offer (`shop_offers`).
 - **Alternatives**: the grid's ranking (`src/shop_ranking.py`) over the
   same category for the same pet, the product itself and the cart left
-  out: what this shopper would most likely buy instead, with reasons.
+  out: what this shopper would most likely buy instead, with reasons. A
+  kit item's category ("accessories") holds cages and bottles alike, so
+  for one the name must also hold its type: another water bottle.
 - **Often in the same basket**: `_relate` on `orders`, where the order's
   SKUs hold this one, related to `skus`. Pairs are thin per product (a few
   orders each), so every row shows its count, and a pair is kept only with
@@ -22,6 +24,7 @@ from src.aito_client import AitoClient
 from src.aito_compat import related_value
 from src.lookup_errors import UnknownProductError
 from src.price_bands import lift_interval
+from src.shop_context import DURABLE_TYPES, item_type
 from src.shop_offers import offers_this_month
 from src.shop_ranking import ShopItem, ranked_items, shop_scope
 
@@ -63,6 +66,8 @@ def get_product_drawer(client: AitoClient, sku: str, shopper_key: str, month: st
     scope = shop_scope(client, shopper_key, month, cart_skus)
     same_kind = {**scope.where(exclude=[sku]),
                  "product_sku.category": product["category"], "product_sku.pet_type": product["pet_type"]}
+    if (kind := item_type(product["name"], product["brand"])) in DURABLE_TYPES:
+        same_kind["product_sku.name"] = {"$match": kind}
     alternatives = ranked_items(client, scope, same_kind, ALTERNATIVES)
 
     body = {"from": "orders", "where": {"skus": {"$match": sku}}, "relate": "skus", "limit": 40}

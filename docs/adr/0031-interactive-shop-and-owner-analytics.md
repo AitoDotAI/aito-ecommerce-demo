@@ -190,3 +190,9 @@ clicked or bought: relevant details, discounts, good reviews.
   each with its lift, and an offer or rating only as a fact.
 - An opened product shows its details, alternatives from its own
   category for this shopper, and the same-basket products.
+
+### Demo impact
+
+The Shop's optional beat gains the reason chips, a product's
+alternatives, and Janne's "food" search (only grain-free food). The
+other beats are unchanged.

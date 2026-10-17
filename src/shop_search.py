@@ -53,7 +53,8 @@ def search_shop(client: AitoClient, shopper_key: str, month: str, cart_skus: lis
     text_lift = _name_matches(client, query)
     candidates = [sku for sku in text_lift if sku not in cart_skus]
     if not candidates:
-        return ShopSearch(query=query, text_matched=bool(text_lift), items=[], last_query={})
+        return ShopSearch(query=query, text_matched=bool(text_lift), items=[],
+                          last_query={"endpoint": "_search", "body": _name_query(query)})
 
     where = scope.where(only=candidates)
     hits = client.recommend("impressions", where, "product_sku", {"purchased": True},
@@ -72,9 +73,14 @@ def search_shop(client: AitoClient, shopper_key: str, month: str, cart_skus: lis
 
 def _name_matches(client: AitoClient, query: str) -> dict[str, float]:
     """{sku: text lift} for the products whose name holds a query word."""
-    res = client.search("products", order_by={"$similarity": {"name": query}, "theta": TEXT_THETA},
-                        select=["sku", "$score"], limit=CATALOGUE_LIMIT)
+    body = _name_query(query)
+    res = client.search(body["from"], order_by=body["orderBy"], select=body["select"], limit=body["limit"])
     if res["total"] > len(res["hits"]):
         raise AitoError(f"The catalogue has {res['total']} products, more than the {CATALOGUE_LIMIT} "
                         "the Shop's search reads")
     return {h["sku"]: float(h["$score"]) for h in res["hits"] if h["$score"] > 1.0}
+
+
+def _name_query(query: str) -> dict:
+    return {"from": "products", "orderBy": {"$similarity": {"name": query}, "theta": TEXT_THETA},
+            "select": ["sku", "$score"], "limit": CATALOGUE_LIMIT}

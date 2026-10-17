@@ -206,9 +206,11 @@ the profit move (ADR 0029).
 Open `/shop/?shopper=sofia`. "Sofia just got a guinea pig: a cage and a
 bottle so far." Point at "What's next for their pet": the hideout, because
 shoppers who owned a cage and a bottle bought that next. Add a cage to the
-cart and watch the grid move. Switch to Janne: "a grain-free household;
-the rule is a filter, Aito ranks within it." Switch to Helena and press
-"Fill my usual basket".
+cart and watch the grid move; the teal chips say why ("Goes with your
+cart ×3.0"), the grey ones are facts (an offer, the stars). Open a product:
+its alternatives, ranked for her. Switch to Janne and search "food":
+"only grain-free food, ranked for this household." Switch to Helena and
+press "Fill my usual basket".
 
 ## Optional beat — the owner's view (30 s)
 
