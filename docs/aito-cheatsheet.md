@@ -1151,6 +1151,30 @@ Each was run on the test env `shoppers` (2026-10-13) before a view used it.
   `"just_bought": true` added to the `where` gives the probability as if
   just bought (0.085 → 0.022 for one product).
 
+### Why a product, and search, in the Shop (probed 2026-10-17 on master)
+
+- **A product's reasons are in its own `$why`.** On a `_recommend` hit
+  (no `basedOn`), the factor `{"type": "hitPropositionLift",
+  "proposition": {"product_sku": {"$has": SKU}}}` carries nested
+  `relatedPropositionLift`s: how much each part of the `where` lifts
+  *this* product (`customer_treat_affinity: high` ×1.49, `month` ×1.32,
+  the cart's `basket_*` propositions ×2.4). The other `hitPropositionLift`s
+  are `$not` other products and aren't this product's reasons. A product
+  with few impressions of its own has no such factor, only
+  `hitLinkPropositionLift` (its features' prior). `src/shop_reasons.py`.
+- **`basedOn` adds per-feature lifts but moves `$p`.** With `basedOn:
+  ["rating_band", "dietary", "category", "tags", "brand"]`, `$why` gains
+  a lift per product feature (grain-free ×1.28), but `$p` roughly
+  doubled (0.46 → 0.87 for one product and shopper) and the top 12
+  became one category. The Shop doesn't use it.
+- **`_search` with `get` doesn't filter on the linked table's fields.**
+  `from: impressions, get: product_sku` with `where` on `product_sku.*`
+  (a category, or the rule's `$or`) still returned all 658 products: the
+  `where` only conditions `$p`. A `where` on `product_sku` itself
+  (`{"$or": [SKUs]}`) does narrow it. An empty `$or` matches everything.
+  The Shop's search ranks name matches through `_recommend` instead,
+  which does apply the filter (`src/shop_search.py`).
+
 ## `AitoClient` method ↔ endpoint cheat reference
 
 | Method | Endpoint | First view that uses it |

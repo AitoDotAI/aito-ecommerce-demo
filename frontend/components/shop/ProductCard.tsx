@@ -2,9 +2,10 @@
 
 import { fmtEur } from "@/lib/api";
 import type { ShopItem } from "@/lib/types";
+import ProductHighlights from "@/components/shop/ProductHighlights";
 
 /** One recommended product: Aito's purchase probability for this shopper,
- *  and, for something they bought last order, how far that pulled it down. */
+ *  why, and, for something they bought last order, how far that pulled it down. */
 export default function ProductCard({ item, onAdd, onOpen }: {
   item: ShopItem;
   onAdd: () => void;
@@ -14,7 +15,7 @@ export default function ProductCard({ item, onAdd, onOpen }: {
     <div className="card" style={{ padding: 12, display: "flex", flexDirection: "column", gap: 6 }}>
       <button
         onClick={onOpen}
-        style={{ all: "unset", cursor: "pointer", fontWeight: 600, fontSize: 13, lineHeight: 1.3 }}
+        className="shop-card-name"
         aria-label={`Open ${item.name}`}
       >
         {item.name}
@@ -33,7 +34,12 @@ export default function ProductCard({ item, onAdd, onOpen }: {
           Bought last order: {Math.round(item.p_if_new * 100)} % → {Math.round(item.p * 100)} %
         </div>
       )}
-      <button className="btn" style={{ marginTop: "auto" }} onClick={onAdd}>Add to cart</button>
+      <ProductHighlights reasons={item.reasons} offerPct={item.offer_pct} rating={item.avg_rating}
+                         keepsRule={item.keeps_rule} />
+      <div style={{ display: "flex", gap: 6, marginTop: "auto" }}>
+        <button className="btn" style={{ flex: 1 }} onClick={onAdd}>Add to cart</button>
+        <button className="btn btn-ghost" onClick={onOpen} aria-label={`Details of ${item.name}`}>Details</button>
+      </div>
     </div>
   );
 }

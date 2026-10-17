@@ -184,7 +184,8 @@ export function shopPanel(): AitoPanelConfig {
       `with who they are, the month and the cart as context; a household's diet rule is a ` +
       `filter, not a prediction. Anything from their last order is re-asked in one ` +
       `<code style="color:var(--aito-teal);">_batch</code> as "just bought", and falls. ` +
-      `The query below is the grid's, as sent.`,
+      `Each card's reasons are the lifts in its <code style="color:var(--aito-teal);">$why</code>. ` +
+      `A search ranks the products its words name the same way. The query below is the one behind what is shown.`,
     query: "",
     links: LEARN_MORE_LINKS,
   };

@@ -515,6 +515,49 @@ def test_shop_suggests_the_hideout_next_for_a_cage_and_a_bottle(client):
     assert result.owned == {"small_animal": ["cage", "water_bottle"]}, result.owned
     assert result.next_for_pet and "Hideout" in result.next_for_pet[0].name, result.next_for_pet
     assert result.usual, "no usual basket for a shopper with orders"
+def test_shop_a_cage_in_the_cart_is_a_reason_given_for_the_bottle(client):
+    """`$why` nested under the product's own lift names the cart: for Sofia
+    with a cage, the water bottle's reasons include it (ADR 0031, 2026-10-17)."""
+    from src.shop_grid import get_shop_grid
+
+    grid = get_shop_grid(client, "sofia", "2026-04", ["SKU-PT-0555"])
+
+    bottles = [i for i in grid.items if "Water Bottle" in i.name]
+    assert bottles, [i.name for i in grid.items]
+    assert any(r.label == "Goes with your cart" and r.lift > 1.5 for r in bottles[0].reasons), bottles[0].reasons
+    assert sum(1 for i in grid.items if i.reasons) >= len(grid.items) // 2, "most items should have reasons"
+
+
+def test_shop_search_keeps_the_household_rule(client):
+    """Search ranks through `_recommend`, which applies the rule; `_search …
+    get` would not (it returned grain food for this household, 2026-10-17)."""
+    from src.shop_search import search_shop
+
+    found = search_shop(client, "janne", "2026-04", [], "food")
+
+    assert found.text_matched and found.items
+    assert all("Grain Free" in i.name for i in found.items if i.category in ("dry-food", "wet-food")), \
+        [i.name for i in found.items]
+
+
+def test_shop_search_for_words_no_name_holds_returns_nothing(client):
+    from src.shop_search import search_shop
+
+    found = search_shop(client, "sofia", "2026-04", [], "zzqx")
+
+    assert (found.text_matched, found.items) == (False, [])
+
+
+def test_shop_alternatives_are_the_same_kind_for_the_same_pet(client):
+    from src.shop_product import get_product_drawer
+
+    drawer = get_product_drawer(client, "SKU-PT-0182", "janne", "2026-04", [])
+
+    assert drawer.alternatives
+    assert all((a.category, a.pet_type) == ("dental-treats", "dog") and a.sku != "SKU-PT-0182"
+               for a in drawer.alternatives), drawer.alternatives
+
+
 # ── Shop analytics (ADR 0031): each section shows rows and a planted pattern ──
 # Rows are judged with clustering by customer and a Bonferroni level per
 # section (src/lift_rows.py), so a planted effect on few customers can

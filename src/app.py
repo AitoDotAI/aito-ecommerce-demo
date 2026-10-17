@@ -39,6 +39,7 @@ from src.product_insights_service import get_product_insights
 from src.shop_grid import get_shop_grid
 from src.shop_personas import SHOPPERS, UnknownShopperError
 from src.shop_product import get_product_drawer
+from src.shop_search import search_shop
 from src.shop_suggestions import get_suggestions
 from src.basket_pairs import get_basket_section
 from src.search_words import get_search_words_section
@@ -391,6 +392,10 @@ def _shop(compute):
         return JSONResponse(status_code=502, content={"error": str(exc), "status_code": exc.status_code})
 
 
+def _cart_skus(cart: str) -> list[str]:
+    return [s for s in cart.split(",") if s]
+
+
 @app.get("/api/shop/shoppers")
 def shop_shoppers_endpoint():
     """The shoppers the Shop view lets you be, each with a story."""
@@ -401,14 +406,20 @@ def shop_shoppers_endpoint():
 def shop_grid_endpoint(shopper: str, month: str = Query(pattern=MONTH), cart: str = ""):
     """What to show this shopper now: `_recommend` with profile, month and
     cart as context, the household rule as a filter, recency re-asked."""
-    skus = [s for s in cart.split(",") if s]
-    return _shop(lambda: get_shop_grid(aito, shopper, month, skus))
+    return _shop(lambda: get_shop_grid(aito, shopper, month, _cart_skus(cart)))
+
+
+@app.get("/api/shop/search")
+def shop_search_endpoint(q: str, shopper: str, month: str = Query(pattern=MONTH), cart: str = ""):
+    """The products whose name the query matches, ranked as the grid ranks them."""
+    return _shop(lambda: search_shop(aito, shopper, month, _cart_skus(cart), q))
 
 
 @app.get("/api/shop/product")
-def shop_product_endpoint(sku: str, shopper: str, month: str = Query(pattern=MONTH)):
-    """A product's drawer: often in the same basket, and in your orders before `month`."""
-    return _shop(lambda: get_product_drawer(aito, sku, shopper, month))
+def shop_product_endpoint(sku: str, shopper: str, month: str = Query(pattern=MONTH), cart: str = ""):
+    """A product's drawer: details, alternatives for this shopper, often in
+    the same basket, and in your orders before `month`."""
+    return _shop(lambda: get_product_drawer(aito, sku, shopper, month, _cart_skus(cart)))
 
 
 @app.get("/api/shop/suggestions")
