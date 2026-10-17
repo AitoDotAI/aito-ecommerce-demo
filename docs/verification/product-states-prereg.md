@@ -67,6 +67,19 @@ with a minimal reproduction for Aito core.
 5. `_relate purchased` → `product_state.discount_band`.
 6. `_relate` → `product_state.product_sku.category`.
 
+## Amendments after the first generation (2026-10-17, data checks only, before any Aito run)
+
+The first generation passed P1a, P1b, P2a, P2c and P6, and failed five.
+Each failure was diagnosed before anything changed:
+
+| check | result | cause | change |
+|:--|:--|:--|:--|
+| P2b | 1.03 | Two causes. (1) The baseline, a fair share by product count, is wrong for food: households keep the food they settled on before a launch, so even an *established* launched food sits at 0.64–0.81 of "fair". In treats and toys, a new product's share was 1.6× fair against 0.7–1.1 once established. (2) The ×2.0 pull reached the basket draw but not the choice of a staple. | **Check:** a launched product's share of its slice in its first 3 months ÷ its own share in months 4–9, pooled over launches; ≥ 1.5. **Generator:** the pull also weights the choice of a staple (a new customer's, or a switcher's). |
+| P2d | 1.17 | Confounded: loyal shoppers' purchase rate differs from flexible shoppers' on every product (favourite brands ×6), so the raw ratio isn't the planted effect. | **Check:** for launched products, (flexible ÷ loyal purchase rate while new) ÷ (the same ratio once established); ≥ 1.3. |
+| P3a | 0.96 | A bug in the check: the comparison group (unraised products of the category) included launched products, whose units go from 0 to some. | **Check:** the comparison group leaves out launched products. Threshold unchanged. |
+| P4a | 1.03 | Confounded across products: those with few early reviews have extreme bands (5 or 1–2) and are the less-bought ones. | **Check:** within product: for each product with impressions in months it showed 5 stars and months it showed 3, its purchase rate at 5 ÷ at 3, pooled (impressions-weighted); ≥ 1.15. If fewer than 15 products qualify, ≥ 4 stars vs ≤ 3 instead, ≥ 1.1. |
+| P5a | 1.79 | The pack fit entered the customer score, which reaches the staple choice and 65 % of basket re-picks only. | **Generator:** the pack fit also weights the basket draw and the seasonal lines (the per-customer `demand`). Strength unchanged. |
+
 ## Results
 
 (none yet)
