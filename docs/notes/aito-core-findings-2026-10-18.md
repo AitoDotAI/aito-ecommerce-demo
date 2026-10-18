@@ -1,6 +1,6 @@
 # Aito core findings, 2026-10-18 (ADR 0032, test env `states`)
 
-Found while probing ADR 0032's data on `shared.aito.ai`, Aito 2.11.4, env
+Reported to Aito core as td-20261018115755850452 (P1). Found while probing ADR 0032's data on `shared.aito.ai`, Aito 2.11.4, env
 `states` (cloned from master, every table then dropped and reloaded by
 `./do reset-data` from the `product-states` branch). All read-only.
 
