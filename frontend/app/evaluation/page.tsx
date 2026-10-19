@@ -11,7 +11,7 @@ import { useUrlState } from "@/lib/use-url-state";
 
 
 /**
- * Evaluation — four `_evaluate` models in a pass/fail table.
+ * Evaluation — three `_evaluate` models in a pass/fail table.
  * Return Risk is the engineered honest-failure case (ADR 0010);
  * the row tints red with `eval-row-fail`.
  *
@@ -128,7 +128,7 @@ function EvaluationView() {
               {loading && (
                 <tr>
                   <td colSpan={8} style={{ color: "var(--text-muted)", fontSize: 12 }}>
-                    Running four `_evaluate` calls — cold path is ~30 s…
+                    Running three `_evaluate` calls — cold path is ~25 s…
                   </td>
                 </tr>
               )}

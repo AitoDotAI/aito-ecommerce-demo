@@ -55,7 +55,7 @@ def nonempty(*keys: str, what: str) -> Callable[[dict], str]:
 # 0.40, diet 0.65 vs 0.26, segment 0.82 vs 0.46) and would otherwise regress
 # silently. return_risk is a DELIBERATE honest failure, so it isn't held to
 # "pass"; every model is held to "no error, has a sample".
-MUST_PASS = ("pet_type_from_name", "dietary_from_name", "segment_from_product")
+MUST_PASS = ("pet_type_from_name", "dietary_from_name")
 
 
 def check_evaluation(body: dict) -> str:
