@@ -338,8 +338,7 @@ export interface SmartSearchResponse {
   customer: {
     id: string;
     label: string;
-    segment: string;
-    pet_size: string | null;
+    customer_id: string;
   };
   baseline: SmartSearchHit[];
   predictive: SmartSearchHitWithDelta[];
@@ -796,7 +795,7 @@ export interface PriceWhatIf {
 /* ─── Product Insights (/api/product-insights) ─── */
 
 export interface ProductInsightsBuyerRow {
-  field: string;          // "customer_segment", ...
+  field: string;          // "context.customer.pets", "product_state.on_offer", ...
   value: string;
   lift: number;           // share among this product's lines / among all lines
   lines: number;          // this product's order lines with this profile

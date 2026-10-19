@@ -13,10 +13,10 @@ import type {
   SmartSearchResponse,
 } from "@/lib/types";
 
-const PERSONAS: Array<{ id: string; emoji: string; label: string; segment: string; pet_size?: string }> = [
-  { id: "maija", emoji: "🐈", label: "Maija Lehtonen — cat owner",            segment: "cat_owner" },
-  { id: "olli",  emoji: "🐾", label: "Olli Mäkelä — multi-pet (small dog)",   segment: "multi_pet", pet_size: "small" },
-  { id: "saara", emoji: "🐕", label: "Saara Virtanen — dog owner (large breed)", segment: "dog_owner", pet_size: "large" },
+const PERSONAS: Array<{ id: string; emoji: string; label: string }> = [
+  { id: "maija", emoji: "🐈", label: "Maija Lehtonen — cat owner" },
+  { id: "olli",  emoji: "🐾", label: "Olli Mäkelä — multi-pet (small dog)" },
+  { id: "saara", emoji: "🐕", label: "Saara Virtanen — dog owner (large breed)" },
 ];
 
 
@@ -50,8 +50,8 @@ function SmartSearchView() {
       );
       setData(res);
       // Update the Aito panel's query block with the *actual* body
-      // that ran: the predictive `_search` (with the live segment +
-      // pet_size), since that is the call worth reading.
+      // that ran: the predictive `_search` (with the customer as
+      // context), since that is the call worth reading.
       setPanel({
         ...smartSearchPanel(),
         query: highlightQuery(res.last_query.body),

@@ -1,7 +1,7 @@
 """Smart Search — text relevance, and text relevance x purchase probability.
 
 The demo's headline moment: same query string, side-by-side
-results, the right column flips per customer-segment context.
+results, the right column flips per customer, learned from their own rows.
 
 Two live Aito calls per request (ADR 0026, step 1):
   1. baseline   — `_search products` ordered by `$similarity` over the
@@ -41,24 +41,14 @@ class PersonaContext:
     persona_id: str   # short id used by the frontend ("maija", "olli", "saara")
     customer_id: str  # CUST-NNNNN — kept anonymous per CLAUDE.md
     label: str        # display name
-    segment: str
-    pet_size: str | None
 
 
-# Olli's customer record is `multi_pet` (per ADR 0002) but the segment
-# label averages cat-and-dog across the multi-pet population, which
-# erases the per-persona flip in the demo. Aito-side we use his
-# *behavioural* segment — `dog_owner + small` — which matches his
-# hand-curated 85 %-dog history. The UI label stays "multi-pet, small
-# dog" per TASK.md, the Aito panel shows the live goal honestly.
-# See `docs/adr/0007-for-you.md` §"Olli divergence".
+# The customer is the only context handed over: Aito reads them from their
+# own rows (ADR 0033), so Olli's mostly-dog history needs no override.
 PERSONAS: dict[str, PersonaContext] = {
-    "maija": PersonaContext("maija", "CUST-00001", "Maija Lehtonen — cat owner",
-                            segment="cat_owner", pet_size=None),
-    "olli":  PersonaContext("olli",  "CUST-00002", "Olli Mäkelä — multi-pet (small dog)",
-                            segment="dog_owner", pet_size="small"),
-    "saara": PersonaContext("saara", "CUST-00003", "Saara Virtanen — dog owner (large breed)",
-                            segment="dog_owner", pet_size="large"),
+    "maija": PersonaContext("maija", "CUST-00001", "Maija Lehtonen — cat owner"),
+    "olli":  PersonaContext("olli",  "CUST-00002", "Olli Mäkelä — multi-pet (small dog)"),
+    "saara": PersonaContext("saara", "CUST-00003", "Saara Virtanen — dog owner (large breed)"),
 }
 
 DEFAULT_PERSONA = "saara"
@@ -157,7 +147,8 @@ def predictive_blend_body(query: str, persona: PersonaContext, limit: int,
 
     - `from impressions, get product_sku`: `where` and `$p` read the
       impressions funnel; the rows returned are products.
-    - `where`: the customer context to condition on (segment, pet size).
+    - `where`: who is searching, through the impression's context
+      (`context.customer`); `$p` conditions on it, it filters nothing.
     - `$p{$context: {purchased: true}}`: P(this context buys the product).
     - `$similarity {name: query}`: BM25 over the product name, as a lift.
     - `$multiply`: rank by the product of the two. A product that matches
@@ -168,9 +159,7 @@ def predictive_blend_body(query: str, persona: PersonaContext, limit: int,
     The selected `$p` would be the blended score, not a probability, so it
     is not selected.
     """
-    where: dict[str, object] = {"customer_segment": persona.segment}
-    if persona.pet_size is not None:
-        where["customer_pet_size"] = persona.pet_size
+    where: dict[str, object] = {"context.customer": persona.customer_id}
     return {
         "from": "impressions",
         "get": "product_sku",
@@ -272,8 +261,7 @@ def smart_search(
         customer={
             "id":      persona.persona_id,
             "label":   persona.label,
-            "segment": persona.segment,
-            "pet_size": persona.pet_size,
+            "customer_id": persona.customer_id,
         },
         baseline=baseline,
         predictive=predictive,

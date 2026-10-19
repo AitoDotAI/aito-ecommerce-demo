@@ -62,7 +62,7 @@ def test_baseline_is_bm25_over_the_name_not_a_word_filter():
 def test_predictive_blend_multiplies_purchase_probability_by_text_match():
     body = predictive_blend_body("food", PERSONAS["saara"], limit=10)
     assert body["from"] == "impressions" and body["get"] == "product_sku"
-    assert body["where"] == {"customer_segment": "dog_owner", "customer_pet_size": "large"}
+    assert body["where"] == {"context.customer": "CUST-00003"}   # only who is searching (ADR 0033)
     assert body["orderBy"] == {"$multiply": [
         {"$p": {"$context": {"purchased": True}}},
         {"$similarity": {"name": "food"}, "theta": TEXT_THETA},

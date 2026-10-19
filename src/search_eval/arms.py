@@ -43,10 +43,8 @@ def before_predictive(persona_id: str) -> Arm:
     persona = PERSONAS[persona_id]
 
     def arm(client: AitoClient, q: str, k: int) -> list[str]:
-        where: dict[str, object] = {"product_sku.name": {"$match": q}, "search_query": q,
-                                    "customer_segment": persona.segment}
-        if persona.pet_size is not None:
-            where["customer_pet_size"] = persona.pet_size
+        where: dict[str, object] = {"product_sku.name": {"$match": q}, "context.search_query": q,
+                                    "context.customer": persona.customer_id}
         res = client.recommend(table="impressions", where=where, recommend_field="product_sku",
                                goal={"purchased": True},
                                based_on=["pet_type", "brand", "dietary", "category"], limit=k)
