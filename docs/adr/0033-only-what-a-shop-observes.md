@@ -50,7 +50,7 @@ Two Aito reference apps already store data that way (survey, 2026-10-19):
 | Table | Holds | Links |
 |---|---|---|
 | `customers` | What the customer declared or the shop records: `region`, `joined_month`, declared `pets` (e.g. "dog cat"), `dog_size`, declared `diet` (a household's rule, when they told us) | — |
-| `contexts` | One row per moment products were shown: `month`, `weekday`, `surface`, `basket_skus`, `basket_categories`, `last_order_skus`, `search_query` | `customer → customers` |
+| `contexts` | One row per moment products were shown: `month`, `weekday`, `surface`, `basket` (SKUs), `basket_categories`, `prev_basket` (the last order's SKUs), `owned` (the household's kit items so far, from its orders, e.g. `small_animal_cage small_animal_water_bottle`), `search_query` | `customer → customers` |
 | `impressions` | The outcome: `clicked`, `added_to_cart`, `purchased`, `position` | `context → contexts`, `product_state → product_states` (ADR 0032) |
 | `orders`, `order_lines` | As now, minus the copied traits | `customer → customers`, `product_state → product_states` |
 
@@ -73,9 +73,37 @@ a view uses either (CLAUDE.md):
    {"context.customer": id}}`, falling back to all impressions when the
    customer has none (the grocery demo's form).
 
-The context (basket, last order, month, surface) goes in `where` as
-evidence in both: this demo already shows that a cage in the basket
-lifts the hideout.
+The context (basket, previous basket, what the household owns, month,
+surface) goes in `where` as evidence in both, as Aito core's grocery tests
+do (`"context.basket": {"$has": id}`, or the whole basket as an array,
+with `$highlight` naming the basket items that lifted a hit). The grocery
+demo itself only *excludes* the basket and never queries `prevBasket`;
+this demo uses both.
+
+### The kit, in the grid (planted effect K1)
+
+Antti's favourite story is the new hamster owner, and its one gap is that
+the grid itself doesn't lead with the kit's next item: only the separate
+"What's next" panel (from orders) does. The cause is in the data: an
+impression of an add-on converts ×3 when the starter kit is in the
+*current* basket, every add-on alike and in no order; the kit's own
+partner (the water bottle with the cage) gets nothing; and what the
+household already owns plays no part. So Aito has no evidence that "owns
+a cage and a bottle → the hideout is next".
+
+Planted instead, from the generator's kit order (`STARTER_KITS`, then
+`ADD_ONS` in sequence), with the kit read from the basket **and** what
+the household owns:
+
+| Shown product | Odds (click, cart, purchase) |
+|---|---|
+| A kit item the household already owns | ×0.1 (nobody needs a second cage) |
+| The kit's **next** missing item: the starter kit's partner, then the add-ons in order | ×5 |
+| Another add-on not yet owned | ×1.5 |
+
+Judged against its null generation as ADR 0032's effects are: the next
+item's purchase rate over other add-ons' ≥ 2.0, and owned kit items'
+over unowned ≤ 0.3, on every seed.
 
 ### Analytics
 
@@ -103,6 +131,7 @@ place, as of the context's month, and named as derived.
 | R2 | The same with the customer as a nested `from` and the fallback | Same measure; which to use. |
 | R3 | `$why` under R1 | Do the context's and the customer's lifts nest under the product's own lift, as the Shop's reasons need? |
 | R4 | `_relate` over `context.customer.dog_size` (two links) | Works as `product_state.product_sku.*` did on 2026-10-18? |
+| R5 | The Shop's grid for a new guinea-pig owner | With a cage in the basket and nothing owned: the water bottle in the top 3. Owning cage and bottle, empty basket: the hideout in the top 3, and no cage in the top 12. |
 
 R1–R3 need Aito with #1673 (`_recommend` counts the goal as its own
 evidence on v2 tables, td-20261018115755850452).
@@ -116,6 +145,9 @@ evidence on v2 tables, td-20261018115755850452).
   food, learned from their history (checked against the generator's
   traits, which Aito never sees).
 - Every analytics view says which fields are declared and which derived.
+- A user can be Päivi (owns a cage and a bottle) and see the hideout
+  among the first three products in the grid, with "you own a cage" or
+  the basket among its reasons; adding the hideout brings the wheel up.
 
 ## Demo impact
 
