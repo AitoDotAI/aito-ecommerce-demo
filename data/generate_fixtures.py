@@ -449,7 +449,8 @@ class CustomerMonth:
     visits: int                     # synthetic per-month site visits
     purchases: int                  # orders this month
     spent_eur: float                # sum of order totals this month
-    pet_size: str | None            # denormalised, nullable
+    pets: str                       # declared by the household (ADR 0033): "dog cat"
+    dog_size: str | None            # declared, when a dog is among them
     region: str                     # denormalised
     tenure_months_at_month: int     # months since first order at this row's month
     latest_rating: int | None       # most-recent review rating in this month
@@ -2236,7 +2237,8 @@ def gen_customer_months(
                 visits=visits,
                 purchases=n_purchases,
                 spent_eur=_round_eur(spent),
-                pet_size=c.pet_size,
+                pets=" ".join(c.pets),
+                dog_size=c.pet_size if "dog" in c.pets else None,
                 region=c.region,
                 tenure_months_at_month=i,
                 latest_rating=review.rating if review is not None else None,

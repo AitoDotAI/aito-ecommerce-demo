@@ -228,8 +228,8 @@ function AtRiskRow({ c }: { c: ChurnAtRiskCustomer }) {
         </div>
       </td>
       <td>
-        <span style={{ color: "var(--text-muted)" }}>{c.segment.replace("_", " ")}</span>
-        {c.pet_size && <span style={{ marginLeft: 4, fontSize: 11 }}>· {c.pet_size}</span>}
+        <span style={{ color: "var(--text-muted)" }}>{c.pets.replace(/_/g, " ")}</span>
+        {c.dog_size && <span style={{ marginLeft: 4, fontSize: 11 }}>· {c.dog_size} dog</span>}
         <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{c.region}</div>
       </td>
       <td style={{ textAlign: "right" }}>

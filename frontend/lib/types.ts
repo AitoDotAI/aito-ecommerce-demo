@@ -451,8 +451,8 @@ export interface ChurnKpi {
 export interface ChurnAtRiskCustomer {
   customer_id: string;
   customer_short: string;
-  segment: string;
-  pet_size: string | null;
+  pets: string;            // declared (ADR 0033)
+  dog_size: string | null;
   region: string;
   tenure_months: number;
   visits: number;

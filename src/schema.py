@@ -318,7 +318,10 @@ SCHEMAS: dict[str, dict] = {
             "visits":            {"type": "Int",    "nullable": False},
             "purchases":         {"type": "Int",    "nullable": False},
             "spent_eur":         {"type": "Decimal", "nullable": False},
-            "pet_size":          {"type": "String", "nullable": True},
+            # Declared by the household (ADR 0033), copied so `_predict` over
+            # this table sees them directly.
+            "pets":              {"type": "Text",   "nullable": False, "analyzer": "whitespace"},
+            "dog_size":          {"type": "String", "nullable": True},
             "region":            {"type": "String", "nullable": False},
             "tenure_months_at_month": {"type": "Int", "nullable": False},
             # Latest-review snapshot in this month (if the customer
