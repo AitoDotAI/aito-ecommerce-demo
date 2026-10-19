@@ -3,7 +3,8 @@
 Composes the four blocks the Dashboard view shows:
   1. KPI grid    — live `_search` counts.
   2. Top patterns — Python-side co-occurrence lift over local fixtures.
-  3. Segments    — live `_search` counts per segment + avg-basket aggs.
+  3. Households  — live `_search` counts per household (the pets it
+                   declared, ADR 0033) + avg-basket aggs.
   4. Recent orders — live `_search` over orders, no per-row predictions
                     (those land with the For You / Bought Together views).
 
@@ -114,32 +115,32 @@ class DashboardResponse:
         }
 
 
-# ── Segment metadata (fixed tone / emoji / note per segment) ───────
+# ── Household cards, keyed by the declared `customers.pets` value ───
 
 
 _SEGMENT_META: dict[str, dict[str, str]] = {
-    "dog_owner": {
-        "emoji": "🐕", "label": "Dog owners",
+    "dog": {
+        "emoji": "🐕", "label": "Dog households",
         "note":  "monthly food reorder · highest LTV",
         "pill_text": "Highest LTV", "pill_tone": "orange",
     },
-    "cat_owner": {
-        "emoji": "🐈", "label": "Cat owners",
+    "cat": {
+        "emoji": "🐈", "label": "Cat households",
         "note":  "bi-weekly litter · steady frequency",
         "pill_text": "High frequency", "pill_tone": "blue",
     },
-    "multi_pet": {
-        "emoji": "🐾", "label": "Multi-pet households",
+    "dog cat": {
+        "emoji": "🐾", "label": "Dog & cat households",
         "note":  "dog + cat · cross-sell sweet spot",
         "pill_text": "Cross-sell", "pill_tone": "purple",
     },
-    "small_animal_owner": {
-        "emoji": "🐹", "label": "Small animals",
+    "small_animal": {
+        "emoji": "🐹", "label": "Small-animal households",
         "note":  "weekly bedding · growing segment",
         "pill_text": "Growing", "pill_tone": "grey",
     },
-    "aquarium_owner": {
-        "emoji": "🐟", "label": "Aquarium / exotic",
+    "aquarium": {
+        "emoji": "🐟", "label": "Aquarium households",
         "note":  "monthly · high AOV",
         "pill_text": "High AOV", "pill_tone": "purple",
     },
@@ -314,18 +315,19 @@ def _month_minus(yyyymm: str, months: int) -> str:
 
 
 def _segment_cards(client: AitoClient, *, total_customers: int) -> list[SegmentCard]:
-    """One card per customer segment: population share + average basket.
+    """One card per household group (its declared pets): population share +
+    average basket.
 
     Two Aito shapes, both server-side — no per-row fan-out:
 
-      1. **Customer counts** for every segment in a single `_batch`
+      1. **Customer counts** for every group in a single `_batch`
          (one round-trip for all five `_search limit=0` counts).
-      2. **Average basket** per segment via one `_aggregate` on the
-         `customers` table, which carries `segment` natively (no link
+      2. **Average basket** per group via one `_aggregate` on the
+         `customers` table, which carries `pets` natively (no link
          traversal) plus per-customer `total_spent_eur` / `total_orders`.
          `mean(total_spent_eur) / mean(total_orders)` is algebraically
-         the exact order-weighted mean basket for the segment
-         (`Σspend / Σorders`), and — because `segment` needs no join and
+         the exact order-weighted mean basket for the group
+         (`Σspend / Σorders`), and — because `pets` needs no join and
          `customers` is small — it costs ~20 ms server-side vs ~2.9 s for
          the equivalent link-filtered aggregate over `orders`.
 
@@ -336,9 +338,10 @@ def _segment_cards(client: AitoClient, *, total_customers: int) -> list[SegmentC
     """
     seg_ids = list(_SEGMENT_META.keys())
 
-    # 1) All per-segment customer counts in one request.
+    # 1) All per-group customer counts in one request. `pets` is a Text
+    #    column; a bare value compares the whole value ("dog" is dog-only).
     counts = client.batch([
-        {"from": "customers", "where": {"segment": seg_id}, "limit": 0}
+        {"from": "customers", "where": {"pets": seg_id}, "limit": 0}
         for seg_id in seg_ids
     ])
 
@@ -348,11 +351,11 @@ def _segment_cards(client: AitoClient, *, total_customers: int) -> list[SegmentC
         if seg_total == 0:
             continue
 
-        # 2) Exact mean basket, aggregated on `customers` (segment is a
+        # 2) Exact mean basket, aggregated on `customers` (`pets` is a
         #    native column — no `orders` join).
         agg = client.aggregate(
             table="customers",
-            where={"segment": seg_id},
+            where={"pets": seg_id},
             aggregate_fields=["total_spent_eur.$mean", "total_orders.$mean"],
         )
         mean_spent = agg.get("total_spent_eur.$mean") or 0.0

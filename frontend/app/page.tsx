@@ -101,9 +101,9 @@ export default function DashboardPage() {
 
         <div className="card">
           <div className="card-title" style={{ marginBottom: 14 }}>
-            Customer Segments
+            Households
             <span style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 400, marginLeft: 6 }}>
-              live `_search` per segment
+              by the pets they declared · live `_search` per group
             </span>
           </div>
           {!data && <SkeletonLines count={4} />}
