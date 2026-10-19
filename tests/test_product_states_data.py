@@ -11,6 +11,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.fixture_joins import impressions_in_context
+
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
 
@@ -41,7 +43,7 @@ def test_p2a_nothing_of_a_launched_product_exists_before_its_launch(launches):
     assert len(launches) == 50
     month_of_order = {o["order_id"]: o["month"] for o in _load("orders.json")}
     dated = (
-        [(r["product_sku"], r["month"]) for r in _load("impressions.json")]
+        [(r["product_sku"], r["month"]) for r in impressions_in_context()]
         + [(r["product_sku"], month_of_order[r["order_id"]]) for r in _load("order_lines.json")]
         + [(r["product_sku"], r["month"]) for r in _load("monthly_sales.json")]
         + [(r["product_sku"], r["month"]) for r in _load("product_states.json")]
@@ -53,7 +55,7 @@ def test_p2a_nothing_of_a_launched_product_exists_before_its_launch(launches):
 def test_p6_every_row_links_to_its_months_state(states):
     month_of_order = {o["order_id"]: o["month"] for o in _load("orders.json")}
     rows = (
-        [(r["product_state"], r["product_sku"], r["month"]) for r in _load("impressions.json")]
+        [(r["product_state"], r["product_sku"], r["month"]) for r in impressions_in_context()]
         + [(r["product_state"], r["product_sku"], month_of_order[r["order_id"]]) for r in _load("order_lines.json")]
         + [(r["product_state"], r["product_sku"], r["month"]) for r in _load("monthly_sales.json")]
     )

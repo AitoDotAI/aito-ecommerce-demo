@@ -26,6 +26,7 @@ from pathlib import Path
 import pytest
 
 from data import lifecycle
+from tests.fixture_joins import customers_with_traits, order_lines_with_customer
 from data.generate_fixtures import (
     FILLABLE_CATEGORIES,
     PERSONAS,
@@ -51,7 +52,8 @@ def products() -> list[dict]:
 
 @pytest.fixture(scope="module")
 def customers() -> list[dict]:
-    return _load("customers.json")
+    # With the generator's hidden model joined back in (ADR 0033).
+    return customers_with_traits()
 
 
 @pytest.fixture(scope="module")
@@ -61,7 +63,7 @@ def orders() -> list[dict]:
 
 @pytest.fixture(scope="module")
 def order_lines() -> list[dict]:
-    return _load("order_lines.json")
+    return order_lines_with_customer()
 
 
 # ── Volume bands ───────────────────────────────────────────────────

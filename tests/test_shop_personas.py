@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 
 from data import lifecycle
+from tests.fixture_joins import customers_with_traits
 
 from src.shop_personas import SHOPPERS, UnknownShopperError, shopper
 
@@ -23,7 +24,7 @@ def _load(name: str) -> list[dict]:
 @pytest.fixture(scope="module")
 def history():
     products = {p["sku"]: p for p in _load("products.json")}
-    customers = {c["customer_id"]: c for c in _load("customers.json")}
+    customers = {c["customer_id"]: c for c in customers_with_traits()}
     orders: dict[str, list[dict]] = {}
     for o in sorted(_load("orders.json"), key=lambda o: o["month"]):
         orders.setdefault(o["customer_id"], []).append(o)

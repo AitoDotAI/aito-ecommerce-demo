@@ -164,12 +164,15 @@ def basket_tokens(products: list) -> list[str]:
     return sorted(set(tokens))
 
 
-def complements_basket(product: dict, basket: list[str]) -> bool:
+def complements_basket(product: dict, basket: list[str], include_kit: bool = True) -> bool:
     """An add-on of a kit item in the basket, or dental treats with dog dry
-    food. `product` is a products.json row."""
+    food. `product` is a products.json row. ADR 0033's K1 replaces the kit
+    half for an impression's odds (`include_kit=False`)."""
     pet = product["pet_type"]
     kind = lifecycle.item_type(product["name"], product["brand"])
     if kind in lifecycle.ADD_ONS.get(pet, ()):
+        if not include_kit:
+            return False
         kit = lifecycle.STARTER_KITS.get(pet, ())
         return any(token(pet, k) in basket for k in kit)
     return pet == "dog" and product["category"] == "dental-treats" and "dog_dryfood" in basket

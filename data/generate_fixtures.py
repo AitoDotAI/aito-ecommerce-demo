@@ -24,7 +24,7 @@ from datetime import date
 from pathlib import Path
 from typing import Callable, Iterable
 
-from data import catalogue_events, lifecycle, shoppers
+from data import catalogue_events, lifecycle, observable, shoppers
 
 RNG_SEED = 42
 DATA_DIR = Path(__file__).resolve().parent
@@ -402,6 +402,8 @@ class Customer:
     # The one kind of food a dog or cat household buys, if it has a rule:
     # grain-free | sensitive | senior | puppy (ADR 0030, S1).
     diet_rule: str | None = None
+    # The pets the household keeps, as it would declare them (ADR 0033).
+    pets: tuple[str, ...] = ()
 
 
 @dataclass
@@ -447,18 +449,8 @@ class CustomerMonth:
     visits: int                     # synthetic per-month site visits
     purchases: int                  # orders this month
     spent_eur: float                # sum of order totals this month
-    segment: str                    # denormalised
     pet_size: str | None            # denormalised, nullable
     region: str                     # denormalised
-    # Latent profile traits — give the Churn view's `_predict
-    # churned_in_3_months` access to lifestyle / health / treat /
-    # loyalty as features. Engineered correlation with churn
-    # (budget+flexible customers churn at higher rate) gives the
-    # model real signal to weight. See ADR 0017.
-    lifestyle: str                  # premium | mid | budget
-    health_focus: str               # high | medium | low
-    treat_affinity: str             # high | medium | low
-    brand_loyalty: str              # loyal | flexible
     tenure_months_at_month: int     # months since first order at this row's month
     latest_rating: int | None       # most-recent review rating in this month
     latest_sentiment: str | None    # sentiment of that review
@@ -532,11 +524,6 @@ class WinbackCampaign:
     # Days since the customer's last order at send time, bucketed
     # for Aito's K-NN to read cleanly. Strong predictor of response.
     recency_bucket: str            # "0-90d" | "90-180d" | "180d+"
-    # Denormalised customer profile so Aito conditions in one hop.
-    customer_segment: str
-    customer_pet_size: str | None  # nullable
-    customer_lifestyle: str
-    customer_health_focus: str
     # The (pet, category) the customer bought most, at least three times,
     # e.g. "dog/dry-food"; "none" if nothing reached three. ADR 0027: a send
     # in the customer's staple category responds 2.5x as often, so the page
@@ -555,55 +542,21 @@ class WinbackCampaign:
 
 @dataclass
 class Impression:
-    """One product shown to a customer in a browsing context, with the
-    funnel outcome recorded. A *view* is implicit (every row is a view);
-    the three booleans capture the funnel beyond it. This is the table
-    that gives recommendations a real conversion KPI to rank on —
-    `_recommend product_sku goal: {purchased: true}`. See ADR 0021.
+    """One product shown in a context, with the funnel outcome recorded
+    (ADR 0021). Who, when and where live on the context (ADR 0033).
 
     Funnel monotonicity invariant: purchased ⇒ added_to_cart ⇒ clicked.
     Enforced at generation; asserted by `./do aito-check`.
     """
     impression_id: str             # "IMP-NNNNNNN"
-    session_id: str                # groups impressions shown together
-    customer_id: str               # link → customers.customer_id
+    context: str                   # link → contexts.context_id
     product_sku: str               # link → products.sku
-    # Where the product was shown. Lets a query scope to one surface
-    # (e.g. only search impressions for the Smart Search re-rank).
-    surface: str                   # search | for_you | category | bought_together
-    month: str                     # YYYY-MM (categorical, like orders.month)
-    position: int                  # 0-based rank in the shown list (descriptive
-                                   # only — never fed to recommend basedOn, ADR 0021)
-    # The query string for surface == "search"; None (absent) otherwise.
-    # Text so `where {search_query: {$match: "food"}}` token-matches.
-    search_query: str | None = None
-    # The basket that month as words ("dog_dry-food small_animal_cage"), or
-    # None when the customer bought nothing that month (ADR 0030, S6).
-    basket_categories: str | None = None
-    basket_skus: str | None = None          # the same basket's SKUs
-    # The customer's last order before this month (recency, S8), and whether
-    # the shown product was in it.
-    last_order_skus: str | None = None
-    just_bought: bool = False
-    # Denormalised customer profile — single-hop conditioning, same
-    # rationale as order_lines (ADR 0006/0017).
-    customer_segment: str = "dog_owner"
-    customer_pet_size: str | None = None
-    customer_lifestyle: str = "mid"
-    customer_health_focus: str = "medium"
-    customer_treat_affinity: str = "medium"
-    customer_brand_loyalty: str = "flexible"
-    customer_diet_rule: str | None = None
-    # Denormalised product attributes for `basedOn` priors.
-    product_pet_type: str = "dog"
-    product_category: str = "dry-food"
-    product_brand: str = "PetNord"
-    # Funnel outcome labels — what Aito's _recommend / _predict learn.
+    product_state: str             # link → product_states (ADR 0032)
+    position: int                  # 0-based rank in the shown list
+    just_bought: bool = False      # the product was in the customer's last order (S8)
     clicked: bool = False
     added_to_cart: bool = False
     purchased: bool = False
-    # ADR 0032: link → product_states, the product as shown that month.
-    product_state: str | None = None
 
 
 @dataclass
@@ -633,26 +586,6 @@ class OrderLine:
     product_sku: str
     qty: int
     returned: bool
-    # Denormalised mirror of `orders.customer_id.{segment, pet_size}`.
-    # Aito's `_recommend` / `_predict` / `_relate` from `order_lines`
-    # only do single-hop link traversal — they can reach
-    # `order_id.<orders col>` and `product_sku.<products col>` but
-    # not two-hop into `order_id.customer_id.<customers col>`. Pulling
-    # the two demo-load-bearing customer attributes down to the line
-    # level lets Smart Search bias by segment + pet_size without a
-    # client-side join. See ADR 0006.
-    customer_segment: str
-    customer_pet_size: str | None = None
-    # Latent customer-profile traits, denormalised for the same
-    # single-hop reason as `customer_segment` / `customer_pet_size`.
-    # Power Aito's `_recommend basedOn` and Pattern Explorer / Bought
-    # Together / Purchase Analytics within-segment patterns. See
-    # ADR 0017.
-    customer_lifestyle: str = "mid"
-    customer_health_focus: str = "medium"
-    customer_treat_affinity: str = "medium"
-    customer_brand_loyalty: str = "flexible"
-    customer_diet_rule: str | None = None
     # ADR 0032: link → product_states, the product as it was that month.
     product_state: str | None = None
 
@@ -1640,6 +1573,7 @@ def gen_orders_and_lines(
             # luck of the seed.
             order_months = order_months[1:] + [eligible_months[-1]]
         pets = lifecycle.main_pets(pet_type_weights)
+        customer.pets = tuple(pets)
         # ADR 0030: the household's diet rule (personas keep none) and the
         # season's lift. New effects draw from their own seeded RNGs so the
         # ADR 0027 signals keep their draws.
@@ -1695,13 +1629,6 @@ def gen_orders_and_lines(
                     product_sku=product.sku,
                     qty=qty,
                     returned=rng.random() < returned_rate,
-                    customer_segment=customer.segment,
-                    customer_pet_size=customer.pet_size,
-                    customer_lifestyle=customer.lifestyle,
-                    customer_health_focus=customer.health_focus,
-                    customer_treat_affinity=customer.treat_affinity,
-                    customer_brand_loyalty=customer.brand_loyalty,
-                    customer_diet_rule=customer.diet_rule,
                     product_state=f"{product.sku}-{month}",
                 ))
                 line_counter += 1
@@ -1844,13 +1771,6 @@ def gen_orders_and_lines(
                             product_sku=product.sku,
                             qty=qty,
                             returned=returned,
-                            customer_segment=customer.segment,
-                            customer_pet_size=customer.pet_size,
-                            customer_lifestyle=customer.lifestyle,
-                            customer_health_focus=customer.health_focus,
-                            customer_treat_affinity=customer.treat_affinity,
-                            customer_brand_loyalty=customer.brand_loyalty,
-                            customer_diet_rule=customer.diet_rule,
                             product_state=f"{product.sku}-{month}",
                         )
                         line_counter += 1
@@ -2316,13 +2236,8 @@ def gen_customer_months(
                 visits=visits,
                 purchases=n_purchases,
                 spent_eur=_round_eur(spent),
-                segment=c.segment,
                 pet_size=c.pet_size,
                 region=c.region,
-                lifestyle=c.lifestyle,
-                health_focus=c.health_focus,
-                treat_affinity=c.treat_affinity,
-                brand_loyalty=c.brand_loyalty,
                 tenure_months_at_month=i,
                 latest_rating=review.rating if review is not None else None,
                 latest_sentiment=review.sentiment if review is not None else None,
@@ -2746,10 +2661,6 @@ def gen_winback_campaigns(
                 product_sku=product.sku,
                 sent_month=sent_month,
                 recency_bucket=recency_bucket,
-                customer_segment=customer.segment,
-                customer_pet_size=customer.pet_size,
-                customer_lifestyle=customer.lifestyle,
-                customer_health_focus=customer.health_focus,
                 customer_staple_category=f"{staple[0]}/{staple[1]}" if staple else "none",
                 product_pet_type=product.pet_type,
                 product_category=product.category,
@@ -2787,6 +2698,8 @@ def _search_query(
 
 
 # How browsing sessions distribute across surfaces.
+WEEKDAYS = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+
 _SURFACE_WEIGHTS: dict[str, float] = {
     "search": 0.40, "for_you": 0.30, "category": 0.20, "bought_together": 0.10,
 }
@@ -2879,7 +2792,7 @@ def gen_impressions(
     orders: list[Order],
     lines: list[OrderLine],
     states: list[catalogue_events.ProductState],
-) -> list[Impression]:
+) -> tuple[list[observable.Context], list[Impression]]:
     """Product impressions with the funnel outcome baked in.
 
     Reuses the order-generation affinity machinery
@@ -2892,6 +2805,7 @@ def gen_impressions(
     so `goal: {purchased: true}` has both a positive and a negative
     class to rank on: relevant items convert, filler mostly doesn't.
     """
+    contexts: list[observable.Context] = []
     impressions: list[Impression] = []
     imp_counter = 1
     session_counter = 1
@@ -2961,6 +2875,10 @@ def gen_impressions(
             earlier = [skus for m, skus in order_history.get(customer.customer_id, []) if m < month]
             last_order_skus = earlier[-1] if earlier else None
             just_bought_skus = set(last_order_skus.split()) if last_order_skus else set()
+            # ADR 0033: the kit items the household owns from earlier orders.
+            owned = {shoppers.token(p.pet_type, kind)
+                     for skus in earlier for p in (by_sku[s] for s in skus.split())
+                     if (kind := lifecycle.item_type(p.name, p.brand)) in lifecycle.DURABLE_TYPES}
 
             # Build the candidate pool for this session + the query.
             query: str | None = None
@@ -3016,6 +2934,18 @@ def gen_impressions(
                 seen.add(pick.sku)
                 shown.append(pick)
 
+            contexts.append(observable.Context(
+                context_id=session_id,
+                customer=customer.customer_id,
+                month=month,
+                weekday=random.Random(f"weekday:{session_id}").choice(WEEKDAYS),
+                surface=surface,
+                search_query=query,
+                basket=basket_skus,
+                basket_categories=" ".join(basket) or None,
+                prev_basket=last_order_skus,
+                owned=" ".join(sorted(owned)) or None,
+            ))
             for position, product in enumerate(shown):
                 odds = click_odds = 1.0
                 if not shoppers.keeps_diet_rule(product.name, product.pet_type, product.category,
@@ -3026,9 +2956,15 @@ def gen_impressions(
                 if product.sku in just_bought_skus:
                     # Still stocked up (S8): less likely to look, or to buy.
                     odds *= shoppers.JUST_BOUGHT_ODDS
-                if basket and shoppers.complements_basket(row_of[product.sku], basket):
+                if basket and shoppers.complements_basket(row_of[product.sku], basket,
+                                                          include_kit=not observable.KIT_PROGRESSION):
                     odds *= shoppers.COMPLEMENT_ODDS
                     click_odds *= shoppers.COMPLEMENT_ODDS
+                if observable.KIT_PROGRESSION:
+                    # K1: where the household is in its kit, from the basket and what it owns.
+                    kit = observable.kit_odds(row_of[product.sku], set(basket), owned)
+                    odds *= kit
+                    click_odds *= kit
                 if product.sku in just_bought_skus:
                     click_odds *= shoppers.JUST_BOUGHT_ODDS
                 state = state_of[(product.sku, month)]
@@ -3040,35 +2976,18 @@ def gen_impressions(
                 )
                 impressions.append(Impression(
                     impression_id=f"IMP-{imp_counter:07d}",
-                    session_id=session_id,
-                    customer_id=customer.customer_id,
+                    context=session_id,
                     product_sku=product.sku,
-                    surface=surface,
-                    month=month,
+                    product_state=state.product_state_id,
                     position=position,
-                    search_query=query,
-                    basket_categories=" ".join(basket) or None,
-                    basket_skus=basket_skus,
-                    last_order_skus=last_order_skus,
                     just_bought=product.sku in just_bought_skus,
-                    customer_segment=customer.segment,
-                    customer_pet_size=customer.pet_size,
-                    customer_lifestyle=customer.lifestyle,
-                    customer_health_focus=customer.health_focus,
-                    customer_treat_affinity=customer.treat_affinity,
-                    customer_brand_loyalty=customer.brand_loyalty,
-                    customer_diet_rule=customer.diet_rule,
-                    product_pet_type=product.pet_type,
-                    product_category=product.category,
-                    product_brand=product.brand,
                     clicked=clicked,
                     added_to_cart=added,
                     purchased=purchased,
-                    product_state=state.product_state_id,
                 ))
                 imp_counter += 1
 
-    return impressions
+    return contexts, impressions
 
 
 # ── Output ──────────────────────────────────────────────────────────
@@ -3082,6 +3001,8 @@ def _to_json_dict(obj) -> dict:
     of the public dataset (and isn't a meaningful column for Aito's
     inference machinery — it's a derived view of brand_loyalty).
     """
+    if isinstance(obj, dict):
+        return {k: v for k, v in obj.items() if v is not None}
     raw = asdict(obj)
     raw.pop("favorite_brands", None)
     return {k: v for k, v in raw.items() if v is not None}
@@ -3171,10 +3092,11 @@ def main() -> None:
     # (`_recommend goal: {purchased: true}`). Generated after the
     # customer-aggregate backfill so `_sessions_for` can scale session
     # count by purchase activity. See ADR 0021.
-    impressions = gen_impressions(rng, customers, products, orders, lines, product_states)
+    contexts, impressions = gen_impressions(rng, customers, products, orders, lines, product_states)
 
     write_json(DATA_DIR / "products.json", products)
-    write_json(DATA_DIR / "customers.json", customers)
+    # ADR 0033: what a shop has; the hidden traits stay in the generator.
+    write_json(DATA_DIR / "customers.json", [observable.public_customer(c) for c in customers])
     write_json(DATA_DIR / "orders.json", orders)
     write_json(DATA_DIR / "order_lines.json", lines)
     write_json(DATA_DIR / "reviews.json", reviews)
@@ -3183,6 +3105,10 @@ def main() -> None:
     write_json(DATA_DIR / "inventory.json", inventory)
     write_json(DATA_DIR / "product_states.json", product_states)
     write_json(DATA_DIR / "winback_campaigns.json", winback_campaigns)
+    write_json(DATA_DIR / "contexts.json", contexts)
+    # The generator's answer key, for the data checks; Aito never sees it.
+    (DATA_DIR / "answer_key").mkdir(exist_ok=True)
+    write_json(DATA_DIR / "answer_key" / "customer_traits.json", [observable.answer_key_row(c) for c in customers])
     write_json(DATA_DIR / "impressions.json", impressions)
 
     # ── Summary print ───────────────────────────────────────────────
@@ -3196,6 +3122,7 @@ def main() -> None:
     print(f"  inventory       {len(inventory):>6}")
     print(f"  winback         {len(winback_campaigns):>6}")
     print(f"  product_states  {len(product_states):>6}")
+    print(f"  contexts        {len(contexts):>6}")
     print(f"  impressions     {len(impressions):>6}")
     _print_impression_funnel(impressions)
 
