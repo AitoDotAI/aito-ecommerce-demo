@@ -671,10 +671,10 @@ export interface WinbackProductSuggestion {
 export interface WinbackTarget {
   customer_id: string;
   customer_name: string;
-  segment: string;
-  pet_size: string | null;
-  lifestyle: string;
-  health_focus: string;
+  pets: string;                  // declared, e.g. "dog cat"
+  dog_size: string | null;
+  region: string;
+  staple_category: string;       // from their orders: "dog/dry-food", or "none"
   recency_bucket: string;
   last_order_month: string;
   total_spent_eur: number;

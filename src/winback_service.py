@@ -10,8 +10,10 @@ order-value and you have €recoverable revenue per send.
 
 Three live calls per customer (parallel):
   1. `_recommend product_sku from winback_campaigns
-       where {customer_lifestyle, customer_segment, recency_bucket}
-       goal {responded: true}`
+       where {customer_id, customer_staple_category, recency_bucket}
+       goal {responded: true}` — the customer through the link (what they
+     declared, and their own earlier sends), their staple from their
+     orders, and how long since they last ordered (ADR 0033).
      → top-3 products by predicted attach probability.
   2. `_predict responded` for each suggested product — to read the
      calibrated response probability (`_recommend` returns it but
@@ -64,10 +66,10 @@ class ProductSuggestion:
 class WinbackTarget:
     customer_id: str
     customer_name: str
-    segment: str
-    pet_size: str | None
-    lifestyle: str
-    health_focus: str
+    pets: str                 # declared, e.g. "dog cat"
+    dog_size: str | None      # declared, when a dog is among them
+    region: str
+    staple_category: str      # from their orders: "dog/dry-food", or "none"
     recency_bucket: str       # derived from last_order_month vs DEMO_TODAY
     last_order_month: str
     total_spent_eur: float
@@ -143,25 +145,32 @@ def _fetch_churned_customers(client: AitoClient) -> list[dict]:
     return hits[:TOP_N_CUSTOMERS]
 
 
+def _customer_where(customer: dict, staple: str, recency_bucket: str) -> dict[str, Any]:
+    """What the shop knows of this customer at send time (ADR 0033)."""
+    return {"customer_id": customer["customer_id"], "customer_staple_category": staple,
+            "recency_bucket": recency_bucket}
+
+
+def _staple_category(client: AitoClient, customer_id: str) -> str:
+    """The customer's staple, as their send rows record it (derived from their orders)."""
+    hits = client.search("winback_campaigns", where={"customer_id": customer_id},
+                         select=["customer_staple_category"], limit=1)["hits"]
+    return hits[0]["customer_staple_category"] if hits else "none"
+
+
 def _recommend_products(
     client: AitoClient,
     customer: dict,
+    staple: str,
     recency_bucket: str,
 ) -> list[dict]:
     """Top-3 product recommendations for one churned customer.
 
-    `_recommend product_sku from winback_campaigns` conditions on
-    the customer's profile + recency bucket, ranking candidates
-    by `P(responded=true | this product, this customer)`.
+    `_recommend product_sku from winback_campaigns` conditions on the
+    customer (through the link), their staple and recency, ranking
+    candidates by `P(responded=true | this product, this customer)`.
     """
-    where: dict[str, Any] = {
-        "customer_lifestyle":   customer["lifestyle"],
-        "customer_segment":     customer["segment"],
-        "customer_health_focus":customer["health_focus"],
-        "recency_bucket":       recency_bucket,
-    }
-    if customer.get("pet_size"):
-        where["customer_pet_size"] = customer["pet_size"]
+    where = _customer_where(customer, staple, recency_bucket)
 
     res = client.recommend(
         table="winback_campaigns",
@@ -177,6 +186,7 @@ def _recommend_products(
 def _predict_aov_for_product(
     client: AitoClient,
     customer: dict,
+    staple: str,
     product_sku: str,
     recency_bucket: str,
 ) -> float:
@@ -184,16 +194,12 @@ def _predict_aov_for_product(
     conditioned on profile + recency. `_estimate` because order
     value is continuous."""
     where: dict[str, Any] = {
-        "customer_lifestyle":   customer["lifestyle"],
-        "customer_segment":     customer["segment"],
-        "recency_bucket":       recency_bucket,
-        "product_sku":          product_sku,
+        **_customer_where(customer, staple, recency_bucket),
+        "product_sku": product_sku,
         # Goal-side: we want the conditional expectation given
         # responded=true, since order_value is 0 otherwise.
-        "responded":            True,
+        "responded": True,
     }
-    if customer.get("pet_size"):
-        where["customer_pet_size"] = customer["pet_size"]
     res = client.estimate(
         "winback_campaigns",
         where=where,
@@ -214,7 +220,8 @@ def _score_customer(
     last_order = customer.get("last_order_month") or DEMO_TODAY_YYYYMM
     recency = _recency_bucket_from_last_order(last_order)
 
-    recs = _recommend_products(client, customer, recency)
+    staple = _staple_category(client, customer["customer_id"])
+    recs = _recommend_products(client, customer, staple, recency)
     if not recs:
         return None
 
@@ -235,7 +242,7 @@ def _score_customer(
         # AOV: use the per-product estimate when it works, else
         # fall back to 2× the product's price (typical basket
         # multiplier for re-engaged customers).
-        aov = _predict_aov_for_product(client, customer, sku, recency)
+        aov = _predict_aov_for_product(client, customer, staple, sku, recency)
         if aov <= 0:
             aov = round(price * 2.0, 2)
         expected = round(response_p * aov - EMAIL_COST_EUR, 2)
@@ -257,10 +264,10 @@ def _score_customer(
     return WinbackTarget(
         customer_id=customer["customer_id"],
         customer_name=customer.get("name", customer["customer_id"]),
-        segment=customer["segment"],
-        pet_size=customer.get("pet_size"),
-        lifestyle=customer["lifestyle"],
-        health_focus=customer["health_focus"],
+        pets=customer["pets"],
+        dog_size=customer.get("dog_size"),
+        region=customer["region"],
+        staple_category=staple,
         recency_bucket=recency,
         last_order_month=last_order,
         total_spent_eur=round(float(customer.get("total_spent_eur", 0) or 0), 2),
@@ -321,9 +328,9 @@ def get_winback(client: AitoClient) -> WinbackResponse:
     sample_body = {
         "from":      "winback_campaigns",
         "where":     {
-            "customer_lifestyle":   "premium",
-            "customer_segment":     "dog_owner",
-            "recency_bucket":       "0-90d",
+            "customer_id":              "CUST-00008",
+            "customer_staple_category": "dog/dry-food",
+            "recency_bucket":           "0-90d",
         },
         "recommend": "product_sku",
         "goal":      {"responded": True},
