@@ -12,6 +12,7 @@ from functools import cache
 from pathlib import Path
 
 from data.catalogue_events import LARGE_PACK_KG, add_months, pack_kg
+from data.observable import kit_status
 from data.shoppers import is_poorly_made
 
 WINDOW_START = "2024-05"
@@ -26,6 +27,27 @@ class Fixtures:
     @cache
     def load(self, table: str) -> list[dict]:
         return json.loads((self.dir / f"{table}.json").read_text(encoding="utf-8"))
+
+    @cache
+    def traits(self) -> dict[str, dict]:
+        """The generator's hidden model per customer (its answer key; Aito never sees it)."""
+        rows = json.loads((self.dir / "answer_key" / "customer_traits.json").read_text(encoding="utf-8"))
+        return {t["customer_id"]: t for t in rows}
+
+    @cache
+    def impressions(self) -> list[dict]:
+        """Impressions with their context, and the customer's hidden model
+        from the generator's answer key (ADR 0033)."""
+        contexts = {c["context_id"]: c for c in self.load("contexts")}
+        traits = self.traits()
+        rows = []
+        for imp in self.load("impressions"):
+            ctx = contexts[imp["context"]]
+            t = traits[ctx["customer"]]
+            rows.append({**imp, "month": ctx["month"], "basket_categories": ctx.get("basket_categories", ""),
+                         "owned": ctx.get("owned", ""), "customer_lifestyle": t["lifestyle"],
+                         "customer_brand_loyalty": t["brand_loyalty"]})
+        return rows
 
     @cache
     def state(self) -> dict[str, dict]:
@@ -64,7 +86,7 @@ def _rate(rows) -> float:
 def offer_ratio(fx: Fixtures, lifestyle: str) -> float:
     """P1: purchase rate on offer ÷ not, for one lifestyle."""
     state = fx.state()
-    rows = [r for r in fx.load("impressions") if r["customer_lifestyle"] == lifestyle]
+    rows = [r for r in fx.impressions() if r["customer_lifestyle"] == lifestyle]
     on = _rate(r for r in rows if state[r["product_state"]]["on_offer"])
     return on / _rate(r for r in rows if not state[r["product_state"]]["on_offer"])
 
@@ -111,7 +133,7 @@ def flexible_take_to_new(fx: Fixtures) -> float:
     state, launches = fx.state(), fx.launches()
 
     def ratio(age):
-        rows = [r for r in fx.load("impressions")
+        rows = [r for r in fx.impressions()
                 if r["product_sku"] in launches and state[r["product_state"]]["age"] == age]
         flexible = _rate(r for r in rows if r["customer_brand_loyalty"] == "flexible")
         return flexible / _rate(r for r in rows if r["customer_brand_loyalty"] == "loyal")
@@ -143,14 +165,14 @@ def sales_after_rise(fx: Fixtures) -> float:
 def stars_sell(fx: Fixtures) -> float:
     """P4a: purchase rate at 5 stars ÷ at 3, products not poorly made."""
     state = fx.state()
-    rows = [r for r in fx.load("impressions") if not is_poorly_made(r["product_sku"])]
+    rows = [r for r in fx.impressions() if not is_poorly_made(r["product_sku"])]
     five = _rate(r for r in rows if state[r["product_state"]]["rating_band"] == "5")
     return five / _rate(r for r in rows if state[r["product_state"]]["rating_band"] == "3")
 
 
 def big_bags_for_big_dogs(fx: Fixtures) -> float:
     """P5a: share of dog-food lines ≥ 7 kg, large-dog ÷ small-dog households."""
-    pet_size = {c["customer_id"]: c.get("pet_size") for c in fx.load("customers")}
+    pet_size = {cid: t.get("pet_size") for cid, t in fx.traits().items()}
     customer_of = {o["order_id"]: o["customer_id"] for o in fx.load("orders")}
     products = {p["sku"]: p for p in fx.load("products")}
     big = defaultdict(lambda: [0, 0])
@@ -161,3 +183,25 @@ def big_bags_for_big_dogs(fx: Fixtures) -> float:
             cell[0] += pack_kg(p["name"]) >= LARGE_PACK_KG
             cell[1] += 1
     return (big["large"][0] / big["large"][1]) / (big["small"][0] / big["small"][1])
+
+
+def _kit_rows(fx: Fixtures) -> dict[str | None, list[dict]]:
+    """Impressions by where the shown product stands in the household's kit."""
+    products = {p["sku"]: p for p in fx.load("products")}
+    by: dict[str | None, list[dict]] = defaultdict(list)
+    for r in fx.impressions():
+        status = kit_status(products[r["product_sku"]], set(r["basket_categories"].split()), set(r["owned"].split()))
+        by[status].append(r)
+    return by
+
+
+def kit_next_item(fx: Fixtures) -> float:
+    """K1a: purchase rate of the kit's next item ÷ other add-ons not yet owned."""
+    by = _kit_rows(fx)
+    return _rate(by["next"]) / _rate(by["other"])
+
+
+def kit_owned_item(fx: Fixtures) -> float:
+    """K1b: purchase rate of a kit item the household has ÷ kit items it doesn't."""
+    by = _kit_rows(fx)
+    return _rate(by["owned"]) / _rate(by["next"] + by["other"])

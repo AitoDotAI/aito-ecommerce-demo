@@ -77,23 +77,30 @@ def kit_sequence(pet: str) -> tuple[str, ...]:
     return lifecycle.STARTER_KITS.get(pet, ()) + lifecycle.ADD_ONS.get(pet, ())
 
 
-def kit_odds(product: dict, basket: set[str], owned: set[str]) -> float:
-    """K1: how much the household's place in its kit moves this shown product.
+def kit_status(product: dict, basket: set[str], owned: set[str]) -> str | None:
+    """Where a shown kit item stands in the household's kit: "owned", "next"
+    (the kit's next missing item), "other" (another add-on not yet owned),
+    or None (not a kit item, or the household has no kit for its pet).
 
     `product` is a products.json-style row; `basket` and `owned` are kit
-    tokens ("small_animal_cage"). The kit counts as started when any of
-    its items is in the basket or owned."""
+    tokens ("small_animal_cage"). The kit counts as started when any of its
+    items is in the basket or owned."""
     pet = product["pet_type"]
     kind = lifecycle.item_type(product["name"], product["brand"])
     sequence = kit_sequence(pet)
     if kind not in sequence:
-        return 1.0
+        return None
     have = {k for k in sequence if shoppers.token(pet, k) in basket | owned}
     if not have:
-        return 1.0
+        return None
     if kind in have:
-        return OWNED_KIT_ODDS
-    next_missing = next(k for k in sequence if k not in have)
-    if kind == next_missing:
-        return NEXT_KIT_ODDS
-    return OTHER_ADD_ON_ODDS if kind in lifecycle.ADD_ONS.get(pet, ()) else 1.0
+        return "owned"
+    if kind == next(k for k in sequence if k not in have):
+        return "next"
+    return "other" if kind in lifecycle.ADD_ONS.get(pet, ()) else None
+
+
+def kit_odds(product: dict, basket: set[str], owned: set[str]) -> float:
+    """K1: how much the household's place in its kit moves this shown product."""
+    return {"owned": OWNED_KIT_ODDS, "next": NEXT_KIT_ODDS, "other": OTHER_ADD_ON_ODDS}.get(
+        kit_status(product, basket, owned), 1.0)

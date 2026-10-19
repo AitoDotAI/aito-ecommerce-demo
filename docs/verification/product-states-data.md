@@ -6,30 +6,36 @@ switched off). Design and margins: `product-states-prereg.md`.
 
 | check | seed | planted | null | planted ÷ null | margin | result |
 |:--|--:|--:|--:|--:|:--|:--|
-| P1a budget shoppers buy on offer | 42 | 2.828 | 1.160 | 2.439 | ≥ 1.5 | pass |
-| P1b premium shoppers barely | 42 | 1.132 | 0.956 | 1.183 | ≤ 1.3 | pass |
+| P1a budget shoppers buy on offer | 42 | 2.632 | 1.112 | 2.366 | ≥ 1.5 | pass |
+| P1b premium shoppers barely | 42 | 1.136 | 1.015 | 1.119 | ≤ 1.3 | pass |
 | P2b a new product's pull | 42 | 2.337 | 0.994 | 2.352 | ≥ 1.3 | pass |
 | P2c incumbents lose to a launch | 42 | 1.324 | 1.422 | 0.931 | ≤ 0.95 | pass |
-| P2d flexible shoppers take to new | 42 | 1.397 | 1.193 | 1.171 | ≥ 1.25 | **fail** |
+| P2d flexible shoppers take to new | 42 | 1.529 | 1.337 | 1.143 | ≥ 1.25 | **fail** |
 | P3a a price rise lowers sales | 42 | 0.776 | 0.900 | 0.862 | ≤ 0.92 | pass |
-| P4a stars sell | 42 | 1.210 | 0.989 | 1.224 | ≥ 1.15 | pass |
+| P4a stars sell | 42 | 1.252 | 0.987 | 1.268 | ≥ 1.15 | pass |
 | P5a big bags for big dogs | 42 | 2.691 | 1.014 | 2.654 | ≥ 1.8 | pass |
-| P1a budget shoppers buy on offer | 7 | 2.603 | 1.178 | 2.211 | ≥ 1.5 | pass |
-| P1b premium shoppers barely | 7 | 1.263 | 1.029 | 1.228 | ≤ 1.3 | pass |
+| K1a the kit's next item | 42 | 2.756 | 1.114 | 2.474 | ≥ 2.0 | pass |
+| K1b an owned kit item | 42 | 0.015 | 0.675 | 0.023 | ≤ 0.3 | pass |
+| P1a budget shoppers buy on offer | 7 | 2.563 | 1.211 | 2.117 | ≥ 1.5 | pass |
+| P1b premium shoppers barely | 7 | 1.185 | 1.048 | 1.131 | ≤ 1.3 | pass |
 | P2b a new product's pull | 7 | 2.217 | 0.957 | 2.318 | ≥ 1.3 | pass |
 | P2c incumbents lose to a launch | 7 | 1.315 | 1.387 | 0.948 | ≤ 0.95 | pass |
-| P2d flexible shoppers take to new | 7 | 1.650 | 1.184 | 1.394 | ≥ 1.25 | pass |
+| P2d flexible shoppers take to new | 7 | 1.889 | 0.942 | 2.004 | ≥ 1.25 | pass |
 | P3a a price rise lowers sales | 7 | 0.921 | 1.114 | 0.827 | ≤ 0.92 | pass |
-| P4a stars sell | 7 | 1.092 | 0.886 | 1.232 | ≥ 1.15 | pass |
+| P4a stars sell | 7 | 1.087 | 0.810 | 1.343 | ≥ 1.15 | pass |
 | P5a big bags for big dogs | 7 | 2.279 | 1.080 | 2.110 | ≥ 1.8 | pass |
-| P1a budget shoppers buy on offer | 99 | 2.537 | 1.096 | 2.315 | ≥ 1.5 | pass |
-| P1b premium shoppers barely | 99 | 1.173 | 0.983 | 1.194 | ≤ 1.3 | pass |
+| K1a the kit's next item | 7 | 2.374 | 0.958 | 2.478 | ≥ 2.0 | pass |
+| K1b an owned kit item | 7 | 0.008 | 0.573 | 0.014 | ≤ 0.3 | pass |
+| P1a budget shoppers buy on offer | 99 | 2.633 | 1.090 | 2.415 | ≥ 1.5 | pass |
+| P1b premium shoppers barely | 99 | 1.270 | 1.053 | 1.206 | ≤ 1.3 | pass |
 | P2b a new product's pull | 99 | 2.073 | 0.975 | 2.126 | ≥ 1.3 | pass |
 | P2c incumbents lose to a launch | 99 | 1.322 | 1.402 | 0.943 | ≤ 0.95 | pass |
-| P2d flexible shoppers take to new | 99 | 1.512 | 0.856 | 1.766 | ≥ 1.25 | pass |
+| P2d flexible shoppers take to new | 99 | 1.644 | 1.184 | 1.388 | ≥ 1.25 | pass |
 | P3a a price rise lowers sales | 99 | 0.877 | 0.987 | 0.889 | ≤ 0.92 | pass |
-| P4a stars sell | 99 | 1.129 | 0.864 | 1.307 | ≥ 1.15 | pass |
+| P4a stars sell | 99 | 1.197 | 0.876 | 1.367 | ≥ 1.15 | pass |
 | P5a big bags for big dogs | 99 | 2.697 | 0.946 | 2.851 | ≥ 1.8 | pass |
-| P1b budget's lift ÷ premium's | 42 | 2.439 | 1.183 | 2.061 | ≥ 1.4 | pass |
-| P1b budget's lift ÷ premium's | 7 | 2.211 | 1.228 | 1.800 | ≥ 1.4 | pass |
-| P1b budget's lift ÷ premium's | 99 | 2.315 | 1.194 | 1.939 | ≥ 1.4 | pass |
+| K1a the kit's next item | 99 | 2.334 | 1.082 | 2.157 | ≥ 2.0 | pass |
+| K1b an owned kit item | 99 | 0.014 | 0.708 | 0.019 | ≤ 0.3 | pass |
+| P1b budget's lift ÷ premium's | 42 | 2.366 | 1.119 | 2.115 | ≥ 1.4 | pass |
+| P1b budget's lift ÷ premium's | 7 | 2.117 | 1.131 | 1.872 | ≥ 1.4 | pass |
+| P1b budget's lift ÷ premium's | 99 | 2.415 | 1.206 | 2.002 | ≥ 1.4 | pass |

@@ -59,24 +59,17 @@ SCHEMAS: dict[str, dict] = {
             # Finnish display name so the UI feels like a real shop.
             # Stable per customer_id.
             "name":          {"type": "String", "nullable": False},
-            "segment":       {"type": "String", "nullable": False},
-            # `pet_size` is set only for dog_owner / multi_pet rows;
-            # nullable so the segments that don't have one don't
-            # have to invent a placeholder.
-            "pet_size":      {"type": "String", "nullable": True},
             "region":        {"type": "String", "nullable": False},
             "tenure_months": {"type": "Int",    "nullable": False},
-            # Latent profile traits sampled at customer creation,
-            # stable across purchase history. Drive within-segment
-            # product preference (lifestyle ↔ brand tier, health
-            # focus ↔ dietary, treat affinity ↔ category, brand
-            # loyalty ↔ favorite brands). Give Aito's `_recommend
-            # basedOn` real signal on thin-history customers. See
-            # ADR 0017.
-            "lifestyle":      {"type": "String", "nullable": False},
-            "health_focus":   {"type": "String", "nullable": False},
-            "treat_affinity": {"type": "String", "nullable": False},
-            "brand_loyalty":  {"type": "String", "nullable": False},
+            # What the household declared (ADR 0033): its pets ("dog cat"),
+            # a dog's size, and the one kind of food it keeps to, if any
+            # (grain-free | sensitive | senior | puppy, ADR 0030). The
+            # generator's hidden traits (lifestyle, health focus, treat
+            # affinity, brand loyalty) are never a column: Aito learns them
+            # from what the customer does.
+            "pets":          {"type": "Text",   "nullable": False, "analyzer": "whitespace"},
+            "dog_size":      {"type": "String", "nullable": True},
+            "diet":          {"type": "String", "nullable": True},
             # Order-history aggregates backfilled by the fixture
             # generator. Stored on customers so the Churn view's
             # `_predict churned` can condition on them without a
@@ -85,9 +78,31 @@ SCHEMAS: dict[str, dict] = {
             "total_spent_eur":  {"type": "Decimal", "nullable": False},
             "last_order_month": {"type": "String",  "nullable": True},
             "churned":          {"type": "Boolean", "nullable": False},
-            # grain-free | sensitive | senior | puppy, for the dog and cat
-            # households that keep one kind of food (ADR 0030).
-            "diet_rule":        {"type": "String",  "nullable": True},
+        },
+    },
+    # 2c. contexts — one moment a customer was shown products (ADR 0033):
+    # who, when, where, and what the basket, the previous basket and the
+    # household's kit held. Impressions link here; queries reach the
+    # customer through it (`context.customer`).
+    "contexts": {
+        "type": "table",
+        "columns": {
+            "context_id":   {"type": "String", "nullable": False},
+            "customer":     {"type": "String", "nullable": False,
+                             "link": "customers.customer_id"},
+            "month":        {"type": "String", "nullable": False},
+            "weekday":      {"type": "String", "nullable": False},
+            "surface":      {"type": "String", "nullable": False},
+            # Text so `where {"context.search_query": {"$match": "food"}}` token-matches.
+            "search_query": {"type": "Text",   "nullable": True, "analyzer": "whitespace"},
+            # This month's basket, as SKUs and as words ("dog_dryfood
+            # small_animal_cage"; no hyphens or spaces, which the analyzer splits).
+            "basket":            {"type": "Text", "nullable": True, "analyzer": "whitespace"},
+            "basket_categories": {"type": "Text", "nullable": True, "analyzer": "whitespace"},
+            # The last order before this month (recency, S8), and the kit items
+            # the household owns from its earlier orders (K1).
+            "prev_basket":  {"type": "Text",   "nullable": True, "analyzer": "whitespace"},
+            "owned":        {"type": "Text",   "nullable": True, "analyzer": "whitespace"},
         },
     },
     # 2b. product_states — each product as it was in each month on sale
@@ -152,86 +167,36 @@ SCHEMAS: dict[str, dict] = {
                             "link": "products.sku"},
             "qty":         {"type": "Int",     "nullable": False},
             "returned":    {"type": "Boolean", "nullable": False},
-            # Denormalised mirror of `customers.{segment, pet_size}`.
-            # Aito's queries from `order_lines` only do single-hop
-            # link traversal — to bias by customer attributes without
-            # a two-hop chain (`order_id → orders → customer_id →
-            # customers`) we pull the demo-load-bearing customer
-            # fields down to the line level. Drives Smart Search's
-            # customer-context biasing. See ADR 0006.
-            "customer_segment":  {"type": "String", "nullable": False},
-            "customer_pet_size": {"type": "String", "nullable": True},
-            # Latent profile traits denormalised onto the line (same
-            # single-hop rationale as `customer_segment` /
-            # `customer_pet_size`). Drive within-segment patterns
-            # surfaced by Pattern Explorer / Bought Together /
-            # Purchase Analytics. See ADR 0017.
-            "customer_lifestyle":      {"type": "String", "nullable": False},
-            "customer_health_focus":   {"type": "String", "nullable": False},
-            "customer_treat_affinity": {"type": "String", "nullable": False},
-            "customer_brand_loyalty":  {"type": "String", "nullable": False},
-            "customer_diet_rule":      {"type": "String", "nullable": True},
             # ADR 0032: the product as it was that month (price, offer, stars, new).
             "product_state":           {"type": "String", "nullable": False,
                                         "link": "product_states.product_state_id"},
         },
     },
-    # 4b. impressions — one product shown to a customer in a browsing
-    # context, with the funnel outcome (clicked / added_to_cart /
-    # purchased). This is the table that gives the recommendation
-    # surfaces a real conversion KPI: `_recommend product_sku
-    # goal: {purchased: true}`. Links to customers + products, so it
-    # loads after both. Largest table — generated, not committed
-    # (gitignored). See ADR 0021.
+    # 4b. impressions — one product shown in a context, with the funnel
+    # outcome (clicked / added_to_cart / purchased): the conversion KPI the
+    # recommendation surfaces rank on (`_recommend product_sku goal:
+    # {purchased: true}`, ADR 0021). Who, when and where are on the
+    # context (ADR 0033). Largest table — generated, not committed.
     "impressions": {
         "type": "table",
         "columns": {
             "impression_id": {"type": "String", "nullable": False},
-            "session_id":    {"type": "String", "nullable": False},
-            "customer_id":   {"type": "String", "nullable": False,
-                              "link": "customers.customer_id"},
+            "context":       {"type": "String", "nullable": False,
+                              "link": "contexts.context_id"},
             "product_sku":   {"type": "String", "nullable": False,
                               "link": "products.sku"},
-            "surface":       {"type": "String", "nullable": False},
-            "month":         {"type": "String", "nullable": False},
+            # ADR 0032: the product as it was that month (price, offer, stars, new).
+            "product_state": {"type": "String", "nullable": False,
+                              "link": "product_states.product_state_id"},
             # Descriptive only — never fed to recommend `basedOn`, so
             # Aito ranks on content, not "position predicts click".
-            "position":      {"type": "Int",    "nullable": False},
-            # The query string for surface == "search". Text so
-            # `where {search_query: {$match: "food"}}` token-matches.
-            "search_query":  {"type": "Text",   "nullable": True,
-                              "analyzer": "whitespace"},
-            # The basket that month as tokens ("dog_dryfood
-            # small_animal_cage"), so `$match` conditions on what is in it
-            # (ADR 0030). Null when nothing was bought that month.
-            "basket_categories": {"type": "Text", "nullable": True,
-                                  "analyzer": "whitespace"},
-            "basket_skus":       {"type": "Text", "nullable": True,
-                                  "analyzer": "whitespace"},
-            # The customer's last order before this month, and whether the
-            # shown product was in it: recency (ADR 0030, S8).
-            "last_order_skus":   {"type": "Text", "nullable": True,
-                                  "analyzer": "whitespace"},
-            "just_bought":       {"type": "Boolean", "nullable": False},
-            # Denormalised customer profile — single-hop conditioning.
-            "customer_segment":      {"type": "String", "nullable": False},
-            "customer_pet_size":     {"type": "String", "nullable": True},
-            "customer_lifestyle":    {"type": "String", "nullable": False},
-            "customer_health_focus": {"type": "String", "nullable": False},
-            "customer_treat_affinity":{"type": "String", "nullable": False},
-            "customer_brand_loyalty":{"type": "String", "nullable": False},
-            "customer_diet_rule":    {"type": "String", "nullable": True},
-            # Denormalised product attributes for `basedOn` priors.
-            "product_pet_type": {"type": "String", "nullable": False},
-            "product_category": {"type": "String", "nullable": False},
-            "product_brand":    {"type": "String", "nullable": False},
+            "position":      {"type": "Int",     "nullable": False},
+            # The product was in the customer's last order (recency, S8).
+            "just_bought":   {"type": "Boolean", "nullable": False},
             # Funnel outcome labels (monotone: purchased ⇒ cart ⇒ click).
             "clicked":       {"type": "Boolean", "nullable": False},
             "added_to_cart": {"type": "Boolean", "nullable": False},
             "purchased":     {"type": "Boolean", "nullable": False},
-            # ADR 0032: the product as it was that month (price, offer, stars, new).
-            "product_state":           {"type": "String", "nullable": False,
-                                        "link": "product_states.product_state_id"},
         },
     },
     # 5. reviews — links to customers AND products. Powers the
@@ -328,11 +293,6 @@ SCHEMAS: dict[str, dict] = {
             # Days since the customer's last order at send time,
             # bucketed for K-NN. Strong predictor of response.
             "recency_bucket": {"type": "String", "nullable": False},
-            # Denormalised so Aito conditions in one hop.
-            "customer_segment":     {"type": "String", "nullable": False},
-            "customer_pet_size":    {"type": "String", "nullable": True},
-            "customer_lifestyle":   {"type": "String", "nullable": False},
-            "customer_health_focus":{"type": "String", "nullable": False},
             # The customer's staple "pet/category" ("none" if none): a send
             # in it responds 2.5x as often (ADR 0027).
             "customer_staple_category": {"type": "String", "nullable": False},
@@ -358,20 +318,8 @@ SCHEMAS: dict[str, dict] = {
             "visits":            {"type": "Int",    "nullable": False},
             "purchases":         {"type": "Int",    "nullable": False},
             "spent_eur":         {"type": "Decimal", "nullable": False},
-            # Profile features denormalised onto each row so `_predict`
-            # over customer_months sees them directly (Aito's
-            # single-hop link-traversal limit).
-            "segment":           {"type": "String", "nullable": False},
             "pet_size":          {"type": "String", "nullable": True},
             "region":            {"type": "String", "nullable": False},
-            # Latent profile traits denormalised so Churn's `_predict
-            # churned_in_3_months` can condition on them. Engineered
-            # correlation: budget+flexible customers churn ~12 pp
-            # higher than premium+loyal. See ADR 0017.
-            "lifestyle":         {"type": "String", "nullable": False},
-            "health_focus":      {"type": "String", "nullable": False},
-            "treat_affinity":    {"type": "String", "nullable": False},
-            "brand_loyalty":     {"type": "String", "nullable": False},
             "tenure_months_at_month": {"type": "Int", "nullable": False},
             # Latest-review snapshot in this month (if the customer
             # wrote one). Connects feedback to churn prediction —

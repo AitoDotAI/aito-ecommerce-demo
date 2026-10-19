@@ -23,6 +23,7 @@ from pathlib import Path
 
 import data.generate_fixtures as generator
 from data import catalogue_events as events
+from data import observable
 from scripts import planted_effect_metrics as metrics
 
 SEEDS = (42, 7, 99)
@@ -37,6 +38,7 @@ NULLS = {
     "price rise": {"RISE_RANGE": (1.0, 1.0)},
     "stars": {"STARS_ODDS": {k: 1.0 for k in events.STARS_ODDS}},
     "pack size": {"PACK_FIT": 1.0},
+    "kit progression": {"observable.KIT_PROGRESSION": False},
 }
 
 # (check, null, metric, comparison, margin) for planted ÷ null.
@@ -49,22 +51,30 @@ CHECKS = [
     ("P3a a price rise lowers sales", "price rise", metrics.sales_after_rise, operator.le, 0.92),
     ("P4a stars sell", "stars", metrics.stars_sell, operator.ge, 1.15),
     ("P5a big bags for big dogs", "pack size", metrics.big_bags_for_big_dogs, operator.ge, 1.8),
+    ("K1a the kit's next item", "kit progression", metrics.kit_next_item, operator.ge, 2.0),
+    ("K1b an owned kit item", "kit progression", metrics.kit_owned_item, operator.le, 0.3),
 ]
+
+
+def _target(name: str):
+    """("observable.KIT_PROGRESSION") → (data.observable, "KIT_PROGRESSION"); else catalogue_events."""
+    module, _, attr = name.rpartition(".")
+    return (observable if module == "observable" else events), attr
 
 
 def generate(seed: int, null: dict | None) -> metrics.Fixtures:
     """Generate the fixtures for `seed` into a temporary dir, with `null`'s constants."""
-    saved = {name: getattr(events, name) for name in (null or {})}
+    saved = {name: getattr(*_target(name)) for name in (null or {})}
     out = Path(tempfile.mkdtemp(prefix=f"planted-{seed}-"))
     try:
         for name, value in (null or {}).items():
-            setattr(events, name, value)
+            setattr(*_target(name), value)
         generator.RNG_SEED, generator.DATA_DIR = seed, out
         with contextlib.redirect_stdout(io.StringIO()):
             generator.main()
     finally:
         for name, value in saved.items():
-            setattr(events, name, value)
+            setattr(*_target(name), value)
     return metrics.Fixtures(out)
 
 

@@ -54,4 +54,16 @@ is an amendment here first, with its reason.
 
 ## Results
 
-(none yet)
+### Data checks, 2026-10-19 (seed 42 committed; seeds 7 and 99 by `./do planted-effects`)
+
+| check | result |
+|:--|:--|
+| O1 no hidden-trait column in the schema or any fixture row | pass (`tests/test_observable_data.py`) |
+| O2 every impression's context exists and is its month | pass |
+| K1a the kit's next item ÷ other add-ons, planted ÷ null | 2.47, 2.48, 2.16 (≥ 2.0): pass |
+| K1b an owned kit item ÷ unowned, planted ÷ null | 0.023, 0.014, 0.019 (≤ 0.3): pass |
+| P1–P5 (ADR 0032), re-run on this data | 31 of 32; P2d misses on seed 42 (1.14 ≥ 1.25), as reported before |
+| D/S checks | pass (`./do test`, 312 tests) |
+
+The hidden traits are verified through `data/answer_key/customer_traits.json`,
+which the loader never uploads.
