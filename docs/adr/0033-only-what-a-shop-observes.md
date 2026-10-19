@@ -1,6 +1,6 @@
 # ADR 0033: Only what a shop can observe — impressions, contexts and customers
 
-**Status:** Proposed (2026-10-19)
+**Status:** Accepted (2026-10-19)
 **Date:** 2026-10-19
 **Deciders:** Antti
 
@@ -51,7 +51,7 @@ Two Aito reference apps already store data that way (survey, 2026-10-19):
 |---|---|---|
 | `customers` | What the customer declared or the shop records: `region`, `joined_month`, declared `pets` (e.g. "dog cat"), `dog_size`, declared `diet` (a household's rule, when they told us) | — |
 | `contexts` | One row per moment products were shown: `month`, `weekday`, `surface`, `basket` (SKUs), `basket_categories`, `prev_basket` (the last order's SKUs), `owned` (the household's kit items so far, from its orders, e.g. `small_animal_cage small_animal_water_bottle`), `search_query` | `customer → customers` |
-| `impressions` | The outcome: `clicked`, `added_to_cart`, `purchased`, `position` | `context → contexts`, `product_state → product_states` (ADR 0032) |
+| `impressions` | The outcome: `clicked`, `added_to_cart`, `purchased`, `position`, `just_bought` | `context → contexts`, `product_sku → products` (the recommend target while state candidates overconfide, td-20261018112625647694), `product_state → product_states` (ADR 0032) |
 | `orders`, `order_lines` | As now, minus the copied traits | `customer → customers`, `product_state → product_states` |
 
 `just_bought` stays on the impression: it is a fact about this product in
