@@ -297,8 +297,8 @@ export interface ForYouTile {
   category: string;
   price_eur: number;
   rank: number;
-  /** P(segment | product) from Aito's `$p`. Surfaced as a per-tile
-   *  "0.91" score chip. */
+  /** P(purchased | this customer) from Aito's `$p`. Surfaced as a
+   *  per-tile "0.91" score chip. */
   score: number;
 }
 
@@ -306,8 +306,6 @@ export interface ForYouResponse {
   persona: {
     id: string;
     label: string;
-    segment: string;
-    pet_size: string | null;
     customer_id: string;
   };
   tiles: ForYouTile[];

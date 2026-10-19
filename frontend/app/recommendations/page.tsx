@@ -20,17 +20,16 @@ const PERSONAS = [
 /**
  * For You — personalised tile grid that flips per persona.
  *
- * The grid is driven by `_recommend product_sku from order_lines`
- * with the persona's `customer_pet_size` in `where` and their
- * `customer_segment` in `goal`. Same data, three crisply different
- * shoppers. See `docs/adr/0007-for-you.md`.
+ * The grid is `_recommend product_sku from impressions` with only the
+ * customer in `where` (`context.customer`), goal `{purchased: true}`:
+ * Aito learns each persona from their own rows (ADR 0021, ADR 0033).
  */
 function ForYouView() {
   usePagePanel(recommendationsPanel(), {
     title: "For You",
     description:
       "Personalised picks for the selected customer. Same query, same data — " +
-      "the grid changes because Aito conditions on the customer's segment.",
+      "the grid changes because Aito learns each customer from what they did.",
     breadcrumb: "For You",
   });
 
@@ -106,11 +105,9 @@ function ForYouView() {
               <>
                 <strong>{data.persona.label}</strong> · {data.tiles.length} picks
                 <span style={{ color: "var(--text-muted)", marginLeft: 8 }}>
-                  · goal{" "}
+                  · where{" "}
                   <code style={{ fontFamily: "var(--mono)" }}>
-                    {`{segment: ${data.persona.segment}${
-                      data.persona.pet_size ? `, pet_size: ${data.persona.pet_size}` : ""
-                    }}`}
+                    {`{context.customer: ${data.persona.customer_id}}`}
                   </code>
                 </span>
               </>
@@ -146,7 +143,7 @@ function Tile({ tile }: { tile: ForYouTile }) {
         <div className="rec-card-brand">{tile.brand} · {tile.category}</div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 4 }}>
           <span className="rec-card-price">{fmtEur(tile.price_eur)}</span>
-          <span className="rec-card-score" title="P(segment | product)">
+          <span className="rec-card-score" title="P(purchased | this customer), from Aito's $p">
             p {tile.score.toFixed(2)}
           </span>
         </div>

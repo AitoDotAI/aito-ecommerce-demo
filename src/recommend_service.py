@@ -1,11 +1,11 @@
 """For You — personalised tile grid via `_recommend`.
 
-Reuses Smart Search's conversion-KPI shape (ADR 0021) without the
-`search_query` filter, so the result spans every category the
-persona converts on: `_recommend product_sku from impressions
-where {customer_segment, [pet_size]} goal {purchased: true}`.
-Persona definitions here override the underlying customer record's
-segment for Olli — see ADR 0007 §"Olli divergence" for the why.
+Reuses Smart Search's conversion-KPI shape (ADR 0021) without a search
+query, so the result spans every category the persona converts on:
+`_recommend product_sku from impressions where {"context.customer": id}
+goal {purchased: true}`. Aito learns the persona from their own rows,
+never from a profile handed to it (ADR 0033). That retires ADR 0007's
+"Olli divergence": his mostly-dog history speaks for itself.
 """
 
 from __future__ import annotations
@@ -25,24 +25,12 @@ class Persona:
     persona_id: str        # short id used by the frontend
     customer_id: str       # the underlying CUST-NNNNN
     label: str             # display name (kept aligned with TASK.md)
-    segment: str           # the `where.customer_segment` context at query time
-    pet_size: str | None   # optional `where.customer_pet_size`
 
 
-# Olli's segment in the *customer record* is `multi_pet` (ADR 0002 persona),
-# but the segment-level conditioning treats `multi_pet` as the whole
-# multi-pet population — which leans cat in our fixture. The For You
-# goal here uses `dog_owner + small` instead, matching Olli's hand-
-# curated personal history (85 % dog). The label stays "multi-pet,
-# small dog" per TASK.md; the Aito panel shows the live goal body.
-# See `docs/adr/0007-for-you.md` for the rationale.
 PERSONAS: dict[str, Persona] = {
-    "maija": Persona("maija", "CUST-00001", "Maija Lehtonen — cat owner",
-                     segment="cat_owner", pet_size=None),
-    "olli":  Persona("olli",  "CUST-00002", "Olli Mäkelä — multi-pet (small dog)",
-                     segment="dog_owner", pet_size="small"),
-    "saara": Persona("saara", "CUST-00003", "Saara Virtanen — large breed dog owner",
-                     segment="dog_owner", pet_size="large"),
+    "maija": Persona("maija", "CUST-00001", "Maija Lehtonen — cat owner"),
+    "olli":  Persona("olli",  "CUST-00002", "Olli Mäkelä — multi-pet (small dog)"),
+    "saara": Persona("saara", "CUST-00003", "Saara Virtanen — large breed dog owner"),
 }
 
 DEFAULT_PERSONA = "maija"
@@ -60,7 +48,7 @@ class Tile:
     category: str
     price_eur: float
     rank: int
-    score: float    # P(segment | product) from Aito's `$p`
+    score: float    # P(purchased | this customer) from Aito's `$p`
 
 
 @dataclass
@@ -97,18 +85,14 @@ def get_for_you(
 
     # Conversion-KPI recommend over the impressions funnel:
     #
-    #   where:  the context — this persona's segment (+ pet_size when
-    #           set). The persona signal conditions the probability.
+    #   where:  who is shopping, through the impression's context. Aito
+    #           reads the customer from their own rows (ADR 0033).
     #   goal:   the real outcome label `{purchased: true}`.
     #
-    # Ranks products by P(purchased | this customer's context), the
-    # textbook personalised recommend. The per-persona flip is learned
-    # from the funnel (cat owners convert on cat products, dog owners
-    # on dog) rather than asserted via a segment-affinity proxy. See
-    # ADR 0021.
-    where: dict[str, str] = {"customer_segment": persona.segment}
-    if persona.pet_size is not None:
-        where["customer_pet_size"] = persona.pet_size
+    # Ranks products by P(purchased | this customer), the textbook
+    # personalised recommend; the per-persona flip is learned from the
+    # funnel, not asserted (ADR 0021).
+    where: dict[str, str] = {"context.customer": persona.customer_id}
     goal = {"purchased": True}
 
     body = {
@@ -146,8 +130,6 @@ def get_for_you(
         persona={
             "id":          persona.persona_id,
             "label":       persona.label,
-            "segment":     persona.segment,
-            "pet_size":    persona.pet_size,
             "customer_id": persona.customer_id,
         },
         tiles=tiles,
