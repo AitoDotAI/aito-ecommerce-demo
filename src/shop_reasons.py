@@ -7,17 +7,18 @@ lift of the product itself:
      "proposition": {"product_sku": {"$has": "SKU-PT-0553"}},
      "value": 7.97,
      "factors": [{"type": "relatedPropositionLift",
-                  "proposition": {"customer_treat_affinity": "high"}, "value": 1.49},
+                  "proposition": {"context.month": "2026-04"}, "value": 1.32},
                  {"type": "relatedPropositionLift",
-                  "proposition": {"month": "2026-04"}, "value": 1.32},
-                 {"type": "relatedPropositionLift",
-                  "proposition": {"$group": [{"$and": [{"basket_categories": …}]}]},
+                  "proposition": {"$group": [{"$and": [{"context.basket_categories": …}]}]},
                   "value": 2.38}, …]}
 
 The nested factors are how much each part of the `where` lifts *this*
-product: the reasons behind the probability the card shows. The cart can
-appear as several factors (its SKUs, its categories); they multiply into
-one "your cart" reason.
+product: the reasons behind the probability the card shows. The `where`
+holds only what a shop observes (ADR 0033): the customer, the month, the
+cart and the kit the household owns. The cart can appear as several
+factors (its SKUs, its categories); they multiply into one "your cart"
+reason. (The nesting was probed 2026-10-17 on the shape before ADR 0033;
+`tests/test_aito_check.py` checks the context form live.)
 
 A product with too few impressions of its own has no such lift: its
 `$why` holds only `hitLinkPropositionLift`, the prior from its features
@@ -38,18 +39,20 @@ MIN_REASON_LIFT = 1.15
 MAX_REASONS = 3
 
 CART = "Goes with your cart"
-FIELD_LABELS = {
-    "customer_segment": "Segment",
-    "customer_lifestyle": "Lifestyle",
-    "customer_health_focus": "Health focus",
-    "customer_treat_affinity": "Treat affinity",
-    "customer_brand_loyalty": "Brand loyalty",
+KIT = "Fits the kit you have"
+HISTORY = "Your own history"
+# Declared fields, if Aito expands the customer link into them.
+DECLARED_LABELS = {
+    "context.customer.pets": "Your pets",
+    "context.customer.dog_size": "Your dog's size",
+    "context.customer.diet": "Your diet",
+    "context.customer.region": "Region",
 }
 
 
 @dataclass(frozen=True)
 class Reason:
-    label: str    # "Treat affinity: high", "Sells in April", "Goes with your cart"
+    label: str    # "Goes with your cart", "Fits the kit you have", "Sells in April"
     lift: float   # how much it multiplies this product's odds of a purchase
 
 
@@ -74,15 +77,20 @@ def reasons_for(why: dict, sku: str) -> list[Reason]:
 def _label(proposition: dict) -> str | None:
     """A reason's label, or None for a part of the `where` that isn't a reason
     to show (`just_bought: false`: the grid asks every product that way)."""
-    if "basket_" in json.dumps(proposition):
+    text = json.dumps(proposition)
+    if "context.basket" in text:
         return CART
+    if "context.owned" in text:
+        return KIT
     if len(proposition) != 1:
-        raise AitoError(f"Unexpected $why proposition: {json.dumps(proposition)[:200]}")
+        raise AitoError(f"Unexpected $why proposition: {text[:200]}")
     [(field, value)] = proposition.items()
     if field == "just_bought":
         return None
-    if field == "month":
+    if field == "context.month":
         return f"Sells in {calendar.month_name[int(value[5:7])]}"
-    if field in FIELD_LABELS and isinstance(value, str):
-        return f"{FIELD_LABELS[field]}: {value.replace('_', ' ')}"
-    raise AitoError(f"Unexpected $why proposition: {json.dumps(proposition)[:200]}")
+    if field == "context.customer":
+        return HISTORY
+    if field in DECLARED_LABELS and isinstance(value, str):
+        return f"{DECLARED_LABELS[field]}: {value.replace('_', ' ')}"
+    raise AitoError(f"Unexpected $why proposition: {text[:200]}")

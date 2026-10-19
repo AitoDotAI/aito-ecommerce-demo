@@ -1,4 +1,4 @@
-"""The Shop's `where` (src/shop_context.py): profile, month, cart and rule."""
+"""The Shop's `where` (src/shop_context.py): customer, month, cart, kit and rule."""
 
 from data import lifecycle
 from src.shop_context import DURABLE_TYPES, basket_words, rule_filter, shopper_where
@@ -7,8 +7,6 @@ CAGE = {"sku": "SKU-PT-0530", "name": "Trixie Cage", "brand": "Trixie",
         "pet_type": "small_animal", "category": "accessories"}
 FOOD = {"sku": "SKU-PT-0012", "name": "Acana Grain Free Lamb Dog Food 2kg", "brand": "Acana",
         "pet_type": "dog", "category": "dry-food"}
-CUSTOMER = {"segment": "dog_owner", "lifestyle": "mid", "health_focus": "high",
-            "treat_affinity": "low", "brand_loyalty": "loyal", "diet_rule": "grain-free"}
 
 
 def test_durable_kit_items_match_the_generators():
@@ -20,19 +18,22 @@ def test_a_cart_is_described_with_the_words_impressions_record():
     assert basket_words([CAGE, FOOD]) == ["dog_dryfood", "small_animal_accessories", "small_animal_cage"]
 
 
-def test_the_where_holds_profile_month_and_cart_but_not_the_rule():
-    where = shopper_where(CUSTOMER, [CAGE], "2025-12")
+def test_the_where_holds_only_what_a_shop_observes():
+    where = shopper_where("CUST-00049", [CAGE], "2025-12", ["small_animal_water_bottle"])
 
-    assert where["customer_segment"] == "dog_owner" and where["month"] == "2025-12"
-    assert where["basket_skus"] == {"$and": [{"$match": "SKU-PT-0530"}]}
-    assert {"$match": "small_animal_cage"} in where["basket_categories"]["$and"]
-    assert "customer_diet_rule" not in where   # the rule is a filter, see rule_filter
+    # ADR 0033: who, when, the cart and the kit, all through the context.
+    assert where["context.customer"] == "CUST-00049" and where["context.month"] == "2025-12"
+    assert where["context.basket"] == {"$and": [{"$match": "SKU-PT-0530"}]}
+    assert {"$match": "small_animal_cage"} in where["context.basket_categories"]["$and"]
+    assert where["context.owned"] == {"$and": [{"$match": "small_animal_water_bottle"}]}
+    # No profile is handed over, and the diet rule is a filter (see rule_filter).
+    assert all(key.startswith("context.") for key in where)
 
 
-def test_an_empty_cart_adds_no_basket_context():
-    where = shopper_where(CUSTOMER, [], "2025-12")
+def test_an_empty_cart_and_no_kit_add_no_context_for_them():
+    where = shopper_where("CUST-00049", [], "2025-12", [])
 
-    assert "basket_skus" not in where and "basket_categories" not in where
+    assert set(where) == {"context.customer", "context.month"}
 
 
 def test_a_rule_keeps_non_food_other_pets_food_and_food_that_names_it():

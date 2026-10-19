@@ -44,7 +44,7 @@ def test_the_grids_context_and_rule_apply_to_search():
 
     where = fake.recommends[0]
     assert {"product_sku.name": {"$match": "Grain"}} in where["$or"]
-    assert where["basket_skus"] == {"$and": [{"$match": "SKU-C"}]}
+    assert where["context.basket"] == {"$and": [{"$match": "SKU-C"}]}
     assert where["product_sku"] == {"$or": ["SKU-A"]}     # the cart's own item isn't a result
 
 

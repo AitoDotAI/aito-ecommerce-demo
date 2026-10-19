@@ -1,5 +1,6 @@
-"""The Shop's `where`: who the shopper is, their household rule, and their
-cart, in the words the impressions table records (ADR 0030, 0031).
+"""The Shop's `where`: who is shopping, when, what is in their cart and
+what their household owns, as the contexts table records them (ADR 0033),
+and their declared diet as a filter (ADR 0031).
 """
 
 from __future__ import annotations
@@ -16,7 +17,6 @@ DURABLE_TYPES = frozenset({
     "Collar", "Harness", "Leash", "Laser Pointer", "Nail Clipper", "Brush",
     "Air Pump", "Tank Heater",
 })
-PROFILE_FIELDS = ("segment", "lifestyle", "health_focus", "treat_affinity", "brand_loyalty")
 
 
 def item_type(name: str, brand: str) -> str:
@@ -40,13 +40,16 @@ def basket_words(products: list[dict]) -> list[str]:
     return sorted(words)
 
 
-def shopper_where(customer: dict, cart: list[dict], month: str) -> dict:
-    """The shopper's profile, the month and the cart, as `_recommend` context."""
-    where: dict = {f"customer_{k}": customer[k] for k in PROFILE_FIELDS}
-    where["month"] = month
+def shopper_where(customer_id: str, cart: list[dict], month: str, owned: list[str]) -> dict:
+    """Who is shopping, the month, the cart and the kit they own, as `_recommend`
+    context. Only what a shop observes: Aito learns the customer from their
+    own rows (`context.customer`), never from a profile handed to it."""
+    where: dict = {"context.customer": customer_id, "context.month": month}
     if cart:
-        where["basket_categories"] = {"$and": [{"$match": w} for w in basket_words(cart)]}
-        where["basket_skus"] = {"$and": [{"$match": p["sku"]} for p in cart]}
+        where["context.basket_categories"] = {"$and": [{"$match": w} for w in basket_words(cart)]}
+        where["context.basket"] = {"$and": [{"$match": p["sku"]} for p in cart]}
+    if owned:
+        where["context.owned"] = {"$and": [{"$match": t} for t in owned]}
     return where
 
 
