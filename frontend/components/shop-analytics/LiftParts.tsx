@@ -29,8 +29,11 @@ export function useSection<T>(path: string): { data: T | null; badLink: string |
 
 const FIELD_LABELS: Record<string, string> = {
   "product_sku.rating_band": "rating", "product_sku.category": "category", "product_sku.dietary": "dietary line",
-  customer_segment: "segment", customer_lifestyle: "lifestyle", customer_diet_rule: "diet rule",
-  just_bought: "in their last order", surface: "surface",
+  "context.customer.pets": "declared pets", "context.customer.diet": "declared diet",
+  "context.surface": "surface", "context.search_query": "search word", just_bought: "in their last order",
+  "product_state.on_offer": "on offer", "product_state.discount_band": "discount",
+  "product_state.age": "new or established", "product_state.rival_launched": "a rival launched",
+  "product_state.price_change": "price change",
 };
 export const fieldLabel = (field: string) => FIELD_LABELS[field] ?? field;
 

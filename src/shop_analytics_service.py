@@ -47,8 +47,10 @@ FUNNEL_FIELDS = [
     # ADR 0032: the product as it was that month (one link, as product_sku.*).
     "product_state.on_offer", "product_state.discount_band", "product_state.age",
     "product_state.rival_launched", "product_state.price_change",
-    "customer_segment", "customer_lifestyle", "customer_diet_rule",
-    "just_bought", "surface",
+    # ADR 0033: the shopper only as a shop knows them, through the context:
+    # what they declared, and where they were shown the product.
+    "context.customer.pets", "context.customer.diet", "context.surface",
+    "just_bought",
 ]
 # Related over the chosen group's order lines. `dietary` shows a diet rule
 # being kept (grain-free households buy grain-free food), which the
@@ -58,14 +60,16 @@ WHO_FIELDS = ["product_sku.category", "product_sku.dietary"]
 FIELD_LIMIT = 50
 
 _SEASONS = ["spring", "summer", "autumn", "winter"]
-_SEGMENTS = ["dog_owner", "cat_owner", "multi_pet", "small_animal_owner", "aquarium_owner"]
-_DIET_RULES = ["grain-free", "sensitive", "senior", "puppy"]
+_PETS = ["dog", "cat", "small_animal", "aquarium", "bird"]
+_DIETS = ["grain-free", "sensitive", "senior", "puppy"]
 # (id, label, group, where). The id is what the page keeps in the URL
 # (`?who=grain-free`); the values of the three groups don't overlap.
 WHO_OPTIONS: list[tuple[str, str, str, dict]] = (
     [(s, s.capitalize(), "Season", {"order_id.month": {"$or": season_months(s)}}) for s in _SEASONS]
-    + [(s, s.replace("_", " ").capitalize(), "Segment", {"customer_segment": s}) for s in _SEGMENTS]
-    + [(d, f"{d.capitalize()} diet rule", "Diet rule", {"customer_diet_rule": d}) for d in _DIET_RULES]
+    # Declared by the customer (ADR 0033), two links from the order line.
+    + [(p, f"{p.replace('_', ' ').capitalize()} households", "Declared pets",
+        {"order_id.customer_id.pets": {"$match": p}}) for p in _PETS]
+    + [(d, f"{d.capitalize()} diet", "Declared diet", {"order_id.customer_id.diet": d}) for d in _DIETS]
 )
 DEFAULT_WHO = "summer"
 
@@ -128,7 +132,7 @@ def _lift_section(client: AitoClient, *, table: str, customer_field: str, month_
 def get_funnel_section(client: AitoClient, kpi: str = "purchased") -> LiftSection:
     if kpi not in KPIS:
         raise ValueError(f"Unknown kpi {kpi!r}; expected one of {KPIS}")
-    return _lift_section(client, table="impressions", customer_field="customer_id", month_field="month",
+    return _lift_section(client, table="impressions", customer_field="context.customer", month_field="context.month",
                          condition={kpi: True}, fields=FUNNEL_FIELDS, selected=kpi, options=[])
 
 

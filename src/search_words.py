@@ -1,8 +1,8 @@
 """Shop analytics, search words: which query words convert above and
 below the average search (ADR 0031).
 
-`impressions.search_query` is a whitespace Text column, set only on the
-`search` surface. Relating it returns one hit per word, `$has` form.
+`contexts.search_query` is a whitespace Text column, set only on the
+`search` surface; impressions reach it as `context.search_query` (ADR 0033). Relating it returns one hit per word, `$has` form.
 
 **Baseline.** `where {surface: "search", purchased: true}` alone compares
 against the wrong baseline: `_relate` divides by the word's share of
@@ -42,8 +42,9 @@ from src.design_effect import DesignEffect, customer_bodies, design_effect, rows
 from src.lift_rows import Candidate, Significance, judge, relate_hits
 from src.timing import submit_in_request
 
-SEARCH = {"surface": "search"}
-SEARCH_PURCHASED = {"surface": "search", "purchased": True}
+SEARCH = {"context.surface": "search"}
+SEARCH_PURCHASED = {"context.surface": "search", "purchased": True}
+QUERY = "context.search_query"   # a whitespace Text column on the context (ADR 0033)
 # Above the vocabulary of the generated queries (99 words on 2026-10-13),
 # so a full page means words may be missing and the call raises.
 WORD_LIMIT = 500
@@ -84,22 +85,22 @@ class SearchWordSection:
 
 def search_words_bodies() -> tuple[dict, dict]:
     def body(where: dict) -> dict:
-        return {"from": "impressions", "where": where, "relate": "search_query", "limit": WORD_LIMIT}
+        return {"from": "impressions", "where": where, "relate": QUERY, "limit": WORD_LIMIT}
 
     return body(SEARCH_PURCHASED), body(SEARCH)
 
 
 def together_count_query(words: tuple[str, ...]) -> dict:
-    return {"$and": [SEARCH] + [{"search_query": {"$match": w}} for w in words]}
+    return {"$and": [SEARCH] + [{QUERY: {"$match": w}} for w in words]}
 
 
 def _counts_by_word(hits: list[dict]) -> tuple[dict[str, float], float]:
-    counts = {related_value(h, "search_query"): h["fs"]["fOnCondition"] for h in hits}
+    counts = {related_value(h, QUERY): h["fs"]["fOnCondition"] for h in hits}
     # Every hit of one `_relate` shares its condition, so fCondition is one
     # number; two would mean the hits answer different questions.
     conditions = {h["fs"]["fCondition"] for h in hits}
     if len(conditions) != 1:
-        raise AitoError(f"search_query _relate hits disagree on their condition count: {sorted(conditions)}")
+        raise AitoError(f"{QUERY} _relate hits disagree on their condition count: {sorted(conditions)}")
     return counts, conditions.pop()
 
 
@@ -117,12 +118,14 @@ def _phrases(client: AitoClient, bought: dict, shown: dict) -> tuple[list[tuple[
             phrases.append((words[0],))
             continue
         checks += 1
-        res = client.search("impressions", where=together_count_query(tuple(words)),
-                            select=["search_query"], limit=1)
+        res = client.search("impressions", where=together_count_query(tuple(words)), limit=0)
         if res["total"] != impressions:
             phrases.extend((w,) for w in words)
             continue
-        example = res["hits"][0]["search_query"].split()
+        # One search that held them all, read from the contexts table itself.
+        found = client.search("contexts", where={"surface": "search", "search_query": {
+            "$and": [{"$match": w} for w in words]}}, select=["search_query"], limit=1)["hits"]
+        example = found[0]["search_query"].split()
         if not set(words) <= set(example):
             raise AitoError(f"search {example} matched {words} but doesn't hold them as words")
         phrases.append(tuple(sorted(words, key=example.index)))
@@ -131,7 +134,7 @@ def _phrases(client: AitoClient, bought: dict, shown: dict) -> tuple[list[tuple[
 
 def get_search_words_section(client: AitoClient) -> SearchWordSection:
     bought_body, shown_body = search_words_bodies()
-    customers_body, buyers_body = customer_bodies("impressions", "customer_id", SEARCH, SEARCH_PURCHASED)
+    customers_body, buyers_body = customer_bodies("impressions", "context.customer", SEARCH, SEARCH_PURCHASED)
     with ThreadPoolExecutor(max_workers=4) as pool:
         jobs = [submit_in_request(pool, relate_hits, client, b)
                 for b in (bought_body, shown_body, customers_body, buyers_body)]
@@ -142,8 +145,8 @@ def get_search_words_section(client: AitoClient) -> SearchWordSection:
     missing = set(bought) - set(shown)
     if missing:
         raise AitoError(f"search words {sorted(missing)} were bought from search but never shown on search")
-    clustering = design_effect(rows_per_customer(customer_hits, "customer_id"),
-                               rows_per_customer(buyer_hits, "customer_id"))
+    clustering = design_effect(rows_per_customer(customer_hits, "context.customer"),
+                               rows_per_customer(buyer_hits, "context.customer"))
     phrases, phrase_checks = _phrases(client, bought, shown)
     average = search_purchases / search_impressions
 
@@ -156,7 +159,7 @@ def get_search_words_section(client: AitoClient) -> SearchWordSection:
             continue
         lift = (purchases / search_purchases) / (impressions / search_impressions)
         fs = {"fOnCondition": purchases, "fCondition": search_purchases, "f": impressions, "n": search_impressions}
-        candidates.append(Candidate("search_query", label, lift, fs, clustering.design_effect))
+        candidates.append(Candidate(QUERY, label, lift, fs, clustering.design_effect))
 
     rows, significance = judge(candidates)
     return SearchWordSection(

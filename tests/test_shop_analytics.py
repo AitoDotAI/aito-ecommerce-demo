@@ -35,9 +35,10 @@ def key(table, where, field):
 
 # 100 customers, 50 rows each, 5 meeting the condition: no clustering.
 UNCLUSTERED = [(50, 5)] * 100
-CUSTOMER_FIELDS = ("customer_id", "order_id.customer_id")
-POPULATIONS = [{"month": {"$or": WINDOW_MONTHS}}, {"order_id.month": {"$or": WINDOW_MONTHS}},
-               {"surface": "search"}]
+CUSTOMER_FIELDS = ("context.customer", "order_id.customer_id", "customer_id")
+POPULATIONS = [{"context.month": {"$or": WINDOW_MONTHS}}, {"order_id.month": {"$or": WINDOW_MONTHS}},
+               {"month": {"$or": WINDOW_MONTHS}},
+               {"context.surface": "search"}]
 
 
 class FakeClient:
@@ -47,6 +48,7 @@ class FakeClient:
         self.counts = counts or {}
         self.relates: list[dict] = []
         self.searches: list[dict] = []
+        self._example = ""
 
     def relate(self, *, table, where, relate_field, limit):
         self.relates.append({"from": table, "where": where, "relate": relate_field, "limit": limit})
@@ -65,9 +67,11 @@ class FakeClient:
                 for i, (n, y) in enumerate(self.customers) if (n if population else y) > 0]
 
     def search(self, table, *, where, select=None, limit=10):
+        if table == "contexts":     # the example search for the phrase counted just before
+            return {"total": 1, "hits": [{"search_query": self._example}]}
         self.searches.append(where)
-        total, example = self.counts[json.dumps(where, sort_keys=True)]
-        return {"total": total, "hits": [{"search_query": example}]}
+        total, self._example = self.counts[json.dumps(where, sort_keys=True)]
+        return {"total": total, "hits": []}
 
     def sent(self, table: str) -> list[dict]:
         return [r for r in self.relates if r["from"] == table and r["relate"] not in CUSTOMER_FIELDS]
@@ -132,8 +136,8 @@ def test_the_design_effect_is_measured_on_the_customer_column():
 
     get_funnel_section(client)
 
-    customer_wheres = [r["where"] for r in client.relates if r["relate"] == "customer_id"]
-    assert customer_wheres == [{"month": {"$or": WINDOW_MONTHS}}, PURCHASED]
+    customer_wheres = [r["where"] for r in client.relates if r["relate"] == "context.customer"]
+    assert customer_wheres == [{"context.month": {"$or": WINDOW_MONTHS}}, PURCHASED]
 
 
 def test_a_lift_whose_interval_excludes_1_is_shown_with_its_counts():
@@ -175,34 +179,34 @@ def test_support_counts_independent_purchases_not_rows():
 
 def test_a_lift_whose_interval_includes_1_is_left_out_and_its_field_has_no_clear_effect():
     # 1.05× on 600 purchases: enough support, but the interval includes 1.
-    slight = hit("surface", "bought_together", 1.05, 600, 12_000, 5_475, 115_000)
+    slight = hit("context.surface", "bought_together", 1.05, 600, 12_000, 5_475, 115_000)
 
-    section = get_funnel_section(FakeClient(funnel_answer("surface", slight)))
+    section = get_funnel_section(FakeClient(funnel_answer("context.surface", slight)))
 
-    assert not [r for r in section.rows if r.field == "surface"]
-    assert "surface" in section.fields_without_clear_effect
+    assert not [r for r in section.rows if r.field == "context.surface"]
+    assert "context.surface" in section.fields_without_clear_effect
 
 
 def test_a_lift_that_passes_alone_is_left_out_when_many_were_tested():
     # 1.08× on 1,000 purchases clears 1 at z = 1.96 (1.01–1.15), not at the
     # Bonferroni z for the seven lifts this section tests (0.99–1.18).
-    borderline = hit("customer_lifestyle", "premium", 1.08, 1_000, 12_000, 8_873, 115_000)
+    borderline = hit("context.customer.diet", "senior", 1.08, 1_000, 12_000, 8_873, 115_000)
 
-    section = get_funnel_section(FakeClient(funnel_answer("customer_lifestyle", borderline)))
+    section = get_funnel_section(FakeClient(funnel_answer("context.customer.diet", borderline)))
 
     assert section.significance.tested == len(FUNNEL_FIELDS)
     assert section.significance.z > 2.5
-    assert "customer_lifestyle" in section.fields_without_clear_effect
+    assert "context.customer.diet" in section.fields_without_clear_effect
 
 
 def test_an_interval_is_rounded_outward_and_left_out_if_it_then_touches_1():
     # The interval's top is 0.991: shown to two decimals without making it
     # narrower, it reads 1.00.
-    budget = hit("customer_lifestyle", "budget", 0.95, 3_250, 12_135, 32_615, 115_690)
+    sensitive = hit("context.customer.diet", "sensitive", 0.95, 3_250, 12_135, 32_615, 115_690)
 
-    section = get_funnel_section(FakeClient(funnel_answer("customer_lifestyle", budget)))
+    section = get_funnel_section(FakeClient(funnel_answer("context.customer.diet", sensitive)))
 
-    assert "customer_lifestyle" in section.fields_without_clear_effect
+    assert "context.customer.diet" in section.fields_without_clear_effect
 
 
 def test_a_boolean_field_reads_true_not_python_true():
@@ -231,8 +235,8 @@ def test_a_window_that_misses_rows_fails_loudly_rather_than_misjudge_clustering(
 
 @pytest.mark.parametrize("who, where", [
     ("summer", {"order_id.month": {"$or": season_months("summer")}}),
-    ("small_animal_owner", {"customer_segment": "small_animal_owner"}),
-    ("grain-free", {"customer_diet_rule": "grain-free"}),
+    ("small_animal", {"order_id.customer_id.pets": {"$match": "small_animal"}}),
+    ("grain-free", {"order_id.customer_id.diet": "grain-free"}),
 ])
 def test_who_and_when_relates_categories_over_that_groups_order_lines(who, where):
     client = FakeClient()
@@ -264,22 +268,22 @@ def test_an_unknown_who_is_refused():
 
 def test_a_relate_with_no_hits_fails_loudly():
     with pytest.raises(AitoError, match="no hits"):
-        get_funnel_section(FakeClient(funnel_answer("customer_segment")))
+        get_funnel_section(FakeClient(funnel_answer("context.customer.pets")))
 
 
 def test_a_full_page_of_hits_fails_loudly_because_values_may_be_cut_off():
-    many = [hit("customer_segment", f"s{i}", 1.0, 100) for i in range(50)]
+    many = [hit("context.customer.pets", f"s{i}", 1.0, 100) for i in range(50)]
 
     with pytest.raises(AitoError, match="full page"):
-        get_funnel_section(FakeClient(funnel_answer("customer_segment", *many)))
+        get_funnel_section(FakeClient(funnel_answer("context.customer.pets", *many)))
 
 
 def test_a_hit_without_related_has_fails_loudly():
-    odd = {"related": {"customer_segment": "dog_owner"}, "lift": 1.5,
+    odd = {"related": {"context.customer.pets": "dog"}, "lift": 1.5,
            "fs": {"fOnCondition": 900, "fCondition": 12_000, "f": 7_000, "n": 115_000}}
 
-    with pytest.raises(AitoError, match="related.customer_segment"):
-        get_funnel_section(FakeClient(funnel_answer("customer_segment", odd)))
+    with pytest.raises(AitoError, match="related.context.customer.pets"):
+        get_funnel_section(FakeClient(funnel_answer("context.customer.pets", odd)))
 
 
 def test_query_pane_shows_one_body_that_was_sent_and_how_many_there_were():
