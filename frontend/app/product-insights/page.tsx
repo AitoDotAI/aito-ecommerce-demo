@@ -152,7 +152,7 @@ function BuyersCard({ buyers }: { buyers: ProductInsightsBuyerRow[] }) {
       {buyers.slice(0, 8).map((b) => (
         <div key={`${b.field}-${b.value}`} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", fontSize: 13 }}>
           <span>
-            <span style={{ color: "var(--text-muted)" }}>{b.field.replace(/^customer_/, "").replace(/_/g, " ")}</span>
+            <span style={{ color: "var(--text-muted)" }}>{b.field.replace(/^order_id\.customer_id\./, "declared ").replace("declared region", "region").replace(/_/g, " ")}</span>
             {" = "}{b.value.replace(/_/g, " ")}
             <span style={{ color: "var(--text-muted)", fontSize: 11 }}> · {b.lines} of {b.lines_total} lines</span>
           </span>
