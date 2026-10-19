@@ -133,7 +133,7 @@ function ShopView() {
       {shown && (
         <div className="card-sub" style={{ margin: "4px 0 12px" }}>
           {shown.shopper.story}
-          {shown.rule && <> Their rule, <strong>{shown.rule}</strong>, is applied as a filter: Aito ranks only food that keeps it.</>}
+          {shown.rule && <> Their declared diet, <strong>{shown.rule}</strong>, is applied as a filter: Aito ranks only food that keeps it.</>}
         </div>
       )}
 

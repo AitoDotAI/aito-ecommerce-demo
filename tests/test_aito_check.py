@@ -39,24 +39,24 @@ def _count(client: AitoClient, where: dict) -> int:
 
 
 @pytest.mark.parametrize(
-    "segment, expected_pet",
-    [("cat_owner", "cat"), ("dog_owner", "dog")],
+    "customer_id, expected_pet",
+    [("CUST-00001", "cat"), ("CUST-00003", "dog")],   # Maija, Saara
 )
-def test_recommend_purchase_kpi_ranks_segment_appropriate_products(
-    client, segment, expected_pet
+def test_recommend_purchase_kpi_ranks_the_customers_own_pets_products(
+    client, customer_id, expected_pet
 ):
-    """`_recommend goal: {purchased: true}` returns a non-empty ranking
-    whose top hits match the segment's pet — the persona flip, learned
-    from the funnel rather than asserted."""
+    """`_recommend goal: {purchased: true}` with only the customer in the
+    `where` returns a ranking whose top hits are for their pet: learned
+    from their own rows, never handed a profile (ADR 0033)."""
     res = client.recommend(
         table="impressions",
-        where={"customer_segment": segment},
+        where={"context.customer": customer_id},
         recommend_field="product_sku",
         goal={"purchased": True},
         limit=5,
     )
     hits = res.get("hits", [])
-    assert hits, f"empty recommendation for {segment}"
+    assert hits, f"empty recommendation for {customer_id}"
     for hit in hits:
         assert 0.0 <= hit["$p"] <= 1.0, hit["$p"]
     top_pets = [h.get("pet_type") for h in hits[:3]]
@@ -119,7 +119,7 @@ def test_recommend_clicks_and_purchases_goals_differ(client):
     def top_skus(goal_field: str) -> list[str]:
         res = client.recommend(
             table="impressions",
-            where={"customer_segment": "cat_owner"},
+            where={"context.customer": "CUST-00001"},
             recommend_field="product_sku",
             goal={goal_field: True},
             limit=10,
@@ -138,9 +138,9 @@ def test_predict_purchased_returns_both_classes(client):
     res = client.predict(
         table="impressions",
         where={
-            "customer_segment": "cat_owner",
-            "product_pet_type": "cat",
-            "product_category": "wet-food",
+            "context.customer": "CUST-00001",
+            "product_sku.pet_type": "cat",
+            "product_sku.category": "wet-food",
         },
         predict_field="purchased",
     )
@@ -275,14 +275,16 @@ def test_relate_over_churned_customers_counts_match_a_search(client):
     from src.aito_compat import related_value
     from src.churn_drivers import CHURNED
 
-    hits = client.relate(table="customers", where=CHURNED, relate_field="segment", limit=20)["hits"]
-    aquarium = next(h for h in hits if related_value(h, "segment") == "aquarium_owner")
+    # `pets` is the declared Text column (ADR 0033): one hit per word.
+    hits = client.relate(table="customers", where=CHURNED, relate_field="pets", limit=20)["hits"]
+    aquarium = next(h for h in hits if related_value(h, "pets") == "aquarium")
 
     def count(where: dict) -> int:
         return client.search("customers", where=where, limit=0)["total"]
 
-    assert aquarium["fs"]["fOnCondition"] == count({**CHURNED, "segment": "aquarium_owner"})
-    assert aquarium["fs"]["f"] == count({"segment": "aquarium_owner"})
+    has_aquarium = {"pets": {"$match": "aquarium"}}
+    assert aquarium["fs"]["fOnCondition"] == count({**CHURNED, **has_aquarium})
+    assert aquarium["fs"]["f"] == count(has_aquarium)
 
 
 def test_churn_profile_drivers_name_long_tenure_and_skip_reviews(client):
@@ -420,9 +422,10 @@ def test_a1_recommend_keeps_a_grain_free_households_rule(client):
     query without the rule keeps it ≤ 7 times."""
     # `product_sku.category` filters the candidates; the impression's own
     # `product_category` would only be context (first run, 2026-10-12).
-    household = {"customer_segment": "dog_owner", "customer_diet_rule": "grain-free",
+    # ADR 0033: the declared diet and pets, through the context's customer.
+    household = {"context.customer.pets": {"$match": "dog"}, "context.customer.diet": "grain-free",
                  "product_sku.category": "dry-food"}
-    without_rule = {k: v for k, v in household.items() if k != "customer_diet_rule"}
+    without_rule = {k: v for k, v in household.items() if k != "context.customer.diet"}
 
     def kept(where: dict) -> int:
         hits = client.recommend("impressions", where, "product_sku", {"purchased": True}, limit=10)["hits"]
@@ -635,7 +638,7 @@ def test_shop_analytics_search_words_against_the_search_average(client, shop_ana
     words = shop_analytics["words"]
     assert any(w.lift > 1 for w in words.rows), words.rows
     assert words.significance.tested <= words.words
-    anywhere = client.search("impressions", where={"search_query": {"$match": "food"}}, limit=0)["total"]
-    on_search = client.search("impressions", where={"surface": "search", "search_query": {"$match": "food"}},
-                              limit=0)["total"]
+    anywhere = client.search("impressions", where={"context.search_query": {"$match": "food"}}, limit=0)["total"]
+    on_search = client.search("impressions", where={"context.surface": "search",
+                                                    "context.search_query": {"$match": "food"}}, limit=0)["total"]
     assert anywhere == on_search > 0, (anywhere, on_search)
