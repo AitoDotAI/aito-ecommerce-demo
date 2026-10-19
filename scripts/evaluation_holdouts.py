@@ -5,7 +5,8 @@
 
 The page's `_evaluate` holds out random ROWS. That leaks when rows come in
 groups sharing the answer: a product's size variants share its pet type
-and diet, and a customer's order lines share their segment. Each model is
+and diet. (The customer-segment model, whose order lines shared their
+segment, was retired with ADR 0033; see that doc for its results.) Each model is
 re-scored with `_predict` over a nested `from` that removes the whole group,
 next to the row-held-out and pooled versions. Design and decision rule:
 docs/verification/evaluation-holdouts.md (pre-registered before the runs).
@@ -107,28 +108,6 @@ def main() -> None:
     diet_base = collections.Counter(p["dietary"] for p in tagged).most_common(1)[0][1] / len(tagged)
     run("dietary from attributes", sample_families(has_diet, 150), product_arms(diet_ev, "dietary"),
         lambda p: p["dietary"], diet_base, "family held out")
-
-    # Customer segment from product (eval_service `segment_from_product`).
-    customer_of = {o["order_id"]: o["customer_id"] for o in rows(client, "orders")}
-    lines = rows(client, "order_lines")
-    by_sku = {p["sku"]: p for p in products}
-    first_line = {}
-    for line in sorted(lines, key=lambda l: l["line_id"]):
-        first_line.setdefault(customer_of[line["order_id"]], line)
-    customers = sorted(first_line)
-    random.Random(0).shuffle(customers)
-    seg_items = [first_line[c] for c in customers[:200]]
-    seg_ev = lambda l: {"product_sku.pet_type": by_sku[l["product_sku"]]["pet_type"],
-                        "product_sku.category": by_sku[l["product_sku"]]["category"]}
-    seg_base = collections.Counter(l["customer_segment"] for l in lines).most_common(1)[0][1] / len(lines)
-    run("customer_segment from product", seg_items, {
-        "plain from":   lambda l: top(client, "order_lines", None, seg_ev(l), "customer_segment"),
-        "pooled":       lambda l: top(client, "order_lines", {"$not": {"line_id": "NO-SUCH-LINE"}}, seg_ev(l), "customer_segment"),
-        "row held out": lambda l: top(client, "order_lines", {"$not": {"line_id": l["line_id"]}}, seg_ev(l), "customer_segment"),
-        "customer held out": lambda l: top(client, "order_lines",
-                                           {"$not": {"order_id.customer_id": customer_of[l["order_id"]]}},
-                                           seg_ev(l), "customer_segment"),
-    }, lambda l: l["customer_segment"], seg_base, "customer held out")
 
 
 if __name__ == "__main__":

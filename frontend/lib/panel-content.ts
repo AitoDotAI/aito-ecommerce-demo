@@ -70,7 +70,7 @@ export function smartSearchPanel(): AitoPanelConfig {
 `${k('"search"')}: {
   ${n('"from"')}: ${s('"impressions"')},
   ${n('"get"')}: ${s('"product_sku"')},
-  ${n('"where"')}: { ${n('"customer_segment"')}: ${s('"cat_owner"')} },
+  ${n('"where"')}: { ${n('"context.customer"')}: ${s('"CUST-00001"')} },
   ${n('"orderBy"')}: { ${n('"$multiply"')}: [
     { ${n('"$p"')}: { ${n('"$context"')}: { ${n('"purchased"')}: ${s('true')} } } },
     { ${n('"$similarity"')}: { ${n('"name"')}: ${s('"food"')} }, ${n('"theta"')}: ${s('4.0')} }
@@ -396,8 +396,8 @@ export function winbackPanel(): AitoPanelConfig {
     query:
 `${k('"from"')}: ${s('"winback_campaigns"')},
 ${k('"where"')}: {
-  ${n('"customer_lifestyle"')}: ${s('"premium"')},
-  ${n('"customer_segment"')}: ${s('"dog_owner"')},
+  ${n('"customer_id"')}: ${s('"CUST-00008"')},
+  ${n('"customer_staple_category"')}: ${s('"dog/dry-food"')},
   ${n('"recency_bucket"')}: ${s('"0-90d"')}
 },
 ${k('"recommend"')}: ${s('"product_sku"')},
