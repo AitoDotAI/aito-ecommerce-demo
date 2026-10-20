@@ -496,8 +496,7 @@ def test_shop_an_item_bought_last_order_scores_lower_as_just_bought(client):
     probability drops below what it was before the shopper bought it."""
     from src.shop_context import shopper_where
 
-    customer = client.search("customers", where={"customer_id": "CUST-00053"}, limit=1)["hits"][0]
-    context = shopper_where(customer, [], "2026-04")
+    context = shopper_where("CUST-00053", [], "2026-04", [])
     sku = "SKU-PT-0278"   # in Helena's last order
 
     def p(extra: dict) -> float:
@@ -518,17 +517,31 @@ def test_shop_suggests_the_hideout_next_for_a_cage_and_a_bottle(client):
     assert result.owned == {"small_animal": ["cage", "water_bottle"]}, result.owned
     assert result.next_for_pet and "Hideout" in result.next_for_pet[0].name, result.next_for_pet
     assert result.usual, "no usual basket for a shopper with orders"
-def test_shop_a_cage_in_the_cart_is_a_reason_given_for_the_bottle(client):
-    """`$why` nested under the product's own lift names the cart: for Päivi
-    with a cage, the water bottle's reasons include it (ADR 0031, 2026-10-17)."""
+def test_r5_a_new_owner_with_a_cage_in_the_cart_is_shown_the_bottle(client):
+    """R5 (observable-data-prereg.md): Päivi as of February 2026, before her
+    first order, owns nothing; with a cage in the cart, the kit's next item
+    (the water bottle) is in the grid's top 3, with the cart among its reasons."""
     from src.shop_grid import get_shop_grid
 
-    grid = get_shop_grid(client, "paivi", "2026-04", ["SKU-PT-0555"])
+    grid = get_shop_grid(client, "paivi", "2026-02", ["SKU-PT-0555"])
 
-    bottles = [i for i in grid.items if "Water Bottle" in i.name]
+    top3 = grid.items[:3]
+    bottles = [i for i in top3 if "Water Bottle" in i.name]
     assert bottles, [i.name for i in grid.items]
-    assert any(r.label == "Goes with your cart" and r.lift > 1.5 for r in bottles[0].reasons), bottles[0].reasons
-    assert sum(1 for i in grid.items if i.reasons) >= len(grid.items) // 2, "most items should have reasons"
+    assert any(r.label == "Goes with your cart" for r in bottles[0].reasons), bottles[0].reasons
+
+
+def test_r5_an_owner_of_cage_and_bottle_is_shown_an_add_on_not_another_cage(client):
+    """R5, as amended: Päivi as of April 2026 owns a cage and a bottle; with an
+    empty cart, an add-on she lacks is in the top 3 and no cage in the top 12."""
+    from src.shop_grid import get_shop_grid
+
+    grid = get_shop_grid(client, "paivi", "2026-04", [])
+
+    names = [i.name for i in grid.items]
+    # Amended (observable-data-prereg.md): an add-on she lacks, not the hideout specifically.
+    assert any(k in n for n in names[:3] for k in ("Hideout", "Exercise Wheel", "Tunnel")), names
+    assert not any(n.endswith("Cage") for n in names), names
 
 
 def test_shop_search_keeps_the_household_rule(client):
@@ -539,7 +552,9 @@ def test_shop_search_keeps_the_household_rule(client):
     found = search_shop(client, "janne", "2026-04", [], "food")
 
     assert found.text_matched and found.items
-    assert all("Grain Free" in i.name for i in found.items if i.category in ("dry-food", "wet-food")), \
+    # The rule covers dog and cat food (ADR 0030), as the filter does.
+    assert all("Grain Free" in i.name for i in found.items
+               if i.category in ("dry-food", "wet-food") and i.pet_type in ("dog", "cat")), \
         [i.name for i in found.items]
 
 

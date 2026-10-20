@@ -30,6 +30,14 @@ def test_the_where_holds_only_what_a_shop_observes():
     assert all(key.startswith("context.") for key in where)
 
 
+def test_the_items_a_household_lacks_are_stated_as_absent():
+    # `_recommend` reads `$match` as "contains": what's missing must be said.
+    where = shopper_where("CUST-01177", [], "2026-04", ["small_animal_cage"], ["small_animal_hideout"])
+
+    assert where["context.owned"] == {"$and": [{"$match": "small_animal_cage"},
+                                               {"$not": {"$match": "small_animal_hideout"}}]}
+
+
 def test_an_empty_cart_and_no_kit_add_no_context_for_them():
     where = shopper_where("CUST-00049", [], "2025-12", [])
 

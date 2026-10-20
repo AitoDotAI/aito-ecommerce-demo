@@ -18,7 +18,7 @@ from dataclasses import dataclass, replace
 from src.aito_client import AitoClient, AitoError
 from src.lookup_errors import UnknownProductError
 from src.shop_context import FOOD, rule_filter, shopper_where
-from src.shop_history import kit_tokens, orders_before, owned_kit
+from src.shop_history import kit_tokens, missing_items, orders_before, owned_kit
 from src.shop_offers import offers_this_month
 from src.shop_personas import Shopper, shopper
 from src.shop_reasons import Reason, reasons_for
@@ -76,8 +76,8 @@ def shop_scope(client: AitoClient, shopper_key: str, month: str, cart_skus: list
     cart = _cart(client, cart_skus)
     orders = orders_before(client, s.customer_id, month)
     owned = kit_tokens(owned_kit(client, orders))
-    return ShopScope(shopper=s, month=month, rule=customer.get("diet"), cart=cart,
-                     context=shopper_where(s.customer_id, cart, month, owned), orders=orders)
+    context = shopper_where(s.customer_id, cart, month, owned, missing_items(client, owned))
+    return ShopScope(shopper=s, month=month, rule=customer.get("diet"), cart=cart, context=context, orders=orders)
 
 
 def ranked_items(client: AitoClient, scope: ShopScope, where: dict, limit: int) -> list[ShopItem]:

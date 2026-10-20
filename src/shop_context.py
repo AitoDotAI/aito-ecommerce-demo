@@ -40,16 +40,19 @@ def basket_words(products: list[dict]) -> list[str]:
     return sorted(words)
 
 
-def shopper_where(customer_id: str, cart: list[dict], month: str, owned: list[str]) -> dict:
-    """Who is shopping, the month, the cart and the kit they own, as `_recommend`
-    context. Only what a shop observes: Aito learns the customer from their
-    own rows (`context.customer`), never from a profile handed to it."""
+def shopper_where(customer_id: str, cart: list[dict], month: str, owned: list[str],
+                  missing: list[str] = ()) -> dict:
+    """Who is shopping, the month, the cart, the kit they own and the commonly
+    owned items they lack, as `_recommend` context. Only what a shop observes:
+    Aito learns the customer from their own rows (`context.customer`), never
+    from a profile handed to it."""
     where: dict = {"context.customer": customer_id, "context.month": month}
     if cart:
         where["context.basket_categories"] = {"$and": [{"$match": w} for w in basket_words(cart)]}
         where["context.basket"] = {"$and": [{"$match": p["sku"]} for p in cart]}
     if owned:
-        where["context.owned"] = {"$and": [{"$match": t} for t in owned]}
+        where["context.owned"] = {"$and": [{"$match": t} for t in owned]
+                                  + [{"$not": {"$match": t}} for t in missing]}
     return where
 
 

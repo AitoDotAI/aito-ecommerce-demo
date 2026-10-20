@@ -9,9 +9,13 @@ that month or later hasn't happened yet.
 from __future__ import annotations
 
 from src.aito_client import AitoClient, AitoError
+from src.aito_compat import related_value
 from src.shop_context import DURABLE_TYPES, item_type
 
 MAX_ORDERS = 200
+# How many commonly owned items a household is told it lacks (ADR 0033, R5).
+COMMON_OWNED = 8
+RELATE_LIMIT = 50
 PETS = ("small_animal", "dog", "cat", "bird", "aquarium")
 
 
@@ -49,3 +53,22 @@ def kit_tokens(owned: dict[str, set[str]]) -> list[str]:
 def kind_word(name: str, brand: str) -> str:
     """"Trixie Water Bottle 500ml" → "water_bottle", the word the tokens use."""
     return item_type(name, brand).lower().replace(" ", "_")
+
+
+def missing_items(client: AitoClient, owned: list[str]) -> list[str]:
+    """The items most often owned by households that own what this one owns,
+    and that this one lacks, at most COMMON_OWNED: learned from the data, so
+    the app needs no kit knowledge (ADR 0033, R5).
+
+    `_recommend` reads `$match` as "contains" and infers nothing from what a
+    context lacks, so the Shop states these as `$not $match` (Aito core
+    td-20261020203235895741 is to widen absence evidence)."""
+    if not owned:
+        return []
+    where = {"owned": {"$and": [{"$match": t} for t in owned]}}
+    hits = client.relate("contexts", where, "owned", limit=RELATE_LIMIT)["hits"]
+    if len(hits) == RELATE_LIMIT:
+        raise AitoError(f"_relate over contexts.owned returned a full page of {RELATE_LIMIT}: items may be cut off")
+    by_count = sorted(((related_value(h, "owned"), int(h["fs"]["fOnCondition"])) for h in hits),
+                      key=lambda row: -row[1])
+    return [token for token, _ in by_count if token not in owned][:COMMON_OWNED]
