@@ -82,6 +82,36 @@ add-on she lacks (hideout, wheel or tunnel) is in the grid's top 3 and no
 cage in the top 12; as of February 2026, owning nothing, with a cage in the
 cart, the water bottle is in the top 3. K1's strength is unchanged.
 
+## Amendment: R1/R2 as a parameter sweep of the Shop's query (2026-10-20, Antti, before any run)
+
+Antti asked to tune the Shop's query as a data scientist would, not by
+hand-picked scenarios. R1/R2 become a held-out sweep
+(`scripts/shop_query_sweep.py`):
+
+- **Sample:** 150 sessions (contexts) drawn with seed 0 from those that
+  showed at least one product that was bought, months 2025-05 … 2026-04.
+- **Leave the session out:** each query reads
+  `from: {from: impressions, where: {"$not": {"context": <session>}}}`,
+  so the session never grades itself.
+- **The query** is the Shop's own `where`, rebuilt from the session's
+  observed context: customer, month, cart (that month's basket), owned kit
+  plus the learned absences, `just_bought: false`.
+- **Variants:**
+  - A, the Shop today: cart as words, absences, no `basedOn`;
+  - B, A without absences;
+  - C, A with cart SKUs + words;
+  - D, A with `basedOn: ["pet_type"]`;
+  - E, A without the customer;
+  - F, A without the cart and kit (customer + month only).
+- **Metrics:**
+  - hit@12, whether any product bought in the session is in the top 12;
+  - Brier score of `$p` over the products the session showed. The cards
+    show `$p`, so calibration matters.
+- **Decision rule:** the Shop uses the variant with the highest hit@12
+  whose Brier score is within 0.01 of A's. If D wins on hit@12 but
+  fails on Brier, it ranks with D and shows A's `$p` (two calls).
+  Differences under 2 sessions (≈ 1.3 pp) are not a win.
+
 ## Results
 
 ### Data checks, 2026-10-19 (seed 42 committed; seeds 7 and 99 by `./do planted-effects`)
