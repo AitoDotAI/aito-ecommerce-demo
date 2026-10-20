@@ -127,3 +127,24 @@ hand-picked scenarios. R1/R2 become a held-out sweep
 
 The hidden traits are verified through `data/answer_key/customer_traits.json`,
 which the loader never uploads.
+
+### R1/R2 sweep, 2026-10-20 (shared 2.11.8, env `observable`, 150 held-out sessions)
+
+Pre-registered variants, `scripts/shop_query_sweep.py`:
+
+| variant | hit@12 | Brier | sessions vs A (won / lost) |
+|:--|--:|--:|:--|
+| A, the Shop today | 0.153 | 0.2273 | — |
+| B, no absences | 0.200 | 0.2220 | +7 / −0 |
+| C, cart SKUs + words | 0.140 | 0.2376 | +3 / −5 |
+| D, `basedOn: [pet_type]` | 0.167 | 0.2322 | +3 / −1 |
+| **E, no customer** | **0.227** | **0.1774** | **+17 / −6** |
+| F, customer + month only | 0.133 | 0.2058 | +6 / −9 |
+
+**By the rule, E wins:** the highest hit@12, and a Brier score 0.05 better
+than A's. Conditioning on the customer's identity (`context.customer`, about
+40 impressions each) overfits and overconfides on held-out sessions. The
+learned absences, which lift Päivi's kit in the named scenario, cost hit@12 on
+average (B beats A, +7/−0). Any variant added after this run is exploratory
+and reported separately.
+
