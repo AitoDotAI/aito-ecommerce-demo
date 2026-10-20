@@ -38,9 +38,10 @@ SCENARIOS = [
 def run(key, month, cart, look):
     s = shopper(key); pets = set(CUST[s.customer_id]["pets"].split())
     scope = shop_scope(c, key, month, cart)
-    base = scope.where()
+    words = scope.where()   # the Shop states the cart as words (td-20261020210945109481)
+    with_skus = {**words, "context.basket": {"$and": [{"$match": sku} for sku in cart]}} if cart else words
     out = []
-    for label, where in (("SKUs+words", base), ("words only", {k: v for k, v in base.items() if k != "context.basket"})):
+    for label, where in (("SKUs+words", with_skus), ("words only", words)):
         hits = c.recommend("impressions", where, "product_sku", {"purchased": True}, select=["sku", "name", "pet_type", "category", "$p"], limit=40)["hits"]
         top = hits[:12]
         fit = sum(h["pet_type"] in pets for h in top)
