@@ -52,6 +52,36 @@ is an amendment here first, with its reason.
 | R5 | the grid for a guinea-pig owner | cage in the basket, nothing owned: water bottle in the top 3; owns cage and bottle, empty basket: hideout in the top 3 and no cage in the top 12 |
 | R6 | a premium, health-focused cat owner (traits known to the generator only) | their grid's food is mostly premium and wellness: share ≥ 1.5× the catalogue's |
 
+## Amendment after the first Aito run (2026-10-20, decided with Antti, before any R5 re-run)
+
+R5 failed on env `observable` (Aito 2.11.8): Päivi owning cage and bottle saw
+treats first and the hideout at #24. Diagnosis (probes in
+`scripts/kit_absence_probe.py`): Aito's `$p` matches the data's counts per
+product (Fruit Drops 0.43 vs 31/76 bought; Exercise Wheel 0.31 vs 5/16), and
+the kit lifts its add-ons ×2–3. Two causes, neither an engine error:
+
+1. **The query left evidence out.** `context.owned: {$and: [$match cage,
+   $match bottle]}` also matches households that own a hideout, for whom a
+   hideout never sells, so its lift was diluted to ×1.6. `_recommend`
+   doesn't infer absence from `$match` (by design; Aito core
+   td-20261020203235895741 is to widen absence evidence to `_recommend` and
+   link paths).
+2. **In this data, treats outsell even the kit's next item** for these
+   households (≈ 0.4 against ≈ 0.38 at best), and "next" is often the wheel,
+   because a hideout bought that month is in the basket, not in `owned`.
+
+**Change (query, not data):** the Shop's context also states which commonly
+owned items the household lacks, learned from the data: the 8 items most
+often owned by households that own what this one owns (`_relate` over
+`contexts.owned`), each absent one as `{"$not": {"$match": token}}`. No kit
+knowledge in the app. Probe: the wheel moves #9 → #3 (×3.1 → ×4.4), the
+hideout #24 → #10.
+
+**R5 becomes:** for Päivi owning cage and bottle, with an empty cart, *a* kit
+add-on she lacks (hideout, wheel or tunnel) is in the grid's top 3 and no
+cage in the top 12; as of February 2026, owning nothing, with a cage in the
+cart, the water bottle is in the top 3. K1's strength is unchanged.
+
 ## Results
 
 ### Data checks, 2026-10-19 (seed 42 committed; seeds 7 and 99 by `./do planted-effects`)
