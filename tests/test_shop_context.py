@@ -23,7 +23,7 @@ def test_the_where_holds_only_what_a_shop_observes():
 
     # ADR 0033: who, when, the cart and the kit, all through the context.
     assert where["context.customer"] == "CUST-00049" and where["context.month"] == "2025-12"
-    assert where["context.basket"] == {"$and": [{"$match": "SKU-PT-0530"}]}
+    assert "context.basket" not in where   # words, not SKUs (td-20261020210945109481)
     assert {"$match": "small_animal_cage"} in where["context.basket_categories"]["$and"]
     assert where["context.owned"] == {"$and": [{"$match": "small_animal_water_bottle"}]}
     # No profile is handed over, and the diet rule is a filter (see rule_filter).

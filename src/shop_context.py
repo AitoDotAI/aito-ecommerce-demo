@@ -48,8 +48,11 @@ def shopper_where(customer_id: str, cart: list[dict], month: str, owned: list[st
     from a profile handed to it."""
     where: dict = {"context.customer": customer_id, "context.month": month}
     if cart:
+        # The cart as words, not SKUs: an exact SKU next to the owned kit makes a
+        # joint condition no row matches, and Aito's estimate then collapses
+        # (td-20261020210945109481). The SKUs still keep the cart's own items
+        # out of the candidates (ShopScope.where).
         where["context.basket_categories"] = {"$and": [{"$match": w} for w in basket_words(cart)]}
-        where["context.basket"] = {"$and": [{"$match": p["sku"]} for p in cart]}
     if owned:
         where["context.owned"] = {"$and": [{"$match": t} for t in owned]
                                   + [{"$not": {"$match": t}} for t in missing]}

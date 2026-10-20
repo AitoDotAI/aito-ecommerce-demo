@@ -76,7 +76,12 @@ def reasons_for(why: dict, sku: str) -> list[Reason]:
 
 def _label(proposition: dict) -> str | None:
     """A reason's label, or None for a part of the `where` that isn't a reason
-    to show (`just_bought: false`: the grid asks every product that way)."""
+    to show (`just_bought: false`: the grid asks every product that way), or
+    for a `$group`: Aito's joint estimate of several conditions, which can rest
+    on no rows at all; until `$why` reports support
+    (td-20261020210945585150), a card shows only single-condition lifts."""
+    if "$group" in proposition:
+        return None
     text = json.dumps(proposition)
     if "context.basket" in text:
         return CART

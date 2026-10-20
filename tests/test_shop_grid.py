@@ -25,7 +25,8 @@ def test_the_carts_items_are_context_and_are_not_recommended_again():
     where = fake.recommends[0]
     assert where["product_sku"] == {"$not": {"$or": ["SKU-C"]}}
     assert where["just_bought"] is False   # ranked as not just bought; the re-ask handles those
-    assert where["context.basket"] == {"$and": [{"$match": "SKU-C"}]}
+    # The cart as words for the ranking (td-20261020210945109481); its SKUs only exclude.
+    assert "context.basket" not in where and where["context.basket_categories"]["$and"]
 
 
 def test_an_item_bought_last_order_is_reasked_as_just_bought_and_falls():

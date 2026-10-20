@@ -36,11 +36,19 @@ def test_the_largest_lifts_nested_under_the_product_itself_are_its_reasons():
 
 
 def test_the_carts_factors_multiply_into_one_reason():
-    reasons = reasons_for(why(({"$and": [{"context.basket": {"$match": "SKU-PT-0555"}}]}, 1.25),
-                              ({"$group": [{"$and": [{"context.basket_categories": {"$match": "small_animal_cage"}}]}]}, 2.38)),
+    reasons = reasons_for(why(({"$and": [{"context.basket_categories": {"$match": "small_animal_cage"}}]}, 1.25),
+                              ({"$and": [{"context.basket_categories": {"$match": "small_animal_accessories"}}]}, 2.38)),
                           SKU)
 
     assert reasons == [Reason("Goes with your cart", 2.97)]   # 1.25 × 2.38
+
+
+def test_a_joint_group_is_never_shown_as_a_reason():
+    # A `$group` is Aito's joint estimate of several conditions; it can rest on
+    # no rows at all, so until `$why` reports support it isn't a reason.
+    group = {"$group": [{"$and": [{"context.basket_categories": {"$match": "small_animal_dryfood"}}]},
+                        {"$and": [{"context.owned": {"$match": "small_animal_cage"}}]}]}
+    assert reasons_for(why((group, 3.4), ({"context.month": "2026-04"}, 1.3)), SKU) == [Reason("Sells in April", 1.3)]
 
 
 def test_at_most_three_reasons_are_kept_and_just_bought_is_never_one():
