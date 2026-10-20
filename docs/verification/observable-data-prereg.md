@@ -148,3 +148,15 @@ learned absences, which lift Päivi's kit in the named scenario, cost hit@12 on
 average (B beats A, +7/−0). Any variant added after this run is exploratory
 and reported separately.
 
+Exploratory, added after the run above (not part of its decision rule;
+`--exploratory`, same 150 sessions, A–F reproduced exactly):
+
+| variant | hit@12 | Brier | sessions vs A (won / lost) |
+|:--|--:|--:|:--|
+| G, declared pets (`context.customer.pets`) in place of identity | 0.220 | 0.1754 | +15 / −5 |
+| H, no customer and no absences | 0.227 | 0.1749 | +18 / −7 |
+
+Declared pets do as well as no customer, and keep a signal for a shopper
+with an empty cart. Once the identity is gone, the absences neither help nor
+hurt on average (E vs H).
+
