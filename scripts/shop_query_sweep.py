@@ -45,6 +45,8 @@ def sample_sessions() -> list[dict]:
     contexts = {c["context_id"]: c for c in load("contexts")}
     eligible = sorted(cid for cid, rows in shown.items()
                       if any(r["purchased"] for r in rows) and contexts[cid]["month"] >= "2025-05")
+    # `sample`, not a seeded `shuffle(...)[:N]`: the two draw different sessions,
+    # and at n = 150 that alone moved hit@12 (prereg, correction of 2026-10-20).
     picked = random.Random(0).sample(eligible, N_SESSIONS)
     return [{**contexts[cid], "shown": shown[cid]} for cid in picked]
 

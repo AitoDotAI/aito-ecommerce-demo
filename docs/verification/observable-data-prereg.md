@@ -160,3 +160,14 @@ Declared pets do as well as no customer, and keep a signal for a shopper
 with an empty cart. Once the identity is gone, the absences neither help nor
 hurt on average (E vs H).
 
+**Correction (2026-10-20, from the benchmark lane, dev3).** An independent
+local rebuild reproduced the table above exactly on the same 150 sessions.
+But a second, equally valid 150-session draw from the same pool (6,824
+eligible sessions) gave E − A hit@12 = −0.013 [−0.067, +0.040], a tie, against
++0.073 [+0.013, +0.133] here. So at n = 150 the **hit@12** difference is not
+resolved. **Calibration is:** E's Brier was better on both samples, with
+paired intervals excluding 0 (−0.048 here, −0.026 on theirs), as were B's and
+F's. The decision on the Shop's query waits for dev3's run over the whole
+pool. (Their note for anyone rebuilding the sweep: `random.Random(0).sample`
+and a seeded `shuffle(...)[:150]` draw entirely different sessions.)
+
