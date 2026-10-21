@@ -171,3 +171,16 @@ F's. The decision on the Shop's query waits for dev3's run over the whole
 pool. (Their note for anyone rebuilding the sweep: `random.Random(0).sample`
 and a seeded `shuffle(...)[:150]` draw entirely different sessions.)
 
+Exploratory, 2026-10-21: the Shop's "Picked for you" query after the
+intent-views amendment (declared pets, month, cart as words; no identity,
+no kit), same 150 sessions, measured *without* the declared-pets candidate
+filter the grid now adds:
+
+| variant | hit@12 | Brier | sessions vs A (won / lost) |
+|:--|--:|--:|:--|
+| K, picked for you | 0.247 | 0.1717 | +20 / −6 |
+
+Best on both columns of this sample. Hit@12 carries the n = 150 caveat
+above; calibration agrees with every other run. The full-pool run in the
+benchmark lane is asked to include K, with and without the pets filter.
+
