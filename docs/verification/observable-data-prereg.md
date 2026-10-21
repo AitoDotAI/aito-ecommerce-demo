@@ -191,8 +191,8 @@ for A–F and I/J, n = 1,400 for K/K+; paired 95 % CIs over sessions, hit@12):**
 |:--|:--|:--|
 | E − A (no identity) | −0.001 [−0.017, +0.015] | tie: the n = 150 win was noise |
 | B − A (no absences) | +0.002 | tie: likewise |
-| K − A (picked for you, no filter) | +0.003 [−0.025, +0.030] | tie: likewise |
-| **K+ − A** (K + declared-pets candidate filter, what the Shop sends) | **+0.031 [+0.003, +0.059]** | better |
+| K − A (picked for you, no filter) | −0.004 [−0.023, +0.016] | tie: likewise |
+| **K+ − A** (K + declared-pets candidate filter, what the Shop sends) | **+0.025 [+0.005, +0.044]** | better |
 | K+ − K | +0.029 [+0.020, +0.037] | the gain is the filter, not pets as evidence |
 | D − A (`basedOn: [pet_type]`) | +0.017 [+0.010, +0.025] | better (a tie at n = 150) |
 | J − I (identity alone vs month alone) | +0.056 [+0.041, +0.071] | identity helps |
@@ -202,4 +202,9 @@ no core inference problem is indicated by this question. Three of three
 n = 150 wins dissolved and one tie became a win; decisions on this data need
 n ≈ 1,400. Brier at the full pool, which the decision rule also needs, is
 still to come.
+
+*K − A and K+ − A above are as re-paired by the benchmark lane on 2026-10-21:
+the first figures (+0.003, +0.031) paired K's sessions 501–1,900 with A's
+1–1,400. The corrected comparisons use the 1,400 sessions both share.
+K+ − K, J − I and all A–F pairs were aligned from the start.*
 
