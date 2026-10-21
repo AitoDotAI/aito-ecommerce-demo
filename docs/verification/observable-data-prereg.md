@@ -208,3 +208,25 @@ the first figures (+0.003, +0.031) paired K's sessions 501–1,900 with A's
 1–1,400. The corrected comparisons use the 1,400 sessions both share.
 K+ − K, J − I and all A–F pairs were aligned from the start.*
 
+### R1/R2 decision (2026-10-21, benchmark lane, paired on session ids)
+
+Hit@12 on the pool (n = 2,600 for A–F and K/K+, 1,200 for L); Brier on a
+both-metrics sweep (n = 400; it resolves at small n, each session averaging
+about 9 squared errors):
+
+| variant | hit@12 | Brier |
+|:--|--:|--:|
+| A, the Shop before the amendment | 0.163 | 0.196 |
+| K, picked for you without the filter | 0.170 | 0.158 |
+| **K+, picked for you (what the Shop sends)** | **0.193** | **0.157** |
+| L, K+ plus identity | 0.215 | 0.181 |
+| D, A with `basedOn: [pet_type]` | 0.180 | 0.203 |
+
+- K+ − A: hit@12 +0.030 [+0.017, +0.044].
+- K+ − K: +0.024 [+0.019, +0.030] on hit@12, and better on Brier.
+- L − K+: hit@12 +0.013 [−0.006, +0.033], a tie; Brier +0.025 [+0.016, +0.034], worse.
+
+**Decision under the rule:** the Shop keeps K+, the best variant on both
+metrics. Identity adds no ranking on top of it and costs calibration. `basedOn`
+ranks better than A but calibrates worst (td-20261020211932494271).
+
