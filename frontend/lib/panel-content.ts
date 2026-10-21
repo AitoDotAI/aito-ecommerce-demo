@@ -157,18 +157,17 @@ export function basketRulesPanel(): AitoPanelConfig {
 export function purchaseAnalyticsPanel(): AitoPanelConfig {
   return {
     operation: "Purchase Analytics",
-    endpoints: ["_search", "_relate"],
+    endpoints: ["_search"],
     description:
-      `Aggregate analytics powered by <code style="color:var(--aito-teal);">_search</code> ` +
-      `and <code style="color:var(--aito-teal);">_relate</code>. Slice by month, ` +
-      `category, segment, region — no pre-built dashboards, just queries.`,
+      `Paged <code style="color:var(--aito-teal);">_search</code> over orders, ` +
+      `order lines and customers, aggregated in the app: orders per month, ` +
+      `top products, and revenue and category mix per household (the pets ` +
+      `each customer declared). The query is the first page of orders.`,
     query:
 `${k('"search"')}: {
   ${n('"from"')}: ${s('"orders"')},
-  ${n('"where"')}: {
-    ${n('"month"')}: ${s('"2026-04"')}
-  },
-  ${n('"limit"')}: 0
+  ${n('"limit"')}: 5000,
+  ${n('"offset"')}: 0
 }`,
     links: LEARN_MORE_LINKS,
   };
@@ -233,16 +232,18 @@ export function patternExplorerPanel(): AitoPanelConfig {
     operation: "Pattern Explorer",
     endpoints: ["_relate"],
     description:
-      `Ad-hoc discovery queries. Pick a field + value and Aito returns ` +
-      `which other fields correlate unusually. Returns lift, support count, ` +
-      `and relative strength — read the table sorted by lift descending.`,
+      `Ad-hoc discovery queries. Pick an anchor category and Aito returns ` +
+      `which other categories share its orders unusually often, or unusually ` +
+      `rarely. Returns lift, support count, and relative strength — read the ` +
+      `table sorted by lift descending.`,
     query:
 `${k('"relate"')}: {
-  ${n('"from"')}: ${s('"customers"')},
+  ${n('"from"')}: ${s('"orders"')},
   ${n('"where"')}: {
-    ${n('"pet_size"')}: ${s('"large"')}
+    ${n('"line_categories"')}: { ${n('"$match"')}: ${s('"dog_dryfood"')} }
   },
-  ${n('"relate"')}: ${s('"segment"')}
+  ${n('"relate"')}: ${s('"line_categories"')},
+  ${n('"limit"')}: 30
 }`,
     links: LEARN_MORE_LINKS,
   };
@@ -314,15 +315,25 @@ export function churnPanel(): AitoPanelConfig {
 `${k('"predict"')}: {
   ${n('"from"')}: ${s('"customer_months"')},
   ${n('"where"')}: {
-    ${n('"segment"')}: ${s('"small_animal_owner"')},
-    ${n('"region"')}: ${s('"oulu"')},
-    ${n('"visits"')}: 4,
-    ${n('"purchases"')}: 0,
-    ${n('"spent_eur"')}: 0,
-    ${n('"latest_rating"')}: 2,
-    ${n('"latest_category"')}: ${s('"shipping"')}
+    ${n('"pets"')}: ${s('"small_animal"')},
+    ${n('"region"')}: ${s('"turku"')},
+    ${n('"tenure_months_at_month"')}: 2,
+    ${n('"visits"')}: 3,
+    ${n('"purchases"')}: 1,
+    ${n('"spent_eur"')}: 59.64,
+    ${n('"latest_rating"')}: 1,
+    ${n('"latest_sentiment"')}: ${s('"negative"')},
+    ${n('"latest_category"')}: ${s('"quality"')}
   },
-  ${n('"predict"')}: ${s('"churned_in_3_months"')}
+  ${n('"predict"')}: ${s('"churned_in_3_months"')},
+  ${n('"select"')}: [
+    ${s('"$p"')}, ${s('"feature"')},
+    { ${n('"$why"')}: { ${n('"highlight"')}: {
+      ${n('"posPreTag"')}: ${s('"«"')}, ${n('"posPostTag"')}: ${s('"»"')},
+      ${n('"negPreTag"')}: ${s('"‹"')}, ${n('"negPostTag"')}: ${s('"›"')}
+    } } }
+  ],
+  ${n('"limit"')}: 2
 }`,
     links: LEARN_MORE_LINKS,
   };

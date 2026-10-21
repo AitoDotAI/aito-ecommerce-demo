@@ -68,9 +68,10 @@ class SegmentCard:
     label: str
     share_pct: float
     avg_basket_eur: float
-    note: str
-    pill_text: str
-    pill_tone: str
+    # Set only on the card that ranks first or last on a number the card
+    # shows (see `_rank_pill`); every other card has no pill.
+    pill_text: str | None
+    pill_tone: str | None
 
 
 @dataclass(frozen=True)
@@ -119,32 +120,28 @@ class DashboardResponse:
 
 
 _SEGMENT_META: dict[str, dict[str, str]] = {
-    "dog": {
-        "emoji": "🐕", "label": "Dog households",
-        "note":  "monthly food reorder · highest LTV",
-        "pill_text": "Highest LTV", "pill_tone": "orange",
-    },
-    "cat": {
-        "emoji": "🐈", "label": "Cat households",
-        "note":  "bi-weekly litter · steady frequency",
-        "pill_text": "High frequency", "pill_tone": "blue",
-    },
-    "dog cat": {
-        "emoji": "🐾", "label": "Dog & cat households",
-        "note":  "dog + cat · cross-sell sweet spot",
-        "pill_text": "Cross-sell", "pill_tone": "purple",
-    },
-    "small_animal": {
-        "emoji": "🐹", "label": "Small-animal households",
-        "note":  "weekly bedding · growing segment",
-        "pill_text": "Growing", "pill_tone": "grey",
-    },
-    "aquarium": {
-        "emoji": "🐟", "label": "Aquarium households",
-        "note":  "monthly · high AOV",
-        "pill_text": "High AOV", "pill_tone": "purple",
-    },
+    "dog":          {"emoji": "🐕", "label": "Dog households"},
+    "cat":          {"emoji": "🐈", "label": "Cat households"},
+    "dog cat":      {"emoji": "🐾", "label": "Dog & cat households"},
+    "small_animal": {"emoji": "🐹", "label": "Small-animal households"},
+    "aquarium":     {"emoji": "🐟", "label": "Aquarium households"},
 }
+
+
+def _rank_pill(card_id: str, shares: dict[str, float], baskets: dict[str, float]) -> tuple[str, str] | None:
+    """The pill a household card earns from the two numbers it shows.
+
+    Pills are derived, never hand-written, so a label can't contradict
+    the share or basket printed next to it. A card that ranks on more
+    than one number keeps the first pill in this order.
+    """
+    if card_id == max(baskets, key=baskets.__getitem__):
+        return "Highest basket", "orange"
+    if card_id == max(shares, key=shares.__getitem__):
+        return "Largest group", "blue"
+    if card_id == min(baskets, key=baskets.__getitem__):
+        return "Lowest basket", "grey"
+    return None
 
 
 # ── Top patterns — Python-side lift over the fixture data ──────────
@@ -345,7 +342,8 @@ def _segment_cards(client: AitoClient, *, total_customers: int) -> list[SegmentC
         for seg_id in seg_ids
     ])
 
-    cards: list[SegmentCard] = []
+    shares: dict[str, float] = {}
+    baskets: dict[str, float] = {}
     for seg_id, count_res in zip(seg_ids, counts):
         seg_total = count_res["total"]
         if seg_total == 0:
@@ -360,19 +358,21 @@ def _segment_cards(client: AitoClient, *, total_customers: int) -> list[SegmentC
         )
         mean_spent = agg.get("total_spent_eur.$mean") or 0.0
         mean_orders = agg.get("total_orders.$mean") or 0.0
-        avg_basket = round(mean_spent / mean_orders, 2) if mean_orders else 0.0
+        baskets[seg_id] = round(mean_spent / mean_orders, 2) if mean_orders else 0.0
+        shares[seg_id] = round(seg_total / max(1, total_customers) * 100, 1)
 
+    cards: list[SegmentCard] = []
+    for seg_id in shares:
         meta = _SEGMENT_META[seg_id]
-        share_pct = round(seg_total / max(1, total_customers) * 100, 1)
+        pill = _rank_pill(seg_id, shares, baskets)
         cards.append(SegmentCard(
             id=seg_id,
             emoji=meta["emoji"],
             label=meta["label"],
-            share_pct=share_pct,
-            avg_basket_eur=avg_basket,
-            note=meta["note"],
-            pill_text=meta["pill_text"],
-            pill_tone=meta["pill_tone"],
+            share_pct=shares[seg_id],
+            avg_basket_eur=baskets[seg_id],
+            pill_text=pill[0] if pill else None,
+            pill_tone=pill[1] if pill else None,
         ))
     return cards
 
@@ -468,8 +468,8 @@ def _build_insight(patterns: list[Pattern]) -> Insight:
             f"<strong>{anchor.label}</strong> co-occurs at "
             f"<strong>{anchor.lift:.2f}×</strong> baseline — Aito flags this as "
             f"the demo's headline cross-sell signal. Drill into individual SKU "
-            f"pairs on Bought Together; live-rank the pattern's customer "
-            f"segments on Pattern Explorer."
+            f"pairs on Bought Together; see every category it lifts, and "
+            f"the ones it holds back, on Pattern Explorer."
         ),
     )
 

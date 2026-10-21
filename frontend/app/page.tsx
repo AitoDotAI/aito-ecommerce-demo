@@ -10,8 +10,8 @@ import ErrorState from "@/components/shell/ErrorState";
 import type { DashboardResponse } from "@/lib/types";
 
 /**
- * Dashboard view — KPI grid + top purchase patterns + customer
- * segments + insight tip + recent orders. Data layer is
+ * Dashboard view — KPI grid + top purchase patterns + households
+ * (by declared pets) + insight tip + recent orders. Data layer is
  * `src/overview_service.py`; see `docs/adr/0005-dashboard.md` for
  * the live-vs-Python split (top patterns are computed locally;
  * everything else hits Aito live).
@@ -124,10 +124,12 @@ export default function DashboardPage() {
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 600 }}>{seg.label}</div>
                   <div style={{ fontSize: 11, color: "var(--text-muted)" }}>
-                    {seg.share_pct}% of buyers · avg {fmtEur(seg.avg_basket_eur)} / order · {seg.note}
+                    {seg.share_pct}% of buyers · avg {fmtEur(seg.avg_basket_eur)} / order
                   </div>
                 </div>
-                <span className={`pill pill-${seg.pill_tone}`}>{seg.pill_text}</span>
+                {seg.pill_text && (
+                  <span className={`pill pill-${seg.pill_tone}`}>{seg.pill_text}</span>
+                )}
               </div>
             ))}
           </div>
@@ -154,37 +156,39 @@ export default function DashboardPage() {
             most recent first · predicted-next column lands with For You
           </span>
         </div>
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Order</th>
-              <th>Customer</th>
-              <th>Products</th>
-              <th>Month</th>
-              <th>Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            {!data && (
+        <div style={{ overflowX: "auto" }}>
+          <table className="data-table">
+            <thead>
               <tr>
-                <td colSpan={5} style={{ color: "var(--text-muted)", fontSize: 12 }}>
-                  Loading…
-                </td>
+                <th>Order</th>
+                <th>Customer</th>
+                <th>Products</th>
+                <th>Month</th>
+                <th>Value</th>
               </tr>
-            )}
-            {data?.recent_orders.map((o) => (
-              <tr key={o.order_id}>
-                <td style={{ fontFamily: "var(--mono)", fontSize: 12 }}>{o.order_id}</td>
-                <td>{o.customer_short}</td>
-                <td>{o.line_summary}</td>
-                <td style={{ fontFamily: "var(--mono)", fontSize: 12, color: "var(--text-muted)" }}>
-                  {o.month}
-                </td>
-                <td style={{ fontWeight: 600 }}>{fmtEur(o.total_eur)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {!data && (
+                <tr>
+                  <td colSpan={5} style={{ color: "var(--text-muted)", fontSize: 12 }}>
+                    Loading…
+                  </td>
+                </tr>
+              )}
+              {data?.recent_orders.map((o) => (
+                <tr key={o.order_id}>
+                  <td style={{ fontFamily: "var(--mono)", fontSize: 12 }}>{o.order_id}</td>
+                  <td>{o.customer_short}</td>
+                  <td>{o.line_summary}</td>
+                  <td style={{ fontFamily: "var(--mono)", fontSize: 12, color: "var(--text-muted)" }}>
+                    {o.month}
+                  </td>
+                  <td style={{ fontWeight: 600 }}>{fmtEur(o.total_eur)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

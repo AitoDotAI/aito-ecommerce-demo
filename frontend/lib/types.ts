@@ -369,9 +369,9 @@ export interface DashboardSegment {
   label: string;
   share_pct: number;
   avg_basket_eur: number;
-  note: string;
-  pill_text: string;
-  pill_tone: "orange" | "blue" | "grey" | "purple" | "green" | "red" | "amber";
+  // Only the group that ranks first or last on a shown number has a pill.
+  pill_text: string | null;
+  pill_tone: "orange" | "blue" | "grey" | null;
 }
 
 export interface DashboardInsight {
@@ -836,7 +836,7 @@ export interface ShopProduct {
 }
 
 export interface ShopReason {
-  label: string;   // "Goes with your cart", "Sells in April", "Treat affinity: high"
+  label: string;   // "Goes with your cart", "Sells in April", "Fits your pets"
   lift: number;    // how much it multiplies this product's odds of a purchase
 }
 

@@ -124,7 +124,7 @@ export default function ChurnPage() {
                   <thead>
                     <tr>
                       <th style={{ textAlign: "left" }}>Customer</th>
-                      <th style={{ textAlign: "left" }}>Segment · region</th>
+                      <th style={{ textAlign: "left" }}>Pets · region</th>
                       <th style={{ textAlign: "right" }}>Visits<br/><span style={{ fontSize: 10, fontWeight: 400 }}>this mo.</span></th>
                       <th style={{ textAlign: "right" }}>Spend<br/><span style={{ fontSize: 10, fontWeight: 400 }}>this mo.</span></th>
                       <th style={{ textAlign: "right" }}>Latest<br/><span style={{ fontSize: 10, fontWeight: 400 }}>rating</span></th>

@@ -110,7 +110,7 @@ function EvaluationView() {
       )}
 
       {!error && (
-        <div className="card">
+        <div className="card" style={{ overflowX: "auto" }}>
           <table className="data-table">
             <thead>
               <tr>

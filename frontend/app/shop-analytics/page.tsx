@@ -60,7 +60,7 @@ function ShopAnalyticsView() {
       {funnel.badLink && <NotFoundNotice message={funnel.badLink} resetLabel="Show purchases" onReset={() => setKpi("purchased")} />}
       {group.badLink && <NotFoundNotice message={group.badLink} resetLabel="Show summer" onReset={() => setWho("summer")} />}
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(380px, 1fr))", gap: 16 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(380px, 100%), 1fr))", gap: 16 }}>
         <Card title={`What goes with ${kpiNoun}`} sub={`Over- or under-represented among ${kpiNoun}, against all impressions`}
               controls={
                 <div style={{ display: "flex", gap: 6 }}>

@@ -15,7 +15,7 @@ search query, so the result spans every category the customer buys.
 
 After Smart Search shows the rank flip for a query, For You shows the
 same effect across the whole catalogue for Maija (cat owner), Saara
-(large-breed dog owner) and Olli (a small dog and a cat, mostly dog).
+(large-breed dog owner) and Olli (a small dog).
 
 ## How it works
 

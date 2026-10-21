@@ -33,9 +33,9 @@ SHOPPERS = [
     Shopper("maija", "CUST-00001", "Maija Lehtonen", "🐈",
             "A cats-only home in Helsinki."),
     Shopper("olli", "CUST-00002", "Olli Mäkelä", "🐕",
-            "A small dog and a cat, mostly dog."),
+            "Declares a small dog; reorders Acana Sensitive dog food."),
     Shopper("saara", "CUST-00003", "Saara Virtanen", "🐕",
-            "A large dog, premium and brand-loyal."),
+            "A large dog: 13 of 14 orders hold the same 7 kg bag of Hill's Science Plan Senior."),
 ]
 DEFAULT_SHOPPER = "paivi"
 

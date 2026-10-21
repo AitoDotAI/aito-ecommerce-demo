@@ -286,12 +286,9 @@ def get_analytics(client: AitoClient) -> AnalyticsResponse:
     if cached:
         return _from_dict(cached)
 
-    body = {
-        "from": "orders",
-        "where": {},
-        "limit": 5000,
-        # Sample paged through Aito's `_search` and aggregated client-side.
-    }
+    # The first page of the paged `_search` over orders; later pages
+    # differ only by offset, and the results are aggregated in Python.
+    body = {"from": "orders", "limit": 5000, "offset": 0}
 
     started = time.perf_counter()
     products = _load_products()
