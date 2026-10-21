@@ -184,3 +184,22 @@ Best on both columns of this sample. Hit@12 carries the n = 150 caveat
 above; calibration agrees with every other run. The full-pool run in the
 benchmark lane is asked to include K, with and without the pets filter.
 
+**Correction from the full pool (2026-10-21, benchmark lane, chunk 1: n = 1,900
+for A–F and I/J, n = 1,400 for K/K+; paired 95 % CIs over sessions, hit@12):**
+
+| comparison | difference | reading |
+|:--|:--|:--|
+| E − A (no identity) | −0.001 [−0.017, +0.015] | tie: the n = 150 win was noise |
+| B − A (no absences) | +0.002 | tie: likewise |
+| K − A (picked for you, no filter) | +0.003 [−0.025, +0.030] | tie: likewise |
+| **K+ − A** (K + declared-pets candidate filter, what the Shop sends) | **+0.031 [+0.003, +0.059]** | better |
+| K+ − K | +0.029 [+0.020, +0.037] | the gain is the filter, not pets as evidence |
+| D − A (`basedOn: [pet_type]`) | +0.017 [+0.010, +0.025] | better (a tie at n = 150) |
+| J − I (identity alone vs month alone) | +0.056 [+0.041, +0.071] | identity helps |
+
+So identity helps alone and does not hurt in combination (A − E is a tie):
+no core inference problem is indicated by this question. Three of three
+n = 150 wins dissolved and one tie became a win; decisions on this data need
+n ≈ 1,400. Brier at the full pool, which the decision rule also needs, is
+still to come.
+
