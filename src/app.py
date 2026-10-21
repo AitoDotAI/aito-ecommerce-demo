@@ -423,9 +423,9 @@ def shop_product_endpoint(sku: str, shopper: str, month: str = Query(pattern=MON
 
 
 @app.get("/api/shop/suggestions")
-def shop_suggestions_endpoint(shopper: str, month: str = Query(pattern=MONTH)):
-    """The usual basket, and what's next for the shopper's pet, as of `month`."""
-    return _shop(lambda: get_suggestions(aito, shopper, month))
+def shop_suggestions_endpoint(shopper: str, month: str = Query(pattern=MONTH), cart: str = ""):
+    """The usual basket, and what's next for the shopper's pet, as of `month` and with `cart`."""
+    return _shop(lambda: get_suggestions(aito, shopper, month, _cart_skus(cart)))
 
 
 @app.get("/api/product-insights")

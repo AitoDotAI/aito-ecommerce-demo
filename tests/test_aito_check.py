@@ -512,7 +512,7 @@ def test_shop_suggests_the_hideout_next_for_a_cage_and_a_bottle(client):
     bottle, and the kit's next item is the hideout."""
     from src.shop_suggestions import get_suggestions
 
-    result = get_suggestions(client, "paivi", "2026-04")
+    result = get_suggestions(client, "paivi", "2026-04", [])
 
     assert result.owned == {"small_animal": ["cage", "water_bottle"]}, result.owned
     assert result.next_for_pet and "Hideout" in result.next_for_pet[0].name, result.next_for_pet
@@ -525,7 +525,7 @@ def test_r5_the_kit_view_shows_an_owner_of_cage_and_bottle_an_add_on_not_another
     141 of 145 baskets with a cage also hold the bottle.)"""
     from src.shop_suggestions import get_suggestions
 
-    nxt = get_suggestions(client, "paivi", "2026-04").next_for_pet
+    nxt = get_suggestions(client, "paivi", "2026-04", []).next_for_pet
 
     assert nxt, "no next item for a kit owner"
     assert any(k in nxt[0].name for k in ("Hideout", "Exercise Wheel", "Tunnel")), [n.name for n in nxt]

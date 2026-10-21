@@ -8,6 +8,9 @@
   whose order already owned what this shopper owns (`order_id.owned_before`
   matching each kit item), for their pet's accessories and toys. ADR 0030
   check A2: after cage, bottle and hideout, the exercise wheel comes top.
+
+Both read the cart too: a kit item in the cart counts as owned, and nothing
+in the cart is suggested again.
 """
 
 from __future__ import annotations
@@ -44,8 +47,8 @@ class Suggestions:
         return asdict(self)
 
 
-def get_suggestions(client: AitoClient, shopper_key: str, month: str) -> Suggestions:
-    """As of `month`: only the shopper's orders before it count."""
+def get_suggestions(client: AitoClient, shopper_key: str, month: str, cart_skus: list[str]) -> Suggestions:
+    """As of `month`: only the shopper's orders before it count, and the cart."""
     customer_id = shopper(shopper_key).customer_id
     orders = orders_before(client, customer_id, month)
     if not orders:
@@ -57,6 +60,9 @@ def get_suggestions(client: AitoClient, shopper_key: str, month: str) -> Suggest
     usual_body = {"from": population, "predict": "skus.$feature", "limit": USUAL_ITEMS + 6}
 
     owned = owned_kit(client, orders)        # {"small_animal": {"cage", "water_bottle"}}
+    for p in _products(client, cart_skus).values():
+        if item_type(p["name"], p["brand"]) in DURABLE_TYPES:
+            owned.setdefault(p["pet_type"], set()).add(kind_word(p["name"], p["brand"]))
     next_hits, next_bodies = [], []
     for pet, kinds in sorted(owned.items()):
         where = {"order_id.owned_before": {"$and": [{"$match": f"{pet}_{k}"} for k in sorted(kinds)]},
@@ -72,7 +78,7 @@ def get_suggestions(client: AitoClient, shopper_key: str, month: str) -> Suggest
     products = _products(client, [h["feature"] for h in usual_hits])
     # Kit items are bought once: a cage is in their history, not their routine.
     routine = [h for h in usual_hits
-               if item_type(products[h["feature"]]["name"], products[h["feature"]]["brand"]) not in DURABLE_TYPES]
+               if h["feature"] not in cart_skus and item_type(products[h["feature"]]["name"], products[h["feature"]]["brand"]) not in DURABLE_TYPES]
     return Suggestions(
         usual=[Suggestion(h["feature"], products[h["feature"]]["name"], round(float(h["$p"]), 3))
                for h in routine[:USUAL_ITEMS]],

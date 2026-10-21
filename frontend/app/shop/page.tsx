@@ -92,14 +92,16 @@ function ShopView() {
   }, [query, shopperKey, month, cartParam, setPanel]);
 
   useEffect(() => {
-    // As of the picked month, like the grid: later orders haven't happened yet.
+    // As of the picked month and the cart, like the grid: later orders haven't
+    // happened yet, and a kit item in the cart counts as owned.
     let current = true;
     setSuggestions(null);
     setSuggestionsError(null);
-    apiFetch<ShopSuggestions>(`/api/shop/suggestions?shopper=${shopperKey}&month=${month}`)
+    apiFetch<ShopSuggestions>(`/api/shop/suggestions?shopper=${shopperKey}&month=${month}` +
+                              `&cart=${encodeURIComponent(cartParam)}`)
       .then((s) => { if (current) setSuggestions(s); }, (e) => { if (current) setSuggestionsError(String(e)); });
     return () => { current = false; };
-  }, [shopperKey, month]);
+  }, [shopperKey, month, cartParam]);
 
   const shown = grid && grid.shopper.key === shopperKey ? grid : null;
   const stale = !!shown && (shown.month !== month || shown.cart.map((p) => p.sku).join(",") !== cartParam);
