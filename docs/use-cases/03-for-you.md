@@ -3,23 +3,19 @@
 ![For You](../../screenshots/03-for-you.png)
 
 *Personalised product grid for the active persona. Click any pill
-in the persona bar above (Maija / Olli / Saara) and the entire
-12-tile grid re-ranks in <300 ms — same query body, different
-`where` + `goal`, completely different recommendations.*
+in the persona bar above (Maija / Olli / Saara) and the 12-tile grid
+re-ranks: same query body, a different customer id in `where`.*
 
 ## Overview
 
 For You is the "what should this customer see on the home page"
-view. It reuses Smart Search's `_recommend` query shape — same
-table, same `goal` semantics — but drops the `name $match` filter
-so the result spans every category the persona-segment buys.
+view. It reuses Smart Search's conversion-KPI shape (ADR 0021): the
+same `impressions` table and `goal: {purchased: true}`, without a
+search query, so the result spans every category the customer buys.
 
-The demo's second-strongest moment lives here. After Smart Search
-demonstrates the rank-flip for a specific query, For You shows the
-same effect across the whole catalog: Maija (cat owner) gets cat
-food + litter + cat accessories; Saara (large breed dog owner)
-gets dog dry-food + dental treats + large-breed accessories; Olli
-(multi-pet small dog) gets the dog-side of a small-pet household.
+After Smart Search shows the rank flip for a query, For You shows the
+same effect across the whole catalogue for Maija (cat owner), Saara
+(large-breed dog owner) and Olli (a small dog and a cat, mostly dog).
 
 ## How it works
 
@@ -27,157 +23,92 @@ gets dog dry-food + dental treats + large-breed accessories; Olli
 
 ```python
 # src/recommend_service.py — get_for_you()
-where = {}
-if persona.pet_size is not None:
-    where["customer_pet_size"] = persona.pet_size
-goal = {"customer_segment": persona.segment}
+where = {"context.customer": persona.customer_id}
+goal = {"purchased": True}
 
 client.recommend(
-    table="order_lines",
+    table="impressions",
     where=where,
     recommend_field="product_sku",
     goal=goal,
-    limit=12,
+    limit=limit,     # 12
 )
 ```
 
-Same shape as Smart Search minus the name-match clause. For Maija
-the `where` is `{}` (no pet_size constraint); for Olli and Saara
-the `where` carries `{customer_pet_size: small | large}` and the
-`goal` carries the matching segment.
+The body the Aito panel shows for Maija:
 
-The frontend issues one call per persona switch — there's no batch
-trick. The 300 ms latency is end-to-end (Aito call + 6 ms cache
-overhead) on a warm cache; first-call cold latency is ~1 s.
-
-### The "Olli divergence"
-
-Olli's customer record is `multi_pet` per the fixture (ADR 0002).
-But the *segment-level* conditioning treats `multi_pet` as the
-whole multi-pet population — which leans cat in our fixture
-because cat-owners-with-a-dog outnumber dog-owners-with-a-cat.
-
-That makes Olli's "multi-pet" goal indistinguishable from Maija's
-"cat-owner" goal, which breaks the demo's "the grid flips per
-persona" moment.
-
-The fix: For You overrides Olli's goal to `dog_owner + small` —
-the segment + size that matches his hand-curated 85% dog history.
-The UI label stays "multi-pet, small dog" so the persona names
-read as TASK.md specifies; the Aito panel honestly shows the live
-goal body that ran. This is "persona labelling", not per-customer
-personalisation. ADR 0007 §"Olli divergence" has the full
-rationale.
-
-```python
-PERSONAS = {
-    "maija": Persona("maija", "CUST-00001", "Maija — cat owner",
-                     segment="cat_owner", pet_size=None),
-    "olli":  Persona("olli",  "CUST-00002", "Olli — multi-pet (small dog)",
-                     segment="dog_owner", pet_size="small"),
-    "saara": Persona("saara", "CUST-00003", "Saara — large breed dog owner",
-                     segment="dog_owner", pet_size="large"),
-}
+```json
+{ "from": "impressions",
+  "where": { "context.customer": "CUST-00001" },
+  "recommend": "product_sku",
+  "goal": { "purchased": true },
+  "limit": 12 }
 ```
+
+`context.customer` is two links from `impressions`: each impression
+links to its `context` (the visit), which links to the `customer`.
+Aito learns the persona from their own rows; no segment, pet size or
+trait is handed to it (ADR 0033). That also retires ADR 0007's "Olli
+divergence", where Olli's goal had to be overridden to a dog segment:
+his mostly-dog history speaks for itself.
+
+The frontend issues one call per persona switch, cached for 5 minutes.
 
 ### Score on each tile
 
-Each tile renders the `$p` from Aito as a small confidence number
-(0.0–1.0). That's P(this persona-segment | product = X), not
-P(persona-X-clicks-product). The label on the tile says "match
-score" because the conditional is the right intuition for the
-shopper-facing demo, even if the technical meaning is conditional
-probability.
-
-```python
-tiles.append(Tile(
-    sku=hit.get("sku", ""),
-    # ... other fields ...
-    score=round(float(hit.get("$p", 0)), 3),
-))
-```
+Each tile renders Aito's `$p`: the probability that this customer buys
+the product when it is shown, P(purchased | this customer).
 
 ## Key features
 
-### 1. Same query body as Smart Search
+### 1. Same table and goal as Smart Search
 
-For You is Smart Search without the `name $match`. Reusing the
-query shape means the Aito panel description, the cache structure,
-and the "what's a recommendation" mental model are all consistent
-across the two views.
+For You is Smart Search's purchase model without the text. Sharing the
+shape keeps the Aito panel, the cache and the "what's a recommendation"
+mental model the same across the two views.
 
-### 2. The grid flips entirely between personas
+### 2. The grid flips between personas
 
-Maija's top tile is cat food. Olli's is small dog food. Saara's is
-large breed dog food. There's no overlap in the first three tiles
-across the three personas in the warm-cache demo state. That's the
-"predictive context drives the catalog presentation" effect made
-visible.
-
-### 3. Goal-overrides documented honestly
-
-When the customer record's segment is overridden at query time
-(Olli), the Aito panel shows the goal that actually ran, not the
-customer record's nominal segment. CLAUDE.md prime directive #2:
-never silently transform. If the persona label and the goal differ,
-the panel exposes the difference.
+Each persona's grid follows what that customer has bought: Maija's
+leans to cat products, Saara's to dog products. That's the customer's
+own history driving the catalogue's presentation. `./do aito-check`
+checks the flip live.
 
 ## Data schema
 
-For You reads from `order_lines` with the denormalised customer
-context columns:
-
 ```json
 {
-  "order_lines": {
-    "type": "table",
-    "columns": {
-      "product_sku":       { "type": "String", "link": "products.sku" },
-      "customer_segment":  { "type": "String" },
-      "customer_pet_size": { "type": "String" }
-    }
-  }
+  "impressions": { "columns": {
+    "context":     { "type": "String", "link": "contexts.context_id" },
+    "product_sku": { "type": "String", "link": "products.sku" },
+    "purchased":   { "type": "Boolean" } } },
+  "contexts": { "columns": {
+    "context_id": { "type": "String" },
+    "customer":   { "type": "String", "link": "customers.customer_id" } } }
 }
 ```
 
-`customer_segment` and `customer_pet_size` are denormalised at
-fixture-gen — copied from the parent customer row onto every
-order line. Aito's `_recommend` requires the conditioning columns
-to be on the table being scanned, and two-hop traversal
-(`order_lines → orders → customers`) returns 400 in our experience.
+Only the columns For You uses are shown; `src/schema.py` has the rest.
 
 ## Tradeoffs and gotchas
 
-- **Per-customer (`customer_id`) recommendations under-fit on
-  3,000 customers**. Most customers have <20 orders; conditioning
-  on `customer_id` alone gives `_recommend` no signal to work
-  with. Segment + size is the right granularity for this fixture.
-- **The grid doesn't update on add-to-cart**. A real product would
-  re-run `_recommend` after each cart event to surface "since you
-  added X, you might also like…" tiles. Demo refreshes per persona
-  switch only.
-- **The first tile-row dominates the visual diff**. We display 12
-  tiles in a 4×3 grid; the row that most cleanly shows the
-  persona effect is the top row. Tradeoff: bigger personas hide
-  the long-tail differences. Pattern Explorer is the right
-  surface for those.
-- **`$p` rendered as "match score" is intentionally informal**.
-  The technical value is P(segment | product). Production would
-  rename it on the tile (e.g. "fit") or omit it entirely and
-  rely on rank-order.
+- **The grid doesn't update on add-to-cart.** The Shop view does that:
+  the cart goes into its `where` as context.
+- **The first tile row dominates the visual diff.** The row that most
+  cleanly shows the persona effect is the top row; Pattern Explorer is
+  the right surface for the long tail.
 
 ## What this demo abstracts away
 
-- **A real recommendation engine** would blend multiple signals
-  (collaborative + content + recency + diversity) and learn from
-  click-throughs. We do segment conditioning only.
-- **Cold-start behaviour**. For new customers without a segment,
-  the demo defaults to Maija (cat owner). A real product would
-  fall back to popularity or do a quick onboarding quiz.
-- **Catalog freshness**. The fixtures are deterministic — products
-  don't go out of stock, prices don't change. Production wants
-  out-of-stock and price-tier filters layered on top of the
-  `_recommend` result.
+- **A real recommendation engine** would blend several signals
+  (collaborative, content, recency, diversity) and learn from
+  click-throughs. For You is one `_recommend`.
+- **Cold start.** A customer with no impressions has nothing for Aito
+  to learn from; a real product would fall back to all impressions or
+  to what the customer declared (the Shop's "Picked for you" uses the
+  declared pets).
+- **Catalogue freshness.** Out-of-stock and price-tier filters would be
+  layered on top of the `_recommend` result.
 
 ## Try it live
 

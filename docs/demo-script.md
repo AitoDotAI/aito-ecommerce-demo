@@ -23,7 +23,7 @@ locally → `http://localhost:8500`).
 
 ## Beat 1 — Dashboard (15 s)
 
-> "PetNord is a Nordic pet store. 11 970 orders, 658 SKUs, 3 000
+> "PetNord is a Nordic pet store. About 12 000 orders, 658 SKUs, 3 000
 > customers — twenty-four months of data, all live in Aito. The
 > top-pattern row says dog dry-food and dental treats co-occur
 > at 2.68× baseline — that's `_relate`, with no model training."
@@ -61,7 +61,8 @@ Click the **Maija** pill.
 Click **Saara** (large-breed dog).
 
 > "Switch to Saara — large-breed dog owner — and the right column
-> flips to the dog foods her segment actually buys."
+> flips to dog food. The query holds only her customer id: Aito
+> reads what she buys from her own rows."
 
 Type `food for an old dog`, keep **Maija**.
 
@@ -80,9 +81,9 @@ customer — and the query still means what it says."
 Click **For You**.
 
 > "Same idea, no query string. Pure recommendation grid for the
-> selected customer. Maija — cat litter and cat dry-food. Olli
-> — small-dog accessories, grooming, health. Saara — large-
-> breed dog kibble. The browser latency badge in the top bar
+> selected customer. Maija — cat products. Saara — dog products.
+> Olli — mostly the dog side of a dog-and-cat home. The browser
+> latency badge in the top bar
 > shows the actual round-trip time — Aito returns this in tens
 > of milliseconds."
 
@@ -92,10 +93,10 @@ it as instant).
 
 > "Three crisply different shoppers from one underlying query
 > shape. The Aito panel on the right shows the exact
-> `_recommend` body that ran for each — only `where.
-> customer_segment` changes per persona; the `goal: {purchased:
-> true}` is identical. Aito ranks each grid by purchase
-> probability."
+> `_recommend` body that ran for each — only the customer id in
+> `where: {"context.customer": …}` changes per persona; the
+> `goal: {purchased: true}` is identical. No profile is handed
+> over: Aito learns each shopper from their own impressions."
 
 **Optional aside — rank for revenue, not clicks:** flip the goal
 from `{purchased: true}` to `{clicked: true}` and the grid
@@ -163,19 +164,18 @@ Hover the **?** icon on the **dietary** row.
 Click **Evaluation**.
 
 > "Last view. Aito's `_evaluate` runs each model against a held-
-> out test set. Pet type from name — 97.5 % accuracy. Dietary
-> from product attributes — 71.5 % accuracy at +47 percentage
-> points over baseline. Customer segment from product — 80.5 %
-> at +34 pp."
+> out sample: pet type from the product name, and the dietary
+> tag from product attributes. Each row shows the accuracy next
+> to the baseline — always guessing the most common answer — and
+> the gain between them."
 
 Pause. Point at the bottom row.
 
-> "And then Return Risk. 96.5 % accuracy — looks impressive,
-> right? The gain is **plus zero point zero**. Aito learned
-> nothing the prior didn't already know. About 3 % of lines get
-> returned in this data; without specific signal, the model
-> just predicts 'won't be returned' for every line and is 97 %
-> correct by accident."
+> "And then Return Risk. The accuracy looks impressive, right?
+> The gain is **zero**. Aito learned nothing the prior didn't
+> already know. Few lines get returned in this data; without
+> specific signal, the model just predicts 'won't be returned'
+> for every line and is right by accident."
 
 Tap on the failed row to show the Aito panel updating.
 
@@ -203,14 +203,25 @@ the profit move (ADR 0029).
 
 ## Optional beat — the Shop (40 s)
 
-Open `/shop/?shopper=paivi`. "Päivi got a guinea pig in February: a cage
-and a bottle so far." Point at "What's next for their pet": the hideout, because
-shoppers who owned a cage and a bottle bought that next. Add a cage to the
-cart and watch the grid move; the teal chips say why ("Goes with your
-cart ×N"), the grey ones are facts (an offer, the stars). Open a product:
-its alternatives, ranked for her. Switch to Janne and search "food":
-"only grain-free food, ranked for this household." Switch to Helena and
-press "Fill my usual basket".
+Open `/shop/?shopper=paivi`. "Päivi Salminen got a guinea pig in
+February: a cage and a water bottle so far. A shop sees what a visit
+is for, so it shows one view per intent."
+
+- **Next for their kit**: the hideout comes first. "Shoppers who owned a
+  cage and a bottle bought that next. Aito reads it from their order
+  lines; the app has no kit rules."
+- **Buy again**: "her routine, one probability per product, predicted
+  from her own orders."
+- **Picked for you**: "everything else, ranked for a household with her
+  pets, this month and this cart." Point at the teal chips: "Fits your
+  pets", "Sells in April". The grey ones are facts (an offer, the stars).
+  Add a cage to the cart and watch the grid move ("Goes with your cart").
+
+"Look at the query in the panel: it holds only what a shop knows — the
+pets she told us, the month and the cart. Nothing about her that she
+didn't say." Open a product: its alternatives, ranked for her. Switch to
+Janne and search "food": "only grain-free food, his household's rule."
+Switch to Helena and press "Fill my usual basket".
 
 ## Optional beat — the owner's view (30 s)
 
@@ -270,11 +281,13 @@ Twenty-four months of synthetic PetNord orders generated by
 re-upload with `./do reset-data` whenever the catalog changes.
 
 **"Does Aito learn the user's history?"**
-Not per-individual — 3 000 customers × ~4 orders each is too
-thin for per-customer priors. Aito conditions on the customer's
-*segment* (≈ 600 customers per group). Per-customer learning
-needs an order of magnitude more data and a different schema
-shape — `aito-shopify` shows that pattern.
+Yes, from their own rows. Smart Search and For You put only the
+customer id in the query (`context.customer`), and Aito reads that
+customer's impressions. Nothing a shop wouldn't know is in the
+data: customers hold what they declared (pets, a dog's size, a
+diet) and their history (ADR 0033). The Shop's "Picked for you"
+uses the declared pets instead of the id; ADR 0033's amendment of
+2026-10-21 has the reasoning.
 
 **"How long would a real merchant's data take?"**
 The full PetNord load takes ~50 s end-to-end. Per the framework

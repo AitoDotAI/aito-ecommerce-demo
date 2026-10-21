@@ -109,10 +109,9 @@ denormalised for Bought Together) + `products` (price + name).
   client-side accumulation of clicks. The rep2 live-session view
   (deferred) will use the same Aito query against an event-driven
   cart.
-- **No personalisation by customer profile.** The current calls
-  have no `customer_segment` / `lifestyle` context. Adding them
-  is a single-line `where` addition once we have a "current
-  visitor" concept.
+- **No personalisation by customer.** The current calls hold only
+  the cart. The Shop view shows the personalised form: the household's
+  declared pets and the month as context next to the cart (ADR 0033).
 - **`_popular_in_category` sorts by price, not unit count.** Same
   popularity-proxy gotcha as Markdown.
 

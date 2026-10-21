@@ -46,20 +46,24 @@ condition. Two field-form `_relate`s on the customer column give both:
 
 ```python
 # everyone: where = every month of the window (so every row), relate the customer
-{"from": "impressions", "where": {"month": {"$or": [...24 months]}},
- "relate": "customer_id", "limit": 10000}
+{"from": "impressions", "where": {"context.month": {"$or": [...24 months]}},
+ "relate": "context.customer", "limit": 10000}
 # the condition
-{"from": "impressions", "where": {"purchased": True}, "relate": "customer_id", "limit": 10000}
+{"from": "impressions", "where": {"purchased": True}, "relate": "context.customer", "limit": 10000}
 ```
 
-Measured on `shoppers` (2026-10-13):
+On `order_lines` the customer is `order_id.customer_id` and the month
+`order_id.month`; on `orders`, `customer_id` and `month`.
+
+Measured on `shoppers` (2026-10-13), before ADR 0033 moved the customer
+onto the context:
 
 | section | ρ | rows per customer | design effect |
 |:--|:--|:--|:--|
 | purchases | 0.021 | 48.5 | 2.0 |
 | clicks | 0.006 | 48.5 | 1.3 |
 | summer order lines | 0.24 | 20.4 | 5.6 |
-| a segment or diet rule | 1 (constant per customer) | 20.4 | 20.4 |
+| a declared pet or diet | 1 (constant per customer) | 20.4 | 20.4 |
 | baskets, per anchor | 0–0.6 | 6.5 | 1.0–6.5 |
 | search purchases | 0.036 | 22.8 | 1.8 |
 
@@ -81,6 +85,10 @@ the bar, or nothing had enough independent rows.
 
 ## The four sections
 
+The figures in this section were measured on the test env `shoppers`
+(2026-10-13), before ADR 0032 and 0033 changed the data; the queries
+are the current ones.
+
 ### 1. What goes with a click and a purchase
 
 ```python
@@ -88,12 +96,16 @@ the bar, or nothing had enough independent rows.
  "relate": "product_sku.rating_band", "limit": 50}
 ```
 
-One call per field:
+One call per field (`FUNNEL_FIELDS` in `src/shop_analytics_service.py`):
 - the product's rating band and category, both through the
   `product_sku` link;
-- the shopper's segment, lifestyle and diet rule;
-- `just_bought`, a Boolean: was the product in their last order;
-- the surface.
+- the product as it was that month (ADR 0032), through the
+  `product_state` link: `on_offer`, `discount_band`, `age`,
+  `rival_launched`, `price_change`;
+- the shopper only as a shop knows them (ADR 0033), two links away:
+  declared `context.customer.pets` and `context.customer.diet`, and
+  where the product was shown, `context.surface`;
+- `just_bought`, a Boolean: was the product in their last order.
 
 The toggle swaps `purchased` for `clicked`. Among purchases:
 
@@ -119,7 +131,13 @@ cart and purchase steps, not the click.
 The same condition also relates `product_sku.dietary`, because a diet
 rule shows in the dietary line, not the category. The selector offers the
 four seasons (`season_months` from `src/demand_service.py`), the five
-segments and the four diet rules.
+declared pets and the four declared diets. Those two reach the customer
+through two links from the order line:
+
+```python
+{"order_id.customer_id.pets": {"$match": "small_animal"}}   # pets is whitespace Text: "dog cat"
+{"order_id.customer_id.diet": "grain-free"}
+```
 
 ```
 summer      → health 3.99× (375 of 6,489 lines, 2.52–6.31)
@@ -127,8 +145,8 @@ grain-free  → dietary = grain-free 3.08× (1,171 of 2,003 lines, 2.54–3.73)
 ```
 
 Summer grooming (3.89×, 157 lines) is planted but doesn't show: with a
-design effect of 5.6 it rests on 28 independent lines. For a segment or
-a diet rule every line of a customer shares the condition, so the design
+design effect of 5.6 it rests on 28 independent lines. For a declared pet
+or diet every line of a customer shares the condition, so the design
 effect is the full 20 lines per customer and only strong effects show.
 
 ### 3. Baskets
@@ -150,7 +168,8 @@ how many more there are, and links to Basket Rules.
 
 ### 4. Search words
 
-`search_query` is a whitespace Text column, so a `_relate` on it returns
+`search_query` is a whitespace Text column on `contexts`, which
+impressions reach as `context.search_query`. A `_relate` on it returns
 one hit per word, in `$has` form. The obvious query has the wrong
 baseline: `_relate` divides by the word's share of *all* impressions,
 and only search impressions carry a query, so every word came out about
@@ -165,9 +184,12 @@ lift = (purchases with the word / search purchases)
 Words with identical counts are checked with a `_search`:
 
 ```python
-{"$and": [{"surface": "search"},
-          {"search_query": {"$match": "algae"}}, {"search_query": {"$match": "wafers"}}]}
+{"$and": [{"context.surface": "search"},
+          {"context.search_query": {"$match": "algae"}}, {"context.search_query": {"$match": "wafers"}}]}
 ```
+
+(a `_search` over `impressions`; one matching search is then read from
+`contexts` for the word order).
 
 If the searches holding all the words are as many as those holding each,
 the words become one phrase ("algae wafers"), in the order of one such
@@ -195,25 +217,22 @@ Product Insights does.
 
 | Section | Table | Columns |
 |---|---|---|
-| Clicks and purchases | `impressions` | `clicked`, `purchased`, `month`, `customer_id`, `product_sku` → `products.rating_band`, `category`; `customer_segment`, `customer_lifestyle`, `customer_diet_rule`, `just_bought`, `surface` |
-| Who and when | `order_lines` | `order_id` → `orders.month`, `customer_id`; `customer_segment`, `customer_diet_rule`; `product_sku` → `products.category`, `dietary` |
+| Clicks and purchases | `impressions` | `clicked`, `purchased`, `just_bought`; `product_sku` → `products.rating_band`, `category`; `product_state` → `product_states.on_offer`, `discount_band`, `age`, `rival_launched`, `price_change`; `context` → `contexts.month`, `surface`, `customer` → `customers.pets`, `diet` |
+| Who and when | `order_lines` | `order_id` → `orders.month`, `customer_id` → `customers.pets`, `diet`; `product_sku` → `products.category`, `dietary` |
 | Baskets | `orders` | `line_categories` (Text), `month`, `customer_id` |
-| Search words | `impressions` | `surface`, `purchased`, `customer_id`, `search_query` (Text) |
+| Search words | `impressions` | `purchased`; `context` → `contexts.surface`, `customer`, `search_query` (Text) |
 
 ## Tradeoffs and gotchas
 
 - **The design effect is an upper bound.** Bounding ρ_value by 1 is safe,
-  but for a customer-level condition (segment, diet rule) it is harsh:
+  but for a customer-level condition (declared pets, diet) it is harsh:
   small-animal owners' 3.4× on treats doesn't show.
-- **`product_category` is not related.** It is the denormalised copy of
-  `product_sku.category`, and both return identical hits.
-- **Needs ADR 0030's data.** The rating band, diet rule, `just_bought`
-  and multi-word search queries exist only in the test env `shoppers`
-  until master is reloaded.
+- **Needs ADR 0033's data.** The `contexts` table and `product_states`
+  exist only in the test env `observable` until master is reloaded.
 
 ## Try it live
 
 ```bash
-AITO_ENV=shoppers ./do dev
+AITO_ENV=observable ./do dev
 # → http://localhost:8500/shop-analytics/
 ```

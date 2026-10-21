@@ -16,8 +16,9 @@ churned were a dead end until this view. For each churned customer
 (top-20 by lifetime €), Win-back predicts which products they'd
 respond to in a re-engagement email + the revenue impact if they do.
 
-Headline number on the demo dataset: **€1,354 recoverable revenue
-across 20 win-back targets, at a €30 campaign cost — 45× ROI.**
+On the synthetic demo data (env `observable`) the view predicts about
+€1,050 recoverable revenue across 20 targets at a €30 campaign cost.
+The data is generated, so this illustrates the arithmetic, not a result.
 
 Three blocks per page load:
 
@@ -33,38 +34,39 @@ Three blocks per page load:
 
 ### The `winback_campaigns` historical table
 
-~1,800 synthetic past re-engagement emails sent to then-inactive
+~2,400 synthetic past re-engagement emails sent to then-inactive
 customers. The outcome label `responded` is what Aito learns from
 to predict response rates for currently-churned customers.
 
-Engineered correlations baked into the fixture:
+Engineered correlations baked into the fixture. The generator draws
+them from each customer's hidden traits; Aito never sees those traits
+(ADR 0033), only the customer, their staple and the recency:
 
-| Trait | Multiplier on base 0.05 |
+| Planted in the generator | Multiplier on base 0.05 |
 |---|---|
-| `lifestyle = premium` | ×2.4 |
-| `lifestyle = budget` | ×0.5 |
+| a premium shopper (hidden trait) | ×2.4 |
+| a budget shopper (hidden trait) | ×0.5 |
 | `recency = 0-90d` | ×1.6 |
 | `recency = 180d+` | ×0.4 |
-| Product matches segment's preferred pet_type | ×3.0 |
-| Mismatched product | ×0.35 |
-| `health_focus = high` + dietary product | ×1.5 |
+| product for the household's pets | ×3.0 |
+| product for other pets | ×0.35 |
+| a health-focused shopper (hidden trait) + dietary product | ×1.5 |
+| product in the customer's staple "pet/category" (ADR 0027) | ×2.5 |
+| a "pet/category" the customer never bought | ×0.5 |
 
-Clipped to `[0.005, 0.25]` so even strong cases stay within
-real-world re-engagement campaign ranges. Audit confirms:
-premium customers respond ~3× more than budget; recent
-churners ~3× more than old.
+Clipped to `[0.005, 0.35]` so even strong cases stay within
+real-world re-engagement campaign ranges.
 
 ### Product ranking — `_recommend`
 
 ```python
+# src/winback_service.py — _recommend_products()
 client.recommend(
     table="winback_campaigns",
     where={
-        "customer_lifestyle":   customer["lifestyle"],
-        "customer_segment":     customer["segment"],
-        "customer_pet_size":    customer["pet_size"],
-        "customer_health_focus":customer["health_focus"],
-        "recency_bucket":       _recency_bucket_from(customer.last_order_month),
+        "customer_id":              customer["customer_id"],
+        "customer_staple_category": staple,           # "dog/dry-food", or "none"
+        "recency_bucket":           recency_bucket,   # from last_order_month
     },
     recommend_field="product_sku",
     goal={"responded": True},
@@ -72,6 +74,13 @@ client.recommend(
     limit=8,
 )
 ```
+
+- `customer_id` is a link to `customers`: Aito reads the customer
+  through it (what they declared, and their own earlier sends).
+- `customer_staple_category` is derived from the customer's orders
+  (their most-bought "pet/category", at least 3 lines), as their send
+  rows record it.
+- `recency_bucket` is derived from `last_order_month`.
 
 For each candidate `product_sku`, Aito returns
 `$p = P(responded=true | this product, this customer's context)`
@@ -82,14 +91,15 @@ linked `products` table), so bare column names.
 ### AOV per suggestion — `_estimate`
 
 ```python
+# src/winback_service.py — _predict_aov_for_product()
 client.estimate(
     "winback_campaigns",
     where={
-        "customer_lifestyle":   customer["lifestyle"],
-        "customer_segment":     customer["segment"],
-        "recency_bucket":       recency,
-        "product_sku":          suggested_sku,
-        "responded":            True,
+        "customer_id":              customer["customer_id"],
+        "customer_staple_category": staple,
+        "recency_bucket":           recency_bucket,
+        "product_sku":              product_sku,
+        "responded":                True,
     },
     estimate_field="order_value_eur",
 )
@@ -149,10 +159,7 @@ New table — `winback_campaigns` — added in ADR 0017 / 0020:
       "product_sku":            { "type": "String", "link": "products.sku" },
       "sent_month":             { "type": "String" },
       "recency_bucket":         { "type": "String" },
-      "customer_segment":       { "type": "String" },
-      "customer_pet_size":      { "type": "String", "nullable": true },
-      "customer_lifestyle":     { "type": "String" },
-      "customer_health_focus":  { "type": "String" },
+      "customer_staple_category": { "type": "String" },
       "product_pet_type":       { "type": "String" },
       "product_category":       { "type": "String" },
       "product_brand":          { "type": "String" },
@@ -163,21 +170,18 @@ New table — `winback_campaigns` — added in ADR 0017 / 0020:
 }
 ```
 
-~1,800 rows generated. 31 % overall response rate; top engineered
-slice (premium × recent × matched) hits 25 % ceiling.
+The customer's traits are not columns: the link to `customers` carries
+what they declared (ADR 0033).
 
 ## Tradeoffs and gotchas
 
-- **Top product suggestions cluster within a profile slice.** Two
-  premium-cat customers with the same lifestyle / segment /
-  recency get the same top-3. That's correct given identical
-  conditioning, but the demo lacks per-customer purchase-history
-  conditioning that would differentiate them. Adding the
-  customer's last-N purchased categories would solve it.
+- **Customers with few sends of their own** lean on their staple and
+  recency: two such customers with the same staple and recency get
+  similar suggestions.
 - **Response rates can read high.** Aito's `_recommend` returns
   the TOP-ranked candidates; for high-signal slices they cluster
-  near the 25 % engineered ceiling. The KPI "average response
-  rate" across all proposed sends lands around 55-60 % which is
+  near the engineered ceiling (35 %). The KPI "average response
+  rate" across all proposed sends lands around 80 % which is
   generous vs real-world re-engagement (~15-20 %). Disclose in
   the demo script.
 - **No live email send.** This is a recommendation view, not a

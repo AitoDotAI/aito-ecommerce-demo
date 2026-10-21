@@ -4,8 +4,8 @@
 
 *The "show the numbers behind every prediction" view. Monthly
 orders + revenue (24-month window), top 10 SKUs by line count,
-per-segment KPIs (customers, orders, revenue, AOV), and the
-per-segment category mix. All `_search`-driven; nothing
+KPIs per household group (by declared pets: customers, orders,
+revenue, AOV), and each group's category mix. All `_search`-driven; nothing
 precomputed.*
 
 ## Overview
@@ -78,37 +78,34 @@ The `_search` here is unindexed — no `where`, no order. Aito
 returns rows in whatever order suits its index; we don't care
 about order, we count. Eight pages cover ~36k lines.
 
-### Per-segment KPIs
+### Per-household KPIs
 
-Three passes — customers, orders, lines — joined client-side:
+Households are grouped by the pets they declared (`customers.pets`,
+ADR 0033): "dog", "cat", "cat dog" and so on. Three passes — customers,
+orders, lines — joined client-side (`src/analytics_service.py` —
+`_segment_kpis()`; the API keeps the field name `segment` for the
+group's key):
 
 ```python
-# Build customer_id → segment map
-customers_by_id = { c["customer_id"]: c for c in pages_of(client, "customers") }
+def _household(customer: dict) -> str:
+    # "dog cat" and "cat dog" are one group
+    return " ".join(sorted(customer["pets"].split()))
 
-# Orders → segment via customer
-seg_orders = Counter()
-seg_revenue = defaultdict(float)
-order_to_segment = {}
-for o in pages_of(client, "orders"):
-    cust = customers_by_id.get(o["customer_id"])
-    if not cust: continue
-    seg = cust.get("segment", "")
+# Orders → household via customer (an unknown customer raises)
+for o in orders:
+    seg = _household(customers_by_id[o["customer_id"]])
     seg_orders[seg] += 1
-    seg_revenue[seg] += float(o.get("total_eur", 0))
+    seg_revenue[seg] += float(o.get("total_eur", 0) or 0)
     order_to_segment[o["order_id"]] = seg
 
-# Lines → segment × (pet_type, category) for the mix
-seg_cat_counts = defaultdict(Counter)
-for ln in pages_of(client, "order_lines"):
-    seg = order_to_segment.get(ln["order_id"])
-    if not seg: continue
-    prod = products.get(ln["product_sku"])
-    if not prod: continue
+# Lines → household × (pet_type, category) for the mix
+for ln in lines:
+    seg = order_to_segment[ln["order_id"]]
+    prod = products[ln["product_sku"]]
     seg_cat_counts[seg][(prod["pet_type"], prod["category"])] += 1
 ```
 
-This produces the segments table at the top of the view + the
+This produces the households table at the top of the view + the
 "category mix" stacked rows below it.
 
 ## Key features
@@ -131,13 +128,12 @@ returns rows, Python folds them. For 14k orders this is fast
 enough; at 14M orders you'd want a real OLAP store next to Aito,
 not this view.
 
-### 3. Per-segment category mix surfaces predictive context
+### 3. Per-household category mix surfaces predictive context
 
 The category-mix block at the bottom is the data Aito uses to
 make For You / Smart Search recommendations work. Looking at
-"Dog owners: 38% dry-food, 22% dental-treats, 16% treats, 11%
-accessories, 7% wet-food, 5% toys" tells you *why* For You for
-Saara puts dry-food at the top: that segment buys it most.
+a dog household's mix tells you *why* For You for Saara leans to dog
+products: that is what dog households buy.
 
 The view doesn't draw that link explicitly — it's implicit. A
 reviewer wanting "why does Aito recommend X" can read it off the
@@ -150,13 +146,14 @@ via `customer_id` and `order_id`:
 
 ```json
 {
-  "customers":   { "columns": { "customer_id", "segment", "pet_size", ... } },
+  "customers":   { "columns": { "customer_id", "pets", "dog_size", ... } },
   "orders":      { "columns": { "order_id", "customer_id", "month", "total_eur", ... } },
   "order_lines": { "columns": { "order_id", "product_sku", ... } }
 }
 ```
 
-`customers.segment` is the link to the segment cards. `orders.month`
+`customers.pets` (declared, whitespace Text) keys the household
+groups. `orders.month`
 is `"YYYY-MM"` (lexicographically sortable) so the time-axis
 sort is trivial. `order_lines.product_sku` joins out to
 `products` for the SKU names in the top-10 list.
@@ -175,10 +172,10 @@ sort is trivial. `order_lines.product_sku` joins out to
 - **No date arithmetic**. Aito stores `month` as `"YYYY-MM"`;
   we sort lexicographically. Day-level breakdowns would require
   a `day` column (we don't have one).
-- **The category-mix row doesn't normalize across segments**.
-  Each segment's row sums to 100% of *its own* lines. That's
-  the right shape for "what does this segment buy"; it's the
-  wrong shape for "which segment dominates this category".
+- **The category-mix row doesn't normalize across households**.
+  Each group's row sums to 100% of *its own* lines. That's
+  the right shape for "what does this group buy"; it's the
+  wrong shape for "which group dominates this category".
   Pattern Explorer handles the latter (with lift, not share).
 
 ## What this demo abstracts away
@@ -186,7 +183,7 @@ sort is trivial. `order_lines.product_sku` joins out to
 - **Time-range pickers**. The view is fixed to the full 24-month
   window. Production would slice arbitrary ranges.
 - **Drill-down from any cell**. Clicking a month bar or a
-  segment row doesn't open a filtered list. Same constraint as
+  household row doesn't open a filtered list. Same constraint as
   the Dashboard — Pattern Explorer is the only drill-down
   surface in the demo.
 - **Real OLAP**. For 100k+ orders you want a columnar store

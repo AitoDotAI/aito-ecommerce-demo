@@ -18,29 +18,28 @@ product for anyone you send it to.
 ### Who buys it — `_relate` over the product's order lines
 
 ```python
-# src/product_insights_service.py — _buyer_rows()
-client.relate(
-    table="order_lines",
-    where={"product_sku": sku},
-    relate_field="customer_segment",
-    limit=10,
-)
+# src/product_insights_service.py — buyers_relate_body()
+{"from": "order_lines", "where": {"product_sku": sku}, "relate": "order_id.customer_id.pets"}
 ```
 
-One call per customer column that is denormalised onto `order_lines`
-(segment, pet size, lifestyle, health focus, treat affinity, brand
-loyalty), fired in parallel. With the product as the condition, each
-hit's `lift` is how much more common that profile is among this
-product's order lines than among all order lines. Its `fs` carries the
-counts: `fOnCondition` is the product's lines with that profile, and
-`fCondition` is all of the product's lines.
+One call per buyer field, fired in parallel: what the household
+declared and where it lives (ADR 0033), reached through two links from
+the order line (`order_lines → orders → customers`):
+`order_id.customer_id.pets`, `.dog_size`, `.diet` and `.region`. With
+the product as the condition, each hit's `lift` is how much more common
+that value is among this product's order lines than among all order
+lines. Its `fs` carries the counts: `fOnCondition` is the product's
+lines with that value, and `fCondition` is all of the product's lines.
 
-For Puppy Cheese Treats (SKU-PT-0177) on master:
+`pets` is whitespace Text ("dog cat"), so its hits are one per pet
+type; a dog-and-cat household counts toward both.
+
+For Puppy Cheese Treats (SKU-PT-0177) on master, before ADR 0033 (the
+buyer field was then the generator's segment):
 
 ```
-segment = dog_owner    1.42×   99 of 117 lines
-segment = multi_pet    0.97×   17 of 117 lines
-segment = cat_owner    0.52×    1 of 117 lines
+dog owners    1.42×   99 of 117 lines
+cat owners    0.52×    1 of 117 lines
 ```
 
 The cat-owner row shows why the counts are on screen. One line out of 117
@@ -53,6 +52,7 @@ it for a finding. Lifts within ±0.15 of 1 are drawn in the neutral colour.
 ```python
 # src/product_insights_service.py — _count_queries()
 {"from": "impressions", "where": {"product_sku": sku, "purchased": True}, "limit": 0}
+{"from": "impressions", "where": {"product_sku": sku, "context.surface": "search"}, "limit": 0}
 ```
 
 The view needs about 20 counts:
@@ -76,8 +76,8 @@ months in between with 0, and the chart's caption says so.
 
 | Panel | Table | Columns |
 |---|---|---|
-| Funnel, surfaces | `impressions` | `product_sku`, `surface`, `clicked`, `added_to_cart`, `purchased` |
-| Who buys it | `order_lines` | `product_sku`, `customer_*` (denormalised profile) |
+| Funnel, surfaces | `impressions` | `product_sku`, `context.surface`, `clicked`, `added_to_cart`, `purchased` |
+| Who buys it | `order_lines` → `orders` → `customers` | `product_sku`, `order_id.customer_id.pets`, `dog_size`, `diet`, `region` (declared or recorded) |
 | Units per month | `monthly_sales` | `product_sku`, `month`, `units_sold` |
 | Reviews | `reviews` | `product_sku`, `rating`, `sentiment` |
 
@@ -87,9 +87,8 @@ months in between with 0, and the chart's caption says so.
   cart" means 90 of 112 carts became purchases. There is no "CTR" tile,
   because the number usually given that name (purchases per impression)
   isn't one.
-- **No search-terms panel.** On this data every search query is a single
-  category word ("treats", "food"), so relating `search_query` says
-  nothing about the product.
+- **No search-terms panel.** Search words are related across the shop
+  in Shop analytics, not per product.
 - **"Bought with it" links out.** A link-traversal `_relate` doesn't
   condition per anchor (see the cheatsheet). The category-level answer is
   Bought Together, which the page links to when the product's category is

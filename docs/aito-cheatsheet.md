@@ -25,6 +25,10 @@ patterns below remain the same regardless.
 | _(schema bring-up)_ | `POST /data/<table>/batch` | Append-only. The loader uses batches of 1 000. |
 
 Per-view sections are added with each view in TASK.md's build order.
+The current schema holds only what a shop observes (ADR 0033): older
+sections that show `customer_*` trait columns are dated history; start
+from "Recommendation by conversion KPI" and "Only what a shop observes"
+for the shapes the views send today.
 
 ---
 
@@ -197,7 +201,7 @@ POST /_search
 POST /_search
 { "from": "impressions",
   "get": "product_sku",
-  "where": { "customer_segment": "cat_owner" },
+  "where": { "context.customer": "CUST-00001" },
   "orderBy": { "$multiply": [
     { "$p": { "$context": { "purchased": true } } },
     { "$similarity": { "name": "food" }, "theta": 4.0 } ] },
@@ -208,7 +212,10 @@ POST /_search
   `$p` read the `from` table (impressions). Every product is a
   candidate: `total` is the catalogue size.
 - `where` conditions `$p`: the same query flips from cat to dog products
-  between segments. `./do aito-check` pins it.
+  between customers (`context.customer` is two links from `impressions`,
+  ADR 0033). `./do aito-check` pins it. A `where` on the linked table's
+  fields does **not** filter what `get` returns (see "Why a product, and
+  search, in the Shop" below).
 - **The θ on `$similarity` sets how much the words count against the
   prediction.** At the default 0.33 the prediction drowned the text (a
   cat owner's "dog food" returned cat food). Measure it on a judged set;
@@ -223,6 +230,15 @@ POST /_search
 
 **Verified live, 2026-05-11**, against
 `shared.aito.ai/db/aito-ecommerce-demo`.
+
+> **History (ADR 0033).** The `customer_*` columns below were copies of
+> the data generator's hidden traits on `order_lines` and `impressions`.
+> ADR 0033 removed them: tables hold only what a shop observes, and a
+> query reaches the customer through two links (`context.customer.*`,
+> `order_id.customer_id.*`; see "Only what a shop observes" below). No
+> view sends these shapes now; they are kept for the `goal` and
+> `basedOn` gotchas, which still hold.
+
 
 ```json
 POST /api/v1/_recommend
@@ -253,11 +269,11 @@ their conditional probability under the segment is high.
   `returned` is uniform at ~3 % across all products, so the resulting
   ranking is essentially baseline. Use a goal that *uses* the
   customer context (`customer_segment`, `customer_pet_size`).
-- **Single-hop link traversal only.** From `order_lines`, Aito reaches
-  `order_id.<orders col>` and `product_sku.<products col>` — but
-  `order_id.customer_id.<customers col>` returns 400. The fix is
-  schema-level: denormalise the cross-table attribute down to the
-  line ( `customer_segment` / `customer_pet_size` on `order_lines`).
+- **Single-hop link traversal only (v1, 2026-05).** From `order_lines`,
+  Aito reached `order_id.<orders col>` and `product_sku.<products col>`,
+  but `order_id.customer_id.<customers col>` returned 400, so the
+  attribute was denormalised onto the line. **On v2 two links work**
+  (see "Only what a shop observes" below); the copies are gone.
 - **Per-customer (`order_id.customer_id`) conditioning under-fits**
   with our 3 000-customer dataset — single-row priors are too thin.
   Segment-level conditioning gets the visible flip.
@@ -295,8 +311,11 @@ multi-pet+small cat-heavy pool.
 ### Hard candidate filter vs. context — Smart Search's shape until ADR 0026
 
 Superseded: Smart Search now ranks with `$multiply` and no filter (see
-"Ranking by text, and by text × prediction" above). This shape is kept
-because the filter/context split still applies to `_recommend` elsewhere.
+"Ranking by text, and by text × prediction" above), and ADR 0033 removed
+`customer_segment` and moved `search_query` to `contexts`. This shape is
+kept because the filter/context split still applies to `_recommend`
+elsewhere: the Shop's grid filters on `product_sku.pet_type` and
+conditions on `context.*`.
 
 The Smart Search path of ADR 0021 recommended over `impressions`
 with `goal: {purchased: true}`, and separates two roles the query text
@@ -434,13 +453,9 @@ to re-check:
 # moving the ranking.
 ```
 
-The fixture also engineers segment ↔ brand and segment ↔ dietary
-correlations within pet_type (see `BRAND_AFFINITY_BY_SEGMENT` /
-`DIETARY_AFFINITY_BY_SEGMENT` in `data/generate_fixtures.py`).
-That's there so when a thin-slice query *does* lean on priors, the
-priors point in a sensible direction (premium brands for `dog_owner`,
-mass brands for `multi_pet`). On the thick personas the priors are
-still redundant, but the engineering doesn't hurt anything.
+(The fixture's `BRAND_AFFINITY_BY_SEGMENT` / `DIETARY_AFFINITY_BY_SEGMENT`
+tables, mentioned here before, were never used and ADR 0032 deleted
+them.)
 
 ### Two query-shape gotchas around `_evaluate basedOn`
 
@@ -538,8 +553,8 @@ POST /_relate
 | `product_sku.rating_band` (through the link) | String on `products` | `{"product_sku.rating_band": {"$has": "1-2"}}` | 0.789×, `fOnCondition` 923 of `fCondition` 12,135; `f` 11,525 of `n` 115,690 |
 | `product_category` (denormalised copy) | String | `{"product_category": {"$has": "dry-food"}}` | identical hits and counts to `product_sku.category` |
 | `just_bought` | Boolean | `{"just_bought": {"$has": true}}`, and a second hit for `false` | 0.483× on 40 of 12,135 |
-| `customer_diet_rule` | nullable String | one hit per non-null value; no hit for null | 4 hits (grain-free, sensitive, senior, puppy) |
-| `search_query` | Text, whitespace | `{"search_query": {"$has": "food"}}`, one hit per word | 99 words on search impressions |
+| `customer_diet_rule` (removed by ADR 0033; now `context.customer.diet`) | nullable String | one hit per non-null value; no hit for null | 4 hits (grain-free, sensitive, senior, puppy) |
+| `search_query` (now `context.search_query`) | Text, whitespace | `{"search_query": {"$has": "food"}}`, one hit per word | 99 words on search impressions |
 
 So the link form works on v2, and on every column type the hit reads as
 `related.<field>.$has` once `normalize_response` has wrapped the bare
@@ -624,6 +639,17 @@ Relating the customer column gives both:
 {"from": "impressions", "where": {"purchased": true},
  "relate": ["customer_id"], "limit": 10000}
 ```
+
+Since ADR 0033 impressions reach the customer through the context, and
+`src/design_effect.py` relates `context.customer` (and
+`order_id.customer_id` on `order_lines`, `customer_id` on `orders`):
+
+```json
+{"from": "impressions", "where": {"purchased": true},
+ "relate": "context.customer", "limit": 10000}
+```
+
+The observations below were measured on the one-link form (2026-10-13).
 
 | observation | value |
 |:--|:--|
@@ -724,8 +750,8 @@ shape needs a reverse-link from `orders` back into
 
 Denormalising the aggregate (a Text field on `orders` listing
 all its lines' tokens) keeps the `_relate` simple and the data
-small. Same trick used elsewhere: ADR 0006 for
-`customer_segment` / `customer_pet_size`.
+small. (ADR 0006 once copied customer traits onto `order_lines` the
+same way; ADR 0033 removed those copies.)
 
 ### Hyphen gotcha
 
@@ -905,7 +931,7 @@ list of `<field>.<stat>` keywords.
 
 ```json
 {
-  "from": "price_history",
+  "from": "product_states",
   "where": {"product_sku": "SKU-PT-0001"},
   "aggregate": [
     "price_eur.$mean",
@@ -950,15 +976,19 @@ There is **no** bare `mean` key. `$mean.samples` doubles as a free row
 count for the filtered set.
 
 **Aggregate on the table that owns the column — a link filter is a
-per-row join.** `_aggregate` accepts single-hop link paths in `where`
-(`{from: orders, where: {customer_id.segment: "dog_owner"},
-aggregate: ["total_eur.$mean"]}` works), but Aito joins `orders →
-customers` for every row: **~2.9 s** server-side here. When the same
-answer can be read off a table that carries the column natively, do
-that instead. The dashboard's per-segment average basket is
-`mean(total_spent_eur) / mean(total_orders)` aggregated on `customers`
-(which has `segment` directly) — algebraically identical (`Σspend /
-Σorders`), **~20 ms** vs 2.9 s. See ADR 0024.
+per-row join.** `_aggregate` accepts single-hop link paths in `where`,
+but Aito joins `orders → customers` for every row: **~2.9 s**
+server-side (measured for ADR 0024 on a customer field through
+`customer_id`). When the same answer can be read off a table that
+carries the column natively, do that instead. The dashboard's average
+basket per household is `mean(total_spent_eur) / mean(total_orders)`
+aggregated on `customers`, which holds the declared `pets` directly —
+algebraically identical (`Σspend / Σorders`), **~20 ms** vs 2.9 s:
+
+```json
+{"from": "customers", "where": {"pets": "dog"},
+ "aggregate": ["total_spent_eur.$mean", "total_orders.$mean"]}
+```
 
 ---
 
@@ -973,11 +1003,12 @@ Collapse them:
 ```json
 POST /_batch
 [
-  {"from": "customers", "where": {"segment": "dog_owner"}, "limit": 0},
-  {"from": "customers", "where": {"segment": "cat_owner"}, "limit": 0}
+  {"from": "customers", "where": {"pets": "dog"}, "limit": 0},
+  {"from": "customers", "where": {"pets": "cat"}, "limit": 0}
 ]
-// → [{"total": 1263}, {"total": 894}]   (search items return full
-//    {offset, total, hits}; count items via limit:0 carry total)
+// → one result per item, in order: {offset, total, hits}; a
+//    limit:0 count reads `total`. (`pets` is Text: a bare value
+//    compares the whole value, so "dog" counts dog-only households.)
 ```
 
 **Gotcha — batch items are the unified query grammar, not endpoint
@@ -993,93 +1024,99 @@ batch the plain reads (`_search`, `_relate`, `_predict`, …).
 to replace *sequential* round-trips (an N+1 loop), not an existing
 parallel fan-out.
 
-This killed the dashboard's two N+1 loops (per-segment counts;
+This killed the dashboard's two N+1 loops (per-household counts;
 per-recent-order line lookups). See ADR 0024.
 
 ---
 
 ## Recommendation by conversion KPI — `_recommend` over `impressions`
 
-**Verified live, 2026-06-23.** The recommendation backbone (Smart
-Search, For You). See ADR 0021.
+**Verified live, 2026-06-23**; the current shapes below since ADR 0033
+(env `observable`, Aito 2.11.8). The recommendation backbone (For You,
+the Shop). See ADR 0021.
 
-The `impressions` table records one product shown to a customer in a
-browsing context, with the funnel outcome (`clicked` → `added_to_cart`
-→ `purchased`). That gives `_recommend` a real conversion KPI to rank
-on, instead of the segment-affinity proxy the views used before:
+The `impressions` table records one product shown in a `context` (a
+visit: customer, month, surface, basket, search query), with the funnel
+outcome (`clicked` → `added_to_cart` → `purchased`). That gives
+`_recommend` a real conversion KPI to rank on:
 
 ```json
-POST /api/v1/_recommend
+POST /_recommend
 {
   "from": "impressions",
-  "where": {
-    "search_query": { "$match": "food" },
-    "customer_segment": "cat_owner"
-  },
+  "where": { "context.customer": "CUST-00001" },
   "recommend": "product_sku",
   "goal":      { "purchased": true },
-  "basedOn":   ["pet_type", "brand", "dietary", "category"],
-  "limit":     10
+  "limit":     12
 }
 ```
 
-Ranks products by **P(purchased = true | this customer searched this
-query)**. The persona signal lives in `where` (context to condition
-on), the KPI in `goal`. Live top-3 (pet × category × $p):
+Ranks products by **P(purchased = true | shown to this customer)**: For
+You (`src/recommend_service.py`). The customer goes in `where` (two
+links: `impressions → contexts → customers`), the KPI in `goal`. Aito
+learns the customer from their own rows; `./do aito-check` asserts that
+Maija's top three are cat products and Saara's dog products.
 
-| Persona | Query | Top-3 | Note |
-|---|---|---|---|
-| Maija (cat_owner) | food | cat × wet-food × 3, p ≈ 0.61 | flips to cat |
-| Saara (dog_owner + large) | food | dog × wet/dry-food × 3, p ≈ 0.46 | flips to dog |
+The Shop's "Picked for you" (`src/shop_context.py`) conditions on what
+the household declared and the visit instead of the id:
 
-**For You** drops the `search_query` constraint and conditions on the
-persona profile alone (`where: {customer_segment, [customer_pet_size]}`),
-same `goal: {purchased: true}`.
+```json
+"where": { "context.customer.pets": { "$and": [{ "$match": "small_animal" }] },
+           "context.month": "2026-04",
+           "context.basket_categories": { "$and": [{ "$match": "small_animal_accessories" },
+                                                   { "$match": "small_animal_cage" }] },
+           "just_bought": false,
+           "product_sku": { "$not": { "$or": ["SKU-PT-0555"] } },
+           "product_sku.pet_type": { "$or": ["small_animal"] } }
+```
+
+The `product_sku.*` keys filter the candidates; the `context.*` keys and
+`just_bought` condition.
 
 ### Goal flip — engagement vs conversion
 
 Swapping the goal field re-ranks by a different funnel stage. On
-`where: {customer_segment: "cat_owner"}`:
-
-- `goal: {purchased: true}` → cat treats + wet-food mix
-- `goal: {clicked: true}`   → cat treats dominate (attention-bait:
-  cheap / fun categories over-click but convert less)
-
-The two rankings are **not** identical — that divergence is its own
-demo beat (rank for revenue, not clicks).
+`where: {"context.customer": "CUST-00001"}`, `goal: {purchased: true}`
+and `goal: {clicked: true}` return different top 10s
+(`test_recommend_clicks_and_purchases_goals_differ`). On 2026-06-23
+(then with the segment as context) the click goal favoured treats:
+cheap, fun categories over-click but convert less. That divergence is
+its own demo beat (rank for revenue, not clicks).
 
 ### Calibrated rate — `_predict` the funnel field
 
 `_recommend`'s `$p` is normalised against goal-positives; for the
-absolute funnel rate use `_predict`:
+absolute funnel rate use `_predict`. The Shop re-asks a product from the
+shopper's last order this way, with the grid's context plus the product
+and `just_bought: true` (`src/shop_ranking.py`, in one `_batch`):
 
 ```json
-POST /api/v1/_predict
 {
   "from": "impressions",
-  "where": { "customer_segment": "cat_owner",
-             "product_pet_type": "cat", "product_category": "wet-food" },
+  "where": { "context.customer.pets": { "$and": [{ "$match": "small_animal" }] },
+             "context.month": "2026-04",
+             "product_sku": "SKU-PT-0534",
+             "just_bought": true },
   "predict": "purchased"
 }
 ```
 
-Returns both classes — `false ≈ 0.784`, `true ≈ 0.216` — summing to 1.
+Returns both classes, summing to 1; read the `true` hit's `$p`.
 
 ### Gotchas
 
-- **`where` conditions, it does not restrict the candidate set.** A
-  `where: {search_query: {$match: "food"}}` makes "the customer searched
-  food" the *context*; `_recommend` still ranks the whole `product_sku`
-  domain, surfacing cold candidates (SKUs with no food-search rows) via
-  the `basedOn` priors. Counting impressions with that filter returns a
-  different set than the recommend candidates — by design.
-- **`search_query` is `Text`, nullable.** Token-match with
-  `{"$match": "food"}`; it's absent (null) on non-search surfaces.
+- **`where` conditions, it does not restrict the candidate set** —
+  unless the key is on the candidate's own fields (`product_sku.*`,
+  or `product_sku` itself). `context.search_query: {$match: "food"}`
+  makes "the customer searched food" the *context*; `_recommend` still
+  ranks the whole `product_sku` domain.
+- **`search_query` is `Text`, nullable, on `contexts`.** Token-match
+  with `{"context.search_query": {"$match": "food"}}`; it's null on
+  non-search surfaces.
 - **`position` is descriptive only** — never put it in `basedOn`, or
   Aito learns "position predicts click" over content.
 - **Funnel monotonicity** (`purchased ⇒ added_to_cart ⇒ clicked`) is a
-  generation invariant, asserted in `./do aito-check`. Live counts:
-  clicked 25 375 → cart 16 254 → purchased 10 761 (of 125 935 rows).
+  generation invariant, asserted in `./do aito-check`.
 
 ---
 
@@ -1128,7 +1165,10 @@ traversal for a SKU-token bag (`orders.line_skus`, a future field).
 
 ## The Shop's query shapes (ADR 0031), probed on 2.11.4
 
-Each was run on the test env `shoppers` (2026-10-13) before a view used it.
+Each was run on the test env `shoppers` (2026-10-13) before a view used it,
+on the data before ADR 0033 (`product_category` and the `customer_*`
+traits were then columns on `impressions`). The current Shop queries are
+in "Only what a shop observes" below.
 
 - **A filter on the candidates of `_recommend`** goes on the linked
   table's fields: `"product_sku.category": "dry-food"` filters;
@@ -1157,8 +1197,10 @@ Each was run on the test env `shoppers` (2026-10-13) before a view used it.
   (no `basedOn`), the factor `{"type": "hitPropositionLift",
   "proposition": {"product_sku": {"$has": SKU}}}` carries nested
   `relatedPropositionLift`s: how much each part of the `where` lifts
-  *this* product (`customer_treat_affinity: high` ×1.49, `month` ×1.32,
-  the cart's `basket_*` propositions ×2.4). The other `hitPropositionLift`s
+  *this* product (then `customer_treat_affinity: high` ×1.49, `month`
+  ×1.32, the cart's `basket_*` propositions ×2.4; since ADR 0033 the
+  keys are `context.month`, `context.customer.pets`,
+  `context.basket_categories`). The other `hitPropositionLift`s
   are `$not` other products and aren't this product's reasons. A product
   with few impressions of its own has no such factor, only
   `hitLinkPropositionLift` (its features' prior). `src/shop_reasons.py`.
@@ -1174,6 +1216,62 @@ Each was run on the test env `shoppers` (2026-10-13) before a view used it.
   (`{"$or": [SKUs]}`) does narrow it. An empty `$or` matches everything.
   The Shop's search ranks name matches through `_recommend` instead,
   which does apply the filter (`src/shop_search.py`).
+
+## Only what a shop observes (ADR 0033), probed on 2.11.8
+
+Probed 2026-10-20 and 2026-10-21 on the test env `observable`
+(`shared.aito.ai`, Aito 2.11.8), unless a line says otherwise. Sources:
+`docs/verification/observable-data-prereg.md`,
+`docs/notes/aito-core-findings-2026-10-18.md` and ADR 0033's amendments.
+
+- **Two-link `where` and field-form `_relate` work on v2.** A `where` on
+  `product_state.product_sku.category` (and the diet rule's `$or` through
+  two links) filters `_recommend` candidates, and `_relate` over
+  `product_state.product_sku.category` answers with sane counts
+  (env `states`, 2.11.4, 2026-10-18). On `observable` the Shop's sweep
+  conditioned `_recommend` on `context.customer.pets` and
+  `context.customer` through two links (variants G, K, L). The views
+  relate `context.customer.pets` / `.diet` (Shop analytics) and
+  `order_id.customer_id.pets` / `.dog_size` / `.diet` / `.region`
+  (Product Insights) the same way.
+- **`$match` on a Text set means "contains", and carries no absence.**
+  `"context.owned": {"$and": [{"$match": "small_animal_cage"},
+  {"$match": "small_animal_water_bottle"}]}` also matches households that
+  own a hideout too, so a hideout's lift for "owns cage and bottle" was
+  diluted to ×1.6. `_recommend` doesn't infer "lacks a hideout" from it.
+  State an absence explicitly: `{"$not": {"$match": "small_animal_hideout"}}`
+  (in the probe, the wheel moved #9 → #3, the hideout #24 → #10;
+  `scripts/kit_absence_probe.py`). A whole value (`{"pets": "dog"}`)
+  filters as "exactly this value" in `_search` (the dashboard counts
+  dog-only households so), but conditions like its tokens in
+  `_recommend`. Widening absence evidence is Aito core
+  td-20261020203235895741.
+- **`_search … get` conditions `$p` but doesn't filter on the linked
+  table's fields.** See "Why a product, and search, in the Shop" above
+  (probed 2026-10-17 on master). The Shop's search filters through
+  `_recommend` instead.
+- **`basedOn` improves thin-data ranking but inflates `$p` toward 1.**
+  On the held-out sweep, `basedOn: ["pet_type"]` ranked better than the
+  same query without it (hit@12 +0.017 [+0.010, +0.025], n = 1,900) but
+  had the worst calibration (Brier 0.203 against 0.196;
+  td-20261020211932494271). Rank with it only if you re-query `$p`
+  without it for anything you show as a probability.
+- **An exact cart SKU next to other context can veto a candidate on
+  near-zero evidence.** The cart's SKUs next to the owned kit made a
+  joint condition no row matches, and the kit's lift disappeared
+  (td-20261020210945109481). The Shop states the cart as category words
+  (`context.basket_categories`, e.g. `small_animal_cage`) and uses the
+  SKUs only to exclude the cart's own items:
+  `"product_sku": {"$not": {"$or": [cart SKUs]}}`.
+- **Evaluating query variants needs more sessions than you think.** On
+  this data, hit@12 differences between variants did not resolve at
+  n = 150 held-out sessions: three of three "wins" dissolved on the full
+  pool and one tie became a win. About 1,400 or more sessions were
+  needed. The Brier score of `$p` resolves at small n (n = 400 here; each
+  session averages about 9 squared errors). The harness, with each
+  session left out of its own query
+  (`from: {from: impressions, where: {"$not": {"context": session}}}`),
+  is `scripts/shop_query_sweep.py`.
 
 ## `AitoClient` method ↔ endpoint cheat reference
 

@@ -1,6 +1,6 @@
 # ADR 0032: Product states — recommend a product as it is this month
 
-**Status:** Proposed (2026-10-17)
+**Status:** Accepted (2026-10-21)
 **Date:** 2026-10-17
 **Deciders:** Antti
 

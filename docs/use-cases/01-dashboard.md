@@ -1,11 +1,11 @@
-# Dashboard — KPIs, patterns, segments, live insight
+# Dashboard — KPIs, patterns, households, live insight
 
 ![Dashboard](../../screenshots/01-dashboard.png)
 
 *Four blocks driven by live Aito calls: KPI grid (`_search limit=0`
 counts), top purchase patterns (`_relate` × 6 in parallel over the
-denormalised `orders.line_categories` Text column), segment cards
-(`_search` per segment), and the demo's headline insight quoted
+denormalised `orders.line_categories` Text column), household cards
+(counts by declared pets in one `_batch`), and the demo's headline insight quoted
 from the strongest co-purchase pair.*
 
 ## Overview
@@ -110,14 +110,26 @@ anchor = next(
 )
 ```
 
-### Segment cards — `_search where {segment} limit=0`
+### Household cards — counts in one `_batch`, averages by `_aggregate`
 
-Five segments (dog / cat / multi-pet / small animal / aquarium),
-each rendered with `{count, share %, avg basket, descriptor}`.
-Count comes from a `_search limit=0` per segment; avg basket
-comes from a small customer sample + their orders. Five segments
-× ~2 calls each = ~10 round-trips, cached at the dashboard level
-for 10 minutes.
+Five household groups, keyed by the pets each household declared
+(`customers.pets`: dog / cat / dog and cat / small animal / aquarium),
+each rendered with `{count, share %, avg basket, descriptor}`
+(`src/overview_service.py` — `_segment_cards()`):
+
+```python
+# All five counts in one round-trip
+client.batch([{"from": "customers", "where": {"pets": "dog"}, "limit": 0}, ...])
+# Avg basket per group, on the table that holds the column
+client.aggregate(table="customers", where={"pets": "dog"},
+                 aggregate_fields=["total_spent_eur.$mean", "total_orders.$mean"])
+```
+
+`pets` is a whitespace Text column, and in `_search` a bare value
+compares the whole value: `{"pets": "dog"}` counts dog-only
+households, and `{"pets": "dog cat"}` the dog-and-cat ones. (`$match`
+would mean "contains", so a dog-and-cat household would count as both.)
+Cached at the dashboard level for 10 minutes.
 
 ## Key features
 
@@ -198,12 +210,10 @@ unlocks).
   document this in the bar's hover tooltip rather than auto-
   scaling, because auto-scale would shrink the dog → dental bar
   to a sliver and break the narrative emphasis.
-- **Segment counts are computed per-segment, not via `_relate`**.
-  `_relate from customers relate segment` would return the same
-  numbers, but the cards' `{count, share %, avg basket, ...}`
-  shape doesn't map cleanly to `_relate`'s row format. Five
-  parallel `_search` calls beat one parsing-heavy `_relate`
-  response.
+- **Household counts are counted per group, not via `_relate`**.
+  `pets` is Text, so `_relate` would answer per pet token (a
+  dog-and-cat household counts toward both), not per household
+  group. Five counts in one `_batch` give the groups directly.
 
 ## What this demo abstracts away
 
