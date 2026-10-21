@@ -184,8 +184,9 @@ handed over, and the probes decide whether it is good enough.
 the customer's identity, the month, the cart, the owned kit and what it
 lacks. Each piece works alone; together they degrade:
 - the cart's SKU next to the owned kit erases the kit's lift;
-- identity plus rich context calibrates worse than either alone, on 150
-  held-out sessions (`observable-data-prereg.md`, R1/R2 sweep);
+- identity plus rich context seemed to calibrate worse, on 150 held-out
+  sessions (`observable-data-prereg.md`, R1/R2 sweep; see the result
+  below: at the full pool, identity helps alone and is a tie in combination);
 - Antti saw the same in the grocery demo, where the basket went unused.
 
 His reading: shopping intent is a mixture (this visit is mostly a routine
@@ -199,11 +200,34 @@ each one well-conditioned query:
 |---|---|---|
 | Buy again | routine | `_predict "skus.$feature"` over the shopper's own orders (the "usual basket", ADR 0031) |
 | Next for their kit | kit | `_predict product_sku` on order lines whose order owned what they own (ADR 0031) |
-| Picked for you | everything else | `_recommend` on impressions with `context.customer.pets` (declared), `context.month` and the cart as words; the diet rule as a filter; the just-bought re-ask |
+| Picked for you | everything else | `_recommend` on impressions with `context.customer.pets` (declared), `context.month` and the cart as words; the declared pets and the diet rule as filters; the just-bought re-ask |
 
 The grid drops the identity and the kit conditions: the kit has its own
-view, and identity worsened calibration. Search and a product's
-alternatives use the same simplified query. Blending the views into one
+view, and the routine has "Buy again". Search and a product's alternatives
+use the same query without the declared-pets filter (a cat owner may look
+for a dog gift); there, "Fits your pets" shows only on the household's own
+pets' products. Both views read the cart: a kit item in it counts as owned,
+and nothing in it is suggested again.
+
+**Result (R1/R2, full pool, paired on sessions).** The grid's query is the
+best of the eleven measured on both hit@12 and Brier. Its gain over the
+earlier grid is the declared-pets filter (+0.024 hit@12); stating the pets
+as evidence alone is a tie. Adding identity back is a tie on hit@12 and
+worse on Brier, so it stays out.
+
+**Acceptance criteria, as amended** (replacing the second and fourth above,
+which assumed the grid carries identity and the kit):
+
+- The Shop shows three views: "Buy again" from the shopper's own orders,
+  "Next for their kit", and "Picked for you". No grid query holds a
+  customer id or `context.owned`.
+- "Picked for you" shows only products for the household's declared pets
+  and, for a household with a diet rule, only food that keeps it.
+- A user can be Päivi (owns a cage and a bottle) and see the hideout first
+  in "Next for their kit"; adding the hideout to the cart brings the wheel
+  up there.
+- Households declaring the same pets get the same "Picked for you" in a
+  month with an empty cart; what sets them apart is "Buy again". Blending the views into one
 list, with Aito predicting the intent weights from history, is a later
 experiment.
 
