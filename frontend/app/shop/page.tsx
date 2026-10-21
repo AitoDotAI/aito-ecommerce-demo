@@ -175,27 +175,35 @@ function ShopView() {
               </div>
             </div>
           ) : (
-          <div className="shop-grid" style={{ opacity: stale ? 0.5 : 1 }} aria-busy={!shown || stale}>
-            {!shown && Array.from({ length: 8 }, (_, i) => (
-              <div key={i} className="card" style={{ height: 170, background: "var(--border-light)" }} />
-            ))}
-            {shown?.items.map((item) => (
-              <ProductCard key={item.sku} item={item}
-                           onAdd={() => addToCart([item.sku])}
-                           onOpen={() => setUrl({ product: item.sku })} />
-            ))}
+          <div style={{ minWidth: 0 }}>
+            {/* One view per intent (ADR 0033, amendment of 2026-10-21): the routine
+                and the kit first, then everything else in "Picked for you". */}
+            {suggestionsError && (
+              <div className="card card-sub" style={{ color: "var(--red)" }}>
+                Couldn&apos;t load their usual basket and kit: {suggestionsError}
+              </div>
+            )}
+            {suggestions && <SuggestionsPanel suggestions={suggestions} month={monthLabel(month)}
+                                              onAdd={(sku) => addToCart([sku])} onAddAll={addToCart} />}
+            <div className="page-title" style={{ fontSize: 16, margin: "16px 0 4px" }}>Picked for you</div>
+            <div className="card-sub" style={{ marginBottom: 8 }}>
+              Ranked by Aito for a household with these pets, this month and this cart
+            </div>
+            <div className="shop-grid" style={{ opacity: stale ? 0.5 : 1 }} aria-busy={!shown || stale}>
+              {!shown && Array.from({ length: 8 }, (_, i) => (
+                <div key={i} className="card" style={{ height: 170, background: "var(--border-light)" }} />
+              ))}
+              {shown?.items.map((item) => (
+                <ProductCard key={item.sku} item={item}
+                             onAdd={() => addToCart([item.sku])}
+                             onOpen={() => setUrl({ product: item.sku })} />
+              ))}
+            </div>
           </div>
           )}
           <div className="shop-side">
             <CartPanel cart={shown?.cart ?? []} onRemove={(sku) => setCart(cart.filter((s) => s !== sku))}
                        onClear={() => setCart([])} />
-            {suggestionsError && (
-              <div className="card card-sub" style={{ color: "var(--red)" }}>
-                Couldn&apos;t load their suggestions: {suggestionsError}
-              </div>
-            )}
-            {suggestions && <SuggestionsPanel suggestions={suggestions} month={monthLabel(month)}
-                                              onAdd={(sku) => addToCart([sku])} onAddAll={addToCart} />}
           </div>
         </div>
       )}

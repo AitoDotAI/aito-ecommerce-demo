@@ -73,3 +73,8 @@ def test_a_product_aito_knows_only_by_its_features_has_no_reasons():
 def test_an_unknown_proposition_raises_rather_than_being_dropped():
     with pytest.raises(AitoError, match="Unexpected"):
         reasons_for(why(({"customer_lifestyle": "premium"}, 1.5)), SKU)   # a hidden trait must never appear
+
+
+def test_the_declared_pets_are_a_reason():
+    pets = {"$and": [{"context.customer.pets": {"$match": "small_animal"}}]}
+    assert reasons_for(why((pets, 1.8)), SKU) == [Reason("Fits your pets", 1.8)]

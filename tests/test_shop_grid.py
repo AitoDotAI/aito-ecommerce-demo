@@ -75,3 +75,12 @@ def test_each_item_carries_aitos_reasons_and_the_facts_beside_them():
     assert item.reasons == [Reason("Sells in April", 1.3)]
     # Facts, not reasons: the offer this month, the stars, and the rule kept.
     assert (item.offer_pct, item.avg_rating, item.keeps_rule) == (17.5, 4.2, True)
+
+
+def test_picked_for_you_shows_only_the_declared_pets_products():
+    fake = FakeAito([product("SKU-A", 0.5)])
+
+    get_shop_grid(fake, "janne", "2026-04", [])
+
+    # Janne's household declared a dog: a rule on the candidates, like the diet.
+    assert fake.recommends[0]["product_sku.pet_type"] == {"$or": ["dog"]}

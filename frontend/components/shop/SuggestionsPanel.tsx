@@ -2,8 +2,10 @@
 
 import type { ShopSuggestions } from "@/lib/types";
 
-/** "Fill my usual basket" and "What's next for your pet": both predicted
- *  from this shopper's own history (src/shop_suggestions.py). */
+/** Two of the Shop's three views, one per intent (ADR 0033, amendment of
+ *  2026-10-21): "Buy again" (the routine) and "Next for their kit" (the
+ *  kit's next step). Both are predicted from this shopper's own orders
+ *  (src/shop_suggestions.py); "Picked for you" is the grid below them. */
 // "Fill my usual basket" adds what they buy at least this often.
 const FILL_AT = 0.15;
 
@@ -14,40 +16,45 @@ export default function SuggestionsPanel({ suggestions, month, onAdd, onAddAll }
   onAddAll: (skus: string[]) => void;
 }) {
   if (suggestions.no_history) {
-    return <div className="card card-sub">No orders before {month}, so nothing to suggest from their history.</div>;
+    return <div className="card card-sub">No orders before {month}: nothing to buy again or to add to a kit yet.</div>;
   }
   const owned = Object.entries(suggestions.owned)
     .map(([pet, kinds]) => `${pet.replace("_", " ")}: ${kinds.map((k) => k.replace("_", " ")).join(", ")}`);
   return (
-    <div className="card">
-      <div className="page-title" style={{ fontSize: 16, margin: 0 }}>Their usual basket</div>
-      <div className="card-sub" style={{ marginBottom: 6 }}>
-        From their orders before {month}: what they buy again, each with Aito&apos;s probability
-        (`skus.$feature` over those orders)
-      </div>
-      {suggestions.usual.map((s) => (
-        <Row key={s.sku} name={s.name} p={s.p} onAdd={() => onAdd(s.sku)} />
-      ))}
-      {suggestions.usual.length > 0 && (
-        <div style={{ marginTop: 8 }}>
-        <button className="btn"
-                onClick={() => onAddAll(suggestions.usual.filter((s) => s.p >= FILL_AT).map((s) => s.sku))}>
-          Fill my usual basket
-        </button>
-        <span className="card-sub" style={{ marginLeft: 8 }}>adds those at {Math.round(FILL_AT * 100)} % or more</span>
+    <div className="shop-shelves">
+      <div className="card">
+        <div className="page-title" style={{ fontSize: 16, margin: 0 }}>Buy again</div>
+        <div className="card-sub" style={{ marginBottom: 6 }}>
+          Their routine: what they buy again from their orders before {month}, each with Aito&apos;s
+          probability (`skus.$feature` over those orders)
         </div>
-      )}
-
-      <div className="page-title" style={{ fontSize: 16, margin: "16px 0 0" }}>What&apos;s next for their pet</div>
-      <div className="card-sub" style={{ marginBottom: 6 }}>
-        {owned.length ? `Owns ${owned.join("; ")}.` : "No kit bought yet."} Next, from shoppers who owned the same.
+        {suggestions.usual.length === 0 && <div className="card-sub">No routine yet.</div>}
+        {suggestions.usual.map((s) => (
+          <Row key={s.sku} name={s.name} p={s.p} onAdd={() => onAdd(s.sku)} />
+        ))}
+        {suggestions.usual.length > 0 && (
+          <div style={{ marginTop: 8 }}>
+            <button className="btn"
+                    onClick={() => onAddAll(suggestions.usual.filter((s) => s.p >= FILL_AT).map((s) => s.sku))}>
+              Fill my usual basket
+            </button>
+            <span className="card-sub" style={{ marginLeft: 8 }}>adds those at {Math.round(FILL_AT * 100)} % or more</span>
+          </div>
+        )}
       </div>
-      {suggestions.next_for_pet.length === 0 && (
-        <div className="card-sub">Nothing left to add to the kit.</div>
-      )}
-      {suggestions.next_for_pet.map((s) => (
-        <Row key={s.sku} name={s.name} p={s.p} onAdd={() => onAdd(s.sku)} />
-      ))}
+
+      <div className="card">
+        <div className="page-title" style={{ fontSize: 16, margin: 0 }}>Next for their kit</div>
+        <div className="card-sub" style={{ marginBottom: 6 }}>
+          {owned.length ? `Owns ${owned.join("; ")}.` : "No kit bought yet."} Next, from shoppers who owned the same.
+        </div>
+        {suggestions.next_for_pet.length === 0 && (
+          <div className="card-sub">{owned.length ? "Nothing left to add to the kit." : "Nothing to complete."}</div>
+        )}
+        {suggestions.next_for_pet.map((s) => (
+          <Row key={s.sku} name={s.name} p={s.p} onAdd={() => onAdd(s.sku)} />
+        ))}
+      </div>
     </div>
   );
 }

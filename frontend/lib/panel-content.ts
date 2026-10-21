@@ -180,9 +180,11 @@ export function shopPanel(): AitoPanelConfig {
     operation: "Shop",
     endpoints: ["_recommend", "_predict", "_batch", "_relate", "_search"],
     description:
-      `Be a shopper. The grid is one <code style="color:var(--aito-teal);">_recommend</code> ` +
-      `with who they are, the month and the cart as context; a household's diet rule is a ` +
-      `filter, not a prediction. Anything from their last order is re-asked in one ` +
+      `Be a shopper. One view per intent: "Buy again" and "Next for their kit" are ` +
+      `<code style="color:var(--aito-teal);">_predict</code> over orders; "Picked for you" is one ` +
+      `<code style="color:var(--aito-teal);">_recommend</code> with the household's declared pets, ` +
+      `the month and the cart as context. The declared pets and diet are filters, not ` +
+      `predictions. Anything from their last order is re-asked in one ` +
       `<code style="color:var(--aito-teal);">_batch</code> as "just bought", and falls. ` +
       `Each card's reasons are the lifts in its <code style="color:var(--aito-teal);">$why</code>. ` +
       `A search ranks the products its words name the same way. The query below is the one behind what is shown.`,

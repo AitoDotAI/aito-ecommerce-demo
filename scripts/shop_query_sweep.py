@@ -29,7 +29,7 @@ DATA = Path(__file__).resolve().parent.parent / "data"
 PREREGISTERED = ("A shop today", "B no absences", "C cart SKUs+words", "D basedOn pet_type", "E no customer",
                  "F customer+month")
 # Exploratory, added after the pre-registered run (2026-10-20): not part of its decision rule.
-EXPLORATORY = ("G declared pets", "H no customer, no absences")
+EXPLORATORY = ("G declared pets", "H no customer, no absences", "K picked for you")
 VARIANTS = PREREGISTERED + (EXPLORATORY if "--exploratory" in sys.argv else ())
 
 
@@ -58,7 +58,12 @@ def variant_where(name: str, session: dict, diet: str | None, missing: list[str]
     words = (session.get("basket_categories") or "").split()
     skus = (session.get("basket") or "").split()
     where: dict = {"context.customer": session["customer"], "context.month": session["month"], "just_bought": False}
-    if name != "F customer+month":
+    if name == "K picked for you":   # the Shop's grid after the 2026-10-21 amendment
+        where = {"context.customer.pets": {"$and": [{"$match": p} for p in pets.split()]},
+                 "context.month": session["month"], "just_bought": False}
+        if words:
+            where["context.basket_categories"] = {"$and": [{"$match": w} for w in words]}
+    elif name != "F customer+month":
         if words:
             where["context.basket_categories"] = {"$and": [{"$match": w} for w in words]}
         if skus and name == "C cart SKUs+words":

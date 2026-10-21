@@ -19,29 +19,22 @@ def test_a_cart_is_described_with_the_words_impressions_record():
 
 
 def test_the_where_holds_only_what_a_shop_observes():
-    where = shopper_where("CUST-00049", [CAGE], "2025-12", ["small_animal_water_bottle"])
+    where = shopper_where("dog", [CAGE], "2025-12")
 
-    # ADR 0033: who, when, the cart and the kit, all through the context.
-    assert where["context.customer"] == "CUST-00049" and where["context.month"] == "2025-12"
+    # ADR 0033: the declared pets, the month and the cart, all through the context.
+    assert where["context.customer.pets"] == {"$and": [{"$match": "dog"}]} and where["context.month"] == "2025-12"
     assert "context.basket" not in where   # words, not SKUs (td-20261020210945109481)
     assert {"$match": "small_animal_cage"} in where["context.basket_categories"]["$and"]
-    assert where["context.owned"] == {"$and": [{"$match": "small_animal_water_bottle"}]}
-    # No profile is handed over, and the diet rule is a filter (see rule_filter).
+    # No identity, no kit (its own view), and the diet rule is a filter (see rule_filter).
+    assert "context.customer" not in where and "context.owned" not in where
     assert all(key.startswith("context.") for key in where)
 
 
-def test_the_items_a_household_lacks_are_stated_as_absent():
-    # `_recommend` reads `$match` as "contains": what's missing must be said.
-    where = shopper_where("CUST-01177", [], "2026-04", ["small_animal_cage"], ["small_animal_hideout"])
+def test_an_empty_cart_adds_no_context_for_it():
+    where = shopper_where("dog cat", [], "2025-12")
 
-    assert where["context.owned"] == {"$and": [{"$match": "small_animal_cage"},
-                                               {"$not": {"$match": "small_animal_hideout"}}]}
-
-
-def test_an_empty_cart_and_no_kit_add_no_context_for_them():
-    where = shopper_where("CUST-00049", [], "2025-12", [])
-
-    assert set(where) == {"context.customer", "context.month"}
+    assert set(where) == {"context.customer.pets", "context.month"}
+    assert where["context.customer.pets"] == {"$and": [{"$match": "dog"}, {"$match": "cat"}]}
 
 
 def test_a_rule_keeps_non_food_other_pets_food_and_food_that_names_it():
