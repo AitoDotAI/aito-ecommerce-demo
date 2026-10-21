@@ -132,3 +132,24 @@ chip outside HEAD's label set was seen.
   design.
 - The Shop's intro still says suggestions follow "who they are". The grid
   uses declared pets, not identity.
+
+## Fixes, and the re-check (2026-10-21, backend restarted at HEAD)
+
+| Finding | Fix | Re-check (live, env `observable`) |
+|---|---|---|
+| 1. "Fits your pets" on dog products in Päivi's "dental" search | The chip shows only on the household's own pets' products (`src/shop_ranking.py`); search still shows other pets' products | The six top results are dog products; their only chip is "Sells in April" |
+| 2. Kit and usual-basket views ignore the cart | A kit item in the cart counts as owned; nothing in the cart is suggested again (`src/shop_suggestions.py`) | Hideout SKU-PT-0558 in the cart: owned reads cage, hideout, water bottle; the wheel is first (23 %), no hideout listed |
+| 3. "segment" in UI copy | Churn "Pets · region"; Churn, Pattern Explorer and Purchase Analytics panels show the queries the code sends; Saara's story states what she reorders | Copy grep clean |
+| 4. Olli's story | "Declares a small dog; reorders Acana Sensitive dog food", as his row declares | — |
+| 5. Dashboard pills | Computed from the card's numbers; notes with no data behind them removed | Offline test `tests/test_overview_household_pills.py`; the dashboard snapshot refreshes at precompute |
+| 6. Month outside the data | 400 "The shop's data runs from 2024-05 to 2026-04" | `month=2030-01` → 400 |
+| 7. Unknown customer on For You / Smart Search | 404 naming the personas, instead of a default persona | `customer=nobody` → 404 on both |
+| Phone overflow | Grid columns shrink; tables scroll inside their cards | Every page measured at 390 px |
+
+The two acceptance criteria overtaken by the amendment are replaced in ADR
+0033 ("Acceptance criteria, as amended"). The kit criterion now passes
+("Next for their kit": hideout first; with it in the cart, the wheel). The
+grid criteria pass by construction (`tests/test_shop_grid.py`). Tests: 325
+offline, and the live checks on `observable`, pass.
+Not re-checked in the browser after the fixes: the layout at 390 px was
+measured by the fixing agent, not by a fresh adversary pass.
