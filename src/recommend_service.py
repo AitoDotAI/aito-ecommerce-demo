@@ -14,6 +14,7 @@ import time
 from dataclasses import dataclass, asdict
 
 from src.aito_client import AitoClient
+from src.lookup_errors import UnknownPersonaError
 from src import cache
 
 
@@ -76,7 +77,9 @@ def get_for_you(
     persona_id: str = DEFAULT_PERSONA,
     limit: int = 12,
 ) -> ForYouResponse:
-    persona = PERSONAS.get(persona_id) or PERSONAS[DEFAULT_PERSONA]
+    if persona_id not in PERSONAS:
+        raise UnknownPersonaError(f"No persona {persona_id!r}; one of {', '.join(PERSONAS)}")
+    persona = PERSONAS[persona_id]
 
     cache_key = f"for_you:{persona.persona_id}:{limit}"
     cached = cache.get(cache_key)

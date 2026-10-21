@@ -106,3 +106,15 @@ def test_response_says_when_no_product_name_matched_the_query(baseline_scores, e
     response = smart_search(fake, query="dogfood", persona_id="saara", limit=10)
     assert response.text_matched is expected
     assert response.to_dict()["text_matched"] is expected
+
+
+def test_an_unknown_customer_is_refused_not_swapped_for_a_default():
+    # A shared link can name anyone; answering for another persona under the
+    # same URL would show the wrong person's results without saying so.
+    from src.lookup_errors import UnknownPersonaError
+    from src.recommend_service import get_for_you
+
+    with pytest.raises(UnknownPersonaError, match="nobody"):
+        smart_search(None, query="food", persona_id="nobody")
+    with pytest.raises(UnknownPersonaError, match="nobody"):
+        get_for_you(None, persona_id="nobody")

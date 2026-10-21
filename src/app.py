@@ -46,7 +46,7 @@ from src.search_words import get_search_words_section
 from src.shop_analytics_service import get_funnel_section, get_who_section
 from src.pattern_service import get_patterns
 from src.feedback_service import get_feedback
-from src.lookup_errors import UnknownProductError, UnknownReviewError
+from src.lookup_errors import UnknownPersonaError, UnknownProductError, UnknownReviewError
 from src.churn_service import get_churn
 from src.demand_service import get_demand
 from src.cart_completion_service import get_cart_completion
@@ -285,6 +285,8 @@ def smart_search_endpoint(q: str = "food", customer: str = "saara"):
     """
     try:
         return smart_search(aito, query=q, persona_id=customer).to_dict()
+    except UnknownPersonaError as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
     except AitoError as exc:
         return JSONResponse(
             status_code=502,
@@ -294,12 +296,14 @@ def smart_search_endpoint(q: str = "food", customer: str = "saara"):
 
 @app.get("/api/for-you")
 def for_you_endpoint(customer: str = "maija"):
-    """Personalised tile grid via `_recommend` ranked by segment-fit.
+    """Personalised tile grid: `_recommend` with the customer as context.
 
     Customer: one of `maija` / `olli` / `saara`.
     """
     try:
         return get_for_you(aito, persona_id=customer).to_dict()
+    except UnknownPersonaError as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
     except AitoError as exc:
         return JSONResponse(
             status_code=502,

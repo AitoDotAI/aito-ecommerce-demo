@@ -30,6 +30,7 @@ from dataclasses import dataclass, asdict
 from typing import Iterable
 
 from src.aito_client import AitoClient
+from src.lookup_errors import UnknownPersonaError
 from src import cache
 
 
@@ -236,7 +237,9 @@ def smart_search(
     persona_id: str = DEFAULT_PERSONA,
     limit: int = 10,
 ) -> SmartSearchResponse:
-    persona = PERSONAS.get(persona_id) or PERSONAS[DEFAULT_PERSONA]
+    if persona_id not in PERSONAS:
+        raise UnknownPersonaError(f"No persona {persona_id!r}; one of {', '.join(PERSONAS)}")
+    persona = PERSONAS[persona_id]
 
     cache_key = f"smart_search:{persona.persona_id}:{query.lower()}:{limit}"
     cached = cache.get(cache_key)

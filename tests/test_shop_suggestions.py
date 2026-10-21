@@ -1,5 +1,7 @@
 """The Shop's suggestions (src/shop_suggestions.py), against a fake Aito."""
 
+import pytest
+
 from src.shop_suggestions import get_suggestions
 
 PRODUCTS = {
@@ -99,3 +101,9 @@ def test_whats_next_says_nothing_when_only_noise_is_left():
 
 def test_a_month_before_any_order_has_no_history_yet():
     assert get_suggestions(FakeAito(PAIVI_ORDERS), "paivi", "2025-12", []).no_history
+
+
+def test_a_month_outside_the_data_is_refused():
+    # 2030 would answer "no orders yet" from no data at all; say so instead.
+    with pytest.raises(ValueError, match="2024-05 to 2026-04"):
+        get_suggestions(FakeAito(PAIVI_ORDERS), "paivi", "2030-01", [])
