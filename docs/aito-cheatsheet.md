@@ -1228,7 +1228,10 @@ Probed 2026-10-20 and 2026-10-21 on the test env `observable`
   `product_state.product_sku.category` (and the diet rule's `$or` through
   two links) filters `_recommend` candidates, and `_relate` over
   `product_state.product_sku.category` answers with sane counts
-  (env `states`, 2.11.4, 2026-10-18). On `observable` the Shop's sweep
+  (env `states`, 2.11.4, 2026-10-18). On `observable` (2.11.8,
+  2026-10-21), `_relate` over `context.customer.dog_size` from
+  `impressions` gives exactly `_search`'s counts for every size (e.g.
+  small: 1,986 purchased of 19,234 shown, both ways). The Shop's sweep
   conditioned `_recommend` on `context.customer.pets` and
   `context.customer` through two links (variants G, K, L). The views
   relate `context.customer.pets` / `.diet` (Shop analytics) and

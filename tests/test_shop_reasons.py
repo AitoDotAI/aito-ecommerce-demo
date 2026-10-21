@@ -27,12 +27,13 @@ def why(*nested, sku=SKU):
 
 
 def test_the_largest_lifts_nested_under_the_product_itself_are_its_reasons():
-    reasons = reasons_for(why(({"context.owned": {"$and": [{"$match": "small_animal_cage"}]}}, 1.49),
+    reasons = reasons_for(why(({"context.customer.pets": {"$and": [{"$match": "small_animal"}]}}, 1.49),
                               ({"context.month": "2026-04"}, 1.32),
-                              ({"context.customer": "CUST-01177"}, 1.04)), SKU)
+                              ({"$and": [{"context.basket_categories": {"$match": "small_animal_hay"}}]}, 1.04)),
+                          SKU)
 
     # ×1.04 is below MIN_REASON_LIFT; the other product's ×9.0 isn't this one's.
-    assert reasons == [Reason("Fits the kit you have", 1.49), Reason("Sells in April", 1.32)]
+    assert reasons == [Reason("Fits your pets", 1.49), Reason("Sells in April", 1.32)]
 
 
 def test_the_carts_factors_multiply_into_one_reason():
@@ -51,14 +52,18 @@ def test_a_joint_group_is_never_shown_as_a_reason():
     assert reasons_for(why((group, 3.4), ({"context.month": "2026-04"}, 1.3)), SKU) == [Reason("Sells in April", 1.3)]
 
 
-def test_at_most_three_reasons_are_kept_and_just_bought_is_never_one():
-    reasons = reasons_for(why(({"just_bought": False}, 1.9),
-                              ({"context.customer.region": "oulu"}, 1.2),
-                              ({"context.customer": "CUST-01177"}, 2.0),
-                              ({"context.owned": {"$and": [{"$match": "small_animal_cage"}]}}, 1.6),
-                              ({"context.month": "2026-04"}, 1.5)), SKU)
+def test_just_bought_is_never_a_reason():
+    # The grid asks every product as "not just bought"; that's how it asks, not why.
+    reasons = reasons_for(why(({"just_bought": False}, 1.9), ({"context.month": "2026-04"}, 1.5)), SKU)
 
-    assert [r.label for r in reasons] == ["Your own history", "Fits the kit you have", "Sells in April"]
+    assert [r.label for r in reasons] == ["Sells in April"]
+
+
+def test_a_condition_the_grid_does_not_send_fails_loudly():
+    # Identity and the owned kit left the grid's `where` (ADR 0033, 2026-10-21);
+    # seeing one in `$why` means the query changed under the reasons.
+    with pytest.raises(AitoError, match="Unexpected"):
+        reasons_for(why(({"context.customer": "CUST-01177"}, 2.0),), SKU)
 
 
 def test_a_product_aito_knows_only_by_its_features_has_no_reasons():

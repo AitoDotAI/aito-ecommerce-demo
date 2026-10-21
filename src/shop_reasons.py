@@ -14,11 +14,11 @@ lift of the product itself:
 
 The nested factors are how much each part of the `where` lifts *this*
 product: the reasons behind the probability the card shows. The `where`
-holds only what a shop observes (ADR 0033): the customer, the month, the
-cart and the kit the household owns. The cart can appear as several
-factors (its SKUs, its categories); they multiply into one "your cart"
-reason. (The nesting was probed 2026-10-17 on the shape before ADR 0033;
-`tests/test_aito_check.py` checks the context form live.)
+holds only what a shop observes (ADR 0033): the household's declared
+pets, the month and the cart's category words. The cart can appear as
+several factors (one per word); they multiply into one "your cart"
+reason. (The nesting was probed 2026-10-17 on the shape before ADR 0033,
+and seen again in the grid's `$why` on env `observable`, 2026-10-21.)
 
 A product with too few impressions of its own has no such lift: its
 `$why` holds only `hitLinkPropositionLift`, the prior from its features
@@ -36,24 +36,14 @@ from src.aito_client import AitoError
 
 # A reason smaller than this isn't worth a chip: ×1.1 is noise in a demo.
 MIN_REASON_LIFT = 1.15
-MAX_REASONS = 3
 
 CART = "Goes with your cart"
 PETS = "Fits your pets"
-KIT = "Fits the kit you have"
-HISTORY = "Your own history"
-# Declared fields, if Aito expands the customer link into them.
-DECLARED_LABELS = {
-    "context.customer.pets": "Your pets",
-    "context.customer.dog_size": "Your dog's size",
-    "context.customer.diet": "Your diet",
-    "context.customer.region": "Region",
-}
 
 
 @dataclass(frozen=True)
 class Reason:
-    label: str    # "Goes with your cart", "Fits the kit you have", "Sells in April"
+    label: str    # "Goes with your cart", "Fits your pets", "Sells in April"
     lift: float   # how much it multiplies this product's odds of a purchase
 
 
@@ -72,7 +62,7 @@ def reasons_for(why: dict, sku: str) -> list[Reason]:
         if label is not None:
             lifts[label] = lifts.get(label, 1.0) * float(factor["value"])
     reasons = [Reason(label, round(lift, 2)) for label, lift in lifts.items() if lift >= MIN_REASON_LIFT]
-    return sorted(reasons, key=lambda r: -r.lift)[:MAX_REASONS]
+    return sorted(reasons, key=lambda r: -r.lift)
 
 
 def _label(proposition: dict) -> str | None:
@@ -86,8 +76,6 @@ def _label(proposition: dict) -> str | None:
     text = json.dumps(proposition)
     if "context.basket" in text:
         return CART
-    if "context.owned" in text:
-        return KIT
     if "context.customer.pets" in text:   # the declared pets, as `$and` of `$match`
         return PETS
     if len(proposition) != 1:
@@ -97,8 +85,4 @@ def _label(proposition: dict) -> str | None:
         return None
     if field == "context.month":
         return f"Sells in {calendar.month_name[int(value[5:7])]}"
-    if field == "context.customer":
-        return HISTORY
-    if field in DECLARED_LABELS and isinstance(value, str):
-        return f"{DECLARED_LABELS[field]}: {value.replace('_', ' ')}"
     raise AitoError(f"Unexpected $why proposition: {text[:200]}")
