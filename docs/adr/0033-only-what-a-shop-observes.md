@@ -177,3 +177,33 @@ handed over, and the probes decide whether it is good enough.
    effects judged against nulls).
 3. Probes R1–R4 on a test env once #1673 is on shared.
 4. Views, one PR each, in the table's order.
+
+## Amendment (2026-10-21): one view per intent in the Shop
+
+**Context.** The grid asked one `_recommend` to carry everything at once:
+the customer's identity, the month, the cart, the owned kit and what it
+lacks. Each piece works alone; together they degrade:
+- the cart's SKU next to the owned kit erases the kit's lift;
+- identity plus rich context calibrates worse than either alone, on 150
+  held-out sessions (`observable-data-prereg.md`, R1/R2 sweep);
+- Antti saw the same in the grocery demo, where the basket went unused.
+
+His reading: shopping intent is a mixture (this visit is mostly a routine
+restock, or mostly growing the kit), while Aito multiplies lifts. The core
+side is filed as a theme with the CPO.
+
+**Decision (Antti, option 2 of three).** The Shop shows one view per intent,
+each one well-conditioned query:
+
+| View | Intent | Query |
+|---|---|---|
+| Buy again | routine | `_predict "skus.$feature"` over the shopper's own orders (the "usual basket", ADR 0031) |
+| Next for their kit | kit | `_predict product_sku` on order lines whose order owned what they own (ADR 0031) |
+| Picked for you | everything else | `_recommend` on impressions with `context.customer.pets` (declared), `context.month` and the cart as words; the diet rule as a filter; the just-bought re-ask |
+
+The grid drops the identity and the kit conditions: the kit has its own
+view, and identity worsened calibration. Search and a product's
+alternatives use the same simplified query. Blending the views into one
+list, with Aito predicting the intent weights from history, is a later
+experiment.
+
