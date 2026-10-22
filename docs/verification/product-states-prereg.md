@@ -168,3 +168,29 @@ against ≥ 1.25) with its mechanism unchanged since it passed at 1.94 and
 ## Results
 
 (none yet)
+
+## B5 as run (design fixed 2026-10-22, before the run)
+
+B5 was not run with ADR 0032's other checks. It runs now on env `observable`
+(Aito 2.11.8), with the R1/R2 sweep's method (`observable-data-prereg.md`):
+
+- **Sessions:** 1,400 held-out sessions (`random.Random(0).sample` of the
+  sessions since 2025-05 that showed a product someone bought). The R1/R2
+  run showed 150 is too few for hit-rate differences of this size.
+- **Context, the same for both:** the Shop's "Picked for you" query (K+):
+  declared pets, month, cart words, `just_bought: false`, the diet rule and
+  the declared-pets filter, the cart excluded. Each session is left out of
+  the data (a nested `from`).
+- **Variants:** `recommend: "product_sku"` against
+  `recommend: "product_state"` with `product_state.month` = the session's
+  month (probed 2026-10-22: candidates narrow to the month, one state per
+  product). The filters go through `product_state.product_sku.*`.
+- **Primary metric:** hit@10, i.e. a product bought in the session is among
+  the top 10 (for states, the state's product). The paired difference
+  (state − product) has a 95 % CI (normal approximation over sessions).
+- **Decision (as pre-registered above):** the Shop switches to
+  `product_state` only if the CI's lower bound is above −0.02.
+- **Reported, not deciding:** Brier of `$p` over the products the session
+  showed. The probe saw higher `$p` on states (top item 0.65 vs 0.44).
+
+Script: `scripts/product_state_sweep.py`.
