@@ -194,3 +194,13 @@ B5 was not run with ADR 0032's other checks. It runs now on env `observable`
   showed. The probe saw higher `$p` on states (top item 0.65 vs 0.44).
 
 Script: `scripts/product_state_sweep.py`.
+
+**Amendment (2026-10-22, after 121 sessions, before any result was read).**
+The run stopped at SESS-001970: a state it showed (SKU-PT-0568-2025-11) has
+no impressions outside that session, so with the session held out,
+`_recommend product_state` cannot return it. The product variant can, from
+the product's other months. Hit@10 is unchanged: a bought state that can't
+be recommended is a miss, the state variant's real cost. Brier leaves such
+"unseen" states out for **both** variants, so they are compared on the same
+rows, and the run reports how many were left out. The first 121 sessions
+had none (the run would have stopped on them).

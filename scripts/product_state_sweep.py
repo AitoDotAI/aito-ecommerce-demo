@@ -49,7 +49,7 @@ def candidate_filters(session: dict, pets: str, diet: str | None, via: str) -> d
 
 
 def score(client: AitoClient, target: str, session: dict, pets: str, diet: str | None,
-          products: dict[str, dict]) -> tuple[int, float]:
+          products: dict[str, dict], unseen: set[str]) -> tuple[int, float]:
     via = "product_sku." if target == "product_sku" else "product_state.product_sku."
     where = {**context_where(session, pets), **candidate_filters(session, pets, diet, via)}
     if target == "product_state":
@@ -61,9 +61,12 @@ def score(client: AitoClient, target: str, session: dict, pets: str, diet: str |
     bought = {r["product_sku"] for r in session["shown"] if r["purchased"]}
     hit = int(bool(bought & {sku_of(h) for h in top}))
 
-    # Calibration over what the session showed and the filters let through.
+    # Calibration over what the session showed and the filters let through, on
+    # states seen outside the session: an unseen state has no rows to rank
+    # (prereg amendment, 2026-10-22), and both variants leave it out.
     shown = [r for r in session["shown"]
-             if r["product_sku"] not in (session.get("basket") or "").split()
+             if r["product_state"] not in unseen
+             and r["product_sku"] not in (session.get("basket") or "").split()
              and not breaks_rule(products[r["product_sku"]], diet)
              and products[r["product_sku"]]["pet_type"] in pets.split()]
     if not shown:
@@ -94,13 +97,18 @@ def main() -> int:
     if CHECKPOINT.exists():
         done = {r["session"]: r for r in map(json.loads, CHECKPOINT.read_text().splitlines())}
     sessions = sample_sessions(N_SESSIONS)
+    contexts_of: dict[str, set[str]] = {}
+    for imp in load("impressions"):
+        contexts_of.setdefault(imp["product_state"], set()).add(imp["context"])
     with CHECKPOINT.open("a") as out:
         for i, session in enumerate(sessions, 1):
             if session["context_id"] not in done:
                 c = customers[session["customer"]]
-                row = {"session": session["context_id"]}
+                unseen = {r["product_state"] for r in session["shown"]
+                          if contexts_of[r["product_state"]] == {session["context_id"]}}
+                row = {"session": session["context_id"], "unseen_states": len(unseen)}
                 for target in ("product_sku", "product_state"):
-                    row[target] = score(client, target, session, c["pets"], c.get("diet"), products)
+                    row[target] = score(client, target, session, c["pets"], c.get("diet"), products, unseen)
                 out.write(json.dumps(row) + "\n")
                 out.flush()
                 done[row["session"]] = row
@@ -108,6 +116,8 @@ def main() -> int:
                 print(f"  {i}/{len(sessions)} sessions", flush=True)
 
     rows = [done[s["context_id"]] for s in sessions]
+    print(f"unseen states left out of Brier: {sum(r.get('unseen_states', 0) for r in rows)} "
+          f"in {sum(1 for r in rows if r.get('unseen_states'))} sessions")
     for metric, k in (("hit@10", 0), ("Brier", 1)):
         a = [r["product_sku"][k] for r in rows]
         b = [r["product_state"][k] for r in rows]
