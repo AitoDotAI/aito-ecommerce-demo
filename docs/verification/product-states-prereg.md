@@ -204,3 +204,21 @@ be recommended is a miss, the state variant's real cost. Brier leaves such
 "unseen" states out for **both** variants, so they are compared on the same
 rows, and the run reports how many were left out. The first 121 sessions
 had none (the run would have stopped on them).
+
+### B5 result (2026-10-22, env `observable`, Aito 2.11.8, n = 1,400 held-out sessions)
+
+| metric | product | state | state − product, paired 95 % CI |
+|:--|--:|--:|:--|
+| hit@10 | 0.1471 | 0.1586 | +0.0114 [−0.0048, +0.0276], a tie |
+| Brier (reported) | 0.1942 | 0.2047 | +0.0105 [+0.0079, +0.0131], state worse |
+
+20 unseen states (one in each of 20 sessions) were left out of Brier for both
+variants, as amended.
+
+**Under the rule:** the CI's lower bound (−0.005) is above −0.02, so a switch
+is *allowed*; the rule names a condition for switching, not a reason to.
+Ranking is a tie and the state's `$p` calibrates measurably worse, and the
+Shop shows `$p` on every card. **The Shop keeps `recommend: product_sku`**,
+with the month's state read as facts on the card. States stay where they
+explain (Shop analytics' findings), and a state with no impressions of its
+own can't be recommended at all, which a live shop meets every month start.
