@@ -1175,6 +1175,43 @@ Each was run on the test env `shoppers` (2026-10-13) before a view used it.
   The Shop's search ranks name matches through `_recommend` instead,
   which does apply the filter (`src/shop_search.py`).
 
+## Business reorders on UCI Online Retail II, env `uci` (ADR 0034)
+
+**Not yet run by this demo.** The `_predict` is Aito core's benchmark
+query (byte-stable across the v2.11.9 candidates, dev3, 2026-10-21); the
+`_relate` mirrors the pet shop's "A Text column of SKUs" above. Probe
+both on env `uci` before merge, then replace this note with what came
+back. `./do uci-check` runs both.
+
+**The draft order.** `lines.code` is a plain String (not a link), and
+the buyer is reached through `lines.invoice → invoices.customer_id`:
+
+```json
+POST /_predict
+{"from": "lines", "where": {"invoice.customer_id": "12357"},
+ "predict": "code", "limit": 10, "select": ["$p", "$value"]}
+```
+
+Expected hits: `{"$p": 0.03, "$value": "85123A"}`; the code reads from
+`$value` because the query selects that name.
+`src/uci_reorder_service.py` raises on a hit without it.
+
+**Bought together.** `baskets.codes` holds each invoice's StockCodes,
+whitespace analyzer. "BANK CHARGES" is stored as `BANK_CHARGES` so it
+stays one token:
+
+```json
+POST /_relate
+{"from": "baskets", "where": {"codes": {"$match": "85123A"}},
+ "relate": ["codes"], "limit": 50}
+```
+
+To probe: hits read `related.codes.$has` with the code's case kept
+(`85123A`, not `85123a`); the chosen code is among the 50 hits
+(`src/uci_bought_together.py` raises if not); and which 50 of the
+~4,400 codes come back (if they are not ordered by lift, the view's
+top 10 by lift is a top 10 of the wrong 50).
+
 ## `AitoClient` method ↔ endpoint cheat reference
 
 | Method | Endpoint | First view that uses it |

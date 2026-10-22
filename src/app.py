@@ -15,6 +15,7 @@ Lifecycle:
 
 import os
 
+from dataclasses import replace
 from pathlib import Path
 
 from fastapi import FastAPI, Query, Request
@@ -55,10 +56,17 @@ from src.markdown_service import get_markdowns
 from src.price_service import get_prices, get_price_detail
 from src.price_what_if import get_price_what_if
 from src.winback_service import get_winback
+from src.uci_bought_together import bought_together
+from src.uci_buyers import pick_buyers
+from src.uci_products import UnknownStockCodeError
+from src.uci_reorder_service import UnknownBuyerError, draft_order
 
 
 config = load_config()
 aito = AitoClient(config)
+# Business reorders (ADR 0034) reads real data, UCI Online Retail II, from
+# its own env on the same instance. The pet shop's client stays on its env.
+uci_aito = AitoClient(replace(config, aito_env="uci"))
 
 # Register the Aito-backed persistent cache layer. No-op when
 # PUBLIC_DEMO=1 so the demo runs against a read-only API key.
@@ -647,6 +655,38 @@ def price_detail_endpoint(sku: str):
             status_code=502,
             content={"error": str(exc), "status_code": exc.status_code},
         )
+
+
+# ── Business reorders, on UCI Online Retail II (ADR 0034) ──────────
+
+
+def _uci(compute):
+    """An unknown customer or StockCode is a 404 with its message, an
+    Aito failure a 502. Not cached: the cache is scoped to the pet shop's env."""
+    try:
+        return compute()
+    except (UnknownBuyerError, UnknownStockCodeError) as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
+    except AitoError as exc:
+        return JSONResponse(status_code=502, content={"error": str(exc), "status_code": exc.status_code})
+
+
+@app.get("/api/uci/buyers")
+def uci_buyers_endpoint():
+    """The buyers the page offers, chosen by a fixed rule (src/uci_buyers.py)."""
+    return {"buyers": [b.to_dict() for b in pick_buyers()]}
+
+
+@app.get("/api/uci/draft")
+def uci_draft_endpoint(customer: str):
+    """Aito's draft of the buyer's next order, against what they ordered next."""
+    return _uci(lambda: draft_order(uci_aito, customer).to_dict())
+
+
+@app.get("/api/uci/bought-together")
+def uci_bought_together_endpoint(code: str):
+    """What is ordered with a StockCode: `_relate` over `baskets`."""
+    return _uci(lambda: bought_together(uci_aito, code).to_dict())
 
 
 # ── Static files ─────────────────────────────────────────────────

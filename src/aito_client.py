@@ -157,6 +157,7 @@ class AitoClient:
         *,
         where: dict | None = None,
         limit: int = 10,
+        select: list | None = None,
     ) -> dict:
         """`_predict` whose hits carry the predicted row's own fields.
 
@@ -165,11 +166,15 @@ class AitoClient:
         ``{"from": "orders", "where": {"order_id": {"$or": [...]}}}``.
         With no `select`, a prediction of a link (`product_sku`) returns the
         linked product's columns, and `skus.$feature` returns one hit per
-        token of a Text column, the token in `feature`.
+        token of a Text column, the token in `feature`. With
+        ``select=["$p", "$value"]``, each hit is just the probability and
+        the predicted value (the UCI draft order, `src/uci_reorder_service.py`).
         """
         body: dict = {"from": population, "predict": predict_field, "limit": limit}
         if where is not None:
             body["where"] = where
+        if select is not None:
+            body["select"] = select
         return self._request("POST", "/_predict", json=body)
 
     def predict(
