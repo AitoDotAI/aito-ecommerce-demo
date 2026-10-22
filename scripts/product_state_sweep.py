@@ -27,7 +27,14 @@ N_SESSIONS = 1400
 TOP = 10
 # The pre-registered pair, and an exploratory third: the state with its product
 # as the prior's feature (prereg, after B5).
-VARIANTS = ("product_sku", "product_state", "product_state basedOn product_sku")
+STATE_FIELDS = ["price_eur", "rating_band", "discount_band", "on_offer", "age", "price_change", "rival_launched"]
+PRODUCT_FIELDS = ["tags", "price_eur", "rating_band", "category", "brand", "dietary"]
+BASED_ON = {
+    "product_state basedOn product_sku": ["product_sku"],
+    "product_state basedOn product_sku+state": ["product_sku"] + STATE_FIELDS,
+    "product_sku basedOn product fields": PRODUCT_FIELDS,
+}
+VARIANTS = ("product_sku", "product_state", *BASED_ON)
 CHECKPOINT = Path(sys.argv[1] if len(sys.argv) > 1 else "product_state_sweep.jsonl")
 
 
@@ -54,7 +61,7 @@ def candidate_filters(session: dict, pets: str, diet: str | None, via: str) -> d
 def score(client: AitoClient, variant: str, session: dict, pets: str, diet: str | None,
           products: dict[str, dict], unseen: set[str]) -> tuple[int, float]:
     target = variant.split()[0]
-    based_on = ["product_sku"] if variant.endswith("basedOn product_sku") else None
+    based_on = BASED_ON.get(variant)
     via = "product_sku." if target == "product_sku" else "product_state.product_sku."
     where = {**context_where(session, pets), **candidate_filters(session, pets, diet, via)}
     if target == "product_state":
@@ -132,7 +139,9 @@ def main() -> int:
         print(f"{metric}: " + "  ".join(f"{v} {statistics.mean(x for x in col[v] if x == x):.4f}" for v in VARIANTS))
         for v in VARIANTS[1:]:
             print(f"  {v} − product_sku {paired(col['product_sku'], col[v])}")
-        print(f"  {VARIANTS[2]} − product_state {paired(col['product_state'], col[VARIANTS[2]])}")
+        for v in VARIANTS[2:]:
+            if v.startswith("product_state"):
+                print(f"  {v} − product_state {paired(col['product_state'], col[v])}")
     return 0
 
 

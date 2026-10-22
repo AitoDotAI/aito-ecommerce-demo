@@ -231,3 +231,29 @@ the top `$p` rises from 0.54 to 0.77 against a base rate of 0.12, the
 `basedOn` inflation seen in R1/R2's variant D (td-20261020211932494271). The
 same 1,400 sessions are scored as a third column, paired against both. Not
 part of B5's decision.
+
+**Exploratory, more `basedOn` fields (Antti, 2026-10-22).** Probed first:
+
+- `basedOn` takes only fields of the target's own table. `product_sku.tags`
+  for a `product_state` target answers 400 ("not a field of the predict
+  target's linked table").
+- Each added state field raises the top `$p`. With `product_sku` and all
+  seven state fields, the top states read 0.96–0.97 against a base rate of
+  0.12.
+- `availability` has no history: `inventory` holds today's stock only, and
+  isn't linked from impressions. It is left out (it would leak the present
+  into past sessions).
+
+Two more columns on the same 1,400 sessions:
+
+- `product_state` with `basedOn: [product_sku, price_eur, rating_band,
+  discount_band, on_offer, age, price_change, rival_launched]`;
+- `product_sku` with `basedOn: [tags, price_eur, rating_band, category,
+  brand, dietary]` (its own table, so tags fit).
+
+**Observed in the same probe, for Aito core:** without `basedOn`, 26 of the
+48 small-animal states for November 2025 get `$p` ≤ 0.001. Their data are 0
+purchases from 1–11 impressions (SKU-PT-0536-2025-11: 0 of 11), against a
+base rate of about 0.09 for the context. Their `$why` multiplies a link
+prior (×0.15) with the state's own lift, so thin, purchase-free rows go to
+an extreme instead of shrinking toward the base rate.
