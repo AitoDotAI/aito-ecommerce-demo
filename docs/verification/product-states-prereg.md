@@ -222,3 +222,12 @@ Shop shows `$p` on every card. **The Shop keeps `recommend: product_sku`**,
 with the month's state read as facts on the card. States stay where they
 explain (Shop analytics' findings), and a state with no impressions of its
 own can't be recommended at all, which a live shop meets every month start.
+
+**Exploratory, after B5 (2026-10-22): the state with `basedOn: ["product_sku"]`.**
+Antti's question: can a state borrow its product's evidence from other
+months? Probe first (held-out SESS-001970, November 2025): the candidates
+are still only states with impressions (48; the unseen chew stays out), and
+the top `$p` rises from 0.54 to 0.77 against a base rate of 0.12, the
+`basedOn` inflation seen in R1/R2's variant D (td-20261020211932494271). The
+same 1,400 sessions are scored as a third column, paired against both. Not
+part of B5's decision.

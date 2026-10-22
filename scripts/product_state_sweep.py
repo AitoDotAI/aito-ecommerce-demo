@@ -25,6 +25,9 @@ from src.shop_context import rule_filter
 
 N_SESSIONS = 1400
 TOP = 10
+# The pre-registered pair, and an exploratory third: the state with its product
+# as the prior's feature (prereg, after B5).
+VARIANTS = ("product_sku", "product_state", "product_state basedOn product_sku")
 CHECKPOINT = Path(sys.argv[1] if len(sys.argv) > 1 else "product_state_sweep.jsonl")
 
 
@@ -48,8 +51,10 @@ def candidate_filters(session: dict, pets: str, diet: str | None, via: str) -> d
     return filters
 
 
-def score(client: AitoClient, target: str, session: dict, pets: str, diet: str | None,
+def score(client: AitoClient, variant: str, session: dict, pets: str, diet: str | None,
           products: dict[str, dict], unseen: set[str]) -> tuple[int, float]:
+    target = variant.split()[0]
+    based_on = ["product_sku"] if variant.endswith("basedOn product_sku") else None
     via = "product_sku." if target == "product_sku" else "product_state.product_sku."
     where = {**context_where(session, pets), **candidate_filters(session, pets, diet, via)}
     if target == "product_state":
@@ -57,7 +62,8 @@ def score(client: AitoClient, target: str, session: dict, pets: str, diet: str |
     held_out = {"from": "impressions", "where": {"$not": {"context": session["context_id"]}}}
     sku_of = (lambda h: h["sku"]) if target == "product_sku" else (lambda h: h["product_sku"])
     select = ["sku"] if target == "product_sku" else ["product_state_id", "product_sku"]
-    top = client.recommend(held_out, where, target, {"purchased": True}, select=select, limit=TOP)["hits"]
+    top = client.recommend(held_out, where, target, {"purchased": True}, select=select, based_on=based_on,
+                           limit=TOP)["hits"]
     bought = {r["product_sku"] for r in session["shown"] if r["purchased"]}
     hit = int(bool(bought & {sku_of(h) for h in top}))
 
@@ -76,7 +82,7 @@ def score(client: AitoClient, target: str, session: dict, pets: str, diet: str |
     id_field = "sku" if target == "product_sku" else "product_state_id"
     p = {h[id_field]: h["$p"] for h in client.recommend(
         held_out, {**where, key: {"$or": ids}}, target, {"purchased": True},
-        select=[id_field, "$p"], limit=len(ids))["hits"]}
+        select=[id_field, "$p"], based_on=based_on, limit=len(ids))["hits"]}
     if missing := [i for i in ids if i not in p]:
         raise RuntimeError(f"{target}: no $p for shown {missing[:3]} in {session['context_id']}")
     return hit, statistics.mean((p[r[key]] - r["purchased"]) ** 2 for r in shown)
@@ -102,13 +108,16 @@ def main() -> int:
         contexts_of.setdefault(imp["product_state"], set()).add(imp["context"])
     with CHECKPOINT.open("a") as out:
         for i, session in enumerate(sessions, 1):
-            if session["context_id"] not in done:
+            row = done.get(session["context_id"], {"session": session["context_id"]})
+            todo = [v for v in VARIANTS if v not in row]
+            if todo:
                 c = customers[session["customer"]]
                 unseen = {r["product_state"] for r in session["shown"]
                           if contexts_of[r["product_state"]] == {session["context_id"]}}
-                row = {"session": session["context_id"], "unseen_states": len(unseen)}
-                for target in ("product_sku", "product_state"):
-                    row[target] = score(client, target, session, c["pets"], c.get("diet"), products, unseen)
+                row["unseen_states"] = len(unseen)
+                for v in todo:
+                    row[v] = score(client, v, session, c["pets"], c.get("diet"), products, unseen)
+                # The last line for a session wins on reading, so a resumed row replaces its earlier one.
                 out.write(json.dumps(row) + "\n")
                 out.flush()
                 done[row["session"]] = row
@@ -119,10 +128,11 @@ def main() -> int:
     print(f"unseen states left out of Brier: {sum(r.get('unseen_states', 0) for r in rows)} "
           f"in {sum(1 for r in rows if r.get('unseen_states'))} sessions")
     for metric, k in (("hit@10", 0), ("Brier", 1)):
-        a = [r["product_sku"][k] for r in rows]
-        b = [r["product_state"][k] for r in rows]
-        mean = lambda xs: statistics.mean(x for x in xs if x == x)
-        print(f"{metric:<7} product {mean(a):.4f}  state {mean(b):.4f}  state − product {paired(a, b)}")
+        col = {v: [r[v][k] for r in rows] for v in VARIANTS}
+        print(f"{metric}: " + "  ".join(f"{v} {statistics.mean(x for x in col[v] if x == x):.4f}" for v in VARIANTS))
+        for v in VARIANTS[1:]:
+            print(f"  {v} − product_sku {paired(col['product_sku'], col[v])}")
+        print(f"  {VARIANTS[2]} − product_state {paired(col['product_state'], col[VARIANTS[2]])}")
     return 0
 
 
