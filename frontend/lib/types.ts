@@ -972,3 +972,47 @@ export interface ShopSearchWordSection extends ShopSectionBase {
   search_purchases: number;
   clustering: ShopClustering;
 }
+
+
+// ── Business reorders, UCI Online Retail II (ADR 0034) ──────────────
+
+export interface UciBuyer {
+  customer_id: string;
+  prior_invoices: number;
+  group: string;              // "1-2 earlier orders" | "regular buyer"
+  next_order_date: string;
+}
+
+export interface UciDraftLine {
+  code: string;
+  description: string;
+  probability: number;        // Aito's $p
+  last_price_gbp: number;
+  ordered_next: boolean;      // in the buyer's next order, which Aito never saw
+}
+
+export interface UciDraftOrder {
+  customer_id: string;
+  prior_invoices: number;
+  lines: UciDraftLine[];
+  draft_value_gbp: number;    // last prices, one of each
+  next_order_date: string | null;
+  next_order_size: number;
+  top_suggestion_ordered: boolean;
+  query: Record<string, unknown>;
+}
+
+export interface UciBoughtWith {
+  code: string;
+  description: string;
+  lift: number;
+  shared_invoices: number;
+  invoices_with_code: number;
+}
+
+export interface UciBoughtTogether {
+  product: { code: string; description: string; last_price_gbp: number };
+  invoices_with_product: number;
+  bought_with: UciBoughtWith[];
+  query: Record<string, unknown>;
+}
