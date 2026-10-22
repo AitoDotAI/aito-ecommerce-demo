@@ -37,7 +37,7 @@ def load(name: str) -> list[dict]:
     return json.loads((DATA / f"{name}.json").read_text(encoding="utf-8"))
 
 
-def sample_sessions() -> list[dict]:
+def sample_sessions(n: int = N_SESSIONS) -> list[dict]:
     """Sessions in the last year that showed a product someone bought, seed 0."""
     shown: dict[str, list[dict]] = {}
     for imp in load("impressions"):
@@ -47,7 +47,7 @@ def sample_sessions() -> list[dict]:
                       if any(r["purchased"] for r in rows) and contexts[cid]["month"] >= "2025-05")
     # `sample`, not a seeded `shuffle(...)[:N]`: the two draw different sessions,
     # and at n = 150 that alone moved hit@12 (prereg, correction of 2026-10-20).
-    picked = random.Random(0).sample(eligible, N_SESSIONS)
+    picked = random.Random(0).sample(eligible, n)
     return [{**contexts[cid], "shown": shown[cid]} for cid in picked]
 
 
