@@ -28,3 +28,7 @@ data/impressions.json
 .DS_Store
 .idea/
 .vscode/
+
+# UCI Online Retail II, prepared for env `uci` (ADR 0034): ~60 MB,
+# regenerated from the local xlsx by `./do uci-prepare`.
+data/uci/
