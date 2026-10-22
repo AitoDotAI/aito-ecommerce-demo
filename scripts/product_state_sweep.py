@@ -36,6 +36,8 @@ BASED_ON = {
 }
 VARIANTS = ("product_sku", "product_state", *BASED_ON)
 CHECKPOINT = Path(sys.argv[1] if len(sys.argv) > 1 else "product_state_sweep.jsonl")
+# Optional: score only these variants (a later column, without re-running the rest).
+REQUESTED = tuple(sys.argv[2:]) or VARIANTS
 
 
 def context_where(session: dict, pets: str) -> dict:
@@ -116,7 +118,7 @@ def main() -> int:
     with CHECKPOINT.open("a") as out:
         for i, session in enumerate(sessions, 1):
             row = done.get(session["context_id"], {"session": session["context_id"]})
-            todo = [v for v in VARIANTS if v not in row]
+            todo = [v for v in REQUESTED if v not in row]
             if todo:
                 c = customers[session["customer"]]
                 unseen = {r["product_state"] for r in session["shown"]
@@ -132,14 +134,16 @@ def main() -> int:
                 print(f"  {i}/{len(sessions)} sessions", flush=True)
 
     rows = [done[s["context_id"]] for s in sessions]
+    # Report the variants every session has; a stopped column isn't averaged.
+    reported = [v for v in VARIANTS if all(v in r for r in rows)]
     print(f"unseen states left out of Brier: {sum(r.get('unseen_states', 0) for r in rows)} "
           f"in {sum(1 for r in rows if r.get('unseen_states'))} sessions")
     for metric, k in (("hit@10", 0), ("Brier", 1)):
-        col = {v: [r[v][k] for r in rows] for v in VARIANTS}
-        print(f"{metric}: " + "  ".join(f"{v} {statistics.mean(x for x in col[v] if x == x):.4f}" for v in VARIANTS))
-        for v in VARIANTS[1:]:
+        col = {v: [r[v][k] for r in rows] for v in reported}
+        print(f"{metric}: " + "  ".join(f"{v} {statistics.mean(x for x in col[v] if x == x):.4f}" for v in reported))
+        for v in reported[1:]:
             print(f"  {v} − product_sku {paired(col['product_sku'], col[v])}")
-        for v in VARIANTS[2:]:
+        for v in reported[2:]:
             if v.startswith("product_state"):
                 print(f"  {v} − product_state {paired(col['product_state'], col[v])}")
     return 0
