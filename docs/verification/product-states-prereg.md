@@ -265,3 +265,11 @@ lifts multiplied past the range of a double". The refusal is deterministic.
 The same body answers without `basedOn` (top `$p` 0.975), and without the cart
 words (0.76). Not worked around: skipping such sessions would bias the
 column. Repro for core: aito-core `.ai/results/recommend-lifts-saturate-many-conditions-2026-10-22.md`.
+
+**Stopped too (2026-10-22, 16:05).** The product-fields column (`product_sku`
+with `basedOn: [tags, price_eur, rating_band, category, brand, dietary]`)
+stopped after 316 of 1,400 sessions on the same refusal: NaN `$p`, "lifts
+multiplied past the range of a double". This time it hit the product itself,
+not a state, so the overflow isn't specific to states. With the plain state
+and product columns complete, B5's result above stands; the `basedOn`
+columns wait on Aito core.
