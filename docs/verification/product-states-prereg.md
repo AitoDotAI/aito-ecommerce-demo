@@ -257,3 +257,11 @@ purchases from 1–11 impressions (SKU-PT-0536-2025-11: 0 of 11), against a
 base rate of about 0.09 for the context. Their `$why` multiplies a link
 prior (×0.15) with the state's own lift, so thin, purchase-free rows go to
 an extreme instead of shrinking toward the base rate.
+
+**Stopped (2026-10-22, 13:07).** The `basedOn: ["product_sku"]` column stopped
+after 253 of 1,400 sessions. At SESS-007197 (a dog household, April 2026,
+five category words in the cart) Aito answers 500: `$p` is NaN, "the evidence
+lifts multiplied past the range of a double". The refusal is deterministic.
+The same body answers without `basedOn` (top `$p` 0.975), and without the cart
+words (0.76). Not worked around: skipping such sessions would bias the
+column. Repro for core: aito-core `.ai/results/recommend-lifts-saturate-many-conditions-2026-10-22.md`.
