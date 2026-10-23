@@ -1,6 +1,6 @@
 # ADR 0035: The data promotion is a step of the deploy
 
-**Status:** Proposed (2026-10-23)
+**Status:** Proposed (2026-10-23; revised with aito-azure's review the same day)
 
 ## Context
 
@@ -40,37 +40,62 @@ demo is inconsistent only for the time the container takes to restart.
 release env. It's slow (a cold env) but correct, and the smoke tests run
 there.
 
-**Cutover (one command in aito-azure, back to back):**
-1. Pre-flight: the release env exists, and its row counts equal the counts
-   the release declares (a file in the release, e.g.
-   `data/release-env.json`: env name plus counts per table). On any
-   mismatch it refuses, before anything is written.
-2. Back up `master` (`POST /_envs`, basedOn `env.master`, named
-   `master-backup-<date>`).
-3. Promote the release env (`POST /_envs/<env>/promote`).
-4. Set the image and restart the web app (today's deploy step).
-5. Clear the lazy cache (`./do clear-cache` against `master`).
-6. Smoke tests on prod, as today.
+**Cutover (one command in aito-azure; aito-azure's order, 2026-10-23):**
+0. Print the whole plan before the first write: env, counts, backup name,
+   image tags. `--dry-run` runs only the pre-flight.
+1. Pre-flight, read-only: the release env exists, its row counts equal the
+   release file's (`data/release-env.json`: env name, counts per table), and
+   the data disk has room for the backup. On any mismatch it refuses, before
+   anything is written.
+2. Disk snapshot (`./do snapshot-db`, as shared releases already do). It
+   covers a promote that damages master.
+3. Set the new image and restart. The unified container takes about 5
+   minutes to start; the old one serves old data with old code meanwhile.
+4. Poll `ecommerce.aito.ai/api/version` until it reports the new build.
+5. Back up `master` (`POST /_envs`, basedOn `env.master`, named
+   `master-backup-<date>`), then promote the release env
+   (`POST /_envs/<env>/promote`) straight away.
+6. Clear the persistent cache (`./do clear-cache` against `master`), warm up
+   a few representative queries (in case the promote leaves master cold),
+   then run the smoke tests.
 
-**Rollback:** promote the backup, then redeploy the previous image.
+**The app waits for its data.** Between steps 4 and 5 the new code runs
+against the old data. So the app reads `data/release-env.json` at startup.
+Until master's tables and counts match it, data routes answer 503 ("data
+release pending"), while `/api/version` and `/api/health` answer as usual.
+Only once it matches does the app warm its caches. Without this, the
+container's in-memory cache would hold answers warmed on the old data, and
+`./do clear-cache` (another process) can't reach it.
 
-**When a release changes no data:** the release file names no env, and the
-cutover skips steps 1–3 and 5.
+**Rollback, in the same order:** redeploy the previous image, wait for its
+build on `/api/version`, then promote the backup. The previous image carries
+its own committed snapshots and release file.
+
+**When a release changes no data:** the release file is unchanged, and the
+cutover skips steps 1, 2, 5 and the cache clear.
 
 ## Ownership and permissions
 
 - **This repo:** the release file, `./do precompute --as master`, and the
   checks the pre-flight runs.
 - **aito-azure:** the cutover command, and running it.
-- **The new permission:** the deploy now holds a key that can promote over
-  `master` on shared.aito.ai. Today only Antti runs such writes. Which key,
-  where it's stored, and who may run the cutover is Antti's decision.
+- **The new permission:** the cutover needs a key that can promote over
+  `master`. aito-azure proposes:
+  - an ecommerce-only read-write key (or a promote-only key, if Aito has
+    one), kept in Key Vault;
+  - fetched by the command itself and never printed;
+  - run only with Antti's yes, outside 08–10 Helsinki, announced before it
+    starts, at night by preference.
+
+  The key is Antti's decision.
+- **For Aito core:** what a promote does to residency (is master hot right
+  after?), and whether `basedOn` makes a full copy (disk use of backups).
 
 ## Acceptance criteria
 
-- A release with a new env goes live with one cutover command. The live
-  demo answers from the new data with the new code, and the gap is the
-  restart.
+- A release with a new env goes live with one cutover command. Old code
+  never reads new data. New code reads old data only for the seconds
+  between its start and the promote, answering 503 on data routes meanwhile.
 - A pre-flight mismatch refuses before anything is written, and says which
   table's count differs.
 - The precomputed views load from the committed snapshots right after the
