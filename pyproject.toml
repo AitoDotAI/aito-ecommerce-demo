@@ -11,6 +11,9 @@ dependencies = [
 ]
 
 [dependency-groups]
+backtest = [
+    "numpy>=2,<3",
+]
 dev = [
     "pytest>=8.0,<9",
     "pytest-httpx>=0.30,<1",
