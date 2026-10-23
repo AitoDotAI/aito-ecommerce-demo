@@ -77,7 +77,8 @@ Money is shown in £, as the data are; nothing is converted.
   (`benchmarks/ecommerce-reco/retail2/analysis.json`, aito-core 625867faca).
 - The claim is worded exactly as cleared (below). The page cites UCI.
 - `./do aito-check` on env `uci` reproduces the benchmark: Aito's hit@1 over
-  the benchmark's buyers with 1–2 earlier orders is 0.31 ± 0.01.
+  the benchmark's buyers with 1–2 earlier orders is exactly 197 of 636
+  (0.31), as in the benchmark's run: the query is deterministic.
 - A user can pick a product and see what is bought with it, with lifts.
 
 ## The claim, as cleared

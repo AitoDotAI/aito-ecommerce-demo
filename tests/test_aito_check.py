@@ -683,8 +683,11 @@ def test_uci_draft_reproduces_the_benchmarks_hit_at_1_for_buyers_with_1_2_orders
         hits += codes[0][0] in buyer.next_order.codes
 
     hit_at_1 = hits / len(buyers)
-    assert abs(hit_at_1 - 0.31) <= 0.01, (
-        f"hit@1 {hit_at_1:.4f} ({hits} of {len(buyers)}), benchmark 0.3097. {UCI_REPRODUCTION_CHECKLIST}")
+    # The query is deterministic, so the reproduction is exact: the same hits,
+    # not a number within a tolerance (±0.01 would be far tighter than the
+    # ±0.036 95 % interval at n = 636 anyway).
+    assert hits == 197, (
+        f"hit@1 {hit_at_1:.4f} ({hits} of {len(buyers)}), benchmark 197 of 636. {UCI_REPRODUCTION_CHECKLIST}")
 
 
 def test_uci_bought_together_answers_lifts_for_a_common_code(uci_client):
