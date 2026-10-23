@@ -703,3 +703,19 @@ def test_uci_bought_together_answers_lifts_for_a_common_code(uci_client):
     assert "85123A" not in {b.code for b in result.bought_with}
     holding = uci_client.search("baskets", where={"codes": {"$match": "85123A"}}, limit=0)["total"]
     assert result.invoices_with_product == holding, (result.invoices_with_product, holding)
+
+
+def test_uci_backtest_why_names_the_buyer_and_agrees_with_the_measured_ranking(uci_client):
+    """ADR 0036's example buyers: the `$why` query (`select` with `{"$why": {}}`,
+    limit 1) must rank the same top code as the measured query, and its
+    tree must parse to a baseP and lifts with their conditions."""
+    from src.backtest_aito import explain_top_suggestion
+    from src.uci_outcomes import load_outcomes
+    from src.uci_reorder_service import predicted_codes
+
+    buyer = min(c for c, o in load_outcomes().items() if 1 <= o.prior_invoices <= 2 and o.next_order)
+    top_code = predicted_codes(uci_client, buyer)[0][0]
+
+    why = explain_top_suggestion(uci_client, buyer, top_code)   # raises if the two rankings disagree
+
+    assert why.startswith("base ") and " when " in why, why

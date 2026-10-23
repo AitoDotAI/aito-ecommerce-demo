@@ -1212,6 +1212,25 @@ To probe: hits read `related.codes.$has` with the code's case kept
 ~4,400 codes come back (if they are not ordered by lift, the view's
 top 10 by lift is a top 10 of the wrong 50).
 
+## The reorder backtest's `$why`, env `uci` (ADR 0036)
+
+**Not yet run by this demo.** The backtest measures the draft order's
+`_predict` above, byte for byte. For its ten example buyers it asks once
+more, for the top code's reasons, combining `$value` (above) with the
+`_predict` `{"$why": {}}` select documented in "`$why` highlight":
+
+```json
+POST /_predict
+{"from": "lines", "where": {"invoice.customer_id": "12357"},
+ "predict": "code", "limit": 1, "select": ["$p", "$value", {"$why": {}}]}
+```
+
+It is a separate query so the measured one never changes. To probe on
+`uci` (`./do uci-check` runs it): the top `$value` equals the measured
+query's top code (`src/backtest_aito.py` raises if not), and the tree
+parses with `src/why_processor.py` to a baseP and lifts whose conditions
+are named (expected: `invoice.customer_id` for a buyer with history).
+
 ## `AitoClient` method ↔ endpoint cheat reference
 
 | Method | Endpoint | First view that uses it |

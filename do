@@ -144,6 +144,9 @@ Quality
   test              Run pytest
   aito-check        Sanity-check Aito queries against the loaded data
   uci-check         The UCI checks in aito-check, on env uci (reproduces the benchmark)
+  backtest-prepare  shopify <export.csv> <name>: a merchant's orders → data/backtest/<name>/ (ADR 0036)
+  backtest-load     <name>: training orders → Aito env backtest-<name> (needs AITO_ENV=backtest-<name>)
+  backtest          <uci|name> [--offline]: Aito vs three baselines → data/backtest/<name>/report.md
   search-eval       Score search arms on the judged query set (nDCG, recall, controls)
   v2-env            Stage the v2 (Rep2) env — ADR 0025 (dry run unless --apply)
   verify <feature>  Run the adversary Playwright agent for one feature
@@ -404,6 +407,29 @@ cmd_uci_check() {
   AITO_ENV=uci uv run pytest tests/test_aito_check.py -v -k uci
 }
 
+# ── Reorder backtest on a merchant's orders (ADR 0036) ────────────
+
+cmd_backtest_prepare() {
+  # Local only. The Email salt comes from BACKTEST_EMAIL_SALT; never commit it.
+  cd "$SCRIPT_DIR"
+  PYTHONPATH=. uv run --group backtest python scripts/backtest.py prepare "$@"
+}
+
+cmd_backtest_load() {
+  cd "$SCRIPT_DIR"
+  _guard_prod_write backtest-load
+  _show_target
+  echo "   env: ${AITO_ENV:-<unset>}"
+  uv run python -m src.backtest_loader "$@"
+}
+
+cmd_backtest() {
+  # --offline: the three baselines only. Otherwise AITO_ENV must be the
+  # dataset's env (uci, or backtest-<name>); only _predict is read.
+  cd "$SCRIPT_DIR"
+  PYTHONPATH=. uv run --group backtest python scripts/backtest.py run "$@"
+}
+
 # ── Workbook ────────────────────────────────────────────────────────
 
 # (Re)create the Aito console workbook from its JSON definition. The
@@ -450,7 +476,8 @@ cmd_workbook() {
 
 cmd_test() {
   cd "$SCRIPT_DIR"
-  uv run pytest tests/ -v
+  # The backtest group adds numpy, which the EASE baseline's tests need (ADR 0036).
+  uv run --group backtest pytest tests/ -v
 }
 
 cmd_aito_check() {
@@ -652,6 +679,9 @@ case "${1:-help}" in
   uci-prepare)       cmd_uci_prepare ;;
   uci-load)          cmd_uci_load ;;
   uci-check)         cmd_uci_check ;;
+  backtest-prepare)  shift; cmd_backtest_prepare "$@" ;;
+  backtest-load)     shift; cmd_backtest_load "$@" ;;
+  backtest)          shift; cmd_backtest "$@" ;;
   workbook)          cmd_workbook ;;
   test)              cmd_test ;;
   aito-check)        cmd_aito_check ;;

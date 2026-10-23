@@ -33,7 +33,7 @@ def run() -> None:
     config = load_config()
     if config.aito_env != UCI_ENV:
         sys.exit(f"Refusing: AITO_ENV is {config.aito_env!r}; the UCI loader writes only to env {UCI_ENV!r}.")
-    _require_env_exists(config)
+    require_env_exists(config, UCI_ENV)
     rows = {table: _prepared_rows(table) for table in UCI_SCHEMA}
     _check_expected_counts(rows)
 
@@ -55,14 +55,14 @@ def run() -> None:
     print("Done.")
 
 
-def _require_env_exists(config: Config) -> None:
+def require_env_exists(config: Config, env: str) -> None:
     """Fail before writing if the env isn't there; we don't create one here."""
     response = httpx.get(f"{config.aito_api_url}/api/v1/_envs",
                          headers={"x-api-key": config.aito_api_key}, timeout=30.0)
     response.raise_for_status()
     names = {env.get("name") for env in response.json().get("envs", [])}
-    if UCI_ENV not in names:
-        sys.exit(f"Env {UCI_ENV!r} does not exist on {config.aito_api_url} (envs: {sorted(names)}). "
+    if env not in names:
+        sys.exit(f"Env {env!r} does not exist on {config.aito_api_url} (envs: {sorted(names)}). "
                  f"Create it first; this loader only fills it.")
 
 
