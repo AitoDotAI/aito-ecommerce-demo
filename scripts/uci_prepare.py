@@ -4,7 +4,8 @@
 
 Reads the local copy of the dataset (never downloads), checks it is the
 exact file the benchmark used, cleans it as the benchmark did, and writes
-one JSON per Aito table plus `outcomes.json` (not loaded into Aito).
+one JSON per Aito table plus `outcomes.json` and `new_buyers.json` (the
+held-out orders of buyers new after the cutoff; neither is loaded into Aito).
 Fails if any count differs from the benchmark's.
 
 Source: Chen, D. (2012). Online Retail II [Dataset]. UCI Machine Learning
@@ -21,8 +22,8 @@ from pathlib import Path
 from src.uci_cleaning import clean_lines
 from src.uci_outcomes import UCI_DATA_DIR
 from src.uci_tables import (
-    EXPECTED_COUNTS, aito_rows, basket_rows, group_invoices, outcomes, product_rows, split,
-    split_counts,
+    EXPECTED_COUNTS, aito_rows, basket_rows, group_invoices, new_buyer_orders, outcomes, product_rows,
+    split, split_counts,
 )
 from src.uci_xlsx import read_rows
 
@@ -53,7 +54,9 @@ def main() -> None:
         raise SystemExit("Counts differ from the benchmark's; not writing data/uci/.")
 
     UCI_DATA_DIR.mkdir(parents=True, exist_ok=True)
-    for name, rows in {**tables, "outcomes": outcomes(invoices, train, test)}.items():
+    held_out = {"outcomes": outcomes(invoices, train, test),
+                "new_buyers": new_buyer_orders(invoices, train, test)}
+    for name, rows in {**tables, **held_out}.items():
         path = UCI_DATA_DIR / f"{name}.json"
         with path.open("w", encoding="utf-8") as fh:
             json.dump(rows, fh)

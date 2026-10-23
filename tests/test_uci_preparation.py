@@ -11,7 +11,8 @@ import zipfile
 
 from src.uci_cleaning import clean_lines
 from src.uci_tables import (
-    aito_rows, basket_rows, basket_token, code_of_token, group_invoices, outcomes, product_rows, split,
+    aito_rows, basket_rows, basket_token, code_of_token, group_invoices, new_buyer_orders, outcomes,
+    product_rows, split,
 )
 from src.uci_xlsx import excel_date, read_rows
 
@@ -126,6 +127,18 @@ def test_a_buyers_next_order_is_their_first_invoice_from_the_cutoff_on():
     assert result["13085"] == {"prior_invoices": 1,
                                "next_order": {"invoice": "2", "date": "2011-09-01", "codes": ["B"]}}
     assert result["99999"] == {"prior_invoices": 1, "next_order": None}
+
+
+def test_a_buyer_new_after_the_cutoff_is_kept_apart_for_the_backtests_0_slice():
+    _, invoices, train, test = prepared([
+        row(invoice="1", code="A", date=DEC_2009),
+        row(invoice="3", code="C", date="40800", customer="55555"),   # new after the cutoff
+        row(invoice="2", code="B", date="40800", customer="55555"),   # same day: the lower id is first
+    ])
+
+    assert "55555" not in outcomes(invoices, train, test)        # Aito holds no history for them
+    assert new_buyer_orders(invoices, train, test) == {
+        "55555": {"invoice": "2", "date": "2011-09-14", "codes": ["B"]}}
 
 
 def test_products_carry_the_most_frequent_description_and_the_latest_training_price():

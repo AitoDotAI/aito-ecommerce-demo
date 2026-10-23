@@ -29,6 +29,7 @@ EXPECTED_COUNTS = {
     "test invoices": 7_121,           # held out
     "scored customers": 2_974,        # with at least one held-out invoice
     "scored with 1-2 prior invoices": 636,
+    "scored with 0 prior invoices": 630,  # new buyers: the backtest's 0 slice (ADR 0036)
 }
 
 
@@ -120,22 +121,39 @@ def outcomes(invoices: dict[str, Invoice], train: list[str], test: list[str]) ->
     next order (the first held-out invoice; ties on the date go to the
     lowest invoice id, as in the benchmark), or None if they never returned."""
     prior = Counter(invoices[i].customer_id for i in train)
-    next_order: dict[str, Invoice] = {}
-    for invoice_id in test:
-        inv = invoices[invoice_id]
-        if inv.customer_id not in next_order or inv.date < next_order[inv.customer_id].date:
-            next_order[inv.customer_id] = inv
+    next_order = _first_held_out_invoices(invoices, test)
     return {
         customer: {
             "prior_invoices": count,
-            "next_order": None if customer not in next_order else {
-                "invoice": next_order[customer].invoice,
-                "date": next_order[customer].date,
-                "codes": sorted(next_order[customer].codes),
-            },
+            "next_order": _order_row(next_order[customer]) if customer in next_order else None,
         }
         for customer, count in sorted(prior.items())
     }
+
+
+def new_buyer_orders(invoices: dict[str, Invoice], train: list[str], test: list[str]) -> dict[str, dict]:
+    """The first held-out invoice of each buyer with NO training invoice.
+
+    `outcomes` covers only the customers loaded into Aito; the backtest
+    (ADR 0036) also scores these buyers, its "0 prior orders" slice."""
+    known = {invoices[i].customer_id for i in train}
+    first = _first_held_out_invoices(invoices, test)
+    return {customer: _order_row(first[customer]) for customer in sorted(first) if customer not in known}
+
+
+def _first_held_out_invoices(invoices: dict[str, Invoice], test: list[str]) -> dict[str, Invoice]:
+    """Per buyer, their first invoice in `test` (sorted ids): on a tied date
+    the lowest id wins, as in the benchmark's `retail2_run.targets`."""
+    first: dict[str, Invoice] = {}
+    for invoice_id in test:
+        inv = invoices[invoice_id]
+        if inv.customer_id not in first or inv.date < first[inv.customer_id].date:
+            first[inv.customer_id] = inv
+    return first
+
+
+def _order_row(invoice: Invoice) -> dict:
+    return {"invoice": invoice.invoice, "date": invoice.date, "codes": sorted(invoice.codes)}
 
 
 def split_counts(invoices: dict[str, Invoice], train: list[str], test: list[str],
@@ -151,6 +169,7 @@ def split_counts(invoices: dict[str, Invoice], train: list[str], test: list[str]
         "test invoices": len(test),
         "scored customers": len(scored),
         "scored with 1-2 prior invoices": sum(1 for c in scored if 1 <= prior[c] <= 2),
+        "scored with 0 prior invoices": sum(1 for c in scored if prior[c] == 0),
     }
 
 
