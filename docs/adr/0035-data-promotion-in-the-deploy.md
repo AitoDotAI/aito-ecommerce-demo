@@ -63,13 +63,25 @@ there.
 against the old data. So the app reads `data/release-env.json` at startup.
 Until master's tables and counts match it, data routes answer 503 ("data
 release pending"), while `/api/version` and `/api/health` answer as usual.
-Only once it matches does the app warm its caches. Without this, the
+Only once it matches does the app warm its caches. The same check repeats
+every 60 seconds (see rollback). Without this, the
 container's in-memory cache would hold answers warmed on the old data, and
 `./do clear-cache` (another process) can't reach it.
 
-**Rollback, in the same order:** redeploy the previous image, wait for its
-build on `/api/version`, then promote the backup. The previous image carries
-its own committed snapshots and release file.
+**Rollback, data first** (aito-azure's order). The previous image may predate
+the data wait: deployed first, it would warm its memory on the release's data
+and keep serving it after the backup returns.
+1. Promote the backup while the new image still serves.
+2. Redeploy the previous image, and wait for its build on `/api/version`. It
+   warms against the old data, which is master again.
+3. Cache clear, warm-up, smoke tests.
+
+During step 2 (about 5 minutes) the new code runs against the old data. So
+the data wait isn't only at startup: **the app re-checks master against its
+release file every 60 seconds.** On a mismatch it drops its in-memory cache
+and answers 503 on data routes until the counts match again. A rollback then
+shows "data release pending" for those minutes, not answers from the wrong
+data.
 
 **When a release changes no data:** the release file is unchanged, and the
 cutover skips steps 1, 2, 5 and the cache clear.
