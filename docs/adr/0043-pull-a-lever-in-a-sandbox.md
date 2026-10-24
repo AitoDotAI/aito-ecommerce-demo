@@ -181,3 +181,37 @@ a number Aito didn't produce.
   what-if by price instead of debugging on Monday.
 
 Reset loads the release fixtures only.
+
+## Amendment 2 (2026-10-24, Antti's request; the CPO's correction), before the code lands
+
+**One sandbox becomes a temporary env per session, branched from a template.** Aito v2
+has instant copy-on-write env branches:
+- `POST /db/{db}/api/v2/_envs {"name": …, "basedOn": "env.master"}` creates one in
+  milliseconds, with no load;
+- an env is chosen only by the URL path `/db/{db}/env/{name}/api/v2/…`.
+
+- **Template:** the sandbox database's master, loaded once from the release fixtures
+  (`./do sandbox-template-load`). PetNord's database stays read-only to the demo. Keys are
+  per database, with no env-scoped keys, so the sandbox database's read-write key can
+  never reach PetNord.
+- **Temp env:** `tmp-YYYY-MM-DD-HH-MM-SS-<16 hex>`, the hash 64 bits from `secrets`.
+  - "New sandbox" creates one (an admin-token endpoint; 404 without a configured token).
+  - The client carries it as `?db=<name>` (shareable for a meeting) or `X-Aito-Env`. The
+    backend maps it to the env path.
+  - A name that doesn't match the pattern exactly, or isn't in the env list, is refused
+    (400). It never falls back to a master.
+  - Writes go only to `tmp-` envs, never to the template.
+- **Reaper:** at startup and every 10 minutes, it deletes `tmp-` envs older than 3 hours
+  (age from the name; a malformed name is logged, never deleted). At most 5 live temp
+  envs; "New sandbox" answers 429 beyond that. "Reset" means a new branch.
+- **The banner says so:** a sandbox starts from the release data (the template), not
+  from live master.
+- **Open, measured by Aito core before the first live run:**
+  - whether one write to `product_states` (a rep1 link target of impressions,
+    order_lines and monthly_sales) relinks those tables in the branch, and at what cost;
+  - the first predict after a write.
+
+  If a write costs seconds, the template gets every product's 2026-05 row in advance,
+  and a lever only replaces its values.
+- **Fallback for Monday:** if the branch flow isn't rehearsed by 10:00, one fixed temp
+  env created in advance serves the demo.
