@@ -1,7 +1,7 @@
 """Precompute-and-serve store for the demo's parameterless views.
 
-Seven views are served from offline snapshots: the six heavy ones
-(churn, demand, evaluation, inventory, markdown, winback) plus the
+Five views are served from offline snapshots: the heavy ones (demand,
+evaluation, retention, supply; `src/precompute.py` lists them) plus the
 Overview landing page (light-looking, but ~321 sequential `_search`
 calls / ~93 s cold — the heaviest cold page, and the first one every
 visitor loads; see ADR 0024).
@@ -11,7 +11,7 @@ The heavy views each run an `_evaluate` and/or a large `_predict` /
 the public
 deploy runs a **read-only** API key, so `src/cache.py`'s write-through
 L2 layer is disabled there — every restart starts cold and the startup
-warmup has to recompute all six.
+warmup has to recompute them all.
 
 This module inverts the write path. The heavy work runs **offline** in
 `./do precompute` (see `src/precompute.py`), which snapshots each
@@ -42,7 +42,7 @@ the *real* query cost from an honest snapshot, not a fabricated number.
 
 Contrast with `src/cache.py`: that is a *lazy* cache for the nine light
 endpoints (compute on first hit, write-through, disabled on the public
-key). This is a *precompute-and-serve* store for the six heavy ones
+key). This is a *precompute-and-serve* store for the heavy ones
 (compute offline, read-only at request time). Two mechanisms, one line
 between them: heavy/offline here, light/lazy there.
 

@@ -206,17 +206,17 @@ export function productFillingPanel(): AitoPanelConfig {
 }
 
 
-export function feedbackPanel(): AitoPanelConfig {
+export function reviewTriagePanel(): AitoPanelConfig {
   return {
-    operation: "Feedback",
+    operation: "Review triage",
     endpoints: ["_predict"],
     description:
-      `Four parallel <code style="color:var(--aito-teal);">_predict</code> calls ` +
+      `Three parallel <code style="color:var(--aito-teal);">_predict</code> calls ` +
       `condition on both <code style="color:var(--aito-teal);">text</code> + ` +
       `<code style="color:var(--aito-teal);">rating</code> and return ` +
-      `<strong>category</strong>, <strong>sentiment</strong>, ` +
-      `<strong>assigned_to</strong>, and <strong>P(churn within 90 d)</strong> ` +
-      `in one round-trip. The popover surfaces each feature's lift contribution.`,
+      `<strong>category</strong>, <strong>sentiment</strong> and ` +
+      `<strong>assigned_to</strong> in one round-trip. The popover surfaces each ` +
+      `feature's lift contribution.`,
     query:
 `${k('"predict"')}: {
   ${n('"from"')}: ${s('"reviews"')},
@@ -224,180 +224,70 @@ export function feedbackPanel(): AitoPanelConfig {
     ${n('"text"')}: ${s('"Package arrived late. The seal was broken."')},
     ${n('"rating"')}: 2
   },
-  ${n('"predict"')}: ${s('"churn_within_90d"')}
+  ${n('"predict"')}: ${s('"assigned_to"')}
 }`,
     links: LEARN_MORE_LINKS,
   };
 }
 
 
-export function churnPanel(): AitoPanelConfig {
+export function retentionPanel(): AitoPanelConfig {
   return {
-    operation: "Churn",
-    endpoints: ["_predict", "_relate", "_evaluate"],
+    operation: "Retention",
+    endpoints: ["_predict", "_relate", "_recommend", "_estimate", "_batch"],
     description:
-      `Time-series prediction over the <code style="color:var(--aito-teal);">customer_months</code> ` +
-      `panel — one row per customer per month with visits, purchases, ` +
-      `spend, latest review snapshot. <code style="color:var(--aito-teal);">_predict ` +
-      `churned_in_3_months</code> ranks active customers by risk. Drivers via ` +
-      `parallel <code style="color:var(--aito-teal);">_relate</code>. Accuracy via ` +
-      `<code style="color:var(--aito-teal);">_evaluate</code>.`,
+      `Each active customer's latest order is scored with ` +
+      `<code style="color:var(--aito-teal);">_predict churned_in_3_months</code>, ` +
+      `batched. A nested <code style="color:var(--aito-teal);">from</code> sets what ` +
+      `Aito learns from: months in which a customer ordered, up to the last month ` +
+      `whose next three months are in the data. Drivers come from ` +
+      `<code style="color:var(--aito-teal);">_relate</code> over churned customers; ` +
+      `the offer from <code style="color:var(--aito-teal);">_recommend</code> over past ` +
+      `win-back emails, a calibrated <code style="color:var(--aito-teal);">_predict responded</code> ` +
+      `and an <code style="color:var(--aito-teal);">_estimate</code> of the order.`,
     query:
 `${k('"predict"')}: {
-  ${n('"from"')}: ${s('"customer_months"')},
+  ${n('"from"')}: {
+    ${n('"from"')}: ${s('"customer_months"')},
+    ${n('"where"')}: {
+      ${n('"month"')}: { ${n('"$lte"')}: ${s('"2026-01"')} },
+      ${n('"purchases"')}: { ${n('"$gte"')}: 1 }
+    }
+  },
   ${n('"where"')}: {
     ${n('"pets"')}: ${s('"small_animal"')},
-    ${n('"region"')}: ${s('"turku"')},
-    ${n('"tenure_months_at_month"')}: 2,
-    ${n('"visits"')}: 3,
-    ${n('"purchases"')}: 1,
-    ${n('"spent_eur"')}: 59.64,
-    ${n('"latest_rating"')}: 1,
-    ${n('"latest_sentiment"')}: ${s('"negative"')},
-    ${n('"latest_category"')}: ${s('"quality"')}
+    ${n('"visits"')}: 4,
+    ${n('"purchases"')}: 1
   },
-  ${n('"predict"')}: ${s('"churned_in_3_months"')},
-  ${n('"select"')}: [
-    ${s('"$p"')}, ${s('"feature"')},
-    { ${n('"$why"')}: { ${n('"highlight"')}: {
-      ${n('"posPreTag"')}: ${s('"«"')}, ${n('"posPostTag"')}: ${s('"»"')},
-      ${n('"negPreTag"')}: ${s('"‹"')}, ${n('"negPostTag"')}: ${s('"›"')}
-    } } }
-  ],
-  ${n('"limit"')}: 2
+  ${n('"predict"')}: ${s('"churned_in_3_months"')}
 }`,
     links: LEARN_MORE_LINKS,
   };
 }
 
 
-export function demandPanel(): AitoPanelConfig {
+export function supplyPanel(): AitoPanelConfig {
   return {
-    operation: "Demand Forecast",
-    endpoints: ["_estimate", "_relate", "_evaluate"],
-    description:
-      `Per-SKU <code style="color:var(--aito-teal);">_estimate units_sold</code> ` +
-      `from the <code style="color:var(--aito-teal);">monthly_sales</code> panel — ` +
-      `expected-value regression (K-NN under the hood), not most-probable-integer ` +
-      `prediction. Seasonality via parallel <code style="color:var(--aito-teal);">_relate</code> ` +
-      `over (season, category). Accuracy via a time-split <code style="color:var(--aito-teal);">_evaluate</code>, ` +
-      `shown next to the naive "same as last month" forecast.`,
-    query:
-`${k('"estimate"')}: {
-  ${n('"from"')}: ${s('"monthly_sales"')},
-  ${n('"where"')}: {
-    ${n('"product_sku"')}: ${s('"SKU-PT-0001"')},
-    ${n('"units_last_month"')}: ${s('14')},
-    ${n('"pet_type"')}: ${s('"dog"')},
-    ${n('"category"')}: ${s('"dry-food"')},
-    ${n('"season"')}: ${s('"spring"')}
-  },
-  ${n('"estimate"')}: ${s('"units_sold"')}
-}`,
-    links: LEARN_MORE_LINKS,
-  };
-}
-
-
-export function inventoryPanel(): AitoPanelConfig {
-  return {
-    operation: "Inventory",
+    operation: "Supply",
     endpoints: ["_estimate", "_search"],
     description:
-      `Stock + lead-time arithmetic for every SKU, with Aito's ` +
-      `<code style="color:var(--aito-teal);">_estimate units_sold</code> ` +
-      `surfacing expected next-month demand for the critical SKUs. Reorder ` +
-      `workflow sorts by <strong>revenue at risk</strong> (forecast shortfall ` +
-      `× retail) — the cash a stockout would cost.`,
+      `Aito's <code style="color:var(--aito-teal);">_estimate units_sold</code> forecasts ` +
+      `next month for every SKU the view lists, once per SKU. The reorder quantity, the ` +
+      `revenue at risk and the tied capital are arithmetic on it. For the largest overstock, ` +
+      `the same <code style="color:var(--aito-teal);">_estimate</code> with ` +
+      `<code style="color:var(--aito-teal);">model: "regression"</code> at five prices ` +
+      `finds the shallowest markdown that clears the excess. Price bands come from one ` +
+      `<code style="color:var(--aito-teal);">_search</code> of realised prices.`,
     query:
 `${k('"estimate"')}: {
   ${n('"from"')}: ${s('"monthly_sales"')},
   ${n('"where"')}: {
-    ${n('"product_sku"')}: ${s('"SKU-PT-0042"')},
-    ${n('"month"')}: ${s('"2026-05"')},
-    ${n('"category"')}: ${s('"dry-food"')},
+    ${n('"product_sku"')}: ${s('"SKU-PT-0206"')},
+    ${n('"units_last_month"')}: 30,
+    ${n('"category"')}: ${s('"accessories"')},
     ${n('"season"')}: ${s('"spring"')}
   },
   ${n('"estimate"')}: ${s('"units_sold"')}
-}`,
-    links: LEARN_MORE_LINKS,
-  };
-}
-
-
-export function winbackPanel(): AitoPanelConfig {
-  return {
-    operation: "Win-back",
-    endpoints: ["_recommend", "_estimate"],
-    description:
-      `For each currently-churned customer, Aito's ` +
-      `<code style="color:var(--aito-teal);">_recommend product_sku</code> over the ` +
-      `<code style="color:var(--aito-teal);">winback_campaigns</code> historical table — ` +
-      `goal <code style="color:var(--aito-teal);">{responded: true}</code> — ranks products ` +
-      `by predicted response rate. Plus per-product ` +
-      `<code style="color:var(--aito-teal);">_estimate order_value_eur</code> to turn ` +
-      `response rate into € recoverable revenue.`,
-    query:
-`${k('"from"')}: ${s('"winback_campaigns"')},
-${k('"where"')}: {
-  ${n('"customer_id"')}: ${s('"CUST-00008"')},
-  ${n('"customer_staple_category"')}: ${s('"dog/dry-food"')},
-  ${n('"recency_bucket"')}: ${s('"0-90d"')}
-},
-${k('"recommend"')}: ${s('"product_sku"')},
-${k('"goal"')}: { ${n('"responded"')}: ${n('true')} },
-${k('"basedOn"')}: [${s('"pet_type"')}, ${s('"category"')}, ${s('"brand"')}],
-${k('"limit"')}: ${n('8')}`,
-    links: LEARN_MORE_LINKS,
-  };
-}
-
-
-export function markdownPanel(): AitoPanelConfig {
-  return {
-    operation: "Markdown",
-    endpoints: ["_estimate"],
-    description:
-      `For each overstock SKU, Aito's <code style="color:var(--aito-teal);">_estimate units_sold</code> ` +
-      `runs at five price points (-20 % … 0 %). Picks the markdown depth that ` +
-      `clears the excess in 3 months at the highest recoverable revenue ` +
-      `<strong>(price − cost) × cleared units</strong>. Ties Inventory + Price + Demand ` +
-      `into one decision.`,
-    query:
-`${k('"estimate"')}: {
-  ${n('"from"')}: ${s('"monthly_sales"')},
-  ${n('"where"')}: {
-    ${n('"product_sku"')}: ${s('"SKU-PT-0042"')},
-    ${n('"month"')}: ${s('"2026-05"')},
-    ${n('"price_eur"')}: ${n('72.20')},
-    ${n('"category"')}: ${s('"dry-food"')},
-    ${n('"season"')}: ${s('"spring"')}
-  },
-  ${n('"estimate"')}: ${s('"units_sold"')}
-}`,
-    links: LEARN_MORE_LINKS,
-  };
-}
-
-
-export function pricePanel(): AitoPanelConfig {
-  return {
-    operation: "Price",
-    endpoints: ["_search", "_aggregate", "_relate"],
-    description:
-      `Fair bands from one bulk <code style="color:var(--aito-teal);">_search</code> of ` +
-      `product_states, with the stats computed in Python; the table's first SKU also gets an ` +
-      `<code style="color:var(--aito-teal);">_aggregate</code>. A product's demand curve and ` +
-      `what-ifs are on the Product view.`,
-    query:
-`${k('"aggregate"')}: {
-  ${n('"from"')}: ${s('"product_states"')},
-  ${n('"where"')}: { ${n('"product_sku"')}: ${s('"SKU-PT-0001"')} },
-  ${n('"aggregate"')}: [
-    ${s('"price_eur.$mean"')},
-    ${s('"price_eur.$min"')},
-    ${s('"price_eur.$max"')}
-  ]
 }`,
     links: LEARN_MORE_LINKS,
   };

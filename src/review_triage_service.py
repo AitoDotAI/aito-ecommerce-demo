@@ -1,4 +1,4 @@
-"""Feedback — multi-field `_predict` over review text.
+"""Review triage — route a review: multi-field `_predict` over its text.
 
 A support-queue triage view: incoming review text in, three predicted
 fields out (category, sentiment, assigned_to) in one round-trip via
@@ -31,15 +31,14 @@ from src.why_processor import process_why
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
 
-# Fields the demo predicts, in display order. Three classifications
-# (category / sentiment / assigned_to) plus the forward-looking
-# `churn_within_90d` — Aito predicts churn risk straight from the
-# review text. See ADR 0012 §"Forward labels" + ADR 0013.
+# Fields the view predicts, in display order: what a support desk needs
+# to route a review. The view once also predicted `churn_within_90d` from
+# the text. The data generator copies churn into reviews, so text → churn
+# runs backwards (ADR 0039); Retention answers who is leaving.
 PREDICT_FIELDS: list[tuple[str, str]] = [
-    ("category",          "Issue category"),
-    ("sentiment",         "Sentiment"),
-    ("assigned_to",       "Suggested assignee"),
-    ("churn_within_90d",  "Churn risk (90 d)"),
+    ("category",    "Issue category"),
+    ("sentiment",   "Sentiment"),
+    ("assigned_to", "Suggested assignee"),
 ]
 
 
@@ -86,11 +85,10 @@ class ReviewSummary:
     actual_category: str
     actual_sentiment: str
     actual_assigned_to: str
-    actual_churn_within_90d: bool
 
 
 @dataclass
-class FeedbackResponse:
+class ReviewTriageResponse:
     review: ReviewSummary
     fields: list[PredictedField]
     candidate_reviews: list[dict]
@@ -207,20 +205,7 @@ def _predict_field(
             alternatives=[], why_factors=[], why_explanation=None,
         )
 
-    # For Boolean risk-style fields we always want to explain the TRUE
-    # class — the popover header reads "Why churn risk = 6 %?" and the
-    # body's base-P + lifts have to be the factors that produce that
-    # 6 % (not the 94 % of P(False)). Without this branch the popover
-    # tells two different stories: title says "6 %", body explains
-    # "94 %".
-    if predict_field == "churn_within_90d":
-        top = next(
-            (h for h in hits if h.get("feature") is True
-             or h.get("feature") == "true"),
-            hits[0],
-        )
-    else:
-        top = hits[0]
+    top = hits[0]
 
     predicted_value = top.get("feature")
     confidence = float(top.get("$p", 0))
@@ -243,12 +228,12 @@ def _predict_field(
 # ── Public entry point ────────────────────────────────────────────
 
 
-def get_feedback(
+def get_review_triage(
     client: AitoClient,
     *,
     review_id: str | None = None,
-) -> FeedbackResponse:
-    cache_key = f"feedback:{review_id or _DEFAULT_REVIEW_ID}"
+) -> ReviewTriageResponse:
+    cache_key = f"review-triage:{review_id or _DEFAULT_REVIEW_ID}"
     cached = cache.get(cache_key)
     if cached:
         return _from_dict(cached)
@@ -262,8 +247,8 @@ def get_feedback(
 
     # Both `text` AND `rating` are predictors. The text drives
     # category / assigned_to (tokens decide which support team takes
-    # it); rating drives sentiment + churn_within_90d (a 1★ review is
-    # a stronger churn signal than the words alone). Including both
+    # it); rating drives sentiment (a 1★ review is negative whatever
+    # its words). Including both
     # surfaces the contribution of each in the popover's `$why`.
     where = {
         "text":   review["text"],
@@ -301,7 +286,7 @@ def get_feedback(
         for r in reviews[:30]
     ]
 
-    resp = FeedbackResponse(
+    resp = ReviewTriageResponse(
         review=ReviewSummary(
             review_id=review["review_id"],
             customer_id=review["customer_id"],
@@ -314,7 +299,6 @@ def get_feedback(
             actual_category=review["category"],
             actual_sentiment=review["sentiment"],
             actual_assigned_to=review["assigned_to"],
-            actual_churn_within_90d=bool(review.get("churn_within_90d", False)),
         ),
         fields=fields,
         candidate_reviews=candidate_reviews,
@@ -328,8 +312,8 @@ def get_feedback(
 # ── Cache round-trip ──────────────────────────────────────────────
 
 
-def _from_dict(d: dict) -> FeedbackResponse:
-    return FeedbackResponse(
+def _from_dict(d: dict) -> ReviewTriageResponse:
+    return ReviewTriageResponse(
         review=ReviewSummary(**d["review"]),
         fields=[
             PredictedField(

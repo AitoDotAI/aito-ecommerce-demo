@@ -15,7 +15,7 @@ Lifecycle:
 
 import os
 
-from dataclasses import replace
+from dataclasses import asdict, replace
 from pathlib import Path
 
 from fastapi import FastAPI, Query, Request
@@ -45,17 +45,16 @@ from src.shop_suggestions import get_suggestions
 from src.basket_pairs import get_basket_section
 from src.search_words import get_search_words_section
 from src.shop_analytics_service import get_funnel_section, get_who_section
-from src.feedback_service import get_feedback
+from src.review_triage_service import get_review_triage
 from src.lookup_errors import ProductNotOnSaleError, UnknownPersonaError, UnknownProductError, UnknownReviewError
-from src.churn_service import get_churn
+from src.churn_evaluation import evaluate_churn
+from src.demand_evaluation import evaluate_demand
 from src.demand_forecast import LATEST_MONTH
 from src.demand_service import get_demand
-from src.inventory_service import get_inventory
-from src.markdown_service import get_markdowns
-from src.price_service import get_prices
+from src.retention_service import get_retention
+from src.supply_service import get_supply
 from src.price_curve import get_price_curve
 from src.price_what_if import get_price_what_if
-from src.winback_service import get_winback
 from src.uci_bought_together import bought_together
 from src.uci_buyers import pick_buyers
 from src.uci_products import UnknownStockCodeError
@@ -514,13 +513,12 @@ def shop_analytics_search_words_endpoint():
     return _shop_analytics_section("search-words", lambda: get_search_words_section(aito))
 
 
-@app.get("/api/feedback")
-def feedback_endpoint(review: str | None = None):
-    """Multi-field `_predict` over a review's text — three parallel
-    predicts return category, sentiment, and the suggested assignee.
-    See ADR 0012."""
+@app.get("/api/review-triage")
+def review_triage_endpoint(review: str | None = None):
+    """Route a review: three parallel `_predict`s over its text return the
+    category, sentiment and suggested assignee. See ADR 0012."""
     try:
-        return get_feedback(aito, review_id=review).to_dict()
+        return get_review_triage(aito, review_id=review).to_dict()
     except UnknownReviewError as exc:
         return JSONResponse(status_code=404, content={"error": str(exc)})
     except AitoError as exc:
@@ -530,14 +528,12 @@ def feedback_endpoint(review: str | None = None):
         )
 
 
-@app.get("/api/churn")
-def churn_endpoint():
-    """KPI strip + at-risk leaderboard (per-customer `_predict
-    churned`) + profile drivers (`_relate` per profile field and
-    tenure band, over churned customers) + honest accuracy
-    (`_evaluate`). See ADR 0013."""
+def _precomputed_view(name: str, compute):
+    """A heavy view: its precompute snapshot, else computed live and cached
+    for 30 minutes (ADR 0024). An Aito failure is a 502."""
     try:
-        return precompute_store.serve("churn", lambda: get_churn(aito).to_dict())
+        return precompute_store.serve(
+            name, lambda: cache.get_or_compute(f"{name}:view", lambda: compute().to_dict(), ttl=1800))
     except AitoError as exc:
         return JSONResponse(
             status_code=502,
@@ -545,10 +541,27 @@ def churn_endpoint():
         )
 
 
+@app.get("/api/supply")
+def supply_endpoint():
+    """What to reorder, what is overstocked and what markdown clears it:
+    `_estimate units_sold` per SKU, at several prices for the overstock,
+    with each SKU's fair price band. See ADR 0041."""
+    return _precomputed_view("supply", lambda: get_supply(aito))
+
+
+@app.get("/api/retention")
+def retention_endpoint():
+    """Who is about to leave, why, and the offer that brings them back:
+    `_predict churned_in_3_months` per active customer, `_relate` drivers,
+    and a win-back email per listed customer. See ADR 0041."""
+    return _precomputed_view("retention", lambda: get_retention(aito))
+
+
 @app.get("/api/demand")
 def demand_endpoint():
     """Per-SKU next-month units forecast + seasonality drivers +
-    held-out accuracy. See ADR 0014."""
+    held-out accuracy. See ADR 0014. Supply shows the forecast; the
+    seasonality moves to Patterns (ADR 0041)."""
     try:
         return precompute_store.serve("demand", lambda: get_demand(aito).to_dict())
     except AitoError as exc:
@@ -558,13 +571,12 @@ def demand_endpoint():
         )
 
 
-@app.get("/api/inventory")
-def inventory_endpoint():
-    """KPI strip + reorder queue (critical SKUs with `_predict
-    units_sold` next month) + overstock list with tied-capital €.
-    See ADR 0015."""
+# ── Model checks for Evidence (ADR 0037): the accuracy behind the 360° views ──
+
+
+def _model_check(name: str, compute):
     try:
-        return precompute_store.serve("inventory", lambda: get_inventory(aito).to_dict())
+        return cache.get_or_compute(f"model-check:{name}", lambda: asdict(compute()), ttl=3600)
     except AitoError as exc:
         return JSONResponse(
             status_code=502,
@@ -572,46 +584,16 @@ def inventory_endpoint():
         )
 
 
-@app.get("/api/winback")
-def winback_endpoint():
-    """Win-back campaign view — for each churned customer, top-3
-    product recommendations + predicted response rate + expected
-    revenue. Empirical impact from `winback_campaigns` historical
-    table. See ADR 0020."""
-    try:
-        return precompute_store.serve("winback", lambda: get_winback(aito).to_dict())
-    except AitoError as exc:
-        return JSONResponse(
-            status_code=502,
-            content={"error": str(exc), "status_code": exc.status_code},
-        )
+@app.get("/api/model-checks/churn")
+def churn_check_endpoint():
+    """Retention's churn score on a time split (`src/churn_evaluation.py`)."""
+    return _model_check("churn", lambda: evaluate_churn(aito))
 
 
-@app.get("/api/markdown")
-def markdown_endpoint():
-    """Markdown decision view — overstock SKUs + proposed discount
-    levels driven by Aito's `_estimate units_sold` at multiple price
-    points + clearance-revenue math. See ADR 0018."""
-    try:
-        return precompute_store.serve("markdown", lambda: get_markdowns(aito).to_dict())
-    except AitoError as exc:
-        return JSONResponse(
-            status_code=502,
-            content={"error": str(exc), "status_code": exc.status_code},
-        )
-
-
-@app.get("/api/price")
-def price_endpoint():
-    """Per-SKU fair-band stats + sweet-spot `_relate` over
-    discount band ↔ category. See ADR 0016."""
-    try:
-        return get_prices(aito).to_dict()
-    except AitoError as exc:
-        return JSONResponse(
-            status_code=502,
-            content={"error": str(exc), "status_code": exc.status_code},
-        )
+@app.get("/api/model-checks/demand")
+def demand_check_endpoint():
+    """Supply's demand forecast against "same as last month" (`src/demand_evaluation.py`)."""
+    return _model_check("demand", lambda: evaluate_demand(aito, LATEST_MONTH))
 
 
 # ── Business reorders, on UCI Online Retail II (ADR 0034) ──────────

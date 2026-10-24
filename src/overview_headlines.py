@@ -15,8 +15,8 @@ from dataclasses import asdict, dataclass
 from typing import Callable
 
 # The precomputed view each headline reads (`src/precompute.py`).
-SUPPLY_SNAPSHOT = "inventory"
-RETENTION_SNAPSHOT = "churn"
+SUPPLY_SNAPSHOT = "supply"
+RETENTION_SNAPSHOT = "retention"
 
 
 @dataclass(frozen=True)
@@ -26,13 +26,6 @@ class Headline:
     headline: str      # the decision, with its number
     detail: str        # the reason, or what else the view holds
     available: bool = True
-
-
-def _kpi(snapshot: dict, label: str) -> float:
-    values = [k["value"] for k in snapshot["kpis"] if k["label"] == label]
-    if len(values) != 1:
-        raise KeyError(f"the snapshot has {len(values)} KPIs labelled {label!r}")
-    return values[0]
 
 
 def _missing(view: str, href: str, name: str) -> Headline:
@@ -62,34 +55,40 @@ def product_headline(overview: dict) -> Headline:
     )
 
 
-def supply_headline(inventory: dict | None) -> Headline:
+def supply_headline(supply: dict | None) -> Headline:
+    """Supply's two decision lines (`src/supply_rows.py`), as Supply leads with them."""
     href = "/supply/"
-    if inventory is None:
+    if supply is None:
         return _missing("Supply", href, SUPPLY_SNAPSHOT)
-    critical, at_risk = int(_kpi(inventory, "Critical")), _kpi(inventory, "Revenue at risk")
-    overstock, tied = int(_kpi(inventory, "Overstock")), _kpi(inventory, "Tied capital")
+    reorder, over = supply["reorder"], supply["overstock_decision"]
+    detail = f"{over['skus']} overstocked products hold €{over['tied_capital_eur']:,.0f}"
+    if over["wont_clear"]:
+        detail += (f"; of the {over['scored']} largest, {over['wont_clear']} won't clear even with a markdown, "
+                   f"by Aito's estimate")
     return Headline(
         "Supply", href,
-        f"Reorder {critical} products below their reorder point: about €{at_risk:,.0f} of next month's "
-        f"sales is at risk if they run out (estimated from Aito's forecast).",
-        f"{overstock} more hold €{tied:,.0f} of stock above need: candidates for a markdown.",
+        f"Reorder {reorder['skus']} products now: about €{reorder['revenue_at_risk_eur']:,.0f} of next month's "
+        f"sales is at risk without them (estimated from Aito's forecast).",
+        detail + ".",
     )
 
 
-def retention_headline(churn: dict | None) -> Headline:
+def retention_headline(retention: dict | None) -> Headline:
+    """Retention's decision line (`src/retention_service.py`) and its strongest observed driver."""
     href = "/retention/"
-    if churn is None:
+    if retention is None:
         return _missing("Retention", href, RETENTION_SNAPSHOT)
-    churned, total = int(_kpi(churn, "Churned")), int(_kpi(churn, "Total customers"))
-    risers = [d for d in churn["drivers"] if d["lift"] > 1]
-    detail = "The at-risk list, and the offer that brings each back, are in Retention."
+    decision = retention["decision"]
+    risers = [d for d in retention["drivers"] if d["lift"] > 1]
+    detail = "Each has a win-back offer to send, where past emails can tell one."
     if risers:
         d = max(risers, key=lambda r: r["lift"])
         detail = (f"Customers with {d['field']} {d['value'].replace('_', ' ')} left at "
                   f"{d['churn_rate']:.0%}, against {d['churn_rate_overall']:.0%} overall. " + detail)
     return Headline(
         "Retention", href,
-        f"Win back {churned:,} of {total:,} customers ({churned / total:.0%}) who haven't ordered in 90 days.",
+        f"Reach {decision['customers']} customers first: €{decision['spend_12m_eur']:,.0f} of last year's spend, "
+        f"each more likely than not to stop ordering, by Aito's estimate.",
         detail,
     )
 

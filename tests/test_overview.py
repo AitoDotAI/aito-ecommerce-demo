@@ -78,17 +78,18 @@ OVERVIEW = {
                         "lift": 2.66, "interval_low": 2.34, "interval_high": 3.03,
                         "orders_with_both": 2911, "orders_with_first": 4325, "confidence": 0.673},
 }
-INVENTORY = {"kpis": [{"label": "Critical", "value": 60.0}, {"label": "Overstock", "value": 87.0},
-                      {"label": "Tied capital", "value": 26576.0}, {"label": "Revenue at risk", "value": 2088.0}]}
-CHURN = {"kpis": [{"label": "Total customers", "value": 3000}, {"label": "Churned", "value": 1004}],
-         "drivers": [{"field": "tenure", "value": "under 6 months", "lift": 0.2, "churn_rate": 0.07,
-                      "churn_rate_overall": 0.33},
-                     {"field": "tenure", "value": "18 months or more", "lift": 1.85, "churn_rate": 0.62,
-                      "churn_rate_overall": 0.33}]}
+SUPPLY = {"reorder": {"skus": 59, "units": 403, "order_cost_eur": 5774.9, "revenue_at_risk_eur": 5667.4},
+          "overstock_decision": {"skus": 87, "tied_capital_eur": 26576.2, "scored": 15, "hold": 3, "markdown": 1,
+                                 "wont_clear": 11}}
+RETENTION = {"decision": {"customers": 20, "spend_12m_eur": 8290.8},
+             "drivers": [{"field": "tenure", "value": "under 6 months", "lift": 0.2, "churn_rate": 0.07,
+                          "churn_rate_overall": 0.33},
+                         {"field": "tenure", "value": "18 months or more", "lift": 1.85, "churn_rate": 0.62,
+                          "churn_rate_overall": 0.33}]}
 
 
 def test_the_patterns_headline_leads_with_the_strongest_pair_and_the_orders_without_it():
-    patterns = owner_headlines(OVERVIEW, {"inventory": INVENTORY, "churn": CHURN}.get)[0]
+    patterns = owner_headlines(OVERVIEW, {"supply": SUPPLY, "retention": RETENTION}.get)[0]
 
     assert patterns["href"] == "/patterns/?anchor=dog_dryfood"
     assert patterns["headline"].startswith(
@@ -104,18 +105,18 @@ def test_the_product_headline_opens_the_best_seller_in_product():
     assert "612 units in 2025-05 … 2026-04" in product.headline
 
 
-def test_the_supply_headline_reads_the_numbers_supply_shows():
-    supply = supply_headline(INVENTORY)
+def test_the_supply_headline_reads_the_decisions_supply_leads_with():
+    supply = supply_headline(SUPPLY)
 
-    assert supply.headline.startswith("Reorder 60 products below their reorder point: about €2,088")
+    assert supply.headline.startswith("Reorder 59 products now: about €5,667")
     assert "estimated" in supply.headline   # the € rests on Aito's forecast
-    assert supply.detail.startswith("87 more hold €26,576")
+    assert supply.detail.startswith("87 overstocked products hold €26,576; of the 15 largest, 11 won't clear")
 
 
 def test_the_retention_headline_gives_the_strongest_driver_as_observed_rates():
-    retention = retention_headline(CHURN)
+    retention = retention_headline(RETENTION)
 
-    assert retention.headline == "Win back 1,004 of 3,000 customers (33%) who haven't ordered in 90 days."
+    assert retention.headline.startswith("Reach 20 customers first: €8,291 of last year's spend")
     assert retention.detail.startswith("Customers with tenure 18 months or more left at 62%, against 33% overall.")
 
 
@@ -128,6 +129,6 @@ def test_a_view_without_a_snapshot_shows_as_unavailable_not_absent():
     assert all("./do precompute" in h["detail"] for h in missing)
 
 
-def test_a_snapshot_without_the_expected_kpi_fails_loudly():
-    with pytest.raises(KeyError, match="Revenue at risk"):
-        supply_headline({"kpis": [{"label": "Critical", "value": 1}]})
+def test_a_snapshot_without_the_expected_decision_fails_loudly():
+    with pytest.raises(KeyError, match="overstock_decision"):
+        supply_headline({"reorder": SUPPLY["reorder"]})

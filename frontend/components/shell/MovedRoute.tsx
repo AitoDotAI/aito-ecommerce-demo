@@ -10,7 +10,8 @@ import { usePagePanel } from "./ShellState";
 /**
  * The page left at an old route (ADR 0041): it forwards to the route's new
  * home, with the link's query string and hash, and replaces the history
- * entry so Back doesn't bounce through the old address.
+ * entry so Back doesn't bounce through the old address. A route with a
+ * `productTo` sends a link naming one product (`?sku=`) there instead.
  */
 export default function MovedRoute({ from }: { from: string }) {
   const moved = MOVED_ROUTES[from];
@@ -19,8 +20,9 @@ export default function MovedRoute({ from }: { from: string }) {
   usePagePanel(null, { title: "Moved", breadcrumb: "Moved" });
 
   useEffect(() => {
-    router.replace(moved.to + window.location.search + window.location.hash);
-  }, [router, moved.to]);
+    const perProduct = moved.productTo && new URLSearchParams(window.location.search).has("sku");
+    router.replace((perProduct ? moved.productTo : moved.to) + window.location.search + window.location.hash);
+  }, [router, moved.to, moved.productTo]);
 
   return (
     <div className="fade-in">
