@@ -94,6 +94,17 @@ _guard_prod_write() {
   exit 1
 }
 
+# Refuse a UCI write unless it targets env `uci`, exactly. The UCI
+# tables share names with the pet shop's (`customers`), so the same load
+# into master, or into another test env, would replace that env's tables.
+_guard_uci_env() {
+  local verb="$1"
+  [[ "${AITO_ENV:-}" == "uci" ]] && return 0
+  echo "⛔ REFUSING '$verb' — it writes the UCI tables, and AITO_ENV is '${AITO_ENV:-}' (not 'uci')."
+  echo "   Run it as:  AITO_ENV=uci ./do $verb"
+  exit 1
+}
+
 # Ports: frontend on 8500 (user-facing), backend on 8501 (internal).
 # Allocated by the cross-demo framework doc — see
 # aito-demo-framework.md §2 "Port allocation". Don't reuse other
@@ -125,11 +136,17 @@ Data
   target            Show which Aito instance commands use, and whose credentials
   warm-cache        Pre-compute every cacheable endpoint once
   precompute        Snapshot the six heavy endpoints to Aito + git JSON (ADR 0024)
+  uci-prepare       UCI Online Retail II xlsx → data/uci/*.json (local, no Aito; ADR 0034)
+  uci-load          Load data/uci/ into Aito env uci (needs AITO_ENV=uci)
   workbook          (Re)create the console workbook from docs/aito-workbook-ecommerce-demo.json
 
 Quality
   test              Run pytest
   aito-check        Sanity-check Aito queries against the loaded data
+  uci-check         The UCI checks in aito-check, on env uci (reproduces the benchmark)
+  backtest-prepare  shopify <export.csv> <name>: a merchant's orders → data/backtest/<name>/ (ADR 0036)
+  backtest-load     <name>: training orders → Aito env backtest-<name> (needs AITO_ENV=backtest-<name>)
+  backtest          <uci|name> [--offline]: Aito vs three baselines → data/backtest/<name>/report.md
   search-eval       Score search arms on the judged query set (nDCG, recall, controls)
   v2-env            Stage the v2 (Rep2) env — ADR 0025 (dry run unless --apply)
   verify <feature>  Run the adversary Playwright agent for one feature
@@ -369,6 +386,51 @@ cmd_optimize() {
   uv run python -m src.data_loader --optimize-only
 }
 
+# ── UCI Online Retail II, env `uci` (ADR 0034) ─────────────────────
+
+cmd_uci_prepare() {
+  # Reads the local xlsx (UCI_XLSX, md5-checked), writes data/uci/.
+  cd "$SCRIPT_DIR"
+  PYTHONPATH=. uv run python scripts/uci_prepare.py
+}
+
+cmd_uci_load() {
+  cd "$SCRIPT_DIR"
+  _guard_uci_env uci-load
+  _show_target
+  echo "   env: uci"
+  uv run python -m src.uci_loader
+}
+
+cmd_uci_check() {
+  # The aito-check tests named *uci*, which skip unless AITO_ENV=uci.
+  cd "$SCRIPT_DIR"
+  AITO_ENV=uci uv run pytest tests/test_aito_check.py -v -k uci
+}
+
+# ── Reorder backtest on a merchant's orders (ADR 0036) ────────────
+
+cmd_backtest_prepare() {
+  # Local only. The Email salt comes from BACKTEST_EMAIL_SALT; never commit it.
+  cd "$SCRIPT_DIR"
+  PYTHONPATH=. uv run --group backtest python scripts/backtest.py prepare "$@"
+}
+
+cmd_backtest_load() {
+  cd "$SCRIPT_DIR"
+  _guard_prod_write backtest-load
+  _show_target
+  echo "   env: ${AITO_ENV:-<unset>}"
+  uv run python -m src.backtest_loader "$@"
+}
+
+cmd_backtest() {
+  # --offline: the three baselines only. Otherwise AITO_ENV must be the
+  # dataset's env (uci, or backtest-<name>); only _predict is read.
+  cd "$SCRIPT_DIR"
+  PYTHONPATH=. uv run --group backtest python scripts/backtest.py run "$@"
+}
+
 # ── Workbook ────────────────────────────────────────────────────────
 
 # (Re)create the Aito console workbook from its JSON definition. The
@@ -415,7 +477,8 @@ cmd_workbook() {
 
 cmd_test() {
   cd "$SCRIPT_DIR"
-  uv run pytest tests/ -v
+  # The backtest group adds numpy, which the EASE baseline's tests need (ADR 0036).
+  uv run --group backtest pytest tests/ -v
 }
 
 cmd_aito_check() {
@@ -621,6 +684,12 @@ case "${1:-help}" in
   warm-cache)        cmd_warm_cache ;;
   precompute)        cmd_precompute ;;
   optimize)          cmd_optimize ;;
+  uci-prepare)       cmd_uci_prepare ;;
+  uci-load)          cmd_uci_load ;;
+  uci-check)         cmd_uci_check ;;
+  backtest-prepare)  shift; cmd_backtest_prepare "$@" ;;
+  backtest-load)     shift; cmd_backtest_load "$@" ;;
+  backtest)          shift; cmd_backtest "$@" ;;
   workbook)          cmd_workbook ;;
   test)              cmd_test ;;
   aito-check)        cmd_aito_check ;;

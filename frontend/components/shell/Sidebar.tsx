@@ -42,6 +42,12 @@ const ALL_SECTIONS: NavSection[] = [
     ],
   },
   {
+    label: "Real data",
+    items: [
+      { href: "/business-reorders", label: "Business reorders", icon: "🧾", badge: { text: "New" } },
+    ],
+  },
+  {
     label: "Analyze",
     items: [
       { href: "/purchase-analytics", label: "Purchase Analytics", icon: "📈" },

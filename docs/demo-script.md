@@ -233,6 +233,15 @@ interval widened because one shopper's rows aren't independent, and a
 bar for the whole section. What doesn't clear it is listed as no clear
 effect, not hidden."
 
+## Optional beat — real data: a business buyer's next order (30 s)
+
+Open `/business-reorders/` (needs env `uci` loaded: `AITO_ENV=uci ./do
+uci-load`). "Now real data. This is a wholesaler's buyer with two earlier
+orders; here is the next order Aito drafts, and here is what they
+actually ordered." Point at the ✓ marks, then the claim box: it is the
+benchmark's number, worded as cleared, with the UCI citation. Pick a
+drafted product under Bought together for what is ordered with it.
+
 ## Beat 7 — close (10 s)
 
 > "A dozen views, one Aito DB. No retraining, no MLOps, no

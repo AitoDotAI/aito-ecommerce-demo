@@ -13,6 +13,7 @@ so `./do test` stays green without a live DB.
 from __future__ import annotations
 
 import math
+import os
 
 import pytest
 
@@ -687,3 +688,81 @@ def test_shop_analytics_search_words_against_the_search_average(client, shop_ana
     on_search = client.search("impressions", where={"context.surface": "search",
                                                     "context.search_query": {"$match": "food"}}, limit=0)["total"]
     assert anywhere == on_search > 0, (anywhere, on_search)
+
+
+# ── Business reorders on UCI Online Retail II, env `uci` (ADR 0034) ──
+# Run with `./do uci-check`. Skipped unless AITO_ENV=uci: the pet shop's
+# checks above don't hold on this env, and these don't hold on the pet's.
+
+
+@pytest.fixture(scope="module")
+def uci_client() -> AitoClient:
+    if os.environ.get("AITO_ENV") != "uci":
+        pytest.skip("UCI checks run on env uci only: AITO_ENV=uci (./do uci-check)")
+    cfg = load_config()
+    c = AitoClient(cfg)
+    if not c.check_connectivity():
+        pytest.skip(f"Aito not reachable at {cfg.api_base}")
+    return c
+
+
+UCI_REPRODUCTION_CHECKLIST = (
+    "If off, check in this order: invoices.month missing or not 'YYYY-MM'; the lines count "
+    "(603,034); lines.code linked to products; the cutoff not exactly 2011-09-01; StockCodes "
+    "filtered (POST, M and the rest must stay)."
+)
+
+
+def test_uci_draft_reproduces_the_benchmarks_hit_at_1_for_buyers_with_1_2_orders(uci_client):
+    """The page's claim: for the 636 buyers with 1-2 orders before the cutoff
+    and a next order after it, Aito's top suggestion was in that next order
+    for 31 % (197 of 636 in the benchmark, aito-core 625867faca)."""
+    from src.uci_outcomes import load_outcomes
+    from src.uci_reorder_service import predicted_codes
+
+    buyers = [o for o in load_outcomes().values() if 1 <= o.prior_invoices <= 2 and o.next_order]
+    assert len(buyers) == 636, len(buyers)
+
+    hits = 0
+    for buyer in buyers:
+        codes = predicted_codes(uci_client, buyer.customer_id)
+        assert all(0.0 <= p <= 1.0 for _, p in codes), codes
+        hits += codes[0][0] in buyer.next_order.codes
+
+    hit_at_1 = hits / len(buyers)
+    # The query is deterministic, so the reproduction is exact: the same hits,
+    # not a number within a tolerance (±0.01 would be far tighter than the
+    # ±0.036 95 % interval at n = 636 anyway).
+    assert hits == 197, (
+        f"hit@1 {hit_at_1:.4f} ({hits} of {len(buyers)}), benchmark 197 of 636. {UCI_REPRODUCTION_CHECKLIST}")
+
+
+def test_uci_bought_together_answers_lifts_for_a_common_code(uci_client):
+    """85123A (white hanging heart T-light holder) is the most ordered code.
+    Its relate must name other codes with lifts and counts that agree with
+    a plain count of the baskets holding it."""
+    from src.uci_bought_together import MIN_SHARED_INVOICES, bought_together
+
+    result = bought_together(uci_client, "85123A")
+
+    assert result.bought_with, "no code bought with 85123A"
+    assert all(b.lift > 0 and b.shared_invoices >= MIN_SHARED_INVOICES for b in result.bought_with)
+    assert "85123A" not in {b.code for b in result.bought_with}
+    holding = uci_client.search("baskets", where={"codes": {"$match": "85123A"}}, limit=0)["total"]
+    assert result.invoices_with_product == holding, (result.invoices_with_product, holding)
+
+
+def test_uci_backtest_why_names_the_buyer_and_agrees_with_the_measured_ranking(uci_client):
+    """ADR 0036's example buyers: the `$why` query (`select` with `{"$why": {}}`,
+    limit 1) must rank the same top code as the measured query, and its
+    tree must parse to a baseP and lifts with their conditions."""
+    from src.backtest_aito import explain_top_suggestion
+    from src.uci_outcomes import load_outcomes
+    from src.uci_reorder_service import predicted_codes
+
+    buyer = min(c for c, o in load_outcomes().items() if 1 <= o.prior_invoices <= 2 and o.next_order)
+    top_code = predicted_codes(uci_client, buyer)[0][0]
+
+    why = explain_top_suggestion(uci_client, buyer, top_code)   # raises if the two rankings disagree
+
+    assert why.startswith("base ") and " when " in why, why
