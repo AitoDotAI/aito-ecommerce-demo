@@ -561,3 +561,35 @@ One older test moved, by sample size only, as the addendum foresaw for S8.
   ≤ 0.5, as before.
 - **Change:** the floor becomes 600, about 60 % of 1,000. The ratio's
   threshold is unchanged.
+
+### Results with ADR 0044 and the catalogue change (2026-10-24; seeds 42, 7, 99)
+
+Full table: `actionable-states-data.md`. **126 of 130 judged rows pass.** The four
+that fail are the accepted failures decided above: R2b on every seed, and P2c
+on seed 99. Nothing was retuned.
+
+| # | threshold | seed 42 | seed 7 | seed 99 | result |
+|:--|:--|--:|--:|--:|:--|
+| C1 (planted) | ≥ 1.8 | 2.09 | 2.27 | 2.24 | pass |
+| C1 ÷ its null | reported | 2.24 | 2.08 | 2.00 | — |
+| C2, consent rate off 0.6 | ≤ 0.05 | 0.003 | 0.018 | 0.007 | pass |
+| C2, largest trait-level gap | ≤ 0.07 | 0.046 | 0.030 | 0.027 | pass |
+| C3, largest \|log\| female ÷ male category share | ≤ 0.223 | 0.053 | 0.150 | 0.041 | pass |
+| P10 (power-risk) | ≥ 1.03 | 1.031 | 1.041 | 1.037 | pass |
+| P9 high ÷ low (power-risk) | ≥ 1.5 | 1.60 | 1.57 | 1.66 | pass |
+| R2a (power-risk) | ≥ 1.8 | 2.00 | 1.85 | 1.86 | pass |
+| R1 | ≥ 1.4 | 1.66 | 1.58 | 1.53 | pass |
+| P1b | ≥ 1.05 | 1.19 | 1.19 | 1.14 | pass |
+| F2b | ≤ 0.2 | 0.017 | 0.082 | 0.100 | pass |
+| R2b (accepted failure) | ≤ 0.8 | 0.812 | 0.812 | 0.832 | fail |
+| P2c (accepted failure) | ≤ 0.95 | 0.943 | 0.949 | 0.957 | fail on 99 |
+
+- **Every other row** passes as before; the values are in the full table.
+- **The order-side checks repeat exactly**, as the addendum predicted: R3–R6,
+  F3a, F3b, F4, F5, P2b, P2c, P3a and P5a. Consent and the variant names draw
+  nothing those checks read.
+- **Of the impression checks,** P10 kept its margin on seed 42 by 0.001.
+- **The `./do test` data checks** pass on seed 42, with S8's sample floor as
+  amended.
+- **Rows:** impressions 100,450, contexts 61,995 (54,670 before a first
+  order). Every other table is unchanged in rows.
