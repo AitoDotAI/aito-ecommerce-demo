@@ -1,6 +1,6 @@
 # ADR 0041: One view per job — the site's structure
 
-**Status:** Proposed
+**Status:** Accepted (2026-10-24, Antti: "review, fix and merge all on green")
 **Date:** 2026-10-24
 **Deciders:** Antti
 
