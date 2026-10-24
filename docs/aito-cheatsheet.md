@@ -535,6 +535,16 @@ large lift on a handful of rows is noise. `src/price_bands.py`
 `lift_interval` gives a 95 % interval from those counts (log relative
 risk).
 
+On the order-level basket relate (`from orders where {line_categories:
+{$match: A}} relate line_categories`) the four counts are a whole rule
+(verified 2026-10-24 on `observable` against `_search` counts of the
+same orders): `fCondition` = orders with A (4,325 dog dry food), `f` =
+orders with B (3,008 dental treats), `fOnCondition` = orders with both
+(2,911), `n` = all orders (11,909). So confidence A → B is
+`fOnCondition / fCondition` (67 %), B → A is `fOnCondition / f` (97 %),
+and support is `fOnCondition / n` (24 %). Patterns › Baskets shows all
+three next to the lift (`src/basket_pairs.py`).
+
 ---
 
 ## Field-form `_relate` through a link, on a Boolean, and on Text
@@ -1414,6 +1424,65 @@ It is a separate query so the measured one never changes. To probe on
 query's top code (`src/backtest_aito.py` raises if not), and the tree
 parses with `src/why_processor.py` to a baseP and lifts whose conditions
 are named (expected: `invoice.customer_id` for a buyer with history).
+
+## Retention and Supply (ADR 0041), probed on env `observable`, 2026-10-24
+
+**A population for `_predict`: a nested `from`.** Retention's churn score
+must not learn from rows whose label isn't known yet, or from months after
+a customer had already gone (there "no orders" is the label itself). The
+`where` only conditions; the nested `from` restricts the rows Aito learns
+from (`src/churn_risk.py`):
+
+```json
+POST /_predict
+{"from": {"from": "customer_months",
+          "where": {"month": {"$lte": "2026-01"}, "purchases": {"$gte": 1}}},
+ "where": {"pets": "small_animal", "region": "tampere", "tenure_months_at_month": 21,
+           "visits": 4, "purchases": 1, "spent_eur": 103.46},
+ "predict": "churned_in_3_months", "limit": 2}
+```
+
+- `$lte` / `$gt` compare `"YYYY-MM"` Strings in order: the `$lte` above
+  counts the same 8,071 rows as an `$or` of the 21 months.
+- Scored this way, the probabilities track what happened: trained on
+  orders before 2025-10 and scored on 2025-10's, rows at p 0.5–0.7 left
+  54 % of the time and rows at 0.7+ 77 %. Over the whole panel (the old
+  Churn view) the same `_predict` put already-gone customers at the top.
+- `_evaluate`'s `train` / `test` take literal equality, `$lte`, `$lt`,
+  `$gte`, `$gt`, `$not`, `$mod` and `$hash`, but not `$or` (400
+  "unsupported operator '$or'"). `src/churn_evaluation.py`: 92 % against
+  85 % for "another order follows", n 953.
+
+**`_batch` items.** A `_predict` with a nested `from` and a `$why` select
+works as a batch item (2,000 customers in 20 batches of 100, ~2 s of Aito
+time each). Two differences from the direct endpoints:
+- a `_recommend` item's hit is only `{"$p", "$value"}`: no linked
+  product columns, so read the SKU from `$value` and the product from
+  `products`;
+- `estimate` is not a batch item: 400 "unexpected field 'estimate'".
+
+**The win-back offer** (`src/winback_offer.py`): `_recommend product_sku
+from winback_campaigns goal {responded: true}`, with
+`"product_sku.pet_type": {"$or": [<the customer's pets>]}` to keep the
+candidates to their pets, then `_predict responded` per candidate for the
+rate and `_estimate order_value_eur` with `responded: true` for the order.
+- The `_recommend` `$p` is not a rate: 0.97–1.0 where `_predict
+  responded` gave 0.02–0.35. Averaged over 200 past sends, `_predict`
+  lands within 0.1 of the observed response share (`./do aito-check`).
+- With the old `basedOn: ["pet_type", "category", "brand"]` and no
+  candidate filter, a cat-litter household was offered dog food and a
+  small-animal one cat litter.
+- No past send featured an aquarium product, so aquarium households get
+  no offer: the view says so.
+
+**The markdown sweep** (`src/markdown_proposal.py`): `_estimate
+units_sold` with `price_eur` and `model: "regression"` at 0–20 % off.
+The price response on this data is weak: 20 % off adds ~2–10 % units (k-NN
+gives about the same, but not monotone). So 11 of the 15 largest overstock
+rows don't clear within a quarter at any level, and Supply says that
+instead of proposing the deepest cut.
+
+---
 
 ## `AitoClient` method ↔ endpoint cheat reference
 

@@ -22,7 +22,7 @@ import time
 
 from src.aito_client import AitoClient, AitoError
 from src import precompute_store as store
-from src.overview_service import get_dashboard
+from src.overview_service import get_overview
 from src.demand_service import get_demand
 from src.eval_service import run_evaluation
 from src.retention_service import get_retention
@@ -34,12 +34,13 @@ from src.supply_service import get_supply
 # other light views, For You / Smart Search, vary by persona/query).
 #
 # The heavy ones each run an `_evaluate` and/or a large fan-out, 14–32 s
-# cold; Retention scores every active customer (~2,000 `_predict`s, batched). `dashboard` is light but is the *landing*
+# cold; Retention scores every active customer (~2,000 `_predict`s, batched).
+# `overview` is light but is the *landing*
 # view, so its cold cost is the first thing every visitor would feel —
 # precompute it too so the entry page is instant even on a cold, read-
 # only public container. See ADR 0024.
 PRECOMPUTED_ENDPOINTS = [
-    ("dashboard",  lambda c: get_dashboard(c).to_dict()),
+    ("overview",   get_overview),
     ("demand",     lambda c: get_demand(c).to_dict()),
     ("evaluation", lambda c: run_evaluation(c).to_dict()),
     ("retention",  lambda c: get_retention(c).to_dict()),

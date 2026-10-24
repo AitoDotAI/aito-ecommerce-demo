@@ -68,7 +68,7 @@ export default function RetentionPage() {
             evidenceHref="/evidence/model-checks/"
           />
 
-          <div className="two-col" style={{ marginTop: 16 }}>
+          <div style={{ display: "grid", gap: 16, marginTop: 16 }}>
             <div className="card">
               <div className="card-title">At risk · most spend at stake first</div>
               <AtRiskTable rows={data.at_risk} />

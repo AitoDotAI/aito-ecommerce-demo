@@ -1,6 +1,6 @@
 /* Shared TypeScript interfaces.
  *
- * Per-view DTOs (DashboardResponse, SmartSearchResponse, etc.) land
+ * Per-view DTOs (OverviewResponse, SmartSearchResponse, etc.) land
  * here as their views are built. For the scaffold step we only need
  * the cross-demo invariants — the AitoPanel contract and the
  * `WhyExplanation` shape used by `WhyTooltip` / `PredictionBadge`. */
@@ -115,73 +115,6 @@ export interface HealthResponse {
   aito_url?: string | null;
 }
 
-/* ─── Purchase Analytics (/api/purchase-analytics) ─── */
-
-export interface AnalyticsMonthly {
-  month: string;
-  orders: number;
-  revenue_eur: number;
-}
-
-export interface AnalyticsTopProduct {
-  sku: string;
-  name: string;
-  pet_type: string;
-  category: string;
-  line_count: number;
-}
-
-export interface AnalyticsSegment {
-  segment: string;
-  label: string;
-  customers: number;
-  orders: number;
-  revenue_eur: number;
-  avg_basket_eur: number;
-}
-
-export interface AnalyticsCategoryMixEntry {
-  pet_type: string;
-  category: string;
-  count: number;
-  share_pct: number;
-}
-
-export interface AnalyticsCategoryMixRow {
-  segment: string;
-  label: string;
-  top_categories: AnalyticsCategoryMixEntry[];
-}
-
-export interface AnalyticsResponse {
-  monthly: AnalyticsMonthly[];
-  top_products: AnalyticsTopProduct[];
-  segments: AnalyticsSegment[];
-  category_mix_by_segment: AnalyticsCategoryMixRow[];
-  last_query: { endpoint: string; body: Record<string, unknown> };
-  last_response_ms: number;
-}
-
-/* ─── Pattern Explorer (/api/pattern-explorer) ─── */
-
-export interface PatternEntry {
-  label: string;
-  token: string;
-  lift: number;
-  support: { f: number; f_on_condition: number };
-  p_given: number;
-  p_overall: number;
-  band: "positive" | "neutral" | "protective";
-}
-
-export interface PatternResponse {
-  anchor: { id: string; pet_type: string; category: string; display: string };
-  patterns: PatternEntry[];
-  available_anchors: Array<{ id: string; display: string }>;
-  last_query: { endpoint: string; body: Record<string, unknown> };
-  last_response_ms: number;
-}
-
 /* ─── Evaluation (/api/evaluation) ─── */
 
 export interface EvalModelResult {
@@ -233,25 +166,6 @@ export interface FillingResponse {
   };
   fields: FillingFieldOut[];
   candidate_skus: Array<{ sku: string; name: string }>;
-  last_query: { endpoint: string; body: Record<string, unknown> };
-  last_response_ms: number;
-}
-
-/* ─── Basket Rules (/api/basket-rules) ─── */
-
-export interface BasketRule {
-  antecedent: string;       // "Dog dry-food"
-  consequent: string;       // "Dog dental-treats"
-  confidence: number;       // P(consequent | antecedent), 0..1
-  lift: number;
-  support_orders: number;   // # orders the rule holds in
-  support_pct: number;      // support_orders / total_orders, 0..1
-}
-
-export interface BasketRulesResponse {
-  rules: BasketRule[];
-  anchors_mined: number;
-  total_orders: number;
   last_query: { endpoint: string; body: Record<string, unknown> };
   last_response_ms: number;
 }
@@ -318,57 +232,63 @@ export interface SmartSearchResponse {
   last_response_ms: number;
 }
 
-/* ─── Dashboard (/api/dashboard) ─── */
+/* ─── Overview (/api/overview, ADR 0041) ─── */
 
-export interface DashboardKpi {
-  value: number;
-  delta_label: string | null;
+export interface OverviewKpis {
+  first_month: string;          // the last 12 months: first_month … last_month
+  last_month: string;
+  orders: number;
+  orders_before: number;        // the 12 months before
+  months_before: number;        // how many of those 12 the data holds
+  revenue_eur: number;
+  revenue_before_eur: number;
+  avg_basket_eur: number;
+  customers_ordering: number;
+  customers: number;
+  products: number;
 }
 
-export interface DashboardPattern {
-  label: string;
-  lift: number;
-  bar_pct: number;
-  available: boolean;   // false: this pattern's query failed; show that
+export interface OverviewMonth {
+  month: string;
+  orders: number;
+  revenue_eur: number;
 }
 
-export interface DashboardSegment {
+export interface OverviewTopProduct {
+  sku: string;
+  name: string;
+  pet_type: string;
+  category: string;
+  units: number;                // in the last 12 months
+}
+
+export interface OverviewHousehold {
   id: string;
   emoji: string;
   label: string;
+  customers: number;
   share_pct: number;
   avg_basket_eur: number;
-  // Only the group that ranks first or last on a shown number has a pill.
   pill_text: string | null;
-  pill_tone: "orange" | "blue" | "grey" | null;
+  pill_tone: string | null;
 }
 
-export interface DashboardInsight {
+/** One owner view's headline, a link (src/overview_headlines.py). */
+export interface OverviewHeadline {
+  view: string;
+  href: string;
   headline: string;
-  body: string;
+  detail: string;
+  available: boolean;
 }
 
-export interface DashboardRecentOrder {
-  order_id: string;
-  customer_short: string;
-  month: string;
-  line_summary: string;
-  total_eur: number;
-}
-
-export interface DashboardResponse {
-  kpis: {
-    products:       DashboardKpi;
-    orders_12mo:    DashboardKpi;
-    customers:      DashboardKpi;
-    avg_basket_eur: DashboardKpi;
-  };
-  top_patterns: DashboardPattern[];
-  segments: DashboardSegment[];
-  insight: DashboardInsight;
-  recent_orders: DashboardRecentOrder[];
+export interface OverviewResponse {
+  kpis: OverviewKpis;
+  monthly: OverviewMonth[];
+  top_products: OverviewTopProduct[];
+  households: OverviewHousehold[];
+  headlines: OverviewHeadline[];
   last_query: { endpoint: string; body: Record<string, unknown> };
-  last_response_ms: number;
 }
 
 /* ─── Review triage (/api/review-triage) ─── */
@@ -839,18 +759,27 @@ export interface ShopLiftSection extends ShopSectionBase {
   clustering: ShopClustering;
 }
 
+/** A basket pair as a rule with a direction (src/basket_pairs.py). */
 export interface ShopAnalyticsPair {
-  first: string;            // "Dog dry-food"
+  first: string;            // "Dog dry-food", the anchor mined
   second: string;           // "Dog dental-treats"
+  first_id: string;         // "dog_dryfood"
+  second_id: string;
   lift: number;
   interval_low: number;
   interval_high: number;
   orders_with_both: number;
   orders_with_first: number;
+  orders_with_second: number;
+  orders: number;
+  confidence: number;          // first → second
+  reverse_confidence: number;  // second → first
+  support: number;             // share of all orders holding both
 }
 
 export interface ShopBasketSection extends ShopSectionBase {
   pairs: ShopAnalyticsPair[];
+  anchors: Array<{ id: string; label: string }>;   // the anchor filter
   design_effects: Record<string, number>;   // per anchor category
 }
 

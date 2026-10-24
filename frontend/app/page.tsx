@@ -3,236 +3,87 @@
 import { useEffect, useState } from "react";
 
 import { apiFetch, fmtEur } from "@/lib/api";
-import { dashboardPanel } from "@/lib/panel-content";
-import { usePagePanel } from "@/components/shell/ShellState";
-import LiftHint from "@/components/prediction/LiftHint";
+import { highlightQuery } from "@/lib/highlight-query";
+import { overviewPanel } from "@/lib/panel-content";
+import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
-import type { DashboardResponse } from "@/lib/types";
+import { BestSellers, HeadlineCard, HouseholdCards, KpiCard, MonthlyBars, changeOnBefore } from "@/components/overview/OverviewParts";
+import type { OverviewResponse } from "@/lib/types";
+
+const DESCRIPTION = "How the shop is doing, and where to look: one headline per owner view, each a link.";
 
 /**
- * Dashboard view — KPI grid + top purchase patterns + households
- * (by declared pets) + insight tip + recent orders. Data layer is
- * `src/overview_service.py`; see `docs/adr/0005-dashboard.md` for
- * the live-vs-Python split (top patterns are computed locally;
- * everything else hits Aito live).
+ * Overview (ADR 0041) — "How is the shop doing, and where should I look?"
+ * The last 12 months against the 12 before, one headline per owner view,
+ * the best sellers, and the households. Data layer:
+ * `src/overview_service.py` (precomputed) and `src/overview_headlines.py`.
  */
-export default function DashboardPage() {
-  usePagePanel(dashboardPanel(), {
-    title: "Store Intelligence Overview",
-    description: "The shop at a glance: its orders, customers and households, and a few of its basket patterns.",
-    breadcrumb: "Overview",
-  });
+export default function OverviewPage() {
+  usePagePanel(overviewPanel(), { title: "Overview", description: DESCRIPTION, breadcrumb: "Overview" });
 
-  const [data, setData] = useState<DashboardResponse | null>(null);
+  const { setPanel } = useShell();
+  const [data, setData] = useState<OverviewResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    apiFetch<DashboardResponse>("/api/dashboard")
-      .then(setData)
-      .catch((e) => setError(String(e)));
+    apiFetch<OverviewResponse>("/api/overview").then(setData).catch((e) => setError(String(e)));
   }, []);
+  useEffect(() => {
+    if (data) setPanel({ ...overviewPanel(), query: highlightQuery(data.last_query.body) });
+  }, [data, setPanel]);
 
-  if (error) {
-    return (
-      <div className="fade-in">
-        <div className="page-header">
-          <div className="page-title">Store Intelligence Overview</div>
-          <div className="page-desc">
-            The shop at a glance: its orders, customers and households, and a few of its basket patterns.
-          </div>
-        </div>
-        <ErrorState
-          title="Couldn't load the dashboard"
-          message={`Aito returned an error. ${error}`}
-          command="./do load-data"
-        />
-      </div>
-    );
-  }
-
+  const k = data?.kpis;
+  const window12 = k ? `${k.first_month} … ${k.last_month}` : "last 12 months";
   return (
     <div className="fade-in">
       <div className="page-header">
-        <div className="page-title">Store Intelligence Overview</div>
-        <div className="page-desc">
-          The shop at a glance: its orders, customers and households, and a few of its basket patterns.
-        </div>
+        <div className="page-title">Overview</div>
+        <div className="page-desc">{DESCRIPTION}</div>
       </div>
 
-      {/* KPI grid */}
+      {error && <ErrorState title="Couldn't load the Overview" message={`Aito returned an error. ${error}`} command="./do load-data" />}
+
       <div className="kpi-grid">
-        <KpiCard label="Products"        value={data?.kpis.products.value}        accent="kpi-accent" />
-        <KpiCard label="Orders (12mo)"   value={data?.kpis.orders_12mo.value}     accent="kpi-accent-green" />
-        <KpiCard label="Customers"       value={data?.kpis.customers.value}       accent="kpi-accent-blue" />
-        <KpiCard
-          label="Avg. Basket"
-          value={data?.kpis.avg_basket_eur.value}
-          format="eur"
-          accent="kpi-accent-purple"
-        />
+        <KpiCard label={`Orders · ${window12}`} accent="kpi-accent"
+                 value={k ? k.orders.toLocaleString("en-US") : "…"}
+                 change={k && changeOnBefore(k.orders, k.orders_before, k.months_before)} />
+        <KpiCard label="Revenue" accent="kpi-accent-green"
+                 value={k ? fmtEur(k.revenue_eur) : "…"}
+                 change={k && changeOnBefore(k.revenue_eur, k.revenue_before_eur, k.months_before)} />
+        <KpiCard label="Average basket" accent="kpi-accent-blue" value={k ? fmtEur(k.avg_basket_eur, 2) : "…"} />
+        <KpiCard label="Customers ordering" accent="kpi-accent-purple"
+                 value={k ? k.customers_ordering.toLocaleString("en-US") : "…"}
+                 change={k && `of ${k.customers.toLocaleString("en-US")} · ${k.products} products`} />
       </div>
 
-      {/* Two-column: top patterns + segments */}
+      <div className="card-title" style={{ margin: "4px 0 10px" }}>Where to look</div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(300px, 100%), 1fr))",
+                    gap: 12, marginBottom: 20 }}>
+        {data?.headlines.map((h) => <HeadlineCard key={h.view} h={h} />)}
+        {!data && !error && <div className="card-sub">Loading…</div>}
+      </div>
+
       <div className="two-col">
         <div className="card">
-          <div className="card-title" style={{ marginBottom: 14 }}>
-            Top Purchase Patterns
-            <span style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 400, marginLeft: 6 }}>
-              _relate · lift scores
-            </span>
-          </div>
-          {!data && <SkeletonLines count={6} />}
-          {data?.top_patterns.map((p) => (
-            <div className="lift-row" key={p.label}>
-              <div className="lift-label">{p.label}</div>
-              {p.available ? (
-                <>
-                  <div className="lift-bar-wrap">
-                    <div className="lift-bar" style={{ width: `${p.bar_pct}%` }} />
-                  </div>
-                  <LiftHint value={p.lift} />
-                </>
-              ) : (
-                <div className="card-sub">unavailable right now</div>
-              )}
-            </div>
-          ))}
+          <div className="card-title">Revenue and orders per month</div>
+          <div className="card-sub" style={{ marginBottom: 12 }}>Every month in the data, newest first</div>
+          {data && <MonthlyBars months={data.monthly} />}
         </div>
-
         <div className="card">
-          <div className="card-title" style={{ marginBottom: 14 }}>
-            Households
-            <span style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 400, marginLeft: 6 }}>
-              by the pets they declared · live `_search` per group
-            </span>
-          </div>
-          {!data && <SkeletonLines count={4} />}
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {data?.segments.map((seg) => (
-              <div
-                key={seg.id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  padding: 10,
-                  background: "var(--bg)",
-                  borderRadius: 8,
-                }}
-              >
-                <span style={{ fontSize: 20 }} aria-hidden="true">{seg.emoji}</span>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600 }}>{seg.label}</div>
-                  <div style={{ fontSize: 11, color: "var(--text-muted)" }}>
-                    {seg.share_pct}% of buyers · avg {fmtEur(seg.avg_basket_eur)} / order
-                  </div>
-                </div>
-                {seg.pill_text && (
-                  <span className={`pill pill-${seg.pill_tone}`}>{seg.pill_text}</span>
-                )}
-              </div>
-            ))}
-          </div>
+          <div className="card-title">Best sellers</div>
+          <div className="card-sub" style={{ marginBottom: 12 }}>Units sold, {window12} · open one in Product</div>
+          {data && <BestSellers products={data.top_products} />}
         </div>
       </div>
 
-      {/* Insight tip-box */}
-      {data?.insight && (
-        <div className="tip-box">
-          <span className="tip-icon" aria-hidden="true">💡</span>
-          <span
-            dangerouslySetInnerHTML={{
-              __html: `<strong>${data.insight.headline}:</strong> ${data.insight.body}`,
-            }}
-          />
-        </div>
-      )}
-
-      {/* Recent orders */}
       <div className="card">
-        <div className="card-title" style={{ marginBottom: 14 }}>
-          Recent Orders
-          <span style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 400, marginLeft: 6 }}>
-            most recent first
-          </span>
+        <div className="card-title">Households</div>
+        <div className="card-sub" style={{ marginBottom: 12 }}>
+          By the pets they declared · what each buys more of is in{" "}
+          <a href="/patterns/?who=dog">Patterns › Who buys what</a>
         </div>
-        <div style={{ overflowX: "auto" }}>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Order</th>
-                <th>Customer</th>
-                <th>Products</th>
-                <th>Month</th>
-                <th>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              {!data && (
-                <tr>
-                  <td colSpan={5} style={{ color: "var(--text-muted)", fontSize: 12 }}>
-                    Loading…
-                  </td>
-                </tr>
-              )}
-              {data?.recent_orders.map((o) => (
-                <tr key={o.order_id}>
-                  <td style={{ fontFamily: "var(--mono)", fontSize: 12 }}>{o.order_id}</td>
-                  <td>{o.customer_short}</td>
-                  <td>{o.line_summary}</td>
-                  <td style={{ fontFamily: "var(--mono)", fontSize: 12, color: "var(--text-muted)" }}>
-                    {o.month}
-                  </td>
-                  <td style={{ fontWeight: 600 }}>{fmtEur(o.total_eur)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        {data && <HouseholdCards households={data.households} />}
       </div>
-    </div>
-  );
-}
-
-
-function KpiCard({
-  label,
-  value,
-  accent,
-  format,
-}: {
-  label: string;
-  value: number | undefined;
-  accent: string;
-  format?: "eur";
-}) {
-  const display =
-    value == null ? "…"
-    : format === "eur" ? fmtEur(value)
-    : value.toLocaleString("fi-FI");
-  return (
-    <div className={`kpi-card ${accent}`}>
-      <div className="kpi-label">{label}</div>
-      <div className="kpi-val">{display}</div>
-    </div>
-  );
-}
-
-
-function SkeletonLines({ count }: { count: number }) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-      {Array.from({ length: count }).map((_, i) => (
-        <div
-          key={i}
-          style={{
-            height: 16,
-            background: "var(--border-light)",
-            borderRadius: 4,
-            opacity: 0.6,
-          }}
-        />
-      ))}
     </div>
   );
 }

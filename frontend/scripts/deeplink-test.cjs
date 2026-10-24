@@ -59,7 +59,6 @@ function serveStatic() {
 const LINKS = [
   { view: "evidence/personalised-search", query: "customer=maija&q=dog+food", api: "/api/smart-search", expect: { customer: "maija", q: "dog food" } },
   { view: "query-patterns", query: "customer=olli", api: "/api/for-you", expect: { customer: "olli" } },
-  { view: "pattern-explorer", query: "anchor=cat_wetfood", api: "/api/pattern-explorer", expect: { anchor: "cat_wetfood" } },
   { view: "product-filling", query: "sku=SKU-PT-0042", api: "/api/product-filling", expect: { sku: "SKU-PT-0042" } },
   { view: "review-triage", query: "review=REV-00042", api: "/api/review-triage", expect: { review: "REV-00042" } },
   { view: "product-insights", query: "sku=SKU-PT-0042", api: "/api/product-insights", expect: { sku: "SKU-PT-0042" } },
@@ -85,12 +84,14 @@ const MOVED = [
   ["/markdown/", "/supply/", null, {}],
   ["/churn/", "/retention/", null, {}],
   ["/winback/", "/retention/", null, {}],
+  ["/pattern-explorer/", "/patterns/", null, { anchor: "cat_wetfood" }],
+  ["/basket-rules/", "/patterns/", null, {}],
+  ["/purchase-analytics/", "/", "/api/overview", {}],
 ];
 
 // Views whose picker is filled from the API response: pick an option by
 // clicking, the address bar must follow, and the copied address must reopen it.
 const PICKERS = [
-  { view: "pattern-explorer", select: "#anchor-picker", key: "anchor", api: "/api/pattern-explorer" },
   { view: "product-filling", select: "#sku-picker", key: "sku", api: "/api/product-filling" },
   { view: "review-triage", select: "#rev-picker", key: "review", api: "/api/review-triage" },
   { view: "product-insights", select: "#sku-picker", key: "sku", api: "/api/product-insights" },
@@ -113,12 +114,7 @@ const EMPTY_SECTION = { significance: { tested: 0, z: 0, family_confidence: 0.95
 const CLUSTERING = { customers: 1, rows_per_customer: 1, intra_customer_correlation: 0, design_effect: 1 };
 
 function stubResponse(apiPath, params) {
-  const anchor = params.get("anchor") ?? OPTIONS.anchor[0];
-  const anchors = OPTIONS.anchor.map((id) => ({ id, display: `Anchor ${id}` }));
   switch (apiPath) {
-    case "/api/pattern-explorer":
-      return { anchor: { id: anchor, pet_type: "dog", category: "dry-food", display: `Anchor ${anchor}` },
-               patterns: [], available_anchors: anchors, last_query: STUB_QUERY, last_response_ms: 1 };
     case "/api/product-filling": {
       const sku = params.get("sku") ?? OPTIONS.sku[0];
       if (sku === UNKNOWN.sku) return notFound(`No product ${sku} in the catalogue`);
@@ -168,7 +164,8 @@ function stubResponse(apiPath, params) {
                options: isFunnel ? [] : OPTIONS.who.map((id) => ({ id, label: `Group ${id}`, group: "Test" })) };
     }
     case "/api/shop-analytics/baskets":
-      return { ...EMPTY_SECTION, pairs: [], design_effects: { "Dog dry-food": 1 } };
+      return { ...EMPTY_SECTION, pairs: [], design_effects: { "Dog dry-food": 1 },
+               anchors: OPTIONS.anchor.map((id) => ({ id, label: `Anchor ${id}` })) };
     case "/api/shop-analytics/search-words":
       return { ...EMPTY_SECTION, rows: [], never_bought: [], words: 0, search_impressions: 1, search_purchases: 0,
                clustering: CLUSTERING };
@@ -313,16 +310,38 @@ async function main() {
     }
 
     {
+      // The anchor filters Baskets in the page (Pattern Explorer's picker), so
+      // the proof is the picker's state, not a request.
+      const anchorSelected = (page, id) => appears(page.locator(`#anchor-picker:has(option[value='${id}']:checked)`));
+      const visit = await openFresh(browser, `${BASE}/patterns/?anchor=cat_wetfood`);
+      const opened = await anchorSelected(visit.page, "cat_wetfood");
+      await visit.page.locator("#anchor-picker").selectOption("dog_dryfood");
+      const followed = await urlMatches(visit.page, /[?&]anchor=dog_dryfood/);
+      const copied = visit.page.url();
+      await visit.context.close();
+      check(opened && followed, `patterns: ?anchor=cat_wetfood opens that anchor, and picking another follows (${copied})`);
+
+      const reopened = await openFresh(browser, copied);
+      check(await anchorSelected(reopened.page, "dog_dryfood"), "patterns: the copied URL reopens the dog_dryfood anchor");
+      await reopened.context.close();
+
+      const bad = await openFresh(browser, `${BASE}/patterns/?anchor=no_such_anchor`);
+      check(await appears(bad.page.getByText(/No basket rules are mined for the anchor “no_such_anchor”/)),
+            "patterns?anchor=no_such_anchor says no rules are mined for it");
+      await bad.context.close();
+    }
+
+    {
       const visit = await openFresh(browser, `${BASE}/evidence/model-checks/`);
-      await visit.page.locator("tr", { hasText: /segment/i }).first().click();
-      const followed = await urlMatches(visit.page, /model=segment_from_product/);
+      await visit.page.locator("tr", { hasText: /pet type/i }).first().click();
+      const followed = await urlMatches(visit.page, /model=pet_type_from_name/);
       const copied = visit.page.url();
       await visit.context.close();
       check(followed, `model-checks: a row click puts the model in the address bar (${copied})`);
 
       const reopened = await openFresh(browser, copied);
-      const focused = await appears(reopened.page.locator("tr[style*='solid']", { hasText: /segment/i }).first());
-      check(focused, "model-checks: the copied URL reopens with the segment row focused");
+      const focused = await appears(reopened.page.locator("tr[style*='solid']", { hasText: /pet type/i }).first());
+      check(focused, "model-checks: the copied URL reopens with the pet-type row focused");
       await reopened.context.close();
     }
 
@@ -345,11 +364,11 @@ async function main() {
       const { context, page } = await openFresh(browser, `${BASE}/evidence/model-checks/?model=dietary_from_name`);
       const focusedDietary = page.locator("tr[style*='solid']", { hasText: /diet/i }).first();
       check(await appears(focusedDietary), "model-checks?model=dietary_from_name focuses the dietary row");
-      await page.locator("tr", { hasText: /segment/i }).first().click();
-      const forward = await urlMatches(page, /model=segment_from_product/);
+      await page.locator("tr", { hasText: /pet type/i }).first().click();
+      const forward = await urlMatches(page, /model=pet_type_from_name/);
       await page.goBack();
       const back = await urlMatches(page, /model=dietary_from_name/) && await appears(focusedDietary);
-      check(forward && back, "model-checks: segment → back restores the dietary focus");
+      check(forward && back, "model-checks: pet type → back restores the dietary focus");
       await context.close();
     }
 
@@ -400,7 +419,7 @@ async function main() {
 
     {
       const { context, page } = await openFresh(browser, `${BASE}/evidence/`);
-      const modelLine = await appears(page.getByText(/3 of 4 models beat that guess by 10 points or more/));
+      const modelLine = await appears(page.getByText(/2 of 3 models beat that guess by 10 points or more/));
       const entries = await page.locator(".evidence-entry").count();
       const marked = await page.locator(".evidence-entry .pill", { hasText: /^(Real|Synthetic) data$/ }).count();
       check(modelLine && entries === 3 && marked === 3,

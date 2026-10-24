@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 
 import { fmtEur } from "@/lib/api";
@@ -11,9 +14,15 @@ import type { SupplyReorderRow } from "@/lib/types";
  * at risk first. The order covers Aito's next-month forecast plus safety
  * stock; the `?` opens the forecast's `$why`, in units.
  */
+const FIRST_SHOWN = 15;
+
 export default function ReorderTable({ rows, month, highlight }: {
   rows: SupplyReorderRow[]; month: string; highlight?: string;
 }) {
+  // A linked row counts as asked for: show them all so it can be highlighted.
+  const [all, setAll] = useState(false);
+  const shown = all || (highlight && rows.findIndex((r) => r.sku === highlight) >= FIRST_SHOWN)
+    ? rows : rows.slice(0, FIRST_SHOWN);
   if (rows.length === 0) {
     return <div className="card-sub">No SKU is below its reorder point.</div>;
   }
@@ -31,7 +40,7 @@ export default function ReorderTable({ rows, month, highlight }: {
           </tr>
         </thead>
         <tbody>
-          {rows.map((r) => (
+          {shown.map((r) => (
             <tr key={r.sku} id={`row-${r.sku}`} style={highlight === r.sku ? HIGHLIGHT : undefined}>
               <td>
                 <Link href={`/product-insights/?sku=${encodeURIComponent(r.sku)}`} style={{ fontWeight: 700 }}>
@@ -71,6 +80,11 @@ export default function ReorderTable({ rows, month, highlight }: {
           ))}
         </tbody>
       </table>
+      {shown.length < rows.length && (
+        <button type="button" className="btn btn-ghost" style={{ marginTop: 8 }} onClick={() => setAll(true)}>
+          Show all {rows.length}
+        </button>
+      )}
     </div>
   );
 }

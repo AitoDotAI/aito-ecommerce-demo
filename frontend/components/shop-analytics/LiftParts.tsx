@@ -37,7 +37,7 @@ const FIELD_LABELS: Record<string, string> = {
 };
 export const fieldLabel = (field: string) => FIELD_LABELS[field] ?? field;
 
-function valueLabel(row: ShopLiftRow): string {
+export function valueLabel(row: ShopLiftRow): string {
   if (row.field === "just_bought") return row.value === "true" ? "yes" : "no";
   if (row.field === "product_sku.rating_band") return row.value === "unrated" ? "unrated" : `${row.value.replace("-", "–")} stars`;
   return row.value.replace(/[_-]/g, " ");

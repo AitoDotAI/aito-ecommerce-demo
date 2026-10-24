@@ -57,9 +57,9 @@
           "category",
           "pet_type"
         ],
-        "accuracy": 0.6746,
+        "accuracy": 0.6667,
         "base_accuracy": 0.2619,
-        "accuracy_gain": 0.4127,
+        "accuracy_gain": 0.4048,
         "n": 126,
         "threshold_pp": 10.0,
         "verdict": "pass",
@@ -100,62 +100,16 @@
         "error": null
       },
       {
-        "id": "segment_from_product",
-        "label": "Customer segment from product attributes",
-        "table": "order_lines",
-        "predict": "customer_segment",
-        "features": [
-          "product.pet_type",
-          "product.category"
-        ],
-        "accuracy": 0.795,
-        "base_accuracy": 0.39,
-        "accuracy_gain": 0.405,
-        "n": 200,
-        "threshold_pp": 10.0,
-        "verdict": "pass",
-        "last_query": {
-          "endpoint": "_evaluate",
-          "body": {
-            "test": {
-              "$sample": {
-                "n": 200,
-                "seed": 0
-              }
-            },
-            "evaluate": {
-              "from": "order_lines",
-              "where": {
-                "product_sku.pet_type": {
-                  "$get": "product_sku.pet_type"
-                },
-                "product_sku.category": {
-                  "$get": "product_sku.category"
-                }
-              },
-              "predict": "customer_segment"
-            },
-            "select": [
-              "accuracy",
-              "baseAccuracy",
-              "n"
-            ]
-          }
-        },
-        "error": null
-      },
-      {
         "id": "return_risk",
         "label": "Return risk (deliberate honest-failure case)",
         "table": "order_lines",
         "predict": "returned",
         "features": [
           "product.category",
-          "product.pet_type",
-          "customer_segment"
+          "product.pet_type"
         ],
-        "accuracy": 0.97,
-        "base_accuracy": 0.97,
+        "accuracy": 0.98,
+        "base_accuracy": 0.98,
         "accuracy_gain": 0.0,
         "n": 200,
         "threshold_pp": 10.0,
@@ -177,9 +131,6 @@
                 },
                 "product_sku.pet_type": {
                   "$get": "product_sku.pet_type"
-                },
-                "customer_segment": {
-                  "$get": "customer_segment"
                 }
               },
               "predict": "returned"
@@ -194,8 +145,8 @@
         "error": null
       }
     ],
-    "last_run": "2026-10-16T18:23:38+00:00",
-    "total_response_ms": 5834
+    "last_run": "2026-10-24T08:57:44+00:00",
+    "total_response_ms": 3941
   },
   "timings": []
 }

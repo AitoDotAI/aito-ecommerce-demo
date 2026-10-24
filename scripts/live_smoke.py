@@ -73,14 +73,14 @@ def check_evaluation(body: dict) -> str:
     return f"{len(models)} models, {len(MUST_PASS)} held to pass all pass"
 
 
-def check_dashboard(body: dict) -> str:
-    """Since #37 an unavailable panel is a tile marked available:false, so a
-    non-empty list can be all-unavailable: require one real pattern."""
-    patterns = _list(body, "top_patterns", "dashboard")
-    real = [p for p in patterns if p.get("available", True) is True]
-    assert real, f"all {len(patterns)} dashboard patterns are unavailable"
-    _list(body, "segments", "dashboard")
-    return f"{len(real)}/{len(patterns)} patterns available"
+def check_overview(body: dict) -> str:
+    """Overview (ADR 0041): a headline whose view has no snapshot is shown as
+    unavailable rather than left out, so require every one to be available."""
+    headlines = _list(body, "headlines", "overview")
+    missing = [h["view"] for h in headlines if h.get("available") is not True]
+    assert not missing, f"overview headlines unavailable: {missing}"
+    _list(body, "households", "overview")
+    return f"{len(headlines)} headlines available"
 
 
 def shape_only(*keys: str, what: str) -> Callable[[dict], str]:
@@ -103,21 +103,19 @@ def check_version(body: dict) -> str:
 
 STEPS = [
     Step("version", "/api/version", check_version),
-    Step("dashboard", "/api/dashboard", check_dashboard),
+    Step("overview", "/api/overview", check_overview),
     Step("evaluation", "/api/evaluation", check_evaluation),
     Step("retention", "/api/retention", nonempty("at_risk", "drivers", what="retention")),
     Step("supply", "/api/supply", nonempty("reorder_queue", "overstock", "top_movers", what="supply")),
     # not shown in the sidebar: shape only (demand's seasonality moves to Patterns)
     Step("demand", "/api/demand", shape_only("top_movers", "seasonality", what="demand")),
-    Step("basket-rules", "/api/basket-rules", nonempty("rules", what="basket rules")),
+    Step("patterns-baskets", "/api/shop-analytics/baskets", nonempty("pairs", what="patterns baskets")),
     Step("price", "/api/price", shape_only("fair_bands", "sweet_spots", what="price")),
     Step("product-filling", "/api/product-filling", nonempty("fields", what="product filling")),
     Step("review-triage", "/api/review-triage", nonempty("fields", what="review triage")),
     Step("smart-search", "/api/smart-search", nonempty("baseline", "predictive", what="smart search"),
          {"q": "food", "customer": "saara"}),
     Step("for-you", "/api/for-you", nonempty("tiles", what="for you"), {"customer": "maija"}),
-    Step("pattern-explorer", "/api/pattern-explorer", nonempty("patterns", what="pattern explorer"),
-         {"anchor": "dog_dryfood"}),
 ]
 
 

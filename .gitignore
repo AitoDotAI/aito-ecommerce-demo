@@ -31,6 +31,9 @@ data/impressions.json
 
 # UCI Online Retail II, prepared for env `uci` (ADR 0034): ~60 MB,
 # regenerated from the local xlsx by `./do uci-prepare`.
-data/uci/
+data/uci/*
+# The app reads only the outcomes at runtime; they ship with it.
+!data/uci/outcomes.json
+!data/uci/README.md
 # A merchant's prepared orders and backtest reports (ADR 0036): never committed.
 data/backtest/
