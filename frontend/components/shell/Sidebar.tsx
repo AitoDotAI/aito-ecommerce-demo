@@ -2,93 +2,82 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { hiddenReason } from "@/lib/hidden-routes";
 import { useShell } from "./ShellState";
 
 interface NavItem {
   href: string;
   label: string;
   icon: string;
-  badge?: { text: string; tone?: "default" | "green" };
+  /** Evidence entries say which data they rest on (ADR 0037). */
+  data?: "Real" | "Synthetic";
 }
-interface NavSection {
-  label: string;
+interface NavGroup {
+  /** Left out when the group is its heading's only theme (Evidence). */
+  label?: string;
   items: NavItem[];
+}
+interface NavHeading {
+  label: string;
+  groups: NavGroup[];
 }
 
 /**
- * Sidebar navigation — sections in order from
- * `predictive-ecommerce-demo.html` lines 514–560. Active item gets
- * the warm-yellow `--cta` left border.
+ * The site's two halves (ADR 0037) and its groups, one per person
+ * (ADR 0041): the shopper, the owner, the operator, the evaluator, the
+ * developer. Each entry is one job.
  *
- * Badges are static placeholders that match the mock. They become
- * data-driven (today's pending counts, current accuracy, etc.)
- * as each view's data layer lands.
+ * Product, Supply and Retention point to the view each will be merged
+ * from (Product Insights, Inventory, Churn) until the merge lands.
  */
-const ALL_SECTIONS: NavSection[] = [
+const NAV: NavHeading[] = [
   {
-    label: "Overview",
-    items: [
-      { href: "/", label: "Dashboard", icon: "📊" },
+    label: "360° intelligent ecommerce",
+    groups: [
+      {
+        label: "Shop",
+        items: [
+          { href: "/shop", label: "Shop", icon: "🛍️" },
+        ],
+      },
+      {
+        label: "Run the shop",
+        items: [
+          { href: "/",                 label: "Overview",  icon: "📊" },
+          { href: "/patterns",         label: "Patterns",  icon: "🔗" },
+          { href: "/product-insights", label: "Product",   icon: "🏷️" },
+          { href: "/inventory",        label: "Supply",    icon: "📦" },
+          { href: "/churn",            label: "Retention", icon: "🔁" },
+        ],
+      },
+      {
+        label: "Operate",
+        items: [
+          { href: "/product-filling", label: "Product filling", icon: "⚡" },
+          { href: "/feedback",        label: "Review triage",   icon: "💬" },
+        ],
+      },
     ],
   },
   {
-    label: "Assist Customers",
-    items: [
-      { href: "/shop",             label: "Shop",             icon: "🛍️", badge: { text: "New" } },
-      { href: "/smart-search",     label: "Smart Search",     icon: "🔍" },
-      { href: "/recommendations",  label: "For You",          icon: "✨", badge: { text: "Live" } },
-      { href: "/bought-together",  label: "Bought Together",  icon: "🛒" },
-    ],
-  },
-  {
-    label: "Real data",
-    items: [
-      { href: "/business-reorders", label: "Business reorders", icon: "🧾", badge: { text: "New" } },
-    ],
-  },
-  {
-    label: "Analyze",
-    items: [
-      { href: "/purchase-analytics", label: "Purchase Analytics", icon: "📈" },
-      { href: "/product-insights",   label: "Product Insights",   icon: "🔍", badge: { text: "New" } },
-      { href: "/shop-analytics",     label: "Shop analytics",     icon: "🏪", badge: { text: "New" } },
-      { href: "/pattern-explorer",   label: "Pattern Explorer",   icon: "🔗" },
-      { href: "/basket-rules",       label: "Basket Rules",       icon: "🧺", badge: { text: "New" } },
-    ],
-  },
-  {
-    label: "Understand",
-    items: [
-      { href: "/feedback", label: "Feedback", icon: "💬" },
-      { href: "/churn",    label: "Churn",    icon: "📉" },
-    ],
-  },
-  {
-    label: "Operate",
-    items: [
-      { href: "/demand",    label: "Demand Forecast", icon: "📦" },
-      { href: "/inventory", label: "Inventory",       icon: "🏷️" },
-      { href: "/price",     label: "Price",           icon: "💶" },
-      { href: "/markdown",       label: "Markdown",        icon: "✂️", badge: { text: "New" } },
-      { href: "/cart-completion",label: "Cart Completion", icon: "🛒", badge: { text: "New" } },
-      { href: "/winback",        label: "Win-back",        icon: "↩️", badge: { text: "New" } },
-    ],
-  },
-  {
-    label: "Automate",
-    items: [
-      { href: "/product-filling", label: "Product Filling", icon: "⚡", badge: { text: "98%", tone: "green" } },
-      { href: "/evaluation",      label: "Evaluation",      icon: "🧪" },
+    label: "Evidence",
+    groups: [
+      {
+        items: [
+          { href: "/evidence",                      label: "Index",               icon: "📋" },
+          { href: "/evidence/business-reorders",    label: "Business reorders",   icon: "🧾", data: "Real" },
+          { href: "/evidence/personalised-search",  label: "Personalised search", icon: "🔍", data: "Synthetic" },
+          { href: "/evidence/model-checks",         label: "Model checks",        icon: "🧪", data: "Synthetic" },
+        ],
+      },
+      {
+        label: "For developers",
+        items: [
+          { href: "/query-patterns", label: "Query patterns", icon: "⌨️" },
+        ],
+      },
     ],
   },
 ];
-
-// Views listed in `lib/hidden-routes.ts` are left out; a section left
-// empty by that is dropped too.
-const SECTIONS: NavSection[] = ALL_SECTIONS
-  .map((section) => ({ ...section, items: section.items.filter((i) => !hiddenReason(i.href)) }))
-  .filter((section) => section.items.length > 0);
 
 
 export default function Sidebar() {
@@ -116,24 +105,30 @@ export default function Sidebar() {
         <span className="sidebar-brand-dim">· Nordic pet store</span>
       </div>
 
-      {SECTIONS.map((section) => (
-        <div className="nav-section" key={section.label}>
-          <div className="nav-section-label">{section.label}</div>
-          {section.items.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`nav-item${isActive(item.href) ? " active" : ""}`}
-              onClick={() => closeMobile()}
-            >
-              <span className="icon" aria-hidden="true">{item.icon}</span>
-              {item.label}
-              {item.badge && (
-                <span className={`nav-badge${item.badge.tone === "green" ? " green" : ""}`}>
-                  {item.badge.text}
-                </span>
-              )}
-            </Link>
+      {NAV.map((heading) => (
+        <div className="nav-heading" key={heading.label}>
+          <div className="nav-heading-label">{heading.label}</div>
+          {heading.groups.map((group, i) => (
+            <div className="nav-section" key={group.label ?? i}>
+              {group.label && <div className="nav-section-label">{group.label}</div>}
+              {group.items.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`nav-item${isActive(item.href) ? " active" : ""}`}
+                  onClick={() => closeMobile()}
+                >
+                  <span className="icon" aria-hidden="true">{item.icon}</span>
+                  {item.label}
+                  {item.data && (
+                    <span className={`nav-data-mark${item.data === "Real" ? " real" : ""}`}
+                          title={`${item.data} data`}>
+                      {item.data}
+                    </span>
+                  )}
+                </Link>
+              ))}
+            </div>
           ))}
         </div>
       ))}
@@ -145,8 +140,6 @@ export default function Sidebar() {
           <div className="aito-dot" />
           <div>
             <strong>aito.ai</strong> · Predictive DB
-            <br />
-            <span style={{ fontSize: 10 }}>11,970 orders · 16ms avg</span>
           </div>
         </div>
       </div>

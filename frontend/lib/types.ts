@@ -237,42 +237,6 @@ export interface FillingResponse {
   last_response_ms: number;
 }
 
-/* ─── Bought Together (/api/bought-together) ─── */
-
-export interface BoughtTogetherSkuSample {
-  sku: string;
-  name: string;
-  brand: string;
-  price_eur: number;
-}
-
-export interface BoughtTogetherCrossSell {
-  label: string;
-  token: string;
-  lift: number;
-  support: {
-    f: number;
-    f_on_condition: number;
-  };
-  sample_skus: BoughtTogetherSkuSample[];
-}
-
-export interface BoughtTogetherAnchor {
-  id: string;
-  pet_type: string;
-  category: string;
-  display: string;
-  sample_skus: BoughtTogetherSkuSample[];
-}
-
-export interface BoughtTogetherResponse {
-  anchor: BoughtTogetherAnchor;
-  cross_sells: BoughtTogetherCrossSell[];
-  available_anchors: Array<{ id: string; display: string }>;
-  last_query: { endpoint: string; body: Record<string, unknown> };
-  last_response_ms: number;
-}
-
 /* ─── Basket Rules (/api/basket-rules) ─── */
 
 export interface BasketRule {
@@ -615,42 +579,6 @@ export interface MarkdownProposal {
 export interface MarkdownResponse {
   kpis: InventoryKpi[];
   proposals: MarkdownProposal[];
-  last_query: { endpoint: string; body: Record<string, unknown> };
-  last_response_ms: number;
-}
-
-/* ─── Cart Completion (/api/cart-completion) ─── */
-
-export interface CartItem {
-  sku: string;
-  name: string;
-  category: string;
-  price_eur: number;
-}
-
-export interface AddOnSuggestion {
-  sku: string;
-  name: string;
-  pet_type: string;
-  category: string;
-  brand: string;
-  price_eur: number;
-  attach_p: number;
-  rank: number;
-  expected_uplift_eur: number;
-}
-
-export interface CartScenarioResult {
-  scenario_id: string;
-  label: string;
-  description: string;
-  items: CartItem[];
-  cart_value_eur: number;
-  suggestions: AddOnSuggestion[];
-}
-
-export interface CartCompletionResponse {
-  scenarios: CartScenarioResult[];
   last_query: { endpoint: string; body: Record<string, unknown> };
   last_response_ms: number;
 }

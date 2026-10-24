@@ -83,8 +83,8 @@ function ProductInsightsView() {
           ))}
         </select>
         {data?.bought_together_anchor && (
-          <a href={`/bought-together/?anchor=${data.bought_together_anchor}`} style={{ fontSize: 13 }}>
-            What's bought with {data.product.category.replace(/-/g, " ")} →
+          <a href="/patterns/" style={{ fontSize: 13 }}>
+            Basket patterns, in Patterns →
           </a>
         )}
       </div>

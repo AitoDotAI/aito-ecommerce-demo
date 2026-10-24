@@ -5,8 +5,7 @@ Composes the four blocks the Dashboard view shows:
   2. Top patterns — Python-side co-occurrence lift over local fixtures.
   3. Households  — live `_search` counts per household (the pets it
                    declared, ADR 0033) + avg-basket aggs.
-  4. Recent orders — live `_search` over orders, no per-row predictions
-                    (those land with the For You / Bought Together views).
+  4. Recent orders — live `_search` over orders, no per-row predictions.
 
 See `docs/adr/0005-dashboard.md` for the why of the live/local split.
 The same `DashboardResponse` shape is consumed by
@@ -183,7 +182,7 @@ def _compute_top_patterns(client: AitoClient, k: int = 6) -> list[Pattern]:
     """Order-level co-occurrence lift via live `_relate`.
 
     For each curated `(pet_a, cat_a) → (pet_b, cat_b)` pattern in
-    `_PATTERN_PAIRS`, runs the same query Bought Together uses:
+    `_PATTERN_PAIRS`, runs the basket `_relate` that Patterns also sends:
 
       _relate from orders where {line_categories: $match <anchor>}
               relate line_categories
@@ -193,14 +192,14 @@ def _compute_top_patterns(client: AitoClient, k: int = 6) -> list[Pattern]:
 
     Six anchors → six parallel `_relate` calls. Cached at the
     `get_dashboard` level (10 min); inner anchors aren't cached
-    separately because Pattern Explorer / Bought Together hit the
-    same query body with their own cache keys.
+    separately because Patterns and Pattern Explorer send the same
+    query body with their own cache keys.
 
     The pair list stays curated (not strict sort-by-lift): aquarium
     → aquarium niche pattern inflates lift to ≈ 16× because of its
     low base rate, mathematically correct but visually misleading
-    for the dashboard's narrative. Pattern Explorer is the right
-    place for raw-ranked discovery.
+    for the dashboard's narrative. Patterns is the place for every
+    pair, with its interval.
     """
     anchors_targets: list[tuple[str, str, str, str]] = []
     for (anchor_pet, anchor_cat), (target_pet, target_cat), label in _PATTERN_PAIRS:
@@ -449,14 +448,14 @@ def _build_insight(patterns: list[Pattern]) -> Insight:
     Aquarium → aquarium-health lifts ≈ 17× because aquarium orders
     are a closed niche (small denominator), which is mathematically
     correct but visually overpowers the dog → dental-treats moment
-    that the rest of the demo (Bought Together, customer-switcher
-    walkthrough) builds on. The dashboard surfaces every pattern
+    that the rest of the demo (the Shop's cart suggestions, Patterns)
+    builds on. The dashboard surfaces every pattern
     in the table; the tip-box leads with the load-bearing one.
     """
     if not patterns:
         return Insight(
             headline="Insight",
-            body="Top patterns will populate once Bought Together is wired live.",
+            body="No basket pattern came back from Aito.",
         )
     anchor = next(
         (p for p in patterns if p.label == _INSIGHT_ANCHOR_LABEL),
@@ -466,10 +465,9 @@ def _build_insight(patterns: list[Pattern]) -> Insight:
         headline="Insight",
         body=(
             f"<strong>{anchor.label}</strong> co-occurs at "
-            f"<strong>{anchor.lift:.2f}×</strong> baseline — Aito flags this as "
-            f"the demo's headline cross-sell signal. Drill into individual SKU "
-            f"pairs on Bought Together; see every category it lifts, and "
-            f"the ones it holds back, on Pattern Explorer."
+            f"<strong>{anchor.lift:.2f}×</strong> baseline. "
+            f'<a href="/patterns/">Patterns</a> shows its interval and counts, '
+            f"and every other basket pair that clears the significance bar."
         ),
     )
 

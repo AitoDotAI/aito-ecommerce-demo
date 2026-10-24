@@ -39,8 +39,8 @@ export function dashboardPanel(): AitoPanelConfig {
       `KPIs from live <code style="color:var(--aito-teal);">_search limit=0</code> ` +
       `counts. Top patterns come from live ` +
       `<code style="color:var(--aito-teal);">_relate</code> over ` +
-      `<code>orders.line_categories</code> — the same query body that powers ` +
-      `Bought Together. Drill into any pattern there for the full lift band.`,
+      `<code>orders.line_categories</code>, the basket query that Patterns ` +
+      `sends with an interval and counts for every pair.`,
     query:
 `${k('"relate"')}: {
   ${n('"from"')}: ${s('"orders"')},
@@ -54,18 +54,19 @@ export function dashboardPanel(): AitoPanelConfig {
 }
 
 
-export function smartSearchPanel(): AitoPanelConfig {
+export function personalisedSearchPanel(): AitoPanelConfig {
   return {
-    operation: "Smart Search",
+    operation: "Personalised search",
     endpoints: ["_search"],
     description:
       `One <code style="color:var(--aito-teal);">_search</code> ranks the whole ` +
       `catalogue by <code style="color:var(--aito-teal);">$multiply</code>: the ` +
-      `probability this customer context buys the product (` +
+      `probability this customer buys the product (` +
       `<code style="color:var(--aito-teal);">$p</code>, learned from the impressions ` +
-      `funnel) times how well its name matches the query (` +
-      `<code style="color:var(--aito-teal);">$similarity</code>, BM25). No word filter, ` +
-      `so natural phrasing and misspellings still find products.`,
+      `funnel with the customer as context) times how well its name matches the query (` +
+      `<code style="color:var(--aito-teal);">$similarity</code>). No word filter, ` +
+      `so natural phrasing and misspellings still find products. The Shop's search ` +
+      `is a different, two-step query: <code>src/shop_search.py</code>.`,
     query:
 `${k('"search"')}: {
   ${n('"from"')}: ${s('"impressions"')},
@@ -82,48 +83,21 @@ export function smartSearchPanel(): AitoPanelConfig {
 }
 
 
-export function recommendationsPanel(): AitoPanelConfig {
+export function recommendMinimalPanel(): AitoPanelConfig {
   return {
-    operation: "For You",
+    operation: "Query patterns",
     endpoints: ["_recommend"],
     description:
-      `Personalised product recommendations per customer. Aito ranks all ` +
-      `products by P(this customer would buy it, given their history). ` +
-      `Switching the customer in the pill bar above flips the entire grid ` +
-      `in &lt; 300 ms — same query body, different ` +
-      `<code style="color:var(--aito-teal);">where</code> context.`,
+      `<code style="color:var(--aito-teal);">_recommend</code> in its minimal form: rank ` +
+      `<code>product_sku</code> over <code>impressions</code> towards the goal ` +
+      `<code>{purchased: true}</code>, with only the customer as context. The Shop's ` +
+      `"Picked for you" sends the production form: <code>src/shop_ranking.py</code>.`,
     query:
-`${k('"recommend"')}: {
-  ${n('"from"')}: ${s('"order_lines"')},
-  ${n('"where"')}: {
-    ${n('"orders.customer_id"')}: ${s('"CUST-00001"')}
-  },
-  ${n('"recommend"')}: ${s('"product_sku"')},
-  ${n('"goal"')}: { ${n('"returned"')}: false }
-}`,
-    links: LEARN_MORE_LINKS,
-  };
-}
-
-
-export function boughtTogetherPanel(): AitoPanelConfig {
-  return {
-    operation: "Bought Together",
-    endpoints: ["_relate"],
-    description:
-      `Co-purchase lift: how much more likely product B is bought ` +
-      `alongside product A compared to its baseline. For dog dry-food, ` +
-      `dental treats run at <strong style="color:var(--aito-teal);">≈ 2.7×</strong> ` +
-      `their normal rate.`,
-    query:
-`${k('"relate"')}: {
-  ${n('"from"')}: ${s('"order_lines"')},
-  ${n('"where"')}: {
-    ${n('"category"')}: ${s('"dry-food"')},
-    ${n('"pet_type"')}: ${s('"dog"')}
-  },
-  ${n('"relate"')}: ${s('"category"')}
-}`,
+`${k('"from"')}: ${s('"impressions"')},
+${k('"where"')}: { ${n('"context.customer"')}: ${s('"CUST-00001"')} },
+${k('"recommend"')}: ${s('"product_sku"')},
+${k('"goal"')}: { ${n('"purchased"')}: ${n('true')} },
+${k('"limit"')}: ${n('12')}`,
     links: LEARN_MORE_LINKS,
   };
 }
@@ -239,7 +213,7 @@ export function productInsightsPanel(): AitoPanelConfig {
 export function shopAnalyticsPanel(queriesSent?: number): AitoPanelConfig {
   const c = (t: string) => `<code style="color:var(--aito-teal);">${t}</code>`;
   return {
-    operation: "Shop analytics",
+    operation: "Patterns",
     endpoints: ["_relate", "_search"],
     description:
       `Each section is ${c("_relate")}, sent in parallel: which values are over- or ` +
@@ -445,28 +419,6 @@ ${k('"recommend"')}: ${s('"product_sku"')},
 ${k('"goal"')}: { ${n('"responded"')}: ${n('true')} },
 ${k('"basedOn"')}: [${s('"pet_type"')}, ${s('"category"')}, ${s('"brand"')}],
 ${k('"limit"')}: ${n('8')}`,
-    links: LEARN_MORE_LINKS,
-  };
-}
-
-
-export function cartCompletionPanel(): AitoPanelConfig {
-  return {
-    operation: "Cart Completion",
-    endpoints: ["_relate"],
-    description:
-      `Given items already in cart, Aito's <code style="color:var(--aito-teal);">_relate</code> ` +
-      `over <code style="color:var(--aito-teal);">orders.line_categories</code> ranks the ` +
-      `categories that co-occur most strongly. Each related category contributes one popular ` +
-      `product as a suggested add-on. Same predictive engine as Bought Together, surfaced at ` +
-      `the checkout funnel.`,
-    query:
-`${k('"from"')}: ${s('"orders"')},
-${k('"where"')}: {
-  ${n('"line_categories"')}: { ${n('"$match"')}: ${s('"dog_dryfood"')} }
-},
-${k('"relate"')}: ${s('"line_categories"')},
-${k('"limit"')}: ${n('10')}`,
     links: LEARN_MORE_LINKS,
   };
 }
