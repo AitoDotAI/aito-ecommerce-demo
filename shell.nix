@@ -38,6 +38,10 @@ pkgs.mkShell {
     export PLAYWRIGHT_BROWSERS_PATH="${pkgs.playwright-driver.browsers}"
     export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 
+    # numpy's PyPI wheel (the backtest group) links libstdc++ and zlib,
+    # which NixOS doesn't put on the default library path.
+    export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib pkgs.zlib ]}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
     # Project env. No AITO_API_URL / AITO_API_KEY defaults here: ./do and
     # src/config.py let an exported variable win over .env, so a default
     # exported by the shell would silently shadow the .env credentials.

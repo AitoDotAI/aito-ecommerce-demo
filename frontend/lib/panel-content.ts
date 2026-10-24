@@ -129,6 +129,34 @@ export function boughtTogetherPanel(): AitoPanelConfig {
 }
 
 
+export function businessReordersPanel(): AitoPanelConfig {
+  return {
+    operation: "Business reorders",
+    endpoints: ["_predict", "_search", "_relate"],
+    description:
+      `Real data: UCI Online Retail II, a UK giftware wholesaler's invoices, in its own env. ` +
+      `One <code style="color:var(--aito-teal);">_predict</code> of <code>code</code> over ` +
+      `<code>lines</code>, conditioned on the buyer through the <code>invoice</code> link, drafts ` +
+      `the next order. Aito learned from invoices before 1 Sep 2011 only; what the buyer ordered ` +
+      `next is checked against the draft outside Aito. Labels and prices come from a ` +
+      `<code style="color:var(--aito-teal);">_search</code> on <code>products</code>, and Bought ` +
+      `together is a <code style="color:var(--aito-teal);">_relate</code> over each invoice's codes.`,
+    query:
+`${k('"predict"')}: {
+  ${n('"from"')}: ${s('"lines"')},
+  ${n('"where"')}: { ${n('"invoice.customer_id"')}: ${s('"12357"')} },
+  ${n('"predict"')}: ${s('"code"')},
+  ${n('"limit"')}: 10,
+  ${n('"select"')}: [${s('"$p"')}, ${s('"$value"')}]
+}`,
+    links: [
+      ...LEARN_MORE_LINKS,
+      { label: "Online Retail II (UCI)", url: "https://doi.org/10.24432/C5CG6D", kind: "external" },
+    ],
+  };
+}
+
+
 export function basketRulesPanel(): AitoPanelConfig {
   return {
     operation: "Basket Rules",
