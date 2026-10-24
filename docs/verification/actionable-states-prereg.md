@@ -836,3 +836,56 @@ was retuned after the run. The failures are reported, by check:
 
 Registered above; it waits for `release2`. Its sessions exist: customers with no
 `pets`, with an earlier order and a purchase in the session.
+
+### Decision (2026-10-24, delegated by Antti, after the results above)
+
+- **O2 and O3a are accepted as recorded failures,** with no generator change.
+  - The ranker's placement works through drawing 6–14 products from an
+    affinity-weighted pool, which dilutes its ×1.3–1.8 factor.
+  - Measured: an offered product's showings ×1.20, and units at a 20 %+
+    offer ×1.6, against the offers-off null.
+  - The views quote these measured values, never the planted ones.
+- **P2c and P3a are accepted as recorded failures.** Since ADR 0045 their
+  mechanisms act through the shop's ranker (a rival's launch ×0.75 on being
+  shown) and the showing's odds (a list-price rise through ε), not through
+  order pick weights.
+- **R6** stays reported, not judged.
+
+### Amendment (2026-10-24, before the run it governs): pooled judging of the impression-side checks
+
+**The reason is structural, not the results.** Since ADR 0045 every sale is a
+purchased showing. A null that changes an impression effect therefore
+propagates:
+- through the orders it changes,
+- into stars, `popular` labels, stock, experiences and churn,
+- and so into every later session.
+
+The per-seed noise model the checks were registered under (common random
+numbers, a null touching only its own impressions) no longer holds.
+
+**From now on these checks are judged by a pooled estimate:** P6, P6 high,
+P7, P7 high, P8, P8 high, P9, P9 high, P10, V1, R1, R2a, R2b, R5, O2,
+O3a, O3b.
+
+- **Seeds:** 10 — the three registered (42, 7, 99) and seven new fixed
+  seeds, listed now before any run: **1, 2, 3, 11, 13, 17, 23**.
+- **Each seed's value** is computed exactly as registered (planted ÷ the
+  check's null).
+- **Ratio checks:**
+  - the pooled point estimate is the geometric mean over the 10 seeds;
+  - its 95 % interval is exp(mean log ± t₀.₉₇₅,₉ · sd(log) / √10), with
+    t₀.₉₇₅,₉ = 2.262;
+  - a "≥" check passes when the pooled estimate meets its threshold **and**
+    the interval's lower bound is above the null's value, 1.0;
+  - a "≤" check (R2b) passes when the estimate meets its threshold **and**
+    the upper bound is below 1.0.
+- **O3b** (a count of slots where clicks don't fall) is judged on the
+  arithmetic mean over the seeds, against its threshold 0: every seed
+  must read 0.
+- **The thresholds are the registered ones.** The accepted failures above
+  stay recorded and are judged again here; the decision stands whatever the
+  pooled result.
+- **The three-seed table stays in the record beside the pooled one**
+  (`actionable-states-data.md`). The pooled run writes
+  `actionable-states-pooled.md`.
+- **Unchanged:** every other check keeps its per-seed judgement.
