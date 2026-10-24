@@ -211,7 +211,7 @@ A section takes 1.5–3 s alone. The customer-column `_relate`s return
 2,500–3,000 hits each and are the slowest part. With all four sections
 asked at once, a section takes 4–9 s. That is over the ~3 s bar, so the
 endpoints cache each section for 30 minutes (`cache.get_or_compute`), as
-Product Insights does.
+the Product view's "For whom" does.
 
 ## Data schema
 

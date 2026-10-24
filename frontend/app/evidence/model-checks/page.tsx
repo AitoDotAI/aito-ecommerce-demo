@@ -118,8 +118,8 @@ function ModelChecksView() {
 
       {data && (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: 16, marginTop: 16 }}>
-          <HeldOutCard title="Retention: who leaves in the next 3 months" result={data.churn}
-                       baselines={[["Always “stays”", data.churn.base_accuracy]]} />
+          <HeldOutCard title="Retention: is an order the last for 3 months?" result={data.churn}
+                       baselines={[["Always “another order follows”", data.churn.base_accuracy]]} />
           <HeldOutCard title="Supply: next month's sales range" result={data.demand}
                        baselines={[["Naive: last month's range", data.demand.naive_accuracy],
                                    ["Always the most common range", data.demand.base_accuracy]]} />
@@ -129,7 +129,7 @@ function ModelChecksView() {
       {data && (
         <RunFacts
           run={data.run}
-          n={`${data.models.map((m) => `${m.label}: ${m.n}`).join("; ")}; churn: ${data.churn.n} customer-months; ` +
+          n={`${data.models.map((m) => `${m.label}: ${m.n}`).join("; ")}; churn: ${data.churn.n} ordering customer-months; ` +
              `demand: ${data.demand.n} products in ${data.demand.test_month}`}
           method={<>
             Aito&apos;s <code>_evaluate</code> holds rows out, predicts each from the rest and counts the right answers.
@@ -140,7 +140,7 @@ function ModelChecksView() {
           sources={[
             { label: "src/evidence/model_checks.py", path: "src/evidence/model_checks.py" },
             { label: "ADR 0010", path: "docs/adr/0010-evaluation.md" },
-            { label: "ADR 0013 (churn)", path: "docs/adr/0013-churn-prediction.md" },
+            { label: "src/churn_evaluation.py", path: "src/churn_evaluation.py" },
             { label: "ADR 0014 (demand)", path: "docs/adr/0014-demand.md" },
           ]}
         />

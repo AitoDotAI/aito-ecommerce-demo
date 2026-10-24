@@ -7,9 +7,10 @@ each against the baseline that makes its number mean something:
 - **Catalogue and returns** (ADR 0010, `eval_service`): three `_evaluate`
   models against always guessing the most common value; pass at ≥ 10 pp.
   Return Risk is meant to fail, and the page shows it.
-- **Churn** (ADR 0013): `_evaluate churned_in_3_months` on the customer-month
-  panel, with the features the Retention view's `_predict` uses, against
-  always guessing "stays".
+- **Churn** (`src/churn_evaluation.py`): Retention's question on a time
+  split: is a month in which the customer ordered followed by three months
+  without one? Against "another order follows". (The old Churn view's
+  96 % scored random customer-months, where "no orders" was the label itself.)
 - **Demand** (ADR 0014, `demand_evaluation`): a time split on the last
   month, against "same range as last month" (naive) and the most common range.
 
@@ -23,6 +24,7 @@ import sys
 from dataclasses import asdict
 
 from src.aito_client import AitoClient, AitoError
+from src.churn_evaluation import evaluate_churn
 from src.config import load_config
 from src.demand_evaluation import evaluate_demand
 from src.demand_forecast import LATEST_MONTH
@@ -30,32 +32,13 @@ from src.eval_service import PASS_THRESHOLD_PP, run_evaluation
 from src.evidence import result_file
 from src.evidence.wording import accuracy_interval, difference_sentence, unpaired_difference
 
-# The Retention view's `_predict churned_in_3_months` features (ADR 0013).
-CHURN_FEATURES = ("pets", "region", "tenure_months_at_month", "visits", "purchases", "spent_eur")
-CHURN_TEST_ROWS = 300
-
-
-def evaluate_churn(client: AitoClient) -> dict:
-    """One `_evaluate` over the panel; `$get` reads each held-out row's own value."""
-    where = {f: {"$get": f} for f in CHURN_FEATURES}
-    res = client.evaluate(table="customer_months", where=where, predict_field="churned_in_3_months",
-                          test_n=CHURN_TEST_ROWS)
-    missing = [k for k in ("accuracy", "baseAccuracy", "n") if k not in res]
-    if missing:
-        raise AitoError(f"_evaluate churned_in_3_months answered without {missing}: {str(res)[:300]}")
-    accuracy, base = float(res["accuracy"]), float(res["baseAccuracy"])
-    return {
-        "label": "Churn in the next 3 months",
-        "table": "customer_months",
-        "predict": "churned_in_3_months",
-        "features": list(CHURN_FEATURES),
-        "accuracy": accuracy,
-        "base_accuracy": base,
-        "gain_pp": (accuracy - base) * 100,
-        "n": int(res["n"]),
-        "method": f"{CHURN_TEST_ROWS} customer-months held out at random by Aito's _evaluate; "
-                  "the baseline always guesses the most common answer (stays).",
-    }
+def churn_model(client: AitoClient) -> dict:
+    """Retention's churn score on a time split (`src/churn_evaluation.py`, ADR 0041's Retention)."""
+    check = evaluate_churn(client)
+    body = check.last_query["body"]
+    return {"label": "Churn: no order for 3 months after an order", "table": body["evaluate"]["from"],
+            "predict": body["evaluate"]["predict"], "features": list(body["evaluate"]["where"]),
+            **asdict(check)}
 
 
 def evaluate_demand_model(client: AitoClient) -> dict:
@@ -96,9 +79,9 @@ def main() -> int:
         "models": [{**m, **with_intervals(m["accuracy"], m["n"], {"the most common value": m["base_accuracy"]},
                                           m["label"])} for m in catalogue["models"]],
     }
-    churn, demand = evaluate_churn(client), evaluate_demand_model(client)
+    churn, demand = churn_model(client), evaluate_demand_model(client)
     result["churn"] = {**churn, **with_intervals(churn["accuracy"], churn["n"],
-                                                 {"always “stays”": churn["base_accuracy"]}, "Aito")}
+                                                 {"“another order follows”": churn["base_accuracy"]}, "Aito")}
     result["demand"] = {**demand, **with_intervals(demand["accuracy"], demand["n"],
                                                    {"naive (last month's range)": demand["naive_accuracy"],
                                                     "the most common range": demand["base_accuracy"]}, "Aito")}

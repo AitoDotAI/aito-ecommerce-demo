@@ -12,6 +12,7 @@ from dataclasses import asdict, dataclass
 from src.aito_client import AitoClient
 from src.shop_context import pets_filter
 from src.shop_ranking import PRODUCT_FIELDS, ShopItem, ranked_items, shop_scope
+from src.shop_rescore import RESCORED, rescore
 
 GRID_SIZE = 12
 CANDIDATES = 20     # ranked before the just-bought re-ask, so the grid stays full
@@ -26,21 +27,29 @@ class ShopGrid:
     items: list[ShopItem]
     last_order_skus: list[str]
     last_query: dict
+    rescored: bool = False   # re-scored by the sandbox's 2026-05 states (ADR 0043)
 
     def to_dict(self) -> dict:
         return asdict(self)
 
 
-def get_shop_grid(client: AitoClient, shopper_key: str, month: str, cart_skus: list[str]) -> ShopGrid:
+def get_shop_grid(client: AitoClient, shopper_key: str, month: str, cart_skus: list[str],
+                  *, rescored: bool = False) -> ShopGrid:
+    """`rescored`: the sandbox's Shop for 2026-05, its top RESCORED candidates
+    re-scored by the states the owner's levers wrote (`src/shop_rescore.py`)."""
     scope = shop_scope(client, shopper_key, month, cart_skus)
     # "Picked for you" shows the household's own pets' products; search and a
     # product's alternatives don't (a cat owner may look for a dog gift).
     where = {**scope.where(), **pets_filter(scope.pets)}
-    items = ranked_items(client, scope, where, CANDIDATES)
+    candidates = RESCORED if rescored else CANDIDATES
+    items = ranked_items(client, scope, where, candidates)
+    if rescored:
+        items = rescore(client, items, month)
     return ShopGrid(
         shopper=scope.shopper.to_dict(), month=month, rule=scope.rule, cart=scope.cart,
         items=items[:GRID_SIZE], last_order_skus=scope.last_order_skus,
         last_query={"endpoint": "_recommend", "body": {
             "from": "impressions", "where": where, "recommend": "product_sku",
-            "goal": {"purchased": True}, "select": PRODUCT_FIELDS + ["$p", "$why"], "limit": CANDIDATES}},
+            "goal": {"purchased": True}, "select": PRODUCT_FIELDS + ["$p", "$why"], "limit": candidates}},
+        rescored=rescored,
     )

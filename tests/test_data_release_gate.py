@@ -134,7 +134,7 @@ def test_run_forever_checks_then_sleeps_the_interval():
 
 
 @pytest.mark.parametrize("path, gated", [
-    ("/api/dashboard", True),
+    ("/api/overview", True),
     ("/api/shop/grid", True),
     ("/api/schema", True),
     ("/api/version", False),
@@ -150,7 +150,7 @@ def test_only_data_routes_wait_for_the_release(path, gated):
 def _app_with(gate: DataReleaseGate) -> TestClient:
     app = FastAPI()
     app.middleware("http")(release_gate_middleware(gate))
-    app.get("/api/dashboard")(lambda: {"kpis": []})
+    app.get("/api/overview")(lambda: {"kpis": []})
     app.get("/api/version")(lambda: {"build": "abc123"})
     return TestClient(app)
 
@@ -160,10 +160,10 @@ def test_a_pending_app_answers_503_on_data_routes_and_version_as_usual():
     gate.check()
     client = _app_with(gate)
 
-    dashboard = client.get("/api/dashboard")
-    assert dashboard.status_code == 503
-    assert dashboard.headers["Retry-After"] == "60"
-    body = dashboard.json()
+    overview = client.get("/api/overview")
+    assert overview.status_code == 503
+    assert overview.headers["Retry-After"] == "60"
+    body = overview.json()
     assert body["error"] == "data release pending"
     assert body["release_env"] == "observable"
     assert "orders: 11919 rows, release has 11909" in body["differences"]
@@ -175,4 +175,19 @@ def test_a_ready_app_serves_data_routes():
     gate = Timeline(RELEASE_DATA).gate()
     gate.check()
 
-    assert _app_with(gate).get("/api/dashboard").json() == {"kpis": []}
+    assert _app_with(gate).get("/api/overview").json() == {"kpis": []}
+
+
+def test_a_request_naming_a_sandbox_waits_for_the_sandbox_template_not_petnords_data():
+    # PetNord's data is ready; the sandbox's template hasn't been loaded yet (ADR 0043).
+    petnord, template = Timeline(RELEASE_DATA).gate(), Timeline(OLD_DATA).gate()
+    petnord.check()
+    template.check()
+    app = FastAPI()
+    app.middleware("http")(release_gate_middleware(
+        petnord, lambda request: template if request.query_params.get("db") else None))
+    app.get("/api/shop/grid")(lambda: {"items": []})
+    client = TestClient(app)
+
+    assert client.get("/api/shop/grid").status_code == 200
+    assert client.get("/api/shop/grid?db=tmp-2026-10-26-15-30-00-3f9c2a1b7d4e6f80").status_code == 503

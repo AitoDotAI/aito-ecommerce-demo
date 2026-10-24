@@ -24,6 +24,12 @@ with `AITO_ENV=observable ./do dev`, it is the release env itself, which
 matches right away. On the `unified` branch a plain `./do dev` (master,
 before the promote) stays pending, which is the point.
 
+The sandbox database (ADR 0043) has a gate of its own, on its master:
+the template its branches are made from. It is ready once
+`./do sandbox-template-load` has loaded the release, and a request that
+names a sandbox branch is gated by it, not by PetNord's. (A branch is a
+copy of the template, plus the levers' rows.)
+
 When the counts can't be read (Aito unreachable, an error) the state is
 left as it was and the error is logged and reported in `status()`: one
 failed read is not evidence that the data changed.
@@ -113,9 +119,9 @@ class DataReleaseGate:
             self.check()
             sleep(interval)
 
-    def start(self) -> threading.Thread:
+    def start(self, *, name: str = "data-release-gate") -> threading.Thread:
         """Check now, then every `CHECK_INTERVAL_SECONDS`, on a daemon thread."""
-        thread = threading.Thread(target=self.run_forever, name="data-release-gate", daemon=True)
+        thread = threading.Thread(target=self.run_forever, name=name, daemon=True)
         thread.start()
         return thread
 
@@ -123,7 +129,7 @@ class DataReleaseGate:
 # Routes that answer whatever the data: the build and the connection.
 # `/api/uci/` reads env `uci`, which a release of the pet shop's data
 # doesn't touch (ADR 0034).
-UNGATED_PATHS = frozenset({"/api/version", "/api/health"})
+UNGATED_PATHS = frozenset({"/api/version", "/api/health", "/api/sandbox"})
 UNGATED_PREFIX = "/api/uci/"
 
 
@@ -131,14 +137,19 @@ def is_data_route(path: str) -> bool:
     return path.startswith("/api/") and path not in UNGATED_PATHS and not path.startswith(UNGATED_PREFIX)
 
 
-def release_gate_middleware(gate: DataReleaseGate):
-    """An HTTP middleware: 503 on data routes while `gate` is pending."""
+def release_gate_middleware(gate: DataReleaseGate, sandbox_gate_for: Callable[[Request], DataReleaseGate | None]
+                            = lambda request: None):
+    """An HTTP middleware: 503 on data routes while the request's gate is
+    pending. `sandbox_gate_for` returns the sandbox's gate for a request that
+    reads the sandbox, None for one that reads master."""
     async def middleware(request: Request, call_next):
-        if is_data_route(request.url.path) and not gate.is_ready:
-            return JSONResponse(
-                status_code=503,
-                content={"error": "data release pending", **gate.status()},
-                headers={"Retry-After": "60"},
-            )
+        if is_data_route(request.url.path):
+            request_gate = sandbox_gate_for(request) or gate
+            if not request_gate.is_ready:
+                return JSONResponse(
+                    status_code=503,
+                    content={"error": "data release pending", **request_gate.status()},
+                    headers={"Retry-After": "60"},
+                )
         return await call_next(request)
     return middleware

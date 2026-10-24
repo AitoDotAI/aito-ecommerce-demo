@@ -279,8 +279,8 @@ SCHEMAS: dict[str, dict] = {
         },
     },
     # 6b. winback_campaigns — historical re-engagement emails sent to
-    # then-inactive customers. Drives the Win-back view's `_predict
-    # responded` per currently-churned customer. See ADR 0020.
+    # then-inactive customers. Drives Retention's win-back offer: `_predict
+    # responded` per at-risk customer and product (src/winback_offer.py). See ADR 0020.
     "winback_campaigns": {
         "type": "table",
         "columns": {
@@ -305,7 +305,7 @@ SCHEMAS: dict[str, dict] = {
         },
     },
     # 7. customer_months — panel data, one row per customer per month.
-    # Drives the Churn view's time-series prediction. Loaded last
+    # Drives Retention's churn score (`src/churn_risk.py`). Loaded last
     # because it links to customers.
     "customer_months": {
         "type": "table",

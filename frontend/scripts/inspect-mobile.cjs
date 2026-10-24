@@ -79,13 +79,13 @@ const WAIT_AFTER_NETWORK = 1500;
 // the delay.
 const VIEWS = [
   { route: "/shop/",                         file: "01-shop.png",                selector: null },
-  { route: "/",                              file: "02-overview.png",            selector: ".lift-row" },
+  { route: "/",                              file: "02-overview.png",            selector: ".hbar-row" },
   { route: "/patterns/",                     file: "03-patterns.png",            selector: null },
-  { route: "/product-insights/",             file: "04-product.png",             selector: null },
-  { route: "/inventory/",                    file: "05-supply.png",              selector: null },
-  { route: "/churn/",                        file: "06-retention.png",           selector: null },
+  { route: "/product/",                      file: "04-product.png",             selector: null },
+  { route: "/supply/",                       file: "05-supply.png",              selector: null },
+  { route: "/retention/",                    file: "06-retention.png",           selector: null },
   { route: "/product-filling/",              file: "07-product-filling.png",     selector: ".fill-conf" },
-  { route: "/feedback/",                     file: "08-review-triage.png",       selector: null },
+  { route: "/review-triage/",                file: "08-review-triage.png",       selector: null },
   { route: "/evidence/",                     file: "09-evidence.png",            selector: ".evidence-entry" },
   { route: "/evidence/business-reorders/",   file: "10-business-reorders.png",   selector: null },
   { route: "/evidence/personalised-search/", file: "11-personalised-search.png", selector: ".pill-orange, .pill-blue" },

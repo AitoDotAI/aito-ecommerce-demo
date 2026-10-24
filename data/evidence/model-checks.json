@@ -6,7 +6,7 @@
  "run": {
   "command": "./do evidence model-checks",
   "date": "2026-10-24",
-  "code_commit": "8263623",
+  "code_commit": "eed1815",
   "aito_env": "observable",
   "aito_api": "v2@observable",
   "aito_version": "2.11.8"
@@ -191,7 +191,7 @@
   }
  ],
  "churn": {
-  "label": "Churn in the next 3 months",
+  "label": "Churn: no order for 3 months after an order",
   "table": "customer_months",
   "predict": "churned_in_3_months",
   "features": [
@@ -202,20 +202,67 @@
    "purchases",
    "spent_eur"
   ],
-  "accuracy": 0.96,
-  "base_accuracy": 0.6533333333333333,
-  "gain_pp": 30.666666666666664,
-  "n": 300,
-  "method": "300 customer-months held out at random by Aito's _evaluate; the baseline always guesses the most common answer (stays).",
-  "accuracy_low": 0.9378251313419899,
-  "accuracy_high": 0.9821748686580101,
+  "accuracy": 0.9224,
+  "base_accuracy": 0.8478,
+  "n": 953,
+  "method": "Predicts whether a month in which the customer ordered is followed by three months without an order. Trained on such months up to 2025-10, tested on every one of 2026-01.",
+  "last_query": {
+   "endpoint": "_evaluate",
+   "body": {
+    "test": {
+     "month": "2026-01",
+     "purchases": {
+      "$gte": 1
+     }
+    },
+    "evaluate": {
+     "from": "customer_months",
+     "where": {
+      "pets": {
+       "$get": "pets"
+      },
+      "region": {
+       "$get": "region"
+      },
+      "tenure_months_at_month": {
+       "$get": "tenure_months_at_month"
+      },
+      "visits": {
+       "$get": "visits"
+      },
+      "purchases": {
+       "$get": "purchases"
+      },
+      "spent_eur": {
+       "$get": "spent_eur"
+      }
+     },
+     "predict": "churned_in_3_months"
+    },
+    "select": [
+     "accuracy",
+     "baseAccuracy",
+     "n"
+    ],
+    "train": {
+     "month": {
+      "$lte": "2025-10"
+     },
+     "purchases": {
+      "$gte": 1
+     }
+    }
+   }
+  },
+  "accuracy_low": 0.9054136476365613,
+  "accuracy_high": 0.9393863523634387,
   "comparisons": [
    {
-    "baseline": "always “stays”",
-    "difference": 0.30666666666666664,
-    "low": 0.2484258689513321,
-    "high": 0.3649074643820012,
-    "sentence": "Aito is ahead of always “stays”: +30.7 pp [+24.8, +36.5]; the interval excludes 0."
+    "baseline": "“another order follows”",
+    "difference": 0.0746,
+    "low": 0.0461626194189286,
+    "high": 0.1030373805810714,
+    "sentence": "Aito is ahead of “another order follows”: +7.5 pp [+4.6, +10.3]; the interval excludes 0."
    }
   ]
  },

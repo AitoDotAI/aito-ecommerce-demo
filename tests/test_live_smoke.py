@@ -51,29 +51,29 @@ def test_evaluation_fails_on_an_errored_model():
         smoke.check_evaluation(body)
 
 
-def test_an_empty_driver_list_fails_churn():
-    check = next(s.check for s in smoke.STEPS if s.name == "churn")
+def test_an_empty_driver_list_fails_retention():
+    check = next(s.check for s in smoke.STEPS if s.name == "retention")
     with pytest.raises(AssertionError, match="drivers"):
         check({"at_risk": [{"customer_id": "c1"}], "drivers": []})
     assert "1 drivers" in check({"at_risk": [{"customer_id": "c1"}], "drivers": [{"factor": "x"}]})
 
 
 def test_hidden_views_are_checked_for_shape_not_content():
-    # ADR 0027: demand/winback/markdown/price are hidden; empty is fine
-    for name, body in [("demand", {"top_movers": [], "seasonality": []}),
-                       ("price", {"fair_bands": [], "sweet_spots": []}),
-                       ("winback", {"targets": []})]:
+    # Demand is off the sidebar (ADR 0041); empty is fine
+    for name, body in [("demand", {"top_movers": [], "seasonality": []})]:
         check = next(s.check for s in smoke.STEPS if s.name == name)
         assert "shape ok" in check(body)
         with pytest.raises(AssertionError):
             check({"error": "boom"})
 
 
-def test_dashboard_needs_one_available_pattern():
-    with pytest.raises(AssertionError, match="unavailable"):
-        smoke.check_dashboard({"top_patterns": [{"available": False}], "segments": [{}]})
-    assert "1/2" in smoke.check_dashboard(
-        {"top_patterns": [{"available": False}, {"available": True}], "segments": [{}]})
+def test_overview_needs_every_headline_available():
+    with pytest.raises(AssertionError, match="unavailable: \\['Supply'\\]"):
+        smoke.check_overview({"headlines": [{"view": "Patterns", "available": True},
+                                            {"view": "Supply", "available": False}], "households": [{}]})
+    assert "2 headlines" in smoke.check_overview(
+        {"headlines": [{"view": "Patterns", "available": True}, {"view": "Supply", "available": True}],
+         "households": [{}]})
 
 
 def test_every_step_is_a_get(monkeypatch):

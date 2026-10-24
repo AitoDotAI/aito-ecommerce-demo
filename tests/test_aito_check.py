@@ -166,27 +166,6 @@ def test_impression_funnel_is_monotone(client):
     assert _count(client, {"added_to_cart": False, "purchased": True}) == 0
 
 
-# ── Basket rule mining — order-level _relate sweep (ADR 0022) ─────────
-
-
-def test_basket_rules_mines_well_formed_association_rules(client):
-    """The Basket Rules sweep returns non-empty, well-formed rules:
-    confidence in [0,1], support in [0,1] (order-granular — never the
-    >100% the line-granular link-traversal shape produced), lift > 1,
-    and the canonical dog dry-food → dental-treats rule is present."""
-    from src.basket_rules_service import get_basket_rules
-
-    resp = get_basket_rules(client)
-    assert resp.rules, "no basket rules mined"
-    for r in resp.rules:
-        assert 0.0 <= r.confidence <= 1.0, r
-        assert 0.0 <= r.support_pct <= 1.0, r           # order-granular, never >1
-        assert r.lift > 1.0, r                          # positive association only
-        assert r.support_orders >= 50, r                # absolute-count gate held
-    pairs = {(r.antecedent, r.consequent) for r in resp.rules}
-    assert ("Dog dry-food", "Dog dental-treats") in pairs, sorted(pairs)
-
-
 # ── Instance health: are the tables actually optimized? ──────────────
 
 
@@ -252,20 +231,18 @@ def test_evaluate_baseline_matches_the_population_majority_share(client):
 # ── Price: findings must be distinguishable from noise ───────────────
 
 
-def test_price_view_flags_no_outlier_on_a_thin_history(client):
-    """The view once opened on an "outlier" whose band came from two sales.
-    Every flagged outlier must have enough observations for a band, and
-    every sweet spot must have support and a lift interval excluding 1."""
-    from src.price_bands import MIN_OUTLIER_OBSERVATIONS, MIN_SWEET_SPOT_SUPPORT
-    from src.price_service import get_prices
-    from src import cache
+def test_supply_flags_no_price_outlier_on_a_thin_history(client):
+    """Price once opened on an "outlier" whose band came from two sales.
+    Over the realised prices Supply reads, every flagged outlier must rest on
+    enough observations for a band to mean anything."""
+    from src.catalogue_reads import products_by_sku, read_all, rows_by_sku
+    from src.price_bands import MIN_OUTLIER_OBSERVATIONS, price_band
 
-    cache.clear()
-    response = get_prices(client)
-    thin = [b.sku for b in response.fair_bands if b.outlier and b.observation_count < MIN_OUTLIER_OBSERVATIONS]
-    assert not thin, f"outliers on a thin history: {thin}"
-    weak = [s.category for s in response.sweet_spots if s.f_on_condition < MIN_SWEET_SPOT_SUPPORT]
-    assert not weak, f"sweet spots on thin support: {weak}"
+    products = products_by_sku(client)
+    bands = [price_band([float(r["price_eur"]) for r in rows], float(products[sku]["price_eur"]))
+             for sku, rows in rows_by_sku(read_all(client, "product_states")).items()]
+    assert any(b.outlier for b in bands), "no outlier at all: is the band rule reading the prices?"
+    assert not [b for b in bands if b.outlier and b.observations < MIN_OUTLIER_OBSERVATIONS]
 
 
 # ── Churn: profile drivers, one row per customer (ADR 0013 amendment) ─
@@ -305,6 +282,100 @@ def test_churn_profile_drivers_name_long_tenure_and_skip_reviews(client):
     assert not any(d.field.startswith("latest_") for d in result.drivers)
 
 
+# ── Retention: the churn score's population, and the win-back offer ──
+
+
+def test_churn_population_is_the_orders_whose_follow_up_is_known(client):
+    """The nested `from` must restrict the rows Aito learns from: a String
+    month compares with `$lte`, so the population is exactly the months up
+    to LABEL_KNOWN_UNTIL in which the customer ordered, and both answers
+    occur in it."""
+    from src.churn_risk import POPULATION
+
+    where = POPULATION["where"]
+    rows = client.search("customer_months", where=where, limit=0)["total"]
+    leavers = client.search("customer_months", where={**where, "churned_in_3_months": True}, limit=0)["total"]
+    later = client.search("customer_months", where={"$and": [where, {"month": {"$gt": "2026-01"}}]},
+                          limit=0)["total"]
+    assert rows > 0 and 0 < leavers < rows
+    assert later == 0
+
+
+def test_batched_churn_predicts_over_the_population_return_both_answers(client):
+    """`_batch` accepts a `_predict` with a nested `from`; each answer has a
+    true and a false hit whose probabilities sum to 1."""
+    from src.churn_risk import evidence_of, predict_body
+
+    rows = client.search("customer_months", where={"month": "2026-04", "purchases": {"$gte": 1}},
+                         limit=3)["hits"]
+    answers = client.batch([predict_body(evidence_of(r), with_why=False) for r in rows])
+    assert len(answers) == len(rows)
+    for answer in answers:
+        p = {h["feature"]: h["$p"] for h in answer["hits"]}
+        assert set(p) == {True, False} and abs(sum(p.values()) - 1) < 1e-6
+
+
+def test_churn_time_split_tests_every_order_of_the_latest_known_month(client):
+    """Evidence's churn check holds out exactly the orders of the test month,
+    and the score beats always answering "another order follows"."""
+    from src.churn_evaluation import evaluate_churn
+    from src.churn_risk import LABEL_KNOWN_UNTIL
+
+    rows = client.search("customer_months", where={"month": LABEL_KNOWN_UNTIL, "purchases": {"$gte": 1}},
+                         limit=0)["total"]
+    check = evaluate_churn(client)
+    assert check.n == rows > 0
+    assert check.accuracy > check.base_accuracy
+
+
+def test_a_batched_recommend_hit_is_only_p_and_value(client):
+    """Unlike a direct `_recommend`, a `_batch` item's hit carries no linked
+    product columns, so the offer reads the SKU from `$value`."""
+    from src.winback_offer import customer_where, recommend_body
+
+    [answer] = client.batch([recommend_body(customer_where("CUST-00008", "none"), ["small_animal"])])
+    assert answer["hits"] and set(answer["hits"][0]) == {"$p", "$value"}
+
+
+def test_winback_response_predictions_match_the_observed_response_rate(client):
+    """`_predict responded` is the rate the offer shows, so it must be a rate:
+    averaged over past sends, it lands near the share that responded."""
+    sends = client.search("winback_campaigns", limit=200)["hits"]
+    answers = client.batch([{"from": "winback_campaigns", "limit": 2, "select": ["$p", "feature"],
+                             "predict": "responded",
+                             "where": {k: s[k] for k in ("customer_id", "customer_staple_category",
+                                                         "recency_bucket", "product_sku")}}
+                            for s in sends])
+    predicted = sum(next(h["$p"] for h in a["hits"] if h["feature"] is True) for a in answers) / len(sends)
+    observed = sum(s["responded"] for s in sends) / len(sends)
+    assert abs(predicted - observed) < 0.1, (predicted, observed)
+
+
+def test_an_estimate_is_not_a_batch_item(client):
+    """`_batch` refuses `estimate` (400 "unexpected field"), so the offers'
+    order values are separate `_estimate` calls."""
+    from src.aito_client import AitoError
+
+    with pytest.raises(AitoError, match="estimate"):
+        client.batch([{"from": "winback_campaigns", "where": {"responded": True}, "estimate": "order_value_eur"}])
+
+
+# ── Supply: the markdown sweep ───────────────────────────────────────
+
+
+def test_the_markdown_sweep_estimates_more_units_at_a_lower_price(client):
+    """The regression `_estimate` the markdown sweep asks must not sell less
+    at a deeper discount, or "the shallowest level that clears" is noise."""
+    from src.catalogue_reads import read_all
+    from src.demand_forecast import last_month_units, units_at_price
+
+    sales = read_all(client, "monthly_sales", where={"product_sku": "SKU-PT-0496"})
+    profile = max(sales, key=lambda r: r["month"])
+    units = [units_at_price(client, "SKU-PT-0496", profile, last_month_units(sales), price, model="regression")
+             for price in (20.29, 16.23)]     # list price, and 20 % off
+    assert units[1] >= units[0] > 0, units
+
+
 # ── Demand: a time-split `_evaluate` (ADR 0014 §Correction) ──────────
 
 
@@ -340,25 +411,53 @@ def test_demand_time_split_honours_the_train_proposition(client):
     assert everything_before != oldest_only
 
 
-# ── Product Insights: one product's funnel and buyers (ADR 0028) ─────
+# ── Product: history, buyers and the decision (ADR 0028, ADR 0041) ───
 
 
-def test_product_insights_funnel_is_monotone_and_relate_counts_its_lines(client):
+def test_product_history_batch_returns_counts_and_every_row(client):
     """For the default product: the funnel never grows step to step, the
     surfaces cover every impression (the service asserts that), and the
-    "who buys it" `_relate` conditions on exactly this product's order
-    lines (`fCondition` equals a plain count)."""
-    from src.product_insights_service import DEFAULT_SKU, get_product_insights
+    rows in the same `_batch` come back whole (`total` equals the hits:
+    `_rows` asserts it), one month per state."""
+    from src.product_history import get_product_history
+    from src.product_service import DEFAULT_SKU
 
-    result = get_product_insights(client, DEFAULT_SKU)
+    history = get_product_history(client, DEFAULT_SKU)
 
-    counts = [step.count for step in result.funnel]
+    counts = [step.count for step in history.funnel]
     assert counts[0] > 0, "no impressions for the default product"
     assert counts == sorted(counts, reverse=True), counts
+    assert len(history.months) == 24, [m.month for m in history.months]
+    assert sum(m.units_sold for m in history.months) > 0
+    assert sum(history.ratings.values()) == sum(history.sentiments.values()) > 0
+
+
+def test_product_buyers_relate_counts_exactly_the_products_order_lines(client):
+    """The "who buys it" `_relate` conditions on exactly this product's
+    order lines: `fCondition` equals a plain count."""
+    from src.product_buyers import get_buyers
+    from src.product_service import DEFAULT_SKU
+
+    buyers = get_buyers(client, DEFAULT_SKU)
+
     lines = client.search("order_lines", where={"product_sku": DEFAULT_SKU}, limit=0)["total"]
-    assert result.buyers, "no buyer profiles for the default product"
-    assert all(b.lines_total == lines for b in result.buyers), (lines, result.buyers[:2])
-    assert result.monthly, "no monthly_sales rows for the default product"
+    assert buyers, "no buyer profiles for the default product"
+    assert all(b.lines_total == lines for b in buyers), (lines, buyers[:2])
+
+
+def test_product_view_leads_with_a_decision_in_range(client):
+    """The decision's rates are Aito's `$p` in [0, 1], its margins follow
+    from them, and the price what-if answers at today's price and, when
+    the advice changes the band, at the advised price."""
+    from src.product_service import DEFAULT_SKU, get_product_view
+
+    view = get_product_view(client, DEFAULT_SKU)
+
+    decision = view.decision
+    assert all(0.0 <= m.p_purchase <= 1.0 for m in decision.margins), decision.margins
+    assert decision.best.margin_per_100_eur == max(m.margin_per_100_eur for m in decision.margins)
+    assert view.price_now.price_eur == view.state.price_eur
+    assert (view.price_best is None) == (decision.action == "keep")
 
 
 # ── v2 engine behaviour the views rely on (checked on 2.11.4) ────────
@@ -393,11 +492,11 @@ def test_price_what_if_explains_the_estimate_with_price_as_a_factor(client):
     """The waterfall's rows multiply out to the estimate (`waterfall` raises
     otherwise), price is one of them, and the what-if agrees with the demand
     curve's point at the same price, since both ask the regression model."""
-    from src.price_service import get_price_detail
+    from src.price_curve import get_price_curve
     from src.price_what_if import get_price_what_if
 
-    detail = get_price_detail(client, "SKU-PT-0133")
-    centre = next(p for p in detail.curve if p.adjustment_pct == 0)
+    curve = get_price_curve(client, "SKU-PT-0133")
+    centre = next(p for p in curve.curve if p.adjustment_pct == 0)
 
     what_if = get_price_what_if(client, "SKU-PT-0133", centre.price_eur)
 
@@ -421,6 +520,60 @@ def test_the_forecast_popover_splits_the_knn_estimate_into_rows_that_chain_to_it
     assert chained == pytest.approx(why["estimate"])
     fields = [c for c in why["components"] if c["type"] == "field"]
     assert len(fields) == len(forecast_where("SKU-PT-0206", sales[0], 0)), fields
+
+
+# ── The sandbox's re-scored Shop and the units model (ADR 0043) ─────
+
+
+def test_schema_meta_reports_the_engine_the_sandbox_template_check_reads(client):
+    """`./do sandbox-template-load` refuses a template whose tables aren't on
+    engine v2; it reads `"engine"` from `GET /schema/<table>?meta=true`."""
+    from src.sandbox_cli import ENGINE_CHECKED
+
+    for table in ENGINE_CHECKED:
+        assert client._request("GET", f"/schema/{table}?meta=true").get("engine") == "v2", table
+
+
+def test_state_band_lifts_are_read_from_why_and_order_as_the_data_does(client):
+    """Each discount and star band's shop-wide lift is one factor in `$why`
+    (`band_lift` raises otherwise). An offer lifts a purchase over no offer
+    by more than ×1.5, and more stars lift it more than fewer."""
+    from src.shop_state_lifts import read_state_lifts
+
+    lifts = read_state_lifts(client)
+
+    assert all(lift > 0 for lift in [*lifts.discount.values(), *lifts.rating.values()])
+    assert lifts.offer_factor("20+") > 1.5, lifts.discount
+    assert lifts.rating["1-2"] < lifts.rating["3"] < lifts.rating["4"] < lifts.rating["5"], lifts.rating
+
+
+def test_estimate_doesnt_take_a_linked_field_so_the_units_follow_the_price_only(client):
+    """Probed 2026-10-24 on 2.11.8: `_estimate units_sold` with
+    `product_state.discount_band` in `where` is a 400 "no such field", on
+    both models. The Product view's units what-if is by price only, and says
+    so. If this starts to pass, the discount can enter the units model."""
+    from src.aito_client import AitoError
+
+    where = {"product_sku": "SKU-PT-0143", "product_state.discount_band": "20+"}
+    with pytest.raises(AitoError, match="no such field"):
+        client.estimate("monthly_sales", where=where, estimate_field="units_sold", model="regression")
+
+
+def test_paivis_shop_answers_for_the_sandboxes_month_and_holds_her_next_kit_item(client):
+    """2026-05 is a month with no contexts yet: `_recommend` still ranks her
+    guinea-pig products, and the hideout her kit needs next is among the 40
+    the sandbox re-scores (the lever target in docs/demo-script.md)."""
+    from src.shop_grid import get_shop_grid
+    from src.shop_rescore import RESCORED
+    from src.shop_ranking import ranked_items, shop_scope
+    from src.shop_context import pets_filter
+
+    scope = shop_scope(client, "paivi", "2026-05", [])
+    items = ranked_items(client, scope, {**scope.where(), **pets_filter(scope.pets)}, RESCORED)
+
+    assert all(0 <= i.p <= 1 and i.pet_type == "small_animal" for i in items)
+    assert "SKU-PT-0563" in [i.sku for i in items]
+    assert get_shop_grid(client, "paivi", "2026-05", [], rescored=True).items
 
 
 # ── Discount what-if: `_predict purchased` per discount band (ADR 0032) ──
@@ -675,6 +828,36 @@ def test_shop_analytics_dog_dry_food_goes_with_dental_treats(shop_analytics):
     pairs = {(p.first, p.second): p for p in shop_analytics["baskets"].pairs}
     pair = pairs.get(("Dog dry-food", "Dog dental-treats"))
     assert pair and pair.interval_low > 1, sorted(pairs)
+
+
+def test_patterns_basket_rule_has_a_direction_read_from_its_counts(client, shop_analytics):
+    """Basket Rules' confidence and support (ADR 0022), now columns on
+    Patterns › Baskets: `fs.f` is the orders holding the other category,
+    so the rule reads both ways. Dental treats almost never sell without
+    dry food; dry food often sells without dental treats."""
+    pairs = {(p.first, p.second): p for p in shop_analytics["baskets"].pairs}
+    pair = pairs[("Dog dry-food", "Dog dental-treats")]
+    dental = client.search("orders", where={"line_categories": {"$match": "dog_dentaltreats"}}, limit=0)["total"]
+
+    assert pair.orders_with_second == dental
+    assert pair.orders == client.search("orders", limit=0)["total"]
+    assert 0 < pair.support < pair.confidence < pair.reverse_confidence <= 1, pair
+
+
+def test_overview_totals_cover_every_order_and_name_the_strongest_pair(client):
+    """Overview pages every order and line with `_search` (it raises if the
+    pages don't add up), and leads Patterns with the strongest pair."""
+    from src.overview_service import get_overview
+
+    overview = get_overview(client)
+
+    kpis = overview["kpis"]
+    assert sum(m["orders"] for m in overview["monthly"]) == client.search("orders", limit=0)["total"]
+    assert kpis["orders"] > 0 and kpis["months_before"] == 12, kpis
+    assert overview["top_products"][0]["units"] >= overview["top_products"][-1]["units"] > 0
+    assert sum(h["customers"] for h in overview["households"]) <= kpis["customers"]
+    assert (overview["top_basket_pair"]["first"], overview["top_basket_pair"]["second"]) == (
+        "Dog dry-food", "Dog dental-treats")
 
 
 def test_shop_analytics_search_words_against_the_search_average(client, shop_analytics):
