@@ -132,7 +132,7 @@ def _lift_section(client: AitoClient, *, table: str, customer_field: str, month_
 def get_funnel_section(client: AitoClient, kpi: str = "purchased") -> LiftSection:
     if kpi not in KPIS:
         raise ValueError(f"Unknown kpi {kpi!r}; expected one of {KPIS}")
-    return _lift_section(client, table="impressions", customer_field="context.customer", month_field="context.month",
+    return _lift_section(client, table="impressions", customer_field="context.visitor", month_field="context.month",
                          condition={kpi: True}, fields=FUNNEL_FIELDS, selected=kpi, options=[])
 
 
