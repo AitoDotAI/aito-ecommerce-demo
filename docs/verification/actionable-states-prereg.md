@@ -326,4 +326,83 @@ reviews the ratio is noise around the causal path's ≈ 1.1.
 
 ## Results
 
-(none yet)
+### Offline checks, 2026-10-24 (seeds 42, 7, 99; `./do planted-effects`)
+
+Full table: `actionable-states-data.md`. **114 of 118 judged rows pass.** Every
+new effect passes on every seed except R2b. One older check, P2c, misses on
+one seed.
+
+| # | threshold | seed 42 | seed 7 | seed 99 | result |
+|:--|:--|--:|--:|--:|:--|
+| P6 high ÷ low (high alone) | ≥ 1.5 (≥ 1.3) | 1.90 (2.18) | 1.98 (2.32) | 1.92 (2.25) | pass |
+| P7 high ÷ low (high alone) | ≥ 1.5 (≥ 1.3) | 3.92 (4.17) | 3.59 (3.93) | 2.95 (3.26) | pass |
+| P8 high ÷ low (high alone) | ≥ 1.5 (≥ 1.3) | 2.39 (2.06) | 1.93 (1.83) | 2.18 (1.99) | pass |
+| P9 high ÷ low (high alone) | ≥ 1.5 (≥ 1.3) | 1.58 (1.58) | 1.59 (1.59) | 1.63 (1.63) | pass |
+| P9p (popular) | reported | 1.51 | 1.51 | 1.56 | — |
+| P10 | ≥ 1.03 | 1.032 | 1.037 | 1.036 | pass |
+| V1 | ≥ 1.2 | 1.45 | 1.51 | 1.47 | pass |
+| P1a | ≥ 1.5 | 1.91 | 2.03 | 1.93 | pass |
+| P1b (moved) | ≥ 1.05 | 1.16 | 1.22 | 1.13 | pass |
+| P4a | ≥ 1.15 | 1.33 | 1.31 | 1.31 | pass |
+| R1 | ≥ 1.4 | 1.65 | 1.59 | 1.52 | pass |
+| R2a | ≥ 1.8 | 2.01 | 1.92 | 1.85 | pass |
+| **R2b** | ≤ 0.8 | **0.827** | **0.822** | **0.831** | **fail** |
+| R3a | ≤ −2.5 | −3.45 | −3.37 | −3.33 | pass |
+| R3b (non-reviewers' NPS) | ≤ 5.5 | 4.26 | 4.21 | 4.47 | pass |
+| R3b gap | ≤ 0.5 | 0.24 | 0.01 | 0.07 | pass |
+| R3c | ≥ 1.2 | 1.79 | 2.25 | 1.71 | pass |
+| R4a | ≥ 1.4 | 1.97 | 2.13 | 1.70 | pass |
+| R4b, pooled (23/398 planted, 33/398 null) | ≤ 0.9 | | | 0.697 | pass |
+| R4b per seed | reported | 0.71 | 0.60 | 0.75 | — |
+| R4c (observable churn) | reported | 1.17 | 1.20 | 1.16 | — |
+| R5 | ≥ 1.4 | 1.57 | 1.71 | 1.47 | pass |
+| R6 | ≥ 1.1 | 1.44 | 1.17 | 1.35 | pass |
+| F1a / F1b / F1c | ≥ 1.6 / 1.8 / 2.0 | 2.01 / 2.51 / 3.03 | 1.99 / 2.43 / 3.00 | 1.99 / 2.46 / 3.05 | pass |
+| F2a | ≥ 3.0 | 5.12 | 5.06 | 4.98 | pass |
+| F2b (worst source off its rate) | ≤ 0.2 | 0.021 | 0.014 | 0.009 | pass |
+| F3a / F3b | ≥ 1.8 / 1.5 | 2.28 / 2.06 | 2.01 / 1.94 | 1.97 / 2.25 | pass |
+| F3c | reported | 1.13 | 1.13 | 1.13 | — |
+| F4a / F4b | ≥ 1.6 / ≤ 0.7 | 3.05 / 0.40 | 2.88 / 0.48 | 3.00 / 0.48 | pass |
+| F5a | ≥ 1.5 | 2.07 | 1.99 | 1.99 | pass |
+| F5b organic / affiliate | reported | 2.03 / 2.61 | 1.87 / 2.22 | 2.18 / 2.16 | — |
+| P2b, P3a, P5a, K1a, K1b | as registered | pass | pass | pass | pass |
+| **P2c** | ≤ 0.95 | 0.943 | 0.949 | **0.957** | **fail on seed 99** |
+
+**R2b fails on every seed**, at 0.82–0.83 against ≤ 0.8 (expected ≈ 0.71). It
+is reported as a failure and nothing is retuned. The expectation assumed the
+cart and purchase steps sit near 0.7–0.75. The likely cause, not yet checked:
+many poor products' impressions sit at those steps' caps (0.92, 0.95), where
+×0.6 odds move the rate less. ADR 0032's first null run saw the same
+saturation for stars. A poor product still converts at ≈ 0.83 of the rest on
+top of its low stars. Moving the threshold or strengthening the ×0.6 (the
+ADR's number) is Antti's call, by amendment.
+
+**P2c misses on seed 99** at 0.957 (≤ 0.95). It passed there at 0.943 in the
+last recorded run (`product-states-data.md`). Its mechanism is unchanged; its
+margin was already thin (0.943–0.949 on the other seeds). R5's star-weighted
+picks and the month-by-month order loop re-draw the histories it reads. This
+is an older range that moved. It is reported, not amended.
+
+**Retired as registered:** P1b's premium half and P2d. Signal #8 read 1.71
+(see the amendment above).
+
+**What a shop sees of churn:** R4c, the share of bad-experience orders after
+which the customer never orders again, is ×1.16–1.20 against its null. The
+hidden hazard reads ×1.7–2.1. The replied ÷ unreplied contrast rests on 23
+against 33 churners in three seeds, so the Reviews view's interval for it
+will overlap 1, as predicted above.
+
+### Table sizes (seed 42)
+
+| table | rows | before |
+|:--|--:|--:|
+| impressions | 168,496 | 117,026 (+44 %; 54,258 on visitors' landing pages) |
+| contexts | 103,134 | 12,662 (90,775 before a first order; most bounced, with no impressions) |
+| nps_responses | 3,420 | new |
+| reviews | 4,627 | 6,000 |
+| orders / order_lines | 11,318 / 35,943 | 11,909 / 39,098 |
+| customer_months | 27,008 | 27,525 |
+| product_states, monthly_sales | 15,157 | 15,157 |
+
+`contexts.json` is 37 MB. It joins `impressions.json` (46 MB) as generated and
+gitignored; `./do` regenerates both when missing.
