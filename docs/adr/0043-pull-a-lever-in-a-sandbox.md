@@ -94,7 +94,7 @@ not per product.
 
 ### The agent on the sandbox
 
-`aito-mcp` with `AITO_URL=…/env/sandbox` and a read-only key that can read it. The agent
+`aito-mcp` with `AITO_URL` = the sandbox database (see the amendment) and a read-only key that can read it. The agent
 sees the 2026-05 state the owner just set (ADR 0042's lever tools can follow).
 
 ## Aito usage
@@ -146,3 +146,38 @@ sheet is `docs/demo-script.md`'s new section.
 - The re-scored Shop is not the measured Shop. It is labelled, and off outside the
   sandbox.
 - Sandbox resets cost a reload; two envs hide it.
+
+## Amendment (2026-10-24, the CPO's review, before any code)
+
+**Keys are per database on shared.aito.ai, so the sandbox is its own database, not an env
+under PetNord's.** A key authenticates only under its own `/db/<name>/` path. A wrong key
+there shows up as a misleading 405. An env under PetNord's DB could only be written with
+PetNord's read-write key, which also writes master.
+
+- **The sandbox:** database `aito-ecommerce-sandbox`, plus `aito-ecommerce-sandbox-b` for an
+  instant reset. Each has its own read-write key and, if the console issues one, its own
+  read-only key.
+- **Config:** `AITO_SANDBOX_URL` (`https://shared.aito.ai/db/aito-ecommerce-sandbox`) and
+  `AITO_SANDBOX_API_KEY`. The second fence is that the URL's database name must contain
+  `sandbox`; otherwise sandbox mode stays off.
+- **Master, in the demo run, is read with PetNord's read-only key.** So master is
+  read-only by the key, and not only by the code. The code fence (the master client
+  raises on any write) stays.
+- **Flow 3's agent** gets the sandbox's read-only key. If there is none, its tools are
+  read-only by construction (aito-mcp refuses writes unless started with
+  `AITO_MCP_ALLOW_WRITES=1`).
+
+**Never carry `$why` across an override.** A re-scored Shop item shows the explanation of
+its *adjusted* score: Aito's factors from the Shop's query, then the explicit lines
+"offer band lift ×1.8 (shop-wide)" and "star band lift ×1.15 (shop-wide)", so the
+explanation still multiplies out to the shown score. It never shows Aito's `$why` beside
+a number Aito didn't produce.
+
+**Sunday's checks:**
+- time the load and the reset; if a reset is over about 20 s, the button swaps to
+  sandbox-b;
+- time the lever → reaction loop 5×, reading back after each write;
+- if `_estimate` with the state is flaky in any of the 5 runs, drop it to the units
+  what-if by price instead of debugging on Monday.
+
+Reset loads the release fixtures only.
