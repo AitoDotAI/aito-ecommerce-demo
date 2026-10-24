@@ -51,7 +51,7 @@ euros follow from that forecast."
 | On screen | Number | Basis |
 |---|---|---|
 | Reorder these 59 now | an estimated €5,667 of May's sales can't be served without them; 403 units, €5,775 at cost | `_estimate units_sold` per SKU for May 2026, against stock and the reorder point (`src/supply_rows.py`); served from `data/precomputed/v2-master/supply.json` |
-| €26,576 tied up in 87 overstocked products | of the 15 largest, 3 sell through at full price within a quarter, 1 clears with a markdown, 11 won't clear even at 20 % off | the same `_estimate` at 5–20 % off, over 13 weeks |
+| €26,576 tied up in 87 overstocked products | say only the €26,576. Don't present the markdown split ("11 don't clear") as a finding: it is the units model by price alone, which counts neither an offer's lift on purchases when shown (×1.81 at 20 %+) nor the higher place it earns in the shop, so it understates an offer and contradicts Product's "put it on offer" | the same `_estimate` at 5–20 % off, over 13 weeks; price only |
 
 **Caveat (the page's one line):** the forecasts are Aito's estimates for
 May; the euros follow from them. **How well? →** opens the model checks.

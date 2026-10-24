@@ -68,8 +68,8 @@ def supply_headline(supply: dict | None) -> Headline | None:
     reorder, over = supply["reorder"], supply["overstock_decision"]
     detail = f"{over['skus']} overstocked products hold €{over['tied_capital_eur']:,.0f}"
     if over["wont_clear"]:
-        detail += (f"; of the {over['scored']} largest, {over['wont_clear']} won't clear even with a markdown, "
-                   f"by Aito's estimate")
+        detail += (f"; of the {over['scored']} largest, {over['wont_clear']} don't clear by price alone "
+                   f"(an offer's lift on purchases and placement isn't counted)")
     return Headline(
         "Supply", href,
         f"Reorder {reorder['skus']} products now: about €{reorder['revenue_at_risk_eur']:,.0f} of next month's "

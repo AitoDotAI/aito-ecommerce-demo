@@ -61,7 +61,7 @@ tab hasn't had it yet.
 
 | Beat | URL | Lands on |
 |---|---|---|
-| 1 Supply (30 s) | `/supply/?demo=1` | "Reorder these 59 now", about €5,667 of May's sales at risk; €26,576 tied up in 87 overstocked |
+| 1 Supply (30 s) | `/supply/?demo=1` | "Reorder these 59 now", about €5,667 of May's sales at risk; €26,576 tied up in 87 overstocked. Don't present "these don't clear by markdown" as a finding: it's by price alone (no offer lift, no placement) |
 | 2 Product what-if | New sandbox, then `/product/?sku=SKU-PT-0563&month=2026-05&tab=what-if&db=<branch>` | "Put it on offer at 10–15 % off", 10.6 % → 19.5 % |
 | 3 Lever | press **20 % or more off**, then **10–15 % off** | Read back "May 2026, 20 % or more off, €17.27, 4 stars"; the decision pushes back to 10–15 % |
 | 4 Shop | **See the Shop react, as Päivi →** (`/shop/?shopper=paivi&month=2026-05&db=<branch>`) | Kit: PetNord Hideout 17 %, Trixie Hideout 15 % (+1 variant); Trixie Hideout card 1st, "Score 48 ↑ 6 since the offer" |

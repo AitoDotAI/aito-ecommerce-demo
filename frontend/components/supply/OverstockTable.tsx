@@ -11,7 +11,7 @@ import type { MarkdownProposal, SupplyOverstockRow } from "@/lib/types";
 const ACTION: Record<MarkdownProposal["action"], { label: (m: MarkdownProposal) => string; pill: string }> = {
   hold:       { label: () => "Hold the price",                pill: "pill-green" },
   markdown:   { label: (m) => `Mark down ${m.discount_pct} %`, pill: "pill-orange" },
-  wont_clear: { label: () => "Markdown won't clear it",        pill: "pill-red" },
+  wont_clear: { label: () => "Not cleared by price alone",        pill: "pill-red" },
 };
 
 /**
