@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { apiFetch, fmtEur } from "@/lib/api";
-import type { PriceDetail, PriceWhatIf as PriceWhatIfResult } from "@/lib/types";
+import type { PriceCurve, PriceWhatIf as PriceWhatIfResult } from "@/lib/types";
 
 /**
  * Price what-if (ADR 0029): pick a price, see next month's units, revenue
@@ -14,17 +14,20 @@ import type { PriceDetail, PriceWhatIf as PriceWhatIfResult } from "@/lib/types"
 export default function PriceWhatIf({
   detail,
   price,
+  known,
   onPrice,
   onQuery,
 }: {
-  detail: PriceDetail;
-  /** The price asked about, from the URL; the curve's centre when null. */
-  price: number | null;
+  detail: PriceCurve;
+  /** The price asked about: from the URL, or today's price. */
+  price: number;
+  /** An answer already in hand (today's price, from the Product view's
+   *  decision), so that price isn't asked twice. */
+  known: PriceWhatIfResult;
   onPrice: (priceEur: number) => void;
   onQuery: (body: Record<string, unknown>) => void;
 }) {
-  const centre = detail.curve.find((c) => c.adjustment_pct === 0)?.price_eur ?? detail.mean_price_eur;
-  const asked = price ?? centre;
+  const asked = price;
   // The slider spans the curve, widened to the price asked about when a
   // link names one outside it.
   const prices = [...detail.curve.map((c) => c.price_eur), asked];
@@ -54,15 +57,19 @@ export default function PriceWhatIf({
   useEffect(() => {
     let current = true;
     setError(null);
+    if (known.sku === detail.sku && Math.abs(known.price_eur - asked) < 0.005) {
+      setResult(known);
+      return;
+    }
     apiFetch<PriceWhatIfResult>(
-      `/api/price/what-if?sku=${encodeURIComponent(detail.sku)}&price=${asked.toFixed(2)}`,
+      `/api/product/price-what-if?sku=${encodeURIComponent(detail.sku)}&price=${asked.toFixed(2)}`,
     ).then((res) => {
       if (!current) return;
       setResult(res);
       onQuery(res.last_query.body);
     }, (e) => { if (current) setError(String(e)); });
     return () => { current = false; };
-  }, [detail.sku, asked, onQuery]);
+  }, [detail.sku, asked, known, onQuery]);
 
   const shown = result && result.sku === detail.sku ? result : null;
   // Older numbers stay readable but dimmed until the new price's answer lands.
@@ -92,7 +99,8 @@ export default function PriceWhatIf({
       {error && <div className="card-sub" style={{ color: "var(--red)" }}>Couldn&apos;t estimate: {error}</div>}
       {!error && !shown && <div style={{ height: 160, background: "var(--border-light)", borderRadius: 4 }} />}
       {!error && shown && (
-        <div className="two-col" style={{ opacity: stale ? 0.5 : 1 }} aria-busy={stale}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 16,
+                      opacity: stale ? 0.5 : 1 }} aria-busy={stale}>
           <div>
             <Kpi label="Units next month" value={shown.units.toFixed(1)} />
             {shown.below_zero && (
@@ -145,7 +153,7 @@ function Waterfall({ result }: { result: PriceWhatIfResult }) {
       })}
       <Row label="Estimate" change="" total={result.units} strong />
       <div className="card-sub" style={{ marginTop: 6 }}>
-        Each effect {multiply ? "multiplies" : "adds to"} the units above it. They
+        Each effect {multiply ? "multiplies" : "adds to"}{" "}the units above it. They
         compare with a typical month in the data, not with this product&apos;s
         current price: move the price to see what changing it does.
       </div>

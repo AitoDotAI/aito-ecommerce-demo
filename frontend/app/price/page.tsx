@@ -1,58 +1,41 @@
 "use client";
 
 import { Suspense, useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { apiFetch, fmtEur } from "@/lib/api";
 import { pricePanel } from "@/lib/panel-content";
 import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
-import PriceScatterChart from "@/components/prediction/PriceScatterChart";
-import PriceWhatIf from "@/components/prediction/PriceWhatIf";
-import DiscountWhatIf from "@/components/prediction/DiscountWhatIf";
-import { useSetUrlParams, useUrlState } from "@/lib/use-url-state";
-import type {
-  PriceResponse, PriceFairBandRow, PriceSweetSpotRow, PriceDetail,
-} from "@/lib/types";
+import type { PriceResponse, PriceFairBandRow, PriceSweetSpotRow } from "@/lib/types";
 
 
 /**
  * Price Intelligence — per-SKU fair-band stats from product_states
  * + sweet-spot `_relate` over discount band ↔ category. See
- * `docs/adr/0016-price.md`.
+ * `docs/adr/0016-price.md`. A product's demand curve and what-ifs are on
+ * the Product view (ADR 0041); a row opens it.
  */
 function PriceView() {
   usePagePanel(pricePanel(), {
     title: "Price",
-    description:
-      "Per-SKU fair-price band from history, a demand curve " +
-      "from `_estimate` at seven prices, and a discount what-if from `_predict`.",
+    description: "Per-SKU fair-price band from history, with outliers flagged.",
     breadcrumb: "Price",
   });
 
   const { setPanel } = useShell();
+  const router = useRouter();
   const [data, setData] = useState<PriceResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [detail, setDetail] = useState<PriceDetail | null>(null);
-  const [detailError, setDetailError] = useState<string | null>(null);
-  // The SKU and the what-if price live in the URL, so a link opens the same
-  // product at the same price. No SKU means the table's first row.
-  const [skuParam] = useUrlState("sku", "");
-  const [priceParam] = useUrlState("price", "");
-  const setUrl = useSetUrlParams();
-  const selectedSku = skuParam || data?.fair_bands[0]?.sku || null;
-  const setSelectedSku = (sku: string) => setUrl({ sku, price: null });
-  const whatIfPrice = priceParam ? Number(priceParam) : null;
-  // Commit the SKU with the price, so the link reopens this product even
-  // when the page fell back to the table's first row.
-  const pickPrice = useCallback(
-    (p: number) => { if (selectedSku) setUrl({ sku: selectedSku, price: p.toFixed(2) }); },
-    [selectedSku, setUrl],
-  );
-  const showQuery = useCallback(
-    (body: Record<string, unknown>) => setPanel({ ...pricePanel(), query: highlightQuery(body) }),
-    [setPanel],
-  );
+
+  // A link to a product's drill-down (`/price/?sku=…&price=…`) now opens
+  // the Product view, where the curve and what-ifs moved (ADR 0041).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("sku")) router.replace(`/product/?${params}`);
+  }, [router]);
   const hasSweetSpots = !loading && data !== null && data.sweet_spots.length > 0;
 
   const fetchData = useCallback(async () => {
@@ -74,31 +57,7 @@ function PriceView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setPanel]);
 
-  const fetchDetail = useCallback(async (sku: string) => {
-    // Clear the previous SKU's chart so the placeholder shows
-    // immediately on click instead of the stale chart lingering
-    // until the new _estimate returns.
-    setDetail(null);
-    setDetailError(null);
-    try {
-      const res = await apiFetch<PriceDetail>(
-        `/api/price/detail?sku=${encodeURIComponent(sku)}`,
-      );
-      setDetail(res);
-      // Surface the chart's `_estimate` query body in the Aito panel.
-      setPanel({
-        ...pricePanel(),
-        query: highlightQuery(res.last_query.body),
-      });
-    } catch (e) {
-      setDetailError(String(e));
-    }
-  }, [setPanel]);
-
   useEffect(() => { fetchData(); }, [fetchData]);
-  useEffect(() => {
-    if (selectedSku) fetchDetail(selectedSku);
-  }, [selectedSku, fetchDetail]);
 
   return (
     <div className="fade-in">
@@ -106,8 +65,8 @@ function PriceView() {
         <div className="page-title">Price</div>
         <div className="page-desc">
           Per-SKU fair-price band (mean ± 1.5σ over product_states)
-          with outliers flagged, and each SKU's demand curve: Aito's
-          <code>_estimate</code> of next month's units at seven prices.
+          with outliers flagged. Click a product for its demand curve and
+          what-ifs, on the Product view.
         </div>
       </div>
 
@@ -144,71 +103,6 @@ function PriceView() {
         </div>
       )}
 
-      {/* Price ↔ Demand / Profit scatter chart for the selected SKU.
-          Driven by `_estimate units_sold` at ±10 % adjusted prices
-          (7-point curve) over the SKU's historical monthly_sales.
-
-          Two-stage render so the title swap on click feels instant:
-          the header is driven by the fair-band row (already on the
-          client), the chart body waits for `_estimate`. */}
-      {!error && (() => {
-        const selectedFair = data?.fair_bands.find((f) => f.sku === selectedSku) ?? null;
-        const detailMatches = !!detail && detail.sku === selectedSku;
-        return (
-          <div className="card" style={{ marginBottom: 20, borderTop: "3px solid var(--cta)" }}>
-            <div className="card-sub" style={{ marginBottom: 8 }}>
-              Demand curve · `_estimate units_sold` × 7 price adjustments
-            </div>
-            {selectedFair && (
-              <div style={{ marginBottom: 10 }}>
-                <div style={{ fontWeight: 700, fontSize: 16 }}>{selectedFair.name}</div>
-                <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 2 }}>
-                  list €{selectedFair.list_price_eur.toFixed(2)}
-                  {detailMatches && ` · cost €${detail.unit_cost_eur.toFixed(2)}`}
-                  {" · "}
-                  {detailMatches ? detail.historical.length : selectedFair.observation_count} historical months
-                </div>
-              </div>
-            )}
-            {!selectedFair && (
-              <div style={{ height: 360, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-muted)" }}>
-                Click a SKU in the fair-band table to load its demand curve.
-              </div>
-            )}
-            {selectedFair && detailError && (
-              <div className="card-sub" style={{ color: "var(--red)" }}>
-                Couldn&apos;t estimate the demand curve: {detailError}
-              </div>
-            )}
-            {selectedFair && !detailMatches && !detailError && (
-              <div
-                aria-busy="true"
-                style={{
-                  height: 360,
-                  background: "var(--border-light)",
-                  borderRadius: 4,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "var(--text-muted)",
-                  fontSize: 13,
-                }}
-              >
-                Estimating demand curve…
-              </div>
-            )}
-            {selectedFair && detailMatches && <PriceScatterChart detail={detail} onPickPrice={pickPrice} />}
-          </div>
-        );
-      })()}
-
-      {!error && detail && detail.sku === selectedSku && data?.fair_bands.some((f) => f.sku === selectedSku) && (
-        <>
-          <PriceWhatIf detail={detail} price={whatIfPrice} onPrice={pickPrice} onQuery={showQuery} />
-          <DiscountWhatIf sku={detail.sku} onQuery={showQuery} />
-        </>
-      )}
-
       {/* The sweet-spots card is shown only when Aito finds a category
           that is discounted more or less than the rest; on today's data
           every lift's interval includes 1 (ADR 0016, 2026-10-11). */}
@@ -216,7 +110,7 @@ function PriceView() {
         <div className={hasSweetSpots ? "two-col" : undefined}>
           <div className="card">
             <div className="card-sub" style={{ marginBottom: 6 }}>
-              Fair-band table · click a row to chart it
+              Fair-band table · a product opens its curve and what-ifs
             </div>
             <div className="page-title" style={{ fontSize: 17, margin: "4px 0 12px" }}>
               Price stats per SKU
@@ -237,12 +131,7 @@ function PriceView() {
                   </thead>
                   <tbody>
                     {data.fair_bands.map((f) => (
-                      <FairBandRowView
-                        key={f.sku}
-                        f={f}
-                        selected={f.sku === selectedSku}
-                        onSelect={() => setSelectedSku(f.sku)}
-                      />
+                      <FairBandRowView key={f.sku} f={f} />
                     ))}
                   </tbody>
                 </table>
@@ -270,29 +159,14 @@ function PriceView() {
 }
 
 
-function FairBandRowView({
-  f, selected, onSelect,
-}: {
-  f: PriceFairBandRow;
-  selected: boolean;
-  onSelect: () => void;
-}) {
-  const bg = selected
-    ? "rgba(245,166,35,0.12)"
-    : f.outlier
-      ? "rgba(231,76,60,0.04)"
-      : undefined;
+function FairBandRowView({ f }: { f: PriceFairBandRow }) {
   return (
-    <tr
-      onClick={onSelect}
-      style={{
-        background: bg,
-        cursor: "pointer",
-        borderLeft: selected ? "3px solid var(--cta)" : "3px solid transparent",
-      }}
-    >
+    <tr style={{ background: f.outlier ? "rgba(231,76,60,0.04)" : undefined }}>
       <td>
-        <div style={{ fontWeight: 700, fontSize: 12 }}>{f.name}</div>
+        <Link href={`/product/?sku=${encodeURIComponent(f.sku)}`} style={{ fontWeight: 700, fontSize: 12 }}
+              title="Its demand curve and what-ifs, on the Product view">
+          {f.name} →
+        </Link>
         <div style={{ color: "var(--text-muted)", fontSize: 10.5 }}>
           {f.pet_type} · {f.category}
         </div>
@@ -355,8 +229,8 @@ function SweetSpotChip({ s }: { s: PriceSweetSpotRow }) {
 }
 
 
-// The view reads its state from the URL (`useUrlState`), which the static
-// export only allows under a Suspense boundary.
+// Kept under a Suspense boundary, as the static export asks of views that
+// read the URL.
 export default function PricePage() {
   return (
     <Suspense>

@@ -206,25 +206,25 @@ KPIs and category mix per household (grouped by declared pets). `_search` with
 the "show me the numbers" companion to the predictive views.
 [→ Implementation](src/analytics_service.py) | [Use case guide](docs/use-cases/05-purchase-analytics.md) | [ADR](docs/adr/0011-analytics-and-patterns.md)
 
-### 6. 🔍 Product Insights — one product, its funnel and its buyers
+### 6. 🔍 Product — one product: put it on offer or not, and for whom
 
 ```python
-# Who buys it: `_relate` over this product's order lines, one call per
-# declared buyer field, two links away. Lift = how much more common the
-# value is among this product's lines than among all lines; `fs` carries
-# the counts.
-{"from": "order_lines", "where": {"product_sku": "SKU-PT-0177"},
- "relate": "order_id.customer_id.pets"}
+# The decision: the chance it is bought when shown, at each discount band.
+# The band goes in `where` through the impression's product_state link,
+# so a band the product never had is a what-if.
+{"from": "impressions",
+ "where": {"product_sku": "SKU-PT-0192", "product_state.discount_band": "10-15"},
+ "predict": "purchased", "select": ["$p", "feature", "$why"]}
 ```
 
-Pick any product. The page shows:
-- its funnel (shown → clicked → added to cart → purchased);
-- each surface's purchase rate;
-- the households that buy it more or less than average (declared pets, dog size, diet, region), each with its counts;
-- units per month and its reviews.
-
-The ~20 counts go in one `_batch`. The `_relate` calls run in parallel, and the query pane shows one of the `_relate` bodies sent (the declared-pets one).
-[→ Implementation](src/product_insights_service.py) | [Use case guide](docs/use-cases/17-product-insights.md) | [ADR](docs/adr/0028-product-insights.md)
+Pick any product and month. The page leads with a decision ("Put it on
+offer at 10–15 % off"). It compares the bands on margin per showing, and
+gives the break-even and next month's units and profit from the price
+model, all labelled as estimates. Tabs show the levers (price curve and
+waterfall, discount bands), the history (units per month with offers,
+price rises and rivals marked, the funnel, the surfaces, the reviews),
+and the households that buy it.
+[→ Implementation](src/product_service.py) | [Use case guide](docs/use-cases/17-product.md) | [ADR](docs/adr/0041-one-view-per-job.md)
 
 ### 7. 🏪 Shop analytics — the patterns behind the shop
 

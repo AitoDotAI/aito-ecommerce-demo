@@ -662,7 +662,7 @@ export interface PriceResponse {
   last_response_ms: number;
 }
 
-/* ─── Price detail (/api/price/detail?sku=…) ─── */
+/* ─── Price curve (/api/product/price-curve?sku=…, ADR 0029) ─── */
 
 export interface PriceHistoricalPoint {
   month: string;
@@ -679,30 +679,19 @@ export interface PriceCurvePoint {
   adjustment_pct: number;
 }
 
-export interface PriceNeighborPoint {
-  month: string;
-  price_eur: number;
-  units_sold: number;
-  profit_eur: number;
-  weight: number;
-}
-
-export interface PriceDetail {
+export interface PriceCurve {
   sku: string;
   name: string;
-  pet_type: string;
-  category: string;
   list_price_eur: number;
   unit_cost_eur: number;
   mean_price_eur: number;
   historical: PriceHistoricalPoint[];
   curve: PriceCurvePoint[];
-  neighbors: PriceNeighborPoint[];
   last_query: { endpoint: string; body: Record<string, unknown> };
   last_response_ms: number;
 }
 
-/* ─── Price what-if (/api/price/what-if, ADR 0029) ─── */
+/* ─── Price what-if (/api/product/price-what-if, ADR 0029) ─── */
 
 export interface PriceWhatIfFactor {
   field: string;        // the `where` field, or "other" / "residual"
@@ -725,7 +714,7 @@ export interface PriceWhatIf {
   last_query: { endpoint: string; body: Record<string, unknown> };
 }
 
-/* ─── Discount what-if (/api/price/discount-what-if, ADR 0032) ─── */
+/* ─── Discount what-if (part of /api/product, ADR 0032) ─── */
 
 export interface DiscountBandEstimate {
   band: "none" | "10-15" | "15-20" | "20+";
@@ -738,7 +727,7 @@ export interface DiscountBandEstimate {
   calibrated: boolean;         // $why holds a `calibration` (rowCap) factor
   shown: number;               // this product's impressions at the band
   purchased: number;
-  current: boolean;            // the product's band in the latest month
+  current: boolean;            // the product's band in the month asked about
 }
 
 export interface DiscountWhatIf {
@@ -750,26 +739,80 @@ export interface DiscountWhatIf {
   last_query: { endpoint: string; body: Record<string, unknown> };
 }
 
-/* ─── Product Insights (/api/product-insights) ─── */
+/* ─── Product (/api/product?sku=&month=, ADR 0041) ─── */
 
-export interface ProductInsightsBuyerRow {
-  field: string;          // "context.customer.pets", "product_state.on_offer", ...
+export type DiscountBand = DiscountBandEstimate["band"];
+
+export interface ProductMonth {
+  month: string;
+  units_sold: number;
+  price_eur: number;
+  list_price_eur: number;
+  discount_band: DiscountBand;
+  rating_band: string;      // "unrated" | "1-2" | "3" | "4" | "5"
+  age: "new" | "established";
+  rival_launched: boolean;  // a rival product launched recently
+  price_change: "none" | "rise";
+  reviews: number;          // reviews written that month
+}
+
+export interface ProductHistory {
+  funnel: Array<{ step: "impressions" | "clicked" | "added_to_cart" | "purchased"; count: number }>;
+  surfaces: Array<{ surface: string; impressions: number; purchased: number }>;
+  months: ProductMonth[];
+  ratings: Record<string, number>;      // "1".."5"
+  sentiments: Record<string, number>;   // "positive" | "neutral" | "negative"
+}
+
+export interface ProductBuyerRow {
+  field: string;          // "order_id.customer_id.pets", ...
   value: string;
   lift: number;           // share among this product's lines / among all lines
   lines: number;          // this product's order lines with this profile
   lines_total: number;    // this product's order lines
 }
 
-export interface ProductInsightsResponse {
-  product: { sku: string; name: string; brand: string; pet_type: string; category: string; price_eur: number };
-  funnel: Array<{ step: "impressions" | "clicked" | "added_to_cart" | "purchased"; count: number }>;
-  surfaces: Array<{ surface: string; impressions: number; purchased: number }>;
-  buyers: ProductInsightsBuyerRow[];
-  monthly: Array<{ month: string; units_sold: number }>;
-  ratings: Record<string, number>;      // "1".."5"
-  sentiments: Record<string, number>;   // "positive" | "neutral" | "negative"
-  candidate_products: Array<{ sku: string; name: string; category: string; pet_type: string }>;
-  bought_together_anchor: string | null;
+export interface BandMargin {
+  band: DiscountBand;
+  price_eur: number;            // list price less the band's typical discount
+  p_purchase: number;           // Aito's estimate, bought when shown
+  margin_per_100_eur: number;   // 100 × p × (price − cost)
+}
+
+export interface OfferDecision {
+  action: "keep" | "offer" | "change" | "end_offer";
+  current_band: DiscountBand;
+  best_band: DiscountBand;
+  current: BandMargin;
+  best: BandMargin;
+  breakeven_ratio: number | null;   // sales needed at the best band vs list price
+  expected_ratio: number;           // Aito's p at the best band / at no discount
+  margins: BandMargin[];
+}
+
+export interface ProductCandidate {
+  sku: string;
+  name: string;
+  brand: string;
+  category: string;
+  pet_type: string;
+}
+
+export interface ProductView {
+  product: { sku: string; name: string; brand: string; pet_type: string; category: string;
+             price_eur: number; unit_cost_eur: number };
+  month: string;
+  forecast_month: string;
+  state: ProductMonth;
+  decision: OfferDecision;
+  discount: DiscountWhatIf;
+  price_now: PriceWhatIf;
+  price_best: PriceWhatIf | null;
+  history: ProductHistory;
+  buyers: ProductBuyerRow[];
+  shopper: { key: string; name: string; matches: string[] } | null;
+  basket_category: { token: string; label: string };
+  candidates: ProductCandidate[];
   last_query: { endpoint: string; body: Record<string, unknown> };
 }
 
