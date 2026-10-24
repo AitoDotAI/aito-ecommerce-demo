@@ -1,6 +1,6 @@
 # ADR 0037: An evidence section, kept apart from the demo
 
-**Status:** Proposed
+**Status:** Accepted (2026-10-24, Antti: "review, fix and merge all on green")
 **Date:** 2026-10-24
 **Deciders:** Antti
 
