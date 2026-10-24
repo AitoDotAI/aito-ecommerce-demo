@@ -30,6 +30,7 @@ from pathlib import Path
 from src.aito_client import AitoClient, AitoError
 from src.config import load_config
 from src.schema import SCHEMAS
+from src.showing_split import split_showings
 
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -44,6 +45,13 @@ BATCH_SIZE = 1000
 
 
 def load_fixture(table: str) -> list[dict]:
+    if table in ("impressions", "unranked_showings"):
+        ranked, unranked = split_showings(_read_fixture("impressions"), _read_fixture("contexts"))
+        return ranked if table == "impressions" else unranked
+    return _read_fixture(table)
+
+
+def _read_fixture(table: str) -> list[dict]:
     path = DATA_DIR / f"{table}.json"
     if not path.exists():
         raise FileNotFoundError(

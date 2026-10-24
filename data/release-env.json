@@ -4,7 +4,7 @@
     "contexts": 61484,
     "customer_months": 27003,
     "customers": 3000,
-    "impressions": 96028,
+    "impressions": 43938,
     "inventory": 658,
     "monthly_sales": 15157,
     "nps_responses": 3274,
@@ -13,6 +13,7 @@
     "product_states": 15157,
     "products": 658,
     "reviews": 4795,
+    "unranked_showings": 52090,
     "winback_campaigns": 2479
   }
 }

@@ -16,8 +16,7 @@ from src.product_history import ROWS_LIMIT, get_product_history
 SKU = "SKU-PT-0192"
 
 FUNNEL = {"impressions": 363, "clicked": 139, "added_to_cart": 112, "purchased": 90}
-BY_SURFACE = {"search": (128, 26), "for_you": (81, 23), "category": (125, 34), "bought_together": (29, 7),
-              "direct": (0, 0), "landing": (0, 0)}
+BY_SURFACE = {"search": (128, 26), "for_you": (81, 23), "category": (125, 34), "bought_together": (29, 7)}
 REVIEWS = [
     {"created_at": "2026-02", "rating": 5, "sentiment": "positive"},
     {"created_at": "2026-02", "rating": 4, "sentiment": "positive"},
@@ -64,7 +63,7 @@ def test_the_whole_record_comes_back_in_one_batch():
     get_product_history(client, SKU)
 
     # Fifteen independent reads, one round-trip, each filtered to the product.
-    assert len(client.batches) == 1 and len(client.batches[0]) == 19
+    assert len(client.batches) == 1 and len(client.batches[0]) == 15
 
 
 def test_funnel_and_surfaces_come_back_as_counts():

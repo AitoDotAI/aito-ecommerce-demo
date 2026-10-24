@@ -126,3 +126,34 @@ Probed on env `release2` (`docs/aito-cheatsheet.md`, "Data release 2").
   ("Q7 on list showings: calibration"). Nothing is built yet.
 - **Not delivered by this ADR:** the double effect's `price_index` slope
   (O4) waits on the engine; see the prereg.
+
+### Amendment 2 (2026-10-24): two tables, so the ranker learns from what the shop ranks
+
+Replaces the nested-`from` direction above.
+
+- **Why the nested `from` goes.** It restricts a query to list showings, but every
+  use costs a full in-heap copy of the population (core ticket td-20261024151214916465),
+  and it only repairs the queries that remember to write it. The Shop's
+  `_recommend`, the Product what-if, the Sandbox's band lifts and the Evidence
+  benchmarks would each need it.
+- **A second confound the first probe missed.** Visitor landing pages, which are
+  never bought from, are 47 % of the showings of products at 10–15 % off and 30 %
+  of those at list price. Together with the buy-again lists, they turn an offer's
+  whole-table lift on `purchased` into ×0.90 at 20 %+ off. Aito's `_predict` multiplies
+  each condition's lift as if independent, so no `where` can condition this away.
+- **Decision.** The log is loaded as two tables of one shape (`src/showing_split.py`):
+  - `impressions`: the showings the shop ranked, a `list` placement on a surface other
+    than `landing`;
+  - `unranked_showings`: landing pages, buy-again lists and checkout add-ons.
+
+  A shop trains its ranker on its own ranking decisions. Every sale and visit stays
+  queryable: the log, `monthly_sales` and `tests/test_one_source.py` are unchanged.
+- **What the ranked table gives**, read off the generated rows before any Aito query
+  (so a description, not a pre-registered result): purchases per showing against the
+  table's average, ×0.80 with no offer and ×1.59, ×1.67 and ×1.79 at 10–15, 15–20 and
+  20 %+ (an offer against none: ×2.0, ×2.1, ×2.2); stars 1–2 ×0.49, 3 ×0.92, 4 ×1.10, 5 ×1.24.
+- **Counts.** impressions 43,938; unranked_showings 52,090 (together the 96,028 of
+  before). `data/release-env.json` is updated to match.
+- **Checked on Aito**, once `release2` is reloaded: `tests/test_aito_check.py`'s band
+  lift tests (an offer lifts a purchase over no offer by more than ×1.5; more stars
+  lift it more) run unchanged.

@@ -223,12 +223,41 @@ SCHEMAS: dict[str, dict] = {
             "incident":    {"type": "Boolean", "nullable": False},
         },
     },
-    # 4b. impressions — one product shown in a context, with the funnel
-    # outcome (clicked / added_to_cart / purchased): the conversion KPI the
+    # 4b. impressions — one product the shop ranked and showed in a context, with the
+    # funnel outcome (clicked / added_to_cart / purchased): the conversion KPI the
     # recommendation surfaces rank on (`_recommend product_sku goal:
     # {purchased: true}`, ADR 0021). Who, when and where are on the
-    # context (ADR 0033). Largest table — generated, not committed.
+    # context (ADR 0033). Only the showings the shop chose (ADR 0045, amendment 3:
+    # `src/showing_split.py`). Largest table — generated, not committed.
     "impressions": {
+        "type": "table",
+        "columns": {
+            "impression_id": {"type": "String", "nullable": False},
+            "context":       {"type": "String", "nullable": False,
+                              "link": "contexts.context_id"},
+            "product_sku":   {"type": "String", "nullable": False,
+                              "link": "products.sku"},
+            # ADR 0032: the product as it was that month (price, offer, stars, new).
+            "product_state": {"type": "String", "nullable": False,
+                              "link": "product_states.product_state_id"},
+            # Descriptive only — never fed to recommend `basedOn`, so
+            # Aito ranks on content, not "position predicts click".
+            "position":      {"type": "Int",     "nullable": False},
+            # ADR 0045: the part of the page, buy_again | list | checkout. The
+            # position counts within it; only `list` is the shop's ranked list.
+            "placement":     {"type": "String",  "nullable": False},
+            # The product was in the customer's last order (recency, S8).
+            "just_bought":   {"type": "Boolean", "nullable": False},
+            # Funnel outcome labels (monotone: purchased ⇒ cart ⇒ click).
+            "clicked":       {"type": "Boolean", "nullable": False},
+            "added_to_cart": {"type": "Boolean", "nullable": False},
+            "purchased":     {"type": "Boolean", "nullable": False},
+        },
+    },
+    # 4c. unranked_showings — the rest of the log, same columns (ADR 0045, amendment 3): visitors'
+    # landing pages, the household's buy-again list, the checkout add-ons. Every
+    # sale and every visit stays queryable, apart from what the ranker learns.
+    "unranked_showings": {
         "type": "table",
         "columns": {
             "impression_id": {"type": "String", "nullable": False},
