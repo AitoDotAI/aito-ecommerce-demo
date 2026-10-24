@@ -93,9 +93,10 @@ MISPRICED_PROMO_P = 0.80
 
 
 def item_type(name: str, brand: str) -> str:
-    """"Trixie Cage" → "Cage"; "PetNord Water Bottle 500ml" → "Water Bottle"."""
+    """"Trixie Cage" → "Cage"; "PetNord Water Bottle 500ml" → "Water Bottle";
+    "Trixie Hideout, large" → "Hideout" (a variant follows the comma)."""
     rest = name[len(brand):].strip() if name.startswith(brand) else name
-    words = rest.split()
+    words = rest.split(",")[0].split()
     if words and any(ch.isdigit() for ch in words[-1]):
         words = words[:-1]
     return " ".join(words)
