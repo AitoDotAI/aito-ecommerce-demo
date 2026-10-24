@@ -20,7 +20,7 @@ export default function ProductHistory({ history, month }: { history: History; m
   const topRating = Math.max(1, ...Object.values(history.ratings));
 
   return (
-    <div style={{ display: "grid", gap: 16 }}>
+    <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 16 }}>
       <ProductMonths months={history.months} selected={month} />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
         <Card title="Funnel" sub="Impressions → purchase, each rate of the step before">

@@ -94,7 +94,7 @@ function ProductFillingView() {
         <select
           id="sku-picker"
           className="search-input"
-          style={{ paddingLeft: 12, width: "auto", minWidth: 360 }}
+          style={{ paddingLeft: 12, width: "auto", minWidth: "min(360px, 100%)" }}
           value={sku ?? data?.product.sku ?? ""}
           onChange={(e) => setSku(e.target.value || undefined)}
         >

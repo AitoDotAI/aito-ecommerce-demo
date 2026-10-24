@@ -31,7 +31,7 @@ export default function ProductBuyers({ view }: { view: ProductView }) {
   const byField = Object.keys(FIELD_LABEL).map((f) => [f, view.buyers.filter((b) => b.field === f)] as const);
 
   return (
-    <div style={{ display: "grid", gap: 16 }}>
+    <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 16 }}>
       <div className="card">
         <div className="page-title" style={{ fontSize: 16, margin: "0 0 6px" }}>
           {clear.length

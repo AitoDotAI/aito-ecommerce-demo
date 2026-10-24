@@ -162,7 +162,7 @@ Quality
   v2-env            Stage the v2 (Rep2) env — ADR 0025 (dry run unless --apply)
   verify <feature>  Run the adversary Playwright agent for one feature
   verify-demo       End-to-end demo-path check
-  verify-mobile     Mobile-viewport screenshot sweep of every sidebar view
+  verify-mobile     Mobile sweep of every view: screenshots, then an overflow check that fails on any overflow
   test-urls         Build the static export; check every view's link opens as shared
   planted-effects   Generate planted and null fixtures for 3 seeds; judge ADR 0032's effects (~5 min)
   check             Pre-merge gate (test + fmt + aito-check)
@@ -714,6 +714,9 @@ cmd_verify_mobile() {
   fi
   cd "$SCRIPT_DIR"
   node frontend/scripts/inspect-mobile.cjs
+  # Screenshots miss a popover wider than the phone; this measures every view and state and
+  # exits non-zero if any overflows (frontend/scripts/mobile-overflow.cjs).
+  NODE_PATH="$SCRIPT_DIR/frontend/node_modules" node frontend/scripts/mobile-overflow.cjs
 }
 
 cmd_v2_env() {

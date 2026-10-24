@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { type CSSProperties, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import EstimateWhyBody from "@/components/prediction/EstimateWhyBody";
+import { popoverStyle } from "@/lib/popover-placement";
 import type { WhyEstimatePayload } from "@/lib/types";
 
 
@@ -22,6 +23,10 @@ export interface WhyLiftEntry {
   lift: number;
   propositions: WhyProposition[];
   highlight?: WhyHighlight | null;
+  /** On a group only (src/why_groups.py): `lift` is the joint lift times the members',
+   *  so the rows still multiply out; the parts are listed inside the card. */
+  joint_lift?: number;
+  members?: WhyLiftEntry[];
 }
 
 export interface WhyExplanationPayload {
@@ -51,7 +56,7 @@ interface WhyPopoverProps {
  */
 export default function WhyPopover({ why, title }: WhyPopoverProps) {
   const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const [placement, setPlacement] = useState<CSSProperties>({});
   const btnRef = useRef<HTMLButtonElement>(null);
   const tipRef = useRef<HTMLDivElement>(null);
 
@@ -71,13 +76,9 @@ export default function WhyPopover({ why, title }: WhyPopoverProps) {
 
   function toggle() {
     if (!open && btnRef.current) {
-      const rect = btnRef.current.getBoundingClientRect();
-      // Position the popover to the LEFT of the button so it stays
-      // visible when the row is on the right side of the table.
-      const popoverWidth = 420;
-      const left = Math.max(12, rect.right - popoverWidth);
-      const top = Math.min(rect.bottom + 8, window.innerHeight - 600);
-      setPos({ top, left });
+      // Under the button on a wide screen, right-aligned to it, and a bottom sheet on a
+      // phone: the old fixed 420 px was wider than a phone (src/lib/popover-placement.ts).
+      setPlacement(popoverStyle(btnRef.current.getBoundingClientRect(), 420));
     }
     setOpen(!open);
   }
@@ -115,17 +116,12 @@ export default function WhyPopover({ why, title }: WhyPopoverProps) {
         <div
           ref={tipRef}
           style={{
-            position: "fixed",
-            top: pos.top,
-            left: pos.left,
+            ...placement,
             zIndex: 9999,
             background: "var(--white)",
             border: "2px solid var(--cta)",
             borderRadius: 10,
             padding: "16px 18px",
-            width: 420,
-            maxHeight: "min(620px, calc(100vh - 40px))",
-            overflowY: "auto",
             boxShadow: "0 12px 32px rgba(0,0,0,0.25)",
             color: "var(--text)",
             fontSize: 13,
@@ -273,9 +269,14 @@ function PatternMatchCard({ entry }: { entry: WhyLiftEntry }) {
   // Boolean columns produce highlights like `«3»` with nothing
   // outside the sentinels; for those the structured "When X is Y"
   // rendering reads better.
-  const highlight = entry.highlight && _hasSurroundingText(entry.highlight.marked_text)
+  // And only when something in it is actually marked: Aito often returns the plain sentence
+  // for a one-word match, and printing it unmarked makes every card look like a copy of the
+  // same row. Then the card states the proposition itself ("name has the word Turkey").
+  const isTextMatch = Boolean(entry.highlight && _hasSurroundingText(entry.highlight.marked_text));
+  const highlight = isTextMatch && entry.highlight && /[«‹]/.test(entry.highlight.marked_text)
     ? entry.highlight
     : null;
+  const members = entry.members ?? [];
   return (
     <div style={{
       background: up ? "rgba(245,166,35,0.10)" : "rgba(82,183,136,0.08)",
@@ -319,28 +320,10 @@ function PatternMatchCard({ entry }: { entry: WhyLiftEntry }) {
           </div>
         ) : (
           <div style={{ fontSize: 12, color: "var(--text)" }}>
-            When{" "}
-            {entry.propositions.map((p, i) => (
-              <span key={i}>
-                {i > 0 && <span style={{ color: "var(--text-muted)" }}> and </span>}
-                <code style={{ fontFamily: "var(--mono)", color: "var(--text-2)" }}>
-                  {p.field}
-                </code>
-                <span style={{ color: "var(--text-muted)" }}>
-                  {" "}{p.negate ? "is not " : "is "}
-                </span>
-                <span style={{
-                  background: up ? "rgba(245,166,35,0.30)" : "rgba(82,183,136,0.22)",
-                  padding: "1px 5px",
-                  borderRadius: 3,
-                  fontWeight: 600,
-                }}>
-                  {p.value}
-                </span>
-              </span>
-            ))}
+            <Conditions entry={entry} up={up} />
           </div>
         )}
+        {members.length > 0 && <Parts entry={entry} members={members} />}
       </div>
       <div style={{
         fontFamily: "var(--mono)",
@@ -351,6 +334,78 @@ function PatternMatchCard({ entry }: { entry: WhyLiftEntry }) {
       }}>
         {up ? "↑" : "↓"} {entry.lift.toFixed(1)}×
       </div>
+    </div>
+  );
+}
+
+
+/** "When name has the word Turkey and brand is Hill's": an entry's conditions as chips. */
+function Conditions({ entry, up }: { entry: WhyLiftEntry; up: boolean }) {
+  // Only the free-text column (the highlight's field) matches on a word; a plain-value
+  // column such as `brand` matches the whole value.
+  const textField = entry.highlight && _hasSurroundingText(entry.highlight.marked_text)
+    ? entry.highlight.field
+    : null;
+  return (
+    <>
+      When{" "}
+      {entry.propositions.map((p, i) => (
+        <span key={i}>
+          {i > 0 && <span style={{ color: "var(--text-muted)" }}> and </span>}
+          <code style={{ fontFamily: "var(--mono)", color: "var(--text-2)" }}>
+            {p.field}
+          </code>
+          <span style={{ color: "var(--text-muted)" }}>
+            {" "}{p.field === textField
+              ? (p.negate ? "does not have the word " : "has the word ")
+              : (p.negate ? "is not " : "is ")}
+          </span>
+          <span style={{
+            background: up ? "rgba(245,166,35,0.30)" : "rgba(82,183,136,0.22)",
+            padding: "1px 5px",
+            borderRadius: 3,
+            fontWeight: 600,
+          }}>
+            {p.value}
+          </span>
+        </span>
+      ))}
+    </>
+  );
+}
+
+
+/**
+ * A group's parts, folded inside its card: the joint lift of all its conditions, then the
+ * small lift each condition keeps on its own. Their product is the card's lift. Native
+ * <details>, so it opens by tap or key as well as click; the title shows the same on hover.
+ */
+function Parts({ entry, members }: { entry: WhyLiftEntry; members: WhyLiftEntry[] }) {
+  const part = (m: WhyLiftEntry) => m.propositions.map((p) => `${p.field} ${p.negate ? "not " : ""}${p.value}`).join(" and ");
+  const joint = entry.joint_lift ?? 1;
+  const hover = [`together ×${joint.toFixed(2)}`, ...members.map((m) => `${part(m)} ×${m.lift.toFixed(2)}`)].join("\n");
+  return (
+    <details style={{ marginTop: 6, fontSize: 11.5 }}>
+      <summary title={hover} style={{ cursor: "pointer", color: "var(--text-muted)" }}>
+        {members.length + 1} parts multiplied: ×{joint.toFixed(2)} together
+        {members.map((m) => ` × ${m.lift.toFixed(2)}`).join("")}
+      </summary>
+      <div style={{ marginTop: 4, display: "grid", gap: 3 }}>
+        <PartLine label={<span>All of them together</span>} lift={joint} />
+        {members.map((m, i) => (
+          <PartLine key={i} lift={m.lift} label={<Conditions entry={m} up={m.lift >= 1} />} />
+        ))}
+      </div>
+    </details>
+  );
+}
+
+
+function PartLine({ label, lift }: { label: React.ReactNode; lift: number }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", gap: 10, color: "var(--text-2)" }}>
+      <span style={{ minWidth: 0 }}>{label}</span>
+      <span style={{ fontFamily: "var(--mono)", flexShrink: 0 }}>×{lift.toFixed(2)}</span>
     </div>
   );
 }
