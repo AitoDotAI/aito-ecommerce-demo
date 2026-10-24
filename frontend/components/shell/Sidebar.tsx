@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useShell } from "./ShellState";
+import { useSandboxEnv, withSandbox } from "@/lib/sandbox";
 
 interface NavItem {
   href: string;
@@ -83,6 +84,7 @@ const NAV: NavHeading[] = [
 export default function Sidebar() {
   const pathname = usePathname();
   const { sidebarCollapsed, mobileOpen, closeMobile } = useShell();
+  const sandbox = useSandboxEnv();   // sandbox mode: every view keeps ?db (ADR 0043)
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/" || pathname === "";
@@ -114,7 +116,7 @@ export default function Sidebar() {
               {group.items.map((item) => (
                 <Link
                   key={item.href}
-                  href={item.href}
+                  href={withSandbox(item.href, sandbox)}
                   className={`nav-item${isActive(item.href) ? " active" : ""}`}
                   onClick={() => closeMobile()}
                 >

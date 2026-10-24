@@ -13,6 +13,8 @@
  *     reused across views.
  */
 
+import { SANDBOX_HEADER, sandboxEnv } from "@/lib/sandbox";
+
 const API_BASE = typeof window !== "undefined"
   ? `${window.location.protocol}//${window.location.host}`
   : "";
@@ -91,6 +93,9 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
   if (!headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }
+  // Sandbox mode (ADR 0043): the page's `?db=` goes with every call.
+  const sandbox = sandboxEnv();
+  if (sandbox && !headers.has(SANDBOX_HEADER)) headers.set(SANDBOX_HEADER, sandbox);
 
   let res: Response;
   try {

@@ -144,7 +144,8 @@ def init(client: AitoClient) -> None:
     set_namespace(client._config.api_namespace)
     try:
         schema = client.get_schema()
-        if PRECOMPUTE_TABLE not in schema.get("schema", {}):
+        # A read-only client (ADR 0043) reads the snapshots; it never creates the table.
+        if PRECOMPUTE_TABLE not in schema.get("schema", {}) and not client.read_only:
             client._request("PUT", f"/schema/{PRECOMPUTE_TABLE}", json=PRECOMPUTE_SCHEMA)
     except AitoError:
         # Read-only key (public deploy) or unreachable Aito: reads still

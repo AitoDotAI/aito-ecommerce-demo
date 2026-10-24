@@ -13,6 +13,7 @@ import ProductCard from "@/components/shop/ProductCard";
 import ProductDrawer from "@/components/shop/ProductDrawer";
 import SuggestionsPanel from "@/components/shop/SuggestionsPanel";
 import { useSetUrlParams, useUrlState } from "@/lib/use-url-state";
+import { SANDBOX_MONTH, SANDBOX_PARAM } from "@/lib/sandbox";
 import type { ShopGrid, ShopSearch, ShopShopper, ShopSuggestions } from "@/lib/types";
 
 // The data's window: May 2024 to April 2026 (the latest month).
@@ -35,7 +36,10 @@ function ShopView() {
   });
   const { setPanel } = useShell();
   const [shopperKey, setShopperKey] = useUrlState("shopper", "paivi");
-  const [month, setMonth] = useUrlState("month", "2026-04");
+  // In a sandbox (ADR 0043) the Shop opens on May 2026: the month the levers write.
+  const [sandbox] = useUrlState(SANDBOX_PARAM, "");
+  const [month, setMonth] = useUrlState("month", sandbox ? SANDBOX_MONTH : "2026-04");
+  const months = sandbox ? [SANDBOX_MONTH, ...MONTHS] : MONTHS;
   const [cartParam] = useUrlState("cart", "");
   const [openSku] = useUrlState("product", "");
   const [query] = useUrlState("q", "");
@@ -129,7 +133,7 @@ function ShopView() {
         ))}
         <select aria-label="Month" className="search-input" style={{ width: "auto", paddingLeft: 12 }}
                 value={month} onChange={(e) => setMonth(e.target.value)}>
-          {MONTHS.map((m) => <option key={m} value={m}>{monthLabel(m)}</option>)}
+          {months.map((m) => <option key={m} value={m}>{monthLabel(m)}{m === SANDBOX_MONTH ? " (sandbox)" : ""}</option>)}
         </select>
       </div>
       {shown && (
@@ -191,12 +195,20 @@ function ShopView() {
             <div className="card-sub" style={{ marginBottom: 8 }}>
               Ranked by Aito for a household with these pets, this month and this cart
             </div>
+            {shown?.rescored && (
+              <div className="card card-sub" style={{ marginBottom: 8, fontSize: 12 }}>
+                <strong>Sandbox, May 2026:</strong> Aito ranks the top 40 as usual. A product whose May state
+                you changed is then re-scored: Aito&apos;s purchase probability × its offer band&apos;s lift ×
+                its star band&apos;s lift, both learned by Aito across the whole shop. The multiplication is this
+                app&apos;s modelling choice, not one Aito query, so those cards show a score, not a rate.
+              </div>
+            )}
             <div className="shop-grid" style={{ opacity: stale ? 0.5 : 1 }} aria-busy={!shown || stale}>
               {!shown && Array.from({ length: 8 }, (_, i) => (
                 <div key={i} className="card" style={{ height: 170, background: "var(--border-light)" }} />
               ))}
-              {shown?.items.map((item) => (
-                <ProductCard key={item.sku} item={item}
+              {shown?.items.map((item, i) => (
+                <ProductCard key={item.sku} item={item} rank={i + 1}
                              onAdd={() => addToCart([item.sku])}
                              onOpen={() => setUrl({ product: item.sku })} />
               ))}

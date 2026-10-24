@@ -139,6 +139,10 @@ Data
                     --as master: compute on AITO_ENV's env, file as master (ADR 0035)
   release-file      <env>: write data/release-env.json from the env's row counts (read-only)
   release-check     [<env>]: does the env (default: the release's) match data/release-env.json? (read-only)
+  sandbox-template-load  Load the release fixtures into the sandbox DB's master, then warm it (ADR 0043)
+  sandbox-new       Branch a sandbox off the template, warm it, print its ?db= link
+  sandbox-list      The live sandboxes and when they expire (read-only)
+  sandbox-time      Time the lever → Shop loop 5× on a throwaway branch (deleted after)
   uci-prepare       UCI Online Retail II xlsx → data/uci/*.json (local, no Aito; ADR 0034)
   uci-load          Load data/uci/ into Aito env uci (needs AITO_ENV=uci)
   workbook          (Re)create the console workbook from docs/aito-workbook-ecommerce-demo.json
@@ -414,6 +418,15 @@ for table, count in release.to_dict()['counts'].items():
     print(f'  {table:20s} {count:>9,}')
 print(f'Wrote {RELEASE_FILE} for env {release.env}.')
 "
+}
+
+# The sandbox database (ADR 0043): AITO_SANDBOX_URL + AITO_SANDBOX_API_KEY.
+# src/sandbox_cli.py refuses unless the URL names a sandbox database.
+cmd_sandbox() {
+  cd "$SCRIPT_DIR"
+  echo "Sandbox database: ${AITO_SANDBOX_URL:-<unset>}"
+  [[ "$1" == "template-load" ]] && _ensure_impressions
+  uv run python -m src.sandbox_cli "$1"
 }
 
 cmd_release_check() {
@@ -763,6 +776,10 @@ case "${1:-help}" in
   backtest-load)     shift; cmd_backtest_load "$@" ;;
   backtest)          shift; cmd_backtest "$@" ;;
   workbook)          cmd_workbook ;;
+  sandbox-template-load) cmd_sandbox template-load ;;
+  sandbox-new)       cmd_sandbox new ;;
+  sandbox-list)      cmd_sandbox list ;;
+  sandbox-time)      cmd_sandbox time ;;
   test)              cmd_test ;;
   aito-check)        cmd_aito_check ;;
   search-eval)       cmd_search_eval ;;

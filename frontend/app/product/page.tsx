@@ -13,9 +13,11 @@ import ProductBuyers from "@/components/product/ProductBuyers";
 import ProductHistory from "@/components/product/ProductHistory";
 import ProductPicker from "@/components/product/ProductPicker";
 import ProductWhatIf from "@/components/product/ProductWhatIf";
+import LeverPanel from "@/components/product/LeverPanel";
+import { SANDBOX_MONTH, SANDBOX_PARAM } from "@/lib/sandbox";
 import { BAND_LABEL, monthLabel, words } from "@/components/product/labels";
 import { useSetUrlParams, useUrlState } from "@/lib/use-url-state";
-import type { ProductCandidate, ProductView as ProductViewData } from "@/lib/types";
+import type { LeverStates, ProductCandidate, ProductView as ProductViewData } from "@/lib/types";
 
 const LATEST_MONTH = "2026-04";
 const TABS = [
@@ -50,6 +52,12 @@ function ProductView() {
   // Kept across a failed load, so the picker still works after a bad link.
   const [candidates, setCandidates] = useState<ProductCandidate[]>([]);
   const [months, setMonths] = useState<string[]>([LATEST_MONTH]);
+  // Sandbox mode (ADR 0043): the levers write May 2026, and after each one
+  // the page asks its estimates again (`pulled`) from the state read back.
+  const [sandbox] = useUrlState(SANDBOX_PARAM, "");
+  const [states, setStates] = useState<LeverStates | null>(null);
+  const [pulled, setPulled] = useState(0);
+  const [noMayYet, setNoMayYet] = useState(false);
 
   useEffect(() => {
     // Only the request for the product and month now in the URL may update the page.
@@ -57,11 +65,22 @@ function ProductView() {
     setError(null);
     setNotFound(null);
     setView(null);
-    const query = new URLSearchParams();
-    if (sku) query.set("sku", sku);
-    if (month !== LATEST_MONTH) query.set("month", month);
-    apiFetch<ProductViewData>(`/api/product${query.size ? `?${query}` : ""}`).then((res) => {
+    const load = async () => {
+      // In a sandbox, May exists for a product only once a lever wrote it.
+      const leverStates = sandbox && sku
+        ? await apiFetch<LeverStates>(`/api/levers/state?sku=${encodeURIComponent(sku)}`) : null;
+      const noMay = month === SANDBOX_MONTH && !leverStates?.next;
+      const query = new URLSearchParams();
+      if (sku) query.set("sku", sku);
+      const asked = noMay ? LATEST_MONTH : month;
+      if (asked !== LATEST_MONTH) query.set("month", asked);
+      const res = await apiFetch<ProductViewData>(`/api/product${query.size ? `?${query}` : ""}`);
+      return { res, leverStates, noMay };
+    };
+    load().then(({ res, leverStates, noMay }) => {
       if (!current) return;
+      setStates(leverStates);
+      setNoMayYet(noMay);
       setView(res);
       setCandidates(res.candidates);
       setMonths(res.history.months.map((m) => m.month));
@@ -72,7 +91,7 @@ function ProductView() {
       else setError(String(e));
     });
     return () => { current = false; };
-  }, [sku, month, setPanel]);
+  }, [sku, month, sandbox, pulled, setPanel]);
 
   const showQuery = useCallback(
     (body: Record<string, unknown>) => setPanel({ ...productPanel(), query: highlightQuery(body) }),
@@ -114,6 +133,19 @@ function ProductView() {
               </button>
             ))}
           </div>
+          {tab === "what-if" && sandbox && (
+            states ? (
+              <LeverPanel sku={shown.product.sku} states={states} sandbox={sandbox}
+                          onPulled={() => { if (month === SANDBOX_MONTH) setPulled((n) => n + 1); else setMonth(SANDBOX_MONTH); }} />
+            ) : (
+              <div className="card card-sub">Pick a product to pull a lever on it in this sandbox.</div>
+            )
+          )}
+          {noMayYet && (
+            <div className="card-sub" style={{ marginBottom: 8 }}>
+              May 2026 has no state for this product yet, so the page shows April: pull a lever to write May.
+            </div>
+          )}
           {tab === "what-if" && (
             <ProductWhatIf view={shown} price={priceParam ? Number(priceParam) : null}
                            onPrice={pickPrice} onQuery={showQuery} />

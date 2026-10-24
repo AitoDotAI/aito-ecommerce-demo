@@ -1369,6 +1369,77 @@ Both classes come back; the `true` hit's `$why` (abridged):
   `_batch` carries the four predicts and the eight counts. v2's `_batch`
   answers `{"kind": "batch", "data": [...]}`.
 
+## Levers in a sandbox branch (ADR 0043)
+
+The levers write only to a throwaway branch of the sandbox database
+(`aito-ecommerce-sandbox`, its own key). Its master is the template, loaded
+once from the release fixtures. Sources: Aito's `api-docs/content/environments-v2.md`
+and `schema-migration-v2.md`, the CPO's facts (2026-10-24), and probes on
+env `observable` (2.11.8, read-only) where a line says so.
+
+**Branches** (the env API, on the sandbox database's master):
+
+```json
+GET    /db/aito-ecommerce-sandbox/api/v2/_envs
+       → {"envs": [{"isMaster": true, "name": "master"}, {"isMaster": false, "name": "tmp-…"}]}
+POST   /db/aito-ecommerce-sandbox/api/v2/_envs   {"name": "tmp-2026-10-26-15-30-00-3f9c2a1b7d4e6f80", "basedOn": "env.master"}
+DELETE /db/aito-ecommerce-sandbox/api/v2/_envs/tmp-2026-10-26-15-30-00-3f9c2a1b7d4e6f80
+```
+
+- The list's shape was probed (GET, on PetNord's database). Create and
+  delete are documented, not yet run by this app: Antti's live run checks them.
+- A branch is addressed by its URL path only:
+  `/db/aito-ecommerce-sandbox/env/<name>/api/v2/…`. The default env is
+  addressed by leaving `/env/` out; `/env/master/` is a 400.
+- Copy-on-write: a branch costs ~0 until written, 1–4 MB once written.
+  Aito keeps at most 100 envs in memory and evicts one idle for 30 minutes
+  (it isn't deleted; its next query re-links it cold). So the app deletes
+  the branch "New sandbox" replaces, and re-warms one idle for 25 minutes.
+
+**Writes** in the branch (`src/product_levers.py`), one `POST /data/_modify` each:
+
+```json
+{"into": "product_states", "insert": {"product_state_id": "SKU-PT-0563-2026-05", "month": "2026-05", …}}
+{"update": "product_states", "set": {"price_eur": 17.27, "discount_band": "20+", …},
+ "where": {"product_state_id": "SKU-PT-0563-2026-05"}}
+{"into": "reviews", "insert": {"review_id": "REV-SANDBOX-…", "rating": 1, "created_at": "2026-05", …}}
+```
+
+Then `_search` reads the row back by its key, and the app shows only what
+it read. Aito core measured, on 2.11.8 with these fixtures: insert 8 ms,
+update 33–86 ms, the first what-if predict after it ~90 ms, then ~11 ms.
+
+**Engine check:** `GET /schema/<table>?meta=true` answers `"engine": "v2"`
+(probed on `observable`); `./do sandbox-template-load` refuses a template
+whose `impressions`, `product_states`, `order_lines` or `monthly_sales`
+aren't on it.
+
+**Shop-wide band lifts** (`src/shop_state_lifts.py`), probed on `observable`:
+`_predict purchased` from `impressions` with only `product_state.rating_band`
+(or `.discount_band`) in `where` gives one `relatedPropositionLift` for the
+band, value bare, equal to the band's observed purchase rate over the base
+rate 0.1241:
+
+| band | lift | observed rate |
+|---|---|---|
+| discount none / 10-15 / 15-20 / 20+ | 0.875 / 1.573 / 1.645 / 1.588 | 10.85 / 19.54 / 20.43 / 19.72 % |
+| stars unrated / 1-2 / 3 / 4 / 5 | 0.813 / 0.699 / 0.993 / 1.198 / 1.271 | 10.09 / 8.67 / 12.32 / 14.87 / 15.78 % |
+
+With both bands in `where`, `$why` holds both lifts side by side. The Shop
+reads the nine in one `_batch`; an offer of 20 %+ against none is ×1.81.
+
+**`_estimate` doesn't take a linked field** (probed on `observable`):
+`_estimate units_sold` from `monthly_sales` with
+`product_state.discount_band` in `where` is a 400 `"no such field
+'product_state.discount_band'"` on both models; the nested form
+`{"product_state": {"discount_band": …}}` is a 501 on k-NN. `_predict
+units_bucket` does take the link. So the Product view's units follow the
+price only, and it says so.
+
+**An unseen month in the Shop:** `_recommend` with `context.month:
+"2026-05"` (no contexts in that month yet) still ranks Päivi's guinea-pig
+products (`$p` 0.16–0.34 for her top 30, against 0.17–0.44 in April).
+
 ## Business reorders on UCI Online Retail II, env `uci` (ADR 0034)
 
 **Not yet run by this demo.** The `_predict` is Aito core's benchmark

@@ -768,6 +768,57 @@ export interface ShopItem extends ShopProduct {
   offer_pct: number | null;
   keeps_rule: boolean;
   p_if_new: number | null;     // bought last order: its P before Aito was told so
+  measured_rank: number | null;          // sandbox: its rank by Aito's $p, before re-scoring
+  adjustment: ScoreAdjustment | null;    // sandbox: set when its 2026-05 state re-scored it
+}
+
+/** Why a re-scored card's score differs from Aito's $p (ADR 0043, src/shop_rescore.py). */
+export interface ScoreAdjustment {
+  aito_p: number;
+  offer_band: string;
+  offer_factor: number;        // lift(offer band) / lift(no offer), shop-wide
+  rating_band: string;
+  rating_band_before: string;
+  rating_factor: number;       // lift(stars) / lift(April's stars), shop-wide
+  score: number;               // aito_p × offer_factor × rating_factor
+}
+
+/** `/api/sandbox` (ADR 0043). */
+export interface SandboxStatus {
+  configured: boolean;
+  can_create?: boolean;
+  month?: string;
+  max_live?: number;
+  max_age_hours?: number;
+  sandbox?: { env: string; expires_at: string; starts_from: string } | null;
+}
+
+/** A product's state row, as `product_states` holds it. */
+export interface ProductStateRow {
+  product_state_id: string;
+  product_sku: string;
+  month: string;
+  price_eur: number;
+  list_price_eur: number;
+  discount_pct: number;
+  on_offer: boolean;
+  discount_band: string;
+  rating_band: string;
+}
+
+/** `/api/levers/state`. */
+export interface LeverStates { april: ProductStateRow; next: ProductStateRow | null; next_month: string }
+
+/** `/api/levers/offer` and `/api/levers/review`: the row as read back. */
+export interface LeverResult {
+  sku: string;
+  lever: "offer" | "review";
+  state: ProductStateRow;
+  rating_band_before: string;
+  rating_band_changed: boolean;
+  reviews: number;
+  avg_rating: number | null;
+  review: { review_id: string; rating: number; text: string } | null;
 }
 
 export interface ShopSearch {
@@ -785,6 +836,7 @@ export interface ShopGrid {
   items: ShopItem[];
   last_order_skus: string[];
   last_query: { endpoint: string; body: Record<string, unknown> };
+  rescored: boolean;            // sandbox, 2026-05: re-scored by the levers' states (ADR 0043)
 }
 
 export interface ShopBasketPair {

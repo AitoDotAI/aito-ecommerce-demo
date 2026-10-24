@@ -430,6 +430,60 @@ def test_the_forecast_popover_splits_the_knn_estimate_into_rows_that_chain_to_it
     assert len(fields) == len(forecast_where("SKU-PT-0206", sales[0], 0)), fields
 
 
+# ── The sandbox's re-scored Shop and the units model (ADR 0043) ─────
+
+
+def test_schema_meta_reports_the_engine_the_sandbox_template_check_reads(client):
+    """`./do sandbox-template-load` refuses a template whose tables aren't on
+    engine v2; it reads `"engine"` from `GET /schema/<table>?meta=true`."""
+    from src.sandbox_cli import ENGINE_CHECKED
+
+    for table in ENGINE_CHECKED:
+        assert client._request("GET", f"/schema/{table}?meta=true").get("engine") == "v2", table
+
+
+def test_state_band_lifts_are_read_from_why_and_order_as_the_data_does(client):
+    """Each discount and star band's shop-wide lift is one factor in `$why`
+    (`band_lift` raises otherwise). An offer lifts a purchase over no offer
+    by more than ×1.5, and more stars lift it more than fewer."""
+    from src.shop_state_lifts import read_state_lifts
+
+    lifts = read_state_lifts(client)
+
+    assert all(lift > 0 for lift in [*lifts.discount.values(), *lifts.rating.values()])
+    assert lifts.offer_factor("20+") > 1.5, lifts.discount
+    assert lifts.rating["1-2"] < lifts.rating["3"] < lifts.rating["4"] < lifts.rating["5"], lifts.rating
+
+
+def test_estimate_doesnt_take_a_linked_field_so_the_units_follow_the_price_only(client):
+    """Probed 2026-10-24 on 2.11.8: `_estimate units_sold` with
+    `product_state.discount_band` in `where` is a 400 "no such field", on
+    both models. The Product view's units what-if is by price only, and says
+    so. If this starts to pass, the discount can enter the units model."""
+    from src.aito_client import AitoError
+
+    where = {"product_sku": "SKU-PT-0143", "product_state.discount_band": "20+"}
+    with pytest.raises(AitoError, match="no such field"):
+        client.estimate("monthly_sales", where=where, estimate_field="units_sold", model="regression")
+
+
+def test_paivis_shop_answers_for_the_sandboxes_month_and_holds_her_next_kit_item(client):
+    """2026-05 is a month with no contexts yet: `_recommend` still ranks her
+    guinea-pig products, and the hideout her kit needs next is among the 40
+    the sandbox re-scores (the lever target in docs/demo-script.md)."""
+    from src.shop_grid import get_shop_grid
+    from src.shop_rescore import RESCORED
+    from src.shop_ranking import ranked_items, shop_scope
+    from src.shop_context import pets_filter
+
+    scope = shop_scope(client, "paivi", "2026-05", [])
+    items = ranked_items(client, scope, {**scope.where(), **pets_filter(scope.pets)}, RESCORED)
+
+    assert all(0 <= i.p <= 1 and i.pet_type == "small_animal" for i in items)
+    assert "SKU-PT-0563" in [i.sku for i in items]
+    assert get_shop_grid(client, "paivi", "2026-05", [], rescored=True).items
+
+
 # ── Discount what-if: `_predict purchased` per discount band (ADR 0032) ──
 
 

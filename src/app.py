@@ -24,6 +24,13 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from src.aito_client import AitoClient, AitoError
+from src.aito_client import WRITES_ANY, WRITES_ENVS, WRITES_NONE
+from src.demo_mode import ENV_HEADER, DemoClients, requested_sandbox
+from src.lever_routes import router as lever_router
+from src.sandbox_config import load_sandbox_setting
+from src.sandbox_envs import SandboxBranches, SandboxEnvError
+from src.sandbox_warmup import warm_resumed
+from src.shop_history import NEXT_MONTH
 from src import cache, timing, precompute_store
 from src.data_release_gate import DataReleaseGate, release_gate_middleware
 from src.release_file import load_release, read_counts
@@ -36,7 +43,7 @@ from src.search_service import smart_search
 from src.recommend_service import get_for_you
 from src.filling_service import get_filling
 from src.eval_service import run_evaluation
-from src.product_service import product_view_payload
+from src.product_service import DEFAULT_SKU, get_product_view, product_view_payload
 from src.shop_grid import get_shop_grid
 from src.shop_personas import SHOPPERS, UnknownShopperError
 from src.shop_product import get_product_drawer
@@ -63,10 +70,23 @@ from src.uci_reorder_service import UnknownBuyerError, draft_order
 
 
 config = load_config()
-aito = AitoClient(config)
+# The levers' sandbox database (ADR 0043). While one is configured,
+# PetNord's database is read through a read-only client, the sandbox
+# database's master (the template) only creates and deletes branches, and
+# data is written only in a `tmp-` branch (src/sandbox_envs.py).
+sandbox_setting = load_sandbox_setting(config)
+petnord_writes = WRITES_NONE if sandbox_setting.config else WRITES_ANY
+aito = AitoClient(config, writes=petnord_writes)
+sandbox_template = AitoClient(sandbox_setting.config, writes=WRITES_ENVS) if sandbox_setting.config else None
+sandbox_branches = SandboxBranches(sandbox_template, on_resume=warm_resumed) if sandbox_template else None
+demo_clients = DemoClients(petnord=aito, branches=sandbox_branches)
+if sandbox_template is None:
+    print(f"  Sandbox mode off: {sandbox_setting.off_reason}.")
+else:
+    print(f"  Sandboxes on: branches of {sandbox_setting.database}; PetNord's database is read-only.")
 # Business reorders (ADR 0034) reads real data, UCI Online Retail II, from
 # its own env on the same instance. The pet shop's client stays on its env.
-uci_aito = AitoClient(replace(config, aito_env="uci"))
+uci_aito = AitoClient(replace(config, aito_env="uci"), writes=petnord_writes)
 
 # Register the Aito-backed persistent cache layer. No-op when
 # PUBLIC_DEMO=1 so the demo runs against a read-only API key.
@@ -122,6 +142,28 @@ release_gate = DataReleaseGate(
 )
 release_gate.start()
 
+# The sandbox template's gate: ready once `./do sandbox-template-load` has
+# loaded the release. A request that names a sandbox branch is gated by it.
+sandbox_gate = None
+if sandbox_template is not None:
+    sandbox_gate = DataReleaseGate(load_release(), read_counts=lambda: read_counts(sandbox_template),
+                                   on_ready=lambda: None, on_mismatch=lambda: None)
+    sandbox_gate.start(name="sandbox-release-gate")
+    # Branches older than three hours are deleted at start-up, then every 10 minutes.
+    import threading
+    threading.Thread(target=sandbox_branches.reap_forever, name="sandbox-reaper", daemon=True).start()
+
+
+def _sandbox_gate_for(request: Request) -> DataReleaseGate | None:
+    """The template's gate for a request that names a sandbox."""
+    if sandbox_gate is None:
+        return None
+    try:
+        named = requested_sandbox(request)
+    except SandboxEnvError:
+        return None    # the route answers the 400
+    return sandbox_gate if named or request.url.path.startswith("/api/levers/") else None
+
 
 app = FastAPI(
     title="Predictive E-commerce — Aito Demo API",
@@ -142,7 +184,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=_allow_origins,
     allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type"],
+    allow_headers=["Content-Type", ENV_HEADER, "X-Admin-Token"],
     # X-Aito-Calls carries per-request timing data the browser reads to
     # render the latency pill. CORS hides custom response headers from
     # JS unless explicitly exposed.
@@ -171,7 +213,26 @@ async def aito_timing_middleware(request: Request, call_next):
 
 
 # 503 on data routes until the data matches the release (ADR 0035).
-app.middleware("http")(release_gate_middleware(release_gate))
+app.middleware("http")(release_gate_middleware(release_gate, _sandbox_gate_for))
+app.state.demo_clients = demo_clients
+
+
+@app.exception_handler(SandboxEnvError)
+async def sandbox_env_error(request: Request, exc: SandboxEnvError):
+    """A sandbox name that isn't a live branch: 400, never PetNord's data."""
+    return JSONResponse(status_code=400, content={"error": str(exc)})
+
+
+@app.exception_handler(AitoError)
+async def uncaught_aito_error(request: Request, exc: AitoError):
+    """An Aito failure no route mapped itself, e.g. reading the sandbox's
+    env list to check a `?db=` name: 502, as the routes answer it."""
+    return JSONResponse(status_code=502, content={"error": str(exc), "status_code": exc.status_code})
+
+
+app.state.sandbox_gate = sandbox_gate
+app.state.admin_token = sandbox_setting.admin_token
+app.include_router(lever_router)
 
 
 @app.middleware("http")
@@ -394,6 +455,20 @@ def _cart_skus(cart: str) -> list[str]:
     return [s for s in cart.split(",") if s]
 
 
+def _reader(request: Request) -> AitoClient:
+    """PetNord's database, or the sandbox branch the request names (src/demo_mode.py).
+    Raises SandboxEnvError (a ValueError: 400) for a name that isn't a live branch."""
+    return demo_clients.reader(request)
+
+
+def _shop_reader(request: Request, month: str) -> AitoClient:
+    """The Shop's reader. The sandbox's month, 2026-05, exists only in a sandbox."""
+    reader = _reader(request)
+    if month == NEXT_MONTH and reader is aito:
+        raise ValueError(f"{NEXT_MONTH} is the sandbox's month: open a sandbox to see it")
+    return reader
+
+
 @app.get("/api/shop/shoppers")
 def shop_shoppers_endpoint():
     """The shoppers the Shop view lets you be, each with a story."""
@@ -401,36 +476,42 @@ def shop_shoppers_endpoint():
 
 
 @app.get("/api/shop/grid")
-def shop_grid_endpoint(shopper: str, month: str = Query(pattern=MONTH), cart: str = ""):
+def shop_grid_endpoint(request: Request, shopper: str, month: str = Query(pattern=MONTH), cart: str = ""):
     """What to show this shopper now: `_recommend` with profile, month and
-    cart as context, the household rule as a filter, recency re-asked."""
-    return _shop(lambda: get_shop_grid(aito, shopper, month, _cart_skus(cart)))
+    cart as context, the household rule as a filter, recency re-asked. In
+    sandbox mode for 2026-05, re-scored by the levers' states (ADR 0043)."""
+    return _shop(lambda: get_shop_grid(_shop_reader(request, month), shopper, month, _cart_skus(cart),
+                                       rescored=month == NEXT_MONTH))
 
 
 @app.get("/api/shop/search")
-def shop_search_endpoint(q: str, shopper: str, month: str = Query(pattern=MONTH), cart: str = ""):
+def shop_search_endpoint(request: Request, q: str, shopper: str, month: str = Query(pattern=MONTH), cart: str = ""):
     """The products whose name the query matches, ranked as the grid ranks them."""
-    return _shop(lambda: search_shop(aito, shopper, month, _cart_skus(cart), q))
+    return _shop(lambda: search_shop(_shop_reader(request, month), shopper, month, _cart_skus(cart), q))
 
 
 @app.get("/api/shop/product")
-def shop_product_endpoint(sku: str, shopper: str, month: str = Query(pattern=MONTH), cart: str = ""):
+def shop_product_endpoint(request: Request, sku: str, shopper: str, month: str = Query(pattern=MONTH), cart: str = ""):
     """A product's drawer: details, alternatives for this shopper, often in
     the same basket, and in your orders before `month`."""
-    return _shop(lambda: get_product_drawer(aito, sku, shopper, month, _cart_skus(cart)))
+    return _shop(lambda: get_product_drawer(_shop_reader(request, month), sku, shopper, month, _cart_skus(cart)))
 
 
 @app.get("/api/shop/suggestions")
-def shop_suggestions_endpoint(shopper: str, month: str = Query(pattern=MONTH), cart: str = ""):
+def shop_suggestions_endpoint(request: Request, shopper: str, month: str = Query(pattern=MONTH), cart: str = ""):
     """The usual basket, and what's next for the shopper's pet, as of `month` and with `cart`."""
-    return _shop(lambda: get_suggestions(aito, shopper, month, _cart_skus(cart)))
+    return _shop(lambda: get_suggestions(_shop_reader(request, month), shopper, month, _cart_skus(cart)))
 
 
 @app.get("/api/product")
-def product_endpoint(sku: str | None = None, month: str = Query(LATEST_MONTH, pattern=MONTH)):
+def product_endpoint(request: Request, sku: str | None = None, month: str = Query(LATEST_MONTH, pattern=MONTH)):
     """The Product view (ADR 0041): one product in one month, the discount
-    decision, the discount and price what-ifs, its history and its buyers."""
+    decision, the discount and price what-ifs, its history and its buyers.
+    In sandbox mode it reads the sandbox, uncached: a lever changes it."""
     try:
+        reader = _reader(request)
+        if reader is not aito:
+            return get_product_view(reader, sku or DEFAULT_SKU, month).to_dict()
         return product_view_payload(aito, sku, month)
     except (UnknownProductError, ProductNotOnSaleError) as exc:
         return JSONResponse(status_code=404, content={"error": str(exc)})
@@ -442,11 +523,11 @@ def product_endpoint(sku: str | None = None, month: str = Query(LATEST_MONTH, pa
 
 
 @app.get("/api/product/price-curve")
-def product_price_curve_endpoint(sku: str):
+def product_price_curve_endpoint(request: Request, sku: str):
     """Next month's units at seven prices (`_estimate units_sold`, regression
     model), beside the product's own months. See ADR 0029."""
     try:
-        return get_price_curve(aito, sku).to_dict()
+        return get_price_curve(_reader(request), sku).to_dict()
     except UnknownProductError as exc:
         return JSONResponse(status_code=404, content={"error": str(exc)})
     except AitoError as exc:
@@ -457,11 +538,11 @@ def product_price_curve_endpoint(sku: str):
 
 
 @app.get("/api/product/price-what-if")
-def product_price_what_if_endpoint(sku: str, price: float = Query(gt=0, allow_inf_nan=False)):
+def product_price_what_if_endpoint(request: Request, sku: str, price: float = Query(gt=0, allow_inf_nan=False)):
     """Units, revenue and profit next month at `price`, with the factors
     behind the estimate (regression `_estimate`). See ADR 0029."""
     try:
-        return get_price_what_if(aito, sku, price).to_dict()
+        return get_price_what_if(_reader(request), sku, price).to_dict()
     except UnknownProductError as exc:
         return JSONResponse(status_code=404, content={"error": str(exc)})
     except AitoError as exc:

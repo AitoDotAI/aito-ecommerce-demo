@@ -233,6 +233,52 @@ interval widened because one shopper's rows aren't independent, and a
 bar for the whole section. What doesn't clear it is listed as no clear
 effect, not hidden."
 
+## Beat — pull a lever in a sandbox (ADR 0043, the partner demo's centre)
+
+**Before the meeting (operator):**
+
+1. In the server's config: `AITO_SANDBOX_URL=https://shared.aito.ai/db/aito-ecommerce-sandbox`,
+   `AITO_SANDBOX_API_KEY` (that database's read-write key) and `ADMIN_TOKEN`
+   (a long random string). PetNord's key stays the read-only one.
+2. Once: `./do sandbox-template-load` (loads the release fixtures into the
+   sandbox database's master, checks engine v2 and the release's row
+   counts, warms it). Then `./do sandbox-time`: the lever → Shop loop 5× on a
+   throwaway branch, printed, then deleted. Write the times here.
+3. Before going on: press **New sandbox** in the banner (asks for the admin
+   token once per tab), or `./do sandbox-new`, which prints the link. The
+   page's URL gains `?db=tmp-…`; every view keeps it. The banner says when
+   it expires (3 h) and that it starts from the release data.
+
+**Flow 1 — the guinea-pig shopper.** `/shop/?shopper=paivi&month=2026-05&db=…`.
+"Next for their kit" leads with the hideouts (PetNord Hideout, Trixie
+Hideout ×2), then the exercise wheel. In "Picked for you", Trixie Hideout
+(SKU-PT-0563) is about 10th.
+
+**Flow 2 — the owner pulls a lever.** Open the Trixie Hideout, "Owner view
+of this product →" (keeps `?db`), What if tab:
+
+- **Offer 20 % or more off.** The panel reads the May row back ("May 2026,
+  20 % or more off, €17.27, 4 stars"); the decision line and the discount
+  what-if are asked again, May's band marked. The units what-if is at the
+  offer's price: "the discount isn't in the units model" (Aito's `_estimate`
+  can't take the linked state).
+- "See the Shop react, as Päivi →": the hideout moves up with "On offer ×1.8,
+  learned across the shop" and "↑ N since the offer". Its card shows
+  Aito's 26 % × offer ×1.81 × stars ×1.00 = score 48, not a rate. "The
+  multiplication is this app's choice; the panel says so."
+- **A review.** Back on the product, add a 1-star review: 6 reviews at 3.83
+  become 7 at 3.43, the band falls 4 → 3, and the Shop card shows
+  "3 stars ×0.83". On PetNord Hideout (SKU-PT-0558, 1.57 over 7 reviews) a
+  5-star review leaves it at 1-2: "No change in its star band".
+
+Other good targets, guinea-pig products Päivi is shown and not on offer
+in April: PetNord Sensitive Guinea Pig Mix Food 7kg (SKU-PT-0533, ~28th in
+May, 4 stars), PetNord Hay Sticks Treats 100g (SKU-PT-0549, 2.25 over 4
+reviews: one 5-star review lifts it to 3 stars).
+
+**Reset:** "Reset: new sandbox" in the banner makes a fresh branch from
+the template and deletes the old one at once.
+
 ## Optional beat — real data: a business buyer's next order (30 s)
 
 Open `/business-reorders/` (needs env `uci` loaded: `AITO_ENV=uci ./do

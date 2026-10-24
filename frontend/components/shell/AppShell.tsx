@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { hiddenReason } from "@/lib/hidden-routes";
 import AitoPanel from "./AitoPanel";
 import HiddenView from "./HiddenView";
+import SandboxBanner from "./SandboxBanner";
 import Sidebar from "./Sidebar";
 import TopBar from "./TopBar";
 import { ShellProvider, useShell } from "./ShellState";
@@ -49,6 +50,7 @@ function ShellChrome({ children }: { children: ReactNode }) {
       <div className="layout">
         <Sidebar />
         <main className={mainClasses}>
+          <SandboxBanner />
           {hidden ? <HiddenView reason={hidden} /> : children}
         </main>
         <AitoPanel />

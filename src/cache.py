@@ -146,7 +146,9 @@ def init_persistent_cache(client: AitoClient) -> None:
     # just as much as the persistent one.
     set_namespace(client._config.api_namespace)
 
-    if PUBLIC_DEMO:
+    # A read-only client (master while a sandbox is configured, ADR 0043)
+    # can't write cache rows, so it gets the memory-only cache too.
+    if PUBLIC_DEMO or client.read_only:
         return
 
     _aito_client = client
