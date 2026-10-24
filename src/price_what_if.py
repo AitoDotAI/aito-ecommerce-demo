@@ -22,6 +22,7 @@ from dataclasses import asdict, dataclass
 
 from src.aito_client import AitoClient, AitoError
 from src.demand_forecast import last_month_units, price_where
+from src.estimate_why import regression_terms, term_label
 from src.lookup_errors import UnknownProductError
 
 # A factor that moves the estimate by less than this share is folded into
@@ -105,7 +106,7 @@ def get_price_what_if(client: AitoClient, sku: str, price_eur: float) -> PriceWh
 def waterfall(why: object, estimate: float) -> tuple[str, float, list[Factor]]:
     """The form, the base and the factors of a regression `_estimate` why,
     largest effect first, small ones folded into "other factors"."""
-    form, terms = _regression_terms(why)
+    form, terms = regression_terms(why)
     mean = next((t["value"] for t in terms if t["type"] == "mean centering"), None)
     if mean is None:
         raise AitoError(f"unexpected _estimate why: no mean term in {why}")
@@ -141,16 +142,6 @@ def waterfall(why: object, estimate: float) -> tuple[str, float, list[Factor]]:
     return form, base, shown
 
 
-def _regression_terms(why: object) -> tuple[str, list[dict]]:
-    """`exp(sum(terms))` or `sum(terms)`: the two shapes the regression model returns."""
-    if isinstance(why, dict) and why.get("type") == "sum" and isinstance(why.get("terms"), list):
-        return "add", why["terms"]
-    if (isinstance(why, dict) and why.get("type") == "exponent"
-            and isinstance(why.get("power"), dict) and why["power"].get("type") == "sum"):
-        return "multiply", why["power"]["terms"]
-    raise AitoError(f"unexpected _estimate why, expected exp(sum(…)) or sum(…): {str(why)[:300]}")
-
-
 def _factor(term: dict, multiply: bool) -> Factor | None:
     def effect(value: float) -> float:
         return math.exp(value) if multiply else value
@@ -167,16 +158,5 @@ def _factor(term: dict, multiply: bool) -> Factor | None:
     if not (isinstance(proposition, dict) and len(proposition) == 1):
         raise AitoError(f"unexpected regression term, expected one field: {term}")
     [(field, value)] = proposition.items()
-    return Factor(field, _label(field, value), effect(term["value"]))
+    return Factor(field, term_label(field, value), effect(term["value"]))
 
-
-def _label(field: str, value: object) -> str:
-    match field:
-        case "price_eur":
-            return f"Price €{float(value):.2f}"
-        case "units_last_month":
-            return f"Sold {value} last month"
-        case "product_sku":
-            return "This product"
-        case _:
-            return f"{field.replace('_', ' ').capitalize()}: {str(value).replace('-', ' ')}"

@@ -878,12 +878,24 @@ Response:
 
 **Key shape differences vs `_predict`:**
 - No `hits` list, no `$p` per hit — `estimate` is a single number.
-- `why` is a `weightedAverage` of `neighborContext` nodes (K-NN);
-  each neighbor has its own per-feature `regression` shifts +
-  `mean centering` + `input.residual`. ~20-30 neighbors typical.
-- For popover rendering, **walk only the top-weighted neighbor's
-  subtree** — otherwise the popover collects N × leaves and reads
-  noisy. See `src/why_processor.py:process_estimate_why`.
+- `why` is a `weightedAverage` of `neighborContext` nodes (K-NN, 8
+  neighbours on `monthly_sales`). Each neighbour's `adjustments` is the
+  regression model's tree (below) plus that neighbour's own
+  `input.residual`, and its `value` is exactly that tree evaluated.
+- **The field terms are the query's, identical in every neighbour**
+  (verified on env `observable`, 2026-10-24); only the residual differs.
+  So the average splits exactly into `mean` + one term per field + the
+  neighbours' average residual ("similar past months"). On data with
+  zero-sale months the tree is a plain `sum`, so **every term is in
+  units, not logs**: SKU-PT-0206 has `mean` 3.30, `units_last_month: 30`
+  +15.39, `product_sku` +6.66, average residual +3.91 → 27.47.
+  Reading those as log deltas printed "↑ 483987665%" in the popover.
+- **The estimate is not always the `why`'s average.** `estimate` 27.53
+  against `why.value` 27.47 (SKU-PT-0206), 8.08 against 10.36
+  (SKU-PT-0155). Neither the `hitScore`-weighted mean, the median, nor
+  clipping neighbours at 0 explains it. Show the gap as its own row
+  (`src/estimate_why.py:explain_estimate`, the Inventory and Demand
+  popovers).
 
 **`model: "regression"` variant** swaps K-NN for a linear-
 regression model with cleaner per-field contribution explanations

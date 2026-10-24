@@ -43,9 +43,10 @@ value*, not the most-probable specific integer. `_predict` on
 ```
 
 The `why` is a K-NN `weightedAverage` of `neighborContext`
-nodes. `process_estimate_why` flattens **only the top-weighted
-neighbor's subtree** — 20+ neighbors × per-feature regressions
-would be too noisy for the popover.
+nodes. `explain_estimate` (`src/estimate_why.py`) splits it into
+a base, one contribution per field and the similar past months, in
+units (amended 2026-10-24: it used to show one neighbour's terms as
+log-scale percentages, which they are not on this data).
 
 Plus, in parallel:
 

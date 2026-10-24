@@ -70,19 +70,24 @@ export interface WhyExplanationPayload {
   final_p: number | null;
 }
 
-/** Estimate-variant explanation from `src/why_processor.py`'s
- *  `process_estimate_why`. K-NN / regression-coefficient
- *  decomposition for `_estimate` queries (Demand / Inventory /
- *  Price). Each component's `value` is on the log scale Aito uses
- *  internally — the popover converts to %-lift for display. */
+/** Estimate-variant explanation from `src/estimate_why.py`'s
+ *  `explain_estimate`: a k-NN `_estimate` (Demand, Inventory) split into
+ *  a base, one contribution per field, the similar past months and any
+ *  gap to Aito's estimate. In form "add" each `effect` is units added; in
+ *  "multiply" a multiplier; both chain from `base` to `estimate`. Form
+ *  "raw" is Aito's terms unconverted, when the split doesn't hold. A
+ *  payload without `form` is a snapshot saved before this format. */
 export interface WhyEstimatePayload {
   kind: "estimate";
   estimate: number | null;
   field_label: string;
+  form?: "add" | "multiply" | "raw";
+  base?: number | null;
+  neighbours?: number;
   components: Array<{
-    name: string;
-    value: number;
-    type: "regression" | "residual" | "mean" | string;
+    type: "field" | "neighbours" | "unexplained" | "raw" | string;
+    label?: string;
+    effect?: number;
   }>;
 }
 

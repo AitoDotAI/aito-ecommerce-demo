@@ -12,6 +12,8 @@ so `./do test` stays green without a live DB.
 
 from __future__ import annotations
 
+import math
+
 import pytest
 
 from src.aito_client import AitoClient
@@ -401,6 +403,23 @@ def test_price_what_if_explains_the_estimate_with_price_as_a_factor(client):
     assert what_if.units >= 0
     assert "price_eur" in {f.field for f in what_if.factors}, what_if.factors
     assert what_if.units == centre.units_sold, (what_if.units, centre.units_sold)
+
+
+def test_the_forecast_popover_splits_the_knn_estimate_into_rows_that_chain_to_it(client):
+    """Inventory and Demand's `?`: the k-NN neighbours share their field terms,
+    so the estimate splits into a base, one row per field and the similar
+    months (`explain_estimate` raises on a neighbour that doesn't add up)."""
+    from src.demand_forecast import forecast_units, forecast_where
+
+    sales = client.search("monthly_sales", where={"product_sku": "SKU-PT-0206"}, limit=200)["hits"]
+    _, why = forecast_units(client, "SKU-PT-0206", sales)
+
+    assert why["form"] in ("add", "multiply"), why
+    effects = [c["effect"] for c in why["components"]]
+    chained = why["base"] * math.prod(effects) if why["form"] == "multiply" else why["base"] + sum(effects)
+    assert chained == pytest.approx(why["estimate"])
+    fields = [c for c in why["components"] if c["type"] == "field"]
+    assert len(fields) == len(forecast_where("SKU-PT-0206", sales[0], 0)), fields
 
 
 # ── ADR 0030: shoppers with a story (docs/verification/shoppers-data-prereg.md) ──
