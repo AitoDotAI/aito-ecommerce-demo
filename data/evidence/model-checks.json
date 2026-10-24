@@ -6,7 +6,7 @@
  "run": {
   "command": "./do evidence model-checks",
   "date": "2026-10-24",
-  "code_commit": "3b77792",
+  "code_commit": "409e7de",
   "aito_env": "observable",
   "aito_api": "v2@observable",
   "aito_version": "2.11.8"
@@ -227,7 +227,7 @@
   "naive_accuracy": 0.4103,
   "base_accuracy": 0.1049,
   "n": 658,
-  "method": "Scores Aito predicting each month's sales range (0, 1, 2-3, 4-7, 8-15, 16-31, 32+) from last month's range and the product, not the unit forecast in the table. Time split: trained on every month before 2026-04, tested on 2026-04.",
+  "method": "Aito predicting each product's sales range (0, 1, 2-3, 4-7, 8-15, 16-31, 32+) in 2026-04 from last month's range and the product, trained on every earlier month. It scores the range, not Supply's unit forecast, which `_evaluate` can't score yet.",
   "test_month": "2026-04",
   "accuracy_low": 0.33987158956876723,
   "accuracy_high": 0.4139284104312328,
