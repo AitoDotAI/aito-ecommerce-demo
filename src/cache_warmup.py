@@ -18,10 +18,10 @@ dev server even starts.
 Scope: this warms the remaining light, parameterised views (For You /
 Smart Search per persona, plus the small ad-hoc ones). The six heavy
 endpoints (churn, demand, evaluation, inventory, markdown, winback)
-AND the dashboard landing page are precompute-and-served via
+AND the Overview landing page are precompute-and-served via
 `./do precompute` (ADR 0024), not lazily cached here — that is what
 removes their cold cost on the read-only public deploy, where this
-lazy L2 layer is disabled. The dashboard is precomputed despite being
+lazy L2 layer is disabled. The Overview is precomputed despite being
 light because it is the entry view: its cold cost is the first thing
 every visitor would feel.
 """
@@ -33,13 +33,8 @@ import time
 from src.aito_client import AitoClient
 from src.search_service import smart_search
 from src.recommend_service import get_for_you
-from src.bought_together_service import get_bought_together
 from src.filling_service import get_filling
-from src.analytics_service import get_analytics
-from src.pattern_service import get_patterns
-from src.feedback_service import get_feedback
-from src.cart_completion_service import get_cart_completion
-from src.price_service import get_prices
+from src.review_triage_service import get_review_triage
 
 
 def warm_all(client: AitoClient, *, verbose: bool = True) -> None:
@@ -80,7 +75,7 @@ def warm_all(client: AitoClient, *, verbose: bool = True) -> None:
         print("Warming cache…")
 
     endpoints = [
-        # dashboard is precompute-served (ADR 0024), not warmed here.
+        # overview is precompute-served (ADR 0024), not warmed here.
         ("for-you maija",    lambda: get_for_you(client, persona_id="maija")),
         ("for-you olli",     lambda: get_for_you(client, persona_id="olli")),
         ("for-you saara",    lambda: get_for_you(client, persona_id="saara")),
@@ -90,15 +85,10 @@ def warm_all(client: AitoClient, *, verbose: bool = True) -> None:
          lambda: smart_search(client, query="food", persona_id="maija")),
         ("smart-search food (olli)",
          lambda: smart_search(client, query="food", persona_id="olli")),
-        ("bought-together",    lambda: get_bought_together(client)),
-        ("pattern-explorer",   lambda: get_patterns(client)),
-        ("purchase-analytics", lambda: get_analytics(client)),
         ("product-filling",    lambda: get_filling(client)),
-        ("feedback",           lambda: get_feedback(client)),
-        ("price",              lambda: get_prices(client)),
-        ("cart-completion",    lambda: get_cart_completion(client)),
-        # The six heavy endpoints (churn, demand, evaluation, inventory,
-        # markdown, winback) are deliberately NOT warmed here. They are
+        ("review-triage",      lambda: get_review_triage(client)),
+        # The heavy endpoints (demand, evaluation, retention, supply)
+        # are deliberately NOT warmed here. They are
         # precompute-and-served from the Aito `precompute_entries` table
         # via `./do precompute` (ADR 0024) — offline snapshots read at
         # request time — so warming them lazily would double the work

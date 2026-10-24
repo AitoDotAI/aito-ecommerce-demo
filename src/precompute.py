@@ -22,42 +22,46 @@ import time
 
 from src.aito_client import AitoClient, AitoError
 from src import precompute_store as store
-from src.overview_service import get_dashboard
-from src.churn_service import get_churn
+from src.overview_service import get_overview
 from src.demand_service import get_demand
 from src.eval_service import run_evaluation
-from src.inventory_service import get_inventory
-from src.markdown_service import get_markdowns
-from src.winback_service import get_winback
+from src.retention_service import get_retention
+from src.supply_service import get_supply
 
 
 # The views served from precompute snapshots. All are parameterless — a
 # single canonical result — which is what makes them precomputable (the
 # other light views, For You / Smart Search, vary by persona/query).
 #
-# The six heavy ones (churn … winback) each run an `_evaluate` and/or a
-# large fan-out, 14–32 s cold. `dashboard` is light but is the *landing*
+# The heavy ones each run an `_evaluate` and/or a large fan-out, 14–32 s
+# cold; Retention scores every active customer (~2,000 `_predict`s, batched).
+# `overview` is light but is the *landing*
 # view, so its cold cost is the first thing every visitor would feel —
 # precompute it too so the entry page is instant even on a cold, read-
 # only public container. See ADR 0024.
 PRECOMPUTED_ENDPOINTS = [
-    ("dashboard",  lambda c: get_dashboard(c).to_dict()),
-    ("churn",      lambda c: get_churn(c).to_dict()),
+    ("overview",   get_overview),
     ("demand",     lambda c: get_demand(c).to_dict()),
     ("evaluation", lambda c: run_evaluation(c).to_dict()),
-    ("inventory",  lambda c: get_inventory(c).to_dict()),
-    ("markdown",   lambda c: get_markdowns(c).to_dict()),
-    ("winback",    lambda c: get_winback(c).to_dict()),
+    ("retention",  lambda c: get_retention(c).to_dict()),
+    ("supply",     lambda c: get_supply(c).to_dict()),
 ]
 
 
-def precompute_all(client: AitoClient, *, verbose: bool = True) -> None:
+def precompute_all(client: AitoClient, *, verbose: bool = True, write_as_env: str | None = None) -> None:
     """Snapshot every precompute-served view into Aito + the git bootstrap.
 
     Runs sequentially: the heavy views each fan out internally to ~20
     parallel Aito calls, so stacking them would blow past Aito's
     inFlightWeight ceiling and 429 (same reason `cache_warmup` is
     sequential).
+
+    `write_as_env` files the snapshots under another env's namespace than
+    the one computed on. A release computes on its own env as `master`
+    (ADR 0035): the promote makes master hold the same rows, so the
+    snapshots are master's from the moment it lands. The Aito rows go to
+    the computed env's `precompute_entries`, which the promote carries
+    onto master with the rest of the env.
     """
     if not client.check_connectivity():
         if verbose:
@@ -65,9 +69,13 @@ def precompute_all(client: AitoClient, *, verbose: bool = True) -> None:
         return
 
     store.init(client)
+    namespace = client._config.api_namespace
+    if write_as_env is not None:
+        namespace = f"{client._config.api_version}@{write_as_env}"
+        store.set_namespace(namespace)
 
     if verbose:
-        print("Precomputing views…")
+        print(f"Precomputing views as {namespace}…")
 
     for name, compute_fn in PRECOMPUTED_ENDPOINTS:
         try:

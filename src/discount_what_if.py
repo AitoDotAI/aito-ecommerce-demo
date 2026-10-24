@@ -1,4 +1,4 @@
-"""Discount what-if on the Price view (ADR 0032): how likely a shopper is
+"""Discount what-if on the Product view (ADR 0032, ADR 0041): how likely a shopper is
 to buy a product when it is shown, at each discount band.
 
 One `_predict purchased` per band on `impressions`, with the product and
@@ -48,7 +48,7 @@ class BandEstimate:
     calibrated: bool            # `$why` holds a `calibration` factor (Aito's rowCap floor)
     shown: int                  # impressions of this product at this band
     purchased: int              # ... of which bought
-    current: bool               # the product's band in the latest month
+    current: bool               # the product's band in the month asked about
 
 
 @dataclass(frozen=True)
@@ -69,22 +69,24 @@ def predict_body(sku: str, band: str) -> dict:
             "predict": "purchased", "select": ["$p", "feature", "$why"]}
 
 
-def get_discount_what_if(client: AitoClient, sku: str) -> DiscountWhatIf:
+def get_discount_what_if(client: AitoClient, sku: str, month: str = LATEST_MONTH) -> DiscountWhatIf:
+    """Every band's estimate for `sku`, with the band it was in in `month`
+    marked as current. The estimates themselves don't depend on the month."""
     products = client.search("products", where={"sku": sku}, limit=1)["hits"]
     if not products:
         raise UnknownProductError(f"No product {sku} in the catalogue")
 
     counts = [{"from": "impressions", "where": {"product_sku": sku, BAND_FIELD: band, **bought}, "limit": 0}
               for band in BANDS for bought in ({}, {"purchased": True})]
-    state = {"from": "product_states", "where": {"product_sku": sku, "month": LATEST_MONTH}, "limit": 1}
+    state = {"from": "product_states", "where": {"product_sku": sku, "month": month}, "limit": 1}
     answers = client.batch([*(predict_body(sku, band) for band in BANDS), *counts, state])
     predictions, totals, [state_answer] = answers[:4], answers[4:12], answers[12:]
 
     if len(state_answer["hits"]) != 1:
-        raise AitoError(f"{sku} has {len(state_answer['hits'])} product_states rows for {LATEST_MONTH}")
+        raise AitoError(f"{sku} has {len(state_answer['hits'])} product_states rows for {month}")
     current = state_answer["hits"][0]["discount_band"]
     if current not in BANDS:
-        raise AitoError(f"{sku} is in discount band {current!r} in {LATEST_MONTH}, not one of {BANDS}")
+        raise AitoError(f"{sku} is in discount band {current!r} in {month}, not one of {BANDS}")
 
     estimates = [band_estimate(sku, band, answer) for band, answer in zip(BANDS, predictions)]
     p_none = estimates[0]["p_purchase"]
@@ -94,7 +96,7 @@ def get_discount_what_if(client: AitoClient, sku: str) -> DiscountWhatIf:
                      current=band == current)
         for i, (band, e) in enumerate(zip(BANDS, estimates))
     ]
-    return DiscountWhatIf(sku=sku, name=products[0]["name"], current_band=current, month=LATEST_MONTH,
+    return DiscountWhatIf(sku=sku, name=products[0]["name"], current_band=current, month=month,
                           bands=bands, last_query={"endpoint": "_predict", "body": predict_body(sku, current)})
 
 

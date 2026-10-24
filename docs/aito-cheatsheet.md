@@ -535,6 +535,16 @@ large lift on a handful of rows is noise. `src/price_bands.py`
 `lift_interval` gives a 95 % interval from those counts (log relative
 risk).
 
+On the order-level basket relate (`from orders where {line_categories:
+{$match: A}} relate line_categories`) the four counts are a whole rule
+(verified 2026-10-24 on `observable` against `_search` counts of the
+same orders): `fCondition` = orders with A (4,325 dog dry food), `f` =
+orders with B (3,008 dental treats), `fOnCondition` = orders with both
+(2,911), `n` = all orders (11,909). So confidence A → B is
+`fOnCondition / fCondition` (67 %), B → A is `fOnCondition / f` (97 %),
+and support is `fOnCondition / n` (24 %). Patterns › Baskets shows all
+three next to the lift (`src/basket_pairs.py`).
+
 ---
 
 ## Field-form `_relate` through a link, on a Boolean, and on Text
@@ -1248,7 +1258,7 @@ Probed 2026-10-20 and 2026-10-21 on the test env `observable`
   `context.customer` through two links (variants G, K, L). The views
   relate `context.customer.pets` / `.diet` (Shop analytics) and
   `order_id.customer_id.pets` / `.dog_size` / `.diet` / `.region`
-  (Product Insights) the same way.
+  (the Product view's "For whom") the same way.
 - **`$match` on a Text set means "contains", and carries no absence.**
   `"context.owned": {"$and": [{"$match": "small_animal_cage"},
   {"$match": "small_animal_water_bottle"}]}` also matches households that
@@ -1291,7 +1301,7 @@ Probed 2026-10-20 and 2026-10-21 on the test env `observable`
 ## A discount band as a what-if — `_predict purchased` with `product_state.*`
 
 Probed 2026-10-24 on env `observable` (Aito 2.11.8), read-only. The
-Price view's discount what-if (ADR 0032, `src/discount_what_if.py`).
+Product view's discount what-if (ADR 0032, ADR 0041, `src/discount_what_if.py`).
 The band goes in `where` through the impression's `product_state` link
 (one link), next to the product:
 
@@ -1359,6 +1369,77 @@ Both classes come back; the `true` hit's `$why` (abridged):
   `_batch` carries the four predicts and the eight counts. v2's `_batch`
   answers `{"kind": "batch", "data": [...]}`.
 
+## Levers in a sandbox branch (ADR 0043)
+
+The levers write only to a throwaway branch of the sandbox database
+(`aito-ecommerce-sandbox`, its own key). Its master is the template, loaded
+once from the release fixtures. Sources: Aito's `api-docs/content/environments-v2.md`
+and `schema-migration-v2.md`, the CPO's facts (2026-10-24), and probes on
+env `observable` (2.11.8, read-only) where a line says so.
+
+**Branches** (the env API, on the sandbox database's master):
+
+```json
+GET    /db/aito-ecommerce-sandbox/api/v2/_envs
+       → {"envs": [{"isMaster": true, "name": "master"}, {"isMaster": false, "name": "tmp-…"}]}
+POST   /db/aito-ecommerce-sandbox/api/v2/_envs   {"name": "tmp-2026-10-26-15-30-00-3f9c2a1b7d4e6f80", "basedOn": "env.master"}
+DELETE /db/aito-ecommerce-sandbox/api/v2/_envs/tmp-2026-10-26-15-30-00-3f9c2a1b7d4e6f80
+```
+
+- The list's shape was probed (GET, on PetNord's database). Create and
+  delete are documented, not yet run by this app: Antti's live run checks them.
+- A branch is addressed by its URL path only:
+  `/db/aito-ecommerce-sandbox/env/<name>/api/v2/…`. The default env is
+  addressed by leaving `/env/` out; `/env/master/` is a 400.
+- Copy-on-write: a branch costs ~0 until written, 1–4 MB once written.
+  Aito keeps at most 100 envs in memory and evicts one idle for 30 minutes
+  (it isn't deleted; its next query re-links it cold). So the app deletes
+  the branch "New sandbox" replaces, and re-warms one idle for 25 minutes.
+
+**Writes** in the branch (`src/product_levers.py`), one `POST /data/_modify` each:
+
+```json
+{"into": "product_states", "insert": {"product_state_id": "SKU-PT-0563-2026-05", "month": "2026-05", …}}
+{"update": "product_states", "set": {"price_eur": 17.27, "discount_band": "20+", …},
+ "where": {"product_state_id": "SKU-PT-0563-2026-05"}}
+{"into": "reviews", "insert": {"review_id": "REV-SANDBOX-…", "rating": 1, "created_at": "2026-05", …}}
+```
+
+Then `_search` reads the row back by its key, and the app shows only what
+it read. Aito core measured, on 2.11.8 with these fixtures: insert 8 ms,
+update 33–86 ms, the first what-if predict after it ~90 ms, then ~11 ms.
+
+**Engine check:** `GET /schema/<table>?meta=true` answers `"engine": "v2"`
+(probed on `observable`); `./do sandbox-template-load` refuses a template
+whose `impressions`, `product_states`, `order_lines` or `monthly_sales`
+aren't on it.
+
+**Shop-wide band lifts** (`src/shop_state_lifts.py`), probed on `observable`:
+`_predict purchased` from `impressions` with only `product_state.rating_band`
+(or `.discount_band`) in `where` gives one `relatedPropositionLift` for the
+band, value bare, equal to the band's observed purchase rate over the base
+rate 0.1241:
+
+| band | lift | observed rate |
+|---|---|---|
+| discount none / 10-15 / 15-20 / 20+ | 0.875 / 1.573 / 1.645 / 1.588 | 10.85 / 19.54 / 20.43 / 19.72 % |
+| stars unrated / 1-2 / 3 / 4 / 5 | 0.813 / 0.699 / 0.993 / 1.198 / 1.271 | 10.09 / 8.67 / 12.32 / 14.87 / 15.78 % |
+
+With both bands in `where`, `$why` holds both lifts side by side. The Shop
+reads the nine in one `_batch`; an offer of 20 %+ against none is ×1.81.
+
+**`_estimate` doesn't take a linked field** (probed on `observable`):
+`_estimate units_sold` from `monthly_sales` with
+`product_state.discount_band` in `where` is a 400 `"no such field
+'product_state.discount_band'"` on both models; the nested form
+`{"product_state": {"discount_band": …}}` is a 501 on k-NN. `_predict
+units_bucket` does take the link. So the Product view's units follow the
+price only, and it says so.
+
+**An unseen month in the Shop:** `_recommend` with `context.month:
+"2026-05"` (no contexts in that month yet) still ranks Päivi's guinea-pig
+products (`$p` 0.16–0.34 for her top 30, against 0.17–0.44 in April).
+
 ## Business reorders on UCI Online Retail II, env `uci` (ADR 0034)
 
 **Not yet run by this demo.** The `_predict` is Aito core's benchmark
@@ -1414,6 +1495,65 @@ It is a separate query so the measured one never changes. To probe on
 query's top code (`src/backtest_aito.py` raises if not), and the tree
 parses with `src/why_processor.py` to a baseP and lifts whose conditions
 are named (expected: `invoice.customer_id` for a buyer with history).
+
+## Retention and Supply (ADR 0041), probed on env `observable`, 2026-10-24
+
+**A population for `_predict`: a nested `from`.** Retention's churn score
+must not learn from rows whose label isn't known yet, or from months after
+a customer had already gone (there "no orders" is the label itself). The
+`where` only conditions; the nested `from` restricts the rows Aito learns
+from (`src/churn_risk.py`):
+
+```json
+POST /_predict
+{"from": {"from": "customer_months",
+          "where": {"month": {"$lte": "2026-01"}, "purchases": {"$gte": 1}}},
+ "where": {"pets": "small_animal", "region": "tampere", "tenure_months_at_month": 21,
+           "visits": 4, "purchases": 1, "spent_eur": 103.46},
+ "predict": "churned_in_3_months", "limit": 2}
+```
+
+- `$lte` / `$gt` compare `"YYYY-MM"` Strings in order: the `$lte` above
+  counts the same 8,071 rows as an `$or` of the 21 months.
+- Scored this way, the probabilities track what happened: trained on
+  orders before 2025-10 and scored on 2025-10's, rows at p 0.5–0.7 left
+  54 % of the time and rows at 0.7+ 77 %. Over the whole panel (the old
+  Churn view) the same `_predict` put already-gone customers at the top.
+- `_evaluate`'s `train` / `test` take literal equality, `$lte`, `$lt`,
+  `$gte`, `$gt`, `$not`, `$mod` and `$hash`, but not `$or` (400
+  "unsupported operator '$or'"). `src/churn_evaluation.py`: 92 % against
+  85 % for "another order follows", n 953.
+
+**`_batch` items.** A `_predict` with a nested `from` and a `$why` select
+works as a batch item (2,000 customers in 20 batches of 100, ~2 s of Aito
+time each). Two differences from the direct endpoints:
+- a `_recommend` item's hit is only `{"$p", "$value"}`: no linked
+  product columns, so read the SKU from `$value` and the product from
+  `products`;
+- `estimate` is not a batch item: 400 "unexpected field 'estimate'".
+
+**The win-back offer** (`src/winback_offer.py`): `_recommend product_sku
+from winback_campaigns goal {responded: true}`, with
+`"product_sku.pet_type": {"$or": [<the customer's pets>]}` to keep the
+candidates to their pets, then `_predict responded` per candidate for the
+rate and `_estimate order_value_eur` with `responded: true` for the order.
+- The `_recommend` `$p` is not a rate: 0.97–1.0 where `_predict
+  responded` gave 0.02–0.35. Averaged over 200 past sends, `_predict`
+  lands within 0.1 of the observed response share (`./do aito-check`).
+- With the old `basedOn: ["pet_type", "category", "brand"]` and no
+  candidate filter, a cat-litter household was offered dog food and a
+  small-animal one cat litter.
+- No past send featured an aquarium product, so aquarium households get
+  no offer: the view says so.
+
+**The markdown sweep** (`src/markdown_proposal.py`): `_estimate
+units_sold` with `price_eur` and `model: "regression"` at 0–20 % off.
+The price response on this data is weak: 20 % off adds ~2–10 % units (k-NN
+gives about the same, but not monotone). So 11 of the 15 largest overstock
+rows don't clear within a quarter at any level, and Supply says that
+instead of proposing the deepest cut.
+
+---
 
 ## `AitoClient` method ↔ endpoint cheat reference
 

@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 
 import { apiFetch, fmtEur } from "@/lib/api";
+import { useSandboxEnv, withSandbox } from "@/lib/sandbox";
 import type { ShopProductDrawer } from "@/lib/types";
 import ProductHighlights from "@/components/shop/ProductHighlights";
 
@@ -18,6 +20,7 @@ export default function ProductDrawer({ sku, shopper, month, cart, onClose, onAd
   onAdd: (sku: string) => void;
   onOpen: (sku: string) => void;
 }) {
+  const sandbox = useSandboxEnv();
   const [drawer, setDrawer] = useState<ShopProductDrawer | null>(null);
   const [error, setError] = useState<string | null>(null);
   const closeButton = useRef<HTMLButtonElement>(null);
@@ -69,7 +72,13 @@ export default function ProductDrawer({ sku, shopper, month, cart, onClose, onAd
           <div className="card-sub">
             {drawer.product.dietary && <>Diet: {drawer.product.dietary} · </>}{drawer.product.tags}
           </div>
-          <button className="btn" style={{ margin: "10px 0" }} onClick={() => onAdd(drawer.product.sku)}>Add to cart</button>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+            <button className="btn" style={{ margin: "10px 0" }} onClick={() => onAdd(drawer.product.sku)}>Add to cart</button>
+            <Link href={withSandbox(`/product/?sku=${encodeURIComponent(drawer.product.sku)}&month=${month}`, sandbox)}
+                  style={{ fontSize: 13 }}>
+              Owner view of this product →
+            </Link>
+          </div>
 
           <div style={{ fontWeight: 600, fontSize: 13, marginTop: 6 }}>Instead, this shopper might buy</div>
           <div className="card-sub" style={{ marginBottom: 4 }}>

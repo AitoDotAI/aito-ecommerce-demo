@@ -26,10 +26,9 @@ export default function HiddenView({ reason }: { reason: string }) {
       </div>
       <div className="card">
         <div className="card-sub" style={{ lineHeight: 1.6 }}>
-          In the meantime, <Link href="/smart-search/">Smart Search</Link>,{" "}
-          <Link href="/recommendations/">For You</Link>,{" "}
-          <Link href="/bought-together/">Bought Together</Link> and{" "}
-          <Link href="/inventory/">Inventory</Link> show the same predictive
+          In the meantime, the <Link href="/shop/">Shop</Link>,{" "}
+          <Link href="/patterns/">Patterns</Link> and{" "}
+          <Link href="/supply/">Supply</Link> show the same predictive
           database at work.
         </div>
       </div>

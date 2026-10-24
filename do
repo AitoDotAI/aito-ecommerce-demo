@@ -150,6 +150,14 @@ Data
   target            Show which Aito instance commands use, and whose credentials
   warm-cache        Pre-compute every cacheable endpoint once
   precompute        Snapshot the six heavy endpoints to Aito + git JSON (ADR 0024)
+                    --as master: compute on AITO_ENV's env, file as master (ADR 0035)
+  release-file      <env>: write data/release-env.json from the env's row counts (read-only)
+  release-check     [<env>]: does the env (default: the release's) match data/release-env.json? (read-only)
+  sandbox-template-load  Load the release fixtures into the sandbox DB's master, then warm it (ADR 0043)
+  sandbox-new       Branch a sandbox off the template, warm it, print its ?db= link
+  sandbox-list      The live sandboxes and when they expire (read-only)
+  sandbox-time      Time the lever → Shop loop 5× on a throwaway branch (deleted after)
+  agent-demo        <branch> ["question"]: an agent (aito-mcp, read-only key) on one sandbox branch
   uci-prepare       UCI Online Retail II xlsx → data/uci/*.json (local, no Aito; ADR 0034)
   uci-load          Load data/uci/ into Aito env uci (needs AITO_ENV=uci)
   workbook          (Re)create the console workbook from docs/aito-workbook-ecommerce-demo.json
@@ -393,16 +401,148 @@ cmd_precompute() {
   # (and the read-only public deploy) only ever reads. Deliberately
   # does NOT init the lazy persistent cache, so each endpoint computes
   # live and its real per-call timings are captured for the pill.
+  #
+  # --as <env>: compute on the env AITO_ENV names, but file the snapshots
+  # under <env>'s namespace. A release computes on its env "as master",
+  # since after the promote master holds those same rows (ADR 0035):
+  #   AITO_ENV=observable ./do precompute --as master
+  local write_as=""
+  if [[ $# -gt 0 ]]; then
+    if [[ "$1" != "--as" || $# -ne 2 || -z "$2" ]]; then
+      echo "Usage: ./do precompute [--as <env>]" >&2
+      exit 1
+    fi
+    write_as="$2"
+  fi
   echo "Precomputing heavy endpoints (churn, demand, evaluation, inventory, markdown, winback)..."
   cd "$SCRIPT_DIR"
   _show_target
-  uv run python -c "
+  echo "   computed on env: ${AITO_ENV:-master}; written as env: ${write_as:-${AITO_ENV:-master}}"
+  WRITE_AS="$write_as" uv run python -c "
+import os
 from src.config import load_config
 from src.aito_client import AitoClient
 from src.precompute import precompute_all
 cfg = load_config()
 client = AitoClient(cfg)
-precompute_all(client, verbose=True)
+precompute_all(client, verbose=True, write_as_env=os.environ['WRITE_AS'] or None)
+"
+}
+
+cmd_release_file() {
+  # Write data/release-env.json from an env's live row counts (ADR 0035).
+  # Read-only: one _search with limit 0 per table.
+  if [[ $# -ne 1 || -z "$1" ]]; then
+    echo "Usage: ./do release-file <env>" >&2
+    exit 1
+  fi
+  cd "$SCRIPT_DIR"
+  _show_target
+  AITO_ENV="$1" uv run python -c "
+from src.config import load_config
+from src.aito_client import AitoClient
+from src.release_file import RELEASE_FILE, Release, read_counts, write_release
+cfg = load_config()
+release = Release(env=cfg.aito_env, counts=read_counts(AitoClient(cfg)))
+write_release(release)
+for table, count in release.to_dict()['counts'].items():
+    print(f'  {table:20s} {count:>9,}')
+print(f'Wrote {RELEASE_FILE} for env {release.env}.')
+"
+}
+
+# The sandbox database (ADR 0043): AITO_SANDBOX_URL + AITO_SANDBOX_API_KEY.
+# src/sandbox_cli.py refuses unless the URL names a sandbox database.
+cmd_sandbox() {
+  cd "$SCRIPT_DIR"
+  echo "Sandbox database: ${AITO_SANDBOX_URL:-<unset>}"
+  [[ "$1" == "template-load" ]] && _ensure_impressions
+  uv run python -m src.sandbox_cli "$1"
+}
+
+# Flow 3 of the partner demo (ADR 0043): a merchant's agent, Claude Code
+# with aito-mcp as its only tools, reading one sandbox branch with the
+# sandbox database's read-only key. The key stays in its file: the MCP
+# config written here holds paths, never the key. Writes are refused twice,
+# by the key and by aito-mcp (no AITO_MCP_ALLOW_WRITES). The rehearsal is in
+# docs/notes/2026-10-26-ambientia-run-sheet.md.
+cmd_agent_demo() {
+  local branch="${1:-}"
+  [[ $# -gt 0 ]] && shift
+  local question="$*"
+  local pattern='^tmp-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9a-f]{16}$'
+  if [[ ! "$branch" =~ $pattern ]]; then
+    echo "Usage: ./do agent-demo <sandbox branch> [\"first question\"]" >&2
+    echo "  the branch is a live sandbox's ?db= value (./do sandbox-list), e.g." >&2
+    echo "  tmp-2026-10-26-11-30-00-3f9c2a1b7d4e6f80" >&2
+    exit 1
+  fi
+  local key_file="${SANDBOX_RO_KEY_FILE:-$HOME/.config/aito-mcp/sandbox-readonly-key}"
+  if [[ ! -r "$key_file" ]]; then
+    echo "⛔ REFUSING: no read-only key at $key_file." >&2
+    echo "   Put the sandbox database's read-only key there (one line, chmod 600)." >&2
+    exit 1
+  fi
+  local tool
+  for tool in claude uvx; do
+    command -v "$tool" >/dev/null || { echo "$tool is not on PATH" >&2; exit 1; }
+  done
+
+  local dir="$SCRIPT_DIR/scripts/agent-demo"
+  local db_url="${AITO_SANDBOX_URL:-https://shared.aito.ai/db/aito-ecommerce-sandbox}"
+  # The agent runs in an empty folder, so it reads no project files and no
+  # CLAUDE.md of this repo: a merchant's agent knows only its brief.
+  local workdir config
+  workdir="$(mktemp -d -t agent-demo-XXXXXX)"
+  config="$workdir/mcp.json"
+  cat > "$config" <<EOF
+{ "mcpServers": { "aito": {
+    "command": "$dir/aito-mcp-sandbox.sh",
+    "env": { "SANDBOX_BRANCH": "$branch", "SANDBOX_DB_URL": "$db_url", "SANDBOX_RO_KEY_FILE": "$key_file" } } } }
+EOF
+  echo "Agent on $db_url/env/$branch"
+  echo "  key: read-only, from $key_file; aito-mcp's writes: refused"
+  local read_tools="mcp__aito__get_schema,mcp__aito__search,mcp__aito__predict,mcp__aito__recommend"
+  read_tools+=",mcp__aito__relate,mcp__aito__match,mcp__aito__query,mcp__aito__evaluate"
+  local status=0
+  (cd "$workdir" && env -u AITO_API_KEY -u AITO_SANDBOX_API_KEY -u ADMIN_TOKEN -u AITO_MCP_ALLOW_WRITES \
+    claude ${question:+"$question"} \
+      --append-system-prompt "$(cat "$dir/brief.txt")" \
+      --mcp-config "$config" --strict-mcp-config \
+      --allowedTools "$read_tools" \
+      --disallowedTools "mcp__aito__put_schema,mcp__aito__upload_rows,Bash,Read,Write,Edit,Glob,Grep,WebFetch,WebSearch,Task,NotebookEdit") \
+      || status=$?
+  rm -rf "$workdir"
+  return "$status"
+}
+
+cmd_release_check() {
+  # The cutover's pre-flight (ADR 0035), read-only: does an env hold the
+  # release file's tables and row counts? Defaults to the release's own
+  # env; `./do release-check master` checks master after the promote.
+  # Exits 1 and names each differing table on a mismatch.
+  if [[ $# -gt 1 ]]; then
+    echo "Usage: ./do release-check [<env>]" >&2
+    exit 1
+  fi
+  cd "$SCRIPT_DIR"
+  _show_target
+  CHECK_ENV="${1:-}" uv run python -c "
+import os, sys
+from dataclasses import replace
+from src.config import load_config
+from src.aito_client import AitoClient
+from src.release_file import RELEASE_FILE, differences, load_release, read_counts
+release = load_release()
+env = os.environ['CHECK_ENV'] or release.env
+cfg = replace(load_config(), aito_env=env)
+found = differences(release.counts, read_counts(AitoClient(cfg)))
+if found:
+    print(f'Env {env} does not match {RELEASE_FILE.name} (release env {release.env}):')
+    for line in found:
+        print(f'  {line}')
+    sys.exit(1)
+print(f'Env {env} matches {RELEASE_FILE.name}: {len(release.counts)} tables, release env {release.env}.')
 "
 }
 
@@ -714,7 +854,9 @@ case "${1:-help}" in
   reset-data)        shift; cmd_reset_data "$@" ;;
   clear-cache)       cmd_clear_cache ;;
   warm-cache)        cmd_warm_cache ;;
-  precompute)        cmd_precompute ;;
+  precompute)        shift; cmd_precompute "$@" ;;
+  release-file)      shift; cmd_release_file "$@" ;;
+  release-check)     shift; cmd_release_check "$@" ;;
   optimize)          cmd_optimize ;;
   uci-prepare)       cmd_uci_prepare ;;
   uci-load)          cmd_uci_load ;;
@@ -723,6 +865,11 @@ case "${1:-help}" in
   backtest-load)     shift; cmd_backtest_load "$@" ;;
   backtest)          shift; cmd_backtest "$@" ;;
   workbook)          cmd_workbook ;;
+  sandbox-template-load) cmd_sandbox template-load ;;
+  sandbox-new)       cmd_sandbox new ;;
+  sandbox-list)      cmd_sandbox list ;;
+  sandbox-time)      cmd_sandbox time ;;
+  agent-demo)        shift; cmd_agent_demo "$@" ;;
   test)              cmd_test ;;
   aito-check)        cmd_aito_check ;;
   search-eval)       cmd_search_eval ;;

@@ -261,11 +261,19 @@ a { color: inherit; text-decoration: none; }
   font-weight: 700; border-left-color: var(--cta);
 }
 .nav-item .icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
-.nav-badge {
-  margin-left: auto; background: rgba(245,166,35,0.2); color: var(--cta);
-  font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px;
+/* The site's two halves (ADR 0037): one heading each, above its groups. */
+.nav-heading { padding-top: 6px; }
+.nav-heading + .nav-heading { margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 14px; }
+.nav-heading-label {
+  font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--cta); padding: 4px 16px 2px;
 }
-.nav-badge.green { background: rgba(82,183,136,0.2); color: #52B788; }
+/* Real or synthetic data, on each Evidence entry. */
+.nav-data-mark {
+  margin-left: auto; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px;
+  background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.55);
+}
+.nav-data-mark.real { background: rgba(82,183,136,0.2); color: #52B788; }
 .nav-divider { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 8px 0; }
 .sidebar-footer { padding: 12px 16px; }
 .aito-badge {
@@ -533,6 +541,9 @@ a { color: inherit; text-decoration: none; }
   border-radius: 14px; padding: 20px;
 }
 .card-sm    { padding: 14px 16px; }
+/* An Evidence index entry: the whole card is the link. */
+.evidence-entry { display: block; color: inherit; text-decoration: none; transition: border-color 0.1s; }
+.evidence-entry:hover { border-color: var(--green); }
 .card-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
 .card-sub   { font-size: 12px; color: var(--text-muted); }
 
@@ -601,6 +612,15 @@ a { color: inherit; text-decoration: none; }
 .shop-reason { color: var(--aito-teal); border: 1px solid var(--aito-teal); }
 .shop-fact   { color: var(--text-2); background: var(--border-light); }
 .shop-fact-offer { color: var(--green); background: var(--green-bg); }
+/* The sandbox (ADR 0043): its banner, and this app's own factors on a
+   re-scored card, dashed so they never pass for Aito's reasons. */
+.sandbox-banner {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 12px; margin-bottom: 12px;
+  font-size: 13px; background: var(--orange-bg); border: 1px solid var(--orange-border);
+}
+.shop-lever { color: var(--orange); border: 1px dashed var(--orange); }
+.shop-rank-up { color: var(--green); font-weight: 600; }
+.shop-rank-down { color: var(--red); font-weight: 600; }
 
 .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .data-table th {

@@ -22,6 +22,7 @@ from src.shop_history import orders_before
 from src.shop_offers import offers_this_month
 from src.shop_personas import Shopper, shopper
 from src.shop_reasons import PETS, Reason, reasons_for
+from src.shop_rescore import ScoreAdjustment
 
 PRODUCT_FIELDS = ["sku", "name", "brand", "pet_type", "category", "price_eur", "avg_rating"]
 
@@ -40,6 +41,9 @@ class ShopItem:
     offer_pct: float | None         # how much they lift a purchase
     keeps_rule: bool                # food that keeps the household's rule
     p_if_new: float | None = None   # for a just-bought item: its P before the re-ask
+    # The sandbox's re-scored Shop (ADR 0043, src/shop_rescore.py):
+    measured_rank: int | None = None          # its rank by Aito's $p, before re-scoring
+    adjustment: ScoreAdjustment | None = None  # set when its 2026-05 state re-scored it
 
 
 @dataclass(frozen=True)

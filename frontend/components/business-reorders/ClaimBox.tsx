@@ -2,8 +2,9 @@
  * The benchmark's result, worded exactly as cleared (ADR 0034, "The claim,
  * as cleared"), with the dataset's citation and licence. Don't reword it:
  * "the whole order was right" or "beats every baseline" are not cleared.
+ * The Evidence index quotes `CLAIM` as this entry's result.
  */
-const CLAIM =
+export const CLAIM =
   "For buyers with 1–2 earlier orders, Aito's top suggestion was in their next orders 31 % of the " +
   "time, against 15 % for the strongest of five classical baselines.";
 
