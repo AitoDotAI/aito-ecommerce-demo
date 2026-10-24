@@ -1,0 +1,314 @@
+# Pre-registration: actionable states, reviews with consequences, acquisition (ADRs 0038–0040)
+
+Written 2026-10-24, **before** the generator was changed for ADRs 0038, 0039
+and 0040. It builds on the earlier pre-registrations, whose checks are re-run:
+`lifecycle-data-prereg.md` (D1–D8), `shoppers-data-prereg.md` (S1–S8),
+`product-states-prereg.md` (P1–P5, the absolute P2a and P6) and
+`observable-data-prereg.md` (O1, O2, K1). Every metric, null and threshold
+below is fixed now. The new fixtures go into a new env (`release2`), loaded by
+Antti; master is not touched.
+
+The generator is **not** re-tuned against these checks after seeing them. If
+it has to change, this file is amended first, dated, with the reason.
+
+**Names.** R1–R6 here are ADR 0039's effects, not the Aito checks R1–R6 of
+`observable-data-prereg.md`. ADR 0032's absolute check "every row links to its
+month's state" was also called P6; here it is **P0**, so that P6 can be ADR
+0038's offer effect.
+
+## Method, for every effect
+
+- **Seeds** 42, 7 and 99 (as `./do planted-effects`).
+- **Null generation:** the same seed with one switch off
+  (`data/planted_switches.py`). Every other effect stays on.
+- **Pass:** the check's value clears its margin **on every seed**, unless the
+  row says *pooled*. "planted ÷ null" is the metric on the planted generation
+  divided by the same metric on its null.
+- **Each effect draws from its own seeded RNG**, and so do the draws it
+  shares with the null (common random numbers):
+  - an impression's click, cart and purchase come from its own RNG, keyed by
+    (seed, shopper, session, position);
+  - orders, experiences, reviews, replies, NPS, churn, sources and
+    sensitivities each have one RNG per customer;
+  - labels have one per month, stock one per product.
+
+  So switching an impression effect off changes only the impressions it
+  touches. Switching an order-side effect off (R4–R6, F4, F5) re-draws the
+  histories of the customers it touches, and through stars (R5, R6) a few
+  others.
+- **Impression metrics read customers' impressions only.** Anonymous visitors
+  (ADR 0040) have no hidden profile in the answer key and never buy.
+- **"The effect's ratio among `high` ≥ 1.5× its ratio among `low`"** (ADR 0038)
+  means:
+  - for a sensitivity group, take the effect's contrast (e.g. purchase rate on
+    offer ÷ not on offer) as planted ÷ null;
+  - then divide the `high` group's value by the `low` group's value;
+  - the `high` group's own planted ÷ null must also clear 1.3, so the check
+    can't pass by `low` falling.
+- **Expected values** are computed from the ADRs' parameters before any run,
+  so a threshold can be seen not to be set from a result. Odds applied at the
+  click, cart and purchase steps compound to about the odds on the purchase
+  rate (P1's ×2.5 read 2.1–2.4 planted ÷ null).
+
+## Choices the ADRs leave open, fixed here
+
+1. **Stars under P7.** The ADR gives 5 and 1–2 stars. 4 stars gets the square
+   root of the 5-star factor, 3 stars ×1.0, unrated ×0.9 (P4's) for everyone.
+2. **P8 replaces P2's `NEW_ODDS`** (×1.6 for flexible shoppers). ADR 0038 lists
+   it as one of the three fixed-trait effects it replaces. P2's pick pull,
+   rival share and restock reconsideration stay.
+3. **Sensitivity draws.** "`high` at 2× the rate" multiplies P(high), capped at
+   0.9. The rest is split between `mid` and `low` in their base proportions.
+   F3 multiplies on top: affiliate ×2.5 for discount, social ×2 for newness.
+4. **Quality → experience** of an order line:
+
+   | quality | bad | ok | good |
+   |:--|--:|--:|--:|
+   | poor | 0.45 | 0.40 | 0.15 |
+   | ok | 0.06 | 0.54 | 0.40 |
+   | good | 0.02 | 0.33 | 0.65 |
+   | excellent | 0.01 | 0.14 | 0.85 |
+
+   - An **order's experience** is its worst line's.
+   - "An excellent one +0.7" (R3) is read as an order whose lines were all
+     good.
+   - A delivery incident is drawn per order at 6 %. It moves NPS only, not
+     reviews or churn: ADR 0039's churn rise is "each bad experience".
+   - `poor` is the 8 % of SKUs with the lowest hash. That is a subset of
+     today's 15 % "poorly made", so S5's rules apply to `poor`:
+     - switched away from at 0.5;
+     - its leavers move to a non-poor staple.
+     
+     R2's ×0.6 replaces the ×0.35 on the cart and purchase steps.
+5. **Reviews.** Each order line is reviewed with P 0.25 / 0.08 / 0.15 after a
+   bad / ok / good experience, drawn in the order's month.
+   - **Rating by experience:**
+     - bad: 1 ×0.50, 2 ×0.35, 3 ×0.15;
+     - ok: 2 ×0.10, 3 ×0.50, 4 ×0.40;
+     - good: 4 ×0.30, 5 ×0.70.
+   - **Category by rating**, so the text matches the stars:
+     - 1–2: quality 0.40, shipping 0.32, fit 0.20, question 0.08;
+     - 3: question 0.35, quality 0.25, shipping 0.20, fit 0.20;
+     - 4: praise 0.70, question 0.20, quality 0.05, fit 0.05;
+     - 5: praise 0.90, question 0.10.
+   - **Replies:** 40 % of negative reviews (rating ≤ 2) are replied to,
+     chosen at random.
+   - **No per-customer cap** on reviews: a cap would make one review depend on
+     another.
+6. **NPS:** 30 % of orders are surveyed, in the order's month. The score is
+   N(8.0, 1.5) plus the effects, rounded and clipped to 0–10.
+7. **Churn** is a monthly hazard, drawn from the customer's churn RNG, from
+   the month after their first order through 2026-04.
+   - **Base hazard:** `_churn_propensity` (unchanged, so the segment, region,
+     lifestyle and loyalty drivers stay), spread so that the customer's whole
+     window carries it.
+   - **The rise:** each bad-experience order multiplies the hazard ×1.8 for
+     the next 3 months, or ×1.4 when the customer's negative review of that
+     order was replied to.
+   - A churned customer places no more orders. Personas never churn.
+   - **Labels:** `churned` keeps its definition (last order ≤ 2026-01).
+     `churn_within_90d` keeps its own (the reviewer churned and never ordered
+     after the review's month), now computed from churn that followed.
+8. **Low stock:** a monthly order-up-to plan per product.
+   - Each delivery fills to 2.2 months of the trailing 3-month demand;
+     8 % of deliveries are late (own RNG).
+   - A month is `low` when its closing stock is under two weeks of the
+     forecast demand.
+   - Expected share of state-months: 5–20 % (descriptive, not a check).
+9. **Labels.**
+   - `recommended` and `staff_pick`: 5 % each of the products on sale in a
+     month, drawn at random and disjoint.
+   - `popular`: the top 5 % (at least one) of last month's units in each
+     category.
+   - A random label wins over `popular`.
+10. **Derived shares** (`offer_share`, `new_share`, `label_share` on
+    `contexts`): read from the shopper's **impressions purchased in earlier
+    months**.
+    - ADR 0038 says "orders and impressions", but ADR 0038 plants the
+      sensitivities on impressions only, so order lines would only dilute
+      the share (a deviation, flagged to Antti).
+    - **Bands:** `none` with no earlier purchase; else `high` at or above
+      0.4 (offer), above 0 (new), 0.25 (label); `low` below.
+11. **Visitors** (ADR 0040).
+    - `visitor` is a String id on `contexts` and `customers`, not a link to a
+      table of its own: the table would hold only ids. `contexts.customer`
+      becomes nullable.
+    - **Never-buy visitors:** for each (source, month), never-buy sessions
+      number Poisson(n·(1/c − 1)). Here n is that month's first orders from
+      the source, and c is the source's F2 conversion.
+      - Each visitor has 1–3 sessions.
+      - 80 % bounce, with no impressions; the rest see 2–4 products on their
+        landing page (`surface: landing`).
+      - Never-buy visitors never buy.
+    - **A customer's sessions** fall in [joined, last order + 2 months]. The
+      first is the first-order session: its source is `first_source`, and
+      `first_order` is true.
+    - **`first_order`** (Boolean) is added to `contexts` so the funnel's
+      conversion step is countable. ADR 0040's column list doesn't name it
+      (flagged).
+    - **Sources:**
+      - first sources: organic 30 %, paid 20 %, direct 20 %, affiliate 12 %,
+        email 10 %, social 8 %;
+      - returning sessions: direct 35 %, email 25 %, organic 20 %, paid 10 %,
+        social 5 %, affiliate 5 %.
+12. **F4 and F5** are planted through a latent "regular" draw.
+    - **The draw:** P = q0 × F4[source] × (2 if the first basket holds a
+      staple). q0 = 0.315 keeps the overall rate at today's 52 % (seed 42,
+      measured before this file).
+    - **What it does to the plan:**
+      - a regular customer's plan gets at least 3 orders in its first 6
+        months;
+      - any other customer's gets at most 2;
+      - later months are as today.
+    - **Staples in the first order:** the first order holds the household's
+      staples with P 0.6, otherwise they start with the second order. Today
+      every first order holds a staple, so F5 would have nothing to compare.
+    - **`became_regular`** exists for customers who joined by 2025-11.
+13. **R5 and R6.**
+    - R5's factor reaches every fresh pick, as P2's pull does: the basket
+      draw, the staple choice, the preference re-pick and the seasonal lines.
+      It doesn't reach restocks of a staple already chosen.
+    - R6 sets ε by the month's band: 5 stars −1.0, 1–2 stars −2.4, otherwise
+      the product's own ε. R6 reaches promotions, rises and stock-ups alike.
+14. **Stars come from reviews written before the month,** for every table: the
+    generator runs month by month, so an order in March sees the stars of
+    reviews written through February.
+
+## The planted effects
+
+### ADR 0038: actionable states and sensitivities
+
+| # | planted as | null | metric (customers' impressions) | expected | pass when |
+|:--|:--|:--|:--|:--|:--|
+| P6 | on offer ×(1 + k · discount_pct / 10), k 1.0 / 0.4 / 0.1 by discount sensitivity; click, cart, purchase | P6 off | purchase rate on offer ÷ not, planted ÷ null; `high` ÷ `low` | high ≈ 2.5, low ≈ 1.15, ratio ≈ 2.2 | ratio ≥ 1.5 and high ≥ 1.3 |
+| P7 | stars by stars sensitivity, 5 / 1–2: ×1.7 / ×0.45, ×1.25 / ×0.8, ×1.05 / ×0.95 | P7 off | purchase rate at 5 stars ÷ at 1–2, planted ÷ null; `high` ÷ `low` | high ≈ 6, low ≈ 1.15 | ratio ≥ 1.5 and high ≥ 1.3 |
+| P8 | new, by newness sensitivity ×2.2 / ×1.3 / ×0.9 | P8 off | on launched products, purchase rate while new ÷ once established, planted ÷ null; `high` ÷ `low` | high ≈ 2.2, low ≈ 0.9, ratio ≈ 2.4 | ratio ≥ 1.5 and high ≥ 1.3 |
+| P9 | label by label sensitivity: high ×1.8 / ×1.6 / ×1.7 (recommended / staff pick / popular), mid ×1.25, low ×1.0 | P9 off | purchase rate with a **random** label (recommended, staff pick) ÷ unlabelled, planted ÷ null; `high` ÷ `low` | high ≈ 1.8, low = 1.0 | ratio ≥ 1.5 and high ≥ 1.3 |
+| P9p | the same for `popular` (a rule, so confounded) | P9 off | as P9, popular only | high ≈ 1.8 | reported |
+| P10 | low stock ×1.25 on the purchase step only, every shopper | P10 off | P(purchase \| added to cart) on low-stock impressions, planted ÷ null | ≈ 1.05 (the step sits near 0.75) | ≥ 1.03 |
+| V1 | the derived band follows the sensitivity | P6 off | P(discount `high` \| `offer_share` high) ÷ P(… \| low), over contexts, planted ÷ null | > 1 | ≥ 1.2 |
+
+**Aggregate offer and stars**, ADR 0038's "stay inside P1's and P4's
+ranges", re-checked against the new nulls:
+
+| # | null | metric | expected | pass when |
+|:--|:--|:--|:--|:--|
+| P1a | P6 off | budget shoppers: purchase rate on offer ÷ not, planted ÷ null | ≈ 2.0 | ≥ 1.5 (unchanged) |
+| P1b | P6 off | budget's planted ÷ null over premium's | ≈ 1.15 | ≥ 1.05 (**moved**, see below) |
+| P4a | P7 off | purchase rate at 5 ÷ at 3 stars, quality not poor, planted ÷ null | ≈ 1.4 | ≥ 1.15 (unchanged) |
+
+### ADR 0039: reviews with consequences
+
+| # | planted as | null | metric | expected | pass when |
+|:--|:--|:--|:--|:--|:--|
+| R1 | P7, on the click | P7 off | click rate at 5 ÷ at 1–2 stars, planted ÷ null | ≈ 1.75 | ≥ 1.4 |
+| R2a | P7 on the purchase | P7 off | purchase rate at 5 ÷ at 1–2 stars, planted ÷ null | ≈ 2.6 | ≥ 1.8 |
+| R2b | a `poor` product's impression ×0.6 on cart and purchase | quality odds off | purchase rate of `poor` products ÷ the rest, planted ÷ null | ≈ 0.71 | ≤ 0.8 |
+| R3a | NPS: base 8.0 (σ 1.5); bad experience −3.5, incident −2.0, all-good +0.7, a reply to the respondent's negative review of the order +2.0 | R3 off | mean NPS after a bad-experience order, planted − null | ≈ −3.4 | ≤ −2.5 |
+| R3b | the same, for every buyer | — | after a bad-experience order: non-reviewers' mean NPS (planted); and the difference between unreplied reviewers and non-reviewers | ≈ 4.6; ≈ 0 | ≤ 5.5; within ±0.5 |
+| R3c | a reply recovers +2.0 | — (replies are random) | mean NPS of negative-review writers with a reply − without, on the surveyed order | ≈ +2.0 | ≥ +1.2 |
+| R4a | each bad experience ×1.8 on the churn hazard for 3 months | R4 off | P(the customer churns in the 3 months after a bad-experience order), from the answer key's churn month, orders through 2026-01; planted ÷ null | ≈ 1.75 | ≥ 1.4 |
+| R4b | a reply halves the rise (×1.4) | reply effect off | P(churn in the 3 months after a replied negative review) among its writers, planted ÷ null, **pooled** over the three seeds | ≈ 0.78 | ≤ 0.9 |
+| R4c | the same rise, as a shop sees it | R4 off | share of bad-experience orders (through 2026-01) after which the customer never orders again, planted ÷ null | ≈ 1.08 | reported |
+| R5 | pick weight by the month's band: 5 ×1.3, 1–2 ×0.6 | R5 off | units per state-month at 5 stars ÷ at 1–2, planted ÷ null | ≈ 1.5–2.0 | ≥ 1.4 |
+| R6 | ε by band: 5 stars −1.0, 1–2 −2.4 | R6 off | (units on offer ÷ off offer per state-month) at 1–2 stars ÷ the same at 5 stars, planted ÷ null | ≈ 1.3 | ≥ 1.1 |
+
+### ADR 0040: acquisition
+
+| # | planted as | null | metric | expected | pass when |
+|:--|:--|:--|:--|:--|:--|
+| F1a | organic search lands on product pages 70 % | F1 off (one landing mix for every source) | P(landing = product \| organic), planted ÷ null | ≈ 2.0 | ≥ 1.6 |
+| F1b | social lands on toys and treats 55 % | F1 off | P(landing category ∈ toys, treats \| social), among contexts with a landing category, planted ÷ null | ≈ 2.5 | ≥ 1.8 |
+| F1c | email and affiliate land on offers 60 % | F1 off | P(landing = offer \| email or affiliate), planted ÷ null | ≈ 3 | ≥ 2.0 |
+| F2a | a new visitor's session converts at email 6 %, paid 4 %, organic 3 %, direct 5 %, affiliate 3.5 %, social 1.2 % | F2 off (every source at the pooled rate) | conversion = first-order sessions ÷ all new-visitor sessions; email's ÷ social's, planted ÷ null | ≈ 5 | ≥ 3.0 |
+| F2b | the same | — | each source's conversion on the planted data | its rate | within ±20 % of it |
+| F3a | an affiliate customer is discount-`high` at 2.5× | F3 off | P(discount high \| affiliate) ÷ P(… \| other sources), customers, planted ÷ null | ≈ 2.1 | ≥ 1.8 |
+| F3b | a social customer is newness-`high` at 2× | F3 off | P(newness high \| social) ÷ P(… \| other), planted ÷ null | ≈ 2.0 | ≥ 1.5 |
+| F3c | affiliates buy on offer | F3 off | affiliate customers' on-offer share of their purchased impressions ÷ others', planted ÷ null | > 1 | reported |
+| F4a | P(regular) by first source: organic ×1.4 … affiliate ×0.5 | F4 off | `became_regular` rate, organic ÷ affiliate, planted ÷ null | ≈ 2.5 | ≥ 1.6 |
+| F4b | social ×0.6 | F4 off | `became_regular` rate, social ÷ organic, planted ÷ null | ≈ 0.45 | ≤ 0.7 |
+| F5a | a staple in the first basket ×2 | F5 off | `became_regular` rate with ÷ without a staple in the first basket, planted ÷ null | ≈ 1.9 | ≥ 1.5 |
+| F5b | "whatever the source" | F5 off | F5a within organic and within affiliate | ≈ 1.9 | reported |
+
+## Where the ADRs' own numbers can't hold (found before any run)
+
+1. **P1b premium ≤ 1.3.**
+   - P6 gives premium shoppers the base sensitivities (30 % discount-high),
+     so their offer odds average ≈ 1.9; the ratio is expected ≈ 1.8.
+   - ADR 0038's "stays inside P1's ranges" can't hold for this half. It is
+     retired, with that reason.
+   - The other half (budget's lift ÷ premium's ≥ 1.4) comes only from
+     budget's 2× discount-high rate now: expected ≈ 1.15. It moves to
+     ≥ 1.05.
+2. **P2d** (flexible ÷ loyal take to new, ≥ 1.25):
+   - P8 links newness to loyalty only through the 2× rate, so the ratio is
+     expected ≈ 1.15. It already missed once at 1.6 planted.
+   - It is retired; P8 supersedes it.
+3. **R4b, "≤ 0.75× an unreplied one's".**
+   - The rise is ×1.8 unreplied and ×1.4 replied, so the expected churn
+     ratio is (1 + 0.4) ÷ (1 + 0.8) ≈ 0.78 whatever the base hazard. The
+     ADR's 0.75 can't be met.
+   - The ADR's headline quantity is the *added* churn, which the reply does
+     halve (0.4 against 0.8). The check above measures it against the
+     reply-off null.
+   - About 280 replied reviews per seed make one seed too few, so it is
+     pooled.
+   - **For Antti:** at this strength the Reviews view's replied ÷ unreplied
+     interval will probably overlap 1. The observable churn effect of a bad
+     experience (R4c ≈ 1.08) is small: the base hazard is ≈ 1.6 % a month.
+4. **ADR 0039's test** ("reviews disabled, churn rate unchanged") is false by
+   design. Two of the ADR's planted paths go from reviews to churn:
+   - a reply lowers its writer's churn (R4);
+   - stars move which products are bought (R5, R6), and so which
+     experiences follow.
+
+   The test instead:
+   - runs with replies' churn effect, R5 and R6 off, and asserts that every
+     customer's churn month is *identical* with and without reviews;
+   - asserts that a review's rating, category and text depend only on its
+     line's experience, not on the writer's churn.
+
+   That is the reversed path the ADR removes.
+5. **Signal #8, P(churn | 1★) ≥ 1.6 × P(churn | 5★)** (`tests/test_fixtures.py`).
+   - It held because churn wrote the reviews. Through the causal path it is
+     expected ≈ 1.1.
+   - It is retired; R4 and the two tests above replace it.
+   - The Feedback view's "churn risk from text" will be weaker, truthfully.
+6. **Review volume 5,000–7,000** (`test_reviews_count_supports_explanations`):
+   - ADR 0039's review rates give ≈ 5,000 on about 39,000 lines, at the
+     floor.
+   - The band becomes 4,000–7,000.
+
+## The older checks
+
+- **`./do planted-effects`** runs P1a, P1b, P2b, P2c, P3a, P4a, P5a, K1a and
+  K1b with their registered nulls and margins.
+  - P1's null is now P6 off, and P4's null P7 off.
+  - P2's null keeps its launch pull, rival share and reconsideration, without
+    `NEW_ODDS`, which P8 replaces.
+  - The report is `docs/verification/actionable-states-data.md`;
+    `product-states-data.md` stays as ADR 0032's record.
+- **`./do test` on the seed-42 fixtures** runs the rest: D1–D8, S1–S8, O1,
+  O2, P0, P2a and the other signal tests.
+- **A moved range** is either of:
+  - a check here that fails;
+  - an older check that fails where it last passed: a `./do test` data test
+    on seed 42, or a planted ÷ null check on a seed where its last recorded
+    run passed.
+
+  Each is reported with its value and a diagnosed cause. Its range changes
+  only by a dated amendment below, with the reason, before it is re-run.
+- **A threshold set above** is not moved by an amendment of this kind. A
+  failure of one is reported as a failure.
+
+## Table sizes (expected; measured in the results)
+
+- `impressions` ≈ +45 % (anonymous landing pages), ≈ 170,000.
+- `contexts` ≈ 8× (bounced visits are rows without impressions),
+  ≈ 100,000.
+- `nps_responses` ≈ 3,600.
+- The other tables stay within 10 % of today, except `reviews` (≈ 5,000).
+
+## Results
+
+(none yet)
