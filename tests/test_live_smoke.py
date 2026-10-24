@@ -59,7 +59,7 @@ def test_an_empty_driver_list_fails_churn():
 
 
 def test_hidden_views_are_checked_for_shape_not_content():
-    # ADR 0027: demand/winback/markdown/price/cart-completion are hidden; empty is fine
+    # ADR 0027: demand/winback/markdown/price are hidden; empty is fine
     for name, body in [("demand", {"top_movers": [], "seasonality": []}),
                        ("price", {"fair_bands": [], "sweet_spots": []}),
                        ("winback", {"targets": []})]:

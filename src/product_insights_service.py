@@ -26,7 +26,7 @@ from src import cache
 from src.aito_client import AitoClient, AitoError
 from src.lookup_errors import UnknownProductError
 from src.aito_compat import related_value
-from src.bought_together_service import ANCHORS
+from src.category_anchors import ANCHORS
 
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"

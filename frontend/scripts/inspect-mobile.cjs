@@ -78,22 +78,19 @@ const WAIT_AFTER_NETWORK = 1500;
 // loader screenshots). When omitted we just trust networkidle +
 // the delay.
 const VIEWS = [
-  { route: "/",                   file: "01-dashboard.png",         selector: ".lift-row" },
-  { route: "/smart-search/",      file: "02-smart-search.png",      selector: ".pill-orange, .pill-blue" },
-  { route: "/recommendations/",   file: "03-for-you.png",           selector: ".rec-card" },
-  { route: "/bought-together/",   file: "04-bought-together.png",   selector: ".rec-card" },
-  { route: "/purchase-analytics/",file: "05-purchase-analytics.png",selector: ".hbar-row" },
-  { route: "/pattern-explorer/",  file: "06-pattern-explorer.png",  selector: ".lift-hint" },
-  { route: "/feedback/",          file: "07-feedback.png",          selector: null },
-  { route: "/churn/",             file: "08-churn.png",             selector: null },
-  { route: "/demand/",            file: "09-demand.png",            selector: null },
-  { route: "/inventory/",         file: "10-inventory.png",         selector: null },
-  { route: "/price/",             file: "11-price.png",             selector: null },
-  { route: "/markdown/",          file: "12-markdown.png",          selector: ".recent-table tbody tr" },
-  { route: "/cart-completion/",   file: "13-cart-completion.png",   selector: ".customer-chip" },
-  { route: "/winback/",           file: "14-winback.png",           selector: ".recent-table tbody tr" },
-  { route: "/product-filling/",   file: "15-product-filling.png",   selector: ".fill-conf" },
-  { route: "/evaluation/",        file: "16-evaluation.png",        selector: ".eval-row-pass, .eval-row-fail" },
+  { route: "/shop/",                         file: "01-shop.png",                selector: null },
+  { route: "/",                              file: "02-overview.png",            selector: ".lift-row" },
+  { route: "/patterns/",                     file: "03-patterns.png",            selector: null },
+  { route: "/product-insights/",             file: "04-product.png",             selector: null },
+  { route: "/inventory/",                    file: "05-supply.png",              selector: null },
+  { route: "/churn/",                        file: "06-retention.png",           selector: null },
+  { route: "/product-filling/",              file: "07-product-filling.png",     selector: ".fill-conf" },
+  { route: "/feedback/",                     file: "08-review-triage.png",       selector: null },
+  { route: "/evidence/",                     file: "09-evidence.png",            selector: ".evidence-entry" },
+  { route: "/evidence/business-reorders/",   file: "10-business-reorders.png",   selector: null },
+  { route: "/evidence/personalised-search/", file: "11-personalised-search.png", selector: ".pill-orange, .pill-blue" },
+  { route: "/evidence/model-checks/",        file: "12-model-checks.png",        selector: ".eval-row-pass, .eval-row-fail" },
+  { route: "/query-patterns/",               file: "13-query-patterns.png",      selector: ".rec-card" },
 ];
 
 async function shot(page, file, label) {

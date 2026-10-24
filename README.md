@@ -182,7 +182,7 @@ level co-occurrence via the denormalised `orders.line_categories`
 Text column — Aito's `_relate` operating on a single-hop within-
 row shape. **Demo moment #3** — dog dry-food → dental treats at
 2.72× baseline.
-[→ Implementation](src/bought_together_service.py) | [Use case guide](docs/use-cases/04-bought-together.md) | [ADR](docs/adr/0008-bought-together.md)
+Dropped by ADR 0041 (now Patterns › Baskets and the Shop drawer) | [Use case guide](docs/use-cases/04-bought-together.md) | [ADR](docs/adr/0008-bought-together.md)
 
 ### 5. 📈 Purchase Analytics — the data behind the predictions
 
@@ -468,7 +468,7 @@ Four preset checkout carts × `_relate` over
 `orders.line_categories` = top add-on suggestion per scenario
 with confidence + expected uplift €. Same engine as Bought
 Together, surfaced at the checkout funnel.
-[→ Implementation](src/cart_completion_service.py) | [Use case guide](docs/use-cases/15-cart-completion.md) | [ADR](docs/adr/0019-cart-completion.md)
+Dropped by ADR 0041 (the Shop's cart re-ranks "Picked for you") | [Use case guide](docs/use-cases/15-cart-completion.md) | [ADR](docs/adr/0019-cart-completion.md)
 
 ### 16. ↩️ Win-back — empirical revenue impact per send
 
@@ -747,7 +747,7 @@ src/                Python FastAPI backend
   overview_service.py    Dashboard
   search_service.py      Smart Search
   recommend_service.py   For You
-  bought_together_service.py
+  category_anchors.py    Basket anchor tokens
   pattern_service.py
   analytics_service.py
   feedback_service.py

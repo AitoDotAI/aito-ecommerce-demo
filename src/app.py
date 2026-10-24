@@ -31,7 +31,6 @@ from src.rate_limit import check_rate_limit
 from src.overview_service import get_dashboard
 from src.search_service import smart_search
 from src.recommend_service import get_for_you
-from src.bought_together_service import get_bought_together
 from src.basket_rules_service import get_basket_rules
 from src.filling_service import get_filling
 from src.eval_service import run_evaluation
@@ -50,7 +49,6 @@ from src.feedback_service import get_feedback
 from src.lookup_errors import UnknownPersonaError, UnknownProductError, UnknownReviewError
 from src.churn_service import get_churn
 from src.demand_service import get_demand
-from src.cart_completion_service import get_cart_completion
 from src.inventory_service import get_inventory
 from src.markdown_service import get_markdowns
 from src.price_service import get_prices, get_price_detail
@@ -320,21 +318,6 @@ def for_you_endpoint(customer: str = "maija"):
         )
 
 
-@app.get("/api/bought-together")
-def bought_together_endpoint(anchor: str = "dog_dryfood"):
-    """Order-level co-occurrence via `_relate` over the denormalised
-    `orders.line_categories` Text column. See ADR 0008."""
-    try:
-        return get_bought_together(aito, anchor_id=anchor).to_dict()
-    except ValueError as exc:
-        return JSONResponse(status_code=400, content={"error": str(exc)})
-    except AitoError as exc:
-        return JSONResponse(
-            status_code=502,
-            content={"error": str(exc), "status_code": exc.status_code},
-        )
-
-
 @app.get("/api/basket-rules")
 def basket_rules_endpoint():
     """Association-rule mining — sweeps anchors with order-level
@@ -580,19 +563,6 @@ def winback_endpoint():
     table. See ADR 0020."""
     try:
         return precompute_store.serve("winback", lambda: get_winback(aito).to_dict())
-    except AitoError as exc:
-        return JSONResponse(
-            status_code=502,
-            content={"error": str(exc), "status_code": exc.status_code},
-        )
-
-
-@app.get("/api/cart-completion")
-def cart_completion_endpoint():
-    """4 preset checkout scenarios × `_recommend product_sku`
-    conditioned on cart's line_categories. See ADR 0019."""
-    try:
-        return get_cart_completion(aito).to_dict()
     except AitoError as exc:
         return JSONResponse(
             status_code=502,

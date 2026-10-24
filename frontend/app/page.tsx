@@ -19,8 +19,8 @@ import type { DashboardResponse } from "@/lib/types";
 export default function DashboardPage() {
   usePagePanel(dashboardPanel(), {
     title: "Store Intelligence Overview",
-    description: "Predictive insights from your purchase data — updated on every query.",
-    breadcrumb: "Dashboard",
+    description: "The shop at a glance: its orders, customers and households, and a few of its basket patterns.",
+    breadcrumb: "Overview",
   });
 
   const [data, setData] = useState<DashboardResponse | null>(null);
@@ -38,7 +38,7 @@ export default function DashboardPage() {
         <div className="page-header">
           <div className="page-title">Store Intelligence Overview</div>
           <div className="page-desc">
-            Predictive insights from your purchase data — updated on every query.
+            The shop at a glance: its orders, customers and households, and a few of its basket patterns.
           </div>
         </div>
         <ErrorState
@@ -55,7 +55,7 @@ export default function DashboardPage() {
       <div className="page-header">
         <div className="page-title">Store Intelligence Overview</div>
         <div className="page-desc">
-          Predictive insights from your purchase data — updated on every query.
+          The shop at a glance: its orders, customers and households, and a few of its basket patterns.
         </div>
       </div>
 
@@ -153,7 +153,7 @@ export default function DashboardPage() {
         <div className="card-title" style={{ marginBottom: 14 }}>
           Recent Orders
           <span style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 400, marginLeft: 6 }}>
-            most recent first · predicted-next column lands with For You
+            most recent first
           </span>
         </div>
         <div style={{ overflowX: "auto" }}>
