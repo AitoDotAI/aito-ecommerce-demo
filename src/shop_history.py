@@ -19,12 +19,16 @@ RELATE_LIMIT = 50
 PETS = ("small_animal", "dog", "cat", "bird", "aquarium")
 # The data's months. Outside them a Shop would answer from no data at all.
 FIRST_MONTH, LATEST_MONTH = "2024-05", "2026-04"
+# The sandbox's month, whose states the owner's levers write (ADR 0043). The
+# Shop endpoint allows it only in sandbox mode.
+NEXT_MONTH = "2026-05"
 
 
 def orders_before(client: AitoClient, customer_id: str, month: str) -> list[dict]:
     """The customer's orders before `month`, oldest first."""
-    if not FIRST_MONTH <= month <= LATEST_MONTH:
-        raise ValueError(f"The shop's data runs from {FIRST_MONTH} to {LATEST_MONTH}; {month} is outside it")
+    if not FIRST_MONTH <= month <= NEXT_MONTH:
+        raise ValueError(f"The shop's data runs from {FIRST_MONTH} to {LATEST_MONTH}, and the sandbox's "
+                         f"to {NEXT_MONTH}; {month} is outside it")
     res = client.search("orders", where={"customer_id": customer_id}, limit=MAX_ORDERS)
     if res["total"] > len(res["hits"]):
         raise AitoError(f"{customer_id} has {res['total']} orders, more than the {MAX_ORDERS} read")

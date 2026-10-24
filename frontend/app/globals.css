@@ -612,6 +612,15 @@ a { color: inherit; text-decoration: none; }
 .shop-reason { color: var(--aito-teal); border: 1px solid var(--aito-teal); }
 .shop-fact   { color: var(--text-2); background: var(--border-light); }
 .shop-fact-offer { color: var(--green); background: var(--green-bg); }
+/* The sandbox (ADR 0043): its banner, and this app's own factors on a
+   re-scored card, dashed so they never pass for Aito's reasons. */
+.sandbox-banner {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 12px; margin-bottom: 12px;
+  font-size: 13px; background: var(--orange-bg); border: 1px solid var(--orange-border);
+}
+.shop-lever { color: var(--orange); border: 1px dashed var(--orange); }
+.shop-rank-up { color: var(--green); font-weight: 600; }
+.shop-rank-down { color: var(--red); font-weight: 600; }
 
 .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .data-table th {

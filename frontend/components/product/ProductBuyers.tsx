@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { useSandboxEnv, withSandbox } from "@/lib/sandbox";
 import type { ProductBuyerRow, ProductView } from "@/lib/types";
 import { words } from "./labels";
 
@@ -25,6 +26,7 @@ const isClear = (b: ProductBuyerRow) =>
  * interval here, so the counts sit beside it and thin lifts are grey.
  */
 export default function ProductBuyers({ view }: { view: ProductView }) {
+  const sandbox = useSandboxEnv();
   const clear = view.buyers.filter(isClear);
   const byField = Object.keys(FIELD_LABEL).map((f) => [f, view.buyers.filter((b) => b.field === f)] as const);
 
@@ -44,7 +46,7 @@ export default function ProductBuyers({ view }: { view: ProductView }) {
         </div>
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 10, fontSize: 13 }}>
           {view.shopper && (
-            <Link href={`/shop/?shopper=${view.shopper.key}&month=${view.month}`}>
+            <Link href={withSandbox(`/shop/?shopper=${view.shopper.key}&month=${view.month}`, sandbox)}>
               See it as {view.shopper.name} ({view.shopper.matches.map(words).join(", ")}) in the Shop →
             </Link>
           )}

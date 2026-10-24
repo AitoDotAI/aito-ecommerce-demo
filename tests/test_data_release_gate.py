@@ -176,3 +176,18 @@ def test_a_ready_app_serves_data_routes():
     gate.check()
 
     assert _app_with(gate).get("/api/overview").json() == {"kpis": []}
+
+
+def test_a_request_naming_a_sandbox_waits_for_the_sandbox_template_not_petnords_data():
+    # PetNord's data is ready; the sandbox's template hasn't been loaded yet (ADR 0043).
+    petnord, template = Timeline(RELEASE_DATA).gate(), Timeline(OLD_DATA).gate()
+    petnord.check()
+    template.check()
+    app = FastAPI()
+    app.middleware("http")(release_gate_middleware(
+        petnord, lambda request: template if request.query_params.get("db") else None))
+    app.get("/api/shop/grid")(lambda: {"items": []})
+    client = TestClient(app)
+
+    assert client.get("/api/shop/grid").status_code == 200
+    assert client.get("/api/shop/grid?db=tmp-2026-10-26-15-30-00-3f9c2a1b7d4e6f80").status_code == 503
