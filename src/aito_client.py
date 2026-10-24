@@ -85,7 +85,19 @@ class AitoClient:
         # handshake (measured: 200-300 ms net vs 57 ms net with the
         # pool warm) which dominates server-side query latency. See
         # docs/notes/aito-perf-findings.md.
-        self._client = httpx.Client(headers=self._headers, timeout=90.0)
+        #
+        # httpx closes a connection after 5 s idle by default, so a view
+        # opened a few seconds after the last one reconnects, and every
+        # reconnect resolves the host again. Where DNS is slow (5 s
+        # timeouts were measured on a demo laptop, 2026-10-24) that put
+        # 3.5 s on most calls whose Aito time was 4 ms. Idle connections
+        # are kept for 5 minutes, and the pool is sized for the parallel
+        # calls a view makes.
+        self._client = httpx.Client(
+            headers=self._headers,
+            timeout=90.0,
+            limits=httpx.Limits(max_connections=40, max_keepalive_connections=20, keepalive_expiry=300.0),
+        )
 
     @property
     def read_only(self) -> bool:

@@ -60,7 +60,7 @@ const LINKS = [
   { view: "evidence/personalised-search", query: "customer=maija&q=dog+food", api: "/api/smart-search", expect: { customer: "maija", q: "dog food" } },
   { view: "query-patterns", query: "customer=olli", api: "/api/for-you", expect: { customer: "olli" } },
   { view: "product-filling", query: "sku=SKU-PT-0042", api: "/api/product-filling", expect: { sku: "SKU-PT-0042" } },
-  { view: "feedback", query: "review=REV-00042", api: "/api/feedback", expect: { review: "REV-00042" } },
+  { view: "review-triage", query: "review=REV-00042", api: "/api/review-triage", expect: { review: "REV-00042" } },
   { view: "product", query: "sku=SKU-PT-0042&month=2025-12", api: "/api/product", expect: { sku: "SKU-PT-0042", month: "2025-12" } },
   { view: "shop", query: "shopper=janne&month=2025-12&cart=SKU-PT-0001", api: "/api/shop/grid",
     expect: { shopper: "janne", month: "2025-12", cart: "SKU-PT-0001" } },
@@ -78,9 +78,16 @@ const MOVED = [
   ["/business-reorders/", "/evidence/business-reorders/", null, { customer: "12357" }],
   ["/bought-together/", "/patterns/", null, { anchor: "cat_wetfood" }],
   ["/cart-completion/", "/shop/", null, {}],
+  ["/feedback/", "/review-triage/", "/api/review-triage", { review: "REV-00042" }],
+  ["/inventory/", "/supply/", null, {}],
+  ["/demand/", "/supply/", null, {}],
+  ["/markdown/", "/supply/", null, {}],
+  ["/churn/", "/retention/", null, {}],
+  ["/winback/", "/retention/", null, {}],
   ["/product-insights/", "/product/", "/api/product", { sku: "SKU-PT-0042" }],
-  // Price's per-product drill-down moved to Product; its table stays (for now).
+  // Price: a per-product link (?sku=) opens Product; the catalogue link opens Supply.
   ["/price/", "/product/", "/api/product", { sku: "SKU-PT-0042" }],
+  ["/price/", "/supply/", null, {}],
   ["/pattern-explorer/", "/patterns/", null, { anchor: "cat_wetfood" }],
   ["/basket-rules/", "/patterns/", null, {}],
   ["/purchase-analytics/", "/", "/api/overview", {}],
@@ -90,7 +97,7 @@ const MOVED = [
 // clicking, the address bar must follow, and the copied address must reopen it.
 const PICKERS = [
   { view: "product-filling", select: "#sku-picker", key: "sku", api: "/api/product-filling" },
-  { view: "feedback", select: "#rev-picker", key: "review", api: "/api/feedback" },
+  { view: "review-triage", select: "#rev-picker", key: "review", api: "/api/review-triage" },
   { view: "product", select: "#sku-picker", key: "sku", api: "/api/product" },
   { view: "patterns", select: "#who-picker", key: "who", api: "/api/shop-analytics/who" },
 ];
@@ -120,13 +127,12 @@ function stubResponse(apiPath, params) {
                fields: [], candidate_skus: OPTIONS.sku.map((s) => ({ sku: s, name: `Product ${s}` })),
                last_query: STUB_QUERY, last_response_ms: 1 };
     }
-    case "/api/feedback": {
+    case "/api/review-triage": {
       const review = params.get("review") ?? OPTIONS.review[0];
       if (review === UNKNOWN.review) return notFound(`No review ${review} in the data`);
       return { review: { review_id: review, customer_id: "CUST-00001", customer_short: "Maija", product_sku: "SKU-PT-0001",
                          product_name: "Product", rating: 4, text: `Review ${review}`, created_at: "2026-01-01",
-                         actual_category: "quality", actual_sentiment: "positive", actual_assigned_to: "Anna",
-                         actual_churn_within_90d: false },
+                         actual_category: "quality", actual_sentiment: "positive", actual_assigned_to: "Anna" },
                fields: [], candidate_reviews: OPTIONS.review.map((r) => ({ review_id: r, rating: 4, text_short: `Review ${r}` })),
                last_query: STUB_QUERY, last_response_ms: 1 };
     }
@@ -351,15 +357,15 @@ async function main() {
 
     {
       const visit = await openFresh(browser, `${BASE}/evidence/model-checks/`);
-      await visit.page.locator("tr", { hasText: /segment/i }).first().click();
-      const followed = await urlMatches(visit.page, /model=segment_from_product/);
+      await visit.page.locator("tr", { hasText: /return risk/i }).first().click();
+      const followed = await urlMatches(visit.page, /model=return_risk/);
       const copied = visit.page.url();
       await visit.context.close();
       check(followed, `model-checks: a row click puts the model in the address bar (${copied})`);
 
       const reopened = await openFresh(browser, copied);
-      const focused = await appears(reopened.page.locator("tr[style*='solid']", { hasText: /segment/i }).first());
-      check(focused, "model-checks: the copied URL reopens with the segment row focused");
+      const focused = await appears(reopened.page.locator("tr[style*='solid']", { hasText: /return risk/i }).first());
+      check(focused, "model-checks: the copied URL reopens with the return-risk row focused");
       await reopened.context.close();
     }
 
@@ -382,11 +388,11 @@ async function main() {
       const { context, page } = await openFresh(browser, `${BASE}/evidence/model-checks/?model=dietary_from_name`);
       const focusedDietary = page.locator("tr[style*='solid']", { hasText: /diet/i }).first();
       check(await appears(focusedDietary), "model-checks?model=dietary_from_name focuses the dietary row");
-      await page.locator("tr", { hasText: /segment/i }).first().click();
-      const forward = await urlMatches(page, /model=segment_from_product/);
+      await page.locator("tr", { hasText: /return risk/i }).first().click();
+      const forward = await urlMatches(page, /model=return_risk/);
       await page.goBack();
       const back = await urlMatches(page, /model=dietary_from_name/) && await appears(focusedDietary);
-      check(forward && back, "model-checks: segment → back restores the dietary focus");
+      check(forward && back, "model-checks: return risk → back restores the dietary focus");
       await context.close();
     }
 
@@ -400,7 +406,7 @@ async function main() {
     // A link to an id that no longer exists says so, and offers the way back.
     for (const [view, key, api, label] of [["product-filling", "sku", "/api/product-filling", "Show the default product"],
                                            ["product", "sku", "/api/product", "Show the default product"],
-                                           ["feedback", "review", "/api/feedback", "Show the default review"]]) {
+                                           ["review-triage", "review", "/api/review-triage", "Show the default review"]]) {
       const { context, page, requests } = await openFresh(browser, `${BASE}/${view}/?${key}=${UNKNOWN[key]}`);
       const notice = page.getByText(`No ${key === "sku" ? "product" : "review"} ${UNKNOWN[key]}`);
       check(await appears(notice), `${view}?${key}=${UNKNOWN[key]} says it isn't in the data`);
@@ -437,7 +443,9 @@ async function main() {
 
     {
       const { context, page } = await openFresh(browser, `${BASE}/evidence/`);
-      const modelLine = await appears(page.getByText(/3 of 4 models beat that guess by 10 points or more/));
+      // The total comes from the snapshot the test serves, so a new evaluation can't leave it stale.
+      const evaluated = JSON.parse(fs.readFileSync(EVAL_SNAPSHOT, "utf8")).data.models.length;
+      const modelLine = await appears(page.getByText(new RegExp(`\\d of ${evaluated} models beat that guess by 10 points or more`)));
       const entries = await page.locator(".evidence-entry").count();
       const marked = await page.locator(".evidence-entry .pill", { hasText: /^(Real|Synthetic) data$/ }).count();
       check(modelLine && entries === 3 && marked === 3,
