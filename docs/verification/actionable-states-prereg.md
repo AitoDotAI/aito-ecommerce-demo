@@ -431,3 +431,98 @@ is clear of any reserved word in Aito without probing that with a write.
 
 `contexts.json` is 37 MB. It joins `impressions.json` (46 MB) as generated and
 gitignored; `./do` regenerates both when missing.
+
+## Addendum (2026-10-24): ADR 0044, what a shop can know about a person
+
+Written **before** the generator changes for ADR 0044. Everything registered
+above stands; this adds C1–C3 and says how consent changes the older checks.
+
+### What changes in the data
+
+- **`customers` gains:**
+  - `consent_behavioural` (Boolean, P 0.6, its own RNG per customer, so it is
+    independent of every hidden trait). The three generator personas
+    (CUST-00001…3) consent: their behaviour anchors the older demo views.
+  - `sex` (`female` / `male` / `other`, filled for 55 %; no effect anywhere).
+  - `postcode_area`: the first 3 digits, drawn within the customer's region
+    (Helsinki 001–009, Espoo 020–028, Turku 200–209, Tampere 330–339,
+    Jyväskylä 400–409, Oulu 900–909).
+  - `delivery_method` (home delivery 0.45, parcel locker 0.40, store pickup
+    0.15).
+  - `loyalty_member` (P 0.4).
+  - `interests`: nullable whitespace Text, about 35 % filled, from the fixed
+    list `training grooming natural_food toys_and_play health_and_care
+    budget_buys`.
+- **Consent and behaviour rows.** A non-consenting customer has no
+  `contexts` or `impressions` rows. Their orders, reviews and NPS answers are
+  unchanged: no order-side draw reads consent.
+- **Visitors.** Consent is one decision per device, made on the cookie
+  banner before any purchase:
+  - a never-buy visitor consents with P 0.6, from its own RNG; a
+    non-consenting one leaves no rows at all;
+  - a customer's consent is the one they gave as a visitor, so their
+    first-order visit is recorded only if they consent.
+
+  So F2's numerator and denominator thin alike, and conversion by source
+  keeps its expected value.
+- **Interests.** A customer declares interests with P 0.35. Each topic is
+  then included independently:
+  - `natural_food`: 0.95 for a grain-free diet-rule household, 0.40 for a
+    high health focus, 0.05 otherwise;
+  - `budget_buys`: 0.6 if budget, else 0.1;
+  - `toys_and_play`: 0.6 if the treat affinity is high, else 0.15;
+  - `health_and_care`: 0.5 if the health focus is high, else 0.15;
+  - `grooming` and `training`: 0.25 each;
+  - when none is drawn, one of the five other than `natural_food`, uniformly.
+- **The answer key** records `consent_behavioural` beside the hidden traits.
+
+**Why `natural_food` reads the diet rule too.** Measured on the current seed-42
+data before this addendum: the hidden health focus alone moves the grain-free
+share of food and treat lines from about 0.21 to 0.29 (×1.37). A declaration
+drawn from health focus alone can't reach ADR 0044's ≥ 1.8. The grain-free
+diet-rule households are the other trait consistent with "natural food". With
+the weights above, the expected ratio is ≈ 2.0, computed on the same data
+before any change. A test of C1 then reads that "natural food" declarers are
+mostly those households: consistent, not a new cause.
+
+### The planted effects
+
+| # | planted as | null | metric | expected | pass when |
+|:--|:--|:--|:--|:--|:--|
+| C1 | interests drawn from the hidden traits | C1 off: every topic at 0.3, whatever the traits | grain-free share of food and treat lines, customers declaring `natural_food` ÷ every other customer (planted); and planted ÷ null | ≈ 2.0; ≈ 2.0 | planted ≥ 1.8; planted ÷ null reported |
+| C2 | consent independent of the traits | — | consent rate overall; for every level of `segment`, `lifestyle`, `health_focus`, `treat_affinity`, `brand_loyalty` and the four sensitivities with ≥ 100 customers, \|its consent rate − the overall\| (the largest) | 0.60; ≈ 0.03 (one level of ~750 has SE ≈ 0.018) | 0.55–0.65; largest gap ≤ 0.07 |
+| C3 | sex has no effect | — | for each category with ≥ 1,000 lines, its share of female buyers' lines ÷ its share of male buyers' lines; the largest \|log ratio\| | ≈ 1.0 | every ratio within 0.8–1.25 |
+
+C2 and C3 are judged on the planted data alone: there is nothing to switch off.
+They run on every seed.
+
+### What consent does to the older checks
+
+Every impression-based check now reads about 60 % of the customers'
+impressions. That covers P6–P10, V1, P1a, P1b, P4a, R1, R2a, R2b, F1, F2, F3c,
+K1a and K1b, and the S5b, S6 and S8 tests.
+- **Expected values don't change**, because consent is independent of the
+  traits (C2).
+- **The noise of a planted ÷ null ratio grows** by about √(1 / 0.6) ≈ 1.29.
+- **Order-side checks don't move at all:** R3–R6, F3a, F3b, F4, F5, P2b,
+  P2c, P3a, P5a, the D checks and the reviews.
+
+**Thresholds are not moved for power.** The checks whose last margin is
+small against that noise, with their expected values (the mean of the last
+run's three seeds), fixed now:
+
+| check | last run (42 / 7 / 99) | expected | margin | risk |
+|:--|:--|--:|:--|:--|
+| P10 | 1.032 / 1.037 / 1.036 | 1.035 | ≥ 1.03 | high: a seed can miss by noise alone |
+| P9 high ÷ low | 1.58 / 1.59 / 1.63 | 1.60 | ≥ 1.5 | moderate |
+| R2a | 2.01 / 1.92 / 1.85 | 1.93 | ≥ 1.8 | moderate |
+| R1 | 1.65 / 1.59 / 1.52 | 1.59 | ≥ 1.4 | low |
+| P1b | 1.16 / 1.22 / 1.13 | 1.17 | ≥ 1.05 | low |
+| F2b (worst source off its rate) | 0.021 / 0.014 / 0.009 | ≈ 0.03 | ≤ 0.2 | low (fewer sessions per source) |
+
+R2b and P2c stay the accepted failures recorded above. P2c is order-side, so
+its values repeat exactly.
+
+**Rows** (expected): impressions ≈ 101,000 and contexts ≈ 62,000, both about
+60 % of the last run's. Every other table is unchanged in rows.
+
