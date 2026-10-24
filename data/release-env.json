@@ -1,17 +1,18 @@
 {
-  "env": "observable",
+  "env": "release2",
   "counts": {
-    "contexts": 12662,
-    "customer_months": 27525,
+    "contexts": 61484,
+    "customer_months": 27003,
     "customers": 3000,
-    "impressions": 117026,
+    "impressions": 96028,
     "inventory": 658,
     "monthly_sales": 15157,
-    "order_lines": 39098,
-    "orders": 11909,
+    "nps_responses": 3274,
+    "order_lines": 36771,
+    "orders": 10834,
     "product_states": 15157,
     "products": 658,
-    "reviews": 6000,
-    "winback_campaigns": 2421
+    "reviews": 4795,
+    "winback_campaigns": 2479
   }
 }

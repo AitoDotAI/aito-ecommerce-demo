@@ -24,7 +24,7 @@ import random
 import re
 from dataclasses import dataclass
 
-from data import shoppers
+from data.planted_switches import stream
 from data.shop_levers import review_count_band
 
 N_LAUNCHES = 50
@@ -181,20 +181,6 @@ def discount_band(discount_pct: float) -> str:
     return "15-20" if discount_pct < 20 else "20+"
 
 
-def reviews_by_month(reviews: list, months: list[str]) -> dict[tuple[str, str], tuple[str, int]]:
-    """(sku, month) → (rating band, review count) from its reviews created before the month."""
-    by_sku: dict[str, list] = {}
-    for r in reviews:
-        by_sku.setdefault(r.product_sku, []).append(r)
-    out: dict[tuple[str, str], tuple[str, int]] = {}
-    for sku, rows in by_sku.items():
-        for month in months:
-            earlier = [r.rating for r in rows if r.created_at < month]
-            if earlier:
-                out[(sku, month)] = (shoppers.rating_band(sum(earlier) / len(earlier)), len(earlier))
-    return out
-
-
 @dataclass
 class ProductState:
     """One product as it was in one month: what a shopper saw (ADR 0032).
@@ -217,37 +203,37 @@ class ProductState:
     review_count_band: str     # "none", "1-4", "5-19", "20+": reviews created before the month
 
 
-def gen_product_states(rng: random.Random, products: list, months: list[str], events: CatalogueEvents,
-                       discount: dict[tuple[str, str], float],
-                       reviews: dict[tuple[str, str], tuple[str, int]],
-                       labels: dict[tuple[str, str], str],
-                       low_stock: set[tuple[str, str]]) -> list[ProductState]:
-    """Every product in every month it is on sale. A ±2 % noise on the
-    price keeps Aito's k-NN from reading a crisp ridge (ADR 0027)."""
+def states_for_month(seed: int, month: str, products: list, events: CatalogueEvents,
+                     discount: dict[tuple[str, str], float], stars: dict[str, tuple[str, int]],
+                     labels: dict[str, str], low_stock: set[str]) -> list[ProductState]:
+    """Every product on sale in `month`, as a shopper sees it at the month's
+    start (ADR 0045: the month's sales follow from it). `stars` maps a SKU to
+    (rating band, review count) from reviews written before the month. A ±2 %
+    noise on the price keeps Aito's k-NN from reading a crisp ridge (ADR 0027)."""
     out = []
     for p in products:
-        for month in months:
-            if not events.on_sale(p.sku, month):
-                continue
-            list_price = events.list_price(p.sku, month)
-            ratio = (1.0 - discount.get((p.sku, month), 0.0)) * (1.0 + rng.uniform(-0.02, 0.02))
-            discount_pct = round((1.0 - ratio) * 100, 1)
-            band, n_reviews = reviews.get((p.sku, month), ("unrated", 0))
-            out.append(ProductState(
-                product_state_id=f"{p.sku}-{month}",
-                product_sku=p.sku,
-                month=month,
-                price_eur=round(list_price * ratio, 2),
-                list_price_eur=list_price,
-                discount_pct=discount_pct,
-                on_offer=discount_pct >= OFFER_MIN_PCT,
-                discount_band=discount_band(discount_pct),
-                rating_band=band,
-                age="new" if events.is_new(p.sku, month) else "established",
-                rival_launched=events.rival_launched(p.sku, month),
-                price_change="rise" if events.recently_raised(p.sku, month) else "none",
-                label=labels.get((p.sku, month), "none"),
-                stock="low" if (p.sku, month) in low_stock else "in_stock",
-                review_count_band=review_count_band(n_reviews),
-            ))
+        if not events.on_sale(p.sku, month):
+            continue
+        list_price = events.list_price(p.sku, month)
+        noise = stream(seed, "price-noise", p.sku, month).uniform(-0.02, 0.02)
+        ratio = (1.0 - discount.get((p.sku, month), 0.0)) * (1.0 + noise)
+        discount_pct = round((1.0 - ratio) * 100, 1)
+        band, n_reviews = stars.get(p.sku, ("unrated", 0))
+        out.append(ProductState(
+            product_state_id=f"{p.sku}-{month}",
+            product_sku=p.sku,
+            month=month,
+            price_eur=round(list_price * ratio, 2),
+            list_price_eur=list_price,
+            discount_pct=discount_pct,
+            on_offer=discount_pct >= OFFER_MIN_PCT,
+            discount_band=discount_band(discount_pct),
+            rating_band=band,
+            age="new" if events.is_new(p.sku, month) else "established",
+            rival_launched=events.rival_launched(p.sku, month),
+            price_change="rise" if events.recently_raised(p.sku, month) else "none",
+            label=labels.get(p.sku, "none"),
+            stock="low" if p.sku in low_stock else "in_stock",
+            review_count_band=review_count_band(n_reviews),
+        ))
     return out

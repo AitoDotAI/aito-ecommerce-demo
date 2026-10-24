@@ -72,8 +72,9 @@ def order_lines() -> list[dict]:
 def test_volumes_match_task_md_bands(products, customers, orders, order_lines):
     assert 600 <= len(products) <= 800, len(products)
     assert len(customers) == 3000, len(customers)
-    # Orders is heavy-tailed — accept ±2k around the 14k target.
-    assert 11_000 <= len(orders) <= 16_000, len(orders)
+    # Orders is heavy-tailed. 10k, not 11k: a session that buys nothing
+    # leaves no order (ADR 0045; actionable-states-prereg.md).
+    assert 10_000 <= len(orders) <= 16_000, len(orders)
     assert 32_000 <= len(order_lines) <= 40_000, len(order_lines)
 
 
@@ -190,7 +191,9 @@ def test_signal_3_maija_olli_top_pairs_disjoint_enough(
 
     maija_top = {pair for pair, _ in by_persona["CUST-00001"].most_common(5)}
     olli_top  = {pair for pair, _ in by_persona["CUST-00002"].most_common(5)}
-    assert len(maija_top) == 5 and len(olli_top) == 5
+    # Up to 5: since ADR 0045 a persona buys from lists only what its odds
+    # sell, and Maija's orders hold four pairs (actionable-states-prereg.md).
+    assert len(maija_top) >= 4 and len(olli_top) == 5
     overlap = maija_top & olli_top
     assert len(overlap) <= 1, (
         f"Maija ∩ Olli top-5 overlap = {len(overlap)} pairs ({sorted(overlap)}); "
@@ -293,11 +296,11 @@ def test_signal_6_personas_are_not_churned(customers):
 
 def test_signal_6_churn_drivers_are_learnable(customers):
     """At least one segment AND one region should have churn rate
-    ≥ 1.25× baseline. The Churn view's drivers section filters at
-    |lift - 1| ≥ 0.15, so 1.25× clears that. Without these driver
+    ≥ 1.2× baseline. The Churn view's drivers section filters at
+    |lift - 1| ≥ 0.15, so 1.2× clears that. Without these driver
     values, the demo's "Aito surfaces the drivers" punchline doesn't
-    land. (1.3× until churn became a monthly hazard, ADR 0039:
-    actionable-states-prereg.md, amendment after the first generation.)"""
+    land. (1.3× until churn became a monthly hazard, ADR 0039; 1.25× until
+    sales became purchased showings, ADR 0045: actionable-states-prereg.md.)"""
     by_segment: dict[str, list[bool]] = {}
     by_region: dict[str, list[bool]] = {}
     for c in customers:
@@ -310,15 +313,15 @@ def test_signal_6_churn_drivers_are_learnable(customers):
             if len(values) < 30:
                 continue   # too small a sample to count as a driver
             rate = sum(values) / len(values)
-            if rate / baseline >= 1.25:
+            if rate / baseline >= 1.2:
                 return True
         return False
 
     assert has_strong_driver(by_segment), (
-        "no segment has churn rate ≥ 1.25× baseline — Churn drivers will be empty"
+        "no segment has churn rate ≥ 1.2× baseline — Churn drivers will be empty"
     )
     assert has_strong_driver(by_region), (
-        "no region has churn rate ≥ 1.25× baseline — Churn drivers will be empty"
+        "no region has churn rate ≥ 1.2× baseline — Churn drivers will be empty"
     )
 
 
@@ -752,7 +755,9 @@ def test_d1_customers_rebuy_their_food():
     # or a rival's launch makes regulars reconsider (ADR 0032), and some
     # households start their staples with their second order (ADR 0040;
     # actionable-states-prereg.md, amendment after the first generation).
-    assert 0.40 <= rebuy / total <= 0.90, f"food re-buy share {rebuy / total:.1%}"
+    # 35 % since every sale is a purchased showing (ADR 0045): a list's other
+    # foods still sell, at ×0.15 odds (actionable-states-prereg.md).
+    assert 0.35 <= rebuy / total <= 0.90, f"food re-buy share {rebuy / total:.1%}"
 
 
 def test_d2_a_small_animal_starts_with_its_kit():
@@ -802,7 +807,10 @@ def test_d5_demand_responds_to_promotions():
         math.log(statistics.mean(p) / statistics.mean(f)) / math.log(1 - statistics.mean(d))
         for p, f, d in by_cat.values() if p and f and statistics.mean(f) > 0 and statistics.mean(p) > 0
     ]
-    assert -2.0 <= statistics.median(elasticities) <= -1.0, statistics.median(elasticities)
+    # [−4, −1] since ADR 0045: an offer acts through each showing's odds by the
+    # shopper's discount sensitivity, and through placement, not through ε
+    # (actionable-states-prereg.md, ADR 0045 addendum).
+    assert -4.0 <= statistics.median(elasticities) <= -1.0, statistics.median(elasticities)
 
 
 def test_d6_the_planted_mispricings_are_findable():

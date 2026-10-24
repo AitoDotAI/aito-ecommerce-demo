@@ -38,16 +38,17 @@ class Fixtures:
 
     @cache
     def impressions(self) -> list[dict]:
-        """Customers' impressions with their context, and the customer's hidden
-        model from the generator's answer key (ADR 0033). A visitor who hasn't
-        bought yet (ADR 0040) has no hidden model and never buys: left out."""
+        """Customers' list impressions with their context, and the customer's
+        hidden model from the generator's answer key (ADR 0033). A visitor who
+        hasn't bought yet (ADR 0040) has no hidden model and never buys, and
+        buy-again and checkout showings are bought by intent (ADR 0045): left out."""
         contexts = {c["context_id"]: c for c in self.load("contexts")}
         traits = self.traits()
         rows = []
         for imp in self.load("impressions"):
             ctx = contexts[imp["context"]]
-            if "customer" not in ctx:
-                continue
+            if "customer" not in ctx or imp["placement"] != "list":
+                continue     # ADR 0045: the shop's lists; buy-again and checkout are intent
             t = traits[ctx["customer"]]
             rows.append({**imp, "month": ctx["month"], "basket_categories": ctx.get("basket_categories", ""),
                          "owned": ctx.get("owned", ""), "customer_id": ctx["customer"],

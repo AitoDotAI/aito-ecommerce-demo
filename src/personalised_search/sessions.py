@@ -83,7 +83,7 @@ def scored_sessions() -> list[Session]:
         customer = customers[c["customer"]]
         sessions.append(Session(
             session_id=c["context_id"], customer=c["customer"], month=c["month"], query=c["search_query"],
-            pets=customer["pets"], rule=customer.get("diet"),
+            pets=customer.get("pets", ""), rule=customer.get("diet"),     # most declare no pet profile
             cart=tuple((c.get("basket") or "").split()), last_order=tuple((c.get("prev_basket") or "").split()),
             prior_orders=sum(1 for m in order_months.get(c["customer"], []) if m < c["month"]),
             bought=frozenset(bought[c["context_id"]]),

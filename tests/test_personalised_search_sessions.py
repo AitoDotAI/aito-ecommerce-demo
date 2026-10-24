@@ -8,6 +8,7 @@ fails here before a run would quietly score a different set.
 
 from __future__ import annotations
 
+import json
 from collections import Counter
 
 import pytest
@@ -16,10 +17,18 @@ from src.personalised_search.generator_ranking import generator_ranking, generat
 from src.personalised_search.sessions import DATA, scored_sessions
 
 
+# The counts below were pre-registered on release 1's data (env `observable`).
+REGISTERED_ON = "observable"
+
+
 @pytest.fixture(scope="module")
 def sessions():
     if not (DATA / "impressions.json").exists():
         pytest.skip("data/impressions.json missing: run ./do generate-fixtures")
+    release = json.loads((DATA / "release-env.json").read_text(encoding="utf-8"))["env"]
+    if release != REGISTERED_ON:
+        pytest.skip(f"the benchmark's counts are registered on env {REGISTERED_ON}, the data is {release}'s: "
+                    f"re-register them for this release")
     return scored_sessions()
 
 

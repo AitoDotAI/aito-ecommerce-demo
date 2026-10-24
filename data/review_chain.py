@@ -151,10 +151,21 @@ class StarsSoFar:
         ratings = self.ratings.get(sku)
         return shoppers.rating_band(sum(ratings) / len(ratings) if ratings else None)
 
+    def count(self, sku: str) -> int:
+        return len(self.ratings.get(sku, []))
+
     def pick_factor(self, sku: str) -> float:
-        """R5: a well-rated product is picked more, a badly rated one less."""
-        return RATING_PICK_FACTOR.get(self.band(sku), 1.0) if ON["R5"] else 1.0
+        return rating_pick_factor(self.band(sku))
 
     def elasticity(self, sku: str, own: float) -> float:
-        """R6: a well-rated product holds its units through a price change."""
-        return RATING_ELASTICITY.get(self.band(sku), own) if ON["R6"] else own
+        return rating_elasticity(self.band(sku), own)
+
+
+def rating_pick_factor(band: str) -> float:
+    """R5: the shop's ranker shows a well-rated product more, a badly rated one less."""
+    return RATING_PICK_FACTOR.get(band, 1.0) if ON["R5"] else 1.0
+
+
+def rating_elasticity(band: str, own: float) -> float:
+    """R6: a well-rated product holds its units through a list-price change."""
+    return RATING_ELASTICITY.get(band, own) if ON["R6"] else own

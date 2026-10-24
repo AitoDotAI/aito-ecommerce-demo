@@ -726,3 +726,42 @@ condition on?
 - **Decision:** the Shop uses the best variant on hit@12 whose Brier score
   is within 0.01 of the best. A difference whose CI includes 0 is a tie, and
   a tie goes to P, which needs no identity.
+
+### Amendment after the first ADR 0045 generation (2026-10-24, before any null run)
+
+**One omission of the rewrite, restored.** The first seed-42 generation read D1
+(food re-buy) at 32.7 %, against 40 %.
+
+- **Cause:** the old basket draw re-pointed a drawn food to the household's
+  settled staple 85 % of the time (`STAPLE_LOYALTY`, ADR 0027). The rewrite
+  carried the staples into `buy_again`, but not that rule into the list.
+  So a list sold any food of the staple's category: food reached 53 % of
+  lines.
+- **The rule restored, as odds:** another food of a pet and category the
+  household has a staple for sells at ×0.15 (= 1 − 0.85) on a list.
+- **Why this isn't a retune:** this is the registered "computed exactly as
+  the old order lines were chosen", now implemented. No threshold moves, and
+  nothing is tuned to a value.
+
+**The tests read what was registered:** S5b, S6 and S8 read
+`placement: list`, as the addendum says impression checks do.
+
+**Stars now reach orders.** A purchase is a showing, so P7's stars reach
+orders. The test that "without reviews every customer churns as with them"
+therefore switches P7 off too, beside R5, R6 and the reply. A review's
+stars are a fourth planted path from a review to churn, in the causal
+direction.
+
+### Amendment after the second ADR 0045 generation (2026-10-24, before any null run)
+
+Restoring the staple rule moved D1 from 32.7 % to 37.7 %. Nothing in the
+generator changes after this. These older ranges moved, each with its cause:
+
+| check | now (seed 42) | cause | change |
+|:--|:--|:--|:--|
+| Order volume 11k–16k (`test_volumes_match_task_md_bands`) | 10,834 | a session that buys nothing leaves no order (ADR 0045); 3.61 orders a customer, was 3.77 | 10k–16k |
+| D1, food re-buy ≥ 40 % | 37.7 % | a list's other foods still sell at ×0.15 odds of a list's base rate, where the old re-pick turned 85 % of food draws into re-buys outright | ≥ 35 % |
+| D5, median fitted elasticity | −2.00 | as pre-registered: offers act through P6 and placement | [−4, −1], the range registered in the addendum |
+| Signal #6, a region's churn ≥ 1.25× | oulu 1.22× | fewer orders a customer means more churn from sparse ordering, which has no driver; among hazard churn, oulu's rate is still 4× helsinki's | ≥ 1.2× (still clears the view's \|lift − 1\| ≥ 0.15) |
+| S8 sample floor ≥ 600 | 359 just-bought list impressions | S8 now reads lists only, as registered, and a restocked staple is shown in buy-again, not the list | ≥ 300; its ratio, 0.34 against ≤ 0.5, holds |
+| Signal #3, Maija's top 5 pairs | 4 pairs | her 12 orders hold staples and accessories only: since ADR 0045 a list sells only what its odds sell, and she is low on treats | compare each persona's top pairs, up to 5. Disjointness, the point of the test, reads 0 shared |

@@ -37,6 +37,8 @@ ON: dict[str, bool] = {
     "F3": True,        # sources bring different sensitivities
     "F4": True,        # sources stay differently
     "F5": True,        # a staple in the first basket doubles the chance to stay
+    # ADR 0045: the shop's ranker places an offered product higher.
+    "placement": True,
     # ADR 0044: what a person declares.
     "C1": True,        # declared interests follow the hidden traits
 }

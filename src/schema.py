@@ -70,7 +70,8 @@ SCHEMAS: dict[str, dict] = {
             # generator's hidden traits (lifestyle, health focus, treat
             # affinity, brand loyalty) are never a column: Aito learns them
             # from what the customer does.
-            "pets":          {"type": "Text",   "nullable": False, "analyzer": "whitespace"},
+            # A pet profile is filled by about 40 % (Antti, 2026-10-24): absent otherwise.
+            "pets":          {"type": "Text",   "nullable": True, "analyzer": "whitespace"},
             "dog_size":      {"type": "String", "nullable": True},
             "diet":          {"type": "String", "nullable": True},
             # Order-history aggregates backfilled by the fixture
@@ -118,8 +119,9 @@ SCHEMAS: dict[str, dict] = {
             "visitor":      {"type": "String", "nullable": False},
             "month":        {"type": "String", "nullable": False},
             "weekday":      {"type": "String", "nullable": False},
-            # search | for_you | category | bought_together, or `landing`: the
-            # page a visitor who hasn't bought yet landed on.
+            # search | for_you | category | bought_together; `direct` for a
+            # reorder without browsing (ADR 0045); `landing` for the page a
+            # visitor who never buys landed on.
             "surface":      {"type": "String", "nullable": False},
             # ADR 0040: where the visit came from and the page it landed on;
             # `first_order` marks the visit with the visitor's first order.
@@ -132,6 +134,9 @@ SCHEMAS: dict[str, dict] = {
             "offer_share":  {"type": "String", "nullable": False},
             "new_share":    {"type": "String", "nullable": False},
             "label_share":  {"type": "String", "nullable": False},
+            # Derived from the customer's earlier orders: the pet types they
+            # bought for ("cat dog"); most customers declare no pet profile.
+            "pets_from_orders": {"type": "Text", "nullable": True, "analyzer": "whitespace"},
             # Text so `where {"context.search_query": {"$match": "food"}}` token-matches.
             "search_query": {"type": "Text",   "nullable": True, "analyzer": "whitespace"},
             # This month's basket, as SKUs and as words ("dog_dryfood
@@ -237,6 +242,9 @@ SCHEMAS: dict[str, dict] = {
             # Descriptive only — never fed to recommend `basedOn`, so
             # Aito ranks on content, not "position predicts click".
             "position":      {"type": "Int",     "nullable": False},
+            # ADR 0045: the part of the page, buy_again | list | checkout. The
+            # position counts within it; only `list` is the shop's ranked list.
+            "placement":     {"type": "String",  "nullable": False},
             # The product was in the customer's last order (recency, S8).
             "just_bought":   {"type": "Boolean", "nullable": False},
             # Funnel outcome labels (monotone: purchased ⇒ cart ⇒ click).
@@ -328,6 +336,12 @@ SCHEMAS: dict[str, dict] = {
             # ADR 0032: the product as it was that month (price, offer, stars, new).
             "product_state":           {"type": "String", "nullable": False,
                                         "link": "product_states.product_state_id"},
+            # ADR 0045: units are the sum of purchased order lines. The price as a
+            # share of that month's list price, its offer band (`_estimate` can't
+            # read linked fields), and the product's recorded impressions.
+            "price_index":   {"type": "Decimal", "nullable": False},
+            "discount_band": {"type": "String",  "nullable": False},
+            "showings":      {"type": "Int",     "nullable": False},
         },
     },
     # 8. inventory — per-SKU stock snapshot. Drives the Inventory
@@ -388,7 +402,7 @@ SCHEMAS: dict[str, dict] = {
             "spent_eur":         {"type": "Decimal", "nullable": False},
             # Declared by the household (ADR 0033), copied so `_predict` over
             # this table sees them directly.
-            "pets":              {"type": "Text",   "nullable": False, "analyzer": "whitespace"},
+            "pets":              {"type": "Text",   "nullable": True,  "analyzer": "whitespace"},
             "dog_size":          {"type": "String", "nullable": True},
             "region":            {"type": "String", "nullable": False},
             "tenure_months_at_month": {"type": "Int", "nullable": False},

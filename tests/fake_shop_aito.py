@@ -5,7 +5,7 @@ same queries is checked in test_aito_check.py.
 
 CUSTOMERS = {
     # Declared and recorded fields only (ADR 0033).
-    "CUST-00828": {"customer_id": "CUST-00828", "pets": "dog", "dog_size": "medium", "diet": "grain-free"},
+    "CUST-00152": {"customer_id": "CUST-00152", "pets": "dog", "dog_size": "medium", "diet": "grain-free"},
     "CUST-00053": {"customer_id": "CUST-00053", "pets": "cat"},
 }
 

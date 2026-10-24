@@ -5,9 +5,9 @@ complaint categories and lower stars, so "1-star reviews predict churn" was
 true of the data for the wrong reason. Now an order line's experience writes
 the review, and the experience (not the review) raises churn.
 
-Two of ADR 0039's planted paths do run from a review to churn, both causal:
-a reply lowers its writer's churn (R4), and stars move which products are
-bought (R5, R6), and so which experiences follow. With those switched off,
+Some of the planted paths do run from a review to churn, all causal: a reply
+lowers its writer's churn (R4), and stars move which products are bought (R5,
+R6, and P7's odds on every showing), and so which experiences follow. With those switched off,
 writing reviews or not must leave every customer's history exactly as it was.
 (docs/verification/actionable-states-prereg.md, "Where the ADRs' own numbers
 can't hold", item 4.)
@@ -39,8 +39,10 @@ def _histories() -> tuple[list, generator.OrderHistory]:
 
 @pytest.fixture
 def stars_paths_off(monkeypatch):
-    monkeypatch.setitem(planted_switches.ON, "R5", False)
-    monkeypatch.setitem(planted_switches.ON, "R6", False)
+    # Stars reach purchases through the shop's ranker (R5), price sensitivity
+    # (R6) and every showing's odds (P7): since ADR 0045 a purchase is a showing.
+    for effect in ("R5", "R6", "P7"):
+        monkeypatch.setitem(planted_switches.ON, effect, False)
 
 
 def test_without_reviews_every_customer_churns_when_they_did_with_them(stars_paths_off, monkeypatch):

@@ -40,8 +40,9 @@ def public_customer(customer) -> dict:
         "name": customer.name,
         "region": customer.region,
         "tenure_months": customer.tenure_months,
-        "pets": " ".join(customer.pets),
-        "dog_size": customer.pet_size if "dog" in customer.pets else None,
+        # Declared only by those who filled a pet profile (about 40 %).
+        "pets": " ".join(customer.pets) if customer.pet_profile else None,
+        "dog_size": customer.pet_size if customer.pet_profile and "dog" in customer.pets else None,
         "diet": customer.diet_rule,
         "total_orders": customer.total_orders,
         "total_spent_eur": customer.total_spent_eur,
@@ -101,6 +102,8 @@ class Context:
     offer_share: str = "none"       # none | low | high: bought on offer
     new_share: str = "none"         # … new products
     label_share: str = "none"       # … labelled products
+    # Derived: the pet types the customer's earlier orders were for ("cat dog").
+    pets_from_orders: str | None = None
     search_query: str | None = None
     basket: str | None = None              # this month's basket, SKUs
     basket_categories: str | None = None   # the same as words: "small_animal_cage dog_dryfood"
@@ -155,3 +158,11 @@ def share_band(kind: str, matching: int, bought: int) -> str:
     if kind == "new":
         return "high" if matching > 0 else "low"
     return "high" if matching / bought >= SHARE_HIGH_AT[kind] else "low"
+
+
+def pets_from_orders(pet_types) -> str | None:
+    """`contexts.pets_from_orders`: the pet types a customer bought for in
+    earlier months, derived from their orders (most customers declare no pet
+    profile). None before their first order."""
+    pets = sorted(set(pet_types))
+    return " ".join(pets) or None

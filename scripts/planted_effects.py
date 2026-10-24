@@ -33,6 +33,7 @@ from scripts import acquisition_effect_metrics as acq
 from scripts import person_effect_metrics as person
 from scripts import planted_effect_metrics as metrics
 from scripts import review_effect_metrics as rev
+from scripts import sales_effect_metrics as sales
 from scripts import state_effect_metrics as st
 
 SEEDS = (42, 7, 99)
@@ -40,8 +41,10 @@ REPORT = Path(__file__).resolve().parent.parent / "docs/verification/actionable-
 
 # Each null switches one planted effect off. A name in `planted_switches.ON`
 # turns that switch off; the older effects set their constants to "no effect".
-SWITCHED = ("P6", "P7", "P8", "P9", "P10", "quality", "R3", "R4", "R4_reply", "R5", "R6",
-            "F1", "F2", "F3", "F4", "F5", "C1")
+SWITCHED = {name: (name,) for name in ("P6", "P7", "P8", "P9", "P10", "quality", "R3", "R4", "R4_reply",
+                                        "R5", "R6", "F1", "F2", "F3", "F4", "F5", "C1", "placement")}
+# ADR 0045's O2: both effects of an offer, per showing and by placement.
+SWITCHED["offers"] = ("P6", "placement")
 CONSTANTS = {
     "launch pull": {"LAUNCH_PICK_FACTOR": 1.0, "RIVAL_PICK_FACTOR": 1.0, "RECONSIDER_AFTER_RIVAL": 1.0,
                     "SWITCH_TO_RIVAL": False},
@@ -49,7 +52,7 @@ CONSTANTS = {
     "pack size": {"PACK_FIT": 1.0},
     "kit progression": {"observable.KIT_PROGRESSION": False},
 }
-NULLS = SWITCHED + tuple(CONSTANTS)
+NULLS = tuple(SWITCHED) + tuple(CONSTANTS)
 
 # Every number a check reads, by name. Each is computed once per generation.
 LEVEL_METRICS = {"P6": st.offer_contrast, "P7": st.stars_contrast, "P8": st.newness_contrast,
@@ -89,6 +92,9 @@ METRICS = {
     **{f"regular {s} {staple}": (lambda fx, s=s, staple=staple: acq.regular_rate(
         fx, source=s, staple_first=staple == "staple"))
        for s in ("organic_search", "affiliate") for staple in ("staple", "no staple")},
+    "O2": sales.units_at_deep_offers,
+    "O3a": sales.showings_on_offer,
+    "O3b": sales.click_rate_rises_by_position,
     "C1": person.natural_food_grain_free,
     "C2 rate": person.consent_rate_off,
     "C2 gap": person.consent_largest_gap,
@@ -160,7 +166,11 @@ CHECKS = [
           ("R4b",)),
     Check("R4c", "never orders again after a bad experience", "R4", "ratio", ("R4c",)),
     Check("R5", "stars move demand (5 ÷ 1–2)", "R5", "ratio", ("R5",), GE, 1.4),
-    Check("R6", "offer response at 1–2 stars ÷ at 5", "R6", "ratio", ("R6",), GE, 1.1),
+    # Reported since ADR 0045: offers act through P6, not ε (actionable-states-prereg.md).
+    Check("R6", "offer response at 1–2 stars ÷ at 5", "R6", "ratio", ("R6",)),
+    Check("O2", "units at a 20 %+ offer", "offers", "ratio", ("O2",), GE, 1.8),
+    Check("O3a", "showings of an offered product", "placement", "ratio", ("O3a",), GE, 1.2),
+    Check("O3b", "list slots 1–9 clicked as often as the slot above", None, "planted", ("O3b",), LE, 0.0),
     Check("F1a", "organic search lands on product pages", "F1", "ratio", ("F1a",), GE, 1.6),
     Check("F1b", "social lands on toys and treats", "F1", "ratio", ("F1b",), GE, 1.8),
     Check("F1c", "email and affiliate land on offers", "F1", "ratio", ("F1c",), GE, 2.0),
@@ -212,16 +222,16 @@ def generate(seed: int, null: str | None) -> metrics.Fixtures:
     try:
         for name, value in patch.items():
             setattr(*_target(name), value)
-        if null in SWITCHED:
-            planted_switches.ON[null] = False
+        for switch in SWITCHED.get(null, ()):
+            planted_switches.ON[switch] = False
         generator.RNG_SEED, generator.DATA_DIR = seed, out
         with contextlib.redirect_stdout(io.StringIO()):
             generator.main()
     finally:
         for name, value in saved.items():
             setattr(*_target(name), value)
-        if null in SWITCHED:
-            planted_switches.ON[null] = True
+        for switch in SWITCHED.get(null, ()):
+            planted_switches.ON[switch] = True
     return metrics.Fixtures(out)
 
 

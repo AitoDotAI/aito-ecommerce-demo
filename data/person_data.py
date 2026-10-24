@@ -10,6 +10,7 @@
 - **Behavioural consent** (about 60 %), independent of every hidden trait
   (C2). Without it, the shop records no visits or impressions; orders
   still exist.
+- **A pet profile** (pets, a dog's size), filled by about 40 %.
 
 Each draw has its own seeded RNG per customer (`data/planted_switches.py`).
 Checks: docs/verification/actionable-states-prereg.md, ADR 0044 addendum.
@@ -28,6 +29,7 @@ POSTCODE_AREAS = {"helsinki": range(1, 10), "espoo": range(20, 29), "turku": ran
                   "tampere": range(330, 340), "jyvaskyla": range(400, 410), "oulu": range(900, 910)}
 DELIVERY_METHODS = {"home_delivery": 0.45, "parcel_locker": 0.40, "store_pickup": 0.15}
 LOYALTY_P = 0.4
+PET_PROFILE_P = 0.4              # Antti, 2026-10-24: most people never fill a pet profile
 
 INTEREST_DECLARED_P = 0.35
 TOPICS = ("training", "grooming", "natural_food", "toys_and_play", "health_and_care", "budget_buys")
@@ -68,12 +70,19 @@ def draw_interests(rng: random.Random, customer) -> str | None:
     return " ".join(chosen or [fallback])
 
 
-def assign(seed: int, customers: list, always_consenting: set[str]) -> None:
-    """Fill each customer's declared fields and consent. Runs after the orders,
-    since the diet rule is drawn there."""
+def assign_consent(seed: int, customers: list, always_consenting: set[str]) -> None:
+    """Behavioural consent, before any session: it decides what is recorded (ADR 0045)."""
+    for c in customers:
+        c.consent_behavioural = (c.customer_id in always_consenting
+                                 or stream(seed, "consent", c.customer_id).random() < CONSENT_P)
+
+
+def assign(seed: int, customers: list, always_with_profile: set[str]) -> None:
+    """Fill each customer's declared fields. Runs after the orders, since the
+    diet rule is drawn there."""
     for c in customers:
         cid = c.customer_id
-        c.consent_behavioural = cid in always_consenting or stream(seed, "consent", cid).random() < CONSENT_P
+        c.pet_profile = cid in always_with_profile or stream(seed, "pet-profile", cid).random() < PET_PROFILE_P
         form = stream(seed, "purchase-form", cid)
         filled, sex = form.random() < SEX_FILLED_P, _choose(form, SEXES)
         c.sex = sex if filled else None
