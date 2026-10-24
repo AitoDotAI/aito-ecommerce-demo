@@ -81,7 +81,7 @@ const VIEWS = [
   { route: "/shop/",                         file: "01-shop.png",                selector: null },
   { route: "/",                              file: "02-overview.png",            selector: ".hbar-row" },
   { route: "/patterns/",                     file: "03-patterns.png",            selector: null },
-  { route: "/product-insights/",             file: "04-product.png",             selector: null },
+  { route: "/product/",                      file: "04-product.png",             selector: null },
   { route: "/supply/",                       file: "05-supply.png",              selector: null },
   { route: "/retention/",                    file: "06-retention.png",           selector: null },
   { route: "/product-filling/",              file: "07-product-filling.png",     selector: ".fill-conf" },

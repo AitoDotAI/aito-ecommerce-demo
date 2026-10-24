@@ -24,7 +24,7 @@ the demo abstracts away.
 | 14 | [Markdown Decision](14-markdown.md) | `_estimate units_sold` × 5 markdown levels per overstock SKU + clearance-revenue picker |
 | 15 | [Cart Completion](15-cart-completion.md) | `_relate` over `orders.line_categories` × 4 preset checkout carts + `_search` for popular products in top related category |
 | 16 | [Win-back Campaigns](16-winback.md) | `_recommend product_sku from winback_campaigns goal {responded: true}` + `_estimate order_value_eur` per suggestion; Netigate action+impact pattern ported |
-| 17 | [Product Insights](17-product-insights.md) | `_relate` over one product's `order_lines` per declared buyer field (`order_id.customer_id.*`, two links); funnel, surface and review counts in one `_batch` |
+| 17 | [Product](17-product.md) | The offer decision from `_predict purchased` per `product_state.discount_band`; the price what-if (`_estimate`, regression); history in one `_batch`; `_relate` over one product's `order_lines` per declared buyer field |
 | 18 | [Shop analytics](18-shop-analytics.md) | Parallel field-form `_relate`s over impressions, order lines and orders; intervals widened by a design effect from `_relate` on the customer column, Bonferroni per section; search-word lift against search impressions from two `_relate`s |
 | 19 | [Shop](19-shop.md) | Three intent views: "Buy again" by `skus.$feature`, "Next for their kit" by `_predict product_sku` over `order_lines`, "Picked for you" by `_recommend` with declared pets, month and cart words as context, pets and household rule as candidate filters; just-bought re-asked in a `_batch`; same-basket `_relate` over `orders.skus` |
 

@@ -35,7 +35,6 @@ from src.search_service import smart_search
 from src.recommend_service import get_for_you
 from src.filling_service import get_filling
 from src.review_triage_service import get_review_triage
-from src.price_service import get_prices
 
 
 def warm_all(client: AitoClient, *, verbose: bool = True) -> None:
@@ -88,7 +87,6 @@ def warm_all(client: AitoClient, *, verbose: bool = True) -> None:
          lambda: smart_search(client, query="food", persona_id="olli")),
         ("product-filling",    lambda: get_filling(client)),
         ("review-triage",      lambda: get_review_triage(client)),
-        ("price",              lambda: get_prices(client)),
         # The heavy endpoints (demand, evaluation, retention, supply)
         # are deliberately NOT warmed here. They are
         # precompute-and-served from the Aito `precompute_entries` table

@@ -61,7 +61,7 @@ const LINKS = [
   { view: "query-patterns", query: "customer=olli", api: "/api/for-you", expect: { customer: "olli" } },
   { view: "product-filling", query: "sku=SKU-PT-0042", api: "/api/product-filling", expect: { sku: "SKU-PT-0042" } },
   { view: "review-triage", query: "review=REV-00042", api: "/api/review-triage", expect: { review: "REV-00042" } },
-  { view: "product-insights", query: "sku=SKU-PT-0042", api: "/api/product-insights", expect: { sku: "SKU-PT-0042" } },
+  { view: "product", query: "sku=SKU-PT-0042&month=2025-12", api: "/api/product", expect: { sku: "SKU-PT-0042", month: "2025-12" } },
   { view: "shop", query: "shopper=janne&month=2025-12&cart=SKU-PT-0001", api: "/api/shop/grid",
     expect: { shopper: "janne", month: "2025-12", cart: "SKU-PT-0001" } },
   { view: "patterns", query: "kpi=clicked&who=grain-free", api: "/api/shop-analytics/funnel", expect: { kpi: "clicked" } },
@@ -84,6 +84,10 @@ const MOVED = [
   ["/markdown/", "/supply/", null, {}],
   ["/churn/", "/retention/", null, {}],
   ["/winback/", "/retention/", null, {}],
+  ["/product-insights/", "/product/", "/api/product", { sku: "SKU-PT-0042" }],
+  // Price: a per-product link (?sku=) opens Product; the catalogue link opens Supply.
+  ["/price/", "/product/", "/api/product", { sku: "SKU-PT-0042" }],
+  ["/price/", "/supply/", null, {}],
   ["/pattern-explorer/", "/patterns/", null, { anchor: "cat_wetfood" }],
   ["/basket-rules/", "/patterns/", null, {}],
   ["/purchase-analytics/", "/", "/api/overview", {}],
@@ -94,7 +98,7 @@ const MOVED = [
 const PICKERS = [
   { view: "product-filling", select: "#sku-picker", key: "sku", api: "/api/product-filling" },
   { view: "review-triage", select: "#rev-picker", key: "review", api: "/api/review-triage" },
-  { view: "product-insights", select: "#sku-picker", key: "sku", api: "/api/product-insights" },
+  { view: "product", select: "#sku-picker", key: "sku", api: "/api/product" },
   { view: "patterns", select: "#who-picker", key: "who", api: "/api/shop-analytics/who" },
 ];
 
@@ -132,16 +136,9 @@ function stubResponse(apiPath, params) {
                fields: [], candidate_reviews: OPTIONS.review.map((r) => ({ review_id: r, rating: 4, text_short: `Review ${r}` })),
                last_query: STUB_QUERY, last_response_ms: 1 };
     }
-    case "/api/product-insights": {
+    case "/api/product": {
       if (params.get("sku") === UNKNOWN.sku) return notFound(`No product ${UNKNOWN.sku} in the catalogue`);
-      const sku = params.get("sku") ?? OPTIONS.sku[0];
-      return { product: { sku, name: `Product ${sku}`, brand: "PetNord", pet_type: "dog", category: "treats", price_eur: 3 },
-               funnel: [{ step: "impressions", count: 10 }, { step: "clicked", count: 5 },
-                        { step: "added_to_cart", count: 3 }, { step: "purchased", count: 2 }],
-               surfaces: [], buyers: [], monthly: [], ratings: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
-               sentiments: { positive: 0, neutral: 0, negative: 0 },
-               candidate_products: OPTIONS.sku.map((s) => ({ sku: s, name: `Product ${s}`, category: "treats", pet_type: "dog" })),
-               bought_together_anchor: null, last_query: STUB_QUERY };
+      return productStub(params.get("sku") ?? OPTIONS.sku[0], params.get("month") ?? "2026-04");
     }
     case "/api/shop/shoppers":
       return { shoppers: [{ key: "paivi", customer_id: "C1", name: "Päivi", emoji: "", story: "s" },
@@ -174,6 +171,33 @@ function stubResponse(apiPath, params) {
     default:
       return null;   // Personalised search and Query patterns show their controls without data.
   }
+}
+
+// The Product view's answer for `sku` in `month`: enough to render every section.
+function productStub(sku, month) {
+  const bands = ["none", "10-15", "15-20", "20+"].map((band, i) => ({
+    band, p_purchase: 0.2 + i * 0.05, vs_no_discount: 1 + i * 0.25, band_lift: 1, product_lift: 1, base_p: 0.12,
+    normaliser: 1, calibrated: false, shown: 10, purchased: 2, current: band === "none" }));
+  const margin = (band, p) => ({ band, price_eur: 3, p_purchase: p, margin_per_100_eur: 30 });
+  const whatIf = { sku, name: `Product ${sku}`, price_eur: 3, cost_eur: 1.5, units: 10, below_zero: false,
+                   revenue_eur: 30, profit_eur: 15, form: "add", base_units: 10, factors: [], last_query: STUB_QUERY };
+  const state = { month, units_sold: 10, price_eur: 3, list_price_eur: 3, discount_band: "none", rating_band: "4",
+                  age: "established", rival_launched: false, price_change: "none", reviews: 0 };
+  return {
+    product: { sku, name: `Product ${sku}`, brand: "PetNord", pet_type: "dog", category: "treats", price_eur: 3, unit_cost_eur: 1.5 },
+    month, forecast_month: "2026-05", state,
+    decision: { action: "keep", current_band: "none", best_band: "none", current: margin("none", 0.2), best: margin("none", 0.2),
+                breakeven_ratio: null, expected_ratio: 1, margins: bands.map((b) => margin(b.band, b.p_purchase)) },
+    discount: { sku, name: `Product ${sku}`, current_band: "none", month, bands, last_query: STUB_QUERY },
+    price_now: whatIf, price_best: null,
+    history: { funnel: [{ step: "impressions", count: 10 }, { step: "clicked", count: 5 },
+                        { step: "added_to_cart", count: 3 }, { step: "purchased", count: 2 }],
+               surfaces: [], months: [{ ...state, month: "2025-12" }, { ...state, month: "2026-04" }],
+               ratings: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }, sentiments: { positive: 0, neutral: 0, negative: 0 } },
+    buyers: [], shopper: null, basket_category: { token: "dog_treats", label: "Dog treats" },
+    candidates: OPTIONS.sku.map((s) => ({ sku: s, name: `Product ${s}`, brand: "PetNord", category: "treats", pet_type: "dog" })),
+    last_query: STUB_QUERY,
+  };
 }
 
 const apiPathOf = (url) => url.pathname.replace(/\/$/, "");
@@ -333,15 +357,15 @@ async function main() {
 
     {
       const visit = await openFresh(browser, `${BASE}/evidence/model-checks/`);
-      await visit.page.locator("tr", { hasText: /pet type/i }).first().click();
-      const followed = await urlMatches(visit.page, /model=pet_type_from_name/);
+      await visit.page.locator("tr", { hasText: /return risk/i }).first().click();
+      const followed = await urlMatches(visit.page, /model=return_risk/);
       const copied = visit.page.url();
       await visit.context.close();
       check(followed, `model-checks: a row click puts the model in the address bar (${copied})`);
 
       const reopened = await openFresh(browser, copied);
-      const focused = await appears(reopened.page.locator("tr[style*='solid']", { hasText: /pet type/i }).first());
-      check(focused, "model-checks: the copied URL reopens with the pet-type row focused");
+      const focused = await appears(reopened.page.locator("tr[style*='solid']", { hasText: /return risk/i }).first());
+      check(focused, "model-checks: the copied URL reopens with the return-risk row focused");
       await reopened.context.close();
     }
 
@@ -364,11 +388,11 @@ async function main() {
       const { context, page } = await openFresh(browser, `${BASE}/evidence/model-checks/?model=dietary_from_name`);
       const focusedDietary = page.locator("tr[style*='solid']", { hasText: /diet/i }).first();
       check(await appears(focusedDietary), "model-checks?model=dietary_from_name focuses the dietary row");
-      await page.locator("tr", { hasText: /pet type/i }).first().click();
-      const forward = await urlMatches(page, /model=pet_type_from_name/);
+      await page.locator("tr", { hasText: /return risk/i }).first().click();
+      const forward = await urlMatches(page, /model=return_risk/);
       await page.goBack();
       const back = await urlMatches(page, /model=dietary_from_name/) && await appears(focusedDietary);
-      check(forward && back, "model-checks: pet type → back restores the dietary focus");
+      check(forward && back, "model-checks: return risk → back restores the dietary focus");
       await context.close();
     }
 
@@ -381,7 +405,7 @@ async function main() {
 
     // A link to an id that no longer exists says so, and offers the way back.
     for (const [view, key, api, label] of [["product-filling", "sku", "/api/product-filling", "Show the default product"],
-                                           ["product-insights", "sku", "/api/product-insights", "Show the default product"],
+                                           ["product", "sku", "/api/product", "Show the default product"],
                                            ["review-triage", "review", "/api/review-triage", "Show the default review"]]) {
       const { context, page, requests } = await openFresh(browser, `${BASE}/${view}/?${key}=${UNKNOWN[key]}`);
       const notice = page.getByText(`No ${key === "sku" ? "product" : "review"} ${UNKNOWN[key]}`);
@@ -419,7 +443,9 @@ async function main() {
 
     {
       const { context, page } = await openFresh(browser, `${BASE}/evidence/`);
-      const modelLine = await appears(page.getByText(/2 of 3 models beat that guess by 10 points or more/));
+      // The total comes from the snapshot the test serves, so a new evaluation can't leave it stale.
+      const evaluated = JSON.parse(fs.readFileSync(EVAL_SNAPSHOT, "utf8")).data.models.length;
+      const modelLine = await appears(page.getByText(new RegExp(`\\d of ${evaluated} models beat that guess by 10 points or more`)));
       const entries = await page.locator(".evidence-entry").count();
       const marked = await page.locator(".evidence-entry .pill", { hasText: /^(Real|Synthetic) data$/ }).count();
       check(modelLine && entries === 3 && marked === 3,

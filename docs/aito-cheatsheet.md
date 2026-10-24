@@ -1258,7 +1258,7 @@ Probed 2026-10-20 and 2026-10-21 on the test env `observable`
   `context.customer` through two links (variants G, K, L). The views
   relate `context.customer.pets` / `.diet` (Shop analytics) and
   `order_id.customer_id.pets` / `.dog_size` / `.diet` / `.region`
-  (Product Insights) the same way.
+  (the Product view's "For whom") the same way.
 - **`$match` on a Text set means "contains", and carries no absence.**
   `"context.owned": {"$and": [{"$match": "small_animal_cage"},
   {"$match": "small_animal_water_bottle"}]}` also matches households that
@@ -1301,7 +1301,7 @@ Probed 2026-10-20 and 2026-10-21 on the test env `observable`
 ## A discount band as a what-if — `_predict purchased` with `product_state.*`
 
 Probed 2026-10-24 on env `observable` (Aito 2.11.8), read-only. The
-Price view's discount what-if (ADR 0032, `src/discount_what_if.py`).
+Product view's discount what-if (ADR 0032, ADR 0041, `src/discount_what_if.py`).
 The band goes in `where` through the impression's `product_state` link
 (one link), next to the product:
 

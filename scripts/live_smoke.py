@@ -110,7 +110,6 @@ STEPS = [
     # not shown in the sidebar: shape only (demand's seasonality moves to Patterns)
     Step("demand", "/api/demand", shape_only("top_movers", "seasonality", what="demand")),
     Step("patterns-baskets", "/api/shop-analytics/baskets", nonempty("pairs", what="patterns baskets")),
-    Step("price", "/api/price", shape_only("fair_bands", "sweet_spots", what="price")),
     Step("product-filling", "/api/product-filling", nonempty("fields", what="product filling")),
     Step("review-triage", "/api/review-triage", nonempty("fields", what="review triage")),
     Step("smart-search", "/api/smart-search", nonempty("baseline", "predictive", what="smart search"),

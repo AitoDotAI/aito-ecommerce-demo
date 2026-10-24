@@ -13,7 +13,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-import type { PriceDetail } from "@/lib/types";
+import type { PriceCurve } from "@/lib/types";
 
 
 /**
@@ -31,7 +31,7 @@ export default function PriceScatterChart({
   detail,
   onPickPrice,
 }: {
-  detail: PriceDetail;
+  detail: PriceCurve;
   /** Called with a curve point's price when the user clicks it. */
   onPickPrice?: (priceEur: number) => void;
 }) {
@@ -206,12 +206,12 @@ export default function PriceScatterChart({
             />
           )}
 
-          {/* Current list price — vivid red disc with white border so
+          {/* The average selling price (the curve's centre) — vivid red disc with white border so
               it never gets lost on the orange curve. Drawn LAST so it
               sits on top of every other layer. */}
           {currentPoint.length > 0 && (
             <Scatter
-              name="Current list price"
+              name="Average selling price"
               data={currentPoint}
               fill="#e3243d"
               shape={(props: { cx?: number; cy?: number }) => (

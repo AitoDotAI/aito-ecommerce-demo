@@ -231,20 +231,18 @@ def test_evaluate_baseline_matches_the_population_majority_share(client):
 # ── Price: findings must be distinguishable from noise ───────────────
 
 
-def test_price_view_flags_no_outlier_on_a_thin_history(client):
-    """The view once opened on an "outlier" whose band came from two sales.
-    Every flagged outlier must have enough observations for a band, and
-    every sweet spot must have support and a lift interval excluding 1."""
-    from src.price_bands import MIN_OUTLIER_OBSERVATIONS, MIN_SWEET_SPOT_SUPPORT
-    from src.price_service import get_prices
-    from src import cache
+def test_supply_flags_no_price_outlier_on_a_thin_history(client):
+    """Price once opened on an "outlier" whose band came from two sales.
+    Over the realised prices Supply reads, every flagged outlier must rest on
+    enough observations for a band to mean anything."""
+    from src.catalogue_reads import products_by_sku, read_all, rows_by_sku
+    from src.price_bands import MIN_OUTLIER_OBSERVATIONS, price_band
 
-    cache.clear()
-    response = get_prices(client)
-    thin = [b.sku for b in response.fair_bands if b.outlier and b.observation_count < MIN_OUTLIER_OBSERVATIONS]
-    assert not thin, f"outliers on a thin history: {thin}"
-    weak = [s.category for s in response.sweet_spots if s.f_on_condition < MIN_SWEET_SPOT_SUPPORT]
-    assert not weak, f"sweet spots on thin support: {weak}"
+    products = products_by_sku(client)
+    bands = [price_band([float(r["price_eur"]) for r in rows], float(products[sku]["price_eur"]))
+             for sku, rows in rows_by_sku(read_all(client, "product_states")).items()]
+    assert any(b.outlier for b in bands), "no outlier at all: is the band rule reading the prices?"
+    assert not [b for b in bands if b.outlier and b.observations < MIN_OUTLIER_OBSERVATIONS]
 
 
 # ── Churn: profile drivers, one row per customer (ADR 0013 amendment) ─
@@ -413,25 +411,53 @@ def test_demand_time_split_honours_the_train_proposition(client):
     assert everything_before != oldest_only
 
 
-# ── Product Insights: one product's funnel and buyers (ADR 0028) ─────
+# ── Product: history, buyers and the decision (ADR 0028, ADR 0041) ───
 
 
-def test_product_insights_funnel_is_monotone_and_relate_counts_its_lines(client):
+def test_product_history_batch_returns_counts_and_every_row(client):
     """For the default product: the funnel never grows step to step, the
     surfaces cover every impression (the service asserts that), and the
-    "who buys it" `_relate` conditions on exactly this product's order
-    lines (`fCondition` equals a plain count)."""
-    from src.product_insights_service import DEFAULT_SKU, get_product_insights
+    rows in the same `_batch` come back whole (`total` equals the hits:
+    `_rows` asserts it), one month per state."""
+    from src.product_history import get_product_history
+    from src.product_service import DEFAULT_SKU
 
-    result = get_product_insights(client, DEFAULT_SKU)
+    history = get_product_history(client, DEFAULT_SKU)
 
-    counts = [step.count for step in result.funnel]
+    counts = [step.count for step in history.funnel]
     assert counts[0] > 0, "no impressions for the default product"
     assert counts == sorted(counts, reverse=True), counts
+    assert len(history.months) == 24, [m.month for m in history.months]
+    assert sum(m.units_sold for m in history.months) > 0
+    assert sum(history.ratings.values()) == sum(history.sentiments.values()) > 0
+
+
+def test_product_buyers_relate_counts_exactly_the_products_order_lines(client):
+    """The "who buys it" `_relate` conditions on exactly this product's
+    order lines: `fCondition` equals a plain count."""
+    from src.product_buyers import get_buyers
+    from src.product_service import DEFAULT_SKU
+
+    buyers = get_buyers(client, DEFAULT_SKU)
+
     lines = client.search("order_lines", where={"product_sku": DEFAULT_SKU}, limit=0)["total"]
-    assert result.buyers, "no buyer profiles for the default product"
-    assert all(b.lines_total == lines for b in result.buyers), (lines, result.buyers[:2])
-    assert result.monthly, "no monthly_sales rows for the default product"
+    assert buyers, "no buyer profiles for the default product"
+    assert all(b.lines_total == lines for b in buyers), (lines, buyers[:2])
+
+
+def test_product_view_leads_with_a_decision_in_range(client):
+    """The decision's rates are Aito's `$p` in [0, 1], its margins follow
+    from them, and the price what-if answers at today's price and, when
+    the advice changes the band, at the advised price."""
+    from src.product_service import DEFAULT_SKU, get_product_view
+
+    view = get_product_view(client, DEFAULT_SKU)
+
+    decision = view.decision
+    assert all(0.0 <= m.p_purchase <= 1.0 for m in decision.margins), decision.margins
+    assert decision.best.margin_per_100_eur == max(m.margin_per_100_eur for m in decision.margins)
+    assert view.price_now.price_eur == view.state.price_eur
+    assert (view.price_best is None) == (decision.action == "keep")
 
 
 # ── v2 engine behaviour the views rely on (checked on 2.11.4) ────────
@@ -466,11 +492,11 @@ def test_price_what_if_explains_the_estimate_with_price_as_a_factor(client):
     """The waterfall's rows multiply out to the estimate (`waterfall` raises
     otherwise), price is one of them, and the what-if agrees with the demand
     curve's point at the same price, since both ask the regression model."""
-    from src.price_service import get_price_detail
+    from src.price_curve import get_price_curve
     from src.price_what_if import get_price_what_if
 
-    detail = get_price_detail(client, "SKU-PT-0133")
-    centre = next(p for p in detail.curve if p.adjustment_pct == 0)
+    curve = get_price_curve(client, "SKU-PT-0133")
+    centre = next(p for p in curve.curve if p.adjustment_pct == 0)
 
     what_if = get_price_what_if(client, "SKU-PT-0133", centre.price_eur)
 

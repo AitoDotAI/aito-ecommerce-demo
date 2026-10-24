@@ -59,9 +59,8 @@ def test_an_empty_driver_list_fails_retention():
 
 
 def test_hidden_views_are_checked_for_shape_not_content():
-    # Demand and Price are off the sidebar (ADR 0041); empty is fine
-    for name, body in [("demand", {"top_movers": [], "seasonality": []}),
-                       ("price", {"fair_bands": [], "sweet_spots": []})]:
+    # Demand is off the sidebar (ADR 0041); empty is fine
+    for name, body in [("demand", {"top_movers": [], "seasonality": []})]:
         check = next(s.check for s in smoke.STEPS if s.name == name)
         assert "shape ok" in check(body)
         with pytest.raises(AssertionError):

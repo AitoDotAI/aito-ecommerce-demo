@@ -39,7 +39,7 @@ export default function OverstockTable({ rows, highlight }: { rows: SupplyOverst
             <Fragment key={r.sku}>
               <tr id={`row-${r.sku}`} style={highlight === r.sku ? HIGHLIGHT : undefined}>
                 <td>
-                  <Link href={`/product-insights/?sku=${encodeURIComponent(r.sku)}`} style={{ fontWeight: 700 }}>
+                  <Link href={`/product/?sku=${encodeURIComponent(r.sku)}`} style={{ fontWeight: 700 }}>
                     {r.name}
                   </Link>
                   <div style={{ color: "var(--text-muted)", fontSize: 11 }}>{r.category.replace(/-/g, " ")}</div>

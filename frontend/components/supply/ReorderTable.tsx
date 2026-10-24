@@ -43,7 +43,7 @@ export default function ReorderTable({ rows, month, highlight }: {
           {shown.map((r) => (
             <tr key={r.sku} id={`row-${r.sku}`} style={highlight === r.sku ? HIGHLIGHT : undefined}>
               <td>
-                <Link href={`/product-insights/?sku=${encodeURIComponent(r.sku)}`} style={{ fontWeight: 700 }}>
+                <Link href={`/product/?sku=${encodeURIComponent(r.sku)}`} style={{ fontWeight: 700 }}>
                   {r.name}
                 </Link>
                 <div style={{ color: "var(--text-muted)", fontSize: 11 }}>

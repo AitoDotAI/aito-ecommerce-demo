@@ -2,53 +2,40 @@
 
 import { useEffect, useState } from "react";
 
-import { apiFetch } from "@/lib/api";
-import type { DiscountBandEstimate, DiscountWhatIf as DiscountWhatIfResult } from "@/lib/types";
+import { fmtEur } from "@/lib/api";
+import { BAND_LABEL } from "./labels";
+import type { BandMargin, DiscountBandEstimate, DiscountWhatIf as DiscountWhatIfResult } from "@/lib/types";
 
-const BAND_LABEL: Record<string, string> = {
-  "none": "No discount",
-  "10-15": "10–15 % off",
-  "15-20": "15–20 % off",
-  "20+": "20 % or more off",
-};
 
 /**
  * Discount what-if (ADR 0032): the chance a shopper buys this product when
  * it is shown, at each discount band. One `_predict purchased` per band on
  * `impressions`, with the band set through `product_state`, so a band the
  * product never had is a what-if. Beside each estimate, what the data holds
- * for the product at that band.
+ * for the product at that band. The Product view sends the queries with
+ * its decision (`/api/product`) and passes the answer in.
  */
 export default function DiscountWhatIf({
-  sku,
+  result: shown,
+  margins,
   onQuery,
 }: {
-  sku: string;
+  result: DiscountWhatIfResult;
+  /** Each band's margin per 100 showings, from the Product view's decision. */
+  margins: BandMargin[];
   onQuery: (body: Record<string, unknown>) => void;
 }) {
-  const [result, setResult] = useState<DiscountWhatIfResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  useEffect(() => {
-    let current = true;
-    setError(null);
-    apiFetch<DiscountWhatIfResult>(`/api/price/discount-what-if?sku=${encodeURIComponent(sku)}`)
-      .then((res) => { if (current) setResult(res); }, (e) => { if (current) setError(String(e)); });
-    return () => { current = false; };
-  }, [sku]);
-
-  const shown = result && result.sku === sku ? result : null;
   // The row whose $why is spelled out below the table: the current band
   // until a row is clicked.
   const [picked, setPicked] = useState<string | null>(null);
-  useEffect(() => { setPicked(null); }, [sku]);
+  useEffect(() => { setPicked(null); }, [shown.sku]);
   const pickBand = (band: string) => {
-    if (!shown) return;
     setPicked(band);
     const body = shown.last_query.body as { where: Record<string, unknown> };
     onQuery({ ...body, where: { ...body.where, "product_state.discount_band": band } });
   };
-  const maxP = shown ? Math.max(...shown.bands.map((b) => b.p_purchase)) : 1;
-  const chainBand = shown?.bands.find((b) => (picked ? b.band === picked : b.current)) ?? null;
+  const maxP = Math.max(...shown.bands.map((b) => b.p_purchase));
+  const chainBand = shown.bands.find((b) => (picked ? b.band === picked : b.current)) ?? null;
 
   return (
     <div className="card" style={{ marginBottom: 20 }}>
@@ -58,52 +45,48 @@ export default function DiscountWhatIf({
       <div className="page-title" style={{ fontSize: 17, margin: "4px 0 12px" }}>
         If it were on offer: the chance a shopper buys it when it&apos;s shown
       </div>
-      {error && <div className="card-sub" style={{ color: "var(--red)" }}>Couldn&apos;t predict: {error}</div>}
-      {!error && !shown && <div style={{ height: 180, background: "var(--border-light)", borderRadius: 4 }} />}
-      {!error && shown && (
-        <>
-          <div style={{ overflowX: "auto" }}>
-            <table className="recent-table" style={{ width: "100%", fontSize: 12.5 }}>
-              <thead>
-                <tr>
-                  <th style={{ textAlign: "left" }}>Discount</th>
-                  <th style={{ textAlign: "left" }}>Bought when shown</th>
-                  <th style={{ textAlign: "right" }}>vs. no discount</th>
-                  <th style={{ textAlign: "right" }}>Band&apos;s lift</th>
-                  <th style={{ textAlign: "right" }}>Product&apos;s lift</th>
-                  <th style={{ textAlign: "right" }}>In the data</th>
-                </tr>
-              </thead>
-              <tbody>
-                {shown.bands.map((b) => (
-                  <BandRow key={b.band} b={b} maxP={maxP} month={shown.month} onClick={() => pickBand(b.band)} />
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {chainBand && <Chain b={chainBand} />}
-          {shown.bands.some((b) => b.calibrated) && (
-            <div className="card-sub" style={{ marginTop: 6 }}>
-              Few shoppers buy this product, and Aito holds its estimate at a
-              floor (a <code>calibration</code> factor in <code>$why</code>): the
-              band&apos;s lift is listed, but moves the estimate little or not at all.
-            </div>
-          )}
-          <div className="card-sub" style={{ marginTop: 6 }}>
-            Each estimate is Aito&apos;s, learned from all impressions: the
-            band&apos;s lift is the same for every product. Where Aito leaves the
-            product&apos;s lift out of <code>$why</code>, the estimate is the
-            band&apos;s, not this product&apos;s. &ldquo;In the data&rdquo; is this
-            product&apos;s own impressions at the band.
-          </div>
-        </>
+      <div style={{ overflowX: "auto" }}>
+        <table className="recent-table" style={{ width: "100%", fontSize: 12.5 }}>
+          <thead>
+            <tr>
+              <th style={{ textAlign: "left" }}>Discount</th>
+              <th style={{ textAlign: "left" }}>Bought when shown</th>
+              <th style={{ textAlign: "right" }}>vs. no discount</th>
+              <th style={{ textAlign: "right" }}>Band&apos;s lift</th>
+              <th style={{ textAlign: "right" }}>Product&apos;s lift</th>
+              <th style={{ textAlign: "right" }}>Margin per 100 shown</th>
+              <th style={{ textAlign: "right" }}>In the data</th>
+            </tr>
+          </thead>
+          <tbody>
+            {shown.bands.map((b) => (
+              <BandRow key={b.band} b={b} maxP={maxP} month={shown.month}
+                       margin={margins.find((m) => m.band === b.band)} onClick={() => pickBand(b.band)} />
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {chainBand && <Chain b={chainBand} />}
+      {shown.bands.some((b) => b.calibrated) && (
+        <div className="card-sub" style={{ marginTop: 6 }}>
+          Few shoppers buy this product, and Aito holds its estimate at a
+          floor (a <code>calibration</code> factor in <code>$why</code>): the
+          band&apos;s lift is listed, but moves the estimate little or not at all.
+        </div>
       )}
+      <div className="card-sub" style={{ marginTop: 6 }}>
+        Each estimate is Aito&apos;s, learned from all impressions: the
+        band&apos;s lift is shop-wide, the same for every product. Where Aito leaves the
+        product&apos;s lift out of <code>$why</code>, the estimate is the
+        band&apos;s, not this product&apos;s. &ldquo;In the data&rdquo; is this
+        product&apos;s own impressions at the band.
+      </div>
     </div>
   );
 }
 
-function BandRow({ b, maxP, month, onClick }: {
-  b: DiscountBandEstimate; maxP: number; month: string; onClick: () => void;
+function BandRow({ b, maxP, month, margin, onClick }: {
+  b: DiscountBandEstimate; maxP: number; month: string; margin: BandMargin | undefined; onClick: () => void;
 }) {
   return (
     <tr onClick={onClick} style={{
@@ -139,6 +122,10 @@ function BandRow({ b, maxP, month, onClick }: {
       </td>
       <td style={{ textAlign: "right", fontFamily: "var(--mono)" }}>
         {b.product_lift === null ? "not in $why" : `×${b.product_lift.toFixed(2)}`}
+      </td>
+      <td style={{ textAlign: "right", fontFamily: "var(--mono)" }}
+          title={margin ? `at ${fmtEur(margin.price_eur, 2)}, one unit per purchase` : undefined}>
+        {margin ? fmtEur(margin.margin_per_100_eur, 2) : "—"}
       </td>
       <td style={{ textAlign: "right", fontSize: 11.5, color: "var(--text-muted)" }}>
         {b.shown === 0 ? "never shown at this band" : `${b.purchased} bought of ${b.shown} shown`}

@@ -4,7 +4,7 @@ and realised prices.
 Each is one paged `_search`. The tables are small (658 SKUs, ~15k
 monthly rows), so reading them once and doing the arithmetic in Python
 is cheaper than one Aito call per SKU: 658 parallel `_aggregate`s trip
-the rate limit (see `price_service.py`).
+the rate limit.
 """
 
 from __future__ import annotations
