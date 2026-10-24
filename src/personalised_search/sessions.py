@@ -70,9 +70,11 @@ def scored_sessions() -> list[Session]:
     """Every search session with a purchase from its results, personas left out, in id order."""
     release = json.loads((DATA / "release-env.json").read_text(encoding="utf-8"))["counts"]
     impressions = load("impressions")
-    if len(impressions) != release["impressions"]:
+    # The log is loaded as two tables (src/showing_split.py); together they are the file.
+    loaded = release["impressions"] + release["unranked_showings"]
+    if len(impressions) != loaded:
         raise ValueError(f"data/impressions.json has {len(impressions)} rows, the release "
-                         f"{release['impressions']}: regenerate it before scoring")
+                         f"{loaded}: regenerate it before scoring")
     bought: dict[str, set[str]] = {}
     for row in impressions:
         if row["purchased"] and row["placement"] == "list":

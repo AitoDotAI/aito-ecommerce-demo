@@ -46,7 +46,8 @@ def test_regenerating_writes_every_committed_loaded_table_byte_for_byte(regenera
 def test_regenerated_impressions_match_the_release(regenerated):
     release = json.loads((DATA_DIR / "release-env.json").read_text(encoding="utf-8"))
     rows = json.loads((regenerated / "impressions.json").read_text(encoding="utf-8"))
-    assert len(rows) == release["counts"]["impressions"]
+    # The log is loaded as two tables (src/showing_split.py).
+    assert len(rows) == release["counts"]["impressions"] + release["counts"]["unranked_showings"]
     local = DATA_DIR / "impressions.json"
     if local.exists():
         assert (regenerated / "impressions.json").read_bytes() == local.read_bytes()
