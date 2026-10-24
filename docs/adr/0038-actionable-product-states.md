@@ -1,6 +1,6 @@
 # ADR 0038: Actionable product states, shoppers who react differently, and a product manager's view
 
-**Status:** Proposed
+**Status:** Accepted (2026-10-24, Antti: "review, fix and merge all on green")
 **Date:** 2026-10-24
 **Deciders:** Antti
 
@@ -100,7 +100,8 @@ customer link) or from the derived band. Both are probed (Q8).
 
 ### The product manager's view
 
-A new owner's view, **Product manager**. Pick a product and a month; see:
+A new owner's view, **Product manager**: under ADR 0041 it is the levers
+of the **Product** view (What if, For whom). Pick a product and a month; see:
 
 1. **Its state** this month: price, discount, label, stock, stars, reviews.
 2. **Aito's estimate of its click-through and conversion**, for an
@@ -170,8 +171,8 @@ minimal repro.
 ## Demo impact
 
 A new owner beat after the Shop: "This dog food is on 15 % off. Aito
-expects it to get ×1.4 more clicks, nearly all of them from shoppers who
-buy on offer. Here's the same product with a Staff pick label instead,
+expects it to get ×N more clicks (the number comes from the run), most of
+them from shoppers who buy on offer. Here's the same product with a Staff pick label instead,
 no discount."
 
 ## Out of scope

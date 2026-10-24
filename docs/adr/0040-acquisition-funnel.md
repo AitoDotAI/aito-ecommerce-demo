@@ -1,6 +1,6 @@
 # ADR 0040: Where customers come from — sources, landing pages, first orders and who stays
 
-**Status:** Proposed
+**Status:** Accepted (2026-10-24, Antti: "review, fix and merge all on green")
 **Date:** 2026-10-24
 **Deciders:** Antti
 

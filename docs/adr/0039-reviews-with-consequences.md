@@ -1,6 +1,6 @@
 # ADR 0039: Reviews with consequences — clicks, purchases, NPS, churn, demand and price
 
-**Status:** Proposed
+**Status:** Accepted (2026-10-24, Antti: "review, fix and merge all on green")
 **Date:** 2026-10-24
 **Deciders:** Antti
 
@@ -77,7 +77,7 @@ thresholds are pre-registered in `docs/verification/actionable-states-prereg.md`
 | `order_lines` | gains `incident` (Boolean, delivery). The experience stays hidden, as a shop only sees it through reviews, NPS and returns |
 | `customer_months` | gains `nps_latest_group`, `had_negative_review`, `review_replied` |
 
-### Analytics: a Reviews view
+### Analytics: a Reviews view (Reviews & NPS, ADR 0041)
 
 One page, one product or the whole shop, each row an Aito query with an
 interval:
