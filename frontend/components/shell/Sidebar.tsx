@@ -45,15 +45,15 @@ const NAV: NavHeading[] = [
           { href: "/",                 label: "Overview",  icon: "📊" },
           { href: "/patterns",         label: "Patterns",  icon: "🔗" },
           { href: "/product-insights", label: "Product",   icon: "🏷️" },
-          { href: "/inventory",        label: "Supply",    icon: "📦" },
-          { href: "/churn",            label: "Retention", icon: "🔁" },
+          { href: "/supply",           label: "Supply",    icon: "📦" },
+          { href: "/retention",        label: "Retention", icon: "🔁" },
         ],
       },
       {
         label: "Operate",
         items: [
           { href: "/product-filling", label: "Product filling", icon: "⚡" },
-          { href: "/feedback",        label: "Review triage",   icon: "💬" },
+          { href: "/review-triage",   label: "Review triage",   icon: "💬" },
         ],
       },
     ],

@@ -1,4 +1,4 @@
-"""When is a price finding real? The two rules the Price view applies.
+"""When is a price finding real? The rules the Price and Supply views apply.
 
 Both exist because the view once presented noise as findings (demo
 review, 2026-09-28): it opened on an "outlier" whose band came from two
@@ -9,6 +9,7 @@ categories, whose lifts swing furthest by chance, came first.
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
 
 # A band of mean ± 1.5σ from fewer observations is not a band: with two
 # sales the σ is near zero and almost any list price falls outside it.
@@ -55,3 +56,29 @@ def is_real_lift(lift: float, fs: dict) -> bool:
         return False
     low, high = lift_interval(lift, support, fs["fCondition"], fs["f"], fs["n"])
     return low > 1 or high < 1
+
+
+@dataclass(frozen=True)
+class PriceBand:
+    """A SKU's list price against the prices it actually sold at."""
+    list_price_eur: float
+    mean_price_eur: float
+    band_low_eur: float              # mean − 1.5σ, floored at 0
+    band_high_eur: float             # mean + 1.5σ
+    observations: int
+    outlier: bool                    # list price outside the band (`is_price_outlier`)
+
+
+def price_band(realised_prices: list[float], list_price: float) -> PriceBand:
+    """The fair band of one SKU from its realised prices (`product_states`)."""
+    assert realised_prices, f"no realised prices to band a list price of {list_price}"
+    mean = sum(realised_prices) / len(realised_prices)
+    std = math.sqrt(sum((p - mean) ** 2 for p in realised_prices) / len(realised_prices))
+    return PriceBand(
+        list_price_eur=round(list_price, 2),
+        mean_price_eur=round(mean, 2),
+        band_low_eur=round(max(0.0, mean - 1.5 * std), 2),
+        band_high_eur=round(mean + 1.5 * std, 2),
+        observations=len(realised_prices),
+        outlier=is_price_outlier(list_price, mean, std, len(realised_prices)),
+    )

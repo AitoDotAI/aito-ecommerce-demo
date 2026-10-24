@@ -10,15 +10,9 @@
  * of the view, so an old link (the Demand page has been emailed out) does
  * not land on a 404.
  */
-export const HIDDEN_ROUTES: Record<string, string> = {
-  "/demand":
-    "The forecast is being re-measured against the naive " +
-    "“same as last month” forecast, on regenerated purchase data.",
-  "/winback":
-    "It showed a raw purchase probability as a campaign response rate (96 %).",
-  "/markdown":
-    "Its proposals lost margin on every row with today's synthetic prices.",
-};
+// None today: Demand, Markdown and Win-back, hidden here before, are merged
+// into Supply and Retention (ADR 0041), and their old routes redirect.
+export const HIDDEN_ROUTES: Record<string, string> = {};
 
 
 /** Why `pathname` is hidden, or undefined if it is shown. Static export

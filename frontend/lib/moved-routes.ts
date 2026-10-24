@@ -19,6 +19,14 @@ export const MOVED_ROUTES: Record<string, MovedRoute> = {
   "/evaluation":        { to: "/evidence/model-checks/",         label: "Evidence › Model checks" },
   "/smart-search":      { to: "/evidence/personalised-search/",  label: "Evidence › Personalised search" },
   "/recommendations":   { to: "/query-patterns/",                label: "Query patterns" },
+  // Supply: one forecast, with markdown as an overstock row's action.
+  "/inventory":         { to: "/supply/",                        label: "Supply" },
+  "/demand":            { to: "/supply/",                        label: "Supply" },
+  "/markdown":          { to: "/supply/",                        label: "Supply" },
+  // Retention: the win-back offer is an at-risk row's action.
+  "/churn":             { to: "/retention/",                     label: "Retention" },
+  "/winback":           { to: "/retention/",                     label: "Retention" },
+  "/feedback":          { to: "/review-triage/",                 label: "Review triage" },
   // Dropped views: their question is answered elsewhere, better measured.
   // Bought Together's category pairs are Patterns › Baskets; Cart
   // Completion's add-ons are the Shop's cart re-ranking "Picked for you".

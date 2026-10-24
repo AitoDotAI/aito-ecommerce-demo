@@ -371,9 +371,9 @@ export interface DashboardResponse {
   last_response_ms: number;
 }
 
-/* ─── Feedback (/api/feedback) ─── */
+/* ─── Review triage (/api/review-triage) ─── */
 
-export interface FeedbackPredictedField {
+export interface ReviewTriageField {
   field: string;
   label: string;
   predicted_value: string | boolean | null;
@@ -383,7 +383,7 @@ export interface FeedbackPredictedField {
   why_explanation: WhyExplanationPayload | null;
 }
 
-export interface FeedbackReviewSummary {
+export interface ReviewTriageReview {
   review_id: string;
   customer_id: string;
   customer_short: string;
@@ -395,40 +395,42 @@ export interface FeedbackReviewSummary {
   actual_category: string;
   actual_sentiment: string;
   actual_assigned_to: string;
-  actual_churn_within_90d: boolean;
 }
 
-export interface FeedbackResponse {
-  review: FeedbackReviewSummary;
-  fields: FeedbackPredictedField[];
+export interface ReviewTriageResponse {
+  review: ReviewTriageReview;
+  fields: ReviewTriageField[];
   candidate_reviews: Array<{ review_id: string; rating: number; text_short: string }>;
   last_query: { endpoint: string; body: Record<string, unknown> };
   last_response_ms: number;
 }
 
-/* ─── Churn (/api/churn) ─── */
+/* ─── Retention (/api/retention) ─── */
 
-export interface ChurnKpi {
-  label: string;
-  value: number;
-  sub: string;
+export interface WinbackOffer {
+  sku: string;
+  name: string;
+  category: string;              // "small_animal/dry-food"
+  price_eur: number;
+  response_p: number;            // calibrated `_predict responded`
+  order_value_eur: number;       // expected order if they respond
+  expected_return_eur: number;   // response_p × order value − email cost
 }
 
-export interface ChurnAtRiskCustomer {
+export interface AtRiskRow {
   customer_id: string;
-  customer_short: string;
-  pets: string;            // declared (ADR 0033)
+  name: string;
+  pets: string;                  // declared (ADR 0033)
   dog_size: string | null;
   region: string;
   tenure_months: number;
-  visits: number;
-  purchases: number;
-  spent_eur: number;
+  last_order_month: string;
   latest_rating: number | null;
-  latest_sentiment: string | null;
-  risk_score: number;
-  confidence_band: "high" | "medium" | "low";
+  risk: "likely" | "very likely";
+  risk_p: number;                // for the $why popover; not shown as a rate
+  spend_12m_eur: number;
   why_explanation: WhyExplanationPayload | null;
+  offer: WinbackOffer | null;    // null: no past email sent a product for their pets
 }
 
 export interface ChurnDriverRow {
@@ -441,181 +443,123 @@ export interface ChurnDriverRow {
   churn_rate_overall: number;
 }
 
-export interface ChurnEvalSummary {
-  accuracy: number;
-  base_accuracy: number;
-  accuracy_gain_pp: number;
-  n: number;
-}
-
-export interface ChurnResponse {
-  kpis: ChurnKpi[];
-  at_risk: ChurnAtRiskCustomer[];
+export interface RetentionResponse {
+  as_of_month: string;
+  /** The last month whose three months of follow-up are in the data. */
+  learned_until: string;
+  decision: {
+    customers: number;
+    spend_12m_eur: number;
+    offers: number;
+    offers_expected_return_eur: number;
+    email_cost_eur: number;
+  };
+  counts: { active: number; likely_to_leave: number; churned: number };
+  at_risk: AtRiskRow[];
   drivers: ChurnDriverRow[];
   /** Profile fields related to churn whose every value stayed near lift 1. */
   driver_fields_without_effect: string[];
-  evaluation: ChurnEvalSummary;
   last_query: { endpoint: string; body: Record<string, unknown> };
   last_response_ms: number;
 }
 
-/* ─── Demand Forecast (/api/demand) ─── */
+/* ─── Supply (/api/supply) ─── */
 
-export interface DemandTopMover {
+export interface PriceBand {
+  list_price_eur: number;
+  mean_price_eur: number;
+  band_low_eur: number;
+  band_high_eur: number;
+  observations: number;
+  outlier: boolean;
+}
+
+export interface MarkdownPoint {
+  discount_pct: number;
+  price_eur: number;
+  monthly_units: number;
+  weeks_to_clear: number | null;   // null: an estimate of 0 units never clears
+}
+
+export interface MarkdownProposal {
+  action: "hold" | "markdown" | "wont_clear";
+  discount_pct: number;
+  price_eur: number;
+  weeks_to_clear: number | null;
+  units_cleared: number;
+  extra_units_vs_full_price: number;
+  capital_freed_eur: number;
+  margin_given_up_eur: number;
+  curve: MarkdownPoint[];
+}
+
+export interface SupplyReorderRow {
   sku: string;
   name: string;
-  pet_type: string;
+  category: string;
+  supplier: string;
+  lead_time_days: number;
+  current_stock: number;
+  reorder_point: number;
+  forecast_units: number | null;
+  order_qty: number;
+  order_cost_eur: number;
+  revenue_at_risk_eur: number;
+  why_explanation: AnyWhyPayload | null;
+  price: PriceBand | null;
+}
+
+export interface SupplyOverstockRow {
+  sku: string;
+  name: string;
+  category: string;
+  current_stock: number;
+  reorder_point: number;
+  excess_units: number;
+  unit_cost_eur: number;
+  tied_capital_eur: number;
+  price: PriceBand | null;
+  markdown: MarkdownProposal;
+}
+
+export interface SupplyMoverRow {
+  sku: string;
+  name: string;
   category: string;
   avg_monthly_units: number;
   last_month_units: number;
   forecast_units: number;
-  forecast_p: number;
+  current_stock: number;
   why_explanation: AnyWhyPayload | null;
 }
 
-export interface DemandSeasonRow {
-  season: string;
-  pet_type: string;
+export interface SupplyPriceOutlier {
+  sku: string;
+  name: string;
   category: string;
-  lift: number;
-  f_on_condition: number;
-  p_on_condition: number;
-  p_overall: number;
+  price: PriceBand;
+  above_band_pct: number;
 }
 
-export interface DemandEvalSummary {
-  accuracy: number;        // model: share of test rows in the right sales range
-  naive_accuracy: number;  // "same range as last month", same rows
-  base_accuracy: number;   // always the most common range
-  n: number;
-  method: string;          // how the split and scoring were done, shown verbatim
-}
-
-export interface DemandResponse {
+export interface SupplyResponse {
   forecast_month: string;
-  top_movers: DemandTopMover[];
-  seasonality: DemandSeasonRow[];
-  evaluation: DemandEvalSummary;
-  last_query: { endpoint: string; body: Record<string, unknown> };
-  last_response_ms: number;
-}
-
-/* ─── Inventory Intelligence (/api/inventory) ─── */
-
-export interface InventoryKpi {
-  label: string;
-  value: number;
-  sub: string;
-}
-
-export interface InventoryReorderRow {
-  sku: string;
-  name: string;
-  pet_type: string;
-  category: string;
-  current_stock: number;
-  reorder_point: number;
-  days_of_supply: number;
-  avg_monthly_units: number;
-  forecast_units: number;
-  suggested_reorder_qty: number;
-  unit_cost_eur: number;
-  revenue_at_risk_eur: number;
-  supplier: string;
-  lead_time_days: number;
-  why_explanation: AnyWhyPayload | null;
-}
-
-export interface InventoryOverstockRow {
-  sku: string;
-  name: string;
-  pet_type: string;
-  category: string;
-  current_stock: number;
-  reorder_point: number;
-  months_of_supply: number;
-  tied_capital_eur: number;
-  unit_cost_eur: number;
-}
-
-export interface InventoryResponse {
-  kpis: InventoryKpi[];
-  reorder_queue: InventoryReorderRow[];
-  overstock: InventoryOverstockRow[];
-  last_query: { endpoint: string; body: Record<string, unknown> };
-  last_response_ms: number;
-}
-
-/* ─── Markdown Decision (/api/markdown) ─── */
-
-export interface MarkdownCurvePoint {
-  discount_pct: number;
-  price_eur: number;
-  monthly_units: number;
-  weeks_to_clear: number;
-  margin_per_unit_eur: number;
-  recoverable_revenue_eur: number;
-}
-
-export interface MarkdownProposal {
-  sku: string;
-  name: string;
-  pet_type: string;
-  category: string;
-  current_stock: number;
-  reorder_point: number;
-  list_price_eur: number;
-  unit_cost_eur: number;
-  excess_units: number;
-  tied_capital_eur: number;
-  proposed_discount_pct: number;
-  proposed_price_eur: number;
-  proposed_weeks_to_clear: number;
-  proposed_recoverable_revenue_eur: number;
-  proposed_margin_lost_eur: number;
-  curve: MarkdownCurvePoint[];
-}
-
-export interface MarkdownResponse {
-  kpis: InventoryKpi[];
-  proposals: MarkdownProposal[];
-  last_query: { endpoint: string; body: Record<string, unknown> };
-  last_response_ms: number;
-}
-
-/* ─── Win-back Campaigns (/api/winback) ─── */
-
-export interface WinbackProductSuggestion {
-  sku: string;
-  name: string;
-  pet_type: string;
-  category: string;
-  brand: string;
-  price_eur: number;
-  response_p: number;
-  predicted_aov_eur: number;
-  expected_revenue_eur: number;
-  rank: number;
-}
-
-export interface WinbackTarget {
-  customer_id: string;
-  customer_name: string;
-  pets: string;                  // declared, e.g. "dog cat"
-  dog_size: string | null;
-  region: string;
-  staple_category: string;       // from their orders: "dog/dry-food", or "none"
-  recency_bucket: string;
-  last_order_month: string;
-  total_spent_eur: number;
-  total_orders: number;
-  suggestions: WinbackProductSuggestion[];
-  expected_recovered_eur: number;
-}
-
-export interface WinbackResponse {
-  kpis: InventoryKpi[];
-  targets: WinbackTarget[];
+  band_counts: { critical: number; low: number; ok: number; overstock: number };
+  reorder: { skus: number; units: number; order_cost_eur: number; revenue_at_risk_eur: number };
+  overstock_decision: {
+    skus: number;
+    tied_capital_eur: number;
+    scored: number;
+    hold: number;
+    markdown: number;
+    wont_clear: number;
+    markdown_units_cleared: number;
+    markdown_capital_freed_eur: number;
+    markdown_margin_given_up_eur: number;
+  };
+  reorder_queue: SupplyReorderRow[];
+  overstock: SupplyOverstockRow[];
+  top_movers: SupplyMoverRow[];
+  price_outliers: SupplyPriceOutlier[];
   last_query: { endpoint: string; body: Record<string, unknown> };
   last_response_ms: number;
 }

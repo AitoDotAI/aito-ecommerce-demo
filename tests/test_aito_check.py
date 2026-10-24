@@ -305,6 +305,100 @@ def test_churn_profile_drivers_name_long_tenure_and_skip_reviews(client):
     assert not any(d.field.startswith("latest_") for d in result.drivers)
 
 
+# ── Retention: the churn score's population, and the win-back offer ──
+
+
+def test_churn_population_is_the_orders_whose_follow_up_is_known(client):
+    """The nested `from` must restrict the rows Aito learns from: a String
+    month compares with `$lte`, so the population is exactly the months up
+    to LABEL_KNOWN_UNTIL in which the customer ordered, and both answers
+    occur in it."""
+    from src.churn_risk import POPULATION
+
+    where = POPULATION["where"]
+    rows = client.search("customer_months", where=where, limit=0)["total"]
+    leavers = client.search("customer_months", where={**where, "churned_in_3_months": True}, limit=0)["total"]
+    later = client.search("customer_months", where={"$and": [where, {"month": {"$gt": "2026-01"}}]},
+                          limit=0)["total"]
+    assert rows > 0 and 0 < leavers < rows
+    assert later == 0
+
+
+def test_batched_churn_predicts_over_the_population_return_both_answers(client):
+    """`_batch` accepts a `_predict` with a nested `from`; each answer has a
+    true and a false hit whose probabilities sum to 1."""
+    from src.churn_risk import evidence_of, predict_body
+
+    rows = client.search("customer_months", where={"month": "2026-04", "purchases": {"$gte": 1}},
+                         limit=3)["hits"]
+    answers = client.batch([predict_body(evidence_of(r), with_why=False) for r in rows])
+    assert len(answers) == len(rows)
+    for answer in answers:
+        p = {h["feature"]: h["$p"] for h in answer["hits"]}
+        assert set(p) == {True, False} and abs(sum(p.values()) - 1) < 1e-6
+
+
+def test_churn_time_split_tests_every_order_of_the_latest_known_month(client):
+    """Evidence's churn check holds out exactly the orders of the test month,
+    and the score beats always answering "another order follows"."""
+    from src.churn_evaluation import evaluate_churn
+    from src.churn_risk import LABEL_KNOWN_UNTIL
+
+    rows = client.search("customer_months", where={"month": LABEL_KNOWN_UNTIL, "purchases": {"$gte": 1}},
+                         limit=0)["total"]
+    check = evaluate_churn(client)
+    assert check.n == rows > 0
+    assert check.accuracy > check.base_accuracy
+
+
+def test_a_batched_recommend_hit_is_only_p_and_value(client):
+    """Unlike a direct `_recommend`, a `_batch` item's hit carries no linked
+    product columns, so the offer reads the SKU from `$value`."""
+    from src.winback_offer import customer_where, recommend_body
+
+    [answer] = client.batch([recommend_body(customer_where("CUST-00008", "none"), ["small_animal"])])
+    assert answer["hits"] and set(answer["hits"][0]) == {"$p", "$value"}
+
+
+def test_winback_response_predictions_match_the_observed_response_rate(client):
+    """`_predict responded` is the rate the offer shows, so it must be a rate:
+    averaged over past sends, it lands near the share that responded."""
+    sends = client.search("winback_campaigns", limit=200)["hits"]
+    answers = client.batch([{"from": "winback_campaigns", "limit": 2, "select": ["$p", "feature"],
+                             "predict": "responded",
+                             "where": {k: s[k] for k in ("customer_id", "customer_staple_category",
+                                                         "recency_bucket", "product_sku")}}
+                            for s in sends])
+    predicted = sum(next(h["$p"] for h in a["hits"] if h["feature"] is True) for a in answers) / len(sends)
+    observed = sum(s["responded"] for s in sends) / len(sends)
+    assert abs(predicted - observed) < 0.1, (predicted, observed)
+
+
+def test_an_estimate_is_not_a_batch_item(client):
+    """`_batch` refuses `estimate` (400 "unexpected field"), so the offers'
+    order values are separate `_estimate` calls."""
+    from src.aito_client import AitoError
+
+    with pytest.raises(AitoError, match="estimate"):
+        client.batch([{"from": "winback_campaigns", "where": {"responded": True}, "estimate": "order_value_eur"}])
+
+
+# ── Supply: the markdown sweep ───────────────────────────────────────
+
+
+def test_the_markdown_sweep_estimates_more_units_at_a_lower_price(client):
+    """The regression `_estimate` the markdown sweep asks must not sell less
+    at a deeper discount, or "the shallowest level that clears" is noise."""
+    from src.catalogue_reads import read_all
+    from src.demand_forecast import last_month_units, units_at_price
+
+    sales = read_all(client, "monthly_sales", where={"product_sku": "SKU-PT-0496"})
+    profile = max(sales, key=lambda r: r["month"])
+    units = [units_at_price(client, "SKU-PT-0496", profile, last_month_units(sales), price, model="regression")
+             for price in (20.29, 16.23)]     # list price, and 20 % off
+    assert units[1] >= units[0] > 0, units
+
+
 # ── Demand: a time-split `_evaluate` (ADR 0014 §Correction) ──────────
 
 

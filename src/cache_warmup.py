@@ -36,7 +36,7 @@ from src.recommend_service import get_for_you
 from src.filling_service import get_filling
 from src.analytics_service import get_analytics
 from src.pattern_service import get_patterns
-from src.feedback_service import get_feedback
+from src.review_triage_service import get_review_triage
 from src.price_service import get_prices
 
 
@@ -91,10 +91,10 @@ def warm_all(client: AitoClient, *, verbose: bool = True) -> None:
         ("pattern-explorer",   lambda: get_patterns(client)),
         ("purchase-analytics", lambda: get_analytics(client)),
         ("product-filling",    lambda: get_filling(client)),
-        ("feedback",           lambda: get_feedback(client)),
+        ("review-triage",      lambda: get_review_triage(client)),
         ("price",              lambda: get_prices(client)),
-        # The six heavy endpoints (churn, demand, evaluation, inventory,
-        # markdown, winback) are deliberately NOT warmed here. They are
+        # The heavy endpoints (demand, evaluation, retention, supply)
+        # are deliberately NOT warmed here. They are
         # precompute-and-served from the Aito `precompute_entries` table
         # via `./do precompute` (ADR 0024) — offline snapshots read at
         # request time — so warming them lazily would double the work
