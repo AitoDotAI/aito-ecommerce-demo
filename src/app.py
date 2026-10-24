@@ -25,6 +25,8 @@ from fastapi.staticfiles import StaticFiles
 
 from src.aito_client import AitoClient, AitoError
 from src import cache, timing, precompute_store
+from src.data_release_gate import DataReleaseGate, release_gate_middleware
+from src.release_file import load_release, read_counts
 from src.build_info import build_info
 from src.config import load_config
 from src.rate_limit import check_rate_limit
@@ -105,9 +107,23 @@ def _warm_cache() -> None:
     ).start()
 
 
-# Kick off the warmup thread. Daemon so the server keeps responding
-# to non-data routes (health, schema) while warmup runs.
-_warm_cache()
+def _drop_memory_caches() -> None:
+    """Forget every answer held in this process. The Aito-side tables
+    are left alone: `./do clear-cache` clears those during a cutover."""
+    cache.clear()
+    precompute_store.invalidate()
+
+
+# The app waits for its data (ADR 0035): data routes answer 503 until
+# the env the app reads matches `data/release-env.json`, and the caches
+# are warmed only then. A malformed release file stops the startup here.
+release_gate = DataReleaseGate(
+    load_release(),
+    read_counts=lambda: read_counts(aito),
+    on_ready=_warm_cache,
+    on_mismatch=_drop_memory_caches,
+)
+release_gate.start()
 
 
 app = FastAPI(
@@ -155,6 +171,10 @@ async def aito_timing_middleware(request: Request, call_next):
     if header_value:
         response.headers["X-Aito-Calls"] = header_value
     return response
+
+
+# 503 on data routes until the data matches the release (ADR 0035).
+app.middleware("http")(release_gate_middleware(release_gate))
 
 
 @app.middleware("http")
@@ -228,7 +248,7 @@ def health():
     """
     cached = cache.get("health")
     if cached:
-        return cached
+        return {**cached, "data_release": release_gate.status()}
     connected = aito.check_connectivity()
     result = {
         "status": "ok",
@@ -244,7 +264,8 @@ def health():
         "api": aito._config.api_namespace,
     }
     cache.set("health", result, ttl=60)
-    return result
+    # Outside the 60 s cache: a cutover polls this to see the data arrive.
+    return {**result, "data_release": release_gate.status()}
 
 
 @app.get("/api/schema")
