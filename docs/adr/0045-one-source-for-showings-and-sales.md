@@ -100,3 +100,67 @@ Each showing's purchase odds carry every price effect, and nothing else adds uni
 - The largest generator change since ADR 0030. Orders change, so every order-side check
   re-runs.
 - The demo's Monday data (release 1) keeps the folded curve until release 2 is live.
+
+
+## Notes
+
+### Amendment (2026-10-24): the placement confound in purchase rates
+
+Probed on env `release2` (`docs/aito-cheatsheet.md`, "Data release 2").
+
+- **Since the rebuild, most purchases are `buy_again` showings.** What the
+  household came for is bought 80–90 % of the time. A `list` showing, the
+  shop's ranked results, is bought 7–12 % of the time.
+- **A whole-table offer lift reads backwards.** Offered products sit on lists
+  more, so over all showings the purchase rate is 23.5 % with no offer and
+  20.4 % at 20 %+ off. Within lists it is 6.96 % and 11.6 %. Adding
+  `placement: list` to `where` doesn't repair it: the other lifts keep their
+  whole-table values or drop out of `$why`.
+- **Direction for release 2's Product view.** Its what-ifs ask `_predict
+  purchased` over a population restricted to list showings: a nested `from`
+  `{"from": "impressions", "where": {"placement": "list"}}`. On the probe it
+  matches the observed counts exactly (band 20+: `$p` 0.1160, observed 0.1161).
+- **It is a new shape,** so it gets its own cheatsheet entry and is probed
+  before a view uses it. Its calibration is pre-registered, with the tolerance
+  fixed before it is run, in `actionable-states-prereg.md`
+  ("Q7 on list showings: calibration"). Nothing is built yet.
+- **Not delivered by this ADR:** the double effect's `price_index` slope
+  (O4) waits on the engine; see the prereg.
+
+### Amendment 2 (2026-10-24): two tables, so the ranker learns from what the shop ranks
+
+Replaces the nested-`from` direction above.
+
+- **Why the nested `from` goes.** It restricts a query to list showings, but every
+  use costs a full in-heap copy of the population (core ticket td-20261024151214916465),
+  and it only repairs the queries that remember to write it. The Shop's
+  `_recommend`, the Product what-if, the Sandbox's band lifts and the Evidence
+  benchmarks would each need it.
+- **A second confound the first probe missed.** Visitor landing pages, which are
+  never bought from, are 47 % of the showings of products at 10–15 % off and 30 %
+  of those at list price. Together with the buy-again lists, they turn an offer's
+  whole-table lift on `purchased` into ×0.90 at 20 %+ off. Aito's `_predict` multiplies
+  each condition's lift as if independent, so no `where` can condition this away.
+- **Decision.** The log is loaded as two tables of one shape (`src/showing_split.py`):
+  - `impressions`: the showings the shop ranked, a `list` placement on a surface other
+    than `landing`;
+  - `unranked_showings`: landing pages, buy-again lists and checkout add-ons.
+
+  A shop trains its ranker on its own ranking decisions. Every sale and visit stays
+  queryable: the log, `monthly_sales` and `tests/test_one_source.py` are unchanged.
+- **What the ranked table gives**, read off the generated rows before any Aito query
+  (so a description, not a pre-registered result): purchases per showing against the
+  table's average, ×0.80 with no offer and ×1.59, ×1.67 and ×1.79 at 10–15, 15–20 and
+  20 %+ (an offer against none: ×2.0, ×2.1, ×2.2); stars 1–2 ×0.49, 3 ×0.92, 4 ×1.10, 5 ×1.24.
+- **Counts.** impressions 43,938; unranked_showings 52,090 (together the 96,028 of
+  before). `data/release-env.json` is updated to match.
+- **Checked on Aito**, once `release2` is reloaded: `tests/test_aito_check.py`'s band
+  lift tests (an offer lifts a purchase over no offer by more than ×1.5; more stars
+  lift it more) run unchanged.
+- **A cost, recorded.** What the household just bought is mostly shown in the buy-again
+  lists, not in the shop's list: the ranked table has 359 just-bought showings (clicks
+  0.198 against 0.315 for the rest, purchases 0.078 against 0.142; 6,632 more are in
+  `unranked_showings`). The direction is the registered one (S8), but 359 is under its
+  sample floor of 600, so `tests/test_aito_check.py`'s two just-bought checks (the Shop's
+  "scores lower as just bought" and the analytics' clicked-less interval) are strict xfails,
+  not retuned.

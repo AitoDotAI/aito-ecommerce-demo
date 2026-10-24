@@ -12,7 +12,7 @@ import pytest
 from data import lifecycle
 from tests.fixture_joins import customers_with_traits
 
-from src.shop_personas import SHOPPERS, UnknownShopperError, shopper
+from src.shop_personas import NO_CONSENT_SHOPPER, NO_PET_PROFILE_SHOPPER, SHOPPERS, UnknownShopperError, shopper
 
 DATA = Path(__file__).resolve().parent.parent / "data"
 
@@ -69,6 +69,51 @@ def test_helena_rebuys_the_same_cat_food(history):
     food = [p["sku"] for p in _bought(products, helena) if p["category"] in ("dry-food", "wet-food")]
     assert len(helena) >= 12
     assert max(food.count(s) for s in set(food)) >= 6
+
+
+def test_every_shopper_but_one_consented_to_behavioural_tracking(history):
+    _, customers, _ = history
+    declined = [person.key for person in SHOPPERS if not customers[person.customer_id]["consent_behavioural"]]
+    assert declined == [NO_CONSENT_SHOPPER]
+
+
+def test_juhani_has_orders_and_declared_interests_but_no_visits(history):
+    _, customers, orders = history
+    juhani = shopper(NO_CONSENT_SHOPPER).customer_id
+    assert len(orders[juhani]) == 11
+    assert customers[juhani]["interests"].split() == ["grooming", "budget_buys"]
+    assert not [c for c in _load("contexts.json") if c.get("customer") == juhani]
+
+
+def test_olli_reorders_eukanuba_puppy_lamb(history):
+    products, customers, orders = history
+    olli = shopper("olli").customer_id
+    assert customers[olli]["dog_size"] == "small"
+    food = [p["name"] for p in _bought(products, orders[olli]) if p["category"] in ("dry-food", "wet-food")]
+    assert max(set(food), key=food.count).startswith("Eukanuba Puppy Lamb")
+
+
+def test_saara_buys_the_same_large_breed_bag_in_6_of_13_orders(history):
+    products, _, orders = history
+    saara = orders[shopper("saara").customer_id]
+    bag = "Hill's Science Plan Large Breed Beef Dog Food 4kg"
+    assert len(saara) == 13
+    assert sum(any(products[s]["name"] == bag for s in o["skus"].split()) for o in saara) == 6
+
+
+def test_paivi_declared_her_pet_profile(history):
+    _, customers, _ = history
+    assert customers[shopper("paivi").customer_id]["pets"] == "small_animal"
+
+
+def test_eemil_declared_no_pets_and_the_shop_reads_a_dog_from_his_orders(history):
+    products, customers, orders = history
+    eemil = shopper(NO_PET_PROFILE_SHOPPER).customer_id
+    assert "pets" not in customers[eemil]
+    assert len(orders[eemil]) == 17
+    assert {p["pet_type"] for p in _bought(products, orders[eemil])} == {"dog"}
+    later = [c for c in _load("contexts.json") if c.get("customer") == eemil and c.get("pets_from_orders")]
+    assert later and all(c["pets_from_orders"] == "dog" for c in later)
 
 
 def test_an_unknown_shopper_is_refused():

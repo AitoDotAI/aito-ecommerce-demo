@@ -1578,6 +1578,182 @@ instead of proposing the deepest cut.
 
 ---
 
+## Data release 2 (ADRs 0038–0040, 0044, 0045), probed on env `release2`, 2026-10-24
+
+Read-only, `shared.aito.ai`, Aito 2.11.8, the counts of `data/release-env.json`.
+The registered shapes Q7–Q15 and ADR 0044's. Three of them returned what the
+view needs; the others are open, as marked. Nothing below is used by a view yet.
+
+### Since ADR 0045 a purchase rate mixes two pages: put `placement` in the population
+
+Every sale is now a purchased showing, and most purchases are on
+`placement: buy_again` (what the household came for, bought 80–90 % of the
+time), not on the shop's ranked `list` (7–12 %). An offered product is placed
+on lists more, so over the whole table **an offer lowers the purchase rate**:
+none 23.5 %, 20+ 20.4 %. Within lists it raises it: 6.96 % → 11.6 %.
+
+`placement: list` in `where` does **not** fix this. The other conditions keep
+their whole-table lifts, or drop out of `$why`:
+
+```json
+POST /_predict
+{"from": "impressions", "where": {"placement": "list", "product_state.discount_band": "20+"},
+ "predict": "purchased", "select": ["$p", "feature", "$why"]}
+```
+
+→ `$p` 0.071; `$why`: baseP 0.2282, `placement: list` ×0.355,
+`discount_band: 20+` ×0.896. With `none`, `10-15` or `15-20` (and with the
+labels `recommended`, `staff_pick`) the band's lift is missing and `$p` is
+0.0809, the same for all. Observed on lists: 6.96 / 10.27 / 10.92 / 11.61 %.
+
+A **nested `from`** restricts the population, and the lifts then match the
+counts exactly:
+
+```json
+{"from": {"from": "impressions", "where": {"placement": "list"}},
+ "where": {"product_state.discount_band": "20+"}, "predict": "purchased", ...}
+```
+
+→ baseP 0.0809, `20+` ×1.434, `$p` 0.1160 (observed 0.1161); labels
+`recommended` ×1.229, `staff_pick` ×1.179, `popular` ×1.351, each its
+observed rate.
+
+### Q7 / Q7b — a product's state as lifts on `_predict clicked` / `purchased`: open
+
+**Direction (ADR 0045, Notes):** the Product view's what-ifs will ask this
+over the list population (nested `from`, below). That shape is new and is
+probed before a view uses it; its calibration tolerance is registered in the
+prereg ("Q7 on list showings") and not yet run.
+
+`where {product_sku, product_state.discount_band, .label, .stock,
+context.surface}`, `select ["$p", "feature", "$why"]`. It answers 200 with
+both classes; **no NaN refusal** on five (and six) conditions.
+
+- Each state field is a `relatedPropositionLift`, its value bare. The chain
+  multiplies to `$p`, as on `observable`.
+- **A field can be left out of `$why`.** `stock: in_stock` was missing from
+  SKU-PT-0203's answer. `label: staff_pick` was missing when set as a what-if
+  (Q7b: 20+, staff pick, low stock).
+- **Values the product never had work.** SKU-PT-0203 was never shown at 20+
+  or as a staff pick; Q7b scores it.
+- **But the lifts are wrong for a what-if,** for the reason above. On
+  SKU-PT-0203 a 20+ offer moves `$p` 0.611 → 0.548 (×0.814), and a staff pick
+  adds nothing. Q7 is reported to Antti, not used; held-out calibration was
+  not run on it.
+- With the list population (nested `from`), SKU-PT-0203 sits at the
+  `rowCap` floor 0.0192 (1/52): it sold once from 207 list showings, and
+  its other sales are restocks on `buy_again`.
+
+### Q8 — does the offer's lift differ by shopper? No, with this query shape (not delivered: ADR 0038, Notes)
+
+Q7 plus `context.offer_share` or `context.customer`. Aito multiplies the
+shopper's lift and the band's lift, so their ratio is the same for everyone:
+
+| route | 20+ ÷ none, whole table | 20+ ÷ none, list population |
+|:--|--:|--:|
+| `context.offer_share: high` / `low` | 0.885 / 0.883 | 1.60 / 1.61 |
+| `context.customer`, two discount-`high` customers | 0.874, 0.872 | 1.66, 1.62 |
+| `context.customer`, two discount-`low` customers | 0.874, 0.880 | 1.70, 1.59 |
+| observed on lists, answer key's sensitivity high / mid / low | | 2.99 / 1.99 / 1.33 |
+
+A population restricted to one band does separate them. `from: {impressions
+where {placement: list, context.offer_share: high}}` gives 1.88, `low` 2.30
+and `none` 1.32. Only `none` stands apart: the derived band doesn't follow
+the sensitivity here. ADR 0038's "for whom" criterion is open.
+
+### Q9 — `_relate purchased` → `product_state.label`, `.stock`: works
+
+One-link field form, bare values: popular ×1.47 (2,381 of 7,074 shown),
+recommended ×1.06, staff pick ×1.05, low stock ×1.23. These are
+whole-table lifts, so the placement mix above applies to them too.
+
+### Q10 — `_relate` from `nps_responses` through an order's lines: refused
+
+```json
+{"from": "nps_responses", "where": {"nps_group": "detractor"},
+ "relate": ["surveyed_order.order_lines.product_state.rating_band"]}
+```
+
+→ 400 `"hop 2 'order_lines' is not a field of 'orders'"`. A link is followed
+only forward, from the row that holds it. One forward link works:
+`surveyed_order.month`. ADR 0039's fallback applies, and is the way forward:
+**`nps_responses` rows carry the product band of their order, derived** (as
+ADR 0033 allows; a column the generator writes, not yet in the schema), and
+Q10 then relates that column directly. Not built yet.
+
+### Q11 — `_relate churned_in_3_months` → `review_replied` on `customer_months`: works
+
+`review_replied: true` ×0.554: 62 of 564 rows among 7,372 churn rows; the
+counts equal `_search`'s. A Boolean gives a hit for `true` and one for
+`false`.
+
+### Q12 — `_estimate units_sold` with `product_state.rating_band`: refused (known)
+
+400 `"no such field 'product_state.rating_band'"` on k-NN and regression. The
+nested form `{"product_state": {"rating_band": "5"}}` is a 501. A band needs
+copying onto `monthly_sales`, as `discount_band` was. **That is the way
+forward:** `monthly_sales.rating_band`, a plain column, so `_estimate` can
+condition on it; Q12 is then asked again on the new column. Not built yet.
+
+### `_estimate` takes no nested `from`, so it can't hold a month out (O4)
+
+```json
+{"from": {"from": "monthly_sales", "where": {"month": {"$lt": "2026-04"}}},
+ "where": {"product_sku": "SKU-PT-0203", "price_index": 1.0},
+ "estimate": "units_sold", "model": "regression"}
+```
+
+→ 501 `"nested from (population restriction) is not supported with
+_estimate yet"`, on both models.
+
+The plain form answers. `discount_band` (a plain column) is accepted. On data
+with zero-sale months, `price_index` is one `"regressionType": "linear"` term
+in units, the same slope for every product (SKU-PT-0203: 1.00 −0.13, 0.83
++1.01). So a product's implied elasticity is that slope over its own base.
+
+### Q13 — `_predict became_regular` on `customers`: works
+
+`where {first_source, first_basket_categories: {"$and": [{"$match": w}, …]}}`.
+Both enter `$why`: `organic_search` ×1.37, `affiliate` ×0.44, `social` ×0.48.
+The `$and` of the basket's words is one proposition, ×1.13 for dog dry food
+with dental treats.
+- **An unknown value is silently no evidence.** `first_source: "organic"`
+  (the value is `organic_search`) answered 200 with no lift for it.
+- **A whole-value Text** (`"cat_litter cat_toys"`) became one `$match`, for
+  `cat_litter` only.
+- **Held-out cohorts:** learned from the 711 customers who joined by 2025-03
+  (nested `from` with `joined_month $lte`), scored on the 1,092 who joined
+  2025-04–11. It ranks: observed 0.13 in the lowest decile, 0.76 in the
+  highest. It is overconfident at both ends: mean `$p` 0.27 and 0.81. Brier
+  0.217, against 0.249 for the base rate. No tolerance is registered.
+
+### Q14 — `_relate` from `contexts`, `source` → `landing_category`: works
+
+Social lands on toys ×2.50 (3,316 of 13,500) and treats ×1.51. `where
+{"source": "social"}`, `relate ["landing_category"]`, bare values.
+
+### Q15 — `_predict purchased` with `context.source` and `context.visitor`, no customer: scores
+
+200, with `context.source: social` ×0.536. A visitor id with few rows adds no
+lift and is left out of `$why`.
+
+### ADR 0044 — interests, and the Shop for a shopper who declined tracking: works
+
+- `"context.customer.interests": {"$and": [{"$match": "grooming"}, {"$match":
+  "budget_buys"}]}` in `_recommend` is one proposition, with a product's own
+  nested lift (×0.73–2.01). 194 customers declare `natural_food`; their
+  impressions count 3,693 through the link.
+- **A non-consenting customer has no `contexts`**, so the Shop can't put
+  their identity in `where`. Juhani (CUST-00330, 11 orders, no pet profile)
+  is ranked from his orders' pets, `context.pets_from_orders: {"$and":
+  [{"$match": "cat"}]}`, with `product_sku.pet_type` as the candidate filter,
+  the month and `just_bought: false`. The top 12 are cat products.
+- `src/shop_ranking.shop_scope` reads `customer["pets"]`, which a customer
+  without a profile lacks. Juhani and Eemil, two of the Shop's shoppers,
+  have none.
+
+---
+
 ## `AitoClient` method ↔ endpoint cheat reference
 
 | Method | Endpoint | First view that uses it |

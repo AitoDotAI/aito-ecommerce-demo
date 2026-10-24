@@ -20,7 +20,7 @@ import pytest
 from src.aito_client import AitoError
 from src.demand_service import season_months
 from src.design_effect import design_effect
-from src.shop_analytics_service import (FUNNEL_FIELDS, WHO_FIELDS, WINDOW_MONTHS, get_funnel_section,
+from src.shop_analytics_service import (IDENTIFIED, FUNNEL_FIELDS, WHO_FIELDS, WINDOW_MONTHS, get_funnel_section,
                                         get_who_section)
 
 
@@ -36,7 +36,7 @@ def key(table, where, field):
 # 100 customers, 50 rows each, 5 meeting the condition: no clustering.
 UNCLUSTERED = [(50, 5)] * 100
 CUSTOMER_FIELDS = ("context.customer", "order_id.customer_id", "customer_id")
-POPULATIONS = [{"context.month": {"$or": WINDOW_MONTHS}}, {"order_id.month": {"$or": WINDOW_MONTHS}},
+POPULATIONS = [{"context.month": {"$or": WINDOW_MONTHS}, **IDENTIFIED}, {"order_id.month": {"$or": WINDOW_MONTHS}},
                {"month": {"$or": WINDOW_MONTHS}},
                {"context.surface": "search"}]
 
@@ -69,6 +69,8 @@ class FakeClient:
     def search(self, table, *, where, select=None, limit=10):
         if table == "contexts":     # the example search for the phrase counted just before
             return {"total": 1, "hits": [{"search_query": self._example}]}
+        if where in POPULATIONS:        # the rows the customers' rows must add up to
+            return {"total": sum(n for n, _ in self.customers), "hits": []}
         self.searches.append(where)
         total, self._example = self.counts[json.dumps(where, sort_keys=True)]
         return {"total": total, "hits": []}
@@ -77,7 +79,7 @@ class FakeClient:
         return [r for r in self.relates if r["from"] == table and r["relate"] not in CUSTOMER_FIELDS]
 
 
-PURCHASED = {"purchased": True}
+PURCHASED = {"purchased": True, **IDENTIFIED}
 
 
 def funnel_answer(field, *hits):
@@ -127,7 +129,7 @@ def test_the_clicked_kpi_relates_the_same_fields_to_clicks():
 
     section = get_funnel_section(client, kpi="clicked")
 
-    assert all(r["where"] == {"clicked": True} for r in client.sent("impressions"))
+    assert all(r["where"] == {"clicked": True, **IDENTIFIED} for r in client.sent("impressions"))
     assert section.selected == "clicked"
 
 
@@ -137,7 +139,7 @@ def test_the_design_effect_is_measured_on_the_customer_column():
     get_funnel_section(client)
 
     customer_wheres = [r["where"] for r in client.relates if r["relate"] == "context.customer"]
-    assert customer_wheres == [{"context.month": {"$or": WINDOW_MONTHS}}, PURCHASED]
+    assert customer_wheres == [{"context.month": {"$or": WINDOW_MONTHS}, **IDENTIFIED}, PURCHASED]
 
 
 def test_a_lift_whose_interval_excludes_1_is_shown_with_its_counts():
@@ -224,7 +226,8 @@ def test_an_unknown_kpi_is_refused():
 
 def test_a_window_that_misses_rows_fails_loudly_rather_than_misjudge_clustering():
     client = FakeClient()
-    client._customer_hits = lambda where, field: [hit(field, "C1", 1.0, 10, 10, 10, 999)]
+    client._customer_hits = lambda where, field: [hit(field, "C1", 1.0, 10, 10, 10, 10)]
+    client.customers = [(999, 1)]   # the table holds 999 rows in the window
 
     with pytest.raises(AitoError, match="cover 10 of 999"):
         get_funnel_section(client)

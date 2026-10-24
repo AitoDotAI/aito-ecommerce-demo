@@ -21,7 +21,11 @@ DURABLE_TYPES = frozenset({
 
 
 def item_type(name: str, brand: str) -> str:
-    """"PetNord Water Bottle 500ml" → "Water Bottle" (brand and size dropped)."""
+    """"PetNord Water Bottle 500ml" → "Water Bottle" (brand and size dropped).
+
+    A name shared by several products carries its variant after a comma
+    ("Trixie Cage, small", ADR 0044); the variant is not part of the type."""
+    name = name.split(", ")[0]
     words = (name[len(brand):] if name.startswith(brand) else name).split()
     if words and any(ch.isdigit() for ch in words[-1]):
         words = words[:-1]
@@ -55,6 +59,16 @@ def shopper_where(pets: str, cart: list[dict], month: str) -> dict:
         # (td-20261020210945109481). The SKUs still keep the cart's own items
         # out of the candidates (ShopScope.where).
         where["context.basket_categories"] = {"$and": [{"$match": w} for w in basket_words(cart)]}
+    return where
+
+
+def shopper_where_from_orders(pets: str, cart: list[dict], month: str) -> dict:
+    """`shopper_where` for a household that declared no pet profile (most don't,
+    ADR 0045): the pet types of its earlier orders, as `contexts.pets_from_orders`
+    records them, in place of the declared pets. Identity-free, so it also serves
+    a shopper who declined tracking, who has no contexts to match."""
+    where = shopper_where(pets, cart, month)
+    where["context.pets_from_orders"] = where.pop("context.customer.pets")
     return where
 
 
