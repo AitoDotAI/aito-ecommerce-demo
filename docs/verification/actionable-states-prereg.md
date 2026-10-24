@@ -1007,3 +1007,33 @@ ranges) were looked at.
      the Shop uses I (the simpler where).
 - **Sample:** `random.Random(0).sample` of 1,400 from the eligible sessions
   sorted by `context_id` (2,333 in the seed-42 fixtures).
+
+### O4, live (2026-10-24, env `release2`, Aito 2.11.8): blocked, not measured
+
+The registered procedure can't run. `_estimate` refuses the nested `from`
+that holds 2026-04 out, on both models:
+
+```json
+POST /_estimate
+{"from": {"from": "monthly_sales", "where": {"month": {"$lt": "2026-04"}}},
+ "where": {"product_sku": "SKU-PT-0203", "price_index": 1.0},
+ "estimate": "units_sold", "model": "regression"}
+```
+
+→ 501 `"nested from (population restriction) is not supported with _estimate
+yet"`.
+
+- **O4 is reported as not measured,** neither a pass nor a fail.
+- **No workaround was run:**
+  - an in-sample estimate isn't a held-out month;
+  - a training-only env would need a write to `shared.aito.ai`.
+- **The ways forward, for Antti:**
+  - Aito core supports a population on `_estimate`;
+  - or a `release2-train` env without 2026-04 is loaded at night.
+- **Seen in the shape probe** (plain `from`, one product, so not O4): with
+  zero-sale months in the data, `price_index` is one linear term in units,
+  the same slope for every product. SKU-PT-0203 reads 22.12 units at 1.00
+  and 23.26 at 0.83, an arc ε of about −0.27 on its base of 22 units. A
+  product's ε under this model is the shared slope over its own base, so the
+  registered median ranges over the products' bases.
+- `discount_band` is accepted in the plain form (variant B's shape).
