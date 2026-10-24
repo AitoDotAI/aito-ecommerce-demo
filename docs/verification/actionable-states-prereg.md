@@ -1037,3 +1037,36 @@ yet"`.
   product's ε under this model is the shared slope over its own base, so the
   registered median ranges over the products' bases.
 - `discount_band` is accepted in the plain form (variant B's shape).
+
+### The no-profile Shop sweep, live (2026-10-24, env `release2`): stopped at 306 of 1,400
+
+`scripts/no_profile_shop_sweep.py`, as amended above. **It hasn't concluded,
+so its decision rule isn't applied.**
+
+- **What stopped it:** three runs ended on a 502 Bad Gateway from
+  `shared.aito.ai` for a `_batch`.
+  - The first, at 90 items a batch, failed after about 8 batches of 45–52 s
+    of Aito time each.
+  - The next two, at 18 items a batch, each failed after exactly 153 more
+    sessions (about 7–8 minutes).
+  - A resume right after the second failure got a 502 on its first batch.
+- **Each failing batch's queries answer 200 alone** and as a batch a minute
+  later. So the cause isn't one query.
+- **The likely cause, not shown:** every session's held-out `from` is a new
+  population. A failure every ~150 sessions, with a 502 just after, looks
+  like the engine filling and restarting on the shared instance. That
+  instance also serves the demo.
+- **Not retried in a loop,** and not run further. The run resumes from its
+  checkpoint (`data/evidence/no-profile-shop-sweep.partial.jsonl`, kept,
+  gitignored) once Antti or core says the instance can take it.
+- **Interim, over the first 306 sampled sessions** (reported, not judged):
+
+  | variant | hit@12 | Brier |
+  |:--|--:|--:|
+  | I | 0.585 | 0.2714 |
+  | P | 0.500 | 0.2819 |
+  | I+P | 0.706 | 0.2618 |
+
+  Paired: P − I hit −0.085 [−0.153, −0.017]; I+P − P +0.206 [+0.146,
+  +0.266]; I+P − I +0.121 [+0.082, +0.160]. Brier I+P − I −0.010
+  [−0.013, −0.006].

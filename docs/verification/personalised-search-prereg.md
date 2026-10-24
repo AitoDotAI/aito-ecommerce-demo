@@ -138,4 +138,65 @@ was drawn. Results: `data/evidence/personalised-search.json`.
 
 ## Amendments
 
-None.
+### Amendment 1 (2026-10-24, before any run on it): re-registered for data release 2, env `release2`
+
+Data release 2 (ADRs 0038–0040, 0044, 0045) is loaded in env `release2`
+(`data/release-env.json`: 96,028 impressions, 61,484 contexts). The design
+above was fixed on release 1. Three of its parts don't carry over, so they
+are fixed again here, before any ranking is scored on release 2. Everything
+not named here stands: the six rankings, θ = 4.0, hit@10 and MRR, the three
+comparisons, the wording and the slices.
+
+**What was seen before this was written.**
+- Counts from the local fixtures (below).
+- The probes of data release 2 (`docs/aito-cheatsheet.md`, "Data release 2").
+- The no-profile Shop sweep's interim scores over 306 of its 1,400
+  sessions (`actionable-states-prereg.md`). The sweep, not this benchmark,
+  decides which evidence the Shop uses for a shopper without a pet profile,
+  and part 3 takes whatever it decides.
+
+No ranking of this benchmark was run on `release2`.
+
+1. **Hits are purchases from the search results.**
+   - Since ADR 0045 a session shows two parts of a page. `buy_again` holds
+     what the household came for, bought 80–90 % of the time whatever was
+     searched. `list` is the shop's ranked results.
+   - 1,692 of the 1,791 search sessions with a purchase bought something on
+     `buy_again`.
+   - A hit is now a product **purchased on `placement: list`** in the
+     session. A scored session is a search session with at least one such
+     purchase, personas left out: **1,150 sessions** (slices 0: 335, 1–2:
+     431, 3–5: 246, 6+: 138).
+   - Every product bought lies in the generator's pool for its phrase (0 of
+     1,150 outside it).
+2. **The cart is empty: the search is scored on arrival.**
+   - Since ADR 0045 a session's `basket` is its own order. 1,692 sessions
+     hold a bought SKU in it.
+   - Used as the Shop's cart, the basket would remove the answer from the
+     candidates. As context words, it would carry the answer.
+   - The "known limit" of 62 sessions on release 1 would now be nearly every
+     session. So no ranking gets a cart.
+3. **A shopper without a pet profile (698 of the 1,150).**
+   - The Shop's search reads the household's declared pets
+     (`context.customer.pets`), and these shoppers declared none.
+   - For them, the Shop's search and household-only rankings take the
+     evidence the no-profile sweep chooses for "Picked for you", by its own
+     registered rule: `NO_PROFILE_EVIDENCE` in
+     `src/personalised_search/rankings.py`. Until the sweep concludes, that is
+     `None`, a session without a profile raises, and the benchmark doesn't run.
+   - It is evidence only. The search has no pet filter, as shipped, so a
+     gift for another pet can be found.
+   - A shopper with a declared profile keeps the shipped `where`: declared
+     pets and the month.
+   - For 196 of the 698 there is no earlier order, so no `pets_from_orders`
+     yet. Their evidence is the month alone, plus identity if the chosen
+     form holds it.
+4. **The ceiling** is unchanged: the generator's `_browse_weights` for the
+   phrase's pool. Since ADR 0045 the generator also multiplies each weight
+   by the shop's merchandising factor (offers, new products, stars), which
+   the ceiling doesn't read. It stays an estimate.
+5. **Size and timing.** 1,150 sessions is fewer than the 1,400 of a
+   subsample, so **the full set is scored**. At release 1's 1.6 s a session
+   (4 at a time), that is about 31 minutes.
+6. **Tests.** `tests/test_personalised_search_sessions.py` holds these
+   counts for env `release2`.
