@@ -657,7 +657,7 @@ cmd_test() {
   # write its cache (aito-azure saw 14 cache writes on master on 2026-10-24).
   export PUBLIC_DEMO="${PUBLIC_DEMO:-1}"
   # The backtest group adds numpy, which the EASE baseline's tests need (ADR 0036).
-  uv run --group backtest pytest tests/ -v
+  uv run --group backtest pytest "${@:-tests/}" -v
 }
 
 cmd_aito_check() {
@@ -914,7 +914,7 @@ case "${1:-help}" in
   sandbox-list)      cmd_sandbox list ;;
   sandbox-time)      cmd_sandbox time ;;
   agent-demo)        shift; cmd_agent_demo "$@" ;;
-  test)              cmd_test ;;
+  test)              shift; cmd_test "$@" ;;
   aito-check)        shift; cmd_aito_check "$@" ;;
   search-eval)       cmd_search_eval ;;
   evidence)          shift; cmd_evidence "$@" ;;

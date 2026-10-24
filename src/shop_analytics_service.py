@@ -99,11 +99,19 @@ def field_body(table: str, where: dict, field: str) -> dict:
     return {"from": table, "where": where, "relate": field, "limit": FIELD_LIMIT}
 
 
+# A visitor's showings before their first order (ADR 0040) belong to no customer, so the
+# clustering below can only see the identified ones. Those are all we cluster on; the
+# anonymous visits are 1-3 sessions each and close to independent.
+IDENTIFIED = {"context.customer": {"$exists": True}}
+
+
 def _lift_section(client: AitoClient, *, table: str, customer_field: str, month_field: str,
                   condition: dict, fields: list[str], selected: str, options: list[dict]) -> LiftSection:
+    identified = IDENTIFIED if customer_field == "context.customer" else {}
+    condition = {**condition, **identified}
     field_bodies = [field_body(table, condition, f) for f in fields]
-    everyone_body, condition_body = customer_bodies(
-        table, customer_field, {month_field: {"$or": WINDOW_MONTHS}}, condition)
+    population = {month_field: {"$or": WINDOW_MONTHS}, **identified}
+    everyone_body, condition_body = customer_bodies(table, customer_field, population, condition)
 
     with ThreadPoolExecutor(max_workers=8) as pool:
         field_jobs = [submit_in_request(pool, relate_hits, client, b) for b in field_bodies]
@@ -113,9 +121,10 @@ def _lift_section(client: AitoClient, *, table: str, customer_field: str, month_
         everyone_hits, condition_hits = everyone_job.result(), condition_job.result()
 
     everyone = rows_per_customer(everyone_hits, customer_field)
-    if sum(everyone.values()) != everyone_hits[0]["fs"]["n"]:
-        raise AitoError(f"{table}: the months {WINDOW_MONTHS[0]}…{WINDOW_MONTHS[-1]} cover "
-                        f"{sum(everyone.values())} of {everyone_hits[0]['fs']['n']} rows")
+    population_rows = client.search(table, where=population, limit=0)["total"]
+    if sum(everyone.values()) != population_rows:
+        raise AitoError(f"{table}: the customers' rows in {WINDOW_MONTHS[0]}…{WINDOW_MONTHS[-1]} cover "
+                        f"{sum(everyone.values())} of {population_rows} rows")
     clustering = design_effect(everyone, rows_per_customer(condition_hits, customer_field))
 
     candidates = [c for field, hits in zip(fields, hits_by_field)
@@ -132,7 +141,7 @@ def _lift_section(client: AitoClient, *, table: str, customer_field: str, month_
 def get_funnel_section(client: AitoClient, kpi: str = "purchased") -> LiftSection:
     if kpi not in KPIS:
         raise ValueError(f"Unknown kpi {kpi!r}; expected one of {KPIS}")
-    return _lift_section(client, table="impressions", customer_field="context.visitor", month_field="context.month",
+    return _lift_section(client, table="impressions", customer_field="context.customer", month_field="context.month",
                          condition={kpi: True}, fields=FUNNEL_FIELDS, selected=kpi, options=[])
 
 

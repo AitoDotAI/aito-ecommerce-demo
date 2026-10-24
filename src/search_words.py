@@ -134,7 +134,7 @@ def _phrases(client: AitoClient, bought: dict, shown: dict) -> tuple[list[tuple[
 
 def get_search_words_section(client: AitoClient) -> SearchWordSection:
     bought_body, shown_body = search_words_bodies()
-    customers_body, buyers_body = customer_bodies("impressions", "context.visitor", SEARCH, SEARCH_PURCHASED)
+    customers_body, buyers_body = customer_bodies("impressions", "context.customer", SEARCH, SEARCH_PURCHASED)
     with ThreadPoolExecutor(max_workers=4) as pool:
         jobs = [submit_in_request(pool, relate_hits, client, b)
                 for b in (bought_body, shown_body, customers_body, buyers_body)]
@@ -145,8 +145,8 @@ def get_search_words_section(client: AitoClient) -> SearchWordSection:
     missing = set(bought) - set(shown)
     if missing:
         raise AitoError(f"search words {sorted(missing)} were bought from search but never shown on search")
-    clustering = design_effect(rows_per_customer(customer_hits, "context.visitor"),
-                               rows_per_customer(buyer_hits, "context.visitor"))
+    clustering = design_effect(rows_per_customer(customer_hits, "context.customer"),
+                               rows_per_customer(buyer_hits, "context.customer"))
     phrases, phrase_checks = _phrases(client, bought, shown)
     average = search_purchases / search_impressions
 

@@ -26,7 +26,7 @@ FUNNEL_STEPS: list[tuple[str, dict]] = [
     ("added_to_cart", {"added_to_cart": True}),
     ("purchased",     {"purchased": True}),
 ]
-SURFACES = ["search", "for_you", "category", "bought_together"]
+SURFACES = ["search", "for_you", "category", "bought_together", "direct", "landing"]
 RATINGS = ["1", "2", "3", "4", "5"]
 SENTIMENTS = ["positive", "neutral", "negative"]
 
