@@ -153,7 +153,7 @@ Quality
   verify-demo       End-to-end demo-path check
   verify-mobile     Mobile-viewport screenshot sweep of every sidebar view
   test-urls         Build the static export; check every view's link opens as shared
-  planted-effects   Generate planted and null fixtures for 3 seeds; judge ADR 0032's effects (~5 min)
+  planted-effects   Generate planted and null fixtures for 3 seeds; judge every planted effect (~30 min)
   check             Pre-merge gate (test + fmt + aito-check)
   fmt               Format code
 
@@ -529,8 +529,9 @@ cmd_test_urls() {
 }
 
 cmd_planted_effects() {
-  # Each ADR 0032 effect against the same seed's generation without it, for
-  # three seeds. Writes docs/verification/product-states-data.md; leaves data/ alone.
+  # Each planted effect (ADRs 0032, 0033, 0038-0040) against the same seed's
+  # generation without it, for three seeds in parallel. Writes
+  # docs/verification/actionable-states-data.md; leaves data/ alone.
   cd "$SCRIPT_DIR"
   PYTHONPATH=. uv run python scripts/planted_effects.py
 }

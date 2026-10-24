@@ -1,8 +1,10 @@
-"""The metrics of ADR 0032's planted effects, read from one generated data dir.
+"""The metrics of ADR 0032's and ADR 0033's planted effects, read from one generated data dir.
 
 Each returns one number; `scripts/planted_effects.py` compares it between a
 planted generation and a null one (docs/verification/product-states-prereg.md,
-amendment after the second generation).
+amendment after the second generation). `Fixtures` is shared with the
+metrics of ADRs 0038–0040 (`state_effect_metrics.py`,
+`review_effect_metrics.py`, `acquisition_effect_metrics.py`).
 """
 from __future__ import annotations
 
@@ -13,7 +15,7 @@ from pathlib import Path
 
 from data.catalogue_events import LARGE_PACK_KG, add_months, pack_kg
 from data.observable import kit_status
-from data.shoppers import is_poorly_made
+from data.review_chain import quality
 
 WINDOW_START = "2024-05"
 
@@ -36,17 +38,22 @@ class Fixtures:
 
     @cache
     def impressions(self) -> list[dict]:
-        """Impressions with their context, and the customer's hidden model
-        from the generator's answer key (ADR 0033)."""
+        """Customers' impressions with their context, and the customer's hidden
+        model from the generator's answer key (ADR 0033). A visitor who hasn't
+        bought yet (ADR 0040) has no hidden model and never buys: left out."""
         contexts = {c["context_id"]: c for c in self.load("contexts")}
         traits = self.traits()
         rows = []
         for imp in self.load("impressions"):
             ctx = contexts[imp["context"]]
+            if "customer" not in ctx:
+                continue
             t = traits[ctx["customer"]]
             rows.append({**imp, "month": ctx["month"], "basket_categories": ctx.get("basket_categories", ""),
-                         "owned": ctx.get("owned", ""), "customer_lifestyle": t["lifestyle"],
-                         "customer_brand_loyalty": t["brand_loyalty"]})
+                         "owned": ctx.get("owned", ""), "customer_id": ctx["customer"],
+                         "customer_lifestyle": t["lifestyle"], "customer_brand_loyalty": t["brand_loyalty"],
+                         **{f"{s}_sensitivity": t[f"{s}_sensitivity"]
+                            for s in ("discount", "stars", "newness", "labels")}})
         return rows
 
     @cache
@@ -77,10 +84,10 @@ class Fixtures:
         return {o["order_id"]: o["month"] for o in self.load("orders")}
 
 
-def _rate(rows) -> float:
+def _rate(rows, outcome: str = "purchased") -> float:
     rows = list(rows)
     assert rows, "no impressions to rate"
-    return sum(r["purchased"] for r in rows) / len(rows)
+    return sum(r[outcome] for r in rows) / len(rows)
 
 
 def offer_ratio(fx: Fixtures, lifestyle: str) -> float:
@@ -163,9 +170,9 @@ def sales_after_rise(fx: Fixtures) -> float:
 
 
 def stars_sell(fx: Fixtures) -> float:
-    """P4a: purchase rate at 5 stars ÷ at 3, products not poorly made."""
+    """P4a: purchase rate at 5 stars ÷ at 3, products whose quality isn't poor."""
     state = fx.state()
-    rows = [r for r in fx.impressions() if not is_poorly_made(r["product_sku"])]
+    rows = [r for r in fx.impressions() if quality(r["product_sku"]) != "poor"]
     five = _rate(r for r in rows if state[r["product_state"]]["rating_band"] == "5")
     return five / _rate(r for r in rows if state[r["product_state"]]["rating_band"] == "3")
 
@@ -205,3 +212,10 @@ def kit_owned_item(fx: Fixtures) -> float:
     """K1b: purchase rate of a kit item the household has ÷ kit items it doesn't."""
     by = _kit_rows(fx)
     return _rate(by["owned"]) / _rate(by["next"] + by["other"])
+
+
+def clear_caches() -> None:
+    """Forget every table read so far: one generation at a time stays in memory."""
+    for value in vars(Fixtures).values():
+        if hasattr(value, "cache_clear"):
+            value.cache_clear()
