@@ -124,7 +124,7 @@ export default function ChurnPage() {
                   <thead>
                     <tr>
                       <th style={{ textAlign: "left" }}>Customer</th>
-                      <th style={{ textAlign: "left" }}>Segment · region</th>
+                      <th style={{ textAlign: "left" }}>Pets · region</th>
                       <th style={{ textAlign: "right" }}>Visits<br/><span style={{ fontSize: 10, fontWeight: 400 }}>this mo.</span></th>
                       <th style={{ textAlign: "right" }}>Spend<br/><span style={{ fontSize: 10, fontWeight: 400 }}>this mo.</span></th>
                       <th style={{ textAlign: "right" }}>Latest<br/><span style={{ fontSize: 10, fontWeight: 400 }}>rating</span></th>
@@ -228,8 +228,8 @@ function AtRiskRow({ c }: { c: ChurnAtRiskCustomer }) {
         </div>
       </td>
       <td>
-        <span style={{ color: "var(--text-muted)" }}>{c.segment.replace("_", " ")}</span>
-        {c.pet_size && <span style={{ marginLeft: 4, fontSize: 11 }}>· {c.pet_size}</span>}
+        <span style={{ color: "var(--text-muted)" }}>{c.pets.replace(/_/g, " ")}</span>
+        {c.dog_size && <span style={{ marginLeft: 4, fontSize: 11 }}>· {c.dog_size} dog</span>}
         <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{c.region}</div>
       </td>
       <td style={{ textAlign: "right" }}>

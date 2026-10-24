@@ -33,12 +33,10 @@ import time
 from src.aito_client import AitoClient
 from src.search_service import smart_search
 from src.recommend_service import get_for_you
-from src.bought_together_service import get_bought_together
 from src.filling_service import get_filling
 from src.analytics_service import get_analytics
 from src.pattern_service import get_patterns
 from src.feedback_service import get_feedback
-from src.cart_completion_service import get_cart_completion
 from src.price_service import get_prices
 
 
@@ -90,13 +88,11 @@ def warm_all(client: AitoClient, *, verbose: bool = True) -> None:
          lambda: smart_search(client, query="food", persona_id="maija")),
         ("smart-search food (olli)",
          lambda: smart_search(client, query="food", persona_id="olli")),
-        ("bought-together",    lambda: get_bought_together(client)),
         ("pattern-explorer",   lambda: get_patterns(client)),
         ("purchase-analytics", lambda: get_analytics(client)),
         ("product-filling",    lambda: get_filling(client)),
         ("feedback",           lambda: get_feedback(client)),
         ("price",              lambda: get_prices(client)),
-        ("cart-completion",    lambda: get_cart_completion(client)),
         # The six heavy endpoints (churn, demand, evaluation, inventory,
         # markdown, winback) are deliberately NOT warmed here. They are
         # precompute-and-served from the Aito `precompute_entries` table

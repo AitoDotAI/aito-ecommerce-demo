@@ -25,7 +25,8 @@ def test_the_carts_items_are_context_and_are_not_recommended_again():
     where = fake.recommends[0]
     assert where["product_sku"] == {"$not": {"$or": ["SKU-C"]}}
     assert where["just_bought"] is False   # ranked as not just bought; the re-ask handles those
-    assert where["basket_skus"] == {"$and": [{"$match": "SKU-C"}]}
+    # The cart as words for the ranking (td-20261020210945109481); its SKUs only exclude.
+    assert "context.basket" not in where and where["context.basket_categories"]["$and"]
 
 
 def test_an_item_bought_last_order_is_reasked_as_just_bought_and_falls():
@@ -71,6 +72,15 @@ def test_each_item_carries_aitos_reasons_and_the_facts_beside_them():
 
     [item] = get_shop_grid(fake, "janne", "2026-04", []).items
 
-    assert item.reasons == [Reason("Lifestyle: mid", 1.3)]
+    assert item.reasons == [Reason("Sells in April", 1.3)]
     # Facts, not reasons: the offer this month, the stars, and the rule kept.
     assert (item.offer_pct, item.avg_rating, item.keeps_rule) == (17.5, 4.2, True)
+
+
+def test_picked_for_you_shows_only_the_declared_pets_products():
+    fake = FakeAito([product("SKU-A", 0.5)])
+
+    get_shop_grid(fake, "janne", "2026-04", [])
+
+    # Janne's household declared a dog: a rule on the candidates, like the diet.
+    assert fake.recommends[0]["product_sku.pet_type"] == {"$or": ["dog"]}

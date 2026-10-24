@@ -25,13 +25,14 @@ from fastapi.staticfiles import StaticFiles
 
 from src.aito_client import AitoClient, AitoError
 from src import cache, timing, precompute_store
+from src.data_release_gate import DataReleaseGate, release_gate_middleware
+from src.release_file import load_release, read_counts
 from src.build_info import build_info
 from src.config import load_config
 from src.rate_limit import check_rate_limit
 from src.overview_service import get_dashboard
 from src.search_service import smart_search
 from src.recommend_service import get_for_you
-from src.bought_together_service import get_bought_together
 from src.basket_rules_service import get_basket_rules
 from src.filling_service import get_filling
 from src.eval_service import run_evaluation
@@ -47,14 +48,14 @@ from src.search_words import get_search_words_section
 from src.shop_analytics_service import get_funnel_section, get_who_section
 from src.pattern_service import get_patterns
 from src.feedback_service import get_feedback
-from src.lookup_errors import UnknownProductError, UnknownReviewError
+from src.lookup_errors import UnknownPersonaError, UnknownProductError, UnknownReviewError
 from src.churn_service import get_churn
 from src.demand_service import get_demand
-from src.cart_completion_service import get_cart_completion
 from src.inventory_service import get_inventory
 from src.markdown_service import get_markdowns
 from src.price_service import get_prices, get_price_detail
 from src.price_what_if import get_price_what_if
+from src.discount_what_if import get_discount_what_if
 from src.winback_service import get_winback
 from src.uci_bought_together import bought_together
 from src.uci_buyers import pick_buyers
@@ -104,9 +105,23 @@ def _warm_cache() -> None:
     ).start()
 
 
-# Kick off the warmup thread. Daemon so the server keeps responding
-# to non-data routes (health, schema) while warmup runs.
-_warm_cache()
+def _drop_memory_caches() -> None:
+    """Forget every answer held in this process. The Aito-side tables
+    are left alone: `./do clear-cache` clears those during a cutover."""
+    cache.clear()
+    precompute_store.invalidate()
+
+
+# The app waits for its data (ADR 0035): data routes answer 503 until
+# the env the app reads matches `data/release-env.json`, and the caches
+# are warmed only then. A malformed release file stops the startup here.
+release_gate = DataReleaseGate(
+    load_release(),
+    read_counts=lambda: read_counts(aito),
+    on_ready=_warm_cache,
+    on_mismatch=_drop_memory_caches,
+)
+release_gate.start()
 
 
 app = FastAPI(
@@ -154,6 +169,10 @@ async def aito_timing_middleware(request: Request, call_next):
     if header_value:
         response.headers["X-Aito-Calls"] = header_value
     return response
+
+
+# 503 on data routes until the data matches the release (ADR 0035).
+app.middleware("http")(release_gate_middleware(release_gate))
 
 
 @app.middleware("http")
@@ -227,7 +246,7 @@ def health():
     """
     cached = cache.get("health")
     if cached:
-        return cached
+        return {**cached, "data_release": release_gate.status()}
     connected = aito.check_connectivity()
     result = {
         "status": "ok",
@@ -243,7 +262,8 @@ def health():
         "api": aito._config.api_namespace,
     }
     cache.set("health", result, ttl=60)
-    return result
+    # Outside the 60 s cache: a cutover polls this to see the data arrive.
+    return {**result, "data_release": release_gate.status()}
 
 
 @app.get("/api/schema")
@@ -293,6 +313,8 @@ def smart_search_endpoint(q: str = "food", customer: str = "saara"):
     """
     try:
         return smart_search(aito, query=q, persona_id=customer).to_dict()
+    except UnknownPersonaError as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
     except AitoError as exc:
         return JSONResponse(
             status_code=502,
@@ -302,27 +324,14 @@ def smart_search_endpoint(q: str = "food", customer: str = "saara"):
 
 @app.get("/api/for-you")
 def for_you_endpoint(customer: str = "maija"):
-    """Personalised tile grid via `_recommend` ranked by segment-fit.
+    """Personalised tile grid: `_recommend` with the customer as context.
 
     Customer: one of `maija` / `olli` / `saara`.
     """
     try:
         return get_for_you(aito, persona_id=customer).to_dict()
-    except AitoError as exc:
-        return JSONResponse(
-            status_code=502,
-            content={"error": str(exc), "status_code": exc.status_code},
-        )
-
-
-@app.get("/api/bought-together")
-def bought_together_endpoint(anchor: str = "dog_dryfood"):
-    """Order-level co-occurrence via `_relate` over the denormalised
-    `orders.line_categories` Text column. See ADR 0008."""
-    try:
-        return get_bought_together(aito, anchor_id=anchor).to_dict()
-    except ValueError as exc:
-        return JSONResponse(status_code=400, content={"error": str(exc)})
+    except UnknownPersonaError as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
     except AitoError as exc:
         return JSONResponse(
             status_code=502,
@@ -431,9 +440,9 @@ def shop_product_endpoint(sku: str, shopper: str, month: str = Query(pattern=MON
 
 
 @app.get("/api/shop/suggestions")
-def shop_suggestions_endpoint(shopper: str, month: str = Query(pattern=MONTH)):
-    """The usual basket, and what's next for the shopper's pet, as of `month`."""
-    return _shop(lambda: get_suggestions(aito, shopper, month))
+def shop_suggestions_endpoint(shopper: str, month: str = Query(pattern=MONTH), cart: str = ""):
+    """The usual basket, and what's next for the shopper's pet, as of `month` and with `cart`."""
+    return _shop(lambda: get_suggestions(aito, shopper, month, _cart_skus(cart)))
 
 
 @app.get("/api/product-insights")
@@ -582,19 +591,6 @@ def winback_endpoint():
         )
 
 
-@app.get("/api/cart-completion")
-def cart_completion_endpoint():
-    """4 preset checkout scenarios × `_recommend product_sku`
-    conditioned on cart's line_categories. See ADR 0019."""
-    try:
-        return get_cart_completion(aito).to_dict()
-    except AitoError as exc:
-        return JSONResponse(
-            status_code=502,
-            content={"error": str(exc), "status_code": exc.status_code},
-        )
-
-
 @app.get("/api/markdown")
 def markdown_endpoint():
     """Markdown decision view — overstock SKUs + proposed discount
@@ -628,6 +624,21 @@ def price_what_if_endpoint(sku: str, price: float = Query(gt=0, allow_inf_nan=Fa
     behind the estimate (regression `_estimate`). See ADR 0029."""
     try:
         return get_price_what_if(aito, sku, price).to_dict()
+    except UnknownProductError as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/price/discount-what-if")
+def price_discount_what_if_endpoint(sku: str):
+    """How likely the product is bought when shown, at each discount band
+    (`_predict purchased` with `product_state.discount_band`). See ADR 0032."""
+    try:
+        return get_discount_what_if(aito, sku).to_dict()
     except UnknownProductError as exc:
         return JSONResponse(status_code=404, content={"error": str(exc)})
     except AitoError as exc:

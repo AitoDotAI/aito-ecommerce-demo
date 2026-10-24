@@ -2,7 +2,7 @@
 
 ![Evaluation](../../screenshots/08-evaluation.png)
 
-*Four prediction models, four `_evaluate` runs, three pass and
+*Three prediction models, three `_evaluate` runs, two pass and
 **one honest failure**. The "Return Risk" model deliberately
 fails its threshold — Aito has no signal in the data to beat the
 3% baseline, and the view shows that as a red row instead of
@@ -11,12 +11,12 @@ fudging the threshold.*
 ## Overview
 
 Most predictive-product demos hide their failures. Ours doesn't.
-The Evaluation view runs four `_evaluate` calls — one per model
+The Evaluation view runs three `_evaluate` calls — one per model
 that the rest of the demo uses — against held-out test sets, and
 reports pass/fail against a fixed threshold (10 percentage points
 of accuracy gain over the always-predict-majority baseline).
 
-Three of the four models pass. The fourth — predicting whether
+Two of the three models pass. The third — predicting whether
 an order line will be returned — fails because the fixture only
 has 3% returned lines and Aito honestly reports `accuracy_gain ≈
 0`. There's no feature in the training data that beats the prior.
@@ -60,7 +60,7 @@ fixed dict every time and `_evaluate` would predict on identical
 input over and over. The `$get` syntax tells Aito "read this
 field from the current test row".
 
-### The four models
+### The three models
 
 ```python
 MODELS = [
@@ -84,38 +84,31 @@ MODELS = [
         predict="dietary",
     ),
     ModelSpec(
-        id="segment_from_product",
-        label="Customer segment from product attributes",
-        table="order_lines",
-        where={
-            "product_sku.pet_type": {"$get": "product_sku.pet_type"},
-            "product_sku.category": {"$get": "product_sku.category"},
-        },
-        predict="customer_segment",
-    ),
-    ModelSpec(
         id="return_risk",
         label="Return risk (deliberate honest-failure case)",
         table="order_lines",
         where={
             "product_sku.category": {"$get": "product_sku.category"},
             "product_sku.pet_type": {"$get": "product_sku.pet_type"},
-            "customer_segment":     {"$get": "customer_segment"},
         },
         predict="returned",
     ),
 ]
 ```
 
-The first three are predictions the rest of the demo's views
-actually run (Product Filling's pet_type / dietary, Smart Search /
-For You's segment). Evaluating them on `_evaluate` proves the
-predictions hold up on held-out data, not just the trained set.
+The first two are predictions the rest of the demo's views
+actually run (Product Filling's pet_type / dietary). Evaluating them
+on `_evaluate` shows the predictions hold up on held-out data, not
+just the trained set. (`ModelSpec` also carries `feature_labels` for
+the page; they aren't sent.)
 
-The fourth is the honest-failure case. `returned` is a Boolean
-that's true ~3% of the time, and none of the conditioning columns
-(product category, pet type, customer segment) carry signal that
-beats the 97% always-false baseline.
+The third is the honest-failure case. `returned` is a Boolean
+that's true ~3% of the time, and neither conditioning column
+(product category, pet type) carries signal that beats the
+always-false baseline.
+
+ADR 0033 retired a fourth model, "customer segment from product
+attributes": no table Aito sees holds a segment any more.
 
 ### Pass / fail threshold
 
@@ -136,8 +129,7 @@ the data); gain is ~0pp; fail.
 
 ### Parallel execution
 
-Each `_evaluate` call is 5–15 seconds live (the test sample +
-the four-model fanout). Serial would be 40+ seconds — too slow
+Each `_evaluate` call is 5–15 seconds live. Serial would be ~30 seconds — too slow
 for the demo. We parallelise:
 
 ```python
@@ -164,7 +156,7 @@ self._client = httpx.AsyncClient(timeout=90.0)
 
 ### 1. Real `_evaluate`, real held-out sample
 
-Nothing precomputed. Each page load runs the four `_evaluate`
+Nothing precomputed. Each page load runs the three `_evaluate`
 calls live against Aito. The `last_run` timestamp on the page is
 the actual UTC time the calls completed.
 
@@ -176,21 +168,19 @@ the view renders red. CLAUDE.md prime directive #2 — never
 silently transform — applies here too. We could pick a different
 predict field that always passes. We don't.
 
-### 3. Three pass rows quote the actual baseline
+### 3. Pass rows quote the actual baseline
 
 The view doesn't just say "model: pass". It shows the accuracy,
-the baseline accuracy, and the gain in percentage points. For
-the segment-from-product model, the line reads "84.7% (baseline
-36.1%, +48.6pp)". The reviewer sees that 48.6pp of accuracy is
-genuinely Aito-driven, not baseline-driven.
+the baseline accuracy, and the gain in percentage points, so the
+reviewer sees how much of the accuracy is Aito-driven rather than
+baseline-driven.
 
 ## Data schema
 
 Evaluation reads the same tables the live views read:
 
 - `products` — for the pet-type-from-name and dietary models
-- `order_lines` — for the segment-from-product and return-risk
-  models
+- `order_lines` — for the return-risk model
 
 No new tables, no special evaluation set. The held-out sample is a
 seeded random 200-row sample that Aito carves at evaluation time via
@@ -223,7 +213,7 @@ baseline to the measured majority share so this cannot regress quietly.
 - **The 10pp threshold is fixture-tuned**. On a real customer
   dataset with stronger signal, 10pp is the floor; on weaker
   data 5pp might be the right number. We picked 10pp because
-  three of our four models clear it by 30+ pp, and the
+  both passing models clear it by 30+ pp, and the
   return-risk failure is unambiguous.
 - **`accuracyGain` field is sometimes missing**. Some Aito
   versions return `accuracy + baseAccuracy` and expect the
@@ -251,7 +241,7 @@ baseline to the measured majority share so this cannot regress quietly.
 ## Try it live
 
 [**Open Evaluation**](http://localhost:8500/evaluation/). Cold
-load is ~15 s (four parallel `_evaluate` calls); cache for
+load is ~15 s (three parallel `_evaluate` calls); cache for
 an hour after. Watch for the red row — that's the demo's
 honest-failure moment.
 

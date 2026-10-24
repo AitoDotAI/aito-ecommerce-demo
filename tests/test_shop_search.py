@@ -37,6 +37,19 @@ def test_a_result_bought_last_order_is_reasked_and_falls():
     assert [(i.sku, i.p_if_new) for i in found.items] == [("SKU-A", None), ("SKU-B", 0.2)]
 
 
+def test_another_pets_product_in_search_never_reads_fits_your_pets():
+    # Helena declares a cat. A dog treat can match her words, and the cat
+    # condition can lift it on a handful of impressions; that isn't a fit.
+    fake = FakeShopAito([product("SKU-D", 0.3, pet_type="dog", reason=("context.customer.pets", {"$and": [{"$match": "cat"}]}, 2.4)),
+                         product("SKU-C", 0.2, pet_type="cat", reason=("context.customer.pets", {"$and": [{"$match": "cat"}]}, 2.4))],
+                        text_scores={"SKU-D": 10.0, "SKU-C": 10.0})
+
+    found = search_shop(fake, "helena", "2026-04", [], "dental")
+
+    assert {i.sku: [r.label for r in i.reasons] for i in found.items} == {
+        "SKU-D": [], "SKU-C": ["Fits your pets"]}
+
+
 def test_the_grids_context_and_rule_apply_to_search():
     fake = FakeShopAito([product("SKU-A", 0.3)], text_scores={"SKU-A": 10.0, "SKU-C": 10.0})
 
@@ -44,7 +57,7 @@ def test_the_grids_context_and_rule_apply_to_search():
 
     where = fake.recommends[0]
     assert {"product_sku.name": {"$match": "Grain"}} in where["$or"]
-    assert where["basket_skus"] == {"$and": [{"$match": "SKU-C"}]}
+    assert "context.basket" not in where and where["context.basket_categories"]["$and"]
     assert where["product_sku"] == {"$or": ["SKU-A"]}     # the cart's own item isn't a result
 
 

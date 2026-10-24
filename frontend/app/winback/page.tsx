@@ -175,11 +175,11 @@ function TargetRow({
         </td>
         <td>
           <span style={{ color: "var(--text-muted)" }}>
-            {t.segment.replace("_", " ")}
-            {t.pet_size && ` · ${t.pet_size}`}
+            {t.pets.replace(/_/g, " ")}
+            {t.dog_size && ` · ${t.dog_size} dog`}
           </span>
           <div style={{ fontSize: 10.5, color: "var(--text-muted)" }}>
-            {t.lifestyle} · {t.health_focus} health
+            {t.region} · usually buys {t.staple_category === "none" ? "nothing regularly" : t.staple_category.replace("/", " ")}
           </div>
         </td>
         <td style={{ textAlign: "right" }}>

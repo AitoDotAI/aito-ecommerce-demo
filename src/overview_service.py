@@ -3,9 +3,9 @@
 Composes the four blocks the Dashboard view shows:
   1. KPI grid    — live `_search` counts.
   2. Top patterns — Python-side co-occurrence lift over local fixtures.
-  3. Segments    — live `_search` counts per segment + avg-basket aggs.
-  4. Recent orders — live `_search` over orders, no per-row predictions
-                    (those land with the For You / Bought Together views).
+  3. Households  — live `_search` counts per household (the pets it
+                   declared, ADR 0033) + avg-basket aggs.
+  4. Recent orders — live `_search` over orders, no per-row predictions.
 
 See `docs/adr/0005-dashboard.md` for the why of the live/local split.
 The same `DashboardResponse` shape is consumed by
@@ -67,9 +67,10 @@ class SegmentCard:
     label: str
     share_pct: float
     avg_basket_eur: float
-    note: str
-    pill_text: str
-    pill_tone: str
+    # Set only on the card that ranks first or last on a number the card
+    # shows (see `_rank_pill`); every other card has no pill.
+    pill_text: str | None
+    pill_tone: str | None
 
 
 @dataclass(frozen=True)
@@ -114,36 +115,32 @@ class DashboardResponse:
         }
 
 
-# ── Segment metadata (fixed tone / emoji / note per segment) ───────
+# ── Household cards, keyed by the declared `customers.pets` value ───
 
 
 _SEGMENT_META: dict[str, dict[str, str]] = {
-    "dog_owner": {
-        "emoji": "🐕", "label": "Dog owners",
-        "note":  "monthly food reorder · highest LTV",
-        "pill_text": "Highest LTV", "pill_tone": "orange",
-    },
-    "cat_owner": {
-        "emoji": "🐈", "label": "Cat owners",
-        "note":  "bi-weekly litter · steady frequency",
-        "pill_text": "High frequency", "pill_tone": "blue",
-    },
-    "multi_pet": {
-        "emoji": "🐾", "label": "Multi-pet households",
-        "note":  "dog + cat · cross-sell sweet spot",
-        "pill_text": "Cross-sell", "pill_tone": "purple",
-    },
-    "small_animal_owner": {
-        "emoji": "🐹", "label": "Small animals",
-        "note":  "weekly bedding · growing segment",
-        "pill_text": "Growing", "pill_tone": "grey",
-    },
-    "aquarium_owner": {
-        "emoji": "🐟", "label": "Aquarium / exotic",
-        "note":  "monthly · high AOV",
-        "pill_text": "High AOV", "pill_tone": "purple",
-    },
+    "dog":          {"emoji": "🐕", "label": "Dog households"},
+    "cat":          {"emoji": "🐈", "label": "Cat households"},
+    "dog cat":      {"emoji": "🐾", "label": "Dog & cat households"},
+    "small_animal": {"emoji": "🐹", "label": "Small-animal households"},
+    "aquarium":     {"emoji": "🐟", "label": "Aquarium households"},
 }
+
+
+def _rank_pill(card_id: str, shares: dict[str, float], baskets: dict[str, float]) -> tuple[str, str] | None:
+    """The pill a household card earns from the two numbers it shows.
+
+    Pills are derived, never hand-written, so a label can't contradict
+    the share or basket printed next to it. A card that ranks on more
+    than one number keeps the first pill in this order.
+    """
+    if card_id == max(baskets, key=baskets.__getitem__):
+        return "Highest basket", "orange"
+    if card_id == max(shares, key=shares.__getitem__):
+        return "Largest group", "blue"
+    if card_id == min(baskets, key=baskets.__getitem__):
+        return "Lowest basket", "grey"
+    return None
 
 
 # ── Top patterns — Python-side lift over the fixture data ──────────
@@ -185,7 +182,7 @@ def _compute_top_patterns(client: AitoClient, k: int = 6) -> list[Pattern]:
     """Order-level co-occurrence lift via live `_relate`.
 
     For each curated `(pet_a, cat_a) → (pet_b, cat_b)` pattern in
-    `_PATTERN_PAIRS`, runs the same query Bought Together uses:
+    `_PATTERN_PAIRS`, runs the basket `_relate` that Patterns also sends:
 
       _relate from orders where {line_categories: $match <anchor>}
               relate line_categories
@@ -195,14 +192,14 @@ def _compute_top_patterns(client: AitoClient, k: int = 6) -> list[Pattern]:
 
     Six anchors → six parallel `_relate` calls. Cached at the
     `get_dashboard` level (10 min); inner anchors aren't cached
-    separately because Pattern Explorer / Bought Together hit the
-    same query body with their own cache keys.
+    separately because Patterns and Pattern Explorer send the same
+    query body with their own cache keys.
 
     The pair list stays curated (not strict sort-by-lift): aquarium
     → aquarium niche pattern inflates lift to ≈ 16× because of its
     low base rate, mathematically correct but visually misleading
-    for the dashboard's narrative. Pattern Explorer is the right
-    place for raw-ranked discovery.
+    for the dashboard's narrative. Patterns is the place for every
+    pair, with its interval.
     """
     anchors_targets: list[tuple[str, str, str, str]] = []
     for (anchor_pet, anchor_cat), (target_pet, target_cat), label in _PATTERN_PAIRS:
@@ -314,18 +311,19 @@ def _month_minus(yyyymm: str, months: int) -> str:
 
 
 def _segment_cards(client: AitoClient, *, total_customers: int) -> list[SegmentCard]:
-    """One card per customer segment: population share + average basket.
+    """One card per household group (its declared pets): population share +
+    average basket.
 
     Two Aito shapes, both server-side — no per-row fan-out:
 
-      1. **Customer counts** for every segment in a single `_batch`
+      1. **Customer counts** for every group in a single `_batch`
          (one round-trip for all five `_search limit=0` counts).
-      2. **Average basket** per segment via one `_aggregate` on the
-         `customers` table, which carries `segment` natively (no link
+      2. **Average basket** per group via one `_aggregate` on the
+         `customers` table, which carries `pets` natively (no link
          traversal) plus per-customer `total_spent_eur` / `total_orders`.
          `mean(total_spent_eur) / mean(total_orders)` is algebraically
-         the exact order-weighted mean basket for the segment
-         (`Σspend / Σorders`), and — because `segment` needs no join and
+         the exact order-weighted mean basket for the group
+         (`Σspend / Σorders`), and — because `pets` needs no join and
          `customers` is small — it costs ~20 ms server-side vs ~2.9 s for
          the equivalent link-filtered aggregate over `orders`.
 
@@ -336,40 +334,44 @@ def _segment_cards(client: AitoClient, *, total_customers: int) -> list[SegmentC
     """
     seg_ids = list(_SEGMENT_META.keys())
 
-    # 1) All per-segment customer counts in one request.
+    # 1) All per-group customer counts in one request. `pets` is a Text
+    #    column; a bare value compares the whole value ("dog" is dog-only).
     counts = client.batch([
-        {"from": "customers", "where": {"segment": seg_id}, "limit": 0}
+        {"from": "customers", "where": {"pets": seg_id}, "limit": 0}
         for seg_id in seg_ids
     ])
 
-    cards: list[SegmentCard] = []
+    shares: dict[str, float] = {}
+    baskets: dict[str, float] = {}
     for seg_id, count_res in zip(seg_ids, counts):
         seg_total = count_res["total"]
         if seg_total == 0:
             continue
 
-        # 2) Exact mean basket, aggregated on `customers` (segment is a
+        # 2) Exact mean basket, aggregated on `customers` (`pets` is a
         #    native column — no `orders` join).
         agg = client.aggregate(
             table="customers",
-            where={"segment": seg_id},
+            where={"pets": seg_id},
             aggregate_fields=["total_spent_eur.$mean", "total_orders.$mean"],
         )
         mean_spent = agg.get("total_spent_eur.$mean") or 0.0
         mean_orders = agg.get("total_orders.$mean") or 0.0
-        avg_basket = round(mean_spent / mean_orders, 2) if mean_orders else 0.0
+        baskets[seg_id] = round(mean_spent / mean_orders, 2) if mean_orders else 0.0
+        shares[seg_id] = round(seg_total / max(1, total_customers) * 100, 1)
 
+    cards: list[SegmentCard] = []
+    for seg_id in shares:
         meta = _SEGMENT_META[seg_id]
-        share_pct = round(seg_total / max(1, total_customers) * 100, 1)
+        pill = _rank_pill(seg_id, shares, baskets)
         cards.append(SegmentCard(
             id=seg_id,
             emoji=meta["emoji"],
             label=meta["label"],
-            share_pct=share_pct,
-            avg_basket_eur=avg_basket,
-            note=meta["note"],
-            pill_text=meta["pill_text"],
-            pill_tone=meta["pill_tone"],
+            share_pct=shares[seg_id],
+            avg_basket_eur=baskets[seg_id],
+            pill_text=pill[0] if pill else None,
+            pill_tone=pill[1] if pill else None,
         ))
     return cards
 
@@ -446,14 +448,14 @@ def _build_insight(patterns: list[Pattern]) -> Insight:
     Aquarium → aquarium-health lifts ≈ 17× because aquarium orders
     are a closed niche (small denominator), which is mathematically
     correct but visually overpowers the dog → dental-treats moment
-    that the rest of the demo (Bought Together, customer-switcher
-    walkthrough) builds on. The dashboard surfaces every pattern
+    that the rest of the demo (the Shop's cart suggestions, Patterns)
+    builds on. The dashboard surfaces every pattern
     in the table; the tip-box leads with the load-bearing one.
     """
     if not patterns:
         return Insight(
             headline="Insight",
-            body="Top patterns will populate once Bought Together is wired live.",
+            body="No basket pattern came back from Aito.",
         )
     anchor = next(
         (p for p in patterns if p.label == _INSIGHT_ANCHOR_LABEL),
@@ -463,10 +465,9 @@ def _build_insight(patterns: list[Pattern]) -> Insight:
         headline="Insight",
         body=(
             f"<strong>{anchor.label}</strong> co-occurs at "
-            f"<strong>{anchor.lift:.2f}×</strong> baseline — Aito flags this as "
-            f"the demo's headline cross-sell signal. Drill into individual SKU "
-            f"pairs on Bought Together; live-rank the pattern's customer "
-            f"segments on Pattern Explorer."
+            f"<strong>{anchor.lift:.2f}×</strong> baseline. "
+            f'<a href="/patterns/">Patterns</a> shows its interval and counts, '
+            f"and every other basket pair that clears the significance bar."
         ),
     )
 

@@ -6,7 +6,7 @@
         "delta_label": null
       },
       "orders_12mo": {
-        "value": 9965,
+        "value": 9959,
         "delta_label": null
       },
       "customers": {
@@ -14,146 +14,141 @@
         "delta_label": null
       },
       "avg_basket_eur": {
-        "value": 79.23,
+        "value": 79.4,
         "delta_label": null
       }
     },
     "top_patterns": [
       {
         "label": "Dog dry-food → Dental treats",
-        "lift": 2.79,
-        "bar_pct": 79.8,
+        "lift": 2.66,
+        "bar_pct": 76.1,
         "available": true
       },
       {
         "label": "Dog dry-food → Dog treats",
-        "lift": 1.78,
-        "bar_pct": 50.9,
+        "lift": 1.77,
+        "bar_pct": 50.6,
         "available": true
       },
       {
         "label": "Dog dry-food → Dog accessories",
-        "lift": 1.66,
-        "bar_pct": 47.5,
+        "lift": 1.65,
+        "bar_pct": 47.2,
         "available": true
       },
       {
         "label": "Cat wet-food → Cat litter",
-        "lift": 2.19,
-        "bar_pct": 62.5,
+        "lift": 2.18,
+        "bar_pct": 62.4,
         "available": true
       },
       {
         "label": "Cat dry-food → Cat wet-food",
-        "lift": 2.14,
-        "bar_pct": 61.3,
+        "lift": 2.16,
+        "bar_pct": 61.6,
         "available": true
       },
       {
         "label": "Aquarium food → Aquarium health",
-        "lift": 13.58,
+        "lift": 14.06,
         "bar_pct": 100.0,
         "available": true
       }
     ],
     "segments": [
       {
-        "id": "dog_owner",
+        "id": "dog",
         "emoji": "🐕",
-        "label": "Dog owners",
+        "label": "Dog households",
         "share_pct": 42.1,
-        "avg_basket_eur": 67.63,
-        "note": "monthly food reorder · highest LTV",
-        "pill_text": "Highest LTV",
-        "pill_tone": "orange"
-      },
-      {
-        "id": "cat_owner",
-        "emoji": "🐈",
-        "label": "Cat owners",
-        "share_pct": 29.8,
-        "avg_basket_eur": 73.8,
-        "note": "bi-weekly litter · steady frequency",
-        "pill_text": "High frequency",
+        "avg_basket_eur": 74.34,
+        "pill_text": "Largest group",
         "pill_tone": "blue"
       },
       {
-        "id": "multi_pet",
+        "id": "cat",
+        "emoji": "🐈",
+        "label": "Cat households",
+        "share_pct": 29.8,
+        "avg_basket_eur": 74.74,
+        "pill_text": null,
+        "pill_tone": null
+      },
+      {
+        "id": "dog cat",
         "emoji": "🐾",
-        "label": "Multi-pet households",
+        "label": "Dog & cat households",
         "share_pct": 15.2,
-        "avg_basket_eur": 110.58,
-        "note": "dog + cat · cross-sell sweet spot",
-        "pill_text": "Cross-sell",
-        "pill_tone": "purple"
+        "avg_basket_eur": 108.38,
+        "pill_text": null,
+        "pill_tone": null
       },
       {
-        "id": "small_animal_owner",
+        "id": "small_animal",
         "emoji": "🐹",
-        "label": "Small animals",
+        "label": "Small-animal households",
         "share_pct": 7.3,
-        "avg_basket_eur": 121.21,
-        "note": "weekly bedding · growing segment",
-        "pill_text": "Growing",
-        "pill_tone": "grey"
+        "avg_basket_eur": 119.48,
+        "pill_text": "Highest basket",
+        "pill_tone": "orange"
       },
       {
-        "id": "aquarium_owner",
+        "id": "aquarium",
         "emoji": "🐟",
-        "label": "Aquarium / exotic",
+        "label": "Aquarium households",
         "share_pct": 5.6,
-        "avg_basket_eur": 63.0,
-        "note": "monthly · high AOV",
-        "pill_text": "High AOV",
-        "pill_tone": "purple"
+        "avg_basket_eur": 63.05,
+        "pill_text": "Lowest basket",
+        "pill_tone": "grey"
       }
     ],
     "insight": {
       "headline": "Insight",
-      "body": "<strong>Dog dry-food → Dental treats</strong> co-occurs at <strong>2.79×</strong> baseline — Aito flags this as the demo's headline cross-sell signal. Drill into individual SKU pairs on Bought Together; live-rank the pattern's customer segments on Pattern Explorer."
+      "body": "<strong>Dog dry-food → Dental treats</strong> co-occurs at <strong>2.66×</strong> baseline. <a href=\"/patterns/\">Patterns</a> shows its interval and counts, and every other basket pair that clears the significance bar."
     },
     "recent_orders": [
       {
-        "order_id": "ORD-11897",
+        "order_id": "ORD-11887",
         "customer_short": "Sari M.",
         "month": "2026-04",
-        "line_summary": "Orijen Indoor Whitefish Cat Food 4kg + 1 more",
-        "total_eur": 35.31
+        "line_summary": "Hill's Science Plan Grain Free Chicken Dog Food 150g + 2 more",
+        "total_eur": 87.61
       },
       {
-        "order_id": "ORD-11890",
+        "order_id": "ORD-11880",
         "customer_short": "Petra L.",
         "month": "2026-04",
-        "line_summary": "Eukanuba Turkey Dog Food 85g + 1 more",
-        "total_eur": 4.56
+        "line_summary": "PetNord Grain Free Puppy Dental Treats 200g + 3 more",
+        "total_eur": 103.17
       },
       {
-        "order_id": "ORD-11888",
+        "order_id": "ORD-11878",
         "customer_short": "Henrik L.",
         "month": "2026-04",
-        "line_summary": "PetNord Silica Crystals Cat Litter 7kg + 1 more",
-        "total_eur": 24.1
+        "line_summary": "PetNord Silica Crystals Cat Litter 7kg + 2 more",
+        "total_eur": 45.44
       },
       {
-        "order_id": "ORD-11875",
+        "order_id": "ORD-11865",
         "customer_short": "Maria L.",
         "month": "2026-04",
-        "line_summary": "PetNord Clumping Clay Cat Litter 7kg + 1 more",
-        "total_eur": 14.88
+        "line_summary": "Hill's Science Plan Beef Cat Food 400g",
+        "total_eur": 8.78
       },
       {
-        "order_id": "ORD-11869",
+        "order_id": "ORD-11859",
         "customer_short": "Pekka L.",
         "month": "2026-04",
-        "line_summary": "Hill's Science Plan Puppy Beef Dog Food 150g",
-        "total_eur": 3.24
+        "line_summary": "PetNord Cheese Treats 500g + 2 more",
+        "total_eur": 45.38
       },
       {
-        "order_id": "ORD-11866",
+        "order_id": "ORD-11856",
         "customer_short": "Sari M.",
         "month": "2026-04",
-        "line_summary": "Trixie Bowl + 2 more",
-        "total_eur": 45.75
+        "line_summary": "PetNord Collar + 3 more",
+        "total_eur": 96.58
       }
     ],
     "last_query": {
@@ -168,56 +163,56 @@
         "limit": 0
       }
     },
-    "last_response_ms": 636
+    "last_response_ms": 14849
   },
   "timings": [
     [
       "_search",
-      0.56
+      0.78
     ],
     [
       "_search",
-      0.68
+      2.35
     ],
     [
       "_search",
-      1.75
+      3.52
     ],
     [
       "_search",
-      50.24
+      56.33
     ],
     [
       "_batch",
-      1.42
+      2.28
     ],
     [
       "_aggregate",
-      22.39
+      18.52
     ],
     [
       "_aggregate",
-      16.4
+      13.49
     ],
     [
       "_aggregate",
-      9.82
+      8.39
     ],
     [
       "_aggregate",
-      4.83
+      3.36
     ],
     [
       "_aggregate",
-      3.68
+      2.8
     ],
     [
       "_search",
-      3.91
+      13.78
     ],
     [
       "_batch",
-      1.8
+      1.25
     ]
   ]
 }

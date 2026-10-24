@@ -10,6 +10,7 @@ from pathlib import Path
 import pytest
 
 from data import lifecycle
+from tests.fixture_joins import customers_with_traits
 
 from src.shop_personas import SHOPPERS, UnknownShopperError, shopper
 
@@ -23,7 +24,7 @@ def _load(name: str) -> list[dict]:
 @pytest.fixture(scope="module")
 def history():
     products = {p["sku"]: p for p in _load("products.json")}
-    customers = {c["customer_id"]: c for c in _load("customers.json")}
+    customers = {c["customer_id"]: c for c in customers_with_traits()}
     orders: dict[str, list[dict]] = {}
     for o in sorted(_load("orders.json"), key=lambda o: o["month"]):
         orders.setdefault(o["customer_id"], []).append(o)
@@ -42,15 +43,15 @@ def test_every_shopper_is_an_active_customer(history):
         assert orders.get(s.customer_id), s
 
 
-def test_sofia_is_a_new_guinea_pig_owner_with_a_cage_and_a_bottle_by_april(history):
+def test_paivi_is_a_new_guinea_pig_owner_with_a_cage_and_a_bottle_by_april(history):
     products, _, orders = history
-    sofia = orders[shopper("sofia").customer_id]
-    before_april = [o for o in sofia if o["month"] < "2026-04"]
+    paivi = orders[shopper("paivi").customer_id]
+    before_april = [o for o in paivi if o["month"] < "2026-04"]
     kinds = {lifecycle.item_type(p["name"], p["brand"]) for p in _bought(products, before_april)}
-    assert len(sofia) <= 3
+    assert len(paivi) <= 3
     assert {"Cage", "Water Bottle"} <= kinds and "Hideout" not in kinds
-    assert {p["pet_type"] for p in _bought(products, sofia)} == {"small_animal"}
-    food = [p["name"] for p in _bought(products, sofia) if p["category"] == "dry-food"]
+    assert {p["pet_type"] for p in _bought(products, paivi)} == {"small_animal"}
+    food = [p["name"] for p in _bought(products, paivi) if p["category"] == "dry-food"]
     assert food and all("Guinea Pig" in name for name in food)
 
 

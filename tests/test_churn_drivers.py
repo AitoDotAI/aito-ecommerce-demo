@@ -109,7 +109,7 @@ def test_tenure_lift_is_the_bands_churn_rate_over_everyones():
 
 def test_drivers_keep_strong_lifts_sorted_by_distance_from_one():
     client = _client(
-        segment={"aquarium_owner": 1.38, "cat_owner": 0.89, "dog_owner": 0.99},
+        pets={"aquarium": 1.38, "cat": 0.89, "dog": 0.99},
         region={"oulu": 1.34, "helsinki": 0.91},
         # Lifts 0.38 (under 6 months) and 1.45 (18+); 6–17 months stays at 1.0.
         tenure={"under 6 months": (1000, 127), "6–17 months": (1000, 333), "18 months or more": (1000, 483)},
@@ -120,7 +120,7 @@ def test_drivers_keep_strong_lifts_sorted_by_distance_from_one():
     assert [(d.field, d.value, d.lift) for d in result.drivers] == [
         ("tenure", "under 6 months", 0.38),
         ("tenure", "18 months or more", 1.45),
-        ("segment", "aquarium_owner", 1.38),
+        ("pets", "aquarium", 1.38),
         ("region", "oulu", 1.34),
     ]
 
@@ -138,19 +138,19 @@ def test_driver_row_reads_as_churn_rate_in_the_group_vs_overall():
 
 
 def test_fields_with_no_effect_are_named_not_dropped():
-    client = _client(segment={"aquarium_owner": 1.38})
+    client = _client(pets={"aquarium": 1.38})
 
     result = get_churn_drivers(client)
 
-    # The reader should see "lifestyle doesn't predict churn here", not an
-    # absence they can't tell apart from "lifestyle wasn't asked".
-    assert "segment" not in result.fields_without_effect
-    assert "lifestyle" in result.fields_without_effect
+    # The reader should see "diet doesn't predict churn here", not an
+    # absence they can't tell apart from "diet wasn't asked".
+    assert "pets" not in result.fields_without_effect
+    assert "diet" in result.fields_without_effect
     assert "tenure" in result.fields_without_effect
 
 
 def test_a_field_with_no_hits_fails_loudly():
-    client = _client(lifestyle={})
+    client = _client(diet={})
 
-    with pytest.raises(AitoError, match="lifestyle returned no hits"):
+    with pytest.raises(AitoError, match="diet returned no hits"):
         get_churn_drivers(client)

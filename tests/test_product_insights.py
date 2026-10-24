@@ -51,18 +51,18 @@ class FakeClient:
             if "rating" in where:
                 return RATINGS[where["rating"]]
             return SENTIMENTS[where["sentiment"]]
-        if "surface" in where:
-            shown, bought = self.by_surface[where["surface"]]
+        if "context.surface" in where:
+            shown, bought = self.by_surface[where["context.surface"]]
             return bought if where.get("purchased") else shown
         step = next(iter(where), "impressions")
         return FUNNEL[step]
 
     def relate(self, *, table, where, relate_field, limit):
         self.relates.append({"from": table, "where": where, "relate": relate_field})
-        if relate_field != "customer_segment":
+        if relate_field != "order_id.customer_id.pets":
             return {"hits": [_hit(relate_field, "x", 1.02, 40)]}
-        return {"hits": [_hit("customer_segment", "cat_owner", 0.52, 1),
-                         _hit("customer_segment", "dog_owner", 1.42, 99)]}
+        return {"hits": [_hit("order_id.customer_id.pets", "cat", 0.52, 1),
+                         _hit("order_id.customer_id.pets", "dog", 1.42, 99)]}
 
     def search(self, table, *, where, select, limit):
         assert table == "monthly_sales" and where == {"product_sku": DEFAULT_SKU}
@@ -109,10 +109,10 @@ def test_who_buys_it_relates_each_customer_column_over_the_products_order_lines(
     assert all(r == {"from": "order_lines", "where": {"product_sku": DEFAULT_SKU}, "relate": r["relate"]}
                for r in client.relates)
     # Each lift comes with the counts behind it.
-    segment = {b.value: b for b in result.buyers if b.field == "customer_segment"}
-    cat, dog = segment["cat_owner"], segment["dog_owner"]
-    assert (cat.value, cat.lift, cat.lines, cat.lines_total) == ("cat_owner", 0.52, 1, 117)
-    assert (dog.value, dog.lift, dog.lines) == ("dog_owner", 1.42, 99)
+    pets = {b.value: b for b in result.buyers if b.field == "order_id.customer_id.pets"}
+    cat, dog = pets["cat"], pets["dog"]
+    assert (cat.value, cat.lift, cat.lines, cat.lines_total) == ("cat", 0.52, 1, 117)
+    assert (dog.value, dog.lift, dog.lines) == ("dog", 1.42, 99)
 
 
 def test_query_pane_shows_the_relate_body_that_was_sent():
@@ -155,11 +155,11 @@ def test_links_to_bought_together_for_the_products_category():
 
 
 def test_a_lift_on_a_handful_of_lines_ranks_below_well_supported_lifts():
-    # cat_owner is 0.52× on 1 of 117 lines: further from 1 than dog_owner's
+    # Cat households are 0.52× on 1 of 117 lines: further from 1 than dog households'
     # 1.42× on 99 lines, but one line is not a finding. It goes after.
     buyers = get_product_insights(FakeClient()).buyers
 
-    assert [b.value for b in buyers if b.field == "customer_segment"] == ["dog_owner", "cat_owner"]
+    assert [b.value for b in buyers if b.field == "order_id.customer_id.pets"] == ["dog", "cat"]
 
 
 def test_a_relate_that_fills_its_limit_fails_instead_of_dropping_values():

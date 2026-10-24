@@ -2,7 +2,7 @@
 
 ![Price](../../screenshots/13-price.png)
 
-*Per-SKU price stats over `price_history` (mean ± 1.5σ, outlier
+*Per-SKU price stats over `product_states` (mean ± 1.5σ, outlier
 flag, observation count), a demand curve from `_estimate units_sold`,
 and `_relate` over discount band ↔ category, which on today's data
 finds no category discounted more than another (see the ADR 0016
@@ -17,8 +17,10 @@ Two questions a price manager asks daily:
 2. *Which categories respond to discounts*, and which sell
    equally well at list?
 
-Aito answers both from the `price_history` panel — one row per
-SKU per month with the observed price + discount. The fair-band
+Aito answers both from the `product_states` table (ADR 0032) — one
+row per product per month on sale, with the observed price and
+discount, and the rest of the product's state that month (on offer,
+stars, new, a rival's launch, a price rise). The fair-band
 half is pure aggregation; the sweet-spot half uses three parallel
 `_relate` calls over discount bands.
 
@@ -28,7 +30,7 @@ half is pure aggregation; the sweet-spot half uses three parallel
 
 ```python
 # src/price_service.py — get_prices()
-prices = _fetch_prices(client)   # paged _search over price_history
+prices = _fetch_prices(client)   # paged _search over product_states
 by_sku = group_by("product_sku")(prices)
 
 for sku, rows in by_sku.items():
@@ -40,7 +42,7 @@ for sku, rows in by_sku.items():
 ```
 
 Aito retrieves the rows; the stats are aggregated locally. For
-11,100 rows that's cheap.
+15,157 rows that's cheap.
 
 ### Sweet-spot — three parallel `_relate` calls
 
@@ -53,7 +55,7 @@ bands = [
 
 def fetch(band, where):
     return client.relate(
-        table="price_history",
+        table="product_states",
         where=where,
         relate_field="product_sku.category",
         limit=8,
@@ -62,7 +64,7 @@ def fetch(band, where):
 
 The `relate` field traverses one hop: `product_sku.category`
 fetches the linked product's category, which lives on `products`,
-not on `price_history`.
+not on `product_states`.
 
 Each band returns categories that over-index there. Pseudo-output:
 
@@ -99,36 +101,41 @@ useful.
 
 ### 3. Cross-table `_relate` via link traversal
 
-`relate: "product_sku.category"` is one hop from `price_history`
+`relate: "product_sku.category"` is one hop from `product_states`
 through `product_sku` to `products.category`. Aito does the
 traversal natively; the alternative would be denormalising
-category onto `price_history` (extra ~11k denormalised values).
+category onto `product_states`.
 
 ## Data schema
 
 ```json
 {
-  "price_history": {
+  "product_states": {
     "type": "table",
     "columns": {
-      "price_observation_id": { "type": "String" },
-      "product_sku":          { "type": "String", "link": "products.sku" },
-      "month":                { "type": "String" },
-      "price_eur":            { "type": "Decimal" },
-      "list_price_eur":       { "type": "Decimal" },
-      "discount_pct":         { "type": "Decimal" }
+      "product_state_id": { "type": "String" },
+      "product_sku":      { "type": "String", "link": "products.sku" },
+      "month":            { "type": "String" },
+      "price_eur":        { "type": "Decimal" },
+      "list_price_eur":   { "type": "Decimal" },
+      "discount_pct":     { "type": "Decimal" },
+      "on_offer":         { "type": "Boolean" },
+      "discount_band":    { "type": "String" },
+      "rating_band":      { "type": "String" },
+      "age":              { "type": "String" },
+      "rival_launched":   { "type": "Boolean" },
+      "price_change":     { "type": "String" }
     }
   }
 }
 ```
 
-~11,100 rows. Discount distribution emerges from the
-demand-correlation engineering in `gen_price_history` (each month's
-price is assigned by demand rank, so high-demand months drift below
-list and low-demand months drift above): ~37 % markup-over-list,
-~24 % near list (±5 %), ~8 % mild discount (5-15 % off), ~32 % promo
-(> 15 % off). Each band has enough observations (≥ 800 obs) for the
-sweet-spot `_relate` to surface category lifts cleanly.
+15,157 rows: every product in every month it is on sale (launched
+products start mid-window). `impressions`, `order_lines` and
+`monthly_sales` link to it through `product_state`. Most months sell
+near list: about 82 % within ±5 % of list, 6 % mild discount (5-15 %
+off) and 13 % promo (> 15 % off), from `gen_product_states` in
+`data/catalogue_events.py`.
 
 ## Tradeoffs and gotchas
 
@@ -139,7 +146,7 @@ sweet-spot `_relate` to surface category lifts cleanly.
   toys" but not ∂units/∂price. Real elasticity needs careful
   counter-factual reasoning Aito doesn't natively offer.
 - **`_relate` over linked column slows by ~30 %** vs a non-linked
-  column — Aito does the join row-by-row. For our 11k rows it's
+  column — Aito does the join row-by-row. For our 15k rows it's
   fine; on millions of rows you'd denormalise.
 - **`band_lower_eur` can go negative** if a SKU has wildly
   varying observed prices; we floor at 0.0 for display.

@@ -2,8 +2,8 @@
 
 The training shape is a panel: one row per customer per month they
 were a customer. Each row carries this-month aggregates (visits,
-purchases, spent_eur), denormalised profile features (segment,
-pet_size, region), tenure-at-this-month, the latest review snapshot
+purchases, spent_eur), what the household declared and where it
+lives (pets, dog_size, region; ADR 0033), tenure-at-this-month, the latest review snapshot
 (rating, sentiment, category) and the **forward-looking** target
 `churned_in_3_months` — True iff the customer has no orders in the
 3 months after this row's month.
@@ -42,13 +42,13 @@ LATEST_MONTH: str = "2026-04"
 
 
 # Feature columns Aito conditions on when predicting churn. Mix of
-# time-series (visits, purchases, spent_eur), profile (segment,
-# region, pet_size, tenure_months_at_month), and latest-review
+# time-series (visits, purchases, spent_eur), declared and recorded
+# (pets, dog_size, region, tenure_months_at_month), and latest-review
 # (latest_rating, latest_sentiment, latest_category). `month` is
 # deliberately excluded — predicting "is this customer about to
 # churn" shouldn't read the calendar.
 _PREDICT_FEATURES: list[str] = [
-    "segment", "pet_size", "region",
+    "pets", "dog_size", "region",
     "tenure_months_at_month",
     "visits", "purchases", "spent_eur",
     "latest_rating", "latest_sentiment", "latest_category",
@@ -69,8 +69,8 @@ class Kpi:
 class AtRiskCustomer:
     customer_id: str
     customer_short: str        # "Mikko T."
-    segment: str
-    pet_size: str | None
+    pets: str                  # declared, e.g. "small_animal"
+    dog_size: str | None
     region: str
     tenure_months: int         # row's tenure_months_at_month
     visits: int                # this month's visits
@@ -142,7 +142,7 @@ def _confidence_band(p: float) -> str:
 def _build_where(row: dict) -> dict:
     """The `where` body for one customer_months row's churn prediction.
 
-    Nullable columns (`pet_size`, `latest_*`) are conditionally
+    Nullable columns (`dog_size`, `latest_*`) are conditionally
     included — Aito errors on `where: {col: null}`.
     """
     where: dict[str, Any] = {}
@@ -231,8 +231,8 @@ def _at_risk_leaderboard(client: AitoClient, top_n: int) -> list[AtRiskCustomer]
         AtRiskCustomer(
             customer_id=row["customer_id"],
             customer_short=row.get("customer_name") or _short_customer_name(row["customer_id"]),
-            segment=row["segment"],
-            pet_size=row.get("pet_size"),
+            pets=row["pets"],
+            dog_size=row.get("dog_size"),
             region=row["region"],
             tenure_months=int(row.get("tenure_months_at_month", 0)),
             visits=int(row.get("visits", 0)),
@@ -255,7 +255,7 @@ def _evaluate_churn(client: AitoClient) -> EvalSummary:
     Same feature set as the leaderboard's `_predict`.
     """
     where = {
-        "segment":                {"$get": "segment"},
+        "pets":                   {"$get": "pets"},
         "region":                 {"$get": "region"},
         "tenure_months_at_month": {"$get": "tenure_months_at_month"},
         "visits":                 {"$get": "visits"},

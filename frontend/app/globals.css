@@ -261,11 +261,19 @@ a { color: inherit; text-decoration: none; }
   font-weight: 700; border-left-color: var(--cta);
 }
 .nav-item .icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
-.nav-badge {
-  margin-left: auto; background: rgba(245,166,35,0.2); color: var(--cta);
-  font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px;
+/* The site's two halves (ADR 0037): one heading each, above its groups. */
+.nav-heading { padding-top: 6px; }
+.nav-heading + .nav-heading { margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 14px; }
+.nav-heading-label {
+  font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--cta); padding: 4px 16px 2px;
 }
-.nav-badge.green { background: rgba(82,183,136,0.2); color: #52B788; }
+/* Real or synthetic data, on each Evidence entry. */
+.nav-data-mark {
+  margin-left: auto; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px;
+  background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.55);
+}
+.nav-data-mark.real { background: rgba(82,183,136,0.2); color: #52B788; }
 .nav-divider { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 8px 0; }
 .sidebar-footer { padding: 12px 16px; }
 .aito-badge {
@@ -533,6 +541,9 @@ a { color: inherit; text-decoration: none; }
   border-radius: 14px; padding: 20px;
 }
 .card-sm    { padding: 14px 16px; }
+/* An Evidence index entry: the whole card is the link. */
+.evidence-entry { display: block; color: inherit; text-decoration: none; transition: border-color 0.1s; }
+.evidence-entry:hover { border-color: var(--green); }
 .card-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
 .card-sub   { font-size: 12px; color: var(--text-muted); }
 
@@ -554,15 +565,18 @@ a { color: inherit; text-decoration: none; }
 .kpi-accent-blue   { border-top: 3px solid var(--blue); }
 .kpi-accent-purple { border-top: 3px solid var(--purple); }
 
-.two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-.three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px; }
+/* `minmax(0, 1fr)`, not `1fr`: a bare `1fr` track can't shrink below its
+   widest child, so one wide table pushes the whole page sideways on a
+   phone. The table scrolls inside its own wrapper instead. */
+.two-col   { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px; }
+.three-col { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 16px; }
 
 /* Mobile collapse — matches the mock's `isMobile = 900px` threshold.
    Below 900 px the KPI grid drops to 2 columns; both .two-col / .three-col
    stack so columns don't overflow the narrow main content. */
 @media (max-width: 900px) {
-  .two-col   { grid-template-columns: 1fr; }
-  .three-col { grid-template-columns: 1fr; }
+  .two-col   { grid-template-columns: minmax(0, 1fr); }
+  .three-col { grid-template-columns: minmax(0, 1fr); }
   .kpi-grid  { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 520px) {
@@ -585,6 +599,9 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 520px) {
   .shop-grid   { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 }
+/* "Buy again" and "Next for their kit" side by side; stacked on a phone. */
+.shop-shelves { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 700px) { .shop-shelves { grid-template-columns: minmax(0, 1fr); } }
 .shop-card-name { all: unset; cursor: pointer; font-weight: 600; font-size: 13px; line-height: 1.3; }
 .shop-card-name:hover { text-decoration: underline; }
 .shop-card-name:focus-visible { outline: 2px solid var(--aito-teal); outline-offset: 2px; }

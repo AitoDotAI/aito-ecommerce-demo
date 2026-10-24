@@ -450,7 +450,7 @@ class AitoClient:
 
         Example (Price Intelligence fair band):
             client.aggregate(
-                table="price_history",
+                table="product_states",
                 where={"product_sku": "SKU-PT-0001"},
                 aggregate_fields=[
                     "price_eur.$mean", "price_eur.$min",
@@ -489,12 +489,12 @@ class AitoClient:
         field is not a valid batch item (Aito 400s it). Keep aggregates
         as their own `aggregate()` calls; batch the plain reads.
 
-        Example (five per-segment customer counts in one call):
+        Example (five household counts, by declared pets, in one call):
             client.batch([
-                {"from": "customers", "where": {"segment": s}, "limit": 0}
-                for s in segments
+                {"from": "customers", "where": {"pets": p}, "limit": 0}
+                for p in ["dog", "cat", "dog cat", "small_animal", "aquarium"]
             ])
-            # → [{"total": 1263}, {"total": 894}, ...]
+            # → [{"total": 1264}, {"total": 894}, ...]
         """
         return self._request("POST", "/_batch", json=queries)
 

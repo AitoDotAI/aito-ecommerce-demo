@@ -4,15 +4,13 @@ same queries is checked in test_aito_check.py.
 """
 
 CUSTOMERS = {
-    "CUST-00049": {"customer_id": "CUST-00049", "segment": "dog_owner", "lifestyle": "mid",
-                   "health_focus": "high", "treat_affinity": "low", "brand_loyalty": "loyal",
-                   "diet_rule": "grain-free"},
-    "CUST-00053": {"customer_id": "CUST-00053", "segment": "cat_owner", "lifestyle": "mid",
-                   "health_focus": "medium", "treat_affinity": "medium", "brand_loyalty": "flexible"},
+    # Declared and recorded fields only (ADR 0033).
+    "CUST-00049": {"customer_id": "CUST-00049", "pets": "dog", "dog_size": "medium", "diet": "grain-free"},
+    "CUST-00053": {"customer_id": "CUST-00053", "pets": "cat"},
 }
 
 
-def product(sku, p=0.0, category="dry-food", pet_type="cat", reason=("customer_lifestyle", "mid", 1.3)):
+def product(sku, p=0.0, category="dry-food", pet_type="cat", reason=("context.month", "2026-04", 1.3)):
     """A `_recommend` hit, with a `$why` holding one reason for it."""
     field, value, lift = reason
     return {"sku": sku, "name": f"Brand {sku}", "brand": "Brand", "pet_type": pet_type,
@@ -41,8 +39,8 @@ class FakeShopAito:
         if table == "products":
             skus = where["sku"]["$or"] if isinstance(where["sku"], dict) else [where["sku"]]
             return {"hits": [product(s) for s in skus if s.startswith("SKU-")]}
-        if table == "price_history":
-            rows = [{"product_sku": s, "discount_pct": self.offers.get(s, 0.0)}
+        if table == "product_states":
+            rows = [{"product_sku": s, "discount_pct": self.offers.get(s, 0.0), "on_offer": s in self.offers}
                     for s in where["product_sku"]["$or"]]
             return {"hits": rows, "total": len(rows)}
         orders = [{"month": "2026-03", "skus": self.last_order}, {"month": "2025-11", "skus": "SKU-OLD"}]

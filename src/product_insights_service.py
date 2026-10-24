@@ -26,7 +26,7 @@ from src import cache
 from src.aito_client import AitoClient, AitoError
 from src.lookup_errors import UnknownProductError
 from src.aito_compat import related_value
-from src.bought_together_service import ANCHORS
+from src.category_anchors import ANCHORS
 
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -43,10 +43,11 @@ SURFACES = ["search", "for_you", "category", "bought_together"]
 RATINGS = [1, 2, 3, 4, 5]
 SENTIMENTS = ["positive", "neutral", "negative"]
 
-# Customer columns denormalised onto order_lines, related to "bought this".
+# What the buyers declared, and where they live (ADR 0033), two links from
+# the order line, related to "bought this".
 BUYER_FIELDS = [
-    "customer_segment", "customer_pet_size", "customer_lifestyle",
-    "customer_health_focus", "customer_treat_affinity", "customer_brand_loyalty",
+    "order_id.customer_id.pets", "order_id.customer_id.dog_size",
+    "order_id.customer_id.diet", "order_id.customer_id.region",
 ]
 
 # A lift on fewer lines than this is shown, but ranked after the rest:
@@ -72,7 +73,7 @@ class SurfaceRow:
 
 @dataclass(frozen=True)
 class BuyerRow:
-    field: str             # "customer_segment", ...
+    field: str             # "order_id.customer_id.pets", ...
     value: str             # "dog_owner"
     lift: float            # share among this product's lines / share among all lines
     lines: int             # this product's order lines with this profile
@@ -121,8 +122,8 @@ def _count_queries(sku: str) -> list[dict]:
 
     return (
         [count("impressions", w) for _, w in FUNNEL_STEPS]
-        + [count("impressions", {"surface": s}) for s in SURFACES]
-        + [count("impressions", {"surface": s, "purchased": True}) for s in SURFACES]
+        + [count("impressions", {"context.surface": s}) for s in SURFACES]
+        + [count("impressions", {"context.surface": s, "purchased": True}) for s in SURFACES]
         + [count("reviews", {"rating": r}) for r in RATINGS]
         + [count("reviews", {"sentiment": s}) for s in SENTIMENTS]
     )
@@ -221,7 +222,7 @@ def get_product_insights(client: AitoClient, sku: str | None = None) -> ProductI
             (a.anchor_id for a in ANCHORS if (a.pet_type, a.category) == (product["pet_type"], product["category"])),
             None,
         ),
-        last_query={"endpoint": "_relate", "body": buyers_relate_body(sku, "customer_segment")},
+        last_query={"endpoint": "_relate", "body": buyers_relate_body(sku, BUYER_FIELDS[0])},
     )
     cache.set(cache_key, resp.to_dict(), ttl=1800)
     return resp

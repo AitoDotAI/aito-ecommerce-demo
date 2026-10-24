@@ -1,12 +1,15 @@
-"""Evaluation — honest pass/fail across four `_evaluate` calls.
+"""Evaluation — honest pass/fail across three `_evaluate` calls.
 
-One of the four models (Return Risk) deliberately fails its
+One of the three models (Return Risk) deliberately fails its
 threshold — the fixture's ~3 % returned share gives Aito no
 features that beat the prior. That's the demo's "Aito tells you
 when it doesn't know" moment per ADR 0010.
 
 Cached for 1 hour. Each evaluate call takes 5-15 s live; running
-all four sequentially would be ~40 s, so we parallelise.
+all three sequentially would be ~30 s, so we parallelise.
+
+ADR 0033 retired a fourth model, "customer segment from product
+attributes": no table Aito sees holds a segment any more.
 """
 
 from __future__ import annotations
@@ -60,27 +63,15 @@ MODELS: list[ModelSpec] = [
         feature_labels=["name", "brand", "category", "pet_type"],
     ),
     ModelSpec(
-        id="segment_from_product",
-        label="Customer segment from product attributes",
-        table="order_lines",
-        where={
-            "product_sku.pet_type": {"$get": "product_sku.pet_type"},
-            "product_sku.category": {"$get": "product_sku.category"},
-        },
-        predict="customer_segment",
-        feature_labels=["product.pet_type", "product.category"],
-    ),
-    ModelSpec(
         id="return_risk",
         label="Return risk (deliberate honest-failure case)",
         table="order_lines",
         where={
             "product_sku.category": {"$get": "product_sku.category"},
             "product_sku.pet_type": {"$get": "product_sku.pet_type"},
-            "customer_segment":     {"$get": "customer_segment"},
         },
         predict="returned",
-        feature_labels=["product.category", "product.pet_type", "customer_segment"],
+        feature_labels=["product.category", "product.pet_type"],
     ),
 ]
 
@@ -168,7 +159,7 @@ def run_evaluation(client: AitoClient) -> EvalResponse:
         return _from_dict(cached)
 
     started = time.perf_counter()
-    # Parallelise the four `_evaluate` calls — each takes 5-15 s
+    # Parallelise the three `_evaluate` calls — each takes 5-15 s
     # live; serial would be ~40 s.
     with ThreadPoolExecutor(max_workers=len(MODELS)) as pool:
         results = list(pool.map(lambda m: _evaluate_one(client, m), MODELS))

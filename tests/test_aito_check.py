@@ -12,6 +12,7 @@ so `./do test` stays green without a live DB.
 
 from __future__ import annotations
 
+import math
 import os
 
 import pytest
@@ -41,24 +42,24 @@ def _count(client: AitoClient, where: dict) -> int:
 
 
 @pytest.mark.parametrize(
-    "segment, expected_pet",
-    [("cat_owner", "cat"), ("dog_owner", "dog")],
+    "customer_id, expected_pet",
+    [("CUST-00001", "cat"), ("CUST-00003", "dog")],   # Maija, Saara
 )
-def test_recommend_purchase_kpi_ranks_segment_appropriate_products(
-    client, segment, expected_pet
+def test_recommend_purchase_kpi_ranks_the_customers_own_pets_products(
+    client, customer_id, expected_pet
 ):
-    """`_recommend goal: {purchased: true}` returns a non-empty ranking
-    whose top hits match the segment's pet — the persona flip, learned
-    from the funnel rather than asserted."""
+    """`_recommend goal: {purchased: true}` with only the customer in the
+    `where` returns a ranking whose top hits are for their pet: learned
+    from their own rows, never handed a profile (ADR 0033)."""
     res = client.recommend(
         table="impressions",
-        where={"customer_segment": segment},
+        where={"context.customer": customer_id},
         recommend_field="product_sku",
         goal={"purchased": True},
         limit=5,
     )
     hits = res.get("hits", [])
-    assert hits, f"empty recommendation for {segment}"
+    assert hits, f"empty recommendation for {customer_id}"
     for hit in hits:
         assert 0.0 <= hit["$p"] <= 1.0, hit["$p"]
     top_pets = [h.get("pet_type") for h in hits[:3]]
@@ -121,7 +122,7 @@ def test_recommend_clicks_and_purchases_goals_differ(client):
     def top_skus(goal_field: str) -> list[str]:
         res = client.recommend(
             table="impressions",
-            where={"customer_segment": "cat_owner"},
+            where={"context.customer": "CUST-00001"},
             recommend_field="product_sku",
             goal={goal_field: True},
             limit=10,
@@ -140,9 +141,9 @@ def test_predict_purchased_returns_both_classes(client):
     res = client.predict(
         table="impressions",
         where={
-            "customer_segment": "cat_owner",
-            "product_pet_type": "cat",
-            "product_category": "wet-food",
+            "context.customer": "CUST-00001",
+            "product_sku.pet_type": "cat",
+            "product_sku.category": "wet-food",
         },
         predict_field="purchased",
     )
@@ -277,14 +278,16 @@ def test_relate_over_churned_customers_counts_match_a_search(client):
     from src.aito_compat import related_value
     from src.churn_drivers import CHURNED
 
-    hits = client.relate(table="customers", where=CHURNED, relate_field="segment", limit=20)["hits"]
-    aquarium = next(h for h in hits if related_value(h, "segment") == "aquarium_owner")
+    # `pets` is the declared Text column (ADR 0033): one hit per word.
+    hits = client.relate(table="customers", where=CHURNED, relate_field="pets", limit=20)["hits"]
+    aquarium = next(h for h in hits if related_value(h, "pets") == "aquarium")
 
     def count(where: dict) -> int:
         return client.search("customers", where=where, limit=0)["total"]
 
-    assert aquarium["fs"]["fOnCondition"] == count({**CHURNED, "segment": "aquarium_owner"})
-    assert aquarium["fs"]["f"] == count({"segment": "aquarium_owner"})
+    has_aquarium = {"pets": {"$match": "aquarium"}}
+    assert aquarium["fs"]["fOnCondition"] == count({**CHURNED, **has_aquarium})
+    assert aquarium["fs"]["f"] == count(has_aquarium)
 
 
 def test_churn_profile_drivers_name_long_tenure_and_skip_reviews(client):
@@ -403,6 +406,46 @@ def test_price_what_if_explains_the_estimate_with_price_as_a_factor(client):
     assert what_if.units == centre.units_sold, (what_if.units, centre.units_sold)
 
 
+def test_the_forecast_popover_splits_the_knn_estimate_into_rows_that_chain_to_it(client):
+    """Inventory and Demand's `?`: the k-NN neighbours share their field terms,
+    so the estimate splits into a base, one row per field and the similar
+    months (`explain_estimate` raises on a neighbour that doesn't add up)."""
+    from src.demand_forecast import forecast_units, forecast_where
+
+    sales = client.search("monthly_sales", where={"product_sku": "SKU-PT-0206"}, limit=200)["hits"]
+    _, why = forecast_units(client, "SKU-PT-0206", sales)
+
+    assert why["form"] in ("add", "multiply"), why
+    effects = [c["effect"] for c in why["components"]]
+    chained = why["base"] * math.prod(effects) if why["form"] == "multiply" else why["base"] + sum(effects)
+    assert chained == pytest.approx(why["estimate"])
+    fields = [c for c in why["components"] if c["type"] == "field"]
+    assert len(fields) == len(forecast_where("SKU-PT-0206", sales[0], 0)), fields
+
+
+# ── Discount what-if: `_predict purchased` per discount band (ADR 0032) ──
+
+
+def test_discount_what_if_gives_each_band_a_rate_and_a_lift_that_chain_to_it(client):
+    """Each band's `$p` is in [0, 1] and is its `$why` multiplied out
+    (`band_estimate` raises otherwise); a discount lifts the band above
+    1 and the estimate above no discount; a band the product was never
+    shown at still answers (the what-if)."""
+    from src.discount_what_if import BANDS, get_discount_what_if
+
+    # Never shown at 15-20 or 20+ on env `observable`.
+    result = get_discount_what_if(client, "SKU-PT-0107")
+
+    assert [b.band for b in result.bands] == list(BANDS)
+    assert sum(b.current for b in result.bands) == 1
+    for band in result.bands:
+        assert 0.0 <= band.p_purchase <= 1.0, band
+    for band in result.bands[1:]:
+        assert band.band_lift is not None and band.band_lift > 1, band
+        assert band.vs_no_discount > 1, band
+    assert any(b.shown == 0 for b in result.bands), result.bands
+
+
 # ── ADR 0030: shoppers with a story (docs/verification/shoppers-data-prereg.md) ──
 
 
@@ -422,9 +465,10 @@ def test_a1_recommend_keeps_a_grain_free_households_rule(client):
     query without the rule keeps it ≤ 7 times."""
     # `product_sku.category` filters the candidates; the impression's own
     # `product_category` would only be context (first run, 2026-10-12).
-    household = {"customer_segment": "dog_owner", "customer_diet_rule": "grain-free",
+    # ADR 0033: the declared diet and pets, through the context's customer.
+    household = {"context.customer.pets": {"$match": "dog"}, "context.customer.diet": "grain-free",
                  "product_sku.category": "dry-food"}
-    without_rule = {k: v for k, v in household.items() if k != "customer_diet_rule"}
+    without_rule = {k: v for k, v in household.items() if k != "context.customer.diet"}
 
     def kept(where: dict) -> int:
         hits = client.recommend("impressions", where, "product_sku", {"purchased": True}, limit=10)["hits"]
@@ -484,8 +528,8 @@ def test_shop_a_cage_in_the_cart_changes_what_is_recommended(client):
     """A6's shop form: the cart is context, so the ranking moves with it."""
     from src.shop_grid import get_shop_grid
 
-    empty = [i.sku for i in get_shop_grid(client, "sofia", "2026-04", []).items[:5]]
-    with_cage = [i.sku for i in get_shop_grid(client, "sofia", "2026-04", ["SKU-PT-0555"]).items[:5]]
+    empty = [i.sku for i in get_shop_grid(client, "paivi", "2026-04", []).items[:5]]
+    with_cage = [i.sku for i in get_shop_grid(client, "paivi", "2026-04", ["SKU-PT-0555"]).items[:5]]
 
     assert empty != with_cage, empty
 
@@ -495,8 +539,7 @@ def test_shop_an_item_bought_last_order_scores_lower_as_just_bought(client):
     probability drops below what it was before the shopper bought it."""
     from src.shop_context import shopper_where
 
-    customer = client.search("customers", where={"customer_id": "CUST-00053"}, limit=1)["hits"][0]
-    context = shopper_where(customer, [], "2026-04")
+    context = shopper_where("cat", [], "2026-04")   # Helena's declared pets
     sku = "SKU-PT-0278"   # in Helena's last order
 
     def p(extra: dict) -> float:
@@ -508,26 +551,28 @@ def test_shop_an_item_bought_last_order_scores_lower_as_just_bought(client):
 
 
 def test_shop_suggests_the_hideout_next_for_a_cage_and_a_bottle(client):
-    """A2's shop form, for Sofia as of April 2026: she owns a cage and a
+    """A2's shop form, for Päivi as of April 2026: she owns a cage and a
     bottle, and the kit's next item is the hideout."""
     from src.shop_suggestions import get_suggestions
 
-    result = get_suggestions(client, "sofia", "2026-04")
+    result = get_suggestions(client, "paivi", "2026-04", [])
 
     assert result.owned == {"small_animal": ["cage", "water_bottle"]}, result.owned
     assert result.next_for_pet and "Hideout" in result.next_for_pet[0].name, result.next_for_pet
     assert result.usual, "no usual basket for a shopper with orders"
-def test_shop_a_cage_in_the_cart_is_a_reason_given_for_the_bottle(client):
-    """`$why` nested under the product's own lift names the cart: for Sofia
-    with a cage, the water bottle's reasons include it (ADR 0031, 2026-10-17)."""
-    from src.shop_grid import get_shop_grid
+def test_r5_the_kit_view_shows_an_owner_of_cage_and_bottle_an_add_on_not_another_cage(client):
+    """R5, as amended (ADR 0033, 2026-10-21: one view per intent): the kit
+    lives in "Next for their kit". For Päivi owning a cage and a bottle in
+    April 2026, its first item is an add-on she lacks, never another cage or
+    bottle. (The February case, a cage alone in the cart, isn't in the data:
+    141 of 145 baskets with a cage also hold the bottle.)"""
+    from src.shop_suggestions import get_suggestions
 
-    grid = get_shop_grid(client, "sofia", "2026-04", ["SKU-PT-0555"])
+    nxt = get_suggestions(client, "paivi", "2026-04", []).next_for_pet
 
-    bottles = [i for i in grid.items if "Water Bottle" in i.name]
-    assert bottles, [i.name for i in grid.items]
-    assert any(r.label == "Goes with your cart" and r.lift > 1.5 for r in bottles[0].reasons), bottles[0].reasons
-    assert sum(1 for i in grid.items if i.reasons) >= len(grid.items) // 2, "most items should have reasons"
+    assert nxt, "no next item for a kit owner"
+    assert any(k in nxt[0].name for k in ("Hideout", "Exercise Wheel", "Tunnel")), [n.name for n in nxt]
+    assert not any(n.name.endswith(("Cage", "Water Bottle")) for n in nxt), [n.name for n in nxt]
 
 
 def test_shop_search_keeps_the_household_rule(client):
@@ -538,14 +583,16 @@ def test_shop_search_keeps_the_household_rule(client):
     found = search_shop(client, "janne", "2026-04", [], "food")
 
     assert found.text_matched and found.items
-    assert all("Grain Free" in i.name for i in found.items if i.category in ("dry-food", "wet-food")), \
+    # The rule covers dog and cat food (ADR 0030), as the filter does.
+    assert all("Grain Free" in i.name for i in found.items
+               if i.category in ("dry-food", "wet-food") and i.pet_type in ("dog", "cat")), \
         [i.name for i in found.items]
 
 
 def test_shop_search_for_words_no_name_holds_returns_nothing(client):
     from src.shop_search import search_shop
 
-    found = search_shop(client, "sofia", "2026-04", [], "zzqx")
+    found = search_shop(client, "paivi", "2026-04", [], "zzqx")
 
     assert (found.text_matched, found.items) == (False, [])
 
@@ -637,9 +684,9 @@ def test_shop_analytics_search_words_against_the_search_average(client, shop_ana
     words = shop_analytics["words"]
     assert any(w.lift > 1 for w in words.rows), words.rows
     assert words.significance.tested <= words.words
-    anywhere = client.search("impressions", where={"search_query": {"$match": "food"}}, limit=0)["total"]
-    on_search = client.search("impressions", where={"surface": "search", "search_query": {"$match": "food"}},
-                              limit=0)["total"]
+    anywhere = client.search("impressions", where={"context.search_query": {"$match": "food"}}, limit=0)["total"]
+    on_search = client.search("impressions", where={"context.surface": "search",
+                                                    "context.search_query": {"$match": "food"}}, limit=0)["total"]
     assert anywhere == on_search > 0, (anywhere, on_search)
 
 

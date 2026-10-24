@@ -7,8 +7,9 @@ less) common is this profile than among all customers?" That ratio is
 two years shouldn't weigh 24 times as much as one who left after a
 month.
 
-Profile fields are related by name (`"relate": "segment"`), which
+Profile fields are related by name (`"relate": "region"`), which
 returns one hit per value, each with its lift and the counts behind it.
+They are what the customer declared or the shop records (ADR 0033).
 
 Tenure is a number and is shown as three bands, which `_relate` can't
 do on API v2:
@@ -44,13 +45,10 @@ from src.aito_compat import related_value
 
 CHURNED = {"churned": True}
 
-# Every discrete profile column on `customers`. Order count and spend
-# are left out on purpose: churners stop ordering, so a low count is
-# partly the outcome, not a cause.
-PROFILE_FIELDS: list[str] = [
-    "segment", "region", "pet_size",
-    "lifestyle", "health_focus", "treat_affinity", "brand_loyalty",
-]
+# Every discrete profile column on `customers`: declared or recorded
+# (ADR 0033). Order count and spend are left out on purpose: churners
+# stop ordering, so a low count is partly the outcome, not a cause.
+PROFILE_FIELDS: list[str] = ["pets", "region", "dog_size", "diet"]
 
 # (label, `_search` filter) per tenure band.
 TENURE_BANDS: list[tuple[str, dict]] = [
@@ -67,8 +65,8 @@ MAX_DRIVERS = 10
 
 @dataclass(frozen=True)
 class DriverRow:
-    field: str                 # "segment", "region", "tenure", ...
-    value: str                 # "aquarium_owner", "18 months or more", ...
+    field: str                 # "pets", "region", "tenure", ...
+    value: str                 # "aquarium", "18 months or more", ...
     lift: float                # churn_rate / churn_rate_overall
     customers: int             # customers with this profile
     churners: int              # of whom churned
@@ -80,7 +78,7 @@ class DriverRow:
 class ChurnDrivers:
     drivers: list[DriverRow]
     # Profile fields that were related but showed no value outside the
-    # neutral band, e.g. ["lifestyle", "health_focus"].
+    # neutral band, e.g. ["dog_size", "diet"].
     fields_without_effect: list[str]
 
 

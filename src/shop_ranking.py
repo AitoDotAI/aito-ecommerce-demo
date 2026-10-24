@@ -21,7 +21,7 @@ from src.shop_context import FOOD, rule_filter, shopper_where
 from src.shop_history import orders_before
 from src.shop_offers import offers_this_month
 from src.shop_personas import Shopper, shopper
-from src.shop_reasons import Reason, reasons_for
+from src.shop_reasons import PETS, Reason, reasons_for
 
 PRODUCT_FIELDS = ["sku", "name", "brand", "pet_type", "category", "price_eur", "avg_rating"]
 
@@ -48,8 +48,9 @@ class ShopScope:
     shopper: Shopper
     month: str
     rule: str | None
+    pets: str               # declared by the household: "dog cat"
     cart: list[dict]
-    context: dict           # the `where` as context: profile, month, cart
+    context: dict           # the `where` as context: declared pets, month, cart
     orders: list[dict]      # the shopper's orders before `month`, oldest first
 
     @property
@@ -74,9 +75,10 @@ def shop_scope(client: AitoClient, shopper_key: str, month: str, cart_skus: list
     s = shopper(shopper_key)
     customer = client.search("customers", where={"customer_id": s.customer_id}, limit=1)["hits"][0]
     cart = _cart(client, cart_skus)
-    return ShopScope(shopper=s, month=month, rule=customer.get("diet_rule"), cart=cart,
-                     context=shopper_where(customer, cart, month),
-                     orders=orders_before(client, s.customer_id, month))
+    orders = orders_before(client, s.customer_id, month)
+    context = shopper_where(customer["pets"], cart, month)
+    return ShopScope(shopper=s, month=month, rule=customer.get("diet"), pets=customer["pets"], cart=cart,
+                     context=context, orders=orders)
 
 
 def ranked_items(client: AitoClient, scope: ShopScope, where: dict, limit: int) -> list[ShopItem]:
@@ -84,7 +86,7 @@ def ranked_items(client: AitoClient, scope: ShopScope, where: dict, limit: int) 
     hits = client.recommend("impressions", where, "product_sku", {"purchased": True},
                             select=PRODUCT_FIELDS + ["$p", "$why"], limit=limit)["hits"]
     offers = offers_this_month(client, [h["sku"] for h in hits], scope.month)
-    items = [_item(h, offers.get(h["sku"]), scope.rule is not None) for h in hits]
+    items = [_item(h, offers.get(h["sku"]), scope.rule is not None, scope.pets.split()) for h in hits]
     items = _reask_just_bought(client, scope.context, items, set(scope.last_order_skus))
     return sorted(items, key=lambda i: -i.p)
 
@@ -121,12 +123,17 @@ def _p_true(answer: dict, sku: str) -> float:
     raise AitoError(f"_predict purchased for {sku} had no `true` hit: {str(answer)[:200]}")
 
 
-def _item(hit: dict, offer_pct: float | None, has_rule: bool) -> ShopItem:
+def _item(hit: dict, offer_pct: float | None, has_rule: bool, pets: list[str]) -> ShopItem:
     rating = hit.get("avg_rating")
+    reasons = reasons_for(hit["$why"], hit["sku"])
+    if hit["pet_type"] not in pets:
+        # Search shows other pets' products too (a gift). The declared pets can
+        # still lift one, on a handful of impressions, but "fits your pets" it doesn't.
+        reasons = [r for r in reasons if r.label != PETS]
     return ShopItem(
         sku=hit["sku"], name=hit["name"], brand=hit["brand"], pet_type=hit["pet_type"],
         category=hit["category"], price_eur=float(hit["price_eur"]), p=float(hit["$p"]),
-        reasons=reasons_for(hit["$why"], hit["sku"]),
+        reasons=reasons,
         avg_rating=None if rating is None else float(rating),
         offer_pct=offer_pct,
         # The rule filter lets through only food that keeps the rule.

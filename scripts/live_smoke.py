@@ -55,7 +55,7 @@ def nonempty(*keys: str, what: str) -> Callable[[dict], str]:
 # 0.40, diet 0.65 vs 0.26, segment 0.82 vs 0.46) and would otherwise regress
 # silently. return_risk is a DELIBERATE honest failure, so it isn't held to
 # "pass"; every model is held to "no error, has a sample".
-MUST_PASS = ("pet_type_from_name", "dietary_from_name", "segment_from_product")
+MUST_PASS = ("pet_type_from_name", "dietary_from_name")
 
 
 def check_evaluation(body: dict) -> str:
@@ -112,15 +112,12 @@ STEPS = [
     Step("winback", "/api/winback", shape_only("targets", what="winback")),
     Step("markdown", "/api/markdown", shape_only("proposals", what="markdown")),
     Step("basket-rules", "/api/basket-rules", nonempty("rules", what="basket rules")),
-    Step("cart-completion", "/api/cart-completion", shape_only("scenarios", what="cart completion")),
     Step("price", "/api/price", shape_only("fair_bands", "sweet_spots", what="price")),
     Step("product-filling", "/api/product-filling", nonempty("fields", what="product filling")),
     Step("feedback", "/api/feedback", nonempty("fields", what="feedback")),
     Step("smart-search", "/api/smart-search", nonempty("baseline", "predictive", what="smart search"),
          {"q": "food", "customer": "saara"}),
     Step("for-you", "/api/for-you", nonempty("tiles", what="for you"), {"customer": "maija"}),
-    Step("bought-together", "/api/bought-together", nonempty("cross_sells", what="bought together"),
-         {"anchor": "dog_dryfood"}),
     Step("pattern-explorer", "/api/pattern-explorer", nonempty("patterns", what="pattern explorer"),
          {"anchor": "dog_dryfood"}),
 ]

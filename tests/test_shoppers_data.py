@@ -15,6 +15,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.fixture_joins import customers_with_traits, impressions_in_context, order_lines_with_customer
+
 from data import lifecycle, shoppers
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -34,10 +36,10 @@ def _load(name: str) -> list[dict]:
 @pytest.fixture(scope="module")
 def data():
     products = {p["sku"]: p for p in _load("products.json")}
-    customers = {c["customer_id"]: c for c in _load("customers.json")}
+    customers = {c["customer_id"]: c for c in customers_with_traits()}
     orders = sorted(_load("orders.json"), key=lambda o: (o["customer_id"], o["month"]))
     lines_by_order = defaultdict(list)
-    for line in _load("order_lines.json"):
+    for line in order_lines_with_customer():
         lines_by_order[line["order_id"]].append(products[line["product_sku"]])
     orders_by_customer = defaultdict(list)
     for o in orders:
@@ -47,7 +49,7 @@ def data():
 
 @pytest.fixture(scope="module")
 def impressions():
-    return _load("impressions.json")
+    return impressions_in_context()
 
 
 def test_s1_diet_rule_households_only_ever_buy_food_that_keeps_the_rule(data):

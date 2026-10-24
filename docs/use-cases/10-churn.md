@@ -4,10 +4,10 @@
 
 *Time-series prediction over a panel of customer-months. Each
 active customer's latest row — carrying this-month visits,
-purchases, spend, denormalised profile, and the latest review
-snapshot — gets scored by `_predict churned_in_3_months`.
+purchases, spend, what the household declared, and the latest
+review snapshot — gets scored by `_predict churned_in_3_months`.
 Parallel `_relate` calls over churned customers surface the profile
-drivers (tenure, segment, region). `_evaluate` reports
+drivers (tenure, declared pets, region). `_evaluate` reports
 held-out accuracy.*
 
 ## Overview
@@ -18,7 +18,7 @@ thumb table ("anyone who hasn't ordered in 90 days is at risk")
 exported nightly to the email tool. That's not prediction;
 that's a calendar.
 
-Real churn prediction asks: *given a customer's segment, region,
+Real churn prediction asks: *given a customer's pets, region,
 tenure, basket size, total spend — who's about to stop buying
 even though they were active recently?* Aito's `_predict
 churned` answers that per row, without the analyst writing any
@@ -62,18 +62,28 @@ Then, one `_predict` per row:
 ```python
 res = client.predict(
     table="customer_months",
-    where={
-        "segment":                row["segment"],
-        "region":                 row["region"],
-        "pet_size":               row.get("pet_size"),    # nullable
-        "tenure_months_at_month": row["tenure_months_at_month"],
-        "visits":                 row["visits"],
-        "purchases":              row["purchases"],
-        "spent_eur":              row["spent_eur"],
-        "latest_rating":          row.get("latest_rating"),
-        "latest_sentiment":       row.get("latest_sentiment"),
-        "latest_category":        row.get("latest_category"),
-    },
+    where=_build_where(row),   # the row's values for _PREDICT_FEATURES, nulls left out
+    predict_field="churned_in_3_months",
+    limit=2,
+)
+```
+
+with
+
+```python
+_PREDICT_FEATURES = [
+    "pets", "dog_size", "region",
+    "tenure_months_at_month",
+    "visits", "purchases", "spent_eur",
+    "latest_rating", "latest_sentiment", "latest_category",
+]
+```
+
+`pets` (e.g. `"dog cat"`), `dog_size` and `region` are what the
+household declared and where it lives (ADR 0033), copied onto the
+panel rows. Reading the answer:
+
+```python
     predict_field="churned_in_3_months",
     limit=2,
 )
@@ -90,27 +100,26 @@ P(churned_in_3_months=true) descending, take the top 20.
 review — not aggregates over the customer's lifetime. That's the
 difference between a calendar-style rule ("hasn't ordered in 90
 d") and a real classifier ("visits dropped 60%, last review was
-a 2-star shipping complaint, segment is small_animal_owner — 78%
+a 2-star shipping complaint, a small-animal household — 78%
 churn risk").
 
 ### Block 3: Drivers — the customer profile, once per customer
 
 ```python
 # src/churn_drivers.py — get_churn_drivers()
-PROFILE_FIELDS = [
-    "segment", "region", "pet_size",
-    "lifestyle", "health_focus", "treat_affinity", "brand_loyalty",
-]
+PROFILE_FIELDS = ["pets", "region", "dog_size", "diet"]
 
 client.relate(
     table="customers",
     where={"churned": True},
-    relate_field="segment",
+    relate_field="pets",
     limit=20,
 )
 ```
 
-One `_relate` per profile field. Each returns, for every value of the
+One `_relate` per profile field: what the household declared, and
+where it lives (ADR 0033). `pets` is whitespace Text, so its hits are
+one per pet type. Each returns, for every value of the
 field, how much more common it is among churned customers than among
 all customers (`lift`), plus the counts behind it (`fs`). It runs on
 `customers`, not the monthly panel, so each customer counts once: a
@@ -123,25 +132,23 @@ can't be related on v2"), so each band's lift comes from `_search
 limit=0` counts: the band's share of churners over its share of
 everyone.
 
-On master (2026-10-03):
+On the synthetic data (env `observable`, 2026-10-21):
 
 ```
-tenure   under 6 months      → 0.23×  (new customers stay)
-tenure   18 months or more   → 1.71×  (long-standing customers drift)
-segment  aquarium_owner      → 1.38×
-region   oulu                → 1.34×
-tenure   6–17 months         → 1.27×
-segment  small_animal_owner  → 1.21×
+tenure   18 months or more   → 1.85×  (long-standing customers drift)
+tenure   under 6 months      → 0.20×  (new customers stay)
+pets     small_animal        → 1.29×
+region   oulu                → 1.29×
+pets     aquarium            → 1.26×
+tenure   6–17 months         → 1.22×
 ```
 
 Filtered to |lift - 1| ≥ 0.15, sorted by |lift - 1| descending, top
 10. Red chips for `lift > 1`, green for `lift < 1`.
 
 Fields whose every value stays inside that band are listed by name
-under the chips: "Also checked, no effect on churn: pet size,
-lifestyle, health focus, treat affinity, brand loyalty". That is a
-finding too. On this data, a budget shopper is no likelier to leave
-than a premium one.
+under the chips ("Also checked, no effect on churn: dog size, diet").
+That is a finding too.
 
 **Left out on purpose:**
 - **Order count.** Churners stop ordering, so a low count is partly
@@ -155,7 +162,7 @@ than a premium one.
 ```python
 # src/churn_service.py — _evaluate_churn()
 where = {
-    "segment":                {"$get": "segment"},
+    "pets":                   {"$get": "pets"},
     "region":                 {"$get": "region"},
     "tenure_months_at_month": {"$get": "tenure_months_at_month"},
     "visits":                 {"$get": "visits"},
@@ -166,7 +173,7 @@ client.evaluate(
     table="customer_months",
     where=where,
     predict_field="churned_in_3_months",
-    test_limit=300,
+    test_n=300,
 )
 ```
 
@@ -217,8 +224,8 @@ ranking.
 
 ### 4. Drivers + accuracy together
 
-The drivers section answers "why": which tenures, segments and
-regions go with churn, and which profile traits don't. The accuracy section answers
+The drivers section answers "why": which tenures, declared pets and
+regions go with churn, and which declared fields don't. The accuracy section answers
 "how well does Aito predict on held-out data". A reviewer
 reading both together gets the full picture: *Aito predicts
 at X% accuracy, and the dominant features are these.*
@@ -239,8 +246,8 @@ The view reads from two tables: `customers` (for KPI counts) and
       "visits":                 { "type": "Int" },
       "purchases":              { "type": "Int" },
       "spent_eur":              { "type": "Decimal" },
-      "segment":                { "type": "String" },
-      "pet_size":               { "type": "String", "nullable": true },
+      "pets":                   { "type": "Text", "analyzer": "whitespace" },
+      "dog_size":               { "type": "String", "nullable": true },
       "region":                 { "type": "String" },
       "tenure_months_at_month": { "type": "Int" },
       "latest_rating":          { "type": "Int",    "nullable": true },
@@ -259,14 +266,16 @@ their last order month. For active customers, every row is False;
 for churned customers, the label flips True at the last-order
 month. Aito learns the transition pattern.
 
-`visits` is synthesized — base rate per segment × decay factor
+`visits` is synthesized — base rate per the generator's hidden
+segment × decay factor
 for churning customers + Gaussian noise. The decay drops visits
 to ~30% in the last-order month and ~4% thereafter, giving Aito
 a strong leading-indicator signal.
 
 The churn signal originates in `data/generate_fixtures.py` with
-`_churn_propensity(customer, n_orders)` — segment + region +
-tenure + low-orders weights — keyed on a sub-RNG seeded from
+`_churn_propensity(customer, n_orders)` — weights on the generator's
+hidden segment (which Aito sees only as the declared `pets`), region,
+tenure and low orders — keyed on a sub-RNG seeded from
 `customer_id` so the existing demo signals (dog-food→dental
 lift, persona overlaps) stay byte-identical. Personas are never
 churned.
@@ -284,18 +293,15 @@ churned.
   service walks the hit list looking for `feature: true` and
   reads its `$p`. Don't assume the first hit is the answer —
   Aito may return `false` first if the baseline favours it.
-- **`pet_size` is nullable**. cat_owner and aquarium_owner rows
-  don't have a pet_size. `_predict` errors on `where:
-  {pet_size: null}`, so the service drops the key when the
-  value is null.
+- **`dog_size` is nullable**. Households without a dog have no
+  dog size. `_predict` errors on `where: {dog_size: null}`, so
+  the service drops the key when the value is null.
 - **100 parallel `_predict` calls is the costliest page**.
   Mitigated by the 30-minute cache. Production scoring should
   precompute once per night rather than per-page-load.
-- **`_relate` over `pet_size` only covers the segments that have
-  one**. The result is "of pet_size=large customers, what's the
-  churn rate", which is over-indexed on dog_owner + multi_pet.
-  This is the right shape for the demo — the alternative would
-  be three separate calls per (segment, pet_size) combination.
+- **`_relate` over `dog_size` only covers households with a dog**.
+  Its lift compares "large-dog households among churners" with
+  all customers, so it mixes the dog size with having a dog.
 
 ## What this demo abstracts away
 

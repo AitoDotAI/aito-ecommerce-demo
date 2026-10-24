@@ -201,9 +201,9 @@ data, different shape.
 
 - **Personalised cross-sell**. The lift numbers here are
   population-wide. A real product would condition on the active
-  customer's segment ("among large-dog-owners specifically,
-  what's the dry-food → dental-treats lift?") — same `_relate`
-  shape with an extra `where` clause.
+  customer's declared fields ("among large-dog households
+  specifically, what's the dry-food → dental-treats lift?") — same
+  `_relate` shape with an extra `where` clause.
 - **Time-windowed lift**. Holiday season shifts cross-sell
   patterns. Production would slice on `month` ranges.
 - **SKU-level pairs**. We anchor and target on `<pet>_<category>`

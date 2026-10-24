@@ -1,0 +1,17 @@
+{
+  "env": "observable",
+  "counts": {
+    "contexts": 12662,
+    "customer_months": 27525,
+    "customers": 3000,
+    "impressions": 117026,
+    "inventory": 658,
+    "monthly_sales": 15157,
+    "order_lines": 39098,
+    "orders": 11909,
+    "product_states": 15157,
+    "products": 658,
+    "reviews": 6000,
+    "winback_campaigns": 2421
+  }
+}

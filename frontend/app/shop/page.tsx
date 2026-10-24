@@ -34,7 +34,7 @@ function ShopView() {
     breadcrumb: "Shop",
   });
   const { setPanel } = useShell();
-  const [shopperKey, setShopperKey] = useUrlState("shopper", "sofia");
+  const [shopperKey, setShopperKey] = useUrlState("shopper", "paivi");
   const [month, setMonth] = useUrlState("month", "2026-04");
   const [cartParam] = useUrlState("cart", "");
   const [openSku] = useUrlState("product", "");
@@ -92,14 +92,16 @@ function ShopView() {
   }, [query, shopperKey, month, cartParam, setPanel]);
 
   useEffect(() => {
-    // As of the picked month, like the grid: later orders haven't happened yet.
+    // As of the picked month and the cart, like the grid: later orders haven't
+    // happened yet, and a kit item in the cart counts as owned.
     let current = true;
     setSuggestions(null);
     setSuggestionsError(null);
-    apiFetch<ShopSuggestions>(`/api/shop/suggestions?shopper=${shopperKey}&month=${month}`)
+    apiFetch<ShopSuggestions>(`/api/shop/suggestions?shopper=${shopperKey}&month=${month}` +
+                              `&cart=${encodeURIComponent(cartParam)}`)
       .then((s) => { if (current) setSuggestions(s); }, (e) => { if (current) setSuggestionsError(String(e)); });
     return () => { current = false; };
-  }, [shopperKey, month]);
+  }, [shopperKey, month, cartParam]);
 
   const shown = grid && grid.shopper.key === shopperKey ? grid : null;
   const stale = !!shown && (shown.month !== month || shown.cart.map((p) => p.sku).join(",") !== cartParam);
@@ -133,7 +135,7 @@ function ShopView() {
       {shown && (
         <div className="card-sub" style={{ margin: "4px 0 12px" }}>
           {shown.shopper.story}
-          {shown.rule && <> Their rule, <strong>{shown.rule}</strong>, is applied as a filter: Aito ranks only food that keeps it.</>}
+          {shown.rule && <> Their declared diet, <strong>{shown.rule}</strong>, is applied as a filter: Aito ranks only food that keeps it.</>}
         </div>
       )}
 
@@ -148,7 +150,7 @@ function ShopView() {
       </form>
 
       {notFound && (
-        <NotFoundNotice message={notFound} resetLabel="Start over as Sofia, with an empty cart"
+        <NotFoundNotice message={notFound} resetLabel="Start over as Päivi, with an empty cart"
                         onReset={() => setUrl({ shopper: null, cart: null, product: null })} />
       )}
       {error && <ErrorState title="Couldn't load the shop" message={error} />}
@@ -175,27 +177,35 @@ function ShopView() {
               </div>
             </div>
           ) : (
-          <div className="shop-grid" style={{ opacity: stale ? 0.5 : 1 }} aria-busy={!shown || stale}>
-            {!shown && Array.from({ length: 8 }, (_, i) => (
-              <div key={i} className="card" style={{ height: 170, background: "var(--border-light)" }} />
-            ))}
-            {shown?.items.map((item) => (
-              <ProductCard key={item.sku} item={item}
-                           onAdd={() => addToCart([item.sku])}
-                           onOpen={() => setUrl({ product: item.sku })} />
-            ))}
+          <div style={{ minWidth: 0 }}>
+            {/* One view per intent (ADR 0033, amendment of 2026-10-21): the routine
+                and the kit first, then everything else in "Picked for you". */}
+            {suggestionsError && (
+              <div className="card card-sub" style={{ color: "var(--red)" }}>
+                Couldn&apos;t load their usual basket and kit: {suggestionsError}
+              </div>
+            )}
+            {suggestions && <SuggestionsPanel suggestions={suggestions} month={monthLabel(month)}
+                                              onAdd={(sku) => addToCart([sku])} onAddAll={addToCart} />}
+            <div className="page-title" style={{ fontSize: 16, margin: "16px 0 4px" }}>Picked for you</div>
+            <div className="card-sub" style={{ marginBottom: 8 }}>
+              Ranked by Aito for a household with these pets, this month and this cart
+            </div>
+            <div className="shop-grid" style={{ opacity: stale ? 0.5 : 1 }} aria-busy={!shown || stale}>
+              {!shown && Array.from({ length: 8 }, (_, i) => (
+                <div key={i} className="card" style={{ height: 170, background: "var(--border-light)" }} />
+              ))}
+              {shown?.items.map((item) => (
+                <ProductCard key={item.sku} item={item}
+                             onAdd={() => addToCart([item.sku])}
+                             onOpen={() => setUrl({ product: item.sku })} />
+              ))}
+            </div>
           </div>
           )}
           <div className="shop-side">
             <CartPanel cart={shown?.cart ?? []} onRemove={(sku) => setCart(cart.filter((s) => s !== sku))}
                        onClear={() => setCart([])} />
-            {suggestionsError && (
-              <div className="card card-sub" style={{ color: "var(--red)" }}>
-                Couldn&apos;t load their suggestions: {suggestionsError}
-              </div>
-            )}
-            {suggestions && <SuggestionsPanel suggestions={suggestions} month={monthLabel(month)}
-                                              onAdd={(sku) => addToCart([sku])} onAddAll={addToCart} />}
           </div>
         </div>
       )}

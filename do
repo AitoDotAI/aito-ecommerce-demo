@@ -136,6 +136,9 @@ Data
   target            Show which Aito instance commands use, and whose credentials
   warm-cache        Pre-compute every cacheable endpoint once
   precompute        Snapshot the six heavy endpoints to Aito + git JSON (ADR 0024)
+                    --as master: compute on AITO_ENV's env, file as master (ADR 0035)
+  release-file      <env>: write data/release-env.json from the env's row counts (read-only)
+  release-check     [<env>]: does the env (default: the release's) match data/release-env.json? (read-only)
   uci-prepare       UCI Online Retail II xlsx → data/uci/*.json (local, no Aito; ADR 0034)
   uci-load          Load data/uci/ into Aito env uci (needs AITO_ENV=uci)
   workbook          (Re)create the console workbook from docs/aito-workbook-ecommerce-demo.json
@@ -153,6 +156,7 @@ Quality
   verify-demo       End-to-end demo-path check
   verify-mobile     Mobile-viewport screenshot sweep of every sidebar view
   test-urls         Build the static export; check every view's link opens as shared
+  planted-effects   Generate planted and null fixtures for 3 seeds; judge ADR 0032's effects (~5 min)
   check             Pre-merge gate (test + fmt + aito-check)
   fmt               Format code
 
@@ -362,16 +366,83 @@ cmd_precompute() {
   # (and the read-only public deploy) only ever reads. Deliberately
   # does NOT init the lazy persistent cache, so each endpoint computes
   # live and its real per-call timings are captured for the pill.
+  #
+  # --as <env>: compute on the env AITO_ENV names, but file the snapshots
+  # under <env>'s namespace. A release computes on its env "as master",
+  # since after the promote master holds those same rows (ADR 0035):
+  #   AITO_ENV=observable ./do precompute --as master
+  local write_as=""
+  if [[ $# -gt 0 ]]; then
+    if [[ "$1" != "--as" || $# -ne 2 || -z "$2" ]]; then
+      echo "Usage: ./do precompute [--as <env>]" >&2
+      exit 1
+    fi
+    write_as="$2"
+  fi
   echo "Precomputing heavy endpoints (churn, demand, evaluation, inventory, markdown, winback)..."
   cd "$SCRIPT_DIR"
   _show_target
-  uv run python -c "
+  echo "   computed on env: ${AITO_ENV:-master}; written as env: ${write_as:-${AITO_ENV:-master}}"
+  WRITE_AS="$write_as" uv run python -c "
+import os
 from src.config import load_config
 from src.aito_client import AitoClient
 from src.precompute import precompute_all
 cfg = load_config()
 client = AitoClient(cfg)
-precompute_all(client, verbose=True)
+precompute_all(client, verbose=True, write_as_env=os.environ['WRITE_AS'] or None)
+"
+}
+
+cmd_release_file() {
+  # Write data/release-env.json from an env's live row counts (ADR 0035).
+  # Read-only: one _search with limit 0 per table.
+  if [[ $# -ne 1 || -z "$1" ]]; then
+    echo "Usage: ./do release-file <env>" >&2
+    exit 1
+  fi
+  cd "$SCRIPT_DIR"
+  _show_target
+  AITO_ENV="$1" uv run python -c "
+from src.config import load_config
+from src.aito_client import AitoClient
+from src.release_file import RELEASE_FILE, Release, read_counts, write_release
+cfg = load_config()
+release = Release(env=cfg.aito_env, counts=read_counts(AitoClient(cfg)))
+write_release(release)
+for table, count in release.to_dict()['counts'].items():
+    print(f'  {table:20s} {count:>9,}')
+print(f'Wrote {RELEASE_FILE} for env {release.env}.')
+"
+}
+
+cmd_release_check() {
+  # The cutover's pre-flight (ADR 0035), read-only: does an env hold the
+  # release file's tables and row counts? Defaults to the release's own
+  # env; `./do release-check master` checks master after the promote.
+  # Exits 1 and names each differing table on a mismatch.
+  if [[ $# -gt 1 ]]; then
+    echo "Usage: ./do release-check [<env>]" >&2
+    exit 1
+  fi
+  cd "$SCRIPT_DIR"
+  _show_target
+  CHECK_ENV="${1:-}" uv run python -c "
+import os, sys
+from dataclasses import replace
+from src.config import load_config
+from src.aito_client import AitoClient
+from src.release_file import RELEASE_FILE, differences, load_release, read_counts
+release = load_release()
+env = os.environ['CHECK_ENV'] or release.env
+cfg = replace(load_config(), aito_env=env)
+found = differences(release.counts, read_counts(AitoClient(cfg)))
+if found:
+    print(f'Env {env} does not match {RELEASE_FILE.name} (release env {release.env}):')
+    for line in found:
+        print(f'  {line}')
+    sys.exit(1)
+print(f'Env {env} matches {RELEASE_FILE.name}: {len(release.counts)} tables, release env {release.env}.')
 "
 }
 
@@ -520,6 +591,13 @@ cmd_test_urls() {
   cd "$SCRIPT_DIR/frontend"
   npx next build --webpack
   node scripts/deeplink-test.cjs
+}
+
+cmd_planted_effects() {
+  # Each ADR 0032 effect against the same seed's generation without it, for
+  # three seeds. Writes docs/verification/product-states-data.md; leaves data/ alone.
+  cd "$SCRIPT_DIR"
+  PYTHONPATH=. uv run python scripts/planted_effects.py
 }
 
 cmd_verify_mobile() {
@@ -674,7 +752,9 @@ case "${1:-help}" in
   reset-data)        shift; cmd_reset_data "$@" ;;
   clear-cache)       cmd_clear_cache ;;
   warm-cache)        cmd_warm_cache ;;
-  precompute)        cmd_precompute ;;
+  precompute)        shift; cmd_precompute "$@" ;;
+  release-file)      shift; cmd_release_file "$@" ;;
+  release-check)     shift; cmd_release_check "$@" ;;
   optimize)          cmd_optimize ;;
   uci-prepare)       cmd_uci_prepare ;;
   uci-load)          cmd_uci_load ;;
@@ -691,6 +771,7 @@ case "${1:-help}" in
   verify-demo)       cmd_verify_demo ;;
   verify-mobile)     cmd_verify_mobile ;;
   test-urls)         cmd_test_urls ;;
+  planted-effects)   cmd_planted_effects ;;
   check)             cmd_check ;;
   fmt)               cmd_fmt ;;
   npm-install)       cmd_npm_install ;;

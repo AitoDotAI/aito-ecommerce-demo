@@ -70,19 +70,24 @@ export interface WhyExplanationPayload {
   final_p: number | null;
 }
 
-/** Estimate-variant explanation from `src/why_processor.py`'s
- *  `process_estimate_why`. K-NN / regression-coefficient
- *  decomposition for `_estimate` queries (Demand / Inventory /
- *  Price). Each component's `value` is on the log scale Aito uses
- *  internally — the popover converts to %-lift for display. */
+/** Estimate-variant explanation from `src/estimate_why.py`'s
+ *  `explain_estimate`: a k-NN `_estimate` (Demand, Inventory) split into
+ *  a base, one contribution per field, the similar past months and any
+ *  gap to Aito's estimate. In form "add" each `effect` is units added; in
+ *  "multiply" a multiplier; both chain from `base` to `estimate`. Form
+ *  "raw" is Aito's terms unconverted, when the split doesn't hold. A
+ *  payload without `form` is a snapshot saved before this format. */
 export interface WhyEstimatePayload {
   kind: "estimate";
   estimate: number | null;
   field_label: string;
+  form?: "add" | "multiply" | "raw";
+  base?: number | null;
+  neighbours?: number;
   components: Array<{
-    name: string;
-    value: number;
-    type: "regression" | "residual" | "mean" | string;
+    type: "field" | "neighbours" | "unexplained" | "raw" | string;
+    label?: string;
+    effect?: number;
   }>;
 }
 
@@ -232,42 +237,6 @@ export interface FillingResponse {
   last_response_ms: number;
 }
 
-/* ─── Bought Together (/api/bought-together) ─── */
-
-export interface BoughtTogetherSkuSample {
-  sku: string;
-  name: string;
-  brand: string;
-  price_eur: number;
-}
-
-export interface BoughtTogetherCrossSell {
-  label: string;
-  token: string;
-  lift: number;
-  support: {
-    f: number;
-    f_on_condition: number;
-  };
-  sample_skus: BoughtTogetherSkuSample[];
-}
-
-export interface BoughtTogetherAnchor {
-  id: string;
-  pet_type: string;
-  category: string;
-  display: string;
-  sample_skus: BoughtTogetherSkuSample[];
-}
-
-export interface BoughtTogetherResponse {
-  anchor: BoughtTogetherAnchor;
-  cross_sells: BoughtTogetherCrossSell[];
-  available_anchors: Array<{ id: string; display: string }>;
-  last_query: { endpoint: string; body: Record<string, unknown> };
-  last_response_ms: number;
-}
-
 /* ─── Basket Rules (/api/basket-rules) ─── */
 
 export interface BasketRule {
@@ -297,8 +266,8 @@ export interface ForYouTile {
   category: string;
   price_eur: number;
   rank: number;
-  /** P(segment | product) from Aito's `$p`. Surfaced as a per-tile
-   *  "0.91" score chip. */
+  /** P(purchased | this customer) from Aito's `$p`. Surfaced as a
+   *  per-tile "0.91" score chip. */
   score: number;
 }
 
@@ -306,8 +275,6 @@ export interface ForYouResponse {
   persona: {
     id: string;
     label: string;
-    segment: string;
-    pet_size: string | null;
     customer_id: string;
   };
   tiles: ForYouTile[];
@@ -340,8 +307,7 @@ export interface SmartSearchResponse {
   customer: {
     id: string;
     label: string;
-    segment: string;
-    pet_size: string | null;
+    customer_id: string;
   };
   baseline: SmartSearchHit[];
   predictive: SmartSearchHitWithDelta[];
@@ -372,9 +338,9 @@ export interface DashboardSegment {
   label: string;
   share_pct: number;
   avg_basket_eur: number;
-  note: string;
-  pill_text: string;
-  pill_tone: "orange" | "blue" | "grey" | "purple" | "green" | "red" | "amber";
+  // Only the group that ranks first or last on a shown number has a pill.
+  pill_text: string | null;
+  pill_tone: "orange" | "blue" | "grey" | null;
 }
 
 export interface DashboardInsight {
@@ -451,8 +417,8 @@ export interface ChurnKpi {
 export interface ChurnAtRiskCustomer {
   customer_id: string;
   customer_short: string;
-  segment: string;
-  pet_size: string | null;
+  pets: string;            // declared (ADR 0033)
+  dog_size: string | null;
   region: string;
   tenure_months: number;
   visits: number;
@@ -617,42 +583,6 @@ export interface MarkdownResponse {
   last_response_ms: number;
 }
 
-/* ─── Cart Completion (/api/cart-completion) ─── */
-
-export interface CartItem {
-  sku: string;
-  name: string;
-  category: string;
-  price_eur: number;
-}
-
-export interface AddOnSuggestion {
-  sku: string;
-  name: string;
-  pet_type: string;
-  category: string;
-  brand: string;
-  price_eur: number;
-  attach_p: number;
-  rank: number;
-  expected_uplift_eur: number;
-}
-
-export interface CartScenarioResult {
-  scenario_id: string;
-  label: string;
-  description: string;
-  items: CartItem[];
-  cart_value_eur: number;
-  suggestions: AddOnSuggestion[];
-}
-
-export interface CartCompletionResponse {
-  scenarios: CartScenarioResult[];
-  last_query: { endpoint: string; body: Record<string, unknown> };
-  last_response_ms: number;
-}
-
 /* ─── Win-back Campaigns (/api/winback) ─── */
 
 export interface WinbackProductSuggestion {
@@ -671,10 +601,10 @@ export interface WinbackProductSuggestion {
 export interface WinbackTarget {
   customer_id: string;
   customer_name: string;
-  segment: string;
-  pet_size: string | null;
-  lifestyle: string;
-  health_focus: string;
+  pets: string;                  // declared, e.g. "dog cat"
+  dog_size: string | null;
+  region: string;
+  staple_category: string;       // from their orders: "dog/dry-food", or "none"
   recency_bucket: string;
   last_order_month: string;
   total_spent_eur: number;
@@ -795,10 +725,35 @@ export interface PriceWhatIf {
   last_query: { endpoint: string; body: Record<string, unknown> };
 }
 
+/* ─── Discount what-if (/api/price/discount-what-if, ADR 0032) ─── */
+
+export interface DiscountBandEstimate {
+  band: "none" | "10-15" | "15-20" | "20+";
+  p_purchase: number;          // Aito's $p that the product is bought when shown
+  vs_no_discount: number;      // p_purchase / p_purchase at "none"
+  band_lift: number | null;    // the band's lift in $why; null when Aito leaves it out
+  product_lift: number | null;
+  base_p: number;              // purchase rate of all impressions
+  normaliser: number;          // Aito's normalisers multiplied (exclusiveness, calibration)
+  calibrated: boolean;         // $why holds a `calibration` (rowCap) factor
+  shown: number;               // this product's impressions at the band
+  purchased: number;
+  current: boolean;            // the product's band in the latest month
+}
+
+export interface DiscountWhatIf {
+  sku: string;
+  name: string;
+  current_band: string;
+  month: string;
+  bands: DiscountBandEstimate[];
+  last_query: { endpoint: string; body: Record<string, unknown> };
+}
+
 /* ─── Product Insights (/api/product-insights) ─── */
 
 export interface ProductInsightsBuyerRow {
-  field: string;          // "customer_segment", ...
+  field: string;          // "context.customer.pets", "product_state.on_offer", ...
   value: string;
   lift: number;           // share among this product's lines / among all lines
   lines: number;          // this product's order lines with this profile
@@ -822,7 +777,7 @@ export interface ProductInsightsResponse {
 /* ─── Shop (/api/shop/*, ADR 0031) ─── */
 
 export interface ShopShopper {
-  key: string;            // URL value: /shop/?shopper=sofia
+  key: string;            // URL value: /shop/?shopper=paivi
   customer_id: string;
   name: string;
   emoji: string;
@@ -839,7 +794,7 @@ export interface ShopProduct {
 }
 
 export interface ShopReason {
-  label: string;   // "Goes with your cart", "Sells in April", "Treat affinity: high"
+  label: string;   // "Goes with your cart", "Sells in April", "Fits your pets"
   lift: number;    // how much it multiplies this product's odds of a purchase
 }
 
@@ -879,7 +834,7 @@ export interface ShopBasketPair {
 
 export interface ShopProductDrawer {
   product: ShopProduct & { avg_rating: number | null; dietary: string | null; tags: string };
-  offer_pct: number | null;    // this month's offer, from price_history
+  offer_pct: number | null;    // this month's offer, from product_states
   alternatives: ShopItem[];    // the same kind of product, ranked for this shopper
   same_basket: ShopBasketPair[];
   your_orders: string[];   // months of this shopper's orders that held it

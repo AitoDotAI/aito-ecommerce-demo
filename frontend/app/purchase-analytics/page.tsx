@@ -10,8 +10,8 @@ import type { AnalyticsResponse } from "@/lib/types";
 
 
 /**
- * Purchase Analytics — month-over-month + segment KPIs + top products
- * + per-segment category mix. Read-heavy, cached 30 min.
+ * Purchase Analytics — month-over-month + household KPIs + top products
+ * + per-household category mix (households by declared pets, ADR 0033). Read-heavy, cached 30 min.
  */
 export default function PurchaseAnalyticsPage() {
   usePagePanel(purchaseAnalyticsPanel(), {
@@ -55,7 +55,7 @@ export default function PurchaseAnalyticsPage() {
         <div className="page-title">Purchase Analytics</div>
         <div className="page-desc">
           The data the predictions are built on — 24 months of orders +
-          12 k baskets aggregated per segment, per category, per month.
+          12 k baskets aggregated per household (by the pets it declared), per category, per month.
         </div>
       </div>
 
@@ -150,12 +150,12 @@ export default function PurchaseAnalyticsPage() {
       </div>
 
       <div className="two-col">
-        {/* Segment KPIs */}
+        {/* Household KPIs */}
         <div className="card">
           <div className="card-title" style={{ marginBottom: 14 }}>
-            Revenue by segment
+            Revenue by household
             <span style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 400, marginLeft: 6 }}>
-              avg basket per segment
+              by the pets they declared · avg basket
             </span>
           </div>
           {!data && <Skeleton count={5} />}
@@ -178,12 +178,12 @@ export default function PurchaseAnalyticsPage() {
           ))}
         </div>
 
-        {/* Per-segment category mix */}
+        {/* Per-household category mix */}
         <div className="card">
           <div className="card-title" style={{ marginBottom: 14 }}>
-            Top categories per segment
+            Top categories per household
             <span style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 400, marginLeft: 6 }}>
-              line-count share within segment
+              line-count share within the household group
             </span>
           </div>
           {!data && <Skeleton count={5} />}

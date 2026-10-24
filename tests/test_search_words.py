@@ -13,16 +13,16 @@ from tests.test_shop_analytics import FakeClient, hit, key
 
 
 def words(bought, shown, counts=None):
-    return FakeClient({key("impressions", SEARCH_PURCHASED, "search_query"): bought,
-                       key("impressions", SEARCH, "search_query"): shown}, counts=counts)
+    return FakeClient({key("impressions", SEARCH_PURCHASED, "context.search_query"): bought,
+                       key("impressions", SEARCH, "context.search_query"): shown}, counts=counts)
 
 
 def bought_hit(word, purchases):
-    return hit("search_query", word, 3.0, purchases, 4_000, 0, 115_000)
+    return hit("context.search_query", word, 3.0, purchases, 4_000, 0, 115_000)
 
 
 def shown_hit(word, impressions):
-    return hit("search_query", word, 3.0, impressions, 40_000, impressions, 115_000)
+    return hit("context.search_query", word, 3.0, impressions, 40_000, impressions, 115_000)
 
 
 def test_a_words_lift_is_against_search_impressions_not_all_impressions():

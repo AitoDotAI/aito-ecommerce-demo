@@ -57,28 +57,38 @@ function serveStatic() {
 
 // Each view: a link with state, and what the page's first API request must carry.
 const LINKS = [
-  { view: "smart-search", query: "customer=maija&q=dog+food", api: "/api/smart-search", expect: { customer: "maija", q: "dog food" } },
-  { view: "recommendations", query: "customer=olli", api: "/api/for-you", expect: { customer: "olli" } },
-  { view: "bought-together", query: "anchor=cat_wetfood", api: "/api/bought-together", expect: { anchor: "cat_wetfood" } },
+  { view: "evidence/personalised-search", query: "customer=maija&q=dog+food", api: "/api/smart-search", expect: { customer: "maija", q: "dog food" } },
+  { view: "query-patterns", query: "customer=olli", api: "/api/for-you", expect: { customer: "olli" } },
   { view: "pattern-explorer", query: "anchor=cat_wetfood", api: "/api/pattern-explorer", expect: { anchor: "cat_wetfood" } },
   { view: "product-filling", query: "sku=SKU-PT-0042", api: "/api/product-filling", expect: { sku: "SKU-PT-0042" } },
   { view: "feedback", query: "review=REV-00042", api: "/api/feedback", expect: { review: "REV-00042" } },
   { view: "product-insights", query: "sku=SKU-PT-0042", api: "/api/product-insights", expect: { sku: "SKU-PT-0042" } },
   { view: "shop", query: "shopper=janne&month=2025-12&cart=SKU-PT-0001", api: "/api/shop/grid",
     expect: { shopper: "janne", month: "2025-12", cart: "SKU-PT-0001" } },
-  { view: "shop-analytics", query: "kpi=clicked&who=grain-free", api: "/api/shop-analytics/funnel", expect: { kpi: "clicked" } },
-  { view: "shop-analytics", query: "kpi=clicked&who=grain-free", api: "/api/shop-analytics/who", expect: { who: "grain-free" } },
+  { view: "patterns", query: "kpi=clicked&who=grain-free", api: "/api/shop-analytics/funnel", expect: { kpi: "clicked" } },
+  { view: "patterns", query: "kpi=clicked&who=grain-free", api: "/api/shop-analytics/who", expect: { who: "grain-free" } },
+];
+
+// Old routes (lib/moved-routes.ts): where each must land, and, where the new
+// view reads the link's state, the request that proves it was carried over.
+const MOVED = [
+  ["/smart-search/", "/evidence/personalised-search/", "/api/smart-search", { customer: "maija", q: "dog food" }],
+  ["/recommendations/", "/query-patterns/", "/api/for-you", { customer: "olli" }],
+  ["/shop-analytics/", "/patterns/", "/api/shop-analytics/funnel", { kpi: "clicked" }],
+  ["/evaluation/", "/evidence/model-checks/", null, { model: "dietary_from_name" }],
+  ["/business-reorders/", "/evidence/business-reorders/", null, { customer: "12357" }],
+  ["/bought-together/", "/patterns/", null, { anchor: "cat_wetfood" }],
+  ["/cart-completion/", "/shop/", null, {}],
 ];
 
 // Views whose picker is filled from the API response: pick an option by
 // clicking, the address bar must follow, and the copied address must reopen it.
 const PICKERS = [
-  { view: "bought-together", select: "#anchor-picker", key: "anchor", api: "/api/bought-together" },
   { view: "pattern-explorer", select: "#anchor-picker", key: "anchor", api: "/api/pattern-explorer" },
   { view: "product-filling", select: "#sku-picker", key: "sku", api: "/api/product-filling" },
   { view: "feedback", select: "#rev-picker", key: "review", api: "/api/feedback" },
   { view: "product-insights", select: "#sku-picker", key: "sku", api: "/api/product-insights" },
-  { view: "shop-analytics", select: "#who-picker", key: "who", api: "/api/shop-analytics/who" },
+  { view: "patterns", select: "#who-picker", key: "who", api: "/api/shop-analytics/who" },
 ];
 
 // Two options per picker, so there is something to pick. The selected entity
@@ -100,9 +110,6 @@ function stubResponse(apiPath, params) {
   const anchor = params.get("anchor") ?? OPTIONS.anchor[0];
   const anchors = OPTIONS.anchor.map((id) => ({ id, display: `Anchor ${id}` }));
   switch (apiPath) {
-    case "/api/bought-together":
-      return { anchor: { id: anchor, pet_type: "dog", category: "dry-food", display: `Anchor ${anchor}`, sample_skus: [] },
-               cross_sells: [], available_anchors: anchors, last_query: STUB_QUERY, last_response_ms: 1 };
     case "/api/pattern-explorer":
       return { anchor: { id: anchor, pet_type: "dog", category: "dry-food", display: `Anchor ${anchor}` },
                patterns: [], available_anchors: anchors, last_query: STUB_QUERY, last_response_ms: 1 };
@@ -136,12 +143,12 @@ function stubResponse(apiPath, params) {
                bought_together_anchor: null, last_query: STUB_QUERY };
     }
     case "/api/shop/shoppers":
-      return { shoppers: [{ key: "sofia", customer_id: "C1", name: "Sofia", emoji: "", story: "s" },
+      return { shoppers: [{ key: "paivi", customer_id: "C1", name: "Päivi", emoji: "", story: "s" },
                           { key: "janne", customer_id: "C2", name: "Janne", emoji: "", story: "j" }] };
     case "/api/shop/grid": {
       const cart = (params.get("cart") ?? "").split(",").filter(Boolean)
         .map((sku) => ({ sku, name: `Product ${sku}`, brand: "B", pet_type: "dog", category: "toys", price_eur: 1 }));
-      const shopper = params.get("shopper") ?? "sofia";
+      const shopper = params.get("shopper") ?? "paivi";
       return { shopper: { key: shopper, customer_id: "C", name: shopper, emoji: "", story: "" },
                month: params.get("month"), rule: null, cart, items: [], last_order_skus: [], last_query: STUB_QUERY };
     }
@@ -163,7 +170,7 @@ function stubResponse(apiPath, params) {
     case "/api/evaluation":
       return JSON.parse(fs.readFileSync(EVAL_SNAPSHOT, "utf8")).data;
     default:
-      return null;   // Smart Search and For You show their controls without data.
+      return null;   // Personalised search and Query patterns show their controls without data.
   }
 }
 
@@ -245,41 +252,41 @@ async function main() {
     }
 
     {
-      const visit = await openFresh(browser, `${BASE}/smart-search/`);
+      const visit = await openFresh(browser, `${BASE}/evidence/personalised-search/`);
       await visit.page.locator("button.customer-chip", { hasText: /maija/i }).first().click();
       await visit.page.locator("form.search-wrap input").fill("cat litter");
       await visit.page.locator("form.search-wrap button[type=submit]").click();
       const followed = await urlMatches(visit.page, /customer=maija/) && await urlMatches(visit.page, /q=cat(\+|%20)litter/);
       const copied = visit.page.url();
       await visit.context.close();
-      check(followed, `smart-search: a persona click and a search put both in the address bar (${copied})`);
+      check(followed, `personalised-search: a persona click and a search put both in the address bar (${copied})`);
 
       const reopened = await openFresh(browser, copied);
       const first = await firstRequest(reopened.requests, "/api/smart-search");
       const chip = await appears(reopened.page.locator("button.customer-chip.selected", { hasText: /maija/i }));
       const query = await reopened.page.locator("form.search-wrap input").inputValue();
       check(carries(first, { customer: "maija", q: "cat litter" }) && chip && query === "cat litter",
-            `smart-search: the copied URL reopens Maija searching "cat litter" (input shows "${query}")`);
+            `personalised-search: the copied URL reopens Maija searching "cat litter" (input shows "${query}")`);
       await reopened.context.close();
     }
 
     {
-      const visit = await openFresh(browser, `${BASE}/recommendations/`);
+      const visit = await openFresh(browser, `${BASE}/query-patterns/`);
       await visit.page.locator("button.customer-chip", { hasText: /olli/i }).first().click();
       const followed = await urlMatches(visit.page, /customer=olli/);
       const copied = visit.page.url();
       await visit.context.close();
-      check(followed, `recommendations: a persona click puts it in the address bar (${copied})`);
+      check(followed, `query-patterns: a persona click puts it in the address bar (${copied})`);
 
       const reopened = await openFresh(browser, copied);
       const first = await firstRequest(reopened.requests, "/api/for-you");
       const chip = await appears(reopened.page.locator("button.customer-chip.selected", { hasText: /olli/i }));
-      check(carries(first, { customer: "olli" }) && chip, "recommendations: the copied URL reopens Olli");
+      check(carries(first, { customer: "olli" }) && chip, "query-patterns: the copied URL reopens Olli");
       await reopened.context.close();
     }
 
     {
-      const visit = await openFresh(browser, `${BASE}/shop-analytics/`);
+      const visit = await openFresh(browser, `${BASE}/patterns/`);
       await firstRequest(visit.requests, "/api/shop-analytics/baskets");
       await visit.page.locator("#kpi-clicked").click();
       const followed = await urlMatches(visit.page, /kpi=clicked/);
@@ -289,33 +296,33 @@ async function main() {
         visit.requests.filter((u) => apiPathOf(u) === `/api/shop-analytics${p}`).length);
       const copied = visit.page.url();
       await visit.context.close();
-      check(followed, `shop-analytics: the Clicks toggle puts the KPI in the address bar (${copied})`);
+      check(followed, `patterns: the Clicks toggle puts the KPI in the address bar (${copied})`);
       check(refetched && others.every((n) => n === 1),
-            `shop-analytics: the toggle re-asks only its section (baskets, words, who asked ${others.join(", ")} times)`);
+            `patterns: the toggle re-asks only its section (baskets, words, who asked ${others.join(", ")} times)`);
 
       const reopened = await openFresh(browser, copied);
       const first = await firstRequest(reopened.requests, "/api/shop-analytics/funnel");
       const toggle = await appears(reopened.page.locator("#kpi-clicked.selected"));
-      check(carries(first, { kpi: "clicked" }) && toggle, "shop-analytics: the copied URL reopens the Clicks KPI");
+      check(carries(first, { kpi: "clicked" }) && toggle, "patterns: the copied URL reopens the Clicks KPI");
       await reopened.context.close();
     }
 
     {
-      const visit = await openFresh(browser, `${BASE}/evaluation/`);
+      const visit = await openFresh(browser, `${BASE}/evidence/model-checks/`);
       await visit.page.locator("tr", { hasText: /segment/i }).first().click();
       const followed = await urlMatches(visit.page, /model=segment_from_product/);
       const copied = visit.page.url();
       await visit.context.close();
-      check(followed, `evaluation: a row click puts the model in the address bar (${copied})`);
+      check(followed, `model-checks: a row click puts the model in the address bar (${copied})`);
 
       const reopened = await openFresh(browser, copied);
       const focused = await appears(reopened.page.locator("tr[style*='solid']", { hasText: /segment/i }).first());
-      check(focused, "evaluation: the copied URL reopens with the segment row focused");
+      check(focused, "model-checks: the copied URL reopens with the segment row focused");
       await reopened.context.close();
     }
 
     console.log("Back/forward: a choice is a history step");
-    for (const [view, chosen, other] of [["smart-search", "maija", "olli"], ["recommendations", "olli", "saara"]]) {
+    for (const [view, chosen, other] of [["evidence/personalised-search", "maija", "olli"], ["query-patterns", "olli", "saara"]]) {
       const { context, page, requests } = await openFresh(browser, `${BASE}/${view}/?customer=${chosen}`);
       const isSelected = (name) => appears(page.locator("button.customer-chip.selected", { hasText: new RegExp(name, "i") }));
       await isSelected(chosen);
@@ -330,21 +337,21 @@ async function main() {
     }
 
     {
-      const { context, page } = await openFresh(browser, `${BASE}/evaluation/?model=dietary_from_name`);
+      const { context, page } = await openFresh(browser, `${BASE}/evidence/model-checks/?model=dietary_from_name`);
       const focusedDietary = page.locator("tr[style*='solid']", { hasText: /diet/i }).first();
-      check(await appears(focusedDietary), "evaluation?model=dietary_from_name focuses the dietary row");
+      check(await appears(focusedDietary), "model-checks?model=dietary_from_name focuses the dietary row");
       await page.locator("tr", { hasText: /segment/i }).first().click();
       const forward = await urlMatches(page, /model=segment_from_product/);
       await page.goBack();
       const back = await urlMatches(page, /model=dietary_from_name/) && await appears(focusedDietary);
-      check(forward && back, "evaluation: segment → back restores the dietary focus");
+      check(forward && back, "model-checks: segment → back restores the dietary focus");
       await context.close();
     }
 
     {
-      const { context, page } = await openFresh(browser, `${BASE}/evaluation/?model=no_such_model`);
+      const { context, page } = await openFresh(browser, `${BASE}/evidence/model-checks/?model=no_such_model`);
       check(await appears(page.getByText("No model “no_such_model” in this evaluation")),
-            "evaluation?model=no_such_model says the model isn't in the evaluation");
+            "model-checks?model=no_such_model says the model isn't in the evaluation");
       await context.close();
     }
 
@@ -362,13 +369,37 @@ async function main() {
       await context.close();
     }
     {
-      const { context, page, requests } = await openFresh(browser, `${BASE}/shop-analytics/?kpi=bogus`);
-      check(await appears(page.getByText("Unknown kpi 'bogus'")), "shop-analytics?kpi=bogus says the link is bad");
+      const { context, page, requests } = await openFresh(browser, `${BASE}/patterns/?kpi=bogus`);
+      check(await appears(page.getByText("Unknown kpi 'bogus'")), "patterns?kpi=bogus says the link is bad");
       await page.getByRole("button", { name: "Show purchases" }).click();
-      const reset = await urlMatches(page, /\/shop-analytics\/?$/);
+      const reset = await urlMatches(page, /\/patterns\/?$/);
       const defaultAsked = await requestMatching(requests,
         (u) => apiPathOf(u) === "/api/shop-analytics/funnel" && u.searchParams.get("kpi") === "purchased");
-      check(reset && defaultAsked, 'shop-analytics: "Show purchases" clears the bad KPI and loads purchases');
+      check(reset && defaultAsked, 'patterns: "Show purchases" clears the bad KPI and loads purchases');
+      await context.close();
+    }
+
+    console.log("Moved routes (ADR 0041): an old link forwards to its new home, with its state");
+    for (const [from, to, api, state] of MOVED) {
+      const search = Object.keys(state).length ? "?" + new URLSearchParams(state) : "";
+      const { context, page, requests } = await openFresh(browser, `${BASE}${from}${search}`);
+      // The client router drops the trailing slash; the static server accepts both forms.
+      const landed = await page.waitForURL((u) => u.pathname.replace(/\/$/, "") === to.replace(/\/$/, ""), { timeout: TIMEOUT })
+        .then(() => true, () => false);
+      const keptState = new URL(page.url()).search === search;
+      const first = api ? await firstRequest(requests, api) : null;
+      check(landed && keptState && (!api || carries(first, state)),
+            `${from}${search} → ${page.url().replace(BASE, "")}${api ? ` (asked ${first ? first.search : "nothing"})` : ""}`);
+      await context.close();
+    }
+
+    {
+      const { context, page } = await openFresh(browser, `${BASE}/evidence/`);
+      const modelLine = await appears(page.getByText(/3 of 4 models beat that guess by 10 points or more/));
+      const entries = await page.locator(".evidence-entry").count();
+      const marked = await page.locator(".evidence-entry .pill", { hasText: /^(Real|Synthetic) data$/ }).count();
+      check(modelLine && entries === 3 && marked === 3,
+            `evidence: ${entries} entries, ${marked} marked Real or Synthetic; Model checks' line read from the evaluation`);
       await context.close();
     }
   } finally {

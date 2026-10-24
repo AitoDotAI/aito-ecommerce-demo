@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 
 from src.aito_client import AitoClient
+from src.shop_context import pets_filter
 from src.shop_ranking import PRODUCT_FIELDS, ShopItem, ranked_items, shop_scope
 
 GRID_SIZE = 12
@@ -32,7 +33,9 @@ class ShopGrid:
 
 def get_shop_grid(client: AitoClient, shopper_key: str, month: str, cart_skus: list[str]) -> ShopGrid:
     scope = shop_scope(client, shopper_key, month, cart_skus)
-    where = scope.where()
+    # "Picked for you" shows the household's own pets' products; search and a
+    # product's alternatives don't (a cat owner may look for a dog gift).
+    where = {**scope.where(), **pets_filter(scope.pets)}
     items = ranked_items(client, scope, where, CANDIDATES)
     return ShopGrid(
         shopper=scope.shopper.to_dict(), month=month, rule=scope.rule, cart=scope.cart,

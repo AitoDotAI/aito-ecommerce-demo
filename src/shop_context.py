@@ -1,5 +1,7 @@
-"""The Shop's `where`: who the shopper is, their household rule, and their
-cart, in the words the impressions table records (ADR 0030, 0031).
+"""The Shop's `where` for "Picked for you": the household's declared pets,
+the month and the cart, as the contexts table records them, and their
+declared diet as a filter (ADR 0031, ADR 0033 and its amendment of
+2026-10-21: one view per intent).
 """
 
 from __future__ import annotations
@@ -16,7 +18,6 @@ DURABLE_TYPES = frozenset({
     "Collar", "Harness", "Leash", "Laser Pointer", "Nail Clipper", "Brush",
     "Air Pump", "Tank Heater",
 })
-PROFILE_FIELDS = ("segment", "lifestyle", "health_focus", "treat_affinity", "brand_loyalty")
 
 
 def item_type(name: str, brand: str) -> str:
@@ -40,14 +41,29 @@ def basket_words(products: list[dict]) -> list[str]:
     return sorted(words)
 
 
-def shopper_where(customer: dict, cart: list[dict], month: str) -> dict:
-    """The shopper's profile, the month and the cart, as `_recommend` context."""
-    where: dict = {f"customer_{k}": customer[k] for k in PROFILE_FIELDS}
-    where["month"] = month
+def shopper_where(pets: str, cart: list[dict], month: str) -> dict:
+    """The household's declared pets, the month and the cart, as `_recommend`
+    context. Not the customer's identity: on held-out sessions it made the
+    probabilities worse (observable-data-prereg.md, R1/R2). Not the kit:
+    "Next for their kit" has its own view, because adding the kit to the
+    same query erased its lift (ADR 0033, amendment of 2026-10-21)."""
+    where: dict = {"context.customer.pets": {"$and": [{"$match": p} for p in pets.split()]},
+                   "context.month": month}
     if cart:
-        where["basket_categories"] = {"$and": [{"$match": w} for w in basket_words(cart)]}
-        where["basket_skus"] = {"$and": [{"$match": p["sku"]} for p in cart]}
+        # The cart as words, not SKUs: an exact SKU next to the owned kit makes a
+        # joint condition no row matches, and Aito's estimate then collapses
+        # (td-20261020210945109481). The SKUs still keep the cart's own items
+        # out of the candidates (ShopScope.where).
+        where["context.basket_categories"] = {"$and": [{"$match": w} for w in basket_words(cart)]}
     return where
+
+
+def pets_filter(pets: str) -> dict:
+    """The household's declared pets as a filter on the candidates: a cat
+    household is shown cat products. A rule, like the diet: Aito saw dog
+    treats shown to cat households only 7 times, too few to learn that they
+    never buy them (×0.89 against the treats' general ×3.1, 2026-10-21)."""
+    return {"product_sku.pet_type": {"$or": pets.split()}}
 
 
 def rule_filter(rule: str | None) -> dict | None:

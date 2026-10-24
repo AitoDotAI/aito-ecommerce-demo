@@ -8,7 +8,7 @@ For each sampled customer, predict the products of their LAST order from
 their earlier orders: `_predict product_sku` over `order_lines`, conditioned
 on the customer, from a nested `from` that excludes the last order (so the
 answer is never in the population). A hit is any product of the last order
-in the top 10. Compared, on the same customers, with the segment's 10 most
+in the top 10. Compared, on the same customers, with the household group's 10 most
 bought products, and with a control that conditions on a different random
 customer. Design: docs/verification/lifecycle-data-prereg.md §2.
 """
@@ -56,6 +56,9 @@ def main() -> None:
     client = AitoClient(config)
     orders = rows(client, "orders")
     lines = rows(client, "order_lines")
+    # The household group: the pets it declared (ADR 0033), in a fixed order.
+    group_of = {c["customer_id"]: " ".join(sorted(c["pets"].split())) for c in rows(client, "customers")}
+    customer_of_order = {o["order_id"]: o["customer_id"] for o in orders}
 
     by_customer: dict[str, list[dict]] = collections.defaultdict(list)
     for o in orders:
@@ -69,15 +72,15 @@ def main() -> None:
     sample = eligible[:N_CUSTOMERS]
     last_order = {c: max(by_customer[c], key=lambda o: (o["month"], o["order_id"]))["order_id"]
                   for c in sample}
-    segment = {c: lines_by_order[last_order[c]][0]["customer_segment"] for c in sample}
+    group = {c: group_of[c] for c in sample}
 
-    # Popularity baseline: the segment's most bought products, from all lines
+    # Popularity baseline: the group's most bought products, from all lines
     # except the sampled customers' last orders.
     held_out = set(last_order.values())
     counts: dict[str, collections.Counter] = collections.defaultdict(collections.Counter)
     for line in lines:
         if line["order_id"] not in held_out:
-            counts[line["customer_segment"]][line["product_sku"]] += 1
+            counts[group_of[customer_of_order[line["order_id"]]]][line["product_sku"]] += 1
     popular = {s: [sku for sku, _ in c.most_common(TOP_K)] for s, c in counts.items()}
 
     rng = random.Random(1)
@@ -91,11 +94,11 @@ def main() -> None:
     with ThreadPoolExecutor(max_workers=1) as pool:
         model = list(pool.map(lambda c: hit(predicted(client, c, last_order[c]), c), sample))
         control = list(pool.map(lambda c: hit(predicted(client, stranger[c], last_order[c]), c), sample))
-    baseline = [hit(popular[segment[c]], c) for c in sample]
+    baseline = [hit(popular[group[c]], c) for c in sample]
 
     print(f"next basket, env {config.aito_env}, {len(sample)} customers, hit rate @{TOP_K}")
     print(f"  model (own history)      {sum(model) / len(sample):.3f}")
-    print(f"  popularity (segment)     {sum(baseline) / len(sample):.3f}")
+    print(f"  popularity (household)   {sum(baseline) / len(sample):.3f}")
     print(f"  control (other customer) {sum(control) / len(sample):.3f}")
     for label, arm in (("model", model), ("control", control)):
         d, lo, hi = paired_ci(baseline, arm)

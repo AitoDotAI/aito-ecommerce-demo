@@ -18,9 +18,10 @@ demos [`aito-accounting-demo`](https://github.com/AitoDotAI/aito-accounting-demo
 [`aito-erp-demo`](https://github.com/AitoDotAI/aito-erp-demo)
 (*Predictive ERP*). PetNord is the dataset — a Nordic-flavoured
 online pet store with ~700 SKUs, 3,000 customers, 12,000 orders,
-39,000 order lines, 6,000 reviews, ~26,500 customer-month panel
-rows, ~11,100 SKU-month sales aggregates, 658 inventory snapshots,
-and ~11,100 price observations.
+39,000 order lines, 6,000 reviews, ~27,500 customer-month panel
+rows, ~15,200 SKU-month sales aggregates, 658 inventory snapshots,
+~15,200 product states (each product as it was in a month), and
+~117,000 product impressions across ~12,700 shopping visits.
 
 ![Predictive E-commerce — 8 views, one predictive database](assets/teaser.png)
 
@@ -89,7 +90,7 @@ Sixteen views grouped under six sidebar sections, all reading
 from a single Aito DB. Click any guide for the full
 implementation, data-schema excerpts, and tradeoffs.
 
-### 1. 📊 Dashboard — KPIs, top patterns, segments, live insight
+### 1. 📊 Dashboard — KPIs, top patterns, households, live insight
 
 ![Dashboard](screenshots/01-dashboard.png)
 
@@ -103,7 +104,7 @@ implementation, data-schema excerpts, and tradeoffs.
 ```
 
 KPI grid + top-patterns bars (six parallel `_relate` calls) +
-segment cards (`_search` per segment) + recent orders. Same query
+household cards (counts by declared pets in one `_batch`) + recent orders. Same query
 body Bought Together runs per anchor — same 2.72× lift surfaces
 in both views.
 [→ Implementation](src/overview_service.py) | [Use case guide](docs/use-cases/01-dashboard.md) | [ADR](docs/adr/0005-dashboard.md)
@@ -116,7 +117,7 @@ in both views.
 {
   "from": "impressions",
   "get": "product_sku",
-  "where": { "customer_segment": "dog_owner", "customer_pet_size": "large" },
+  "where": { "context.customer": "CUST-00003" },
   "orderBy": { "$multiply": [
     { "$p": { "$context": { "purchased": true } } },
     { "$similarity": { "name": "food for an old dog" }, "theta": 4.0 }
@@ -129,11 +130,14 @@ Side by side: BM25 text relevance on the left, and on the right one
 `_search` that ranks every product by the probability this shopper
 buys it (learned from the `impressions` funnel) times how well its
 name matches the query. There's no word filter, so natural phrasing
-and misspellings still find products. Same query string, different
-`where` context per persona: the right column flips when you click
+and misspellings still find products. The `where` holds only the
+customer id: Aito learns each shopper from their own impressions,
+two links away (`impressions → contexts → customers`). Same query
+string, a different customer per persona: the right column flips when you click
 the Maija / Olli / Saara pills. Measured on a judged query set
 ([search-eval](docs/verification/search-eval.md)): nDCG@10 0.29 →
-0.52 on the left and 0.29 → 0.57-0.59 on the right. **Demo moment #1.**
+0.52 on the left and 0.29 → 0.57-0.59 on the right (measured
+2026-09-28, before ADR 0033). **Demo moment #1.**
 [→ Implementation](src/search_service.py) | [Use case guide](docs/use-cases/02-smart-search.md) | [ADR](docs/adr/0026-three-way-smart-search.md)
 
 ### 3. ✨ For You — personalised tile grid
@@ -143,10 +147,7 @@ the Maija / Olli / Saara pills. Measured on a judged query set
 ```json
 {
   "from": "impressions",
-  "where": {
-    "customer_segment": "dog_owner",
-    "customer_pet_size": "large"
-  },
+  "where": { "context.customer": "CUST-00003" },
   "recommend": "product_sku",
   "goal": { "purchased": true },
   "limit": 12
@@ -154,9 +155,10 @@ the Maija / Olli / Saara pills. Measured on a judged query set
 ```
 
 The conversion-KPI `_recommend`: purchase probability learned from
-the `impressions` funnel, with no query. The whole catalog re-ranks per persona by
-purchase probability; Maija (cat owner) sees cat food + treats at
-the top, Saara (large breed dog) sees dog food + treats. Flip the
+the `impressions` funnel, with no query, for one customer. The whole
+catalog re-ranks per persona by purchase probability; Maija (cat
+owner) sees cat products at the top, Saara (large breed dog) dog
+products. Flip the
 goal to `{ clicked: true }` and the grid reorders toward
 attention-grabbing items — rank for revenue or for engagement,
 your choice. **Demo moment #2.**
@@ -180,7 +182,7 @@ level co-occurrence via the denormalised `orders.line_categories`
 Text column — Aito's `_relate` operating on a single-hop within-
 row shape. **Demo moment #3** — dog dry-food → dental treats at
 2.72× baseline.
-[→ Implementation](src/bought_together_service.py) | [Use case guide](docs/use-cases/04-bought-together.md) | [ADR](docs/adr/0008-bought-together.md)
+Dropped by ADR 0041 (now Patterns › Baskets and the Shop drawer) | [Use case guide](docs/use-cases/04-bought-together.md) | [ADR](docs/adr/0008-bought-together.md)
 
 ### 5. 📈 Purchase Analytics — the data behind the predictions
 
@@ -199,7 +201,7 @@ while True:
 ```
 
 Monthly orders + revenue (24 months), top-10 SKUs by line count,
-per-segment KPIs, per-segment category mix. `_search` with
+KPIs and category mix per household (grouped by declared pets). `_search` with
 `offset` pagination + Python aggregation — no new Aito mechanics,
 the "show me the numbers" companion to the predictive views.
 [→ Implementation](src/analytics_service.py) | [Use case guide](docs/use-cases/05-purchase-analytics.md) | [ADR](docs/adr/0011-analytics-and-patterns.md)
@@ -208,22 +210,20 @@ the "show me the numbers" companion to the predictive views.
 
 ```python
 # Who buys it: `_relate` over this product's order lines, one call per
-# customer column. Lift = how much more common the profile is among this
-# product's lines than among all lines; `fs` carries the counts.
-client.relate(
-    table="order_lines",
-    where={"product_sku": "SKU-PT-0177"},
-    relate_field="customer_segment",
-)
+# declared buyer field, two links away. Lift = how much more common the
+# value is among this product's lines than among all lines; `fs` carries
+# the counts.
+{"from": "order_lines", "where": {"product_sku": "SKU-PT-0177"},
+ "relate": "order_id.customer_id.pets"}
 ```
 
 Pick any product. The page shows:
 - its funnel (shown → clicked → added to cart → purchased);
 - each surface's purchase rate;
-- the customer profiles that buy it more or less than average, each with its counts;
+- the households that buy it more or less than average (declared pets, dog size, diet, region), each with its counts;
 - units per month and its reviews.
 
-The ~20 counts go in one `_batch`. The `_relate` calls run in parallel, and the query pane shows one of the `_relate` bodies sent (the customer-segment one). Puppy Cheese Treats: dog owners 1.42× (99 of 117 lines).
+The ~20 counts go in one `_batch`. The `_relate` calls run in parallel, and the query pane shows one of the `_relate` bodies sent (the declared-pets one).
 [→ Implementation](src/product_insights_service.py) | [Use case guide](docs/use-cases/17-product-insights.md) | [ADR](docs/adr/0028-product-insights.md)
 
 ### 7. 🏪 Shop analytics — the patterns behind the shop
@@ -239,12 +239,12 @@ client.relate(
 ```
 
 Four sections, each its own endpoint and a set of parallel `_relate`s:
-- what goes with a purchase or a click (rating, category, segment, diet rule, "in their last order", surface);
-- who buys what, and when: categories and dietary lines for a season, segment or diet rule;
+- what goes with a purchase or a click (rating, category, the product's state that month, declared pets and diet, "in their last order", surface);
+- who buys what, and when: categories and dietary lines for a season, declared pets or diet;
 - category pairs that share a basket;
 - the search words that convert above and below the average search.
 
-Each lift is shown with its counts and an interval that accounts for two things: one customer's rows are not independent (a design effect measured from `_relate`s on the customer column), and a section tests dozens of lifts at once (Bonferroni, 95 % for the section). A lift is shown only if that interval excludes 1 and it rests on 30 or more independent rows. 1–2 star products sell at 0.79× (923 of 12,135 purchases); summer order lines hold 4.0× the usual share of health products. Needs ADR 0030's data (test env `shoppers` for now).
+Each lift is shown with its counts and an interval that accounts for two things: one customer's rows are not independent (a design effect measured from `_relate`s on the customer column), and a section tests dozens of lifts at once (Bonferroni, 95 % for the section). A lift is shown only if that interval excludes 1 and it rests on 30 or more independent rows. Needs ADR 0033's data (test env `observable` until master is reloaded).
 [→ Implementation](src/shop_analytics_service.py) | [Use case guide](docs/use-cases/18-shop-analytics.md) | [ADR](docs/adr/0031-interactive-shop-and-owner-analytics.md)
 
 ### 8. 🔗 Pattern Explorer — the full lift band
@@ -295,8 +295,9 @@ lights up a red risk chip; positive praise stays green.
 {
   "from": "customer_months",
   "where": {
-    "segment": "small_animal_owner",
+    "pets": "small_animal",
     "region": "oulu",
+    "tenure_months_at_month": 20,
     "visits": 4,
     "purchases": 0,
     "spent_eur": 0,
@@ -308,10 +309,11 @@ lights up a red risk chip; positive praise stays green.
 ```
 
 Panel-data churn prediction: one row per customer per month with
-visits, purchases, spend, profile, and the latest review snapshot.
+visits, purchases, spend, what the household declared (pets, dog
+size) and its region, and the latest review snapshot.
 Each active customer's *latest row* scored with `_predict
 churned_in_3_months`; drivers via `_relate` over churned
-customers, per profile field and tenure band; held-out accuracy via `_evaluate`. The killer
+customers, per declared field and tenure band; held-out accuracy via `_evaluate`. The killer
 feature of the Understand section.
 [→ Implementation](src/churn_service.py) | [Use case guide](docs/use-cases/10-churn.md) | [ADR](docs/adr/0013-churn-prediction.md)
 
@@ -374,13 +376,14 @@ prediction underneath.
 
 ```json
 {
-  "from": "price_history",
+  "from": "product_states",
   "where": { "discount_pct": { "$gt": 15.0 } },
   "relate": "product_sku.category"
 }
 ```
 
-Per-SKU fair-band stats from `price_history` (mean ± 1.5σ, outliers
+Per-SKU fair-band stats from `product_states` (one row per product and
+month on sale, ADR 0032; mean ± 1.5σ, outliers
 flagged), and a demand curve per SKU: `_estimate units_sold` at seven
 prices within ±10 % of its average selling price. Three parallel
 `_relate` calls over discount bands ↔ category look for categories that
@@ -426,18 +429,26 @@ flagged "won't clear in horizon" — honest signal.
 ```json
 {
   "from": "impressions",
-  "where": { "customer_segment": "small_animal_owner", "month": "2026-04",
-             "basket_categories": { "$match": "small_animal_cage" } },
+  "where": { "context.customer.pets": { "$and": [{ "$match": "small_animal" }] },
+             "context.month": "2026-04",
+             "just_bought": false,
+             "product_sku.pet_type": { "$or": ["small_animal"] } },
   "recommend": "product_sku",
-  "goal": { "purchased": true }
+  "goal": { "purchased": true },
+  "select": ["sku", "name", "brand", "pet_type", "category", "price_eur", "avg_rating", "$p", "$why"],
+  "limit": 20
 }
 ```
 
-Six shoppers, each a real customer whose story the data backs. The cart,
-the month and their last order change the grid; a household's diet rule
-is a filter, not a prediction; what they just bought is re-asked and
-falls. A product opens with what's often in the same basket, and a
-routine buyer fills their usual basket in one click.
+Six shoppers, each a real customer whose story the data backs. Aito
+sees only what a shop observes (ADR 0033): the customer id, what the
+household declared, and the visit. One view per intent: **Buy again**
+(`_predict "skus.$feature"` over the shopper's own orders), **Next for
+their kit** (`_predict product_sku` over order lines whose order owned
+what they own) and **Picked for you** (above: declared pets, month and
+cart as context; their pets and diet rule as filters). What they just
+bought is re-asked and falls. A product opens with what's often in the
+same basket.
 [→ Implementation](src/shop_grid.py) | [Use case guide](docs/use-cases/19-shop.md) | [ADR](docs/adr/0031-interactive-shop-and-owner-analytics.md)
 
 ### 15. 🛒 Cart Completion — checkout-funnel personalisation
@@ -457,7 +468,7 @@ Four preset checkout carts × `_relate` over
 `orders.line_categories` = top add-on suggestion per scenario
 with confidence + expected uplift €. Same engine as Bought
 Together, surfaced at the checkout funnel.
-[→ Implementation](src/cart_completion_service.py) | [Use case guide](docs/use-cases/15-cart-completion.md) | [ADR](docs/adr/0019-cart-completion.md)
+Dropped by ADR 0041 (the Shop's cart re-ranks "Picked for you") | [Use case guide](docs/use-cases/15-cart-completion.md) | [ADR](docs/adr/0019-cart-completion.md)
 
 ### 16. ↩️ Win-back — empirical revenue impact per send
 
@@ -467,9 +478,9 @@ Together, surfaced at the checkout funnel.
 {
   "from": "winback_campaigns",
   "where": {
-    "customer_lifestyle":  "premium",
-    "customer_segment":    "dog_owner",
-    "recency_bucket":      "0-90d"
+    "customer_id":              "CUST-00022",
+    "customer_staple_category": "dog/dry-food",
+    "recency_bucket":           "90-180d"
   },
   "recommend": "product_sku",
   "goal":      { "responded": true },
@@ -482,9 +493,10 @@ For each currently-churned customer (top-20 by lifetime €),
 Aito's `_recommend product_sku from winback_campaigns goal
 {responded: true}` ranks products by predicted email response
 rate; `_estimate order_value_eur` per suggestion gives the AOV
-forecast. **Headline: €1,354 recoverable from 20 targets at €30
-send cost — 45× ROI. Demo moment #9.** Ports the Netigate
-action+impact pattern.
+forecast. The customer goes in as their id (a link to what they
+declared and their earlier sends), with their staple from their orders
+and how long since they last ordered. **Demo moment #9.** Ports the
+Netigate action+impact pattern.
 [→ Implementation](src/winback_service.py) | [Use case guide](docs/use-cases/16-winback.md) | [ADR](docs/adr/0020-winback.md)
 
 ### 17. ⚡ Product Filling — catalog enrichment
@@ -518,8 +530,7 @@ five at ≥ 0.87 in ~480 ms.
     "from": "order_lines",
     "where": {
       "product_sku.category": { "$get": "product_sku.category" },
-      "product_sku.pet_type": { "$get": "product_sku.pet_type" },
-      "customer_segment":     { "$get": "customer_segment" }
+      "product_sku.pet_type": { "$get": "product_sku.pet_type" }
     },
     "predict": "returned"
   },
@@ -527,7 +538,7 @@ five at ≥ 0.87 in ~480 ms.
 }
 ```
 
-Four `_evaluate` calls in parallel, three pass, **one honest
+Three `_evaluate` calls in parallel, two pass, **one honest
 failure**. The "Return Risk" model deliberately fails its 10 pp
 threshold — the 3% returned rate has no signal Aito can beat the
 baseline on, and the view renders that as a red row. **Demo
@@ -677,12 +688,17 @@ Browser → Next.js (port 8500) → fetch("/api/...") → FastAPI (port 8501)
   view in `frontend/app/<view>/page.tsx`. The locked Aito side
   panel reads its config from `frontend/lib/panel-content.ts` and
   updates its `query` block with the actual body that ran.
-- **Schema** — Four tables (`products`, `customers`, `orders`,
-  `order_lines`) with link declarations chained so `_recommend`
-  and `_relate` traverse one hop without manual joins. Two
-  denormalised columns for cases where Aito only supports
-  single-hop traversal: `order_lines.{customer_segment,
-  customer_pet_size}` and `orders.line_categories`.
+- **Schema** — `src/schema.py`. Core tables (`products`,
+  `customers`, `orders`, `order_lines`), the shopper funnel
+  (`impressions → contexts → customers`), `product_states` (each
+  product as it was in a month, ADR 0032) and the panels the
+  Understand views read. Links are chained, so a query reaches
+  `context.customer.pets` or `order_id.customer_id.diet` through two
+  links without manual joins. Tables hold only what a shop observes
+  (ADR 0033): `customers` has what the household declared (pets, dog
+  size, diet) and its recorded history, never the hidden traits the
+  data generator uses to produce behaviour. `orders.line_categories`
+  is denormalised Text for order-level co-occurrence.
 - **Caching** — Two mechanisms, split by cost. The nine *light* views
   use a lazy two-layer cache (`cache.py`): in-memory LRU per process +
   Aito-backed `prediction_cache` table that survives restarts, computed
@@ -705,10 +721,10 @@ Browser → Next.js (port 8500) → fetch("/api/...") → FastAPI (port 8501)
 |---|---|---|
 | `_search` | Retrieve rows / count via `limit=0`; rank by `$similarity` or `$multiply` | Dashboard KPIs, Smart Search (both columns), Purchase Analytics, Bought Together sample SKUs, Price aggregation, Inventory snapshot |
 | `_match` (via `$match`) | Token match on Text columns | Bought Together (`line_categories`), Pattern Explorer |
-| `_recommend` | Rank rows by `P(goal | row)` | For You |
+| `_recommend` | Rank rows by `P(goal | row)` | For You, Shop "Picked for you" and search, Win-back |
 | `_relate` | Co-occurrence with lift / support / `pOnCondition` | Dashboard top patterns, Bought Together, Pattern Explorer, Churn profile drivers (fields + tenure bands), Demand seasonality × 4 parallel, Price sweet-spot × 3 parallel |
 | `_predict` | Predict a field with `$p` + `$why` factor tree | Product Filling × 5 parallel, Feedback × 4 parallel, Churn at-risk × N parallel, Demand × 25 parallel, Inventory × 25 parallel |
-| `_evaluate` | Cross-validation accuracy + baseline + per-row results | Evaluation × 4 parallel, Churn × 1, Demand × 1 |
+| `_evaluate` | Cross-validation accuracy + baseline + per-row results | Evaluation × 3 parallel, Churn × 1, Demand × 1 |
 
 Verified query bodies + Aito-API gotchas (multi-field `goal`
 semantics, hyphen tokenisation, single-hop link traversal, the
@@ -731,7 +747,7 @@ src/                Python FastAPI backend
   overview_service.py    Dashboard
   search_service.py      Smart Search
   recommend_service.py   For You
-  bought_together_service.py
+  category_anchors.py    Basket anchor tokens
   pattern_service.py
   analytics_service.py
   feedback_service.py
@@ -754,7 +770,8 @@ data/               Deterministic JSON fixtures (seed = 42)
   generate_fixtures.py          single source of truth — re-runs idempotent
   products.json · customers.json · orders.json · order_lines.json
   reviews.json · customer_months.json
-  monthly_sales.json · inventory.json · price_history.json
+  monthly_sales.json · inventory.json · product_states.json
+  contexts.json · impressions.json · winback_campaigns.json
 
 tests/              pytest — fixture signal checks + AitoClient body shape
 screenshots/        Canonical per-view screenshots (the inspect/ subfolder is the workshop)
@@ -810,6 +827,12 @@ Read top-to-bottom and you have the demo's full design rationale.
 | 0014 | [Demand Forecast — `_estimate units_sold`, time-split accuracy against the naive forecast](docs/adr/0014-demand.md) | Accepted |
 | 0015 | [Inventory Intelligence — the killer Operate view](docs/adr/0015-inventory.md) | Accepted |
 | 0016 | [Price Intelligence — fair-band + sweet-spot `_relate`](docs/adr/0016-price.md) | Accepted |
+| 0030 | [Shoppers with a story — personas, guided kits, seasons, routines](docs/adr/0030-shoppers-with-a-story.md) | Accepted |
+| 0031 | [An interactive shop, and the owner's view of its patterns](docs/adr/0031-interactive-shop-and-owner-analytics.md) | Accepted |
+| 0032 | [Product states — a product as it is this month](docs/adr/0032-product-states.md) | Accepted |
+| 0033 | [Only what a shop can observe — impressions, contexts and customers](docs/adr/0033-only-what-a-shop-observes.md) | Accepted |
+
+ADRs 0017–0029 are in [`docs/adr/`](docs/adr/).
 
 ---
 

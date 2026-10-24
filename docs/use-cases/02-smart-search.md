@@ -31,6 +31,10 @@ version, which required every query word in the name:
 | Left | 0.29 | 0.52 | 30 % |
 | Right (per persona) | 0.29 | 0.57-0.59 | 0 % |
 
+(Measured 2026-09-28, when the right column's `where` still held each
+persona's segment; ADR 0033 replaced it with the customer id. Re-run
+`./do search-eval` for the current shape.)
+
 ## How it works
 
 ### Left — BM25 text relevance
@@ -60,7 +64,7 @@ as if they were results.
 {
     "from": "impressions",
     "get": "product_sku",
-    "where": {"customer_segment": "dog_owner", "customer_pet_size": "large"},
+    "where": {"context.customer": "CUST-00003"},   # Saara
     "orderBy": {"$multiply": [
         {"$p": {"$context": {"purchased": True}}},
         {"$similarity": {"name": query}, "theta": 4.0},
@@ -73,10 +77,13 @@ as if they were results.
 Reading it line by line:
 
 - `from: impressions` — one row per product shown to a shopper, with
-  the outcome (`clicked`, `purchased`) and the shopper's segment.
+  the outcome (`clicked`, `purchased`) and a link to its `context`: the
+  visit, which links to the `customer` (ADR 0033).
 - `get: product_sku` — rank the *products* those rows link to, not
   the rows themselves. Every product in the catalogue is a candidate.
-- `where` — the customer context to condition on.
+- `where` — the customer to condition on, two links away
+  (`impressions → contexts → customers`). `$p` conditions on it; it
+  filters nothing.
 - `$p{$context: {purchased: true}}` — P(this context buys the
   product), learned from the funnel.
 - `$similarity {name: query}` — BM25 over the product name, as a lift.
@@ -123,17 +130,18 @@ in the left column's top 10 at all.
 
 ## Key features
 
-### 1. Persona context, not per-customer history
+### 1. The customer, learned from their own rows
 
-Maija (cat owner), Olli (small dog) and Saara (large-breed dog) are
-*segment* contexts in `where`, not individual customer ids. On 3,000
-synthetic customers, per-customer conditioning under-fits; segment
-conditioning gives the clean, visible flip.
+Maija (cat owner), Olli (small dog) and Saara (large-breed dog) go into
+`where` as their customer id only: `{"context.customer": id}`. Aito
+learns what each buys from their own impressions; no profile, segment or
+trait is handed to it (ADR 0033). A shop has the customer id, so a
+developer can send the same query with their own data.
 
 ### 2. One query shape, three personas
 
 The Aito panel shows the body the right column actually sent. Between
-personas only the `where` values change.
+personas only the customer id in `where` changes.
 
 ### 3. The baseline isn't a strawman
 
@@ -167,7 +175,7 @@ slightly better.
 ## What this demo abstracts away
 
 - **Authenticated per-customer search.** Real e-commerce wires the
-  active customer into every search call; the demo uses segment pills
+  active customer into every search call; the demo uses persona pills
   to make the flip visible in one screenshot.
 - **Query suggestion / typeahead.**
 - **Result-set diversity rules.** Production would spread categories

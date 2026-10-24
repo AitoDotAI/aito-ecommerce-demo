@@ -3,8 +3,9 @@
 The "show the data behind the predictions" view. Four blocks:
   - Monthly orders/revenue (24-month window)
   - Top 10 products by line count
-  - Per-segment KPIs (customers, orders, revenue, AOV)
-  - Per-segment top categories
+  - Per-household KPIs (customers, orders, revenue, AOV), households
+    grouped by the pets they declared (ADR 0033)
+  - Per-household top categories
 
 No new Aito mechanics; reuses `_search limit=0` for counts +
 small samples + Python aggregation. Cached 30 minutes.
@@ -18,7 +19,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, asdict
 from pathlib import Path
 
-from src.aito_client import AitoClient
+from src.aito_client import AitoClient, AitoError
 from src import cache
 
 
@@ -28,13 +29,15 @@ DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 # ── Segment metadata (label only — full meta lives in overview) ────
 
 
-_SEGMENT_LABELS: dict[str, str] = {
-    "dog_owner":          "Dog owners",
-    "cat_owner":          "Cat owners",
-    "multi_pet":          "Multi-pet households",
-    "small_animal_owner": "Small animals",
-    "aquarium_owner":     "Aquarium / exotic",
-}
+def _household(customer: dict) -> str:
+    """The group a customer is counted in: the pets they declared, in a
+    fixed order ("cat dog"), so "dog cat" and "cat dog" are one group."""
+    return " ".join(sorted(customer["pets"].split()))
+
+
+def _household_label(key: str) -> str:
+    """"cat dog" → "Cat & dog households"."""
+    return " & ".join(p.replace("_", " ") for p in key.split()).capitalize() + " households"
 
 
 # ── DTOs ──────────────────────────────────────────────────────────
@@ -171,8 +174,9 @@ def _top_products(client: AitoClient, products: dict[str, dict]) -> list[TopProd
 
 
 def _segment_kpis(client: AitoClient) -> tuple[list[SegmentRow], list[CategoryMixRow], dict[str, str]]:
-    """One pass over customers + orders + order_lines to compute
-    per-segment KPIs + category mix."""
+    """One pass over customers + orders + order_lines to compute KPIs and
+    category mix per household group (declared pets; the API keeps the
+    field name `segment` for the group's key)."""
     products = _load_products()
 
     # Customer map.
@@ -202,12 +206,10 @@ def _segment_kpis(client: AitoClient) -> tuple[list[SegmentRow], list[CategoryMi
         if not hits:
             break
         for o in hits:
-            cust = customers_by_id.get(o.get("customer_id", ""))
-            if not cust:
-                continue
-            seg = cust.get("segment", "")
-            if not seg:
-                continue
+            cust = customers_by_id.get(o["customer_id"])
+            if cust is None:
+                raise AitoError(f"order {o['order_id']} names customer {o['customer_id']}, who isn't in customers")
+            seg = _household(cust)
             seg_orders[seg] += 1
             seg_revenue[seg] += float(o.get("total_eur", 0) or 0)
             seg_customers_seen[seg].add(cust["customer_id"])
@@ -225,12 +227,12 @@ def _segment_kpis(client: AitoClient) -> tuple[list[SegmentRow], list[CategoryMi
         if not hits:
             break
         for ln in hits:
-            seg = order_to_segment.get(ln.get("order_id", ""))
-            if not seg:
-                continue
-            prod = products.get(ln.get("product_sku", ""))
-            if not prod:
-                continue
+            seg = order_to_segment.get(ln["order_id"])
+            if seg is None:
+                raise AitoError(f"line {ln['line_id']} names order {ln['order_id']}, which isn't in orders")
+            prod = products.get(ln["product_sku"])
+            if prod is None:
+                raise AitoError(f"line {ln['line_id']} names product {ln['product_sku']}, which isn't in products")
             seg_cat_counts[seg][(prod.get("pet_type", ""), prod.get("category", ""))] += 1
         if len(hits) < page:
             break
@@ -239,12 +241,12 @@ def _segment_kpis(client: AitoClient) -> tuple[list[SegmentRow], list[CategoryMi
     # Build SegmentRow + CategoryMixRow lists.
     seg_total_customers: Counter[str] = Counter()
     for c in customers_by_id.values():
-        seg = c.get("segment", "")
-        if seg:
-            seg_total_customers[seg] += 1
+        seg_total_customers[_household(c)] += 1
+    households = [seg for seg, _ in seg_total_customers.most_common()]
 
     segments: list[SegmentRow] = []
-    for seg, label in _SEGMENT_LABELS.items():
+    for seg in households:
+        label = _household_label(seg)
         orders = seg_orders.get(seg, 0)
         revenue = seg_revenue.get(seg, 0.0)
         avg = revenue / orders if orders else 0.0
@@ -258,7 +260,8 @@ def _segment_kpis(client: AitoClient) -> tuple[list[SegmentRow], list[CategoryMi
         ))
 
     mix: list[CategoryMixRow] = []
-    for seg, label in _SEGMENT_LABELS.items():
+    for seg in households:
+        label = _household_label(seg)
         counter = seg_cat_counts.get(seg, Counter())
         total = sum(counter.values()) or 1
         top = [
@@ -283,12 +286,9 @@ def get_analytics(client: AitoClient) -> AnalyticsResponse:
     if cached:
         return _from_dict(cached)
 
-    body = {
-        "from": "orders",
-        "where": {},
-        "limit": 5000,
-        # Sample paged through Aito's `_search` and aggregated client-side.
-    }
+    # The first page of the paged `_search` over orders; later pages
+    # differ only by offset, and the results are aggregated in Python.
+    body = {"from": "orders", "limit": 5000, "offset": 0}
 
     started = time.perf_counter()
     products = _load_products()
