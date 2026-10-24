@@ -105,6 +105,19 @@ _guard_uci_env() {
   exit 1
 }
 
+# Refuse a write that replaces every table unless AITO_ENV names an env
+# other than master: a data release is loaded into its own env first, and
+# reaches master only through ADR 0035's promote.
+_guard_named_env() {
+  local verb="$1"
+  case "${AITO_ENV:-}" in
+    ""|master)
+      echo "⛔ REFUSING '$verb' — it drops and reloads every table, and AITO_ENV is '${AITO_ENV:-<unset>}' (master)."
+      echo "   Run it as:  AITO_ENV=<a new env> ./do $verb"
+      exit 1 ;;
+  esac
+}
+
 # Ports: frontend on 8500 (user-facing), backend on 8501 (internal).
 # Allocated by the cross-demo framework doc — see
 # aito-demo-framework.md §2 "Port allocation". Don't reuse other
@@ -130,6 +143,7 @@ Common
 Data
   generate-fixtures (Re)run data/generate_fixtures.py
   load-data         Upload schema + fixtures to Aito
+  env-load          Drop and reload every table into a named env (needs AITO_ENV=<env>; refuses master)
   reset-data        Drop and reload all Aito tables + warm the cache
   optimize          Merge batch segments on all tables for faster reads
   clear-cache       Clear in-memory + Aito persistent prediction cache
@@ -292,6 +306,17 @@ cmd_load_data() {
   _show_target
   _ensure_impressions
   uv run python -m src.data_loader "$@"
+}
+
+cmd_env_load() {
+  # A data release goes into its own env (ADR 0035): every table of
+  # src/schema.py, dropped and reloaded. The env must exist already.
+  cd "$SCRIPT_DIR"
+  _guard_named_env env-load
+  _show_target
+  echo "   env: $AITO_ENV"
+  _ensure_impressions
+  uv run python -m src.data_loader --reset --refuse-master "$@"
 }
 
 cmd_reset_data() {
@@ -685,6 +710,7 @@ case "${1:-help}" in
   demo)              cmd_demo ;;
   generate-fixtures) cmd_generate_fixtures ;;
   load-data)         shift; cmd_load_data "$@" ;;
+  env-load)          shift; cmd_env_load "$@" ;;
   reset-data)        shift; cmd_reset_data "$@" ;;
   clear-cache)       cmd_clear_cache ;;
   warm-cache)        cmd_warm_cache ;;
