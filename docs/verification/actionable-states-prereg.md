@@ -392,6 +392,31 @@ hidden hazard reads ×1.7–2.1. The replied ÷ unreplied contrast rests on 23
 against 33 churners in three seeds, so the Reviews view's interval for it
 will overlap 1, as predicted above.
 
+### Decision (2026-10-24, delegated by Antti, after the results above)
+
+**R2b and P2c are accepted as recorded failures.** No threshold or parameter
+changes.
+- Both effects exist but are weaker than registered: a poor product converts
+  at ≈ 0.83 of the rest against its null, and incumbents lose ≈ 5 % to a
+  launch.
+- The views won't quote R2's size.
+- R2b's likely cause (the cart and purchase steps at their caps) is untested.
+
+**The choices made beyond the ADRs' text are accepted as made:**
+- `offer_share`, `new_share` and `label_share` are read from impression
+  purchases in earlier months, not from orders;
+- `contexts.first_order` (Boolean) makes the funnel's conversion step
+  countable;
+- `visitor` is a String id on `contexts` and `customers`, not a link to a
+  table of its own;
+- a visitor who hasn't bought yet is shown products on `surface: landing`.
+
+**One rename.** `nps_responses.order` becomes `surveyed_order`, so the column
+is clear of any reserved word in Aito without probing that with a write.
+- Only the column's name changes; every other fixture is byte-identical.
+- The rename touches the schema, the generator, the R3 metrics and ADR 0039's
+  table.
+
 ### Table sizes (seed 42)
 
 | table | rows | before |

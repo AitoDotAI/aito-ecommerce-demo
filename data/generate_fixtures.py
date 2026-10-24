@@ -618,7 +618,7 @@ class NpsResponse:
     """A survey answer after an order (ADR 0039, R3): 0–10, and its group."""
     nps_response_id: str
     customer: str                   # link → customers.customer_id
-    order: str                      # link → orders.order_id, the order surveyed
+    surveyed_order: str             # link → orders.order_id, the order surveyed
     month: str
     score: int
     nps_group: str                  # promoter (9–10) | passive (7–8) | detractor (0–6)
@@ -1677,7 +1677,7 @@ def _number_history(customers: list[Customer], shop: _Shop) -> OrderHistory:
             history.reviews.append(review)
         for answer in shop.nps_of.get(c.customer_id, []):
             answer.nps_response_id = f"NPS-{len(history.nps) + 1:05d}"
-            answer.order = order_id[answer.order]
+            answer.surveyed_order = order_id[answer.surveyed_order]
             history.nps.append(answer)
     return history
 
@@ -1936,8 +1936,9 @@ def _customer_life(customer: Customer, persona: Persona | None, shop: _Shop) -> 
         experience = review_chain.order_experience(experiences)
         score = review_chain.nps_score(nps_rng, experience, incident, replied_negative)
         if score is not None:
-            shop.nps_of[cid].append(NpsResponse(nps_response_id="", customer=cid, order=order_ref, month=month,
-                                                score=score, nps_group=review_chain.nps_group(score)))
+            shop.nps_of[cid].append(NpsResponse(
+                nps_response_id="", customer=cid, surveyed_order=order_ref, month=month,
+                score=score, nps_group=review_chain.nps_group(score)))
         if experience == "bad":
             churn.rise(month, review_chain.churn_rise(replied_negative))
         shop.orders_of[cid].append((order, this_orders_lines, experiences))

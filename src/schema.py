@@ -274,7 +274,8 @@ SCHEMAS: dict[str, dict] = {
             "nps_response_id": {"type": "String", "nullable": False},
             "customer":        {"type": "String", "nullable": False,
                                 "link": "customers.customer_id"},
-            "order":           {"type": "String", "nullable": False,
+            # Not `order`: kept clear of any reserved word in a query.
+            "surveyed_order":  {"type": "String", "nullable": False,
                                 "link": "orders.order_id"},
             "month":           {"type": "String", "nullable": False},
             "score":           {"type": "Int",    "nullable": False},

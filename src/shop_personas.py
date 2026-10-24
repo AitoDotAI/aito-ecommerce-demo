@@ -24,7 +24,9 @@ class Shopper:
 
 # Stories read as of the Shop's default month, April 2026.
 SHOPPERS = [
-    Shopper("paivi", "CUST-01177", "Päivi Salminen", "🐹",
+    # Re-picked for data release 2 (ADRs 0038-0040): CUST-01177 became a
+    # hamster household. The key stays `paivi` so links and the default hold.
+    Shopper("paivi", "CUST-00175", "Raija Nieminen", "🐹",
             "Got a guinea pig in February: a cage and a water bottle so far."),
     Shopper("janne", "CUST-00049", "Janne Hämäläinen", "🐕",
             "A grain-free dog household: never any other food."),

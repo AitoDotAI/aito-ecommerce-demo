@@ -58,7 +58,7 @@ def poor_quality_contrast(fx: Fixtures) -> float:
 
 def _nps_after(fx: Fixtures, keep) -> list[int]:
     orders = _orders(fx)
-    return [a["score"] for a in fx.load("nps_responses") if keep(orders[a["order"]])]
+    return [a["score"] for a in fx.load("nps_responses") if keep(orders[a["surveyed_order"]])]
 
 
 def _mean(values: list[float]) -> float:
