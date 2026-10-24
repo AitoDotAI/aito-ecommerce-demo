@@ -100,7 +100,7 @@ function ReviewTriageView() {
         <select
           id="rev-picker"
           className="search-input"
-          style={{ paddingLeft: 12, width: "auto", minWidth: 420 }}
+          style={{ paddingLeft: 12, width: "auto", minWidth: "min(420px, 100%)" }}
           value={reviewId ?? data?.review.review_id ?? ""}
           onChange={(e) => setReviewId(e.target.value || undefined)}
         >

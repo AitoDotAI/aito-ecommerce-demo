@@ -77,7 +77,7 @@ export default function EvidenceIndexPage() {
         </div>
       </div>
 
-      <div className="card" style={{ marginBottom: 16, display: "grid", gap: 8 }}>
+      <div className="card" style={{ marginBottom: 16, display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 8 }}>
         <div className="card-sub" style={{ lineHeight: 1.6 }}>
           <DataMark data="Real" /> A real business&apos;s records, from a public dataset. A result on real
           data is worded only as it was cleared by Aito&apos;s core team.
@@ -87,7 +87,7 @@ export default function EvidenceIndexPage() {
         </div>
       </div>
 
-      <div style={{ display: "grid", gap: 12 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 12 }}>
         {entries.map((e) => (
           <Link key={e.href} href={e.href} className="card evidence-entry">
             <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 6 }}>

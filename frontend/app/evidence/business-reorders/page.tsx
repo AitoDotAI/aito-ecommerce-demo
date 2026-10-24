@@ -96,7 +96,7 @@ function BusinessReordersView() {
       {draft.notFound && <NotFoundNotice message={draft.notFound} resetLabel="Show the first buyer" onReset={() => setCustomer("")} />}
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: 16 }}>
-        <div style={{ display: "grid", gap: 16, alignContent: "start" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 16, alignContent: "start" }}>
           {draft.data ? <DraftTable draft={draft.data} /> : !draft.notFound && <div className="card card-sub">Loading the draft…</div>}
           <ClaimBox />
         </div>

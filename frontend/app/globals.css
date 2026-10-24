@@ -339,6 +339,13 @@ a { color: inherit; text-decoration: none; }
   /* Topbar-actions on mobile are pruned to just the essentials —
      the rightmost area becomes the breadcrumb's home and the
      Aito FAB (bottom-right) carries the CTA path. */
+  /* A long breadcrumb pushed the avatar off the right edge (by up to 33 px) and the
+     short ones wrapped onto two lines. On a phone only the current view's name is
+     shown, on one line, with an ellipsis if it is still too long. */
+  .topbar-content { min-width: 0; padding: 0 8px 0 0; gap: 8px; }
+  .breadcrumb { min-width: 0; }
+  .breadcrumb > :not(.current) { display: none; }
+  .breadcrumb .current { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .pill.latency-badge { display: none; }   /* "aito 80ms" badge */
   .topbar-actions .btn-primary { display: none; }  /* "Live Demo" link */
 }

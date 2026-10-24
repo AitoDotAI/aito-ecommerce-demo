@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { popoverStyle } from "@/lib/popover-placement";
 import type { WhyFactor } from "@/lib/types";
 
 interface WhyTooltipProps {
@@ -17,7 +18,7 @@ interface WhyTooltipProps {
  */
 export default function WhyTooltip({ factors }: WhyTooltipProps) {
   const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const [placement, setPlacement] = useState<CSSProperties>({});
   const btnRef = useRef<HTMLButtonElement>(null);
   const tipRef = useRef<HTMLDivElement>(null);
 
@@ -37,8 +38,7 @@ export default function WhyTooltip({ factors }: WhyTooltipProps) {
 
   function toggle() {
     if (!open && btnRef.current) {
-      const rect = btnRef.current.getBoundingClientRect();
-      setPos({ top: rect.bottom + 6, left: Math.max(8, rect.left - 120) });
+      setPlacement(popoverStyle(btnRef.current.getBoundingClientRect(), 320));
     }
     setOpen(!open);
   }
@@ -77,16 +77,12 @@ export default function WhyTooltip({ factors }: WhyTooltipProps) {
         <div
           ref={tipRef}
           style={{
-            position: "fixed",
-            top: pos.top,
-            left: pos.left,
+            ...placement,
             zIndex: 9999,
             background: "var(--aito-bg)",
             border: "1px solid rgba(155,105,255,0.3)",
             borderRadius: 6,
             padding: "10px 12px",
-            minWidth: 240,
-            maxWidth: 320,
             boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
           }}
         >

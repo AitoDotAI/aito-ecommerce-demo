@@ -32,6 +32,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from src.why_groups import arrange_lifts
+
 
 def process_why(
     raw_why: Any,
@@ -46,10 +48,13 @@ def process_why(
         {
             "base_p": float,           # prior probability of predicted_value
             "predicted_value": Any,    # echoed for the popover title
-            "lifts": [
+            "lifts": [                 # strongest first; see src/why_groups.py
                 {
                     "lift": float,
-                    "propositions": [{"field": str, "value": str}, ...]
+                    "propositions": [{"field": str, "value": str}, ...],
+                    # only on a group: its own lift, and the single conditions it holds
+                    "joint_lift": float,
+                    "members": [{"lift": float, "propositions": [...]}, ...],
                 },
                 ...
             ],
@@ -111,7 +116,7 @@ def process_why(
     return {
         "base_p": round(base_p, 4),
         "predicted_value": _stringify(predicted_value),
-        "lifts": lifts,
+        "lifts": arrange_lifts(lifts),
         "final_p": final_p,
     }
 

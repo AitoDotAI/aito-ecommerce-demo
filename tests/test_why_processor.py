@@ -119,3 +119,107 @@ def test_process_why_returns_none_without_base():
          "proposition": {"name": {"$has": "turkey"}}},
     ]}
     assert process_why(tree, predicted_value="x", actual_p=0.5) is None
+
+
+# ── Groups and order: what the popover lists ─────────────────────────
+#
+# Aito lists a joint lift for several conditions that hold together AND,
+# separately, a small lift for each of those conditions on its own (the
+# residual after the joint). Shown as separate lines they look like copies of one
+# row (the Product filling popover had ten). So a group is ONE row whose lift is
+# joint × its members' lifts, which keeps the chain multiplying out, with the parts
+# listed inside it; rows are ordered by how far their lift is from 1.
+
+
+def _lift(value, *propositions):
+    proposition = propositions[0] if len(propositions) == 1 else {"$group": list(propositions)}
+    return {"type": "relatedPropositionLift", "value": value, "proposition": proposition}
+
+
+def _why(*lifts):
+    return {"type": "product", "factors": [
+        {"type": "baseP", "value": 0.38, "proposition": {"pet_type": "dog"}}, *lifts]}
+
+
+def test_a_group_and_its_residuals_are_one_row_with_the_parts_inside():
+    tree = _why(
+        _lift(1.011, {"name": {"$match": "Plan"}}),
+        _lift(1.329, {"brand": "Hill's"}, {"name": {"$match": "Plan"}}, {"name": {"$match": "Science"}}),
+        _lift(1.011, {"name": {"$match": "Science"}}),
+        _lift(1.011, {"brand": "Hill's"}),
+        _lift(2.606, {"name": {"$match": "Dog"}}),
+    )
+    out = process_why(tree, predicted_value="dog", actual_p=0.98)
+    rows = out["lifts"]
+    assert [len(r["propositions"]) for r in rows] == [1, 3]      # the group, then "Dog" is first
+    group = next(r for r in rows if len(r["propositions"]) == 3)
+    assert group["joint_lift"] == 1.329
+    assert group["lift"] == round(1.329 * 1.011 ** 3, 3)           # joint × the three residuals
+    # Equal strength, so Aito's order is kept.
+    assert [m["propositions"][0]["value"] for m in group["members"]] == ["Plan", "Science", "Hill's"]
+    assert all(m["lift"] == 1.011 for m in group["members"])
+    assert len(rows) == 2                                            # no residual left as its own row
+
+
+def test_the_chain_still_multiplies_out_after_grouping():
+    """Grouping must not change the product of the lifts, which the popover prints as an equation."""
+    singles = [1.011, 1.011, 2.606]   # the two members of the group, and "Dog"
+    tree = _why(
+        _lift(1.329, {"brand": "Hill's"}, {"name": {"$match": "Plan"}}),
+        _lift(1.011, {"brand": "Hill's"}),
+        _lift(1.011, {"name": {"$match": "Plan"}}),
+        _lift(2.606, {"name": {"$match": "Dog"}}),
+    )
+    out = process_why(tree, predicted_value="dog", actual_p=0.98)
+    before = 1.329
+    for s in singles:
+        before *= s
+    after = 1.0
+    for r in out["lifts"]:
+        after *= r["lift"]
+    assert abs(before - after) < 0.01
+
+
+def test_rows_are_ordered_by_how_far_the_lift_is_from_one_either_way():
+    """|log lift|: a protective 0.5 (log −0.69) outranks an 1.8 (log 0.59)."""
+    tree = _why(
+        _lift(1.1, {"name": {"$match": "Food"}}),
+        _lift(1.8, {"name": {"$match": "Turkey"}}),
+        _lift(0.5, {"name": {"$match": "Sensitive"}}),
+        _lift(2.6, {"name": {"$match": "Dog"}}),
+    )
+    out = process_why(tree, predicted_value="dog", actual_p=0.98)
+    assert [r["propositions"][0]["value"] for r in out["lifts"]] == ["Dog", "Sensitive", "Turkey", "Food"]
+
+
+def test_a_single_condition_that_is_in_two_groups_goes_to_the_larger_one():
+    tree = _why(
+        _lift(1.2, {"a": "1"}, {"b": "2"}),
+        _lift(1.5, {"a": "1"}, {"b": "2"}, {"c": "3"}),
+        _lift(1.1, {"b": "2"}),
+    )
+    out = process_why(tree, predicted_value="x", actual_p=0.5)
+    by_size = {len(r["propositions"]): r for r in out["lifts"]}
+    assert [m["propositions"][0]["field"] for m in by_size[3]["members"]] == ["b"]
+    assert "members" not in by_size[2]
+
+
+def test_a_single_condition_outside_every_group_stays_its_own_row():
+    tree = _why(
+        _lift(1.4, {"a": "1"}, {"b": "2"}),
+        _lift(1.3, {"z": "9"}),
+    )
+    out = process_why(tree, predicted_value="x", actual_p=0.5)
+    assert sorted(len(r["propositions"]) for r in out["lifts"]) == [1, 2]
+    assert all("members" not in r for r in out["lifts"])
+
+
+def test_an_absence_is_a_member_only_of_a_group_that_also_holds_the_absence():
+    """`negate` is part of the identity: 'has Plan' is not the residual of a group that says 'no Plan'."""
+    tree = _why(
+        _lift(1.4, {"a": "1"}, {"$not": {"name": {"$match": "Plan"}}}),
+        _lift(1.1, {"name": {"$match": "Plan"}}),
+    )
+    out = process_why(tree, predicted_value="x", actual_p=0.5)
+    assert len(out["lifts"]) == 2
+    assert all("members" not in r for r in out["lifts"])
