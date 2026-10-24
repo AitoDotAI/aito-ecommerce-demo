@@ -36,7 +36,7 @@ from src.search_service import smart_search
 from src.recommend_service import get_for_you
 from src.filling_service import get_filling
 from src.eval_service import run_evaluation
-from src.product_insights_service import get_product_insights
+from src.product_service import product_view_payload
 from src.shop_grid import get_shop_grid
 from src.shop_personas import SHOPPERS, UnknownShopperError
 from src.shop_product import get_product_drawer
@@ -46,14 +46,15 @@ from src.basket_pairs import get_basket_section
 from src.search_words import get_search_words_section
 from src.shop_analytics_service import get_funnel_section, get_who_section
 from src.feedback_service import get_feedback
-from src.lookup_errors import UnknownPersonaError, UnknownProductError, UnknownReviewError
+from src.lookup_errors import ProductNotOnSaleError, UnknownPersonaError, UnknownProductError, UnknownReviewError
 from src.churn_service import get_churn
+from src.demand_forecast import LATEST_MONTH
 from src.demand_service import get_demand
 from src.inventory_service import get_inventory
 from src.markdown_service import get_markdowns
-from src.price_service import get_prices, get_price_detail
+from src.price_service import get_prices
+from src.price_curve import get_price_curve
 from src.price_what_if import get_price_what_if
-from src.discount_what_if import get_discount_what_if
 from src.winback_service import get_winback
 from src.uci_bought_together import bought_together
 from src.uci_buyers import pick_buyers
@@ -425,12 +426,42 @@ def shop_suggestions_endpoint(shopper: str, month: str = Query(pattern=MONTH), c
     return _shop(lambda: get_suggestions(aito, shopper, month, _cart_skus(cart)))
 
 
-@app.get("/api/product-insights")
-def product_insights_endpoint(sku: str | None = None):
-    """One product's funnel, surfaces, buyers (`_relate` over its order
-    lines), monthly units and reviews. See ADR 0028."""
+@app.get("/api/product")
+def product_endpoint(sku: str | None = None, month: str = Query(LATEST_MONTH, pattern=MONTH)):
+    """The Product view (ADR 0041): one product in one month, the discount
+    decision, the discount and price what-ifs, its history and its buyers."""
     try:
-        return get_product_insights(aito, sku=sku).to_dict()
+        return product_view_payload(aito, sku, month)
+    except (UnknownProductError, ProductNotOnSaleError) as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/product/price-curve")
+def product_price_curve_endpoint(sku: str):
+    """Next month's units at seven prices (`_estimate units_sold`, regression
+    model), beside the product's own months. See ADR 0029."""
+    try:
+        return get_price_curve(aito, sku).to_dict()
+    except UnknownProductError as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
+    except AitoError as exc:
+        return JSONResponse(
+            status_code=502,
+            content={"error": str(exc), "status_code": exc.status_code},
+        )
+
+
+@app.get("/api/product/price-what-if")
+def product_price_what_if_endpoint(sku: str, price: float = Query(gt=0, allow_inf_nan=False)):
+    """Units, revenue and profit next month at `price`, with the factors
+    behind the estimate (regression `_estimate`). See ADR 0029."""
+    try:
+        return get_price_what_if(aito, sku, price).to_dict()
     except UnknownProductError as exc:
         return JSONResponse(status_code=404, content={"error": str(exc)})
     except AitoError as exc:
@@ -576,56 +607,6 @@ def price_endpoint():
     discount band ↔ category. See ADR 0016."""
     try:
         return get_prices(aito).to_dict()
-    except AitoError as exc:
-        return JSONResponse(
-            status_code=502,
-            content={"error": str(exc), "status_code": exc.status_code},
-        )
-
-
-@app.get("/api/price/what-if")
-def price_what_if_endpoint(sku: str, price: float = Query(gt=0, allow_inf_nan=False)):
-    """Units, revenue and profit next month at `price`, with the factors
-    behind the estimate (regression `_estimate`). See ADR 0029."""
-    try:
-        return get_price_what_if(aito, sku, price).to_dict()
-    except UnknownProductError as exc:
-        return JSONResponse(status_code=404, content={"error": str(exc)})
-    except AitoError as exc:
-        return JSONResponse(
-            status_code=502,
-            content={"error": str(exc), "status_code": exc.status_code},
-        )
-
-
-@app.get("/api/price/discount-what-if")
-def price_discount_what_if_endpoint(sku: str):
-    """How likely the product is bought when shown, at each discount band
-    (`_predict purchased` with `product_state.discount_band`). See ADR 0032."""
-    try:
-        return get_discount_what_if(aito, sku).to_dict()
-    except UnknownProductError as exc:
-        return JSONResponse(status_code=404, content={"error": str(exc)})
-    except AitoError as exc:
-        return JSONResponse(
-            status_code=502,
-            content={"error": str(exc), "status_code": exc.status_code},
-        )
-
-
-@app.get("/api/price/detail")
-def price_detail_endpoint(sku: str):
-    """Per-SKU detail for the Price scatter chart — historical
-    (price, units, profit) pairs + 7-point demand curve via
-    parallel `_estimate units_sold` at price adjustments."""
-    try:
-        detail = get_price_detail(aito, sku)
-        if detail is None:
-            return JSONResponse(
-                status_code=404,
-                content={"error": f"sku not found: {sku}"},
-            )
-        return detail.to_dict()
     except AitoError as exc:
         return JSONResponse(
             status_code=502,

@@ -19,6 +19,7 @@ export const MOVED_ROUTES: Record<string, MovedRoute> = {
   "/evaluation":        { to: "/evidence/model-checks/",         label: "Evidence › Model checks" },
   "/smart-search":      { to: "/evidence/personalised-search/",  label: "Evidence › Personalised search" },
   "/recommendations":   { to: "/query-patterns/",                label: "Query patterns" },
+  "/product-insights":  { to: "/product/",                       label: "Product" },
   // Merged views. Pattern Explorer's `?anchor=` is Patterns' anchor
   // filter; Basket Rules' confidence and support are columns on Baskets;
   // Purchase Analytics' trend and best sellers are on the Overview.

@@ -144,15 +144,17 @@ export function shopPanel(): AitoPanelConfig {
 }
 
 
-export function productInsightsPanel(): AitoPanelConfig {
+export function productPanel(): AitoPanelConfig {
+  const c = (t: string) => `<code style="color:var(--aito-teal);">${t}</code>`;
   return {
-    operation: "Product Insights",
-    endpoints: ["_relate", "_batch", "_search"],
+    operation: "Product",
+    endpoints: ["_predict", "_estimate", "_relate", "_batch", "_search"],
     description:
-      `One product, live. <code style="color:var(--aito-teal);">_relate</code> over its ` +
-      `order lines shows which customer profiles buy it more than average; ` +
-      `the funnel, surfaces and reviews are counts in one ` +
-      `<code style="color:var(--aito-teal);">_batch</code>. The query below is one of the six <code style="color:var(--aito-teal);">_relate</code> bodies sent.`,
+      `One product, live. The discount what-if is ${c("_predict purchased")} on impressions with ` +
+      `${c("product_state.discount_band")} set to each band; the price what-if and curve are ` +
+      `${c("_estimate units_sold")} with the regression model at a chosen price. History is ` +
+      `counts and rows in one ${c("_batch")}; for whom is ${c("_relate")} over the product's order ` +
+      `lines, per declared customer field. The query below is the one behind what is shown.`,
     query: "",
     links: LEARN_MORE_LINKS,
   };
@@ -381,15 +383,12 @@ export function markdownPanel(): AitoPanelConfig {
 export function pricePanel(): AitoPanelConfig {
   return {
     operation: "Price",
-    endpoints: ["_search", "_aggregate", "_estimate", "_predict", "_relate"],
+    endpoints: ["_search", "_aggregate", "_relate"],
     description:
       `Fair bands from one bulk <code style="color:var(--aito-teal);">_search</code> of ` +
-      `product_states, with the stats computed in Python; the selected SKU also gets an ` +
-      `<code style="color:var(--aito-teal);">_aggregate</code>. The demand curve asks ` +
-      `<code style="color:var(--aito-teal);">_estimate units_sold</code> for next month at ` +
-      `seven prices within ±10 % of its average selling price. The discount what-if asks ` +
-      `<code style="color:var(--aito-teal);">_predict purchased</code> on impressions with ` +
-      `the product and <code style="color:var(--aito-teal);">product_state.discount_band</code>, per band.`,
+      `product_states, with the stats computed in Python; the table's first SKU also gets an ` +
+      `<code style="color:var(--aito-teal);">_aggregate</code>. A product's demand curve and ` +
+      `what-ifs are on the Product view.`,
     query:
 `${k('"aggregate"')}: {
   ${n('"from"')}: ${s('"product_states"')},

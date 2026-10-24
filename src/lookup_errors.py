@@ -16,3 +16,7 @@ class UnknownReviewError(LookupError):
 
 class UnknownPersonaError(LookupError):
     """The requested customer is not one of the view's demo personas."""
+
+
+class ProductNotOnSaleError(LookupError):
+    """The product exists, but had no state in the requested month."""

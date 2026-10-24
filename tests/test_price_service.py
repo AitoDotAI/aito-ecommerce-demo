@@ -3,8 +3,7 @@
 Offline: a fake client answers from a tiny price history. These pin the
 two rules that keep the view from presenting noise as a finding: an
 "outlier" needs enough history to have a band, and a "sweet spot" needs
-enough support for its lift to be distinguishable from 1. The demand
-curve tests pin what each `_estimate` conditions on.
+enough support for its lift to be distinguishable from 1.
 """
 
 from __future__ import annotations
@@ -12,9 +11,7 @@ from __future__ import annotations
 import pytest
 
 from src import cache
-from src.aito_client import AitoError
-from src.demand_forecast import LATEST_MONTH
-from src.price_service import get_price_detail, get_prices
+from src.price_service import get_prices
 
 
 def _prices(sku: str, values: list[float]) -> list[dict]:
@@ -102,83 +99,3 @@ def test_a_supported_sweet_spot_is_still_rejected_when_its_interval_spans_one():
     categories = {s.category for s in get_prices(FakeAito()).sweet_spots}
     assert "health" not in categories
     assert "toys" in categories
-
-
-# ── Demand curve: `_estimate units_sold` at seven prices ─────────────
-
-
-def _sales(month: str, units: int, price: float) -> dict:
-    return {"product_sku": "REAL", "month": month, "units_sold": units, "price_eur": price,
-            "revenue_eur": units * price, "pet_type": "dog", "category": "dry-food",
-            "brand": "Acme", "season": "spring"}
-
-
-SALES = [_sales("2026-03", 9, 10.0), _sales(LATEST_MONTH, 12, 9.8)]
-
-
-class CurveAito:
-    """Answers the detail view's lookups and records each `_estimate`."""
-
-    def __init__(self, sales: list[dict] = SALES, estimate: float | None = 11.0):
-        self.sales = sales
-        self.estimate_value = estimate
-        self.estimate_wheres: list[dict] = []
-        self.estimate_models: list[str | None] = []
-
-    def search(self, table, where=None, limit=10, offset=0, **_):
-        rows = {"monthly_sales": self.sales,
-                "inventory": [{"sku": "REAL", "unit_cost_eur": 6.0}],
-                "products": [p for p in PRODUCTS if p["sku"] == "REAL"]}[table]
-        return {"hits": rows[offset:offset + limit], "total": len(rows)}
-
-    def estimate(self, table, where, estimate_field, model=None, with_why=True):
-        assert (table, estimate_field) == ("monthly_sales", "units_sold")
-        self.estimate_wheres.append(where)
-        self.estimate_models.append(model)
-        return {"estimate": self.estimate_value}
-
-
-def test_demand_curve_conditions_on_last_months_units_not_the_unseen_month():
-    """`month: "2026-05"` matches no training row, so it is no evidence and
-    the estimate fell back to the SKU's all-time average. Last month's
-    units are the evidence, as in the Demand forecast (ADR 0014)."""
-    fake = CurveAito()
-
-    get_price_detail(fake, "REAL")
-
-    assert len(fake.estimate_wheres) == 7                     # one per price
-    assert all("month" not in w for w in fake.estimate_wheres)
-    assert {w["units_last_month"] for w in fake.estimate_wheres} == {12}
-    assert len({w["price_eur"] for w in fake.estimate_wheres}) == 7
-
-
-def test_a_sku_that_sold_nothing_last_month_is_estimated_from_zero_units():
-    """No row for the latest month means it sold nothing then."""
-    fake = CurveAito(sales=[_sales("2026-03", 9, 10.0)])
-
-    get_price_detail(fake, "REAL")
-
-    assert {w["units_last_month"] for w in fake.estimate_wheres} == {0}
-
-
-def test_demand_curve_panel_shows_a_query_that_was_actually_sent():
-    fake = CurveAito()
-
-    detail = get_price_detail(fake, "REAL")
-
-    assert detail.last_query["body"]["where"] in fake.estimate_wheres
-
-
-def test_demand_curve_fails_loudly_when_aito_returns_no_estimate():
-    with pytest.raises(AitoError, match="no estimate"):
-        get_price_detail(CurveAito(estimate=None), "REAL")
-
-
-def test_demand_curve_uses_the_regression_model_like_the_what_if():
-    # ADR 0029: the what-if explains a price with the regression model, so
-    # the curve asks the same model and a point on it matches the what-if.
-    client = CurveAito()
-
-    get_price_detail(client, "REAL")
-
-    assert client.estimate_models and set(client.estimate_models) == {"regression"}

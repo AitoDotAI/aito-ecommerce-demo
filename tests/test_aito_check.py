@@ -319,25 +319,53 @@ def test_demand_time_split_honours_the_train_proposition(client):
     assert everything_before != oldest_only
 
 
-# ── Product Insights: one product's funnel and buyers (ADR 0028) ─────
+# ── Product: history, buyers and the decision (ADR 0028, ADR 0041) ───
 
 
-def test_product_insights_funnel_is_monotone_and_relate_counts_its_lines(client):
+def test_product_history_batch_returns_counts_and_every_row(client):
     """For the default product: the funnel never grows step to step, the
     surfaces cover every impression (the service asserts that), and the
-    "who buys it" `_relate` conditions on exactly this product's order
-    lines (`fCondition` equals a plain count)."""
-    from src.product_insights_service import DEFAULT_SKU, get_product_insights
+    rows in the same `_batch` come back whole (`total` equals the hits:
+    `_rows` asserts it), one month per state."""
+    from src.product_history import get_product_history
+    from src.product_service import DEFAULT_SKU
 
-    result = get_product_insights(client, DEFAULT_SKU)
+    history = get_product_history(client, DEFAULT_SKU)
 
-    counts = [step.count for step in result.funnel]
+    counts = [step.count for step in history.funnel]
     assert counts[0] > 0, "no impressions for the default product"
     assert counts == sorted(counts, reverse=True), counts
+    assert len(history.months) == 24, [m.month for m in history.months]
+    assert sum(m.units_sold for m in history.months) > 0
+    assert sum(history.ratings.values()) == sum(history.sentiments.values()) > 0
+
+
+def test_product_buyers_relate_counts_exactly_the_products_order_lines(client):
+    """The "who buys it" `_relate` conditions on exactly this product's
+    order lines: `fCondition` equals a plain count."""
+    from src.product_buyers import get_buyers
+    from src.product_service import DEFAULT_SKU
+
+    buyers = get_buyers(client, DEFAULT_SKU)
+
     lines = client.search("order_lines", where={"product_sku": DEFAULT_SKU}, limit=0)["total"]
-    assert result.buyers, "no buyer profiles for the default product"
-    assert all(b.lines_total == lines for b in result.buyers), (lines, result.buyers[:2])
-    assert result.monthly, "no monthly_sales rows for the default product"
+    assert buyers, "no buyer profiles for the default product"
+    assert all(b.lines_total == lines for b in buyers), (lines, buyers[:2])
+
+
+def test_product_view_leads_with_a_decision_in_range(client):
+    """The decision's rates are Aito's `$p` in [0, 1], its margins follow
+    from them, and the price what-if answers at today's price and, when
+    the advice changes the band, at the advised price."""
+    from src.product_service import DEFAULT_SKU, get_product_view
+
+    view = get_product_view(client, DEFAULT_SKU)
+
+    decision = view.decision
+    assert all(0.0 <= m.p_purchase <= 1.0 for m in decision.margins), decision.margins
+    assert decision.best.margin_per_100_eur == max(m.margin_per_100_eur for m in decision.margins)
+    assert view.price_now.price_eur == view.state.price_eur
+    assert (view.price_best is None) == (decision.action == "keep")
 
 
 # ── v2 engine behaviour the views rely on (checked on 2.11.4) ────────
@@ -372,11 +400,11 @@ def test_price_what_if_explains_the_estimate_with_price_as_a_factor(client):
     """The waterfall's rows multiply out to the estimate (`waterfall` raises
     otherwise), price is one of them, and the what-if agrees with the demand
     curve's point at the same price, since both ask the regression model."""
-    from src.price_service import get_price_detail
+    from src.price_curve import get_price_curve
     from src.price_what_if import get_price_what_if
 
-    detail = get_price_detail(client, "SKU-PT-0133")
-    centre = next(p for p in detail.curve if p.adjustment_pct == 0)
+    curve = get_price_curve(client, "SKU-PT-0133")
+    centre = next(p for p in curve.curve if p.adjustment_pct == 0)
 
     what_if = get_price_what_if(client, "SKU-PT-0133", centre.price_eur)
 
