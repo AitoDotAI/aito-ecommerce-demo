@@ -31,24 +31,18 @@ function n(s: string): string { return `<span class="n">${s}</span>`; }
 function s(v: string): string { return `<span class="s">${v}</span>`; }
 
 
-export function dashboardPanel(): AitoPanelConfig {
+export function overviewPanel(): AitoPanelConfig {
+  const c = (t: string) => `<code style="color:var(--aito-teal);">${t}</code>`;
   return {
-    operation: "Dashboard",
-    endpoints: ["_search", "_relate"],
+    operation: "Overview",
+    endpoints: ["_search", "_batch", "_aggregate", "_relate"],
     description:
-      `KPIs from live <code style="color:var(--aito-teal);">_search limit=0</code> ` +
-      `counts. Top patterns come from live ` +
-      `<code style="color:var(--aito-teal);">_relate</code> over ` +
-      `<code>orders.line_categories</code>, the basket query that Patterns ` +
-      `sends with an interval and counts for every pair.`,
-    query:
-`${k('"relate"')}: {
-  ${n('"from"')}: ${s('"orders"')},
-  ${n('"where"')}: {
-    ${n('"line_categories"')}: { ${n('"$match"')}: ${s('"dog_dryfood"')} }
-  },
-  ${n('"relate"')}: ${s('"line_categories"')}
-}`,
+      `Paged ${c("_search")} over orders and order lines, with ${c("select")}, summed in the app: ` +
+      `orders and revenue per month, and units per product. Household cards are one ${c("_batch")} ` +
+      `of counts and an ${c("_aggregate")} per group. The Patterns headline is the strongest pair of ` +
+      `Patterns' basket ${c("_relate")}s, with its interval; Supply and Retention read those views' ` +
+      `own precomputed answers. The query below is the first page of orders.`,
+    query: "",
     links: LEARN_MORE_LINKS,
   };
 }
@@ -131,51 +125,6 @@ export function businessReordersPanel(): AitoPanelConfig {
 }
 
 
-export function basketRulesPanel(): AitoPanelConfig {
-  return {
-    operation: "Basket Rules",
-    endpoints: ["_relate"],
-    description:
-      `Association-rule mining as a live query: one <code>_relate</code> ` +
-      `per anchor, ranked by lift. Each rule's confidence = ` +
-      `<code>fOnCondition/fCondition</code>, support = ` +
-      `<code>fOnCondition/n</code> — no Apriori batch job. Rules are ` +
-      `directional: dog dry-food → dental treats is <strong ` +
-      `style="color:var(--aito-teal);">72%</strong>, the reverse <strong ` +
-      `style="color:var(--aito-teal);">94%</strong>.`,
-    query:
-`${k('"relate"')}: {
-  ${n('"from"')}: ${s('"orders"')},
-  ${n('"where"')}: {
-    ${n('"line_categories"')}: { ${n('"$match"')}: ${s('"dog_dryfood"')} }
-  },
-  ${n('"relate"')}: ${s('"line_categories"')}
-}`,
-    links: LEARN_MORE_LINKS,
-  };
-}
-
-
-export function purchaseAnalyticsPanel(): AitoPanelConfig {
-  return {
-    operation: "Purchase Analytics",
-    endpoints: ["_search"],
-    description:
-      `Paged <code style="color:var(--aito-teal);">_search</code> over orders, ` +
-      `order lines and customers, aggregated in the app: orders per month, ` +
-      `top products, and revenue and category mix per household (the pets ` +
-      `each customer declared). The query is the first page of orders.`,
-    query:
-`${k('"search"')}: {
-  ${n('"from"')}: ${s('"orders"')},
-  ${n('"limit"')}: 5000,
-  ${n('"offset"')}: 0
-}`,
-    links: LEARN_MORE_LINKS,
-  };
-}
-
-
 export function shopPanel(): AitoPanelConfig {
   return {
     operation: "Shop",
@@ -220,35 +169,13 @@ export function shopAnalyticsPanel(queriesSent?: number): AitoPanelConfig {
     description:
       `Each section is ${c("_relate")}, sent in parallel: which values are over- or ` +
       `under-represented among purchases (or clicks), in a group's order lines, in baskets with a ` +
-      `category, and in searches that convert. Two more ${c("_relate")}s on the customer column ` +
+      `category (whose ${c("fs")} counts also give each rule's confidence both ways and its support), ` +
+      `and in searches that convert. Two more ${c("_relate")}s on the customer column ` +
       `measure how clustered the rows are, which widens every interval. A lift is shown when its ` +
       `interval excludes 1 at 95 % for the whole section (Bonferroni) and it rests on 30 or more ` +
       `independent rows. ${c("_search")} checks which search words are always searched together. ` +
       `The query below is one of the ${queriesSent ?? "…"} sent.`,
     query: "",
-    links: LEARN_MORE_LINKS,
-  };
-}
-
-
-export function patternExplorerPanel(): AitoPanelConfig {
-  return {
-    operation: "Pattern Explorer",
-    endpoints: ["_relate"],
-    description:
-      `Ad-hoc discovery queries. Pick an anchor category and Aito returns ` +
-      `which other categories share its orders unusually often, or unusually ` +
-      `rarely. Returns lift, support count, and relative strength — read the ` +
-      `table sorted by lift descending.`,
-    query:
-`${k('"relate"')}: {
-  ${n('"from"')}: ${s('"orders"')},
-  ${n('"where"')}: {
-    ${n('"line_categories"')}: { ${n('"$match"')}: ${s('"dog_dryfood"')} }
-  },
-  ${n('"relate"')}: ${s('"line_categories"')},
-  ${n('"limit"')}: 30
-}`,
     links: LEARN_MORE_LINKS,
   };
 }

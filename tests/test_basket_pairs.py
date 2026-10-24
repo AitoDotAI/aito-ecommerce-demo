@@ -1,10 +1,9 @@
-"""Offline tests for Shop analytics' baskets (src/basket_pairs.py), with
-the fake client from test_shop_analytics.py."""
+"""Offline tests for Patterns' baskets (src/basket_pairs.py), with the
+fake client from test_shop_analytics.py."""
 
 from __future__ import annotations
 
-from src.basket_pairs import TOKEN_LIMIT, get_basket_section
-from src.basket_rules_service import MINED_ANCHORS
+from src.basket_pairs import MINED_ANCHORS, TOKEN_LIMIT, decode_token, get_basket_section
 from tests.test_shop_analytics import FakeClient, hit, key
 
 
@@ -48,3 +47,31 @@ def test_a_basket_pair_skips_the_anchor_itself_and_is_shown_once():
     # The reverse pair is not a second test: one test for dry-food + dental,
     # and one neutral pair from each of the other eight anchors.
     assert section.significance.tested == 1 + (len(MINED_ANCHORS) - 2)
+
+
+def test_a_basket_pair_reads_as_a_rule_both_ways_from_the_hits_counts():
+    # fCondition: orders with dry food; f: orders with dental treats;
+    # fOnCondition: orders with both; n: all orders.
+    dental = hit("line_categories", "dog_dentaltreats", 2.66, 2_911, 4_325, 3_008, 11_909)
+    client = FakeClient(basket_answer("dog_dryfood", dental))
+
+    pair = get_basket_section(client).pairs[0]
+
+    assert (pair.first_id, pair.second_id) == ("dog_dryfood", "dog_dentaltreats")
+    assert (pair.orders_with_first, pair.orders_with_second, pair.orders) == (4_325, 3_008, 11_909)
+    # Two thirds of dry-food baskets hold dental treats, but nearly every
+    # dental-treats basket holds dry food: the rule has a direction.
+    assert (pair.confidence, pair.reverse_confidence, pair.support) == (0.673, 0.968, 0.244)
+
+
+def test_the_anchor_filter_offers_every_mined_anchor_by_its_token():
+    section = get_basket_section(FakeClient())
+
+    assert [a["id"] for a in section.anchors][:2] == ["dog_dryfood", "dog_wetfood"]
+    assert {"id": "aquarium_aquarium", "label": "Aquarium products"} in section.anchors
+    assert len(section.anchors) == len(MINED_ANCHORS)
+
+
+def test_a_category_token_decodes_on_its_last_underscore():
+    assert decode_token("small_animal_dryfood") == ("small_animal", "dry-food")
+    assert decode_token("dog_dentaltreats") == ("dog", "dental-treats")

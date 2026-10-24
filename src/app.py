@@ -30,13 +30,12 @@ from src.release_file import load_release, read_counts
 from src.build_info import build_info
 from src.config import load_config
 from src.rate_limit import check_rate_limit
-from src.overview_service import get_dashboard
+from src.overview_headlines import owner_headlines
+from src.overview_service import get_overview
 from src.search_service import smart_search
 from src.recommend_service import get_for_you
-from src.basket_rules_service import get_basket_rules
 from src.filling_service import get_filling
 from src.eval_service import run_evaluation
-from src.analytics_service import get_analytics
 from src.product_service import product_view_payload
 from src.shop_grid import get_shop_grid
 from src.shop_personas import SHOPPERS, UnknownShopperError
@@ -46,7 +45,6 @@ from src.shop_suggestions import get_suggestions
 from src.basket_pairs import get_basket_section
 from src.search_words import get_search_words_section
 from src.shop_analytics_service import get_funnel_section, get_who_section
-from src.pattern_service import get_patterns
 from src.feedback_service import get_feedback
 from src.lookup_errors import ProductNotOnSaleError, UnknownPersonaError, UnknownProductError, UnknownReviewError
 from src.churn_service import get_churn
@@ -290,14 +288,21 @@ def schema():
 # routes stay in this single file so the table-of-contents is
 # greppable.
 
-@app.get("/api/dashboard")
-def dashboard():
-    """Dashboard summary — KPIs + top patterns + segments + recent orders.
+def _snapshot_data(name: str) -> dict | None:
+    """A precomputed view's data, or None when it has no snapshot."""
+    entry = precompute_store.get(name)
+    return entry["data"] if isinstance(entry, dict) and "data" in entry else None
 
-    Cached for 10 minutes per `overview_service.get_dashboard`.
-    """
+
+@app.get("/api/overview")
+def overview_endpoint():
+    """Overview (ADR 0041): the shop's last 12 months, best sellers,
+    households, and one headline per owner view. The payload is
+    precomputed; the Supply and Retention headlines read those views'
+    own snapshots, so each headline matches the view it links to."""
     try:
-        return precompute_store.serve("dashboard", lambda: get_dashboard(aito).to_dict())
+        overview = precompute_store.serve("overview", lambda: get_overview(aito))
+        return {**overview, "headlines": owner_headlines(overview, _snapshot_data)}
     except AitoError as exc:
         return JSONResponse(
             status_code=502,
@@ -340,19 +345,6 @@ def for_you_endpoint(customer: str = "maija"):
         )
 
 
-@app.get("/api/basket-rules")
-def basket_rules_endpoint():
-    """Association-rule mining — sweeps anchors with order-level
-    `_relate` and ranks the strongest basket rules. See ADR 0022."""
-    try:
-        return get_basket_rules(aito).to_dict()
-    except AitoError as exc:
-        return JSONResponse(
-            status_code=502,
-            content={"error": str(exc), "status_code": exc.status_code},
-        )
-
-
 @app.get("/api/product-filling")
 def product_filling_endpoint(sku: str | None = None):
     """Multi-field `_predict` for catalog enrichment. See ADR 0009."""
@@ -373,18 +365,6 @@ def evaluation_endpoint():
     per the +10 pp accuracy-gain threshold. See ADR 0010."""
     try:
         return precompute_store.serve("evaluation", lambda: run_evaluation(aito).to_dict())
-    except AitoError as exc:
-        return JSONResponse(
-            status_code=502,
-            content={"error": str(exc), "status_code": exc.status_code},
-        )
-
-
-@app.get("/api/purchase-analytics")
-def purchase_analytics_endpoint():
-    """Monthly orders + top products + per-segment KPIs. See ADR 0011."""
-    try:
-        return get_analytics(aito).to_dict()
     except AitoError as exc:
         return JSONResponse(
             status_code=502,
@@ -532,21 +512,6 @@ def shop_analytics_baskets_endpoint():
 def shop_analytics_search_words_endpoint():
     """Search words that convert above or below the average search."""
     return _shop_analytics_section("search-words", lambda: get_search_words_section(aito))
-
-
-@app.get("/api/pattern-explorer")
-def pattern_explorer_endpoint(anchor: str = "dog_dryfood"):
-    """Ad-hoc `_relate` over `orders.line_categories` — full lift
-    band (positive + neutral + protective). See ADR 0011."""
-    try:
-        return get_patterns(aito, anchor_id=anchor).to_dict()
-    except ValueError as exc:
-        return JSONResponse(status_code=400, content={"error": str(exc)})
-    except AitoError as exc:
-        return JSONResponse(
-            status_code=502,
-            content={"error": str(exc), "status_code": exc.status_code},
-        )
 
 
 @app.get("/api/feedback")

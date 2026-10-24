@@ -535,6 +535,16 @@ large lift on a handful of rows is noise. `src/price_bands.py`
 `lift_interval` gives a 95 % interval from those counts (log relative
 risk).
 
+On the order-level basket relate (`from orders where {line_categories:
+{$match: A}} relate line_categories`) the four counts are a whole rule
+(verified 2026-10-24 on `observable` against `_search` counts of the
+same orders): `fCondition` = orders with A (4,325 dog dry food), `f` =
+orders with B (3,008 dental treats), `fOnCondition` = orders with both
+(2,911), `n` = all orders (11,909). So confidence A → B is
+`fOnCondition / fCondition` (67 %), B → A is `fOnCondition / f` (97 %),
+and support is `fOnCondition / n` (24 %). Patterns › Baskets shows all
+three next to the lift (`src/basket_pairs.py`).
+
 ---
 
 ## Field-form `_relate` through a link, on a Boolean, and on Text
