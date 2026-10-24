@@ -1,6 +1,6 @@
 /**
- * Visual inspection — walks every view, exercises interactive
- * controls (persona pills, anchor pickers, SKU dropdown), and
+ * Visual inspection: walks every sidebar view (ADR 0041's sections),
+ * exercises a few controls (shopper, search, anchor, SKU picker), and
  * captures full-page screenshots into `screenshots/inspect/`.
  *
  * Run: node scripts/inspect-views.cjs
@@ -10,7 +10,8 @@ const { chromium } = require("playwright-core");
 const fs = require("fs");
 const path = require("path");
 
-const BASE = "http://localhost:8500";
+// INSPECT_BASE: another running copy, e.g. a backend serving the static export.
+const BASE = process.env.INSPECT_BASE || "http://localhost:8500";
 const OUT_DIR = path.resolve(__dirname, "../../screenshots/inspect");
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
@@ -95,65 +96,39 @@ async function settleAfterInteraction(page, contentSelector) {
   const ctx = await browser.newContext({ viewport: VIEWPORT });
   const page = await ctx.newPage();
 
-  // 1. Dashboard — wait for top-pattern bars to render
+  // The site by job (ADR 0041): the Shop, the owner's views, the operator's
+  // tools, Evidence and Query patterns. The old views redirect to these
+  // (frontend/lib/moved-routes.ts), so they aren't walked.
+
+  // 1. Overview: KPIs, one headline per owner view, best sellers, households
   await gotoAndSettle(page, "/", ".hbar-row");
-  await shot(page, "01-overview.png", "Overview — KPIs / headlines per owner view / best sellers / households");
+  await shot(page, "01-overview.png", "Overview: KPIs / headlines per owner view / best sellers / households");
 
-  // 2. Smart Search — Saara default. Wait for at least one predictive row.
-  await gotoAndSettle(page, "/smart-search/", ".pill-orange, .pill-blue");
-  await shot(page, "02-smart-search-saara-default.png", "Smart Search — Saara (large breed dog)");
+  // 2. Shop: Päivi's kit path (the partner demo's Flow 1), then Janne's search
+  await gotoAndSettle(page, "/shop/?shopper=paivi", ".shop-card-name");
+  await shot(page, "02-shop-paivi.png", "Shop: Päivi, Buy again / Next for their kit / Picked for you");
 
-  await page.locator(".customer-chip", { hasText: "Maija" }).click();
-  await settleAfterInteraction(page, ".pill-blue");
-  await shot(page, "02-smart-search-maija.png", "Smart Search — Maija (cat owner) — flipped");
+  await gotoAndSettle(page, "/shop/?shopper=janne&q=food", ".shop-card-name");
+  await shot(page, "02-shop-janne-food.png", "Shop: Janne searches 'food', his household's grain-free rule");
 
-  await page.locator(".customer-chip", { hasText: "Olli" }).click();
-  await settleAfterInteraction(page);
-  await shot(page, "02-smart-search-olli.png", "Smart Search — Olli (multi-pet small dog)");
+  // 3. Product: the offer decision and the what-ifs for the Flow 2 product
+  await gotoAndSettle(page, "/product/?sku=SKU-PT-0563&month=2026-04&tab=what-if", "[role=tablist]");
+  await shot(page, "03-product-what-if.png", "Product: Trixie Hideout, the offer decision and what-ifs");
 
-  // 3. For You — wait for a rec-card to appear
-  await gotoAndSettle(page, "/recommendations/", ".rec-card");
-  await shot(page, "03-for-you-maija.png", "For You — Maija default");
-
-  await page.locator(".customer-chip", { hasText: "Saara" }).click();
-  await settleAfterInteraction(page, ".rec-card");
-  await shot(page, "03-for-you-saara.png", "For You — Saara (large breed dog)");
-
-  await page.locator(".customer-chip", { hasText: "Olli" }).click();
-  await settleAfterInteraction(page, ".rec-card");
-  await shot(page, "03-for-you-olli.png", "For You — Olli (multi-pet small dog)");
-
-  // 4. Bought Together — wait for cross-sell tiles (rec-card)
-  await gotoAndSettle(page, "/bought-together/", ".rec-card");
-  await shot(page, "04-bought-together-dog-dryfood.png", "Bought Together — dog dry-food anchor");
-
-  await page.selectOption("#anchor-picker", "cat_wetfood");
-  await settleAfterInteraction(page, ".rec-card");
-  await shot(page, "04-bought-together-cat-wetfood.png", "Bought Together — cat wet-food anchor");
-
-  // Aquarium has a single cross-sell and is the cold-cache stress test.
-  // Wait until either the rec-card lands OR the "no patterns" empty
-  // state renders — whichever comes first.
-  await page.selectOption("#anchor-picker", "aquarium_aquarium");
-  await page.waitForTimeout(300);
-  await page.waitForLoadState("networkidle", { timeout: 90_000 });
-  await page.waitForFunction(
-    () => document.querySelectorAll(".rec-card").length > 0
-       || !!document.querySelector("[data-empty-state]"),
-    null,
-    { timeout: 90_000 },
-  );
-  await page.waitForTimeout(WAIT_AFTER_NETWORK);
-  await shot(page, "04-bought-together-aquarium.png", "Bought Together — aquarium anchor (niche)");
-
-  // 5–6. Patterns' baskets as rules, filtered to one anchor (ex Basket
-  // Rules and Pattern Explorer; Purchase Analytics is in the Overview)
+  // 4. Patterns: baskets as rules, filtered to one anchor
   await gotoAndSettle(page, "/patterns/?anchor=dog_dryfood", "#basket-rules");
-  await shot(page, "06-patterns-baskets-dog-dryfood.png", "Patterns — baskets as rules, dog dry-food anchor");
+  await shot(page, "04-patterns-baskets-dog-dryfood.png", "Patterns: baskets as rules, dog dry-food anchor");
 
-  // 7. Product Filling — wait for confidence chip
+  // 5–6. Supply and Retention
+  await gotoAndSettle(page, "/supply/", ".card-title");
+  await shot(page, "05-supply.png", "Supply: reorder now, overstock and its markdown");
+
+  await gotoAndSettle(page, "/retention/", ".card-title");
+  await shot(page, "06-retention.png", "Retention: at-risk customers and their win-back offer");
+
+  // 7. Product filling: wait for a confidence chip, then a second SKU
   await gotoAndSettle(page, "/product-filling/", ".fill-conf");
-  await shot(page, "07-product-filling-default.png", "Product Filling — default (Hill's Sensitive)");
+  await shot(page, "07-product-filling-default.png", "Product filling: default (Hill's Sensitive)");
 
   const skuOptions = await page.$$eval("#sku-picker option", (opts) =>
     opts.map((o) => o.value).filter((v) => v),
@@ -162,21 +137,38 @@ async function settleAfterInteraction(page, contentSelector) {
     const target = skuOptions[3];
     await page.selectOption("#sku-picker", target);
     await settleAfterInteraction(page, ".fill-conf");
-    await shot(page, "07-product-filling-alt.png", `Product Filling — alt SKU ${target}`);
+    await shot(page, "07-product-filling-alt.png", `Product filling: alt SKU ${target}`);
   }
 
-  // 8. Evaluation — wait for at least one .eval-row-pass row
-  await gotoAndSettle(page, "/evaluation/", ".eval-row-pass, .eval-row-fail");
-  await shot(page, "08-evaluation.png", "Evaluation — 3 pass, 1 honest-failure");
+  // 8. Review triage
+  await gotoAndSettle(page, "/review-triage/", "#rev-picker");
+  await shot(page, "08-review-triage.png", "Review triage: category, sentiment, assignee");
 
-  // 9. Mobile breakpoint sanity (≤ 768px hides both side rails)
+  // 9–12. Evidence: the index, real data (UCI), and the synthetic pages
+  await gotoAndSettle(page, "/evidence/", ".evidence-entry");
+  await shot(page, "09-evidence-index.png", "Evidence: index, Real / Synthetic marks");
+
+  await gotoAndSettle(page, "/evidence/business-reorders/", ".card-title");
+  await shot(page, "10-evidence-business-reorders.png", "Evidence: a business buyer's next order (UCI, real data)");
+
+  await gotoAndSettle(page, "/evidence/personalised-search/", ".card-title");
+  await shot(page, "11-evidence-personalised-search.png", "Evidence: personalised search, side by side");
+
+  await gotoAndSettle(page, "/evidence/model-checks/", ".data-table");
+  await shot(page, "12-evidence-model-checks.png", "Evidence: model checks, with the honest failure");
+
+  // 13. For developers: one minimal call per endpoint
+  await gotoAndSettle(page, "/query-patterns/", ".rec-card");
+  await shot(page, "13-query-patterns.png", "Query patterns: the minimal _recommend");
+
+  // 14. Mobile breakpoint sanity (≤ 768px hides both side rails)
   await ctx.close();
   const mobileCtx = await browser.newContext({ viewport: { width: 414, height: 900 } });
   const mp = await mobileCtx.newPage();
   await mp.goto(BASE + "/", { waitUntil: "networkidle", timeout: 90_000 });
   await mp.waitForTimeout(WAIT_AFTER_NETWORK);
-  await mp.screenshot({ path: path.join(OUT_DIR, "09-mobile-dashboard.png"), fullPage: false });
-  console.log(`   mobile dashboard captured`);
+  await mp.screenshot({ path: path.join(OUT_DIR, "14-mobile-overview.png"), fullPage: false });
+  console.log(`   mobile overview captured`);
 
   await browser.close();
   console.log(`Done. ${OUT_DIR}`);

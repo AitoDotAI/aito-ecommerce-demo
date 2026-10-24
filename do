@@ -143,6 +143,7 @@ Data
   sandbox-new       Branch a sandbox off the template, warm it, print its ?db= link
   sandbox-list      The live sandboxes and when they expire (read-only)
   sandbox-time      Time the lever → Shop loop 5× on a throwaway branch (deleted after)
+  agent-demo        <branch> ["question"]: an agent (aito-mcp, read-only key) on one sandbox branch
   uci-prepare       UCI Online Retail II xlsx → data/uci/*.json (local, no Aito; ADR 0034)
   uci-load          Load data/uci/ into Aito env uci (needs AITO_ENV=uci)
   workbook          (Re)create the console workbook from docs/aito-workbook-ecommerce-demo.json
@@ -427,6 +428,62 @@ cmd_sandbox() {
   echo "Sandbox database: ${AITO_SANDBOX_URL:-<unset>}"
   [[ "$1" == "template-load" ]] && _ensure_impressions
   uv run python -m src.sandbox_cli "$1"
+}
+
+# Flow 3 of the partner demo (ADR 0043): a merchant's agent, Claude Code
+# with aito-mcp as its only tools, reading one sandbox branch with the
+# sandbox database's read-only key. The key stays in its file: the MCP
+# config written here holds paths, never the key. Writes are refused twice,
+# by the key and by aito-mcp (no AITO_MCP_ALLOW_WRITES). The rehearsal is in
+# docs/notes/2026-10-26-ambientia-run-sheet.md.
+cmd_agent_demo() {
+  local branch="${1:-}"
+  [[ $# -gt 0 ]] && shift
+  local question="$*"
+  local pattern='^tmp-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9a-f]{16}$'
+  if [[ ! "$branch" =~ $pattern ]]; then
+    echo "Usage: ./do agent-demo <sandbox branch> [\"first question\"]" >&2
+    echo "  the branch is a live sandbox's ?db= value (./do sandbox-list), e.g." >&2
+    echo "  tmp-2026-10-26-11-30-00-3f9c2a1b7d4e6f80" >&2
+    exit 1
+  fi
+  local key_file="${SANDBOX_RO_KEY_FILE:-$HOME/.config/aito-mcp/sandbox-readonly-key}"
+  if [[ ! -r "$key_file" ]]; then
+    echo "⛔ REFUSING: no read-only key at $key_file." >&2
+    echo "   Put the sandbox database's read-only key there (one line, chmod 600)." >&2
+    exit 1
+  fi
+  local tool
+  for tool in claude uvx; do
+    command -v "$tool" >/dev/null || { echo "$tool is not on PATH" >&2; exit 1; }
+  done
+
+  local dir="$SCRIPT_DIR/scripts/agent-demo"
+  local db_url="${AITO_SANDBOX_URL:-https://shared.aito.ai/db/aito-ecommerce-sandbox}"
+  # The agent runs in an empty folder, so it reads no project files and no
+  # CLAUDE.md of this repo: a merchant's agent knows only its brief.
+  local workdir config
+  workdir="$(mktemp -d -t agent-demo-XXXXXX)"
+  config="$workdir/mcp.json"
+  cat > "$config" <<EOF
+{ "mcpServers": { "aito": {
+    "command": "$dir/aito-mcp-sandbox.sh",
+    "env": { "SANDBOX_BRANCH": "$branch", "SANDBOX_DB_URL": "$db_url", "SANDBOX_RO_KEY_FILE": "$key_file" } } } }
+EOF
+  echo "Agent on $db_url/env/$branch"
+  echo "  key: read-only, from $key_file; aito-mcp's writes: refused"
+  local read_tools="mcp__aito__get_schema,mcp__aito__search,mcp__aito__predict,mcp__aito__recommend"
+  read_tools+=",mcp__aito__relate,mcp__aito__match,mcp__aito__query,mcp__aito__evaluate"
+  local status=0
+  (cd "$workdir" && env -u AITO_API_KEY -u AITO_SANDBOX_API_KEY -u ADMIN_TOKEN -u AITO_MCP_ALLOW_WRITES \
+    claude ${question:+"$question"} \
+      --append-system-prompt "$(cat "$dir/brief.txt")" \
+      --mcp-config "$config" --strict-mcp-config \
+      --allowedTools "$read_tools" \
+      --disallowedTools "mcp__aito__put_schema,mcp__aito__upload_rows,Bash,Read,Write,Edit,Glob,Grep,WebFetch,WebSearch,Task,NotebookEdit") \
+      || status=$?
+  rm -rf "$workdir"
+  return "$status"
 }
 
 cmd_release_check() {
@@ -780,6 +837,7 @@ case "${1:-help}" in
   sandbox-new)       cmd_sandbox new ;;
   sandbox-list)      cmd_sandbox list ;;
   sandbox-time)      cmd_sandbox time ;;
+  agent-demo)        shift; cmd_agent_demo "$@" ;;
   test)              cmd_test ;;
   aito-check)        cmd_aito_check ;;
   search-eval)       cmd_search_eval ;;
