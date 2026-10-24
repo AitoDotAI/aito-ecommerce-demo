@@ -1008,7 +1008,7 @@ ranges) were looked at.
 - **Sample:** `random.Random(0).sample` of 1,400 from the eligible sessions
   sorted by `context_id` (2,333 in the seed-42 fixtures).
 
-### O4, live (2026-10-24, env `release2`, Aito 2.11.8): blocked, not measured
+### O4, live (2026-10-24, env `release2`, Aito 2.11.8): BLOCKED BY ENGINE, not measured
 
 The registered procedure can't run. `_estimate` refuses the nested `from`
 that holds 2026-04 out, on both models:
@@ -1027,9 +1027,9 @@ yet"`.
 - **No workaround was run:**
   - an in-sample estimate isn't a held-out month;
   - a training-only env would need a write to `shared.aito.ai`.
-- **The ways forward, for Antti:**
-  - Aito core supports a population on `_estimate`;
-  - or a `release2-train` env without 2026-04 is loaded at night.
+- **Decision (2026-10-24, Antti via the coordinator):** no training-only env
+  is loaded now. O4 waits on Aito core supporting a population on `_estimate`.
+  Its procedure above stands, to be run unchanged when it does.
 - **Seen in the shape probe** (plain `from`, one product, so not O4): with
   zero-sale months in the data, `price_index` is one linear term in units,
   the same slope for every product. SKU-PT-0203 reads 22.12 units at 1.00
@@ -1070,3 +1070,34 @@ so its decision rule isn't applied.**
   Paired: P − I hit −0.085 [−0.153, −0.017]; I+P − P +0.206 [+0.146,
   +0.266]; I+P − I +0.121 [+0.082, +0.160]. Brier I+P − I −0.010
   [−0.013, −0.006].
+
+### Decision (2026-10-24, Antti via the coordinator): no more heavy queries until after Monday 26.10
+
+- **The Shop sweep stays stopped at 306 of 1,400,** and the personalised-search
+  benchmark stays unrun, until Tuesday 27.10 and until aito-core has looked at
+  the repro (`docs/notes/2026-10-24-nested-from-batch-502-repro.md`). The
+  instance serves the live demo.
+- **Meanwhile, "Picked for you" for a shopper with no pet profile** reads their
+  orders' pets (form P) in `shop_scope`. P is provisional: it is the only form
+  that also serves a shopper who declined tracking, and the sweep's rule
+  hasn't been applied.
+
+### Q7 on list showings: calibration, registered before it is run (2026-10-24)
+
+For release 2's Product view (ADR 0045, Notes). Not run: no heavy query on
+the shared instance until after 26.10 (decision above).
+
+- **Query:** `_predict purchased`, `from {from: impressions, where {placement:
+  list, context.month: {"$lt": "2026-02"}}}` (a nested `from`), `where
+  {product_state.discount_band: B}`, once per band `none`, `10-15`, `15-20`,
+  `20+`, and once per label (`none`, `recommended`, `staff_pick`, `popular`).
+- **Scored on:** list showings of 2026-02 to 2026-04, counted with `_search`
+  (`limit: 0`, the band or label and `purchased: true`).
+- **Calibrated when,** for every one of the 8 cells, `|$p − observed| ÷
+  observed ≤ 0.15`. This is the width of the in-sample and held-out misses of
+  the earlier band query (−6 % to +10 %, cheatsheet), fixed before this one
+  ran.
+- **If any cell misses,** the view shows relative change ("×1.4 more
+  purchases than without the offer"), not a rate (ADR 0038).
+- **Reported, not judged:** per-product `$p` against its own observed rate in
+  deciles; a product with fewer than 30 list showings is left out of them.

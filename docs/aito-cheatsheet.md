@@ -1620,6 +1620,11 @@ observed rate.
 
 ### Q7 / Q7b — a product's state as lifts on `_predict clicked` / `purchased`: open
 
+**Direction (ADR 0045, Notes):** the Product view's what-ifs will ask this
+over the list population (nested `from`, below). That shape is new and is
+probed before a view uses it; its calibration tolerance is registered in the
+prereg ("Q7 on list showings") and not yet run.
+
 `where {product_sku, product_state.discount_band, .label, .stock,
 context.surface}`, `select ["$p", "feature", "$why"]`. It answers 200 with
 both classes; **no NaN refusal** on five (and six) conditions.
@@ -1639,7 +1644,7 @@ both classes; **no NaN refusal** on five (and six) conditions.
   `rowCap` floor 0.0192 (1/52): it sold once from 207 list showings, and
   its other sales are restocks on `buy_again`.
 
-### Q8 — does the offer's lift differ by shopper? No, with this query shape
+### Q8 — does the offer's lift differ by shopper? No, with this query shape (not delivered: ADR 0038, Notes)
 
 Q7 plus `context.offer_share` or `context.customer`. Aito multiplies the
 shopper's lift and the band's lift, so their ratio is the same for everyone:
@@ -1671,8 +1676,10 @@ whole-table lifts, so the placement mix above applies to them too.
 
 → 400 `"hop 2 'order_lines' is not a field of 'orders'"`. A link is followed
 only forward, from the row that holds it. One forward link works:
-`surveyed_order.month`. ADR 0039's fallback applies: NPS rows carry the band,
-derived.
+`surveyed_order.month`. ADR 0039's fallback applies, and is the way forward:
+**`nps_responses` rows carry the product band of their order, derived** (as
+ADR 0033 allows; a column the generator writes, not yet in the schema), and
+Q10 then relates that column directly. Not built yet.
 
 ### Q11 — `_relate churned_in_3_months` → `review_replied` on `customer_months`: works
 
@@ -1684,7 +1691,9 @@ counts equal `_search`'s. A Boolean gives a hit for `true` and one for
 
 400 `"no such field 'product_state.rating_band'"` on k-NN and regression. The
 nested form `{"product_state": {"rating_band": "5"}}` is a 501. A band needs
-copying onto `monthly_sales`, as `discount_band` was.
+copying onto `monthly_sales`, as `discount_band` was. **That is the way
+forward:** `monthly_sales.rating_band`, a plain column, so `_estimate` can
+condition on it; Q12 is then asked again on the new column. Not built yet.
 
 ### `_estimate` takes no nested `from`, so it can't hold a month out (O4)
 

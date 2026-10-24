@@ -1,0 +1,765 @@
+[
+ {
+  "from": {
+   "from": "impressions",
+   "where": {
+    "$not": {
+     "context": "SESS-001932"
+    }
+   }
+  },
+  "where": {
+   "context.month": "2026-03",
+   "just_bought": false,
+   "context.customer": "CUST-00886"
+  },
+  "recommend": "product_sku",
+  "goal": {
+   "purchased": true
+  },
+  "limit": 12
+ },
+ {
+  "from": {
+   "from": "impressions",
+   "where": {
+    "$not": {
+     "context": "SESS-001932"
+    }
+   }
+  },
+  "where": {
+   "context.month": "2026-03",
+   "just_bought": false,
+   "context.customer": "CUST-00886",
+   "product_sku": {
+    "$or": [
+     "SKU-PT-0310",
+     "SKU-PT-0311",
+     "SKU-PT-0332",
+     "SKU-PT-0351",
+     "SKU-PT-0352",
+     "SKU-PT-0353",
+     "SKU-PT-0355",
+     "SKU-PT-0398",
+     "SKU-PT-0483"
+    ]
+   }
+  },
+  "recommend": "product_sku",
+  "goal": {
+   "purchased": true
+  },
+  "limit": 9
+ },
+ {
+  "from": {
+   "from": "impressions",
+   "where": {
+    "$not": {
+     "context": "SESS-001932"
+    }
+   }
+  },
+  "where": {
+   "context.month": "2026-03",
+   "just_bought": false,
+   "context.pets_from_orders": {
+    "$and": [
+     {
+      "$match": "cat"
+     }
+    ]
+   },
+   "product_sku.pet_type": {
+    "$or": [
+     "cat"
+    ]
+   }
+  },
+  "recommend": "product_sku",
+  "goal": {
+   "purchased": true
+  },
+  "limit": 12
+ },
+ {
+  "from": {
+   "from": "impressions",
+   "where": {
+    "$not": {
+     "context": "SESS-001932"
+    }
+   }
+  },
+  "where": {
+   "context.month": "2026-03",
+   "just_bought": false,
+   "context.pets_from_orders": {
+    "$and": [
+     {
+      "$match": "cat"
+     }
+    ]
+   },
+   "product_sku.pet_type": {
+    "$or": [
+     "cat"
+    ]
+   },
+   "product_sku": {
+    "$or": [
+     "SKU-PT-0310",
+     "SKU-PT-0311",
+     "SKU-PT-0332",
+     "SKU-PT-0351",
+     "SKU-PT-0352",
+     "SKU-PT-0353",
+     "SKU-PT-0355",
+     "SKU-PT-0398",
+     "SKU-PT-0483"
+    ]
+   }
+  },
+  "recommend": "product_sku",
+  "goal": {
+   "purchased": true
+  },
+  "limit": 9
+ },
+ {
+  "from": {
+   "from": "impressions",
+   "where": {
+    "$not": {
+     "context": "SESS-001932"
+    }
+   }
+  },
+  "where": {
+   "context.month": "2026-03",
+   "just_bought": false,
+   "context.customer": "CUST-00886",
+   "context.pets_from_orders": {
+    "$and": [
+     {
+      "$match": "cat"
+     }
+    ]
+   },
+   "product_sku.pet_type": {
+    "$or": [
+     "cat"
+    ]
+   }
+  },
+  "recommend": "product_sku",
+  "goal": {
+   "purchased": true
+  },
+  "limit": 12
+ },
+ {
+  "from": {
+   "from": "impressions",
+   "where": {
+    "$not": {
+     "context": "SESS-001932"
+    }
+   }
+  },
+  "where": {
+   "context.month": "2026-03",
+   "just_bought": false,
+   "context.customer": "CUST-00886",
+   "context.pets_from_orders": {
+    "$and": [
+     {
+      "$match": "cat"
+     }
+    ]
+   },
+   "product_sku.pet_type": {
+    "$or": [
+     "cat"
+    ]
+   },
+   "product_sku": {
+    "$or": [
+     "SKU-PT-0310",
+     "SKU-PT-0311",
+     "SKU-PT-0332",
+     "SKU-PT-0351",
+     "SKU-PT-0352",
+     "SKU-PT-0353",
+     "SKU-PT-0355",
+     "SKU-PT-0398",
+     "SKU-PT-0483"
+    ]
+   }
+  },
+  "recommend": "product_sku",
+  "goal": {
+   "purchased": true
+  },
+  "limit": 9
+ },
+ {
+  "from": {
+   "from": "impressions",
+   "where": {
+    "$not": {
+     "context": "SESS-005861"
+    }
+   }
+  },
+  "where": {
+   "context.month": "2026-03",
+   "just_bought": false,
+   "context.customer": "CUST-02616"
+  },
+  "recommend": "product_sku",
+  "goal": {
+   "purchased": true
+  },
+  "limit": 12
+ },
+ {
+  "from": {
+   "from": "impressions",
+   "where": {
+    "$not": {
+     "context": "SESS-005861"
+    }
+   }
+  },
+  "where": {
+   "context.month": "2026-03",
+   "just_bought": false,
+   "context.customer": "CUST-02616",
+   "product_sku": {
+    "$or": [
+     "SKU-PT-0086",
+     "SKU-PT-0287",
+     "SKU-PT-0448",
+     "SKU-PT-0488"
+    ]
+   }
+  },
+  "recommend": "product_sku",
+  "goal": {
+   "purchased": true
+  },
+  "limit": 4
+ },
+ {
+  "from": {
+   "from": "impressions",
+   "where": {
+    "$not": {
+     "context": "SESS-005861"
+    }
+   }
+  },
+  "where": {
+   "context.month": "2026-03",
+   "just_bought": false,
+   "context.pets_from_orders": {
+    "$and": [
+     {
+      "$match": "cat"
+     },
+     {
+      "$match": "dog"
+     }
+    ]
+   },
+   "product_sku.pet_type": {
+    "$or": [
+     "cat",
+     "dog"
+    ]
+   }
+  },
+  "recommend": "product_sku",
+  "goal": {
+   "purchased": true
+  },
+  "limit": 12
+ },
+ {
+  "from": {
+   "from": "impressions",
+   "where": {
+    "$not": {
+     "context": "SESS-005861"
+    }
+   }
+  },
+  "where": {
+   "context.month": "2026-03",
+   "just_bought": false,
+   "context.pets_from_orders": {
+    "$and": [
+     {
+      "$match": "cat"
+     },
+     {
+      "$match": "dog"
+     }
+    ]
+   },
+   "product_sku.pet_type": {
+    "$or": [
+     "cat",
+     "dog"
+    ]
+   },
+   "product_sku": {
+    "$or": [
+     "SKU-PT-0086",
+     "SKU-PT-0287",
+     "SKU-PT-0448",
+     "SKU-PT-0488"
+    ]
+   }
+  },
+  "recommend": "product_sku",
+  "goal": {
+   "purchased": true
+  },
+  "limit": 4
+ },
+ {
+  "from": {
+   "from": "impressions",
+   "where": {
+    "$not": {
+     "context": "SESS-005861"
+    }
+   }
+  },
+  "where": {
+   "context.month": "2026-03",
+   "just_bought": false,
+   "context.customer": "CUST-02616",
+   "context.pets_from_orders": {
+    "$and": [
+     {
+      "$match": "cat"
+     },
+     {
+      "$match": "dog"
+     }
+    ]
+   },
+   "product_sku.pet_type": {
+    "$or": [
+     "cat",
+     "dog"
+    ]
+   }
+  },
+  "recommend": "product_sku",
+  "goal": {
+   "purchased": true
+  },
+  "limit": 12
+ },
+ {
+  "from": {
+   "from": "impressions",
+   "where": {
+    "$not": {
+     "context": "SESS-005861"
+    }
+   }
+  },
+  "where": {
+   "context.month": "2026-03",
+   "just_bought": false,
+   "context.customer": "CUST-02616",
+   "context.pets_from_orders": {
+    "$and": [
+     {
+      "$match": "cat"
+     },
+     {
+      "$match": "dog"
+     }
+    ]
+   },
+   "product_sku.pet_type": {
+    "$or": [
+     "cat",
+     "dog"
+    ]
+   },
+   "product_sku": {
+    "$or": [
+     "SKU-PT-0086",
+     "SKU-PT-0287",
+     "SKU-PT-0448",
+     "SKU-PT-0488"
+    ]
+   }
+  },
+  "recommend": "product_sku",
+  "goal": {
+   "purchased": true
+  },
+  "limit": 4
+ },
+ {
+  "from": {
+   "from": "impressions",
+   "where": {
+    "$not": {
+     "context": "SESS-002455"
+    }
+   }
+  },
+  "where": {
+   "context.month": "2025-08",
+   "just_bought": false,
+   "context.customer": "CUST-01144",
+   "$or": [
+    {
+     "product_sku.category": {
+      "$not": {
+       "$or": [
+        "dry-food",
+        "wet-food"
+       ]
+      }
+     }
+    },
+    {
+     "product_sku.pet_type": {
+      "$not": {
+       "$or": [
+        "dog",
+        "cat"
+       ]
+      }
+     }
+    },
+    {
+     "product_sku.name": {
+      "$match": "Grain"
+     }
+    }
+   ]
+  },
+  "recommend": "product_sku",
+  "goal": {
+   "purchased": true
+  },
+  "limit": 12
+ },
+ {
+  "from": {
+   "from": "impressions",
+   "where": {
+    "$not": {
+     "context": "SESS-002455"
+    }
+   }
+  },
+  "where": {
+   "context.month": "2025-08",
+   "just_bought": false,
+   "context.customer": "CUST-01144",
+   "$or": [
+    {
+     "product_sku.category": {
+      "$not": {
+       "$or": [
+        "dry-food",
+        "wet-food"
+       ]
+      }
+     }
+    },
+    {
+     "product_sku.pet_type": {
+      "$not": {
+       "$or": [
+        "dog",
+        "cat"
+       ]
+      }
+     }
+    },
+    {
+     "product_sku.name": {
+      "$match": "Grain"
+     }
+    }
+   ],
+   "product_sku": {
+    "$or": [
+     "SKU-PT-0039",
+     "SKU-PT-0115",
+     "SKU-PT-0142",
+     "SKU-PT-0202"
+    ]
+   }
+  },
+  "recommend": "product_sku",
+  "goal": {
+   "purchased": true
+  },
+  "limit": 4
+ },
+ {
+  "from": {
+   "from": "impressions",
+   "where": {
+    "$not": {
+     "context": "SESS-002455"
+    }
+   }
+  },
+  "where": {
+   "context.month": "2025-08",
+   "just_bought": false,
+   "context.pets_from_orders": {
+    "$and": [
+     {
+      "$match": "dog"
+     }
+    ]
+   },
+   "product_sku.pet_type": {
+    "$or": [
+     "dog"
+    ]
+   },
+   "$or": [
+    {
+     "product_sku.category": {
+      "$not": {
+       "$or": [
+        "dry-food",
+        "wet-food"
+       ]
+      }
+     }
+    },
+    {
+     "product_sku.pet_type": {
+      "$not": {
+       "$or": [
+        "dog",
+        "cat"
+       ]
+      }
+     }
+    },
+    {
+     "product_sku.name": {
+      "$match": "Grain"
+     }
+    }
+   ]
+  },
+  "recommend": "product_sku",
+  "goal": {
+   "purchased": true
+  },
+  "limit": 12
+ },
+ {
+  "from": {
+   "from": "impressions",
+   "where": {
+    "$not": {
+     "context": "SESS-002455"
+    }
+   }
+  },
+  "where": {
+   "context.month": "2025-08",
+   "just_bought": false,
+   "context.pets_from_orders": {
+    "$and": [
+     {
+      "$match": "dog"
+     }
+    ]
+   },
+   "product_sku.pet_type": {
+    "$or": [
+     "dog"
+    ]
+   },
+   "$or": [
+    {
+     "product_sku.category": {
+      "$not": {
+       "$or": [
+        "dry-food",
+        "wet-food"
+       ]
+      }
+     }
+    },
+    {
+     "product_sku.pet_type": {
+      "$not": {
+       "$or": [
+        "dog",
+        "cat"
+       ]
+      }
+     }
+    },
+    {
+     "product_sku.name": {
+      "$match": "Grain"
+     }
+    }
+   ],
+   "product_sku": {
+    "$or": [
+     "SKU-PT-0039",
+     "SKU-PT-0115",
+     "SKU-PT-0142",
+     "SKU-PT-0202"
+    ]
+   }
+  },
+  "recommend": "product_sku",
+  "goal": {
+   "purchased": true
+  },
+  "limit": 4
+ },
+ {
+  "from": {
+   "from": "impressions",
+   "where": {
+    "$not": {
+     "context": "SESS-002455"
+    }
+   }
+  },
+  "where": {
+   "context.month": "2025-08",
+   "just_bought": false,
+   "context.customer": "CUST-01144",
+   "context.pets_from_orders": {
+    "$and": [
+     {
+      "$match": "dog"
+     }
+    ]
+   },
+   "product_sku.pet_type": {
+    "$or": [
+     "dog"
+    ]
+   },
+   "$or": [
+    {
+     "product_sku.category": {
+      "$not": {
+       "$or": [
+        "dry-food",
+        "wet-food"
+       ]
+      }
+     }
+    },
+    {
+     "product_sku.pet_type": {
+      "$not": {
+       "$or": [
+        "dog",
+        "cat"
+       ]
+      }
+     }
+    },
+    {
+     "product_sku.name": {
+      "$match": "Grain"
+     }
+    }
+   ]
+  },
+  "recommend": "product_sku",
+  "goal": {
+   "purchased": true
+  },
+  "limit": 12
+ },
+ {
+  "from": {
+   "from": "impressions",
+   "where": {
+    "$not": {
+     "context": "SESS-002455"
+    }
+   }
+  },
+  "where": {
+   "context.month": "2025-08",
+   "just_bought": false,
+   "context.customer": "CUST-01144",
+   "context.pets_from_orders": {
+    "$and": [
+     {
+      "$match": "dog"
+     }
+    ]
+   },
+   "product_sku.pet_type": {
+    "$or": [
+     "dog"
+    ]
+   },
+   "$or": [
+    {
+     "product_sku.category": {
+      "$not": {
+       "$or": [
+        "dry-food",
+        "wet-food"
+       ]
+      }
+     }
+    },
+    {
+     "product_sku.pet_type": {
+      "$not": {
+       "$or": [
+        "dog",
+        "cat"
+       ]
+      }
+     }
+    },
+    {
+     "product_sku.name": {
+      "$match": "Grain"
+     }
+    }
+   ],
+   "product_sku": {
+    "$or": [
+     "SKU-PT-0039",
+     "SKU-PT-0115",
+     "SKU-PT-0142",
+     "SKU-PT-0202"
+    ]
+   }
+  },
+  "recommend": "product_sku",
+  "goal": {
+   "purchased": true
+  },
+  "limit": 4
+ }
+]
