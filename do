@@ -267,14 +267,19 @@ cmd_generate_fixtures() {
   uv run python -m data.generate_fixtures
 }
 
-# The impressions fixture is gitignored (too large to commit, see
-# ADR 0021). Regenerate the whole deterministic fixture set if it's
-# absent — a no-op for the committed tables (seed=42 ⇒ byte-identical).
+# The impressions and contexts fixtures are gitignored (too large to
+# commit, see ADR 0021 and ADR 0040). Regenerate the whole deterministic
+# fixture set if either is absent — a no-op for the committed tables
+# (seed=42 ⇒ byte-identical).
 _ensure_impressions() {
-  if [[ ! -f "$SCRIPT_DIR/data/impressions.json" ]]; then
-    echo "data/impressions.json missing (gitignored) — regenerating fixtures..."
-    cmd_generate_fixtures
-  fi
+  local table
+  for table in impressions contexts; do
+    if [[ ! -f "$SCRIPT_DIR/data/$table.json" ]]; then
+      echo "data/$table.json missing (gitignored) — regenerating fixtures..."
+      cmd_generate_fixtures
+      return
+    fi
+  done
 }
 
 cmd_load_data() {

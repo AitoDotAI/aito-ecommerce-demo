@@ -22,6 +22,10 @@ from data import lifecycle, shoppers
 
 # The generator's hidden model: never a column in any table Aito sees.
 HIDDEN_TRAITS = ("segment", "lifestyle", "health_focus", "treat_affinity", "brand_loyalty")
+# ADR 0038's sensitivities and ADR 0039's hidden causes, likewise.
+SENSITIVITIES = ("discount", "stars", "newness", "labels")
+HIDDEN_FIELDS = tuple(f"{s}_sensitivity" for s in SENSITIVITIES) + (
+    "favorite_brands", "churn_month", "quality", "experience")
 
 KIT_PROGRESSION = True      # K1 on; its null keeps ADR 0030's S6 kit rule instead
 OWNED_KIT_ODDS = 0.1        # a kit item the household has: nobody needs a second cage
@@ -43,6 +47,12 @@ def public_customer(customer) -> dict:
         "total_spent_eur": customer.total_spent_eur,
         "last_order_month": customer.last_order_month,
         "churned": customer.churned,
+        # ADR 0040: the device it came from, and its first order.
+        "visitor": customer.visitor,
+        "first_source": customer.first_source,
+        "joined_month": customer.joined_month,
+        "first_basket_categories": customer.first_basket_categories,
+        "became_regular": customer.became_regular,
     }
     return {k: v for k, v in row.items() if v is not None}
 
@@ -52,19 +62,35 @@ def answer_key_row(customer) -> dict:
     `data/answer_key/`, which the loader never uploads (it loads the tables
     of `src/schema.py`)."""
     row = {"customer_id": customer.customer_id, "pet_size": customer.pet_size,
-           "diet_rule": customer.diet_rule, "pets": " ".join(customer.pets)}
+           "diet_rule": customer.diet_rule, "pets": " ".join(customer.pets),
+           # What ADR 0037's personalised-search ceiling scores with.
+           "favorite_brands": "|".join(customer.favorite_brands) or None,
+           # ADR 0039: the month the churn hazard ended the customer's history.
+           "churn_month": customer.churn_month}
     row.update({trait: getattr(customer, trait) for trait in HIDDEN_TRAITS})
+    row.update({f"{s}_sensitivity": customer.sensitivities[s] for s in SENSITIVITIES})
     return {k: v for k, v in row.items() if v is not None}
 
 
 @dataclass
 class Context:
-    """One moment a customer was shown products (one session)."""
+    """One visit: a moment products were shown, or a landing that bounced.
+
+    A visitor who hasn't bought yet has no `customer` (ADR 0040)."""
     context_id: str                 # "SESS-000001"
-    customer: str                   # link → customers.customer_id
+    customer: str | None            # link → customers.customer_id; None before a first order
+    visitor: str                    # the device: "VIS-0012345"
     month: str
     weekday: str
-    surface: str                    # search | for_you | category | bought_together
+    surface: str                    # search | for_you | category | bought_together | landing
+    source: str                     # organic_search | paid_search | social | email | affiliate | direct
+    landing: str                    # product | category | search | home | offer
+    landing_category: str | None = None
+    first_order: bool = False       # the visit ended in the visitor's first order
+    # ADR 0038: derived visibly from the shopper's purchases in earlier months.
+    offer_share: str = "none"       # none | low | high: bought on offer
+    new_share: str = "none"         # … new products
+    label_share: str = "none"       # … labelled products
     search_query: str | None = None
     basket: str | None = None              # this month's basket, SKUs
     basket_categories: str | None = None   # the same as words: "small_animal_cage dog_dryfood"
@@ -104,3 +130,18 @@ def kit_odds(product: dict, basket: set[str], owned: set[str]) -> float:
     """K1: how much the household's place in its kit moves this shown product."""
     return {"owned": OWNED_KIT_ODDS, "next": NEXT_KIT_ODDS, "other": OTHER_ADD_ON_ODDS}.get(
         kit_status(product, basket, owned), 1.0)
+
+
+# ADR 0038: what a shop can see of a sensitivity is what the shopper bought.
+# A share at or above this is `high` (for new products, any purchase is).
+SHARE_HIGH_AT = {"offer": 0.4, "label": 0.25}
+
+
+def share_band(kind: str, matching: int, bought: int) -> str:
+    """`offer_share`, `new_share`, `label_share`: of the shopper's purchases
+    in earlier months, the share bought on offer, new, or labelled."""
+    if bought == 0:
+        return "none"
+    if kind == "new":
+        return "high" if matching > 0 else "low"
+    return "high" if matching / bought >= SHARE_HIGH_AT[kind] else "low"

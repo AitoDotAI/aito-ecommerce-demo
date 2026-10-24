@@ -78,6 +78,17 @@ SCHEMAS: dict[str, dict] = {
             "total_spent_eur":  {"type": "Decimal", "nullable": False},
             "last_order_month": {"type": "String",  "nullable": True},
             "churned":          {"type": "Boolean", "nullable": False},
+            # ADR 0040: the device the customer first came on (the same id as
+            # their visits before the first order), the source of the visit
+            # with the first order, and what that order held.
+            "visitor":                 {"type": "String",  "nullable": False},
+            "first_source":            {"type": "String",  "nullable": False},
+            "joined_month":            {"type": "String",  "nullable": False},
+            "first_basket_categories": {"type": "Text",    "nullable": False, "analyzer": "whitespace"},
+            # 3 or more orders in the first 6 months: a label from later data,
+            # as `churned_in_3_months` is. Absent for customers who joined
+            # less than 6 months before the data ends.
+            "became_regular":          {"type": "Boolean", "nullable": True},
         },
     },
     # 2c. contexts — one moment a customer was shown products (ADR 0033):
@@ -88,11 +99,26 @@ SCHEMAS: dict[str, dict] = {
         "type": "table",
         "columns": {
             "context_id":   {"type": "String", "nullable": False},
-            "customer":     {"type": "String", "nullable": False,
+            # Absent before the visitor's first order (ADR 0040).
+            "customer":     {"type": "String", "nullable": True,
                              "link": "customers.customer_id"},
+            "visitor":      {"type": "String", "nullable": False},
             "month":        {"type": "String", "nullable": False},
             "weekday":      {"type": "String", "nullable": False},
+            # search | for_you | category | bought_together, or `landing`: the
+            # page a visitor who hasn't bought yet landed on.
             "surface":      {"type": "String", "nullable": False},
+            # ADR 0040: where the visit came from and the page it landed on;
+            # `first_order` marks the visit with the visitor's first order.
+            "source":           {"type": "String",  "nullable": False},
+            "landing":          {"type": "String",  "nullable": False},
+            "landing_category": {"type": "String",  "nullable": True},
+            "first_order":      {"type": "Boolean", "nullable": False},
+            # ADR 0038, derived from the shopper's purchases in earlier months
+            # (none | low | high): the share bought on offer, new, labelled.
+            "offer_share":  {"type": "String", "nullable": False},
+            "new_share":    {"type": "String", "nullable": False},
+            "label_share":  {"type": "String", "nullable": False},
             # Text so `where {"context.search_query": {"$match": "food"}}` token-matches.
             "search_query": {"type": "Text",   "nullable": True, "analyzer": "whitespace"},
             # This month's basket, as SKUs and as words ("dog_dryfood
@@ -128,6 +154,11 @@ SCHEMAS: dict[str, dict] = {
             "age":              {"type": "String",  "nullable": False},
             "rival_launched":   {"type": "Boolean", "nullable": False},
             "price_change":     {"type": "String",  "nullable": False},
+            # ADR 0038: none | recommended | staff_pick | popular; in_stock |
+            # low; and the reviews written before the month, as a band.
+            "label":             {"type": "String", "nullable": False},
+            "stock":             {"type": "String", "nullable": False},
+            "review_count_band": {"type": "String", "nullable": False},
         },
     },
     # 3. orders — links to customers.
@@ -170,6 +201,8 @@ SCHEMAS: dict[str, dict] = {
             # ADR 0032: the product as it was that month (price, offer, stars, new).
             "product_state":           {"type": "String", "nullable": False,
                                         "link": "product_states.product_state_id"},
+            # ADR 0039: the order's delivery was late or damaged.
+            "incident":    {"type": "Boolean", "nullable": False},
         },
     },
     # 4b. impressions — one product shown in a context, with the funnel
@@ -221,11 +254,32 @@ SCHEMAS: dict[str, dict] = {
             "sentiment":   {"type": "String",  "nullable": False},
             "assigned_to": {"type": "String",  "nullable": False},
             "created_at":  {"type": "String",  "nullable": False},
-            # Forward-looking label: True iff the reviewer has no
-            # orders in the 3 months after this review. Drives the
+            # Forward-looking label: True iff the reviewer churned and
+            # never ordered after this review's month. Drives the
             # Feedback view's "churn risk from text" 4th predict —
             # see ADR 0013 §"Forward labels".
             "churn_within_90d": {"type": "Boolean", "nullable": False},
+            # ADR 0039: the shop replied (to negative reviews, at random),
+            # and the order line the review is about.
+            "replied":     {"type": "Boolean", "nullable": False},
+            "order_line":  {"type": "String",  "nullable": False,
+                            "link": "order_lines.line_id"},
+        },
+    },
+    # 5b. nps_responses — a survey answer after an order (ADR 0039): its
+    # score and group. Links to the customer and the order surveyed.
+    "nps_responses": {
+        "type": "table",
+        "columns": {
+            "nps_response_id": {"type": "String", "nullable": False},
+            "customer":        {"type": "String", "nullable": False,
+                                "link": "customers.customer_id"},
+            "order":           {"type": "String", "nullable": False,
+                                "link": "orders.order_id"},
+            "month":           {"type": "String", "nullable": False},
+            "score":           {"type": "Int",    "nullable": False},
+            # promoter (9–10) | passive (7–8) | detractor (0–6)
+            "nps_group":       {"type": "String", "nullable": False},
         },
     },
     # 7. monthly_sales — SKU × month sales aggregate. Drives the
@@ -334,6 +388,11 @@ SCHEMAS: dict[str, dict] = {
             # labels" for the customer.churned ∧ month ≥ last_order
             # rule.
             "churned_in_3_months": {"type": "Boolean", "nullable": False},
+            # ADR 0039: the latest NPS group so far, and a negative review
+            # in this month or the 2 before (and whether the shop replied).
+            "nps_latest_group":    {"type": "String",  "nullable": True},
+            "had_negative_review": {"type": "Boolean", "nullable": False},
+            "review_replied":      {"type": "Boolean", "nullable": False},
         },
     },
 }

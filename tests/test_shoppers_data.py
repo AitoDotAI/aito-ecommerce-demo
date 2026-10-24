@@ -17,7 +17,7 @@ import pytest
 
 from tests.fixture_joins import customers_with_traits, impressions_in_context, order_lines_with_customer
 
-from data import lifecycle, shoppers
+from data import lifecycle, review_chain, shoppers
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 FOOD = {"dry-food", "wet-food"}
@@ -136,7 +136,7 @@ def test_s5_a_poorly_made_food_is_rebought_less(data):
         for o in orders:
             for p in lines_by_order[o["order_id"]]:
                 if p["category"] in FOOD:
-                    tally = rebuys[shoppers.is_poorly_made(p["sku"])]
+                    tally = rebuys[review_chain.quality(p["sku"]) == "poor"]
                     tally[0] += p["sku"] in seen
                     tally[1] += 1
                     seen.add(p["sku"])
@@ -147,7 +147,7 @@ def test_s5_a_poorly_made_food_is_rebought_less(data):
 def test_s5_a_poorly_made_product_converts_less_from_an_impression(impressions):
     bought = {True: [0, 0], False: [0, 0]}
     for i in impressions:
-        tally = bought[shoppers.is_poorly_made(i["product_sku"])]
+        tally = bought[review_chain.quality(i["product_sku"]) == "poor"]
         tally[0] += i["purchased"]
         tally[1] += 1
     poor, rest = (bought[k][0] / bought[k][1] for k in (True, False))

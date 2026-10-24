@@ -769,9 +769,11 @@ frontend/           Next.js 16 (App Router)
 data/               Deterministic JSON fixtures (seed = 42)
   generate_fixtures.py          single source of truth — re-runs idempotent
   products.json · customers.json · orders.json · order_lines.json
-  reviews.json · customer_months.json
+  reviews.json · nps_responses.json · customer_months.json
   monthly_sales.json · inventory.json · product_states.json
-  contexts.json · impressions.json · winback_campaigns.json
+  winback_campaigns.json
+  contexts.json · impressions.json   generated, not committed (`./do generate-fixtures`)
+  answer_key/                   the generator's hidden model, for the data checks; never loaded
 
 tests/              pytest — fixture signal checks + AitoClient body shape
 screenshots/        Canonical per-view screenshots (the inspect/ subfolder is the workshop)
