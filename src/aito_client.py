@@ -130,6 +130,25 @@ class AitoClient:
         """Fetch the database schema. Returns table definitions."""
         return self._request("GET", "/schema")
 
+    def engine_version(self) -> str:
+        """The Aito engine's version, which an Evidence result file records
+        next to its numbers (ADR 0037). `GET /version` lives at the host's
+        root, outside any database's path, and takes no key: sent with a
+        database's key it answers 401."""
+        url = httpx.URL(self._base_url)
+        origin = f"{url.scheme}://{url.host}" + (f":{url.port}" if url.port else "")
+        try:
+            response = httpx.get(f"{origin}/version", timeout=10.0)
+        except httpx.HTTPError as exc:
+            raise AitoError(f"Aito request failed: GET /version: {exc}") from exc
+        if response.status_code >= 400:
+            raise AitoError(f"Aito returned {response.status_code} for GET /version: {response.text[:200]}",
+                            status_code=response.status_code, body=response.text)
+        body = response.json()
+        if "version" not in body:
+            raise AitoError(f"GET /version answered without a version: {str(body)[:200]}")
+        return str(body["version"])
+
     def check_connectivity(self) -> bool:
         """True if the configured Aito instance is reachable + authenticated."""
         try:
