@@ -108,9 +108,10 @@ _guard_uci_env() {
 # Ports: frontend on 8500 (user-facing), backend on 8501 (internal).
 # Allocated by the cross-demo framework doc — see
 # aito-demo-framework.md §2 "Port allocation". Don't reuse other
-# demos' pairs.
-PORT_FRONTEND=8500
-PORT_BACKEND=8501
+# demos' pairs. Override both to run a second copy beside the demo, e.g.
+# PORT_BACKEND=8640 ./do backend-dev from a worktree.
+PORT_FRONTEND="${PORT_FRONTEND:-8500}"
+PORT_BACKEND="${PORT_BACKEND:-8501}"
 
 cmd_help() {
   cat <<EOF

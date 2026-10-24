@@ -107,3 +107,20 @@ def test_a_month_outside_the_data_is_refused():
     # 2030 would answer "no orders yet" from no data at all; say so instead.
     with pytest.raises(ValueError, match="2024-05 to 2026-04"):
         get_suggestions(FakeAito(PAIVI_ORDERS), "paivi", "2030-01", [])
+
+
+def test_next_for_the_kit_shows_a_name_once_at_its_highest_skus_probability():
+    # Päivi owns a cage only: two SKUs named "Trixie Hideout" come next, at 15 % and 13 %.
+    orders = [{"order_id": "O1", "month": "2026-01", "skus": "SKU-CAGE SKU-FOOD", "owned_before": None}]
+    fake = FakeAito(orders)
+    real = fake.predict_rows
+    fake.predict_rows = lambda population, field, where=None, limit=10: (
+        real(population, field, where=where, limit=limit) if field == "skus.$feature"
+        else {"hits": [{"sku": "SKU-PT-0563", "name": "Trixie Hideout", "brand": "Trixie", "$p": 0.15},
+                       {"sku": "SKU-PT-0564", "name": "Trixie Hideout", "brand": "Trixie", "$p": 0.133},
+                       {"sku": "SKU-W", "name": "PetNord Exercise Wheel", "brand": "PetNord", "$p": 0.093}]})
+
+    result = get_suggestions(fake, "paivi", "2026-04", [])
+
+    assert [(s.sku, s.p, s.same_name_skus) for s in result.next_for_pet] == [
+        ("SKU-PT-0563", 0.15, ["SKU-PT-0564"]), ("SKU-W", 0.093, [])]

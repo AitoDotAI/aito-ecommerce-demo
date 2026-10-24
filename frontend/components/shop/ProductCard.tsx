@@ -4,11 +4,13 @@ import { fmtEur } from "@/lib/api";
 import { lastLever } from "@/lib/sandbox";
 import type { ScoreAdjustment, ShopItem } from "@/lib/types";
 import ProductHighlights from "@/components/shop/ProductHighlights";
+import VariantNote from "@/components/shop/VariantNote";
 
-/** One recommended product: Aito's purchase probability for this shopper,
- *  why, and, for something they bought last order, how far that pulled it down.
- *  In a sandbox's 2026-05, a product a lever changed shows its re-scored
- *  score and that score's own explanation instead (ADR 0043). */
+/** One recommended product: its name, price and offer, Aito's purchase
+ *  probability for this shopper, and the strongest of Aito's reasons. For
+ *  something they bought last order, how far
+ *  that pulled it down. In a sandbox's 2026-05, a product a lever changed
+ *  shows its re-scored score and that score's own explanation instead (ADR 0043). */
 export default function ProductCard({ item, rank, onAdd, onOpen }: {
   item: ShopItem;
   rank?: number;           // its place in the grid, for the sandbox's rank change
@@ -25,8 +27,10 @@ export default function ProductCard({ item, rank, onAdd, onOpen }: {
       >
         {item.name}
       </button>
-      <div className="card-sub">
-        {item.pet_type.replace("_", " ")} · {item.category.replace("-", " ")} · {fmtEur(item.price_eur, 2)}
+      <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6 }}>
+        <span style={{ fontWeight: 600 }}>{fmtEur(item.price_eur, 2)}</span>
+        {item.offer_pct !== null && <span className="shop-fact shop-fact-offer">−{Math.round(item.offer_pct)} % this month</span>}
+        <VariantNote skus={item.same_name_skus} />
       </div>
       <div title={item.adjustment
         ? "This app's score: Aito's probability times the shop-wide lifts of the product's May state"
@@ -47,7 +51,7 @@ export default function ProductCard({ item, rank, onAdd, onOpen }: {
       )}
       {item.adjustment
         ? <AdjustedScore item={item} adjustment={item.adjustment} />
-        : <ProductHighlights reasons={item.reasons} offerPct={item.offer_pct} rating={item.avg_rating}
+        : <ProductHighlights reasons={item.reasons.slice(0, 1)} offerPct={null} rating={null}
                              keepsRule={item.keeps_rule} />}
       <div style={{ display: "flex", gap: 6, marginTop: "auto" }}>
         <button className="btn" style={{ flex: 1 }} onClick={onAdd}>Add to cart</button>
