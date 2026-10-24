@@ -53,6 +53,10 @@ class Config:
     # env to point at: master IS the migrated database. `AITO_ENV`
     # overrides for a feature-branch sandbox.
     aito_env: str = "master"
+    # `DEMO_MODE=1`: pages open in presentation mode (the Aito panel
+    # collapsed, fine print behind "Details"), as `?demo=1` does for one
+    # tab. Presentation only: no number or query changes.
+    demo_mode: bool = False
 
     @property
     def api_base(self) -> str:
@@ -110,6 +114,7 @@ def load_config(*, use_dotenv: bool = True) -> Config:
     # both versions address the same database and there is no second env
     # to keep in sync. `AITO_ENV` overrides for a sandbox env.
     aito_env = os.environ.get("AITO_ENV", "") or "master"
+    demo_mode = os.environ.get("DEMO_MODE", "").lower() in ("1", "true", "yes")
 
     if not api_url or not api_key:
         raise ValueError(
@@ -123,6 +128,7 @@ def load_config(*, use_dotenv: bool = True) -> Config:
         public_demo=public_demo,
         use_v2=use_v2,
         aito_env=aito_env,
+        demo_mode=demo_mode,
     )
 
 

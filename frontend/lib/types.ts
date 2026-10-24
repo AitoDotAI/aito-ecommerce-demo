@@ -279,7 +279,6 @@ export interface OverviewHeadline {
   href: string;
   headline: string;
   detail: string;
-  available: boolean;
 }
 
 export interface OverviewResponse {

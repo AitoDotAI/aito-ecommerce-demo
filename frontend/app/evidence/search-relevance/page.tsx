@@ -1,6 +1,7 @@
 "use client";
 
 import ErrorState from "@/components/shell/ErrorState";
+import FinePrint from "@/components/shell/FinePrint";
 import EvidenceHeader from "@/components/evidence/EvidenceHeader";
 import RunFacts from "@/components/evidence/RunFacts";
 import { usePagePanel } from "@/components/shell/ShellState";
@@ -169,10 +170,12 @@ function StrataTable({ data }: { data: SearchRelevanceFile }) {
           ))}
         </tbody>
       </table>
+      <FinePrint>
       <div className="card-sub" style={{ marginTop: 8 }}>
         Point estimates on {Math.min(...Object.values(data.strata))}–{Math.max(...Object.values(data.strata))} queries
         per kind: too few to read a kind on its own, so no interval is given and no kind is compared.
       </div>
+      </FinePrint>
     </div>
   );
 }

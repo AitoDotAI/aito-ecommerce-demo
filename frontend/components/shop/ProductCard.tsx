@@ -8,8 +8,7 @@ import VariantNote from "@/components/shop/VariantNote";
 
 /** One recommended product: its name, price and offer, Aito's purchase
  *  probability for this shopper, and the strongest of Aito's reasons. For
- *  something they bought last order, how far
- *  that pulled it down. In a sandbox's 2026-05, a product a lever changed
+ *  something they bought last order, how far that pulled it down. In a sandbox's 2026-05, a product a lever changed
  *  shows its re-scored score and that score's own explanation instead (ADR 0043). */
 export default function ProductCard({ item, rank, onAdd, onOpen }: {
   item: ShopItem;

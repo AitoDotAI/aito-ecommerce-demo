@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { apiFetch, fmtEur } from "@/lib/api";
+import FinePrint from "@/components/shell/FinePrint";
 import type { PriceCurve, ProductView } from "@/lib/types";
 import DiscountWhatIf from "./DiscountWhatIf";
 import PriceScatterChart from "./PriceScatterChart";
@@ -49,6 +50,7 @@ export default function ProductWhatIf({ view, price, onPrice, onQuery }: {
           <div className="page-title" style={{ fontSize: 17, margin: "4px 0 8px" }}>
             Units and profit next month, by price
           </div>
+          <FinePrint summary="Details: the price effect is shop-wide">
           <div className="card-sub" style={{ marginBottom: 10, color: "var(--text-2)" }}>
             <strong>The price effect is shop-wide.</strong>{" "}Aito&apos;s regression learns one price effect
             from all products&apos; months, so this curve&apos;s slope
@@ -56,6 +58,7 @@ export default function ProductWhatIf({ view, price, onPrice, onQuery }: {
             {view.price_now.form === "add" ? "the same units per € for every product" : "the same share of units per € for every product"},
             not this product&apos;s own price sensitivity. Its own months are the dots.
           </div>
+          </FinePrint>
           {error && <div className="card-sub" style={{ color: "var(--red)" }}>Couldn&apos;t estimate the curve: {error}</div>}
           {!error && !curve && <div aria-busy="true" style={{ height: 360, background: "var(--border-light)", borderRadius: 4 }} />}
           {curve && (

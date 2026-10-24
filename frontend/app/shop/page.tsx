@@ -7,6 +7,7 @@ import { highlightQuery } from "@/lib/highlight-query";
 import { shopPanel } from "@/lib/panel-content";
 import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
+import FinePrint from "@/components/shell/FinePrint";
 import NotFoundNotice from "@/components/shell/NotFoundNotice";
 import CartPanel from "@/components/shop/CartPanel";
 import ProductCard from "@/components/shop/ProductCard";
@@ -197,10 +198,13 @@ function ShopView() {
             </div>
             {shown?.rescored && (
               <div className="card card-sub" style={{ marginBottom: 8, fontSize: 12 }}>
-                <strong>Sandbox, May 2026:</strong> Aito ranks the top 40 as usual. A product whose May state
-                you changed is then re-scored: Aito&apos;s purchase probability × its offer band&apos;s lift ×
-                its star band&apos;s lift, both learned by Aito across the whole shop. The multiplication is this
-                app&apos;s modelling choice, not one Aito query, so those cards show a score, not a rate.
+                <strong>Sandbox, May 2026:</strong> a product whose May state you changed is re-scored, so its
+                card shows a score, not a rate.
+                <FinePrint>
+                  {" "}Aito ranks the top 40 as usual. The score is Aito&apos;s purchase probability × its offer
+                  band&apos;s lift × its star band&apos;s lift, both learned by Aito across the whole shop. The
+                  multiplication is this app&apos;s modelling choice, not one Aito query.
+                </FinePrint>
               </div>
             )}
             <div className="shop-grid" style={{ opacity: stale ? 0.5 : 1 }} aria-busy={!shown || stale}>

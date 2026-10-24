@@ -21,7 +21,11 @@ const DESCRIPTION = "How the shop is doing, and where to look: one headline per 
 export default function OverviewPage() {
   usePagePanel(overviewPanel(), { title: "Overview", description: DESCRIPTION, breadcrumb: "Overview" });
 
-  const { setPanel } = useShell();
+  const { setPanel, demoMode } = useShell();
+  // Demo mode hides the year-on-year comparison: the generated shop grows
+  // +300 % a year, which reads as fiction in a meeting. The counts stay.
+  const growth = (now: number, before: number, monthsBefore: number) =>
+    demoMode ? null : changeOnBefore(now, before, monthsBefore);
   const [data, setData] = useState<OverviewResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,10 +50,10 @@ export default function OverviewPage() {
       <div className="kpi-grid">
         <KpiCard label={`Orders · ${window12}`} accent="kpi-accent"
                  value={k ? k.orders.toLocaleString("en-US") : "…"}
-                 change={k && changeOnBefore(k.orders, k.orders_before, k.months_before)} />
+                 change={k && growth(k.orders, k.orders_before, k.months_before)} />
         <KpiCard label="Revenue" accent="kpi-accent-green"
                  value={k ? fmtEur(k.revenue_eur) : "…"}
-                 change={k && changeOnBefore(k.revenue_eur, k.revenue_before_eur, k.months_before)} />
+                 change={k && growth(k.revenue_eur, k.revenue_before_eur, k.months_before)} />
         <KpiCard label="Average basket" accent="kpi-accent-blue" value={k ? fmtEur(k.avg_basket_eur, 2) : "…"} />
         <KpiCard label="Customers ordering" accent="kpi-accent-purple"
                  value={k ? k.customers_ordering.toLocaleString("en-US") : "…"}

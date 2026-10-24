@@ -1,4 +1,5 @@
 import RunFacts from "@/components/evidence/RunFacts";
+import FinePrint from "@/components/shell/FinePrint";
 import type { Interval, PersonalisedSearchFile, PersonalisedSlice } from "@/lib/evidence-types";
 import { pctInterval } from "@/lib/use-evidence";
 
@@ -49,10 +50,13 @@ export default function PersonalisedSearchResults({ data }: { data: Personalised
           </div>
         ))}
         <div className="card-sub" style={{ lineHeight: 1.5 }}>
-          Differences in hit@10, paired session by session. The Shop&apos;s search reads the household&apos;s declared
-          pets, not the shopper&apos;s history, so it isn&apos;t expected to rise with history; the history form is.
-          The generator&apos;s ranking is an estimate of the ceiling, not a bound: purchases were drawn from what was
-          shown, through the purchase funnel, not from its weight.
+          Differences in hit@10, paired session by session.
+          <FinePrint>
+            {" "}The Shop&apos;s search reads the household&apos;s declared pets, not the shopper&apos;s history, so it
+            isn&apos;t expected to rise with history; the history form is. The generator&apos;s ranking is an
+            estimate of the ceiling, not a bound: purchases were drawn from what was shown, through the purchase
+            funnel, not from its weight.
+          </FinePrint>
         </div>
       </div>
 

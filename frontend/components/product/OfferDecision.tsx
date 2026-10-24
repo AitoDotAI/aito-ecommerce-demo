@@ -3,6 +3,8 @@
 import Link from "next/link";
 
 import { fmtEur } from "@/lib/api";
+import FinePrint from "@/components/shell/FinePrint";
+import { useShell } from "@/components/shell/ShellState";
 import type { ProductView } from "@/lib/types";
 import { BAND_LABEL, monthLabel, pct } from "./labels";
 
@@ -13,6 +15,7 @@ import { BAND_LABEL, monthLabel, pct } from "./labels";
  * reasons from Aito's `$why`. Every number is an estimate, and says so.
  */
 export default function OfferDecision({ view }: { view: ProductView }) {
+  const { demoMode } = useShell();
   const { decision, discount, price_now: now, price_best: best } = view;
   const bestBand = discount.bands.find((b) => b.band === decision.best_band)!;
   const atList = decision.margins[0];
@@ -70,15 +73,25 @@ export default function OfferDecision({ view }: { view: ProductView }) {
         </span>
       </div>
       <div className="card-sub">
-        Estimates. The discount band&apos;s lift is shop-wide: Aito learned it from every product&apos;s
-        impressions, so it is the same for every product. Margin per showing assumes one unit per
-        purchase and as many showings as now. The price model sees the price, not the offer label,
-        and learns one price effect for all products
-        {slope !== null && Number.isFinite(slope) && <> (here {Math.abs(slope).toFixed(1)} units per €)</>}:
-        it shows what the lower price costs, not what the offer earns.{" "}
+        Estimates. The discount band&apos;s lift is shop-wide, the same for every product.{" "}
+        {!demoMode && <FinePrintText slope={slope} />}
         <Link href="/evidence/model-checks/">How well? →</Link>
+        {demoMode && <FinePrint><FinePrintText slope={slope} /></FinePrint>}
       </div>
     </div>
+  );
+}
+
+/** What the caveat line leaves out; behind "Details" in demo mode. */
+function FinePrintText({ slope }: { slope: number | null }) {
+  return (
+    <>
+      Aito learned the lift from every product&apos;s impressions. Margin per showing assumes one unit per
+      purchase and as many showings as now. The price model sees the price, not the offer label,
+      and learns one price effect for all products
+      {slope !== null && Number.isFinite(slope) && <> (here {Math.abs(slope).toFixed(1)} units per €)</>}:
+      it shows what the lower price costs, not what the offer earns.{" "}
+    </>
   );
 }
 

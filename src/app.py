@@ -131,8 +131,11 @@ def _drop_memory_caches() -> None:
 # The app waits for its data (ADR 0035): data routes answer 503 until
 # the env the app reads matches `data/release-env.json`, and the caches
 # are warmed only then. A malformed release file stops the startup here.
+release = load_release()
+# On the release env itself, the snapshots its release filed for master are its own.
+precompute_store.read_release_snapshots(precompute_store.release_snapshot_namespace(config, release.env))
 release_gate = DataReleaseGate(
-    load_release(),
+    release,
     read_counts=lambda: read_counts(aito),
     on_ready=_warm_cache,
     on_mismatch=_drop_memory_caches,
@@ -290,6 +293,8 @@ def version():
         # null sha: on a deployment this means BUILD_SHA was not set at
         # build time, so provenance is unverifiable.
         "pinned": info.get("source") == "BUILD_SHA",
+        # Whether pages open in presentation mode (DEMO_MODE=1); `?demo=` overrides per tab.
+        "demo_mode": config.demo_mode,
     }
 
 
@@ -346,21 +351,25 @@ def schema():
 # routes stay in this single file so the table-of-contents is
 # greppable.
 
-def _snapshot_data(name: str) -> dict | None:
-    """A precomputed view's data, or None when it has no snapshot."""
+def _view_data(name: str) -> dict | None:
+    """What a heavy view serves, without computing it: its snapshot, else its
+    live answer once a visit to the view has cached it (`_precomputed_view`),
+    else None."""
     entry = precompute_store.get(name)
-    return entry["data"] if isinstance(entry, dict) and "data" in entry else None
+    if isinstance(entry, dict) and "data" in entry:
+        return entry["data"]
+    return cache.get(f"{name}:view")
 
 
 @app.get("/api/overview")
 def overview_endpoint():
     """Overview (ADR 0041): the shop's last 12 months, best sellers,
     households, and one headline per owner view. The payload is
-    precomputed; the Supply and Retention headlines read those views'
-    own snapshots, so each headline matches the view it links to."""
+    precomputed; the Supply and Retention headlines read what those views
+    serve, so each headline matches the view it links to."""
     try:
         overview = precompute_store.serve("overview", lambda: get_overview(aito))
-        return {**overview, "headlines": owner_headlines(overview, _snapshot_data)}
+        return {**overview, "headlines": owner_headlines(overview, _view_data)}
     except AitoError as exc:
         return JSONResponse(
             status_code=502,
