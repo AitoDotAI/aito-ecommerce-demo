@@ -1,13 +1,16 @@
-# Demo script: the partner run (5–7 minutes)
+# Demo script: the partner run (6–8 minutes)
 
-One shop, its owner and an agent, all on one Aito database. The run has
-three flows and a close:
+One shop, its owner and an agent, all on one Aito database. Monday's run
+goes from the owner's decisions to the shopper, then the agent, and closes
+on the real-data evidence:
 
-1. **The shopper:** Päivi's guinea-pig kit in the Shop.
-2. **The owner pulls a lever** in a sandbox: an offer, then a review. The
-   estimates change, and so does Päivi's Shop.
-3. **The agent** reads the same sandbox and sees the offer just set.
-4. **"How well?"** Evidence, ending on the real-data claim.
+1. **Supply's headlines** (30 s): what to reorder, what is overstocked.
+2. **Product what-if**: the decision for one product, before any lever.
+3. **The lever** in a sandbox: 20 % or more off, and the decision pushes
+   back to 10–15 %.
+4. **The Shop** as Päivi: her kit path, and the discounted hideout rising.
+5. **The agent** reads the same sandbox and sees the offer just set.
+6. **"How well?"** Evidence, ending on the real-data claim.
 
 Each beat lists what to click, what to say, the number on screen and its
 basis, the one caveat, and a recovery line. Every number was read on
@@ -20,41 +23,44 @@ sheet, `docs/notes/2026-10-26-ambientia-run-sheet.md`.
 The app runs at **ecommerce.aito.ai**, or locally with `./do dev` at
 `http://localhost:8500`. Until tonight's cutover (ADR 0035), run it
 locally with `AITO_ENV=observable ./do dev`. Sandbox mode needs the
-sandbox database in the server's config (ADR 0043). Without it, Flows 2
-and 3 don't run, and the banner doesn't show.
+sandbox database in the server's config (ADR 0043). Without it, the lever
+and the agent don't run, and the banner doesn't show.
 
-**Setup:** a screen 1440 px wide or wider, with the Aito panel open (the
-lightning toggle in the top bar). Keep the sandbox link from the
-pre-flight in a second tab.
+**Setup:** a screen 1440 px wide or wider. Open the first tab with
+`?demo=1` (or start the server with `DEMO_MODE=1`): demo mode lasts for the
+tab's session. It starts the Aito panel collapsed (the tab on the right
+edge opens it), hides "Start free trial" and the Overview's year-on-year
+growth, and folds each view's fine print behind **Details**, leaving one
+plain caveat line. It changes no number: every basis is one click away.
+Keep the sandbox link from the pre-flight in a second tab.
+
+**Not on the path:** Patterns (it stays in "If there's time"), and
+Retention. If Retention comes up, lead with who to reach and why, not with
+the €183 the win-back emails return: that is a small, synthetic sum.
 
 ---
 
-## Flow 1: the shopper (about 1 minute)
+## 1. Supply's headlines (30 seconds)
 
-**Click:** `/shop/?shopper=paivi`. This is the public Shop, April 2026.
+**Click:** the sidebar's **Supply** (or its card on the Overview).
 
-**Say:** "Päivi got a guinea pig in February: a cage and a water bottle so
-far. A shop sees what a visit is for, so it shows one view per intent."
+**Say:** "Every morning the owner asks two things: what runs out, and what
+is stuck on the shelf. Aito forecasts next month's sales per product; the
+euros follow from that forecast."
 
 | On screen | Number | Basis |
 |---|---|---|
-| Next for their kit | PetNord Hideout 17 %, Trixie Hideout 15 %, Trixie Hideout 13 %, PetNord Exercise Wheel 9 % | `_predict product_sku` on `order_lines` where `owned_before` holds a small-animal cage and water bottle (`src/shop_suggestions.py`) |
-| Buy again | PetNord Senior Guinea Pig Mix Food 12kg, 67 % | `_predict skus.$feature` over her own orders before April |
-| Picked for you, first | PetNord Veggie Crunch Treats 100g, "44 % buy it when shown" | `_recommend impressions` with her declared pets, the month and the cart (`src/shop_ranking.py`) |
+| Reorder these 59 now | an estimated €5,667 of May's sales can't be served without them; 403 units, €5,775 at cost | `_estimate units_sold` per SKU for May 2026, against stock and the reorder point (`src/supply_rows.py`); served from `data/precomputed/v2-master/supply.json` |
+| €26,576 tied up in 87 overstocked products | of the 15 largest, 3 sell through at full price within a quarter, 1 clears with a markdown, 11 won't clear even at 20 % off | the same `_estimate` at 5–20 % off, over 13 weeks |
 
-**Say, on the kit:** "Shoppers who owned a cage and a bottle bought a
-hideout next. Aito reads that from their order lines. The app has no kit
-rules." Point at the Aito panel: "The query holds only what a shop knows:
-the pets she told us, the month and her cart."
+**Caveat (the page's one line):** the forecasts are Aito's estimates for
+May; the euros follow from them. **How well? →** opens the model checks.
 
-**Caveat:** her Buy again rests on a single earlier order, so 67 % comes
-from very little history.
+**Recovery:** if Supply is slow on its first visit, the snapshot is
+missing for this env; the Overview leaves its card out rather than wait.
+Go on to the Product view.
 
-**Recovery:** if the grid stays empty, the backend can't reach its data
-release (`/api/health`, `data_release.state`). Switch to the static
-screenshots.
-
-## Flow 2: the owner pulls a lever (about 2½ minutes)
+## 2. Product what-if: the decision (about 1 minute)
 
 ### The sandbox
 
@@ -71,10 +77,9 @@ not from the live shop.
 
 ### The decision, before the lever
 
-**Click:** open the Trixie Hideout in the Shop, then **Owner view of this
-product →**. Or go straight to
-`/product/?sku=SKU-PT-0563&month=2026-05&tab=what-if&db=<branch>`. Until a
-lever writes May, the view shows April.
+**Click:** go straight to
+`/product/?sku=SKU-PT-0563&month=2026-05&tab=what-if&db=<branch>` (the
+Trixie Hideout). Until a lever writes May, the view shows April.
 
 | On screen | Number | Basis |
 |---|---|---|
@@ -82,7 +87,7 @@ lever writes May, the view shows April.
 | Margin per 100 showings | €106.55 → €141.52 (+33 %); break-even ×1.38 | list price €22.28, cost €12.25, one unit per purchase |
 | Why | 12.4 % (all impressions) × 1.57 (10–15 % off, shop-wide) × 1.00 = 19.5 % | the band's `$why` |
 
-### Pull it: 20 % or more off
+## 3. The lever: 20 % or more off, and the pushback (about 1½ minutes)
 
 **Click:** in "Pull a lever: May 2026, in this sandbox", press **20 % or
 more off**.
@@ -101,32 +106,66 @@ reads it back from the database before it shows anything."
 at 10–15 %, so the extra discount is margin given away. The owner gets the
 estimate and the reason, and still decides."
 
+**Click:** press **10–15 % off**: the owner takes the advice. The read-back
+says "May 2026, 10–15 % off"; the decision should read "Keep its offer at
+10–15 % off" **(Sunday)**.
+
+| On screen | Number | Basis |
+|---|---|---|
+| The Shop's offer factor at 10–15 % | ×1.80, so the hideout's score stays 48 (0.265 × 1.80) | lift(10–15 %) 1.573 / lift(none) 0.875 (`src/shop_state_lifts.py`) |
+
 **Caveat:** the offer's lift is shop-wide. Aito learned what a discount
 does across all products, plus how this product sells. It hasn't learned
 this product's own response to a discount.
 
-### The Shop reacts
+## 4. The Shop as Päivi (about 1½ minutes)
 
 **Click:** **See the Shop react, as Päivi →**
 (`/shop/?shopper=paivi&month=2026-05&db=<branch>`).
 
+**Say:** "Päivi got a guinea pig in February: a cage and a water bottle so
+far. A shop sees what a visit is for, so it shows one view per intent."
+
+### Her kit path
+
 | On screen | Number | Basis |
 |---|---|---|
-| Before the lever | Trixie Hideout 10th, "27 % buy it when shown" | the Shop's measured `_recommend` for May, top 40 |
-| After | Trixie Hideout 1st: "Score 48 ↑ 9 since the offer", chip "On offer ×1.8, learned across the shop" | `src/shop_rescore.py`: 0.265 × 1.81 = 0.48, above the next card's 0.335 |
+| Next for their kit | PetNord Hideout 17 %, Trixie Hideout 15 % "+1 variant", PetNord Exercise Wheel 9 %, Trixie Exercise Wheel 9 % | `_predict product_sku` on `order_lines` where `owned_before` holds a small-animal cage and water bottle (`src/shop_suggestions.py`); read for May on `observable`, the same as April's |
+| Buy again | PetNord Senior Guinea Pig Mix Food 12kg, 67 % | `_predict skus.$feature` over her own orders before the month |
+
+**Say, on the kit:** "Shoppers who owned a cage and a bottle bought a
+hideout next. Aito reads that from their order lines. The app has no kit
+rules."
+
+**On "+1 variant":** the generated catalogue gives some products the same
+name under two or three SKUs (SKU-PT-0563 and SKU-PT-0564 are both "Trixie
+Hideout"). Each list shows a name once, as the SKU Aito ranked highest,
+with that SKU's own number; scores are never added (`src/same_name.py`).
+
+### The discounted hideout rising
+
+| On screen | Number | Basis |
+|---|---|---|
+| Before the lever | Trixie Hideout 7th card, "27 % buy it when shown" | the Shop's measured `_recommend` for May, top 40, one card per name (10th of 40 SKUs; read on `observable`) |
+| After **(Sunday)** | Trixie Hideout 1st: "Score 48 ↑ 6 since the offer" (at 20 %+ or at 10–15 %), chip "On offer ×1.8, learned across the shop" | `src/shop_rescore.py`: 0.265 × 1.81 = 0.48, above the next card's 0.335; the rank change counts cards, as the page shows them |
 | The card's explanation | "Aito's purchase probability 27 % (…) × offer band lift ×1.81 (shop-wide) × star band lift ×1.00 (shop-wide) = score 48" | offer factor = lift(20 %+) 1.588 / lift(none) 0.875, each from `$why` of `_predict purchased` (`src/shop_state_lifts.py`) |
+
+**Point at the Aito panel** (open it with the tab on the right edge):
+"The query holds only what a shop knows: the pets she told us, the month
+and her cart."
 
 **Say:** "The hideout rises to first, and the card says why: the
 explanation multiplies out to the number shown. The 27 % is Aito's, and so
 is the offer's lift. Multiplying them is this app's choice, and the panel
 says so."
 
-**Caveat:** the score isn't a rate, and the re-scored Shop isn't the
-measured one. It's labelled, and it exists only in the sandbox.
+**Caveat (the page's one line):** the re-scored card shows a score, not a
+rate. The rest (the top 40, the multiplication) is behind **Details**. The
+re-scored Shop exists only in the sandbox.
 
-### Variant: a 1-star review
+### Optional: a 1-star review
 
-**Click:** back on the product, add a 1-star review with any text.
+**Optional. Click:** back on the product, add a 1-star review with any text.
 
 | On screen | Number | Basis |
 |---|---|---|
@@ -143,7 +182,18 @@ to another server: press **Reset: new sandbox**, or open the spare link.
 If the Shop doesn't move, check that the URL still has `?db=` and
 `month=2026-05`.
 
-## Flow 3: the agent (about 1½ minutes)
+**Without a sandbox:** the public Shop, `/shop/?shopper=paivi`, is April
+2026 and shows the same kit path and Buy again. Its "Picked for you" leads
+with PetNord Veggie Crunch Treats 100g, "44 % buy it when shown" (`_recommend
+impressions` with her declared pets, the month and the cart,
+`src/shop_ranking.py`), "+1 variant". Her Buy again rests on a single
+earlier order, so 67 % comes from very little history.
+
+**Recovery:** if the grid stays empty, the backend can't reach its data
+release (`/api/health`, `data_release.state`). Switch to the static
+screenshots.
+
+## 5. The agent (about 1½ minutes)
 
 **Click:** a terminal: `./do agent-demo <branch>`, the same branch as the
 browser's (setup and rehearsal: the run sheet).
@@ -168,7 +218,7 @@ numbers a tool returned.
 the deck folder (68 s, two real runs on the same data, recorded
 2026-10-24).
 
-## How well? Evidence (about 1 minute)
+## 6. How well? Evidence: the close (about 1 minute)
 
 **Click:** the sidebar's **Evidence**, then **Business reorders** (Real
 data).
@@ -186,6 +236,9 @@ the strongest of five classical baselines."
 buyers, with 3 or more orders, Aito ties the best simple method. With no
 history, it equals popularity. The data is a UK giftware wholesaler's:
 public, CC BY 4.0."
+
+In demo mode the page keeps its method and intervals in view; only the
+longer interpretation notes fold behind **Details**.
 
 **On screen, don't dwell on:** the page's default buyer (12357) ordered
 131 products next, so a hit is easy for this buyer; the 31 % is the
@@ -211,6 +264,8 @@ held out, 56,005 impressions).
 ---
 
 ## If there's time
+
+- **Patterns** stays out of the path; use it only if asked about baskets.
 
 - **Patterns** (`/patterns/?anchor=dog_dryfood`): dog dry food and dental
   treats are in the same basket 2.66× more often than chance (interval

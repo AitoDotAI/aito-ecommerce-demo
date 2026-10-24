@@ -11,9 +11,9 @@ clock.
 
 1. `./do sandbox-template-load` once. Then `./do sandbox-time`: write the 5
    timings of the lever → Shop loop here: ____ ____ ____ ____ ____.
-2. Rehearse all three flows on a fresh branch. Tick each **(Sunday)**
+2. Rehearse the run in its Monday order on a fresh branch, with `?demo=1`. Tick each **(Sunday)**
    number in the script, or correct it.
-3. Rehearse Flow 3 (below). Keep the transcript.
+3. Rehearse the agent (below). Keep the transcript.
 4. If `_estimate` with the state was flaky in any of the 5 runs, keep the
    units what-if by price (the script already uses it).
 
@@ -24,9 +24,9 @@ clock.
 | by 10:00 | If the branch flow isn't rehearsed by now, fall back to one fixed branch made in advance (ADR 0043, amendment 2). |
 | 14:30 | Start the app with the sandbox config: `AITO_SANDBOX_URL`, `AITO_SANDBOX_API_KEY`, `ADMIN_TOKEN`. PetNord's key is the read-only one. |
 | 14:45 | `./do sandbox-new`: it prints the `?db=` link. This is the spare. A branch lives 3 hours, so one made at 14:45 lasts until 17:45, past the meeting; make it no earlier than 13:45. |
-| 14:50 | Warm-up: click Flow 1 and Flow 2 on the spare link, without pulling a lever. `./do sandbox-list` shows it live. |
+| 14:50 | Warm-up: click beats 1, 2 and 4 on the spare link, without pulling a lever. `./do sandbox-list` shows it live. |
 | 15:00 | `./do agent-demo <spare branch>`: ask one question, check the first answer, then quit. |
-| 15:20 | The DNS check below. Open the tabs: `/shop/?shopper=paivi`, the spare link, a terminal in the repo. |
+| 15:20 | The DNS check below. Open the tabs, each with `?demo=1` (demo mode: the Aito panel collapsed, fine print behind "Details", for the tab's session): `/supply/?demo=1`, the spare link with `&demo=1`, a terminal in the repo. |
 
 **DNS margin.** This laptop's DNS lookups can take 5 s. The app keeps its
 Aito connections open for 5 minutes (`src/aito_client.py`,
@@ -41,11 +41,14 @@ remove the line on Tuesday (the address can change).
 view on the path loads in 0.7–2.1 s. The Shop is the slowest, because its grid
 query takes 0.7 s. Cold, each page's first visit costs 1–2 s more, because
 `./do dev` compiles the page then. So the 14:50 warm-up must open **every**
-view the talk visits, sandbox and non-sandbox: Shop, Product (all three
-tabs), Overview, Patterns, Supply, Retention, Evidence, Business reorders.
-Retention computed live took 22.6 s cold on `observable`. On master after the
-promote it reads its precomputed snapshot; check on Sunday that `/retention/`
-opens in about 1 s on the first visit after restarting the app.
+view the talk visits, sandbox and non-sandbox: Supply, Product (all three
+tabs), Shop, Overview, Evidence, Business reorders.
+Supply and Retention read the release's snapshots, filed as master
+(`data/precomputed/v2-master/`), on master and, since the demo-polish
+change, on `observable` too (measured 2026-10-24: 0.06 s each, against 22.6 s
+for Retention computed live). If a snapshot is missing, the Overview leaves
+that card out instead of showing a command; check on Sunday that all five
+Overview cards show.
 
 **Idle branches.** Aito evicts an env idle for 30 minutes from memory. The
 app re-warms a branch idle for 25 minutes on its next request, which costs
@@ -53,23 +56,38 @@ that request some seconds. The 14:50 warm-up plus clicks keep it warm.
 
 ## The flows
 
-| Flow | URL | Lands on |
-|---|---|---|
-| 1 Shopper | `/shop/?shopper=paivi` | Kit: PetNord Hideout 17 %, Trixie Hideout 15 % |
-| 2 Lever | New sandbox, then `/product/?sku=SKU-PT-0563&month=2026-05&tab=what-if&db=<branch>`, press **20 % or more off** | Read back "May 2026, 20 % or more off, €17.27, 4 stars" |
-| 2 Shop | **See the Shop react, as Päivi →** (`/shop/?shopper=paivi&month=2026-05&db=<branch>`) | Trixie Hideout 1st, "Score 48 ↑ 9 since the offer", "On offer ×1.8" |
-| 2 Variant | a 1-star review on the same product; the honest case `?sku=SKU-PT-0558` with 5 stars | 4 → 3 stars ×0.83; "No change in its star band" |
-| 3 Agent | `./do agent-demo <branch>` | It reads the May row and the per-band estimates |
-| Evidence | `/evidence/`, then **Business reorders** | The claim, word for word |
+Monday's order (`docs/demo-script.md`). Every URL takes `&demo=1` if the
+tab hasn't had it yet.
 
-## Flow 3: the agent's setup and rehearsal
+| Beat | URL | Lands on |
+|---|---|---|
+| 1 Supply (30 s) | `/supply/?demo=1` | "Reorder these 59 now", about €5,667 of May's sales at risk; €26,576 tied up in 87 overstocked |
+| 2 Product what-if | New sandbox, then `/product/?sku=SKU-PT-0563&month=2026-05&tab=what-if&db=<branch>` | "Put it on offer at 10–15 % off", 10.6 % → 19.5 % |
+| 3 Lever | press **20 % or more off**, then **10–15 % off** | Read back "May 2026, 20 % or more off, €17.27, 4 stars"; the decision pushes back to 10–15 % |
+| 4 Shop | **See the Shop react, as Päivi →** (`/shop/?shopper=paivi&month=2026-05&db=<branch>`) | Kit: PetNord Hideout 17 %, Trixie Hideout 15 % (+1 variant); Trixie Hideout card 1st, "Score 48 ↑ 6 since the offer" |
+| 4 Variant (optional) | a 1-star review on the same product; the honest case `?sku=SKU-PT-0558` with 5 stars | 4 → 3 stars ×0.83; "No change in its star band" |
+| 5 Agent | `./do agent-demo <branch>` | It reads the May row and the per-band estimates |
+| 6 Evidence (close) | `/evidence/`, then **Business reorders** | The claim, word for word |
+
+**Notes for the run:**
+
+- Don't lead Retention with the €183 the win-back emails return; it isn't
+  on the path.
+- Patterns stays out of the path.
+- Demo mode is presentation only. Every caveat is behind **Details** or
+  **How well? →**, one click away; open one if asked "how do you know?".
+- Every Shop list shows a name once ("+1 variant"): the generated catalogue
+  repeats some names under several SKUs. Supply's rows are per SKU, so they
+  show the SKU beside the name.
+
+## The agent: setup and rehearsal
 
 - **Key:** the sandbox database's read-only key, as one line in
   `~/.config/aito-mcp/sandbox-readonly-key` (chmod 600). `./do agent-demo`
   refuses without it and never prints it. If the console issues no
   read-only key for the sandbox database, decide before Monday. With the
   read-write key in that file, aito-mcp's refusal of writes is the only
-  fence; without a key, skip Flow 3 and play the video.
+  fence; without a key, skip the agent and play the video.
 - **What runs:** Claude Code in an empty temporary folder, with
   `aito-mcp@1.2.0` as its only tools (`scripts/agent-demo/aito-mcp-sandbox.sh`),
   `AITO_URL=https://shared.aito.ai/db/aito-ecommerce-sandbox/env/<branch>`.
@@ -98,8 +116,9 @@ that request some seconds. The 14:50 warm-up plus clicks keep it warm.
   `discount-what-if-unseen-bands.png`, `shop-analytics-state-lifts.png`,
   `uci-business-reorders.png`, `agentic-q1-offers.png`,
   `agentic-q2-gate.png`.
-- **No sandbox at all:** run Flow 1, the Product view's decision on the
-  public data (`/product/?sku=SKU-PT-0563`), the video, then Evidence.
+- **No sandbox at all:** Supply, the Product view's decision on the public
+  data (`/product/?sku=SKU-PT-0563`), the public Shop
+  (`/shop/?shopper=paivi`, April), the video, then Evidence.
 
 ## Say aloud
 

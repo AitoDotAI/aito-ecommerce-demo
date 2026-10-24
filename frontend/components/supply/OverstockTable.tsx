@@ -42,7 +42,7 @@ export default function OverstockTable({ rows, highlight }: { rows: SupplyOverst
                   <Link href={`/product/?sku=${encodeURIComponent(r.sku)}`} style={{ fontWeight: 700 }}>
                     {r.name}
                   </Link>
-                  <div style={{ color: "var(--text-muted)", fontSize: 11 }}>{r.category.replace(/-/g, " ")}</div>
+                  <div style={{ color: "var(--text-muted)", fontSize: 11 }}>{r.sku} · {r.category.replace(/-/g, " ")}</div>
                 </td>
                 <td style={{ textAlign: "right" }}>
                   <strong>{r.current_stock}</strong> · {r.excess_units}

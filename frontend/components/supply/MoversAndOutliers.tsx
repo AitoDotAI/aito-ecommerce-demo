@@ -20,7 +20,7 @@ export function TopMovers({ rows, month }: { rows: SupplyMoverRow[]; month: stri
       <tbody>
         {rows.map((m) => (
           <tr key={m.sku}>
-            <td><Link href={`/product/?sku=${encodeURIComponent(m.sku)}`}>{m.name}</Link></td>
+            <td><Link href={`/product/?sku=${encodeURIComponent(m.sku)}`}>{m.name}</Link> <span className="sku-tag">{m.sku}</span></td>
             <td style={{ textAlign: "right" }}>{m.avg_monthly_units}</td>
             <td style={{ textAlign: "right" }}>{m.last_month_units}</td>
             <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
@@ -57,7 +57,7 @@ export function PriceOutliers({ rows }: { rows: SupplyPriceOutlier[] }) {
       <tbody>
         {rows.map((o) => (
           <tr key={o.sku}>
-            <td><Link href={`/product/?sku=${encodeURIComponent(o.sku)}`}>{o.name}</Link></td>
+            <td><Link href={`/product/?sku=${encodeURIComponent(o.sku)}`}>{o.name}</Link> <span className="sku-tag">{o.sku}</span></td>
             <td style={{ textAlign: "right" }}>{fmtEur(o.price.list_price_eur, 2)}</td>
             <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
               {fmtEur(o.price.band_low_eur, 2)}–{fmtEur(o.price.band_high_eur, 2)}

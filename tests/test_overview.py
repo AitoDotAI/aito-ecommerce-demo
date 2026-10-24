@@ -120,13 +120,21 @@ def test_the_retention_headline_gives_the_strongest_driver_as_observed_rates():
     assert retention.detail.startswith("Customers with tenure 18 months or more left at 62%, against 33% overall.")
 
 
-def test_a_view_without_a_snapshot_shows_as_unavailable_not_absent():
+def test_a_view_without_an_answer_yet_is_left_out_and_logged_never_shown_as_a_command(caplog):
     headlines = owner_headlines(OVERVIEW, lambda name: None)
 
+    assert [h["view"] for h in headlines] == ["Patterns", "Product", "Evidence"]
+    assert not any("./do" in h["headline"] + h["detail"] for h in headlines)
+    assert "Overview leaves out the Supply card" in caplog.text
+    assert "Overview leaves out the Retention card" in caplog.text
+
+
+def test_a_views_cached_live_answer_makes_its_headline():
+    served = {"supply": SUPPLY, "retention": RETENTION}
+
+    headlines = owner_headlines(OVERVIEW, served.get)
+
     assert [h["view"] for h in headlines] == ["Patterns", "Product", "Supply", "Retention", "Evidence"]
-    missing = [h for h in headlines if not h["available"]]
-    assert [h["view"] for h in missing] == ["Supply", "Retention"]
-    assert all("./do precompute" in h["detail"] for h in missing)
 
 
 def test_a_snapshot_without_the_expected_decision_fails_loudly():

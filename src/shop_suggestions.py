@@ -10,14 +10,16 @@
   check A2: after cage, bottle and hideout, the exercise wheel comes top.
 
 Both read the cart too: a kit item in the cart counts as owned, and nothing
-in the cart is suggested again.
+in the cart is suggested again. Both show one row per product name
+(`src/same_name.py`).
 """
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 
 from src.aito_client import AitoClient
+from src.same_name import one_per_name
 from src.shop_context import DURABLE_TYPES, item_type
 from src.shop_history import kind_word, orders_before, owned_kit
 from src.shop_personas import shopper
@@ -33,6 +35,7 @@ class Suggestion:
     sku: str
     name: str
     p: float
+    same_name_skus: list[str] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -80,9 +83,10 @@ def get_suggestions(client: AitoClient, shopper_key: str, month: str, cart_skus:
     routine = [h for h in usual_hits
                if h["feature"] not in cart_skus and item_type(products[h["feature"]]["name"], products[h["feature"]]["brand"]) not in DURABLE_TYPES]
     return Suggestions(
-        usual=[Suggestion(h["feature"], products[h["feature"]]["name"], round(float(h["$p"]), 3))
-               for h in routine[:USUAL_ITEMS]],
-        next_for_pet=[Suggestion(h["sku"], h["name"], round(float(h["$p"]), 3)) for h in fresh[:NEXT_ITEMS]],
+        usual=one_per_name([Suggestion(h["feature"], products[h["feature"]]["name"], round(float(h["$p"]), 3))
+                            for h in routine])[:USUAL_ITEMS],
+        next_for_pet=one_per_name([Suggestion(h["sku"], h["name"], round(float(h["$p"]), 3))
+                                   for h in fresh])[:NEXT_ITEMS],
         owned={pet: sorted(kinds) for pet, kinds in owned.items()},
         no_history=False,
         queries=[{"endpoint": "_predict", "body": usual_body}]

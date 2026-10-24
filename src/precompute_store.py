@@ -120,9 +120,9 @@ def _current_namespace() -> str:
     return _namespace if _namespace is not None else current_api_namespace()
 
 
-def _scoped(name: str) -> str:
+def _scoped(name: str, namespace: str | None = None) -> str:
     """Key used for L1 and for the `name` column in Aito."""
-    return f"{_current_namespace()}|{name}"
+    return f"{namespace or _current_namespace()}|{name}"
 
 
 def _namespace_dir(namespace: str) -> str:
@@ -131,8 +131,34 @@ def _namespace_dir(namespace: str) -> str:
     return namespace.replace("@", "-")
 
 
-def _fallback_path(name: str) -> Path:
-    return _FALLBACK_DIR / _namespace_dir(_current_namespace()) / f"{name}.json"
+def _fallback_path(name: str, namespace: str | None = None) -> Path:
+    return _FALLBACK_DIR / _namespace_dir(namespace or _current_namespace()) / f"{name}.json"
+
+
+# ── The release env reads the snapshots its release filed for master ──
+#
+# A release computes its snapshots on the release env and files them as
+# master (`./do precompute --as master`, ADR 0035), because after the
+# promote master holds the same rows. Before the promote, an app reading
+# the release env itself (staging, or `AITO_ENV=observable ./do dev`)
+# would find none under its own namespace. Its data is the release's (the
+# data release gate checks it), so it reads master's snapshots too, after
+# its own. Writes always go to the current namespace.
+
+_release_namespace: str | None = None
+
+
+def read_release_snapshots(namespace: str | None) -> None:
+    """Also read `namespace`'s snapshots on a miss (None: only our own)."""
+    global _release_namespace
+    _release_namespace = namespace
+
+
+def release_snapshot_namespace(config, release_env: str) -> str | None:
+    """Master's namespace when `config` reads the release env, else None."""
+    if config.aito_env == release_env and release_env != "master":
+        return f"{config.api_version}@master"
+    return None
 
 
 def init(client: AitoClient) -> None:
@@ -157,8 +183,18 @@ def init(client: AitoClient) -> None:
 
 
 def get(name: str) -> Any | None:
-    """Read a snapshot entry, falling back L1 → Aito → git JSON → None."""
-    key = _scoped(name)
+    """Read a snapshot entry, falling back L1 → Aito → git JSON → None.
+
+    On the release env, a miss is read again under master's namespace
+    (see `read_release_snapshots`)."""
+    found = _get_in(_current_namespace(), name)
+    if found is None and _release_namespace and _release_namespace != _current_namespace():
+        found = _get_in(_release_namespace, name)
+    return found
+
+
+def _get_in(namespace: str, name: str) -> Any | None:
+    key = _scoped(name, namespace)
     cached = _l1.get(key)
     if cached is not None:
         return cached
@@ -179,7 +215,7 @@ def get(name: str) -> Any | None:
         except (AitoError, KeyError, json.JSONDecodeError):
             pass  # fall through to the bootstrap file
 
-    path = _fallback_path(name)
+    path = _fallback_path(name, namespace)
     if path.is_file():
         try:
             with open(path) as f:
@@ -279,3 +315,5 @@ def invalidate(name: str | None = None) -> None:
             _l1.clear()
         else:
             _l1.pop(_scoped(name), None)
+            if _release_namespace:
+                _l1.pop(_scoped(name, _release_namespace), None)

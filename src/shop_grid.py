@@ -2,20 +2,22 @@
 
 The shopper's top products by `src/shop_ranking.py`: `_recommend` with
 their profile, the month and the cart as context, the household rule as a
-filter, and the last order's items re-asked as just bought.
+filter, and the last order's items re-asked as just bought. One card per
+product name (`src/same_name.py`).
 """
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 
 from src.aito_client import AitoClient
+from src.same_name import one_per_name
 from src.shop_context import pets_filter
 from src.shop_ranking import PRODUCT_FIELDS, ShopItem, ranked_items, shop_scope
 from src.shop_rescore import RESCORED, rescore
 
 GRID_SIZE = 12
-CANDIDATES = 20     # ranked before the just-bought re-ask, so the grid stays full
+CANDIDATES = 24     # ranked before the just-bought re-ask and one card per name, so the grid stays full
 
 
 @dataclass(frozen=True)
@@ -43,8 +45,7 @@ def get_shop_grid(client: AitoClient, shopper_key: str, month: str, cart_skus: l
     where = {**scope.where(), **pets_filter(scope.pets)}
     candidates = RESCORED if rescored else CANDIDATES
     items = ranked_items(client, scope, where, candidates)
-    if rescored:
-        items = rescore(client, items, month)
+    items = _rescored(client, items, month) if rescored else one_per_name(items)
     return ShopGrid(
         shopper=scope.shopper.to_dict(), month=month, rule=scope.rule, cart=scope.cart,
         items=items[:GRID_SIZE], last_order_skus=scope.last_order_skus,
@@ -53,3 +54,15 @@ def get_shop_grid(client: AitoClient, shopper_key: str, month: str, cart_skus: l
             "goal": {"purchased": True}, "select": PRODUCT_FIELDS + ["$p", "$why"], "limit": candidates}},
         rescored=rescored,
     )
+
+
+def _rescored(client: AitoClient, items: list[ShopItem], month: str) -> list[ShopItem]:
+    """Re-scored, one card per name; a product a lever changed wins its name.
+
+    A card's measured rank is its name's place in the measured Shop, which
+    also shows one card per name, so "↑ 9 since the offer" counts the cards
+    the viewer saw move.
+    """
+    measured_place = {item.name: place for place, item in enumerate(one_per_name(items), start=1)}
+    cards = one_per_name(rescore(client, items, month), wins=lambda item: item.adjustment is not None)
+    return [replace(card, measured_rank=measured_place[card.name]) for card in cards]

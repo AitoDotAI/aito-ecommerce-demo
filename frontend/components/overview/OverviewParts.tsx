@@ -23,7 +23,7 @@ export function HeadlineCard({ h }: { h: OverviewHeadline }) {
       <div className="card-sub" style={{ fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", fontSize: 11 }}>
         {h.view} →
       </div>
-      <div style={{ fontSize: 14, fontWeight: 600, margin: "6px 0 4px", color: h.available ? "var(--text)" : "var(--text-muted)" }}>
+      <div style={{ fontSize: 14, fontWeight: 600, margin: "6px 0 4px", color: "var(--text)" }}>
         {h.headline}
       </div>
       <div className="card-sub">{h.detail}</div>

@@ -47,7 +47,7 @@ export default function ReorderTable({ rows, month, highlight }: {
                   {r.name}
                 </Link>
                 <div style={{ color: "var(--text-muted)", fontSize: 11 }}>
-                  {r.supplier} · {r.lead_time_days} d lead time
+                  {r.sku} · {r.supplier} · {r.lead_time_days} d lead time
                 </div>
               </td>
               <td style={{ textAlign: "right" }}>
