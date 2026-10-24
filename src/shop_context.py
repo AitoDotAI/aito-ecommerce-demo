@@ -21,7 +21,11 @@ DURABLE_TYPES = frozenset({
 
 
 def item_type(name: str, brand: str) -> str:
-    """"PetNord Water Bottle 500ml" → "Water Bottle" (brand and size dropped)."""
+    """"PetNord Water Bottle 500ml" → "Water Bottle" (brand and size dropped).
+
+    A name shared by several products carries its variant after a comma
+    ("Trixie Cage, small", ADR 0044); the variant is not part of the type."""
+    name = name.split(", ")[0]
     words = (name[len(brand):] if name.startswith(brand) else name).split()
     if words and any(ch.isdigit() for ch in words[-1]):
         words = words[:-1]

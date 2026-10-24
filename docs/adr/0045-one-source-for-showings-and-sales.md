@@ -157,3 +157,10 @@ Replaces the nested-`from` direction above.
 - **Checked on Aito**, once `release2` is reloaded: `tests/test_aito_check.py`'s band
   lift tests (an offer lifts a purchase over no offer by more than ×1.5; more stars
   lift it more) run unchanged.
+- **A cost, recorded.** What the household just bought is mostly shown in the buy-again
+  lists, not in the shop's list: the ranked table has 359 just-bought showings (clicks
+  0.198 against 0.315 for the rest, purchases 0.078 against 0.142; 6,632 more are in
+  `unranked_showings`). The direction is the registered one (S8), but 359 is under its
+  sample floor of 600, so `tests/test_aito_check.py`'s two just-bought checks (the Shop's
+  "scores lower as just bought" and the analytics' clicked-less interval) are strict xfails,
+  not retuned.

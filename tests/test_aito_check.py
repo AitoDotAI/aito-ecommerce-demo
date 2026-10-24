@@ -687,6 +687,10 @@ def test_shop_a_cage_in_the_cart_changes_what_is_recommended(client):
     assert empty != with_cage, empty
 
 
+@pytest.mark.xfail(strict=True, reason=(
+    "ADR 0045, amendment 2: the ranked table holds 359 just-bought showings (the shop's list "
+    "rarely shows what was just bought; the rest are buy-again lists), too few to judge. "
+    "Direction is as registered (clicks 0.198 against 0.315); the sample floor of 600 is not met."))
 def test_shop_an_item_bought_last_order_scores_lower_as_just_bought(client):
     """A8's shop form: re-asked with just_bought: true, a product's purchase
     probability drops below what it was before the shopper bought it."""
@@ -804,6 +808,10 @@ def test_shop_analytics_low_rated_products_sell_less(shop_analytics):
     assert row and row.interval_high < 1, row
 
 
+@pytest.mark.xfail(strict=True, reason=(
+    "ADR 0045, amendment 2: the ranked table holds 359 just-bought showings (the shop's list "
+    "rarely shows what was just bought; the rest are buy-again lists), too few to judge. "
+    "Direction is as registered (clicks 0.198 against 0.315); the sample floor of 600 is not met."))
 def test_shop_analytics_just_bought_products_are_clicked_less(shop_analytics):
     """S8: a product in the last order draws fewer clicks (109 of 24,950)."""
     row = _row(shop_analytics["clicked"].rows, "just_bought", "true")
