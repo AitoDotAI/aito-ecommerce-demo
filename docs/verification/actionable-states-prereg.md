@@ -934,3 +934,76 @@ two bug fixes left those seeds unchanged.
 - **The rule's interval bars:** R1, R2a and R5 clear their thresholds only by
   their point estimates (their intervals reach below them); the rule asks
   only that intervals exclude 1.0.
+
+## Amendment (2026-10-24, before either run): O4's procedure and the Shop sweep's details, fixed
+
+`release2` is loaded (Aito 2.11.8, counts as `data/release-env.json`). The two
+live items above leave details open. They are fixed here before any O4
+estimate or sweep query was sent; only the local fixtures (row counts, value
+ranges) were looked at.
+
+### O4, the implied elasticity
+
+- **Held-out month:** 2026-04, the last month with sales (`LATEST_MONTH`).
+  Aito learns from the other months only, through a nested `from`:
+  `{"from": "monthly_sales", "where": {"month": {"$lt": "2026-04"}}}`.
+- **Products:** every product with a 2026-04 row (658).
+- **Query, primary (A):** `_estimate units_sold`, `model: "regression"` (the
+  Price view's model; k-NN isn't monotone in price, see the cheatsheet), with
+  `where {product_sku, price_index}`: within product, so the slope is the
+  price index's term with the product held fixed.
+- **Two points per product:** `price_index` 1.00 (list price) and 0.83
+  (17 % off, the middle of the offered rows' range).
+- **A product's implied ε:** ln(U(0.83) ÷ U(1.00)) ÷ ln(0.83).
+  - A product whose U(1.00) is under 1 unit is counted and reported, not
+    used: on a near-zero base the ratio is noise.
+  - A non-positive estimate at either point is counted and reported.
+  - If either count exceeds 10 % of the products, O4 is reported as not
+    measurable, not as a pass or fail.
+- **O4's value:** the median implied ε over the products used. **Pass:** in
+  [−2.5, −0.5], as registered.
+- **Reported, not judged:**
+  - **B:** the same with `discount_band` in `where` (`none` at 1.00,
+    `15-20` at 0.83), if `_estimate` accepts the column;
+  - **k-NN:** A without `model`;
+  - **held-out accuracy:** A's mean absolute error on 2026-04 at each
+    product's actual `price_index`, against the product's mean units over
+    the training months.
+
+### The Shop sweep for shoppers without a pet profile
+
+- **The cart.** Since ADR 0045 a session's `basket` is its own order: in a
+  local count of 2,000 eligible sessions, 1,889 hold a bought SKU in the
+  basket. Cart words from the session would carry the answer, and leaving
+  the cart's SKUs out of the candidates would make a hit impossible. So
+  "Picked for you" is scored **on arrival, with an empty cart**: no cart
+  words and no cart SKUs. (A deviation from "month, cart words", made
+  before the run, flagged.)
+- **The three `where`s,** each with `context.month` (the session's) and
+  `just_bought: false`, and the diet rule's filter when the customer
+  declared one:
+  - **I:** `context.customer` (the session's customer);
+  - **P:** `context.pets_from_orders` as `$and` of `$match` per pet type
+    (the session's value), and `product_sku.pet_type: {"$or": those types}`
+    as the candidate filter;
+  - **I+P:** both.
+- **Hold-out:** `from: {"from": "impressions", "where": {"$not": {"context":
+  <session>}}}` for every query, as ADR 0033's sweep.
+- **hit@12:** 1 when any product purchased in the session is among the
+  `_recommend` top 12.
+- **Brier:** over the session's shown products whose pet type is in the
+  session's `pets_from_orders` and that the diet rule keeps, the **same set
+  for every variant**, so the comparison is paired. Each variant's `$p`
+  comes from the same `_recommend` restricted to that set
+  (`product_sku: {"$or": set}`). A session with an empty set is left out of
+  the Brier comparison and counted.
+- **Paired 95 % intervals:** per-session differences, mean ± 1.96 · sd ÷ √n.
+- **The decision rule, operationally:**
+  1. eligible: the variants whose mean Brier is within 0.01 of the best;
+  2. among them, the leader on mean hit@12;
+  3. if the leader isn't P, P is eligible, and the leader − P hit@12
+     interval includes 0, the Shop uses P;
+  4. otherwise the leader. If I and I+P tie in step 2 with P not eligible,
+     the Shop uses I (the simpler where).
+- **Sample:** `random.Random(0).sample` of 1,400 from the eligible sessions
+  sorted by `context_id` (2,333 in the seed-42 fixtures).
