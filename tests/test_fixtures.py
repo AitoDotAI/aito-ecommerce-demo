@@ -672,6 +672,14 @@ def test_treat_affinity_correlates_with_treats_share(customers, products, orders
     )
 
 
+def test_product_names_are_unique():
+    """A merchant reads two SKUs with one name as a duplicate: a variant
+    ("Trixie Hideout, small") tells them apart."""
+    names = [p["name"] for p in _load("products.json")]
+    repeated = sorted({n for n in names if names.count(n) > 1})
+    assert not repeated, repeated[:5]
+
+
 def test_no_product_name_repeats_a_word():
     """A shopper reading "Daily Dental Dental Treats" stops trusting the
     catalogue (demo review, 2026-09-28): a flavour already ending in the

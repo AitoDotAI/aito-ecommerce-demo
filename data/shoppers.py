@@ -177,7 +177,8 @@ def query_phrases(products: list) -> dict[str, list]:
     """Every 2–3 word phrase from a product's type (its name without brand
     or size) that at least MIN_QUERY_MATCHES product names contain,
     mapped to those products."""
-    names = [(p, p.name.lower()) for p in products]
+    # A variant follows a comma ("Trixie Exercise Wheel, small"): words, not punctuation.
+    names = [(p, p.name.lower().replace(",", "")) for p in products]
     phrases: dict[str, list] = {}
     for p in products:
         words = lifecycle.item_type(p.name, p.brand).lower().split()

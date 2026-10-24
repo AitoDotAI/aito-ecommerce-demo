@@ -322,7 +322,7 @@
   },
   {
     "sku": "SKU-PT-0024",
-    "name": "Hill's Science Plan Puppy Lamb Dog Food 15kg",
+    "name": "Hill's Science Plan Puppy Lamb Dog Food 15kg, classic recipe",
     "category": "dry-food",
     "pet_type": "dog",
     "brand": "Hill's Science Plan",
@@ -332,11 +332,12 @@
     "tax_class": "food-reduced",
     "tags": "premium puppy-stage complete kibble value-bundle",
     "avg_rating": 4.2,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0025",
-    "name": "Hill's Science Plan Puppy Lamb Dog Food 15kg",
+    "name": "Hill's Science Plan Puppy Lamb Dog Food 15kg, light recipe",
     "category": "dry-food",
     "pet_type": "dog",
     "brand": "Hill's Science Plan",
@@ -346,7 +347,8 @@
     "tax_class": "food-reduced",
     "tags": "premium puppy-stage complete kibble value-bundle",
     "avg_rating": 4.71,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0026",
@@ -420,7 +422,7 @@
   },
   {
     "sku": "SKU-PT-0031",
-    "name": "Hill's Science Plan Beef Dog Food 1kg",
+    "name": "Hill's Science Plan Beef Dog Food 1kg, classic recipe",
     "category": "dry-food",
     "pet_type": "dog",
     "brand": "Hill's Science Plan",
@@ -430,7 +432,8 @@
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
     "avg_rating": 2.0,
-    "rating_band": "1-2"
+    "rating_band": "1-2",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0032",
@@ -462,7 +465,7 @@
   },
   {
     "sku": "SKU-PT-0034",
-    "name": "Hill's Science Plan Beef Dog Food 1kg",
+    "name": "Hill's Science Plan Beef Dog Food 1kg, light recipe",
     "category": "dry-food",
     "pet_type": "dog",
     "brand": "Hill's Science Plan",
@@ -472,7 +475,8 @@
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0035",
@@ -624,7 +628,7 @@
   },
   {
     "sku": "SKU-PT-0046",
-    "name": "Eukanuba Lamb Dog Food 7kg",
+    "name": "Eukanuba Lamb Dog Food 7kg, classic recipe",
     "category": "dry-food",
     "pet_type": "dog",
     "brand": "Eukanuba",
@@ -634,11 +638,12 @@
     "tax_class": "food-reduced",
     "tags": "mass complete kibble value-bundle",
     "avg_rating": 4.6,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0047",
-    "name": "Eukanuba Lamb Dog Food 7kg",
+    "name": "Eukanuba Lamb Dog Food 7kg, light recipe",
     "category": "dry-food",
     "pet_type": "dog",
     "brand": "Eukanuba",
@@ -648,7 +653,8 @@
     "tax_class": "food-reduced",
     "tags": "mass complete kibble value-bundle",
     "avg_rating": 3.0,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0048",
@@ -959,7 +965,7 @@
   },
   {
     "sku": "SKU-PT-0070",
-    "name": "Acana Beef Dog Food 1kg",
+    "name": "Acana Beef Dog Food 1kg, classic recipe",
     "category": "dry-food",
     "pet_type": "dog",
     "brand": "Acana",
@@ -969,11 +975,12 @@
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
     "avg_rating": 3.5,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0071",
-    "name": "Acana Beef Dog Food 1kg",
+    "name": "Acana Beef Dog Food 1kg, light recipe",
     "category": "dry-food",
     "pet_type": "dog",
     "brand": "Acana",
@@ -983,11 +990,12 @@
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
     "avg_rating": 4.67,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0072",
-    "name": "Acana Beef Dog Food 1kg",
+    "name": "Acana Beef Dog Food 1kg, value pack",
     "category": "dry-food",
     "pet_type": "dog",
     "brand": "Acana",
@@ -997,7 +1005,8 @@
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
     "avg_rating": 3.75,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "value pack"
   },
   {
     "sku": "SKU-PT-0073",
@@ -1071,7 +1080,7 @@
   },
   {
     "sku": "SKU-PT-0078",
-    "name": "Acana Sensitive Turkey Dog Food 1kg",
+    "name": "Acana Sensitive Turkey Dog Food 1kg, classic recipe",
     "category": "dry-food",
     "pet_type": "dog",
     "brand": "Acana",
@@ -1081,11 +1090,12 @@
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble",
     "avg_rating": 4.57,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0079",
-    "name": "Acana Sensitive Turkey Dog Food 1kg",
+    "name": "Acana Sensitive Turkey Dog Food 1kg, light recipe",
     "category": "dry-food",
     "pet_type": "dog",
     "brand": "Acana",
@@ -1093,11 +1103,12 @@
     "dietary": "sensitive",
     "tags": "premium hypoallergenic complete kibble",
     "avg_rating": 3.8,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0080",
-    "name": "Orijen Chicken Dog Food 1kg",
+    "name": "Orijen Chicken Dog Food 1kg, classic recipe",
     "category": "dry-food",
     "pet_type": "dog",
     "brand": "Orijen",
@@ -1107,7 +1118,8 @@
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0081",
@@ -1167,7 +1179,7 @@
   },
   {
     "sku": "SKU-PT-0085",
-    "name": "Orijen Chicken Dog Food 1kg",
+    "name": "Orijen Chicken Dog Food 1kg, light recipe",
     "category": "dry-food",
     "pet_type": "dog",
     "brand": "Orijen",
@@ -1177,7 +1189,8 @@
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
     "avg_rating": 4.67,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0086",
@@ -1349,7 +1362,7 @@
   },
   {
     "sku": "SKU-PT-0098",
-    "name": "Orijen Turkey Dog Food 2kg",
+    "name": "Orijen Turkey Dog Food 2kg, classic recipe",
     "category": "dry-food",
     "pet_type": "dog",
     "brand": "Orijen",
@@ -1359,11 +1372,12 @@
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0099",
-    "name": "Orijen Turkey Dog Food 2kg",
+    "name": "Orijen Turkey Dog Food 2kg, light recipe",
     "category": "dry-food",
     "pet_type": "dog",
     "brand": "Orijen",
@@ -1373,7 +1387,8 @@
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0100",
@@ -1559,7 +1574,7 @@
   },
   {
     "sku": "SKU-PT-0113",
-    "name": "Royal Canin Turkey Dog Food 400g",
+    "name": "Royal Canin Turkey Dog Food 400g, classic recipe",
     "category": "wet-food",
     "pet_type": "dog",
     "brand": "Royal Canin",
@@ -1569,7 +1584,8 @@
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0114",
@@ -1629,7 +1645,7 @@
   },
   {
     "sku": "SKU-PT-0118",
-    "name": "Royal Canin Turkey Dog Food 400g",
+    "name": "Royal Canin Turkey Dog Food 400g, light recipe",
     "category": "wet-food",
     "pet_type": "dog",
     "brand": "Royal Canin",
@@ -1639,7 +1655,8 @@
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
     "avg_rating": 4.17,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0119",
@@ -1671,7 +1688,7 @@
   },
   {
     "sku": "SKU-PT-0121",
-    "name": "Royal Canin Puppy Duck Dog Food 400g",
+    "name": "Royal Canin Puppy Duck Dog Food 400g, classic recipe",
     "category": "wet-food",
     "pet_type": "dog",
     "brand": "Royal Canin",
@@ -1681,7 +1698,8 @@
     "tax_class": "food-reduced",
     "tags": "premium puppy-stage complete pouch",
     "avg_rating": 4.5,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0122",
@@ -1713,7 +1731,7 @@
   },
   {
     "sku": "SKU-PT-0124",
-    "name": "Royal Canin Puppy Duck Dog Food 400g",
+    "name": "Royal Canin Puppy Duck Dog Food 400g, light recipe",
     "category": "wet-food",
     "pet_type": "dog",
     "brand": "Royal Canin",
@@ -1723,11 +1741,12 @@
     "tax_class": "food-reduced",
     "tags": "premium puppy-stage complete pouch",
     "avg_rating": 4.11,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0125",
-    "name": "Hill's Science Plan Chicken Dog Food 85g",
+    "name": "Hill's Science Plan Chicken Dog Food 85g, classic recipe",
     "category": "wet-food",
     "pet_type": "dog",
     "brand": "Hill's Science Plan",
@@ -1737,11 +1756,12 @@
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0126",
-    "name": "Hill's Science Plan Grain Free Chicken Dog Food 85g",
+    "name": "Hill's Science Plan Grain Free Chicken Dog Food 85g, classic recipe",
     "category": "wet-food",
     "pet_type": "dog",
     "brand": "Hill's Science Plan",
@@ -1751,7 +1771,8 @@
     "tax_class": "food-reduced",
     "tags": "premium natural complete pouch",
     "avg_rating": 4.33,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0127",
@@ -1781,7 +1802,7 @@
   },
   {
     "sku": "SKU-PT-0129",
-    "name": "Hill's Science Plan Grain Free Chicken Dog Food 85g",
+    "name": "Hill's Science Plan Grain Free Chicken Dog Food 85g, light recipe",
     "category": "wet-food",
     "pet_type": "dog",
     "brand": "Hill's Science Plan",
@@ -1791,11 +1812,12 @@
     "tax_class": "food-reduced",
     "tags": "premium natural complete pouch",
     "avg_rating": 3.25,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0130",
-    "name": "Hill's Science Plan Chicken Dog Food 85g",
+    "name": "Hill's Science Plan Chicken Dog Food 85g, light recipe",
     "category": "wet-food",
     "pet_type": "dog",
     "brand": "Hill's Science Plan",
@@ -1805,7 +1827,8 @@
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
     "avg_rating": 4.83,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0131",
@@ -1879,7 +1902,7 @@
   },
   {
     "sku": "SKU-PT-0136",
-    "name": "Hill's Science Plan Beef Dog Food 150g",
+    "name": "Hill's Science Plan Beef Dog Food 150g, classic recipe",
     "category": "wet-food",
     "pet_type": "dog",
     "brand": "Hill's Science Plan",
@@ -1889,11 +1912,12 @@
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
     "avg_rating": 3.5,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0137",
-    "name": "Hill's Science Plan Beef Dog Food 150g",
+    "name": "Hill's Science Plan Beef Dog Food 150g, light recipe",
     "category": "wet-food",
     "pet_type": "dog",
     "brand": "Hill's Science Plan",
@@ -1903,7 +1927,8 @@
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0138",
@@ -2031,7 +2056,7 @@
   },
   {
     "sku": "SKU-PT-0147",
-    "name": "Eukanuba Large Breed Chicken Dog Food 150g",
+    "name": "Eukanuba Large Breed Chicken Dog Food 150g, classic recipe",
     "category": "wet-food",
     "pet_type": "dog",
     "brand": "Eukanuba",
@@ -2041,11 +2066,12 @@
     "tax_class": "food-reduced",
     "tags": "mass large-breed complete pouch",
     "avg_rating": 4.56,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0148",
-    "name": "Eukanuba Large Breed Chicken Dog Food 150g",
+    "name": "Eukanuba Large Breed Chicken Dog Food 150g, light recipe",
     "category": "wet-food",
     "pet_type": "dog",
     "brand": "Eukanuba",
@@ -2055,7 +2081,8 @@
     "tax_class": "food-reduced",
     "tags": "mass large-breed complete pouch",
     "avg_rating": 3.62,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0149",
@@ -2073,7 +2100,7 @@
   },
   {
     "sku": "SKU-PT-0150",
-    "name": "Eukanuba Large Breed Chicken Dog Food 400g",
+    "name": "Eukanuba Large Breed Chicken Dog Food 400g, classic recipe",
     "category": "wet-food",
     "pet_type": "dog",
     "brand": "Eukanuba",
@@ -2083,11 +2110,12 @@
     "tax_class": "food-reduced",
     "tags": "mass large-breed complete pouch",
     "avg_rating": 3.6,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0151",
-    "name": "Eukanuba Large Breed Chicken Dog Food 400g",
+    "name": "Eukanuba Large Breed Chicken Dog Food 400g, light recipe",
     "category": "wet-food",
     "pet_type": "dog",
     "brand": "Eukanuba",
@@ -2097,7 +2125,8 @@
     "tax_class": "food-reduced",
     "tags": "mass large-breed complete pouch",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0152",
@@ -2293,7 +2322,7 @@
   },
   {
     "sku": "SKU-PT-0166",
-    "name": "PetNord Puppy Bacon Treats 100g",
+    "name": "PetNord Puppy Bacon Treats 100g, classic",
     "category": "treats",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -2303,11 +2332,12 @@
     "tax_class": "food-reduced",
     "tags": "mass puppy-stage indulgent training",
     "avg_rating": 4.38,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "classic"
   },
   {
     "sku": "SKU-PT-0167",
-    "name": "PetNord Puppy Bacon Treats 100g",
+    "name": "PetNord Puppy Bacon Treats 100g, soft",
     "category": "treats",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -2317,7 +2347,8 @@
     "tax_class": "food-reduced",
     "tags": "mass puppy-stage indulgent training",
     "avg_rating": 4.8,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "soft"
   },
   {
     "sku": "SKU-PT-0168",
@@ -2419,7 +2450,7 @@
   },
   {
     "sku": "SKU-PT-0175",
-    "name": "PetNord Cheese Treats 500g",
+    "name": "PetNord Cheese Treats 500g, classic",
     "category": "treats",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -2429,7 +2460,8 @@
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
     "avg_rating": 4.09,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "classic"
   },
   {
     "sku": "SKU-PT-0176",
@@ -2461,7 +2493,7 @@
   },
   {
     "sku": "SKU-PT-0178",
-    "name": "PetNord Cheese Treats 500g",
+    "name": "PetNord Cheese Treats 500g, soft",
     "category": "treats",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -2471,7 +2503,8 @@
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
     "avg_rating": 3.57,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "soft"
   },
   {
     "sku": "SKU-PT-0179",
@@ -2489,7 +2522,7 @@
   },
   {
     "sku": "SKU-PT-0180",
-    "name": "PetNord Mixed Reward Treats 500g",
+    "name": "PetNord Mixed Reward Treats 500g, classic",
     "category": "treats",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -2499,11 +2532,12 @@
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
     "avg_rating": 4.62,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "classic"
   },
   {
     "sku": "SKU-PT-0181",
-    "name": "PetNord Mixed Reward Treats 500g",
+    "name": "PetNord Mixed Reward Treats 500g, soft",
     "category": "treats",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -2513,7 +2547,8 @@
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
     "avg_rating": 4.71,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "soft"
   },
   {
     "sku": "SKU-PT-0182",
@@ -2531,7 +2566,7 @@
   },
   {
     "sku": "SKU-PT-0183",
-    "name": "Whimzees Grain Free Daily Dental Treats 200g",
+    "name": "Whimzees Grain Free Daily Dental Treats 200g, small dogs",
     "category": "dental-treats",
     "pet_type": "dog",
     "brand": "Whimzees",
@@ -2541,11 +2576,12 @@
     "tax_class": "food-reduced",
     "tags": "natural dental training preventive",
     "avg_rating": 3.87,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "small dogs"
   },
   {
     "sku": "SKU-PT-0184",
-    "name": "Whimzees Grain Free Daily Dental Treats 200g",
+    "name": "Whimzees Grain Free Daily Dental Treats 200g, medium dogs",
     "category": "dental-treats",
     "pet_type": "dog",
     "brand": "Whimzees",
@@ -2555,7 +2591,8 @@
     "tax_class": "food-reduced",
     "tags": "natural dental training preventive",
     "avg_rating": 4.29,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "medium dogs"
   },
   {
     "sku": "SKU-PT-0185",
@@ -2571,7 +2608,7 @@
   },
   {
     "sku": "SKU-PT-0186",
-    "name": "Whimzees Grain Free Puppy Dental Treats 200g",
+    "name": "Whimzees Grain Free Puppy Dental Treats 200g, small dogs",
     "category": "dental-treats",
     "pet_type": "dog",
     "brand": "Whimzees",
@@ -2581,11 +2618,12 @@
     "tax_class": "food-reduced",
     "tags": "natural dental training preventive",
     "avg_rating": 3.69,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "small dogs"
   },
   {
     "sku": "SKU-PT-0187",
-    "name": "Whimzees Grain Free Puppy Dental Treats 200g",
+    "name": "Whimzees Grain Free Puppy Dental Treats 200g, medium dogs",
     "category": "dental-treats",
     "pet_type": "dog",
     "brand": "Whimzees",
@@ -2595,7 +2633,8 @@
     "tax_class": "food-reduced",
     "tags": "natural dental training preventive",
     "avg_rating": 4.58,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "medium dogs"
   },
   {
     "sku": "SKU-PT-0188",
@@ -2613,7 +2652,7 @@
   },
   {
     "sku": "SKU-PT-0189",
-    "name": "Whimzees Grain Free Fresh Breath Dental Treats 200g",
+    "name": "Whimzees Grain Free Fresh Breath Dental Treats 200g, small dogs",
     "category": "dental-treats",
     "pet_type": "dog",
     "brand": "Whimzees",
@@ -2623,11 +2662,12 @@
     "tax_class": "food-reduced",
     "tags": "natural dental training preventive",
     "avg_rating": 4.42,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "small dogs"
   },
   {
     "sku": "SKU-PT-0190",
-    "name": "Whimzees Grain Free Fresh Breath Dental Treats 200g",
+    "name": "Whimzees Grain Free Fresh Breath Dental Treats 200g, medium dogs",
     "category": "dental-treats",
     "pet_type": "dog",
     "brand": "Whimzees",
@@ -2637,7 +2677,8 @@
     "tax_class": "food-reduced",
     "tags": "natural dental training preventive",
     "avg_rating": 4.36,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "medium dogs"
   },
   {
     "sku": "SKU-PT-0191",
@@ -2655,7 +2696,7 @@
   },
   {
     "sku": "SKU-PT-0192",
-    "name": "PetNord Grain Free Daily Dental Treats 120g",
+    "name": "PetNord Grain Free Daily Dental Treats 120g, small dogs",
     "category": "dental-treats",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -2665,11 +2706,12 @@
     "tax_class": "food-reduced",
     "tags": "mass natural dental training preventive",
     "avg_rating": 3.17,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "small dogs"
   },
   {
     "sku": "SKU-PT-0193",
-    "name": "PetNord Grain Free Daily Dental Treats 120g",
+    "name": "PetNord Grain Free Daily Dental Treats 120g, medium dogs",
     "category": "dental-treats",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -2679,7 +2721,8 @@
     "tax_class": "food-reduced",
     "tags": "mass natural dental training preventive",
     "avg_rating": 3.64,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "medium dogs"
   },
   {
     "sku": "SKU-PT-0194",
@@ -2765,7 +2808,7 @@
   },
   {
     "sku": "SKU-PT-0200",
-    "name": "PetNord Grain Free Fresh Breath Dental Treats 80g",
+    "name": "PetNord Grain Free Fresh Breath Dental Treats 80g, small dogs",
     "category": "dental-treats",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -2773,11 +2816,12 @@
     "weight_kg": 0.08,
     "tags": "mass natural dental training preventive",
     "avg_rating": 3.63,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "small dogs"
   },
   {
     "sku": "SKU-PT-0201",
-    "name": "PetNord Grain Free Fresh Breath Dental Treats 80g",
+    "name": "PetNord Grain Free Fresh Breath Dental Treats 80g, medium dogs",
     "category": "dental-treats",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -2787,7 +2831,8 @@
     "tax_class": "food-reduced",
     "tags": "mass natural dental training preventive",
     "avg_rating": 2.76,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "medium dogs"
   },
   {
     "sku": "SKU-PT-0202",
@@ -2829,7 +2874,7 @@
   },
   {
     "sku": "SKU-PT-0205",
-    "name": "PetNord Harness",
+    "name": "PetNord Harness, small",
     "category": "accessories",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -2837,11 +2882,12 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 3.66,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0206",
-    "name": "PetNord Harness",
+    "name": "PetNord Harness, medium",
     "category": "accessories",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -2849,11 +2895,12 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 3.48,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0207",
-    "name": "PetNord Bowl",
+    "name": "PetNord Bowl, small",
     "category": "accessories",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -2861,11 +2908,12 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 4.28,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0208",
-    "name": "PetNord Bowl",
+    "name": "PetNord Bowl, medium",
     "category": "accessories",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -2873,11 +2921,12 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 3.88,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0209",
-    "name": "PetNord Bowl",
+    "name": "PetNord Bowl, large",
     "category": "accessories",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -2885,7 +2934,8 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 3.67,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "large"
   },
   {
     "sku": "SKU-PT-0210",
@@ -2901,7 +2951,7 @@
   },
   {
     "sku": "SKU-PT-0211",
-    "name": "Trixie Collar",
+    "name": "Trixie Collar, small",
     "category": "accessories",
     "pet_type": "dog",
     "brand": "Trixie",
@@ -2909,11 +2959,12 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 4.14,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0212",
-    "name": "Trixie Collar",
+    "name": "Trixie Collar, medium",
     "category": "accessories",
     "pet_type": "dog",
     "brand": "Trixie",
@@ -2921,11 +2972,12 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 4.16,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0213",
-    "name": "Trixie Collar",
+    "name": "Trixie Collar, large",
     "category": "accessories",
     "pet_type": "dog",
     "brand": "Trixie",
@@ -2933,7 +2985,8 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 4.2,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "large"
   },
   {
     "sku": "SKU-PT-0214",
@@ -2949,7 +3002,7 @@
   },
   {
     "sku": "SKU-PT-0215",
-    "name": "Trixie Harness",
+    "name": "Trixie Harness, small",
     "category": "accessories",
     "pet_type": "dog",
     "brand": "Trixie",
@@ -2957,11 +3010,12 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 4.15,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0216",
-    "name": "Trixie Harness",
+    "name": "Trixie Harness, medium",
     "category": "accessories",
     "pet_type": "dog",
     "brand": "Trixie",
@@ -2969,11 +3023,12 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 4.24,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0217",
-    "name": "Trixie Bowl",
+    "name": "Trixie Bowl, small",
     "category": "accessories",
     "pet_type": "dog",
     "brand": "Trixie",
@@ -2981,11 +3036,12 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 3.95,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0218",
-    "name": "Trixie Bowl",
+    "name": "Trixie Bowl, medium",
     "category": "accessories",
     "pet_type": "dog",
     "brand": "Trixie",
@@ -2993,7 +3049,8 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 3.45,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0219",
@@ -3033,7 +3090,7 @@
   },
   {
     "sku": "SKU-PT-0222",
-    "name": "Kong Chew Bone",
+    "name": "Kong Chew Bone, small",
     "category": "toys",
     "pet_type": "dog",
     "brand": "Kong",
@@ -3041,11 +3098,12 @@
     "tax_class": "standard",
     "tags": "mass interactive chew",
     "avg_rating": 4.33,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0223",
-    "name": "Kong Chew Bone",
+    "name": "Kong Chew Bone, medium",
     "category": "toys",
     "pet_type": "dog",
     "brand": "Kong",
@@ -3053,11 +3111,12 @@
     "tax_class": "standard",
     "tags": "mass interactive chew",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0224",
-    "name": "Kong Tennis Ball",
+    "name": "Kong Tennis Ball, small",
     "category": "toys",
     "pet_type": "dog",
     "brand": "Kong",
@@ -3065,11 +3124,12 @@
     "tax_class": "standard",
     "tags": "mass interactive chew",
     "avg_rating": 3.33,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0225",
-    "name": "Kong Tennis Ball",
+    "name": "Kong Tennis Ball, medium",
     "category": "toys",
     "pet_type": "dog",
     "brand": "Kong",
@@ -3077,11 +3137,12 @@
     "tax_class": "standard",
     "tags": "mass interactive chew",
     "avg_rating": 4.11,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0226",
-    "name": "Kong Tennis Ball",
+    "name": "Kong Tennis Ball, large",
     "category": "toys",
     "pet_type": "dog",
     "brand": "Kong",
@@ -3089,7 +3150,8 @@
     "tax_class": "standard",
     "tags": "mass interactive chew",
     "avg_rating": 4.33,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "large"
   },
   {
     "sku": "SKU-PT-0227",
@@ -3105,7 +3167,7 @@
   },
   {
     "sku": "SKU-PT-0228",
-    "name": "PetNord Squeak Ball",
+    "name": "PetNord Squeak Ball, small",
     "category": "toys",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -3113,11 +3175,12 @@
     "tax_class": "standard",
     "tags": "mass interactive chew",
     "avg_rating": 2.0,
-    "rating_band": "1-2"
+    "rating_band": "1-2",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0229",
-    "name": "PetNord Squeak Ball",
+    "name": "PetNord Squeak Ball, medium",
     "category": "toys",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -3125,7 +3188,8 @@
     "tax_class": "standard",
     "tags": "mass interactive chew",
     "avg_rating": 4.33,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0230",
@@ -3165,7 +3229,7 @@
   },
   {
     "sku": "SKU-PT-0233",
-    "name": "Trixie Squeak Ball",
+    "name": "Trixie Squeak Ball, small",
     "category": "toys",
     "pet_type": "dog",
     "brand": "Trixie",
@@ -3173,11 +3237,12 @@
     "tax_class": "standard",
     "tags": "mass interactive chew",
     "avg_rating": 2.0,
-    "rating_band": "1-2"
+    "rating_band": "1-2",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0234",
-    "name": "Trixie Squeak Ball",
+    "name": "Trixie Squeak Ball, medium",
     "category": "toys",
     "pet_type": "dog",
     "brand": "Trixie",
@@ -3185,11 +3250,12 @@
     "tax_class": "standard",
     "tags": "mass interactive chew",
     "avg_rating": 1.0,
-    "rating_band": "1-2"
+    "rating_band": "1-2",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0235",
-    "name": "Trixie Squeak Ball",
+    "name": "Trixie Squeak Ball, large",
     "category": "toys",
     "pet_type": "dog",
     "brand": "Trixie",
@@ -3197,11 +3263,12 @@
     "tax_class": "standard",
     "tags": "mass interactive chew",
     "avg_rating": 3.5,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "large"
   },
   {
     "sku": "SKU-PT-0236",
-    "name": "Trixie Chew Bone",
+    "name": "Trixie Chew Bone, small",
     "category": "toys",
     "pet_type": "dog",
     "brand": "Trixie",
@@ -3209,11 +3276,12 @@
     "tax_class": "standard",
     "tags": "mass interactive chew",
     "avg_rating": 1.5,
-    "rating_band": "1-2"
+    "rating_band": "1-2",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0237",
-    "name": "Trixie Chew Bone",
+    "name": "Trixie Chew Bone, medium",
     "category": "toys",
     "pet_type": "dog",
     "brand": "Trixie",
@@ -3221,11 +3289,12 @@
     "tax_class": "standard",
     "tags": "mass interactive chew",
     "avg_rating": 3.67,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0238",
-    "name": "Trixie Chew Bone",
+    "name": "Trixie Chew Bone, large",
     "category": "toys",
     "pet_type": "dog",
     "brand": "Trixie",
@@ -3233,11 +3302,12 @@
     "tax_class": "standard",
     "tags": "mass interactive chew",
     "avg_rating": 3.0,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "large"
   },
   {
     "sku": "SKU-PT-0239",
-    "name": "Trixie Tennis Ball",
+    "name": "Trixie Tennis Ball, small",
     "category": "toys",
     "pet_type": "dog",
     "brand": "Trixie",
@@ -3245,11 +3315,12 @@
     "tax_class": "standard",
     "tags": "mass interactive chew",
     "avg_rating": 3.5,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0240",
-    "name": "Trixie Tennis Ball",
+    "name": "Trixie Tennis Ball, medium",
     "category": "toys",
     "pet_type": "dog",
     "brand": "Trixie",
@@ -3257,7 +3328,8 @@
     "tax_class": "standard",
     "tags": "mass interactive chew",
     "avg_rating": 3.25,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0241",
@@ -3273,7 +3345,7 @@
   },
   {
     "sku": "SKU-PT-0242",
-    "name": "PetNord Dental Spray",
+    "name": "PetNord Dental Spray, single",
     "category": "health",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -3281,11 +3353,12 @@
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
     "avg_rating": 1.86,
-    "rating_band": "1-2"
+    "rating_band": "1-2",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0243",
-    "name": "PetNord Dental Spray",
+    "name": "PetNord Dental Spray, twin pack",
     "category": "health",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -3293,11 +3366,12 @@
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
     "avg_rating": 4.67,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0244",
-    "name": "PetNord Dental Spray",
+    "name": "PetNord Dental Spray, triple pack",
     "category": "health",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -3305,11 +3379,12 @@
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
     "avg_rating": 4.33,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "triple pack"
   },
   {
     "sku": "SKU-PT-0245",
-    "name": "PetNord Ear Cleaner",
+    "name": "PetNord Ear Cleaner, single",
     "category": "health",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -3317,11 +3392,12 @@
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
     "avg_rating": 4.25,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0246",
-    "name": "PetNord Ear Cleaner",
+    "name": "PetNord Ear Cleaner, twin pack",
     "category": "health",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -3329,11 +3405,12 @@
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
     "avg_rating": 4.8,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0247",
-    "name": "PetNord Calming Tablets",
+    "name": "PetNord Calming Tablets, single",
     "category": "health",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -3341,11 +3418,12 @@
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
     "avg_rating": 3.33,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0248",
-    "name": "PetNord Calming Tablets",
+    "name": "PetNord Calming Tablets, twin pack",
     "category": "health",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -3353,11 +3431,12 @@
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
     "avg_rating": 4.4,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0249",
-    "name": "PetNord Shampoo",
+    "name": "PetNord Shampoo, single",
     "category": "grooming",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -3365,11 +3444,12 @@
     "tax_class": "standard",
     "tags": "mass spa everyday",
     "avg_rating": 3.5,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0250",
-    "name": "PetNord Brush",
+    "name": "PetNord Brush, single",
     "category": "grooming",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -3377,11 +3457,12 @@
     "tax_class": "standard",
     "tags": "mass spa everyday",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0251",
-    "name": "PetNord Nail Clipper",
+    "name": "PetNord Nail Clipper, single",
     "category": "grooming",
     "pet_type": "dog",
     "brand": "PetNord",
@@ -3389,7 +3470,8 @@
     "tax_class": "standard",
     "tags": "mass spa everyday",
     "avg_rating": 2.71,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0252",
@@ -3672,7 +3754,7 @@
   },
   {
     "sku": "SKU-PT-0272",
-    "name": "Hill's Science Plan Salmon Cat Food 7kg",
+    "name": "Hill's Science Plan Salmon Cat Food 7kg, classic recipe",
     "category": "dry-food",
     "pet_type": "cat",
     "brand": "Hill's Science Plan",
@@ -3682,7 +3764,8 @@
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
     "avg_rating": 4.33,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0273",
@@ -3700,7 +3783,7 @@
   },
   {
     "sku": "SKU-PT-0274",
-    "name": "Hill's Science Plan Salmon Cat Food 7kg",
+    "name": "Hill's Science Plan Salmon Cat Food 7kg, light recipe",
     "category": "dry-food",
     "pet_type": "cat",
     "brand": "Hill's Science Plan",
@@ -3710,7 +3793,8 @@
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0275",
@@ -3770,7 +3854,7 @@
   },
   {
     "sku": "SKU-PT-0279",
-    "name": "Hill's Science Plan Indoor Chicken Cat Food 15kg",
+    "name": "Hill's Science Plan Indoor Chicken Cat Food 15kg, classic recipe",
     "category": "dry-food",
     "pet_type": "cat",
     "brand": "Hill's Science Plan",
@@ -3780,7 +3864,8 @@
     "tax_class": "food-reduced",
     "tags": "premium indoor-cat complete kibble value-bundle",
     "avg_rating": 3.0,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0280",
@@ -3812,7 +3897,7 @@
   },
   {
     "sku": "SKU-PT-0282",
-    "name": "Hill's Science Plan Indoor Chicken Cat Food 15kg",
+    "name": "Hill's Science Plan Indoor Chicken Cat Food 15kg, light recipe",
     "category": "dry-food",
     "pet_type": "cat",
     "brand": "Hill's Science Plan",
@@ -3822,7 +3907,8 @@
     "tax_class": "food-reduced",
     "tags": "premium indoor-cat complete kibble value-bundle",
     "avg_rating": 2.0,
-    "rating_band": "1-2"
+    "rating_band": "1-2",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0283",
@@ -3854,7 +3940,7 @@
   },
   {
     "sku": "SKU-PT-0285",
-    "name": "Hill's Science Plan Turkey Cat Food 12kg",
+    "name": "Hill's Science Plan Turkey Cat Food 12kg, classic recipe",
     "category": "dry-food",
     "pet_type": "cat",
     "brand": "Hill's Science Plan",
@@ -3864,11 +3950,12 @@
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0286",
-    "name": "Hill's Science Plan Turkey Cat Food 12kg",
+    "name": "Hill's Science Plan Turkey Cat Food 12kg, light recipe",
     "category": "dry-food",
     "pet_type": "cat",
     "brand": "Hill's Science Plan",
@@ -3878,7 +3965,8 @@
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
     "avg_rating": 4.5,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0287",
@@ -4217,7 +4305,7 @@
   },
   {
     "sku": "SKU-PT-0311",
-    "name": "Acana Turkey Cat Food 2kg",
+    "name": "Acana Turkey Cat Food 2kg, classic recipe",
     "category": "dry-food",
     "pet_type": "cat",
     "brand": "Acana",
@@ -4227,11 +4315,12 @@
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
     "avg_rating": 4.38,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0312",
-    "name": "Acana Turkey Cat Food 2kg",
+    "name": "Acana Turkey Cat Food 2kg, light recipe",
     "category": "dry-food",
     "pet_type": "cat",
     "brand": "Acana",
@@ -4241,7 +4330,8 @@
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
     "avg_rating": 3.5,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0313",
@@ -4399,7 +4489,7 @@
   },
   {
     "sku": "SKU-PT-0324",
-    "name": "Orijen Weight Control Tuna Cat Food 4kg",
+    "name": "Orijen Weight Control Tuna Cat Food 4kg, classic recipe",
     "category": "dry-food",
     "pet_type": "cat",
     "brand": "Orijen",
@@ -4409,11 +4499,12 @@
     "tax_class": "food-reduced",
     "tags": "premium diet complete kibble",
     "avg_rating": 4.5,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0325",
-    "name": "Orijen Weight Control Tuna Cat Food 4kg",
+    "name": "Orijen Weight Control Tuna Cat Food 4kg, light recipe",
     "category": "dry-food",
     "pet_type": "cat",
     "brand": "Orijen",
@@ -4423,7 +4514,8 @@
     "tax_class": "food-reduced",
     "tags": "premium diet complete kibble",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0326",
@@ -4901,7 +4993,7 @@
   },
   {
     "sku": "SKU-PT-0360",
-    "name": "Royal Canin Indoor Tuna Cat Food 400g",
+    "name": "Royal Canin Indoor Tuna Cat Food 400g, classic recipe",
     "category": "wet-food",
     "pet_type": "cat",
     "brand": "Royal Canin",
@@ -4911,7 +5003,8 @@
     "tax_class": "food-reduced",
     "tags": "premium indoor-cat complete pouch",
     "avg_rating": 3.33,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0361",
@@ -4929,7 +5022,7 @@
   },
   {
     "sku": "SKU-PT-0362",
-    "name": "Royal Canin Indoor Tuna Cat Food 400g",
+    "name": "Royal Canin Indoor Tuna Cat Food 400g, light recipe",
     "category": "wet-food",
     "pet_type": "cat",
     "brand": "Royal Canin",
@@ -4939,7 +5032,8 @@
     "tax_class": "food-reduced",
     "tags": "premium indoor-cat complete pouch",
     "avg_rating": 2.33,
-    "rating_band": "1-2"
+    "rating_band": "1-2",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0363",
@@ -5025,7 +5119,7 @@
   },
   {
     "sku": "SKU-PT-0369",
-    "name": "Royal Canin Chicken Cat Food 85g",
+    "name": "Royal Canin Chicken Cat Food 85g, classic recipe",
     "category": "wet-food",
     "pet_type": "cat",
     "brand": "Royal Canin",
@@ -5035,11 +5129,12 @@
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
     "avg_rating": 1.33,
-    "rating_band": "1-2"
+    "rating_band": "1-2",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0370",
-    "name": "Royal Canin Chicken Cat Food 85g",
+    "name": "Royal Canin Chicken Cat Food 85g, light recipe",
     "category": "wet-food",
     "pet_type": "cat",
     "brand": "Royal Canin",
@@ -5049,7 +5144,8 @@
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0371",
@@ -5107,7 +5203,7 @@
   },
   {
     "sku": "SKU-PT-0375",
-    "name": "Royal Canin Sensitive Liver Cat Food 85g",
+    "name": "Royal Canin Sensitive Liver Cat Food 85g, classic recipe",
     "category": "wet-food",
     "pet_type": "cat",
     "brand": "Royal Canin",
@@ -5117,7 +5213,8 @@
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete pouch",
     "avg_rating": 4.2,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0376",
@@ -5135,7 +5232,7 @@
   },
   {
     "sku": "SKU-PT-0377",
-    "name": "Royal Canin Sensitive Liver Cat Food 85g",
+    "name": "Royal Canin Sensitive Liver Cat Food 85g, light recipe",
     "category": "wet-food",
     "pet_type": "cat",
     "brand": "Royal Canin",
@@ -5145,7 +5242,8 @@
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete pouch",
     "avg_rating": 4.38,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0378",
@@ -5275,7 +5373,7 @@
   },
   {
     "sku": "SKU-PT-0387",
-    "name": "Hill's Science Plan Chicken Cat Food 400g",
+    "name": "Hill's Science Plan Chicken Cat Food 400g, classic recipe",
     "category": "wet-food",
     "pet_type": "cat",
     "brand": "Hill's Science Plan",
@@ -5285,11 +5383,12 @@
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0388",
-    "name": "Hill's Science Plan Chicken Cat Food 400g",
+    "name": "Hill's Science Plan Chicken Cat Food 400g, light recipe",
     "category": "wet-food",
     "pet_type": "cat",
     "brand": "Hill's Science Plan",
@@ -5297,7 +5396,8 @@
     "weight_kg": 0.4,
     "tags": "premium complete pouch",
     "avg_rating": 4.5,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0389",
@@ -5315,7 +5415,7 @@
   },
   {
     "sku": "SKU-PT-0390",
-    "name": "Hill's Science Plan Beef Cat Food 400g",
+    "name": "Hill's Science Plan Beef Cat Food 400g, classic recipe",
     "category": "wet-food",
     "pet_type": "cat",
     "brand": "Hill's Science Plan",
@@ -5325,11 +5425,12 @@
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0391",
-    "name": "Hill's Science Plan Beef Cat Food 400g",
+    "name": "Hill's Science Plan Beef Cat Food 400g, light recipe",
     "category": "wet-food",
     "pet_type": "cat",
     "brand": "Hill's Science Plan",
@@ -5339,7 +5440,8 @@
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
     "avg_rating": 4.25,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0392",
@@ -5495,7 +5597,7 @@
   },
   {
     "sku": "SKU-PT-0403",
-    "name": "Whiskas Chicken Cat Food 150g",
+    "name": "Whiskas Chicken Cat Food 150g, classic recipe",
     "category": "wet-food",
     "pet_type": "cat",
     "brand": "Whiskas",
@@ -5505,7 +5607,8 @@
     "tax_class": "food-reduced",
     "tags": "mass complete pouch",
     "avg_rating": 4.33,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0404",
@@ -5523,7 +5626,7 @@
   },
   {
     "sku": "SKU-PT-0405",
-    "name": "Whiskas Chicken Cat Food 150g",
+    "name": "Whiskas Chicken Cat Food 150g, light recipe",
     "category": "wet-food",
     "pet_type": "cat",
     "brand": "Whiskas",
@@ -5533,7 +5636,8 @@
     "tax_class": "food-reduced",
     "tags": "mass complete pouch",
     "avg_rating": 4.17,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0406",
@@ -5551,7 +5655,7 @@
   },
   {
     "sku": "SKU-PT-0407",
-    "name": "Whiskas Beef Cat Food 150g",
+    "name": "Whiskas Beef Cat Food 150g, classic recipe",
     "category": "wet-food",
     "pet_type": "cat",
     "brand": "Whiskas",
@@ -5561,11 +5665,12 @@
     "tax_class": "food-reduced",
     "tags": "mass complete pouch",
     "avg_rating": 2.0,
-    "rating_band": "1-2"
+    "rating_band": "1-2",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0408",
-    "name": "Whiskas Beef Cat Food 150g",
+    "name": "Whiskas Beef Cat Food 150g, light recipe",
     "category": "wet-food",
     "pet_type": "cat",
     "brand": "Whiskas",
@@ -5575,7 +5680,8 @@
     "tax_class": "food-reduced",
     "tags": "mass complete pouch",
     "avg_rating": 4.5,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0409",
@@ -5593,7 +5699,7 @@
   },
   {
     "sku": "SKU-PT-0410",
-    "name": "Whiskas Beef Cat Food 150g",
+    "name": "Whiskas Beef Cat Food 150g, multipack",
     "category": "wet-food",
     "pet_type": "cat",
     "brand": "Whiskas",
@@ -5603,7 +5709,8 @@
     "tax_class": "food-reduced",
     "tags": "mass complete pouch",
     "avg_rating": 4.43,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "multipack"
   },
   {
     "sku": "SKU-PT-0411",
@@ -5715,7 +5822,7 @@
   },
   {
     "sku": "SKU-PT-0419",
-    "name": "Felix Salmon Cat Food 85g",
+    "name": "Felix Salmon Cat Food 85g, classic recipe",
     "category": "wet-food",
     "pet_type": "cat",
     "brand": "Felix",
@@ -5725,7 +5832,8 @@
     "tax_class": "food-reduced",
     "tags": "complete pouch",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0420",
@@ -5743,7 +5851,7 @@
   },
   {
     "sku": "SKU-PT-0421",
-    "name": "Felix Salmon Cat Food 85g",
+    "name": "Felix Salmon Cat Food 85g, light recipe",
     "category": "wet-food",
     "pet_type": "cat",
     "brand": "Felix",
@@ -5753,7 +5861,8 @@
     "tax_class": "food-reduced",
     "tags": "complete pouch",
     "avg_rating": 3.71,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0422",
@@ -5895,7 +6004,7 @@
   },
   {
     "sku": "SKU-PT-0432",
-    "name": "Felix Liver Cat Food 400g",
+    "name": "Felix Liver Cat Food 400g, classic recipe",
     "category": "wet-food",
     "pet_type": "cat",
     "brand": "Felix",
@@ -5905,11 +6014,12 @@
     "tax_class": "food-reduced",
     "tags": "complete pouch",
     "avg_rating": 1.75,
-    "rating_band": "1-2"
+    "rating_band": "1-2",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0433",
-    "name": "Felix Liver Cat Food 400g",
+    "name": "Felix Liver Cat Food 400g, light recipe",
     "category": "wet-food",
     "pet_type": "cat",
     "brand": "Felix",
@@ -5919,7 +6029,8 @@
     "tax_class": "food-reduced",
     "tags": "complete pouch",
     "avg_rating": 4.6,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0434",
@@ -6223,7 +6334,7 @@
   },
   {
     "sku": "SKU-PT-0456",
-    "name": "Whiskas Crunchy Bites Treats 200g",
+    "name": "Whiskas Crunchy Bites Treats 200g, classic",
     "category": "treats",
     "pet_type": "cat",
     "brand": "Whiskas",
@@ -6233,11 +6344,12 @@
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
     "avg_rating": 4.5,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "classic"
   },
   {
     "sku": "SKU-PT-0457",
-    "name": "Whiskas Crunchy Bites Treats 200g",
+    "name": "Whiskas Crunchy Bites Treats 200g, soft",
     "category": "treats",
     "pet_type": "cat",
     "brand": "Whiskas",
@@ -6247,7 +6359,8 @@
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
     "avg_rating": 1.0,
-    "rating_band": "1-2"
+    "rating_band": "1-2",
+    "variant": "soft"
   },
   {
     "sku": "SKU-PT-0458",
@@ -6333,7 +6446,7 @@
   },
   {
     "sku": "SKU-PT-0464",
-    "name": "Felix Tuna Sticks Treats 100g",
+    "name": "Felix Tuna Sticks Treats 100g, classic",
     "category": "treats",
     "pet_type": "cat",
     "brand": "Felix",
@@ -6343,11 +6456,12 @@
     "tax_class": "food-reduced",
     "tags": "indulgent training",
     "avg_rating": 4.33,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "classic"
   },
   {
     "sku": "SKU-PT-0465",
-    "name": "Felix Tuna Sticks Treats 100g",
+    "name": "Felix Tuna Sticks Treats 100g, soft",
     "category": "treats",
     "pet_type": "cat",
     "brand": "Felix",
@@ -6357,7 +6471,8 @@
     "tax_class": "food-reduced",
     "tags": "indulgent training",
     "avg_rating": 4.5,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "soft"
   },
   {
     "sku": "SKU-PT-0466",
@@ -6459,7 +6574,7 @@
   },
   {
     "sku": "SKU-PT-0473",
-    "name": "PetNord Indoor Tuna Sticks Treats 200g",
+    "name": "PetNord Indoor Tuna Sticks Treats 200g, classic",
     "category": "treats",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -6469,7 +6584,8 @@
     "tax_class": "food-reduced",
     "tags": "mass indoor-cat indulgent training",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "classic"
   },
   {
     "sku": "SKU-PT-0474",
@@ -6487,7 +6603,7 @@
   },
   {
     "sku": "SKU-PT-0475",
-    "name": "PetNord Indoor Tuna Sticks Treats 200g",
+    "name": "PetNord Indoor Tuna Sticks Treats 200g, soft",
     "category": "treats",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -6497,7 +6613,8 @@
     "tax_class": "food-reduced",
     "tags": "mass indoor-cat indulgent training",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "soft"
   },
   {
     "sku": "SKU-PT-0476",
@@ -6571,7 +6688,7 @@
   },
   {
     "sku": "SKU-PT-0481",
-    "name": "PetNord Indoor Salmon Drops Treats 500g",
+    "name": "PetNord Indoor Salmon Drops Treats 500g, classic",
     "category": "treats",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -6581,11 +6698,12 @@
     "tax_class": "food-reduced",
     "tags": "mass indoor-cat indulgent training",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "classic"
   },
   {
     "sku": "SKU-PT-0482",
-    "name": "PetNord Indoor Salmon Drops Treats 500g",
+    "name": "PetNord Indoor Salmon Drops Treats 500g, soft",
     "category": "treats",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -6595,11 +6713,12 @@
     "tax_class": "food-reduced",
     "tags": "mass indoor-cat indulgent training",
     "avg_rating": 4.5,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "soft"
   },
   {
     "sku": "SKU-PT-0483",
-    "name": "PetNord Clumping Clay Cat Litter 7kg",
+    "name": "PetNord Clumping Clay Cat Litter 7kg, unscented",
     "category": "litter",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -6608,11 +6727,12 @@
     "tax_class": "standard",
     "tags": "mass clumping absorbent",
     "avg_rating": 4.18,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "unscented"
   },
   {
     "sku": "SKU-PT-0484",
-    "name": "PetNord Clumping Clay Cat Litter 7kg",
+    "name": "PetNord Clumping Clay Cat Litter 7kg, lavender scent",
     "category": "litter",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -6621,7 +6741,8 @@
     "tax_class": "standard",
     "tags": "mass clumping absorbent",
     "avg_rating": 4.23,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "lavender scent"
   },
   {
     "sku": "SKU-PT-0485",
@@ -6638,7 +6759,7 @@
   },
   {
     "sku": "SKU-PT-0486",
-    "name": "PetNord Silica Crystals Cat Litter 7kg",
+    "name": "PetNord Silica Crystals Cat Litter 7kg, unscented",
     "category": "litter",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -6647,11 +6768,12 @@
     "tax_class": "standard",
     "tags": "mass clumping absorbent",
     "avg_rating": 4.22,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "unscented"
   },
   {
     "sku": "SKU-PT-0487",
-    "name": "PetNord Silica Crystals Cat Litter 7kg",
+    "name": "PetNord Silica Crystals Cat Litter 7kg, lavender scent",
     "category": "litter",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -6660,7 +6782,8 @@
     "tax_class": "standard",
     "tags": "mass clumping absorbent",
     "avg_rating": 4.41,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "lavender scent"
   },
   {
     "sku": "SKU-PT-0488",
@@ -6690,7 +6813,7 @@
   },
   {
     "sku": "SKU-PT-0490",
-    "name": "PetNord Silica Crystals Cat Litter 7kg",
+    "name": "PetNord Silica Crystals Cat Litter 7kg, value pack",
     "category": "litter",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -6699,11 +6822,12 @@
     "tax_class": "standard",
     "tags": "mass clumping absorbent",
     "avg_rating": 4.4,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "value pack"
   },
   {
     "sku": "SKU-PT-0491",
-    "name": "PetNord Recycled Paper Cat Litter 7kg",
+    "name": "PetNord Recycled Paper Cat Litter 7kg, unscented",
     "category": "litter",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -6712,7 +6836,8 @@
     "tax_class": "standard",
     "tags": "mass clumping absorbent",
     "avg_rating": 4.3,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "unscented"
   },
   {
     "sku": "SKU-PT-0492",
@@ -6729,7 +6854,7 @@
   },
   {
     "sku": "SKU-PT-0493",
-    "name": "PetNord Recycled Paper Cat Litter 7kg",
+    "name": "PetNord Recycled Paper Cat Litter 7kg, lavender scent",
     "category": "litter",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -6738,7 +6863,8 @@
     "tax_class": "standard",
     "tags": "mass clumping absorbent",
     "avg_rating": 4.66,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "lavender scent"
   },
   {
     "sku": "SKU-PT-0494",
@@ -6754,7 +6880,7 @@
   },
   {
     "sku": "SKU-PT-0495",
-    "name": "PetNord Bowl",
+    "name": "PetNord Bowl, extra large",
     "category": "accessories",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -6762,11 +6888,12 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 3.81,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "extra large"
   },
   {
     "sku": "SKU-PT-0496",
-    "name": "PetNord Bowl",
+    "name": "PetNord Bowl, natural wood",
     "category": "accessories",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -6774,11 +6901,12 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 4.38,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "natural wood"
   },
   {
     "sku": "SKU-PT-0497",
-    "name": "PetNord Bowl",
+    "name": "PetNord Bowl, grey",
     "category": "accessories",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -6786,7 +6914,8 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 4.21,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "grey"
   },
   {
     "sku": "SKU-PT-0498",
@@ -6826,7 +6955,7 @@
   },
   {
     "sku": "SKU-PT-0501",
-    "name": "Trixie Bowl",
+    "name": "Trixie Bowl, large",
     "category": "accessories",
     "pet_type": "cat",
     "brand": "Trixie",
@@ -6834,7 +6963,8 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 4.23,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "large"
   },
   {
     "sku": "SKU-PT-0502",
@@ -6850,7 +6980,7 @@
   },
   {
     "sku": "SKU-PT-0503",
-    "name": "Trixie Carrier",
+    "name": "Trixie Carrier, small",
     "category": "accessories",
     "pet_type": "cat",
     "brand": "Trixie",
@@ -6858,11 +6988,12 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 3.8,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0504",
-    "name": "Trixie Carrier",
+    "name": "Trixie Carrier, medium",
     "category": "accessories",
     "pet_type": "cat",
     "brand": "Trixie",
@@ -6870,7 +7001,8 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 4.5,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0505",
@@ -6896,7 +7028,7 @@
   },
   {
     "sku": "SKU-PT-0507",
-    "name": "Kong Laser Pointer",
+    "name": "Kong Laser Pointer, small",
     "category": "toys",
     "pet_type": "cat",
     "brand": "Kong",
@@ -6904,11 +7036,12 @@
     "tax_class": "standard",
     "tags": "mass interactive chew",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0508",
-    "name": "Kong Laser Pointer",
+    "name": "Kong Laser Pointer, medium",
     "category": "toys",
     "pet_type": "cat",
     "brand": "Kong",
@@ -6916,7 +7049,8 @@
     "tax_class": "standard",
     "tags": "mass interactive chew",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0509",
@@ -6966,18 +7100,19 @@
   },
   {
     "sku": "SKU-PT-0513",
-    "name": "Trixie Catnip Mouse",
+    "name": "Trixie Catnip Mouse, small",
     "category": "toys",
     "pet_type": "cat",
     "brand": "Trixie",
     "price_eur": 11.87,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0514",
-    "name": "Trixie Catnip Mouse",
+    "name": "Trixie Catnip Mouse, medium",
     "category": "toys",
     "pet_type": "cat",
     "brand": "Trixie",
@@ -6985,22 +7120,24 @@
     "tax_class": "standard",
     "tags": "mass interactive chew",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0515",
-    "name": "Trixie Laser Pointer",
+    "name": "Trixie Laser Pointer, small",
     "category": "toys",
     "pet_type": "cat",
     "brand": "Trixie",
     "price_eur": 12.48,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0516",
-    "name": "Trixie Laser Pointer",
+    "name": "Trixie Laser Pointer, medium",
     "category": "toys",
     "pet_type": "cat",
     "brand": "Trixie",
@@ -7008,11 +7145,12 @@
     "tax_class": "standard",
     "tags": "mass interactive chew",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0517",
-    "name": "PetNord Hairball Paste",
+    "name": "PetNord Hairball Paste, single",
     "category": "health",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -7020,11 +7158,12 @@
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
     "avg_rating": 3.5,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0518",
-    "name": "PetNord Hairball Paste",
+    "name": "PetNord Hairball Paste, twin pack",
     "category": "health",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -7032,7 +7171,8 @@
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0519",
@@ -7047,7 +7187,7 @@
   },
   {
     "sku": "SKU-PT-0520",
-    "name": "PetNord Flea Drops",
+    "name": "PetNord Flea Drops, single",
     "category": "health",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -7055,11 +7195,12 @@
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0521",
-    "name": "PetNord Flea Drops",
+    "name": "PetNord Flea Drops, twin pack",
     "category": "health",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -7067,11 +7208,12 @@
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
     "avg_rating": 3.33,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0522",
-    "name": "PetNord Flea Drops",
+    "name": "PetNord Flea Drops, triple pack",
     "category": "health",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -7079,11 +7221,12 @@
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "triple pack"
   },
   {
     "sku": "SKU-PT-0523",
-    "name": "PetNord Shampoo",
+    "name": "PetNord Shampoo, twin pack",
     "category": "grooming",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -7091,11 +7234,12 @@
     "tax_class": "standard",
     "tags": "mass spa everyday",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0524",
-    "name": "PetNord Shampoo",
+    "name": "PetNord Shampoo, triple pack",
     "category": "grooming",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -7103,11 +7247,12 @@
     "tax_class": "standard",
     "tags": "mass spa everyday",
     "avg_rating": 3.0,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "triple pack"
   },
   {
     "sku": "SKU-PT-0525",
-    "name": "PetNord Brush",
+    "name": "PetNord Brush, twin pack",
     "category": "grooming",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -7115,11 +7260,12 @@
     "tax_class": "standard",
     "tags": "mass spa everyday",
     "avg_rating": 3.75,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0526",
-    "name": "PetNord Brush",
+    "name": "PetNord Brush, triple pack",
     "category": "grooming",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -7127,11 +7273,12 @@
     "tax_class": "standard",
     "tags": "mass spa everyday",
     "avg_rating": 4.5,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "triple pack"
   },
   {
     "sku": "SKU-PT-0527",
-    "name": "PetNord Nail Clipper",
+    "name": "PetNord Nail Clipper, twin pack",
     "category": "grooming",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -7139,11 +7286,12 @@
     "tax_class": "standard",
     "tags": "mass spa everyday",
     "avg_rating": 4.5,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0528",
-    "name": "PetNord Nail Clipper",
+    "name": "PetNord Nail Clipper, triple pack",
     "category": "grooming",
     "pet_type": "cat",
     "brand": "PetNord",
@@ -7151,18 +7299,20 @@
     "tax_class": "standard",
     "tags": "mass spa everyday",
     "avg_rating": 1.0,
-    "rating_band": "1-2"
+    "rating_band": "1-2",
+    "variant": "triple pack"
   },
   {
     "sku": "SKU-PT-0529",
-    "name": "PetNord Nail Clipper",
+    "name": "PetNord Nail Clipper, value pack",
     "category": "grooming",
     "pet_type": "cat",
     "brand": "PetNord",
     "price_eur": 16.55,
     "tax_class": "standard",
     "tags": "mass spa everyday",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "value pack"
   },
   {
     "sku": "SKU-PT-0530",
@@ -7264,7 +7414,7 @@
   },
   {
     "sku": "SKU-PT-0537",
-    "name": "PetNord Senior Hamster Mix Food 4kg",
+    "name": "PetNord Senior Hamster Mix Food 4kg, classic recipe",
     "category": "dry-food",
     "pet_type": "small_animal",
     "brand": "PetNord",
@@ -7274,7 +7424,8 @@
     "tax_class": "food-reduced",
     "tags": "mass senior-care complete kibble",
     "avg_rating": 4.85,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0538",
@@ -7292,7 +7443,7 @@
   },
   {
     "sku": "SKU-PT-0539",
-    "name": "PetNord Senior Hamster Mix Food 4kg",
+    "name": "PetNord Senior Hamster Mix Food 4kg, light recipe",
     "category": "dry-food",
     "pet_type": "small_animal",
     "brand": "PetNord",
@@ -7302,7 +7453,8 @@
     "tax_class": "food-reduced",
     "tags": "mass senior-care complete kibble",
     "avg_rating": 3.29,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0540",
@@ -7320,7 +7472,7 @@
   },
   {
     "sku": "SKU-PT-0541",
-    "name": "PetNord Veggie Crunch Treats 200g",
+    "name": "PetNord Veggie Crunch Treats 200g, classic",
     "category": "treats",
     "pet_type": "small_animal",
     "brand": "PetNord",
@@ -7329,11 +7481,12 @@
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
     "avg_rating": 4.5,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "classic"
   },
   {
     "sku": "SKU-PT-0542",
-    "name": "PetNord Veggie Crunch Treats 100g",
+    "name": "PetNord Veggie Crunch Treats 100g, classic",
     "category": "treats",
     "pet_type": "small_animal",
     "brand": "PetNord",
@@ -7342,11 +7495,12 @@
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "classic"
   },
   {
     "sku": "SKU-PT-0543",
-    "name": "PetNord Veggie Crunch Treats 200g",
+    "name": "PetNord Veggie Crunch Treats 200g, soft",
     "category": "treats",
     "pet_type": "small_animal",
     "brand": "PetNord",
@@ -7355,11 +7509,12 @@
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
     "avg_rating": 4.5,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "soft"
   },
   {
     "sku": "SKU-PT-0544",
-    "name": "PetNord Veggie Crunch Treats 100g",
+    "name": "PetNord Veggie Crunch Treats 100g, soft",
     "category": "treats",
     "pet_type": "small_animal",
     "brand": "PetNord",
@@ -7368,11 +7523,12 @@
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "soft"
   },
   {
     "sku": "SKU-PT-0545",
-    "name": "PetNord Veggie Crunch Treats 200g",
+    "name": "PetNord Veggie Crunch Treats 200g, crunchy",
     "category": "treats",
     "pet_type": "small_animal",
     "brand": "PetNord",
@@ -7381,7 +7537,8 @@
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "crunchy"
   },
   {
     "sku": "SKU-PT-0546",
@@ -7398,7 +7555,7 @@
   },
   {
     "sku": "SKU-PT-0547",
-    "name": "PetNord Hay Sticks Treats 500g",
+    "name": "PetNord Hay Sticks Treats 500g, classic",
     "category": "treats",
     "pet_type": "small_animal",
     "brand": "PetNord",
@@ -7407,11 +7564,12 @@
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
     "avg_rating": 1.0,
-    "rating_band": "1-2"
+    "rating_band": "1-2",
+    "variant": "classic"
   },
   {
     "sku": "SKU-PT-0548",
-    "name": "PetNord Hay Sticks Treats 500g",
+    "name": "PetNord Hay Sticks Treats 500g, soft",
     "category": "treats",
     "pet_type": "small_animal",
     "brand": "PetNord",
@@ -7420,7 +7578,8 @@
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
     "avg_rating": 3.43,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "soft"
   },
   {
     "sku": "SKU-PT-0549",
@@ -7437,7 +7596,7 @@
   },
   {
     "sku": "SKU-PT-0550",
-    "name": "PetNord Fruit Drops Treats 100g",
+    "name": "PetNord Fruit Drops Treats 100g, classic",
     "category": "treats",
     "pet_type": "small_animal",
     "brand": "PetNord",
@@ -7446,7 +7605,8 @@
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
     "avg_rating": 3.67,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "classic"
   },
   {
     "sku": "SKU-PT-0551",
@@ -7463,7 +7623,7 @@
   },
   {
     "sku": "SKU-PT-0552",
-    "name": "PetNord Fruit Drops Treats 100g",
+    "name": "PetNord Fruit Drops Treats 100g, soft",
     "category": "treats",
     "pet_type": "small_animal",
     "brand": "PetNord",
@@ -7472,11 +7632,12 @@
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
     "avg_rating": 4.5,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "soft"
   },
   {
     "sku": "SKU-PT-0553",
-    "name": "PetNord Fruit Drops Treats 100g",
+    "name": "PetNord Fruit Drops Treats 100g, crunchy",
     "category": "treats",
     "pet_type": "small_animal",
     "brand": "PetNord",
@@ -7485,7 +7646,8 @@
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
     "avg_rating": 3.0,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "crunchy"
   },
   {
     "sku": "SKU-PT-0554",
@@ -7514,7 +7676,7 @@
   },
   {
     "sku": "SKU-PT-0556",
-    "name": "PetNord Water Bottle",
+    "name": "PetNord Water Bottle, small",
     "category": "accessories",
     "pet_type": "small_animal",
     "brand": "PetNord",
@@ -7522,11 +7684,12 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 4.2,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0557",
-    "name": "PetNord Water Bottle",
+    "name": "PetNord Water Bottle, medium",
     "category": "accessories",
     "pet_type": "small_animal",
     "brand": "PetNord",
@@ -7534,7 +7697,8 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 4.3,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0558",
@@ -7550,7 +7714,7 @@
   },
   {
     "sku": "SKU-PT-0559",
-    "name": "Trixie Cage",
+    "name": "Trixie Cage, small",
     "category": "accessories",
     "pet_type": "small_animal",
     "brand": "Trixie",
@@ -7558,11 +7722,12 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 4.73,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0560",
-    "name": "Trixie Cage",
+    "name": "Trixie Cage, medium",
     "category": "accessories",
     "pet_type": "small_animal",
     "brand": "Trixie",
@@ -7570,11 +7735,12 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0561",
-    "name": "Trixie Water Bottle",
+    "name": "Trixie Water Bottle, small",
     "category": "accessories",
     "pet_type": "small_animal",
     "brand": "Trixie",
@@ -7582,11 +7748,12 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0562",
-    "name": "Trixie Water Bottle",
+    "name": "Trixie Water Bottle, medium",
     "category": "accessories",
     "pet_type": "small_animal",
     "brand": "Trixie",
@@ -7594,11 +7761,12 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 4.5,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0563",
-    "name": "Trixie Hideout",
+    "name": "Trixie Hideout, small",
     "category": "accessories",
     "pet_type": "small_animal",
     "brand": "Trixie",
@@ -7606,11 +7774,12 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 3.4,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0564",
-    "name": "Trixie Hideout",
+    "name": "Trixie Hideout, medium",
     "category": "accessories",
     "pet_type": "small_animal",
     "brand": "Trixie",
@@ -7618,7 +7787,8 @@
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
     "avg_rating": 3.2,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0565",
@@ -7657,18 +7827,19 @@
   },
   {
     "sku": "SKU-PT-0568",
-    "name": "Trixie Wooden Chew",
+    "name": "Trixie Wooden Chew, small",
     "category": "toys",
     "pet_type": "small_animal",
     "brand": "Trixie",
     "price_eur": 13.72,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0569",
-    "name": "Trixie Wooden Chew",
+    "name": "Trixie Wooden Chew, medium",
     "category": "toys",
     "pet_type": "small_animal",
     "brand": "Trixie",
@@ -7676,7 +7847,8 @@
     "tax_class": "standard",
     "tags": "mass interactive chew",
     "avg_rating": 4.33,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0570",
@@ -7704,18 +7876,19 @@
   },
   {
     "sku": "SKU-PT-0572",
-    "name": "PetNord Vitamin Drops",
+    "name": "PetNord Vitamin Drops, single",
     "category": "health",
     "pet_type": "small_animal",
     "brand": "PetNord",
     "price_eur": 19.21,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0573",
-    "name": "PetNord Vitamin Drops",
+    "name": "PetNord Vitamin Drops, twin pack",
     "category": "health",
     "pet_type": "small_animal",
     "brand": "PetNord",
@@ -7723,11 +7896,12 @@
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
     "avg_rating": 4.67,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0574",
-    "name": "PetNord Mite Treatment",
+    "name": "PetNord Mite Treatment, single",
     "category": "health",
     "pet_type": "small_animal",
     "brand": "PetNord",
@@ -7735,11 +7909,12 @@
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
     "avg_rating": 2.5,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0575",
-    "name": "PetNord Mite Treatment",
+    "name": "PetNord Mite Treatment, twin pack",
     "category": "health",
     "pet_type": "small_animal",
     "brand": "PetNord",
@@ -7747,11 +7922,12 @@
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0576",
-    "name": "Beaphar Vitamin Drops",
+    "name": "Beaphar Vitamin Drops, single",
     "category": "health",
     "pet_type": "small_animal",
     "brand": "Beaphar",
@@ -7759,11 +7935,12 @@
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
     "avg_rating": 4.33,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0577",
-    "name": "Beaphar Vitamin Drops",
+    "name": "Beaphar Vitamin Drops, twin pack",
     "category": "health",
     "pet_type": "small_animal",
     "brand": "Beaphar",
@@ -7771,7 +7948,8 @@
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0578",
@@ -7799,7 +7977,7 @@
   },
   {
     "sku": "SKU-PT-0580",
-    "name": "PetNord Parrot Mix Food 4kg",
+    "name": "PetNord Parrot Mix Food 4kg, classic recipe",
     "category": "dry-food",
     "pet_type": "bird",
     "brand": "PetNord",
@@ -7807,11 +7985,12 @@
     "weight_kg": 4,
     "tax_class": "food-reduced",
     "tags": "mass complete kibble",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0581",
-    "name": "PetNord Parrot Mix Food 4kg",
+    "name": "PetNord Parrot Mix Food 4kg, light recipe",
     "category": "dry-food",
     "pet_type": "bird",
     "brand": "PetNord",
@@ -7819,11 +7998,12 @@
     "weight_kg": 4,
     "tax_class": "food-reduced",
     "tags": "mass complete kibble",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0582",
-    "name": "PetNord Canary Seed Food 4kg",
+    "name": "PetNord Canary Seed Food 4kg, classic recipe",
     "category": "dry-food",
     "pet_type": "bird",
     "brand": "PetNord",
@@ -7831,11 +8011,12 @@
     "weight_kg": 4,
     "tax_class": "food-reduced",
     "tags": "mass complete kibble",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0583",
-    "name": "PetNord Canary Seed Food 15kg",
+    "name": "PetNord Canary Seed Food 15kg, classic recipe",
     "category": "dry-food",
     "pet_type": "bird",
     "brand": "PetNord",
@@ -7844,11 +8025,12 @@
     "tax_class": "food-reduced",
     "tags": "mass complete kibble value-bundle",
     "avg_rating": 3.0,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0584",
-    "name": "PetNord Canary Seed Food 15kg",
+    "name": "PetNord Canary Seed Food 15kg, light recipe",
     "category": "dry-food",
     "pet_type": "bird",
     "brand": "PetNord",
@@ -7857,11 +8039,12 @@
     "tax_class": "food-reduced",
     "tags": "mass complete kibble value-bundle",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0585",
-    "name": "PetNord Canary Seed Food 4kg",
+    "name": "PetNord Canary Seed Food 4kg, light recipe",
     "category": "dry-food",
     "pet_type": "bird",
     "brand": "PetNord",
@@ -7870,11 +8053,12 @@
     "tax_class": "food-reduced",
     "tags": "mass complete kibble",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0586",
-    "name": "PetNord Budgie Blend Food 15kg",
+    "name": "PetNord Budgie Blend Food 15kg, classic recipe",
     "category": "dry-food",
     "pet_type": "bird",
     "brand": "PetNord",
@@ -7882,11 +8066,12 @@
     "weight_kg": 15,
     "tax_class": "food-reduced",
     "tags": "mass complete kibble value-bundle",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "classic recipe"
   },
   {
     "sku": "SKU-PT-0587",
-    "name": "PetNord Budgie Blend Food 15kg",
+    "name": "PetNord Budgie Blend Food 15kg, light recipe",
     "category": "dry-food",
     "pet_type": "bird",
     "brand": "PetNord",
@@ -7895,7 +8080,8 @@
     "tax_class": "food-reduced",
     "tags": "mass complete kibble value-bundle",
     "avg_rating": 3.5,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "light recipe"
   },
   {
     "sku": "SKU-PT-0588",
@@ -7937,7 +8123,7 @@
   },
   {
     "sku": "SKU-PT-0591",
-    "name": "PetNord Honey Stick Treats 500g",
+    "name": "PetNord Honey Stick Treats 500g, classic",
     "category": "treats",
     "pet_type": "bird",
     "brand": "PetNord",
@@ -7946,11 +8132,12 @@
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "classic"
   },
   {
     "sku": "SKU-PT-0592",
-    "name": "PetNord Honey Stick Treats 500g",
+    "name": "PetNord Honey Stick Treats 500g, soft",
     "category": "treats",
     "pet_type": "bird",
     "brand": "PetNord",
@@ -7959,11 +8146,12 @@
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "soft"
   },
   {
     "sku": "SKU-PT-0593",
-    "name": "PetNord Millet Spray Treats 500g",
+    "name": "PetNord Millet Spray Treats 500g, classic",
     "category": "treats",
     "pet_type": "bird",
     "brand": "PetNord",
@@ -7971,11 +8159,12 @@
     "weight_kg": 0.5,
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "classic"
   },
   {
     "sku": "SKU-PT-0594",
-    "name": "PetNord Millet Spray Treats 100g",
+    "name": "PetNord Millet Spray Treats 100g, classic",
     "category": "treats",
     "pet_type": "bird",
     "brand": "PetNord",
@@ -7984,11 +8173,12 @@
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
     "avg_rating": 2.0,
-    "rating_band": "1-2"
+    "rating_band": "1-2",
+    "variant": "classic"
   },
   {
     "sku": "SKU-PT-0595",
-    "name": "PetNord Millet Spray Treats 500g",
+    "name": "PetNord Millet Spray Treats 500g, soft",
     "category": "treats",
     "pet_type": "bird",
     "brand": "PetNord",
@@ -7996,11 +8186,12 @@
     "weight_kg": 0.5,
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "soft"
   },
   {
     "sku": "SKU-PT-0596",
-    "name": "PetNord Millet Spray Treats 100g",
+    "name": "PetNord Millet Spray Treats 100g, soft",
     "category": "treats",
     "pet_type": "bird",
     "brand": "PetNord",
@@ -8009,73 +8200,80 @@
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "soft"
   },
   {
     "sku": "SKU-PT-0597",
-    "name": "PetNord Perch",
+    "name": "PetNord Perch, small",
     "category": "accessories",
     "pet_type": "bird",
     "brand": "PetNord",
     "price_eur": 18.62,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0598",
-    "name": "PetNord Perch",
+    "name": "PetNord Perch, medium",
     "category": "accessories",
     "pet_type": "bird",
     "brand": "PetNord",
     "price_eur": 18.55,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0599",
-    "name": "PetNord Feeder",
+    "name": "PetNord Feeder, small",
     "category": "accessories",
     "pet_type": "bird",
     "brand": "PetNord",
     "price_eur": 20.59,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0600",
-    "name": "PetNord Feeder",
+    "name": "PetNord Feeder, medium",
     "category": "accessories",
     "pet_type": "bird",
     "brand": "PetNord",
     "price_eur": 21.22,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0601",
-    "name": "PetNord Cage Cover",
+    "name": "PetNord Cage Cover, small",
     "category": "accessories",
     "pet_type": "bird",
     "brand": "PetNord",
     "price_eur": 18.77,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "small"
   },
   {
     "sku": "SKU-PT-0602",
-    "name": "PetNord Cage Cover",
+    "name": "PetNord Cage Cover, medium",
     "category": "accessories",
     "pet_type": "bird",
     "brand": "PetNord",
     "price_eur": 24.02,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "medium"
   },
   {
     "sku": "SKU-PT-0603",
@@ -8124,7 +8322,7 @@
   },
   {
     "sku": "SKU-PT-0607",
-    "name": "Beaphar Beak Conditioner",
+    "name": "Beaphar Beak Conditioner, single",
     "category": "health",
     "pet_type": "bird",
     "brand": "Beaphar",
@@ -8132,22 +8330,24 @@
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0608",
-    "name": "Beaphar Beak Conditioner",
+    "name": "Beaphar Beak Conditioner, twin pack",
     "category": "health",
     "pet_type": "bird",
     "brand": "Beaphar",
     "price_eur": 18.09,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0609",
-    "name": "JBL Filter Pads",
+    "name": "JBL Filter Pads, single",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "JBL",
@@ -8155,11 +8355,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 3.5,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0610",
-    "name": "JBL Filter Pads",
+    "name": "JBL Filter Pads, twin pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "JBL",
@@ -8167,7 +8368,8 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 4.25,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0611",
@@ -8182,18 +8384,19 @@
   },
   {
     "sku": "SKU-PT-0612",
-    "name": "JBL Aquatic Plants",
+    "name": "JBL Aquatic Plants, single",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "JBL",
     "price_eur": 23.88,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0613",
-    "name": "JBL Aquatic Plants",
+    "name": "JBL Aquatic Plants, twin pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "JBL",
@@ -8201,11 +8404,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0614",
-    "name": "JBL Tropical Flakes",
+    "name": "JBL Tropical Flakes, single",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "JBL",
@@ -8213,11 +8417,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 2.0,
-    "rating_band": "1-2"
+    "rating_band": "1-2",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0615",
-    "name": "JBL Tropical Flakes",
+    "name": "JBL Tropical Flakes, twin pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "JBL",
@@ -8225,11 +8430,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 3.83,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0616",
-    "name": "JBL Tropical Flakes",
+    "name": "JBL Tropical Flakes, triple pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "JBL",
@@ -8237,11 +8443,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "triple pack"
   },
   {
     "sku": "SKU-PT-0617",
-    "name": "JBL Cichlid Pellets",
+    "name": "JBL Cichlid Pellets, single",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "JBL",
@@ -8249,11 +8456,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 4.67,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0618",
-    "name": "JBL Cichlid Pellets",
+    "name": "JBL Cichlid Pellets, twin pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "JBL",
@@ -8261,11 +8469,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 3.33,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0619",
-    "name": "JBL Cichlid Pellets",
+    "name": "JBL Cichlid Pellets, triple pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "JBL",
@@ -8273,7 +8482,8 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "triple pack"
   },
   {
     "sku": "SKU-PT-0620",
@@ -8289,7 +8499,7 @@
   },
   {
     "sku": "SKU-PT-0621",
-    "name": "JBL Tank Heater",
+    "name": "JBL Tank Heater, single",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "JBL",
@@ -8297,11 +8507,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 3.33,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0622",
-    "name": "JBL Tank Heater",
+    "name": "JBL Tank Heater, twin pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "JBL",
@@ -8309,11 +8520,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0623",
-    "name": "JBL Air Pump",
+    "name": "JBL Air Pump, single",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "JBL",
@@ -8321,11 +8533,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 4.4,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0624",
-    "name": "JBL Air Pump",
+    "name": "JBL Air Pump, twin pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "JBL",
@@ -8333,11 +8546,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0625",
-    "name": "JBL Air Pump",
+    "name": "JBL Air Pump, triple pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "JBL",
@@ -8345,7 +8559,8 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 4.67,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "triple pack"
   },
   {
     "sku": "SKU-PT-0626",
@@ -8361,25 +8576,27 @@
   },
   {
     "sku": "SKU-PT-0627",
-    "name": "Tetra Water Conditioner",
+    "name": "Tetra Water Conditioner, single",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "Tetra",
     "price_eur": 23.25,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0628",
-    "name": "Tetra Water Conditioner",
+    "name": "Tetra Water Conditioner, twin pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "Tetra",
     "price_eur": 24.01,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0629",
@@ -8394,7 +8611,7 @@
   },
   {
     "sku": "SKU-PT-0630",
-    "name": "Tetra Tropical Flakes",
+    "name": "Tetra Tropical Flakes, single",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "Tetra",
@@ -8402,11 +8619,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 3.17,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0631",
-    "name": "Tetra Tropical Flakes",
+    "name": "Tetra Tropical Flakes, twin pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "Tetra",
@@ -8414,11 +8632,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 4.33,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0632",
-    "name": "Tetra Cichlid Pellets",
+    "name": "Tetra Cichlid Pellets, single",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "Tetra",
@@ -8426,22 +8645,24 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 2.86,
-    "rating_band": "3"
+    "rating_band": "3",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0633",
-    "name": "Tetra Cichlid Pellets",
+    "name": "Tetra Cichlid Pellets, twin pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "Tetra",
     "price_eur": 23.22,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "rating_band": "unrated"
+    "rating_band": "unrated",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0634",
-    "name": "Tetra Cichlid Pellets",
+    "name": "Tetra Cichlid Pellets, triple pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "Tetra",
@@ -8449,11 +8670,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "triple pack"
   },
   {
     "sku": "SKU-PT-0635",
-    "name": "Tetra Algae Wafers",
+    "name": "Tetra Algae Wafers, single",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "Tetra",
@@ -8461,11 +8683,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0636",
-    "name": "Tetra Algae Wafers",
+    "name": "Tetra Algae Wafers, twin pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "Tetra",
@@ -8473,11 +8696,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 2.33,
-    "rating_band": "1-2"
+    "rating_band": "1-2",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0637",
-    "name": "Tetra Tank Heater",
+    "name": "Tetra Tank Heater, single",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "Tetra",
@@ -8485,11 +8709,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 3.75,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0638",
-    "name": "Tetra Tank Heater",
+    "name": "Tetra Tank Heater, twin pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "Tetra",
@@ -8497,7 +8722,8 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0639",
@@ -8513,7 +8739,7 @@
   },
   {
     "sku": "SKU-PT-0640",
-    "name": "PetNord Filter Pads",
+    "name": "PetNord Filter Pads, single",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "PetNord",
@@ -8521,11 +8747,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0641",
-    "name": "PetNord Filter Pads",
+    "name": "PetNord Filter Pads, twin pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "PetNord",
@@ -8533,7 +8760,8 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0642",
@@ -8559,7 +8787,7 @@
   },
   {
     "sku": "SKU-PT-0644",
-    "name": "PetNord Tropical Flakes",
+    "name": "PetNord Tropical Flakes, single",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "PetNord",
@@ -8567,11 +8795,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 4.75,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0645",
-    "name": "PetNord Tropical Flakes",
+    "name": "PetNord Tropical Flakes, twin pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "PetNord",
@@ -8579,11 +8808,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0646",
-    "name": "PetNord Tropical Flakes",
+    "name": "PetNord Tropical Flakes, triple pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "PetNord",
@@ -8591,11 +8821,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "triple pack"
   },
   {
     "sku": "SKU-PT-0647",
-    "name": "PetNord Cichlid Pellets",
+    "name": "PetNord Cichlid Pellets, single",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "PetNord",
@@ -8603,11 +8834,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 4.75,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0648",
-    "name": "PetNord Cichlid Pellets",
+    "name": "PetNord Cichlid Pellets, twin pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "PetNord",
@@ -8615,11 +8847,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0649",
-    "name": "PetNord Algae Wafers",
+    "name": "PetNord Algae Wafers, single",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "PetNord",
@@ -8627,11 +8860,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 1.0,
-    "rating_band": "1-2"
+    "rating_band": "1-2",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0650",
-    "name": "PetNord Algae Wafers",
+    "name": "PetNord Algae Wafers, twin pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "PetNord",
@@ -8639,7 +8873,8 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 4.67,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0651",
@@ -8655,7 +8890,7 @@
   },
   {
     "sku": "SKU-PT-0652",
-    "name": "PetNord Air Pump",
+    "name": "PetNord Air Pump, single",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "PetNord",
@@ -8663,11 +8898,12 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0653",
-    "name": "PetNord Air Pump",
+    "name": "PetNord Air Pump, twin pack",
     "category": "aquarium",
     "pet_type": "aquarium",
     "brand": "PetNord",
@@ -8675,7 +8911,8 @@
     "tax_class": "standard",
     "tags": "mass tank filter",
     "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "4",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0654",
@@ -8691,7 +8928,7 @@
   },
   {
     "sku": "SKU-PT-0655",
-    "name": "JBL pH Adjuster",
+    "name": "JBL pH Adjuster, single",
     "category": "health",
     "pet_type": "aquarium",
     "brand": "JBL",
@@ -8699,11 +8936,12 @@
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
     "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "single"
   },
   {
     "sku": "SKU-PT-0656",
-    "name": "JBL pH Adjuster",
+    "name": "JBL pH Adjuster, twin pack",
     "category": "health",
     "pet_type": "aquarium",
     "brand": "JBL",
@@ -8711,7 +8949,8 @@
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
     "avg_rating": 4.67,
-    "rating_band": "5"
+    "rating_band": "5",
+    "variant": "twin pack"
   },
   {
     "sku": "SKU-PT-0657",

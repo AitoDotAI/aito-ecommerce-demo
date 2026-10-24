@@ -49,6 +49,9 @@ SCHEMAS: dict[str, dict] = {
             # when nobody reviewed it.
             "avg_rating":  {"type": "Decimal", "nullable": True},
             "rating_band": {"type": "String",  "nullable": False},
+            # What tells it from a product that would share its name ("large",
+            # "value pack"); also in the name, after a comma.
+            "variant":     {"type": "String",  "nullable": True},
         },
     },
     # 2. customers — link target for orders.customer_id.
@@ -89,6 +92,16 @@ SCHEMAS: dict[str, dict] = {
             # as `churned_in_3_months` is. Absent for customers who joined
             # less than 6 months before the data ends.
             "became_regular":          {"type": "Boolean", "nullable": True},
+            # ADR 0044: what a shop can know about a person. Behaviour
+            # (contexts, impressions) exists only with `consent_behavioural`.
+            # `sex` is from the purchase form, when filled in, and no ranking
+            # query conditions on it; `interests` are topics the person chose.
+            "consent_behavioural": {"type": "Boolean", "nullable": False},
+            "sex":                 {"type": "String",  "nullable": True},
+            "postcode_area":       {"type": "String",  "nullable": False},
+            "delivery_method":     {"type": "String",  "nullable": False},
+            "loyalty_member":      {"type": "Boolean", "nullable": False},
+            "interests":           {"type": "Text",    "nullable": True, "analyzer": "whitespace"},
         },
     },
     # 2c. contexts — one moment a customer was shown products (ADR 0033):

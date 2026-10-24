@@ -200,7 +200,9 @@ def test_s8_a_product_just_bought_converts_less_when_shown_again(data, impressio
             tally = rates[i["just_bought"]]
             tally[0] += i["purchased"]
             tally[1] += 1
-    assert min(rates[True][1], rates[False][1]) >= 1000, rates
+    # 600, not 1,000: behaviour is recorded only with consent (ADR 0044;
+    # actionable-states-prereg.md, amendment after the first ADR 0044 generation).
+    assert min(rates[True][1], rates[False][1]) >= 600, rates
     just, earlier_bought = (rates[k][0] / rates[k][1] for k in (True, False))
     assert just / earlier_bought <= 0.5, f"just bought {just:.1%} vs bought earlier {earlier_bought:.1%}"
 

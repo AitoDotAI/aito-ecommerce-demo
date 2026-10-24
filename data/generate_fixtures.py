@@ -24,8 +24,8 @@ from datetime import date
 from pathlib import Path
 from typing import Callable, Iterable, Iterator
 
-from data import (acquisition, catalogue_events, lifecycle, observable, planted_switches, review_chain,
-                  sensitivities, shop_levers, shoppers)
+from data import (acquisition, catalogue_events, lifecycle, observable, person_data, planted_switches,
+                  review_chain, sensitivities, shop_levers, shoppers)
 from data.planted_switches import stream
 
 RNG_SEED = 42
@@ -363,6 +363,8 @@ class Product:
     # (ADR 0030, S5). None / "unrated" for a product nobody reviewed.
     avg_rating: float | None = None
     rating_band: str = "unrated"
+    # Set only where another product would share the name: "large", "value pack".
+    variant: str | None = None
 
 
 @dataclass
@@ -417,6 +419,14 @@ class Customer:
     became_regular: bool | None = None      # None: joined too late to tell
     # ADR 0039: the month the churn hazard ended the customer's history. Hidden.
     churn_month: str | None = None
+    # ADR 0044: behavioural consent, the purchase form, the account and the
+    # declared interests (`data/person_data.py`).
+    consent_behavioural: bool = True
+    sex: str | None = None
+    postcode_area: str = ""
+    delivery_method: str = ""
+    loyalty_member: bool = False
+    interests: str | None = None
 
 
 @dataclass
@@ -798,6 +808,7 @@ def gen_products(rng: random.Random) -> list[Product]:
         if "tax_class" in nulled:
             p.tax_class = None
 
+    name_variants(products)
     return products
 
 
@@ -808,6 +819,39 @@ def gen_products(rng: random.Random) -> list[Product]:
 FILLABLE_CATEGORIES: set[str] = {
     "dry-food", "wet-food", "treats", "dental-treats", "litter",
 }
+
+
+
+# What tells two otherwise identical products apart, by category (data release 2:
+# a merchant reads two SKUs with one name as a duplicate).
+VARIANTS_BY_CATEGORY: dict[str, tuple[str, ...]] = {
+    "accessories": ("small", "medium", "large", "extra large", "natural wood", "grey"),
+    "toys":        ("small", "medium", "large", "blue", "red", "green"),
+    "dry-food":    ("classic recipe", "light recipe", "value pack", "multipack", "family pack", "trial pack"),
+    "wet-food":    ("classic recipe", "light recipe", "multipack", "value pack", "family pack", "trial pack"),
+    "treats":      ("classic", "soft", "crunchy", "value pack", "multipack", "trial pack"),
+    "dental-treats": ("small dogs", "medium dogs", "large dogs", "value pack", "multipack", "trial pack"),
+    "litter":      ("unscented", "lavender scent", "value pack", "multipack"),
+}
+PACK_VARIANTS = ("single", "twin pack", "triple pack", "value pack", "refill", "starter pack")
+
+
+def name_variants(products: list[Product]) -> None:
+    """Products sharing a name get a distinguishing variant, in SKU order:
+    "Trixie Hideout, small", "Trixie Hideout, medium". No RNG draw, so
+    nothing else in the data moves. The variant follows a comma, which
+    `lifecycle.item_type` drops."""
+    by_name: dict[str, list[Product]] = {}
+    for p in products:
+        by_name.setdefault(p.name, []).append(p)
+    for same in by_name.values():
+        if len(same) < 2:
+            continue
+        variants = VARIANTS_BY_CATEGORY.get(same[0].category, PACK_VARIANTS)
+        assert len(same) <= len(variants), f"{len(same)} products named {same[0].name!r}"
+        for p, variant in zip(sorted(same, key=lambda p: p.sku), variants):
+            p.variant = variant
+            p.name = f"{p.name}, {variant}"
 
 
 def _compose_name(brand: str, flavour: str, dietary: str | None,
@@ -2933,6 +2977,8 @@ def _customer_visits(world: _ImpressionWorld, customer: Customer,
         cat_bias = _category_bias_for_customer(cat_bias, customer)
     if customer.joined_month is None:
         return     # no order, so never a customer
+    if not customer.consent_behavioural:
+        return     # ADR 0044: without consent, the shop records no visits
 
     rng = stream(RNG_SEED, "visits", cid)
     story_rng = random.Random(f"sessions:{cid}")
@@ -3081,6 +3127,8 @@ def _never_buy_visits(world: _ImpressionWorld, first_orders: Counter) -> list[in
     session_of: Counter = Counter()
     profiles: dict[int, tuple] = {}
     for source, month, visitor in acquisition.never_buy_sessions(RNG_SEED, first_orders):
+        if not person_data.visitor_consents(RNG_SEED, visitor):
+            continue   # ADR 0044: a visitor who declined tracking leaves no rows
         if visitor not in profiles:
             profiles[visitor] = _anonymous_shopper(visitor, source)
             visitors.append(visitor)
@@ -3223,6 +3271,9 @@ def main() -> None:
     # churned). Powers the Churn view's `_predict` features.
     backfill_customer_aggregates(customers, orders)
     backfill_first_orders(customers, orders)
+    # ADR 0044: what each person told the shop, and whether they consented to
+    # behavioural tracking. After the orders: the diet rule is drawn there.
+    person_data.assign(RNG_SEED, customers, always_consenting={p.customer_id for p in PERSONAS})
     rate_products(products, reviews)
     # Forward-looking churn label per review, from the churn that followed it.
     backfill_review_churn_label(reviews, customers)

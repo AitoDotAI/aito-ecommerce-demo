@@ -30,6 +30,7 @@ from pathlib import Path
 import data.generate_fixtures as generator
 from data import acquisition, catalogue_events as events, observable, planted_switches
 from scripts import acquisition_effect_metrics as acq
+from scripts import person_effect_metrics as person
 from scripts import planted_effect_metrics as metrics
 from scripts import review_effect_metrics as rev
 from scripts import state_effect_metrics as st
@@ -40,7 +41,7 @@ REPORT = Path(__file__).resolve().parent.parent / "docs/verification/actionable-
 # Each null switches one planted effect off. A name in `planted_switches.ON`
 # turns that switch off; the older effects set their constants to "no effect".
 SWITCHED = ("P6", "P7", "P8", "P9", "P10", "quality", "R3", "R4", "R4_reply", "R5", "R6",
-            "F1", "F2", "F3", "F4", "F5")
+            "F1", "F2", "F3", "F4", "F5", "C1")
 CONSTANTS = {
     "launch pull": {"LAUNCH_PICK_FACTOR": 1.0, "RIVAL_PICK_FACTOR": 1.0, "RECONSIDER_AFTER_RIVAL": 1.0,
                     "SWITCH_TO_RIVAL": False},
@@ -88,6 +89,10 @@ METRICS = {
     **{f"regular {s} {staple}": (lambda fx, s=s, staple=staple: acq.regular_rate(
         fx, source=s, staple_first=staple == "staple"))
        for s in ("organic_search", "affiliate") for staple in ("staple", "no staple")},
+    "C1": person.natural_food_grain_free,
+    "C2 rate": person.consent_rate_off,
+    "C2 gap": person.consent_largest_gap,
+    "C3": person.sex_largest_log_ratio,
     "P2b": metrics.launch_pull,
     "P2c": metrics.incumbents_after_launch,
     "P3a": metrics.sales_after_rise,
@@ -175,6 +180,13 @@ CHECKS = [
           ("regular organic_search staple", "regular organic_search no staple")),
     Check("F5b affiliate", "F5a among affiliate customers", "F5", "high ÷ low",
           ("regular affiliate staple", "regular affiliate no staple")),
+    Check("C1", "natural-food declarers buy grain-free (÷ everyone else)", None, "planted", ("C1",), GE, 1.8),
+    Check("C1 vs null", "C1 against interests drawn without the traits", "C1", "ratio", ("C1",)),
+    Check("C2 rate", "consent rate's distance from 0.6", None, "planted", ("C2 rate",), LE, 0.05),
+    Check("C2 gap", "largest consent gap between a trait level and the rest", None, "planted", ("C2 gap",),
+          LE, 0.07),
+    Check("C3", "largest \\|log\\| female ÷ male category share (log 1.25 = 0.223)", None, "planted", ("C3",),
+          LE, 0.223),
     Check("P2b", "a new product's pull", "launch pull", "ratio", ("P2b",), GE, 1.3),
     Check("P2c", "incumbents lose to a launch", "launch pull", "ratio", ("P2c",), LE, 0.95),
     Check("P3a", "a price rise lowers sales", "price rise", "ratio", ("P3a",), LE, 0.92),

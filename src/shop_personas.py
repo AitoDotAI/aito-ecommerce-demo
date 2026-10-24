@@ -28,7 +28,8 @@ SHOPPERS = [
     # hamster household. The key stays `paivi` so links and the default hold.
     Shopper("paivi", "CUST-00175", "Raija Nieminen", "🐹",
             "Got a guinea pig in February: a cage and a water bottle so far."),
-    Shopper("janne", "CUST-00049", "Janne Hämäläinen", "🐕",
+    # Re-picked for ADR 0044: CUST-00049 declined behavioural tracking.
+    Shopper("janne", "CUST-00828", "Satu Anttila", "🐕",
             "A grain-free dog household: never any other food."),
     Shopper("helena", "CUST-00053", "Helena Heinonen", "🐈",
             "Buys the same cat food every few weeks."),
@@ -38,7 +39,13 @@ SHOPPERS = [
             "Declares a small dog; reorders Acana Sensitive dog food."),
     Shopper("saara", "CUST-00003", "Saara Virtanen", "🐕",
             "A large dog: 13 of 14 orders hold the same 7 kg bag of Hill's Science Plan Senior."),
+    # ADR 0044: said no to behavioural tracking. The shop has their orders
+    # and what they told it, and no visits or impressions.
+    Shopper("juhani", "CUST-00330", "Juhani Salminen", "🐈",
+            "Said no to tracking: 11 orders, and the interests they chose (grooming, budget buys)."),
 ]
+# The shopper whose Shop shows "no behavioural data" (ADR 0044).
+NO_CONSENT_SHOPPER = "juhani"
 DEFAULT_SHOPPER = "paivi"
 
 

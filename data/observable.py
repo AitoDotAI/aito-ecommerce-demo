@@ -53,6 +53,13 @@ def public_customer(customer) -> dict:
         "joined_month": customer.joined_month,
         "first_basket_categories": customer.first_basket_categories,
         "became_regular": customer.became_regular,
+        # ADR 0044: consent, the purchase form, the account, declared interests.
+        "consent_behavioural": customer.consent_behavioural,
+        "sex": customer.sex,
+        "postcode_area": customer.postcode_area,
+        "delivery_method": customer.delivery_method,
+        "loyalty_member": customer.loyalty_member,
+        "interests": customer.interests,
     }
     return {k: v for k, v in row.items() if v is not None}
 
@@ -66,7 +73,9 @@ def answer_key_row(customer) -> dict:
            # What ADR 0037's personalised-search ceiling scores with.
            "favorite_brands": "|".join(customer.favorite_brands) or None,
            # ADR 0039: the month the churn hazard ended the customer's history.
-           "churn_month": customer.churn_month}
+           "churn_month": customer.churn_month,
+           # ADR 0044: whether the shop may record this customer's behaviour.
+           "consent_behavioural": customer.consent_behavioural}
     row.update({trait: getattr(customer, trait) for trait in HIDDEN_TRAITS})
     row.update({f"{s}_sensitivity": customer.sensitivities[s] for s in SENSITIVITIES})
     return {k: v for k, v in row.items() if v is not None}

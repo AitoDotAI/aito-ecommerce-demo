@@ -526,3 +526,38 @@ its values repeat exactly.
 **Rows** (expected): impressions ≈ 101,000 and contexts ≈ 62,000, both about
 60 % of the last run's. Every other table is unchanged in rows.
 
+
+### A change to the catalogue, not an effect (2026-10-24, before the run)
+
+239 of 658 SKUs shared a display name with another SKU of identical attributes,
+e.g. "Trixie Hideout" (SKU-PT-0563, -0564). The variant loop of `gen_products`
+draws them, and food collides too (the same pack size and dietary drawn twice).
+A merchant reads that as a duplicate.
+
+- **The change:** each product of a shared name gets a distinguishing
+  variant, after a comma, in SKU order: "Trixie Hideout, small" / ", medium";
+  "… Dog Food 2kg, classic recipe" / ", light recipe". The variant is also a
+  new `products.variant` column, absent where the name was already unique.
+- **No RNG draw:** every other byte of the data stays as it was.
+- **Names are parsed in two places,** and both are updated:
+  - `lifecycle.item_type` drops what follows the comma, so kit items, durables
+    and search phrases read as before;
+  - the search-phrase matcher ignores the comma.
+- **A test asserts** that product names are unique.
+
+It plants nothing and moves no registered value: the effects read SKUs and
+attributes, not names. It is re-run with everything else.
+
+### Amendment after the first ADR 0044 generation (2026-10-24, before the null run)
+
+One older test moved, by sample size only, as the addendum foresaw for S8.
+
+- **The test:** S8 (`test_s8_a_product_just_bought_converts_less_when_shown_again`)
+  requires at least 1,000 impressions in each of its two groups, before
+  comparing their purchase rates.
+- **What moved:** with behaviour recorded for about 60 % of customers, the
+  groups hold 767 (just bought) and 725 (bought earlier).
+- **What didn't:** the ratio it judges reads 0.25 (34/767 ÷ 128/725), against
+  ≤ 0.5, as before.
+- **Change:** the floor becomes 600, about 60 % of 1,000. The ratio's
+  threshold is unchanged.

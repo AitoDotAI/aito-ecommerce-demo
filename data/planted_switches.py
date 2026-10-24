@@ -37,6 +37,8 @@ ON: dict[str, bool] = {
     "F3": True,        # sources bring different sensitivities
     "F4": True,        # sources stay differently
     "F5": True,        # a staple in the first basket doubles the chance to stay
+    # ADR 0044: what a person declares.
+    "C1": True,        # declared interests follow the hidden traits
 }
 
 # Reviews written at all. Off only in `tests/test_review_chain.py`, which
