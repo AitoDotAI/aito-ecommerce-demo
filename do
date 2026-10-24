@@ -184,6 +184,8 @@ EOF
 }
 
 cmd_dev() {
+  # A local app reads the shared demo DB: memory-only cache unless PUBLIC_DEMO=0 is set.
+  export PUBLIC_DEMO="${PUBLIC_DEMO:-1}"
   echo "Starting Predictive E-commerce"
   echo "  Backend:  http://localhost:${PORT_BACKEND} (internal)"
   echo "  Frontend: http://localhost:${PORT_FRONTEND} (open this)"
@@ -620,12 +622,16 @@ cmd_workbook() {
 
 cmd_test() {
   cd "$SCRIPT_DIR"
+  # Live checks read the shared demo DB with the read-write key; they must never
+  # write its cache (aito-azure saw 14 cache writes on master on 2026-10-24).
+  export PUBLIC_DEMO="${PUBLIC_DEMO:-1}"
   # The backtest group adds numpy, which the EASE baseline's tests need (ADR 0036).
   uv run --group backtest pytest tests/ -v
 }
 
 cmd_aito_check() {
   cd "$SCRIPT_DIR"
+  export PUBLIC_DEMO="${PUBLIC_DEMO:-1}"   # reads only: no cache rows on the shared DB
   if [[ ! -f tests/test_aito_check.py ]]; then
     echo "tests/test_aito_check.py not implemented yet (lands with the first view that calls Aito)."
     exit 0
