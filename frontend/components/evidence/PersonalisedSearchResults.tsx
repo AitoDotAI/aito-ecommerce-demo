@@ -93,9 +93,15 @@ function ScoreTable({ slices, rankings, pick, digits }: {
   pick: (s: PersonalisedSlice) => Record<string, Interval>;
   digits?: number;
 }) {
-  const show = (v: Interval) => digits
-    ? `${v.mean.toFixed(digits)} [${v.low?.toFixed(digits)}, ${v.high?.toFixed(digits)}]`
-    : <>{(v.mean * 100).toFixed(1)} % <span style={{ color: "var(--text-muted)" }}>{pctInterval(v.low, v.high)}</span></>;
+  // The estimate, and its 95 % interval on a second line, so five slices fit side by side.
+  const show = (v: Interval) => (
+    <>
+      <div>{digits ? v.mean.toFixed(digits) : `${(v.mean * 100).toFixed(1)} %`}</div>
+      <div style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 400 }}>
+        {digits ? `[${v.low?.toFixed(digits)}, ${v.high?.toFixed(digits)}]` : pctInterval(v.low, v.high)}
+      </div>
+    </>
+  );
   return (
     <table className="data-table">
       <thead>
@@ -112,7 +118,7 @@ function ScoreTable({ slices, rankings, pick, digits }: {
       <tbody>
         {rankings.map((r) => (
           <tr key={r}>
-            <td>
+            <td style={{ minWidth: 220 }}>
               <div style={{ fontWeight: 600 }}>{r}</div>
               <div style={{ fontSize: 11, color: "var(--text-muted)" }}>{WHAT[r]}</div>
             </td>

@@ -159,7 +159,7 @@ function ModelRow({ m, focused, onPick }: { m: ModelCheck; focused: boolean; onP
       style={{ cursor: "pointer", outline: focused ? "2px solid var(--cta)" : undefined, outlineOffset: -2 }}
     >
       <td><span className={`eval-mark ${m.verdict}`}>{m.verdict === "pass" ? "✓" : "✗"}</span></td>
-      <td>
+      <td style={{ minWidth: 200 }}>
         <div style={{ fontWeight: 600 }}>{m.label}</div>
         <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--mono)" }}>
           predict <code>{m.predict}</code> from <code>{m.table}</code>

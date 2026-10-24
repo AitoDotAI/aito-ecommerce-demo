@@ -53,7 +53,7 @@ def evaluate_churn(client: AitoClient) -> dict:
         "base_accuracy": base,
         "gain_pp": (accuracy - base) * 100,
         "n": int(res["n"]),
-        "method": f"{CHURN_TEST_ROWS} customer-months held out at random by Aito's `_evaluate`; "
+        "method": f"{CHURN_TEST_ROWS} customer-months held out at random by Aito's _evaluate; "
                   "the baseline always guesses the most common answer (stays).",
     }
 
@@ -62,10 +62,10 @@ def evaluate_demand_model(client: AitoClient) -> dict:
     e = evaluate_demand(client, LATEST_MONTH)
     return {"label": "Next month's sales range", "table": "monthly_sales", "predict": "units_bucket",
             **asdict(e), "test_month": LATEST_MONTH,
-            # Said for this page: Supply's unit forecast is an `_estimate`, which `_evaluate` can't score yet.
+            # Said for this page: Supply's unit forecast is an `_estimate`, which _evaluate can't score yet.
             "method": f"Aito predicting each product's sales range (0, 1, 2-3, 4-7, 8-15, 16-31, 32+) in "
                       f"{LATEST_MONTH} from last month's range and the product, trained on every earlier month. "
-                      "It scores the range, not Supply's unit forecast, which `_evaluate` can't score yet."}
+                      "It scores the range, not Supply's unit forecast, which _evaluate can't score yet."}
 
 
 def with_intervals(accuracy: float, n: int, comparisons: dict[str, float], label: str) -> dict:
