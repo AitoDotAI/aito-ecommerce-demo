@@ -149,3 +149,14 @@ def test_an_unknown_product_is_refused(client, httpx_mock):
 
     with pytest.raises(UnknownProductError):
         get_discount_what_if(client, "NOPE-1")
+
+
+def test_the_current_band_is_the_one_in_the_month_asked_about(client, httpx_mock):
+    # The Product view opens on any month; the estimates don't change with it.
+    mock_aito(httpx_mock, current_band="15-20")
+
+    result = get_discount_what_if(client, SKU, "2025-11")
+
+    queries = json.loads(httpx_mock.get_requests()[-1].read())
+    assert queries[-1]["where"] == {"product_sku": SKU, "month": "2025-11"}
+    assert (result.month, result.current_band) == ("2025-11", "15-20")

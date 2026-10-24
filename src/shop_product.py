@@ -6,11 +6,14 @@ with it (ADR 0031).
   same category for the same pet, the product itself and the cart left
   out: what this shopper would most likely buy instead, with reasons. A
   kit item's category ("accessories") holds cages and bottles alike, so
-  for one the name must also hold its type: another water bottle.
+  for one the name must also hold its type: another water bottle. A SKU
+  with the product's own name is the same product to a shopper, so it is
+  no alternative; the rest show one card per name (`src/same_name.py`).
 - **Often in the same basket**: `_relate` on `orders`, where the order's
   SKUs hold this one, related to `skus`. Pairs are thin per product (a few
   orders each), so every row shows its count, and a pair is kept only with
-  at least MIN_TOGETHER orders and a 95 % interval above 1.
+  at least MIN_TOGETHER orders and a 95 % interval above 1. One row per
+  name, as in the Shop's lists.
 - **In your orders**: the shopper's own orders that held it, by `_search`.
   This is their history, not a prediction: `_relate` over one shopper's
   orders (a nested `from`) isn't supported on Aito 2.11.4 (501).
@@ -18,12 +21,13 @@ with it (ADR 0031).
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 
 from src.aito_client import AitoClient
 from src.aito_compat import related_value
 from src.lookup_errors import UnknownProductError
 from src.price_bands import lift_interval
+from src.same_name import one_per_name
 from src.shop_context import DURABLE_TYPES, item_type
 from src.shop_offers import offers_this_month
 from src.shop_ranking import ShopItem, ranked_items, shop_scope
@@ -42,6 +46,7 @@ class BasketPair:
     lift: float
     together: int       # orders holding both
     orders_with_it: int  # orders holding this drawer's product
+    same_name_skus: list[str] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -68,7 +73,9 @@ def get_product_drawer(client: AitoClient, sku: str, shopper_key: str, month: st
                  "product_sku.category": product["category"], "product_sku.pet_type": product["pet_type"]}
     if (kind := item_type(product["name"], product["brand"])) in DURABLE_TYPES:
         same_kind["product_sku.name"] = {"$match": kind}
-    alternatives = ranked_items(client, scope, same_kind, ALTERNATIVES)
+    # Asked for twice as many, so ALTERNATIVES remain after one card per name.
+    ranked = ranked_items(client, scope, same_kind, 2 * ALTERNATIVES)
+    alternatives = one_per_name([a for a in ranked if a.name != product["name"]])[:ALTERNATIVES]
 
     body = {"from": "orders", "where": {"skus": {"$match": sku}}, "relate": "skus", "limit": 40}
     hits = client.relate(table="orders", where=body["where"], relate_field="skus", limit=40)["hits"]
@@ -80,11 +87,11 @@ def get_product_drawer(client: AitoClient, sku: str, shopper_key: str, month: st
         low, _ = lift_interval(float(hit["lift"]), fs["fOnCondition"], fs["fCondition"], fs["f"], fs["n"])
         if other != sku and fs["fOnCondition"] >= MIN_TOGETHER and low > 1:
             pairs.append((other, hit))
-    pairs = pairs[:PAIRS]
     names = _names(client, [other for other, _ in pairs])
     same_basket = [BasketPair(other, names[other], round(float(h["lift"]), 2),
                               int(h["fs"]["fOnCondition"]), int(h["fs"]["fCondition"]))
-                   for other, h in pairs]
+                   for other, h in pairs if names[other] != product["name"]]
+    same_basket = one_per_name(same_basket)[:PAIRS]
 
     # Their own orders before the picked month that held it: history, as of then.
     mine = [o["month"] for o in scope.orders if sku in o["skus"].split()]

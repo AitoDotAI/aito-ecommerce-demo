@@ -37,11 +37,40 @@ class AitoError(Exception):
         super().__init__(message)
 
 
+class ReadOnlyClientError(RuntimeError):
+    """A write was attempted through a client that may not make it (ADR 0043).
+
+    Deliberately not an `AitoError`: several callers catch `AitoError` and
+    carry on (the cache, the precompute store), and a write that reaches
+    a master database must never be carried on from silently.
+    """
+
+
+# The query endpoints: every POST that reads. Anything else (`/data/...`,
+# `/schema/...` with PUT or DELETE) writes.
+READ_ENDPOINTS = frozenset({
+    "/_predict", "/_recommend", "/_relate", "/_search", "/_match", "/_estimate",
+    "/_aggregate", "/_batch", "/_evaluate", "/_query",
+})
+
+# What a client may change (ADR 0043):
+WRITES_ANY = "any"      # the loaders and a sandbox branch's client
+WRITES_NONE = "none"    # PetNord's database while sandboxes are configured
+WRITES_ENVS = "envs"    # the sandbox database's master: create and delete branches, never data
+
+
 class AitoClient:
     """Synchronous client for the Aito REST API."""
 
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config: Config, *, writes: str = WRITES_ANY) -> None:
+        if writes not in (WRITES_ANY, WRITES_NONE, WRITES_ENVS):
+            raise ValueError(f"Unknown writes mode {writes!r}")
         self._config = config
+        # While sandboxes are configured (ADR 0043), PetNord's client writes
+        # nothing and the sandbox database's own client only manages its
+        # branches: data is written only in a `tmp-` branch. The check is in
+        # `_request`, the one place every call passes through.
+        self.writes = writes
         self._base_url = config.aito_api_url
         # The whole v1/v2 switch lives here (ADR 0025): one assembled
         # base path, so every endpoint moves together.
@@ -56,7 +85,33 @@ class AitoClient:
         # handshake (measured: 200-300 ms net vs 57 ms net with the
         # pool warm) which dominates server-side query latency. See
         # docs/notes/aito-perf-findings.md.
-        self._client = httpx.Client(headers=self._headers, timeout=90.0)
+        #
+        # httpx closes a connection after 5 s idle by default, so a view
+        # opened a few seconds after the last one reconnects, and every
+        # reconnect resolves the host again. Where DNS is slow (5 s
+        # timeouts were measured on a demo laptop, 2026-10-24) that put
+        # 3.5 s on most calls whose Aito time was 4 ms. Idle connections
+        # are kept for 5 minutes, and the pool is sized for the parallel
+        # calls a view makes.
+        self._client = httpx.Client(
+            headers=self._headers,
+            timeout=90.0,
+            limits=httpx.Limits(max_connections=40, max_keepalive_connections=20, keepalive_expiry=300.0),
+        )
+
+    @property
+    def read_only(self) -> bool:
+        return self.writes == WRITES_NONE
+
+    @property
+    def env(self) -> str:
+        return self._config.aito_env
+
+    def may(self, method: str, path: str) -> bool:
+        """Whether this client may send `method path` (see WRITES_*)."""
+        if is_read(method, path) or self.writes == WRITES_ANY:
+            return True
+        return self.writes == WRITES_ENVS and is_env_admin(method, path)
 
     def _url(self, path: str) -> str:
         """Every Aito URL is built here, from the configured base.
@@ -87,6 +142,11 @@ class AitoClient:
         # v1/v2 request + response translation happens here and nowhere
         # else, so every service module keeps reading v1's vocabulary
         # regardless of which API is configured (ADR 0025).
+        if not self.may(method, path):
+            raise ReadOnlyClientError(
+                f"Refusing {method} {path} on {self._base_url} (env {self._config.aito_env}): "
+                f"this client's writes are {self.writes!r}; lever writes go to a sandbox branch (ADR 0043)"
+            )
         json = adapt_request(path, json, use_v2=self.use_v2)
 
         start = time.perf_counter()
@@ -129,6 +189,25 @@ class AitoClient:
     def get_schema(self) -> dict:
         """Fetch the database schema. Returns table definitions."""
         return self._request("GET", "/schema")
+
+    def engine_version(self) -> str:
+        """The Aito engine's version, which an Evidence result file records
+        next to its numbers (ADR 0037). `GET /version` lives at the host's
+        root, outside any database's path, and takes no key: sent with a
+        database's key it answers 401."""
+        url = httpx.URL(self._base_url)
+        origin = f"{url.scheme}://{url.host}" + (f":{url.port}" if url.port else "")
+        try:
+            response = httpx.get(f"{origin}/version", timeout=10.0)
+        except httpx.HTTPError as exc:
+            raise AitoError(f"Aito request failed: GET /version: {exc}") from exc
+        if response.status_code >= 400:
+            raise AitoError(f"Aito returned {response.status_code} for GET /version: {response.text[:200]}",
+                            status_code=response.status_code, body=response.text)
+        body = response.json()
+        if "version" not in body:
+            raise AitoError(f"GET /version answered without a version: {str(body)[:200]}")
+        return str(body["version"])
 
     def check_connectivity(self) -> bool:
         """True if the configured Aito instance is reachable + authenticated."""
@@ -564,6 +643,16 @@ class AitoClient:
         if train is not None:
             body["train"] = train
         return body
+
+
+def is_read(method: str, path: str) -> bool:
+    """True for a request that cannot change data: a GET, or a query endpoint."""
+    return method == "GET" or (method == "POST" and path in READ_ENDPOINTS)
+
+
+def is_env_admin(method: str, path: str) -> bool:
+    """Creating a branch (`POST /_envs`) or deleting one (`DELETE /_envs/<name>`)."""
+    return (method == "POST" and path == "/_envs") or (method == "DELETE" and path.startswith("/_envs/"))
 
 
 logger = logging.getLogger("aito.client")

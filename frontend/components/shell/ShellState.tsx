@@ -21,6 +21,7 @@ import {
   type ReactNode,
 } from "react";
 
+import { serverDemoMode, tabDemoChoice } from "@/lib/demo-mode";
 import type { AitoPanelConfig } from "@/lib/types";
 
 interface ShellState {
@@ -31,6 +32,7 @@ interface ShellState {
   pageTitle: string;
   pageDescription: string;
   breadcrumb: string;
+  demoMode: boolean;       // presentation mode (lib/demo-mode.ts)
 }
 
 interface ShellActions {
@@ -59,6 +61,7 @@ export function ShellProvider({ children }: { children: ReactNode }) {
     "Predictive insights from your purchase data — updated on every query.",
   );
   const [breadcrumb, setBreadcrumb] = useState("Dashboard");
+  const [demoMode, setDemoMode] = useState(false);
 
   // Persist desktop collapse state so a refresh doesn't surprise
   // the visitor. Mobile drawer state stays ephemeral.
@@ -69,6 +72,20 @@ export function ShellProvider({ children }: { children: ReactNode }) {
     if (sb === "true") setSidebarCollapsed(true);
     if (ap === "true") setAitoCollapsed(true);
   }, []);
+
+  // Demo mode: the tab's `?demo=` wins, else the server's DEMO_MODE. It
+  // starts the Aito panel collapsed, without forgetting the visitor's own
+  // choice for later sessions; the panel's tab still opens it.
+  useEffect(() => {
+    const choice = tabDemoChoice();
+    if (choice !== null) { setDemoMode(choice); return; }
+    let current = true;
+    serverDemoMode().then((on) => { if (current) setDemoMode(on); });
+    return () => { current = false; };
+  }, []);
+  useEffect(() => {
+    if (demoMode && !isMobile()) setAitoCollapsed(true);
+  }, [demoMode]);
 
   const toggleSidebar = useCallback(() => {
     if (isMobile()) {
@@ -110,6 +127,7 @@ export function ShellProvider({ children }: { children: ReactNode }) {
     pageTitle,
     pageDescription,
     breadcrumb,
+    demoMode,
     toggleSidebar,
     toggleAito,
     closeMobile,
@@ -117,7 +135,7 @@ export function ShellProvider({ children }: { children: ReactNode }) {
     setPage,
   }), [
     sidebarCollapsed, aitoCollapsed, mobileOpen, panel,
-    pageTitle, pageDescription, breadcrumb,
+    pageTitle, pageDescription, breadcrumb, demoMode,
     toggleSidebar, toggleAito, closeMobile, setPage,
   ]);
 

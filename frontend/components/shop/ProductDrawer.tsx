@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 
 import { apiFetch, fmtEur } from "@/lib/api";
+import { useSandboxEnv, withSandbox } from "@/lib/sandbox";
 import type { ShopProductDrawer } from "@/lib/types";
 import ProductHighlights from "@/components/shop/ProductHighlights";
+import VariantNote from "@/components/shop/VariantNote";
 
 /** A product, opened: its details, what this shopper would buy instead
  *  (ranked by Aito, with why), what is often in the same basket (from all
@@ -18,6 +21,7 @@ export default function ProductDrawer({ sku, shopper, month, cart, onClose, onAd
   onAdd: (sku: string) => void;
   onOpen: (sku: string) => void;
 }) {
+  const sandbox = useSandboxEnv();
   const [drawer, setDrawer] = useState<ShopProductDrawer | null>(null);
   const [error, setError] = useState<string | null>(null);
   const closeButton = useRef<HTMLButtonElement>(null);
@@ -69,7 +73,13 @@ export default function ProductDrawer({ sku, shopper, month, cart, onClose, onAd
           <div className="card-sub">
             {drawer.product.dietary && <>Diet: {drawer.product.dietary} · </>}{drawer.product.tags}
           </div>
-          <button className="btn" style={{ margin: "10px 0" }} onClick={() => onAdd(drawer.product.sku)}>Add to cart</button>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+            <button className="btn" style={{ margin: "10px 0" }} onClick={() => onAdd(drawer.product.sku)}>Add to cart</button>
+            <Link href={withSandbox(`/product/?sku=${encodeURIComponent(drawer.product.sku)}&month=${month}`, sandbox)}
+                  style={{ fontSize: 13 }}>
+              Owner view of this product →
+            </Link>
+          </div>
 
           <div style={{ fontWeight: 600, fontSize: 13, marginTop: 6 }}>Instead, this shopper might buy</div>
           <div className="card-sub" style={{ marginBottom: 4 }}>
@@ -79,8 +89,11 @@ export default function ProductDrawer({ sku, shopper, month, cart, onClose, onAd
           {drawer.alternatives.map((a) => (
             <div key={a.sku} style={{ padding: "5px 0", borderTop: "1px solid var(--border-light)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", gap: 8, fontSize: 13 }}>
-                <button className="shop-card-name" style={{ fontWeight: 400 }} onClick={() => onOpen(a.sku)}
-                        aria-label={`Open ${a.name}`}>{a.name}</button>
+                <span>
+                  <button className="shop-card-name" style={{ fontWeight: 400 }} onClick={() => onOpen(a.sku)}
+                          aria-label={`Open ${a.name}`}>{a.name}</button>
+                  {" "}<VariantNote skus={a.same_name_skus} />
+                </span>
                 <span className="card-sub" style={{ whiteSpace: "nowrap" }}>
                   {Math.round(a.p * 100)} % · {fmtEur(a.price_eur, 2)}
                   <button className="btn btn-ghost" style={{ marginLeft: 6, padding: "0 6px" }}
@@ -98,8 +111,11 @@ export default function ProductDrawer({ sku, shopper, month, cart, onClose, onAd
           {drawer.same_basket.length === 0 && <div className="card-sub">No pair is common enough to show.</div>}
           {drawer.same_basket.map((p) => (
             <div key={p.sku} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, padding: "3px 0" }}>
-              <button className="shop-card-name" style={{ fontWeight: 400 }} onClick={() => onOpen(p.sku)}
-                      aria-label={`Open ${p.name}`}>{p.name}</button>
+              <span>
+                <button className="shop-card-name" style={{ fontWeight: 400 }} onClick={() => onOpen(p.sku)}
+                        aria-label={`Open ${p.name}`}>{p.name}</button>
+                {" "}<VariantNote skus={p.same_name_skus} />
+              </span>
               <span className="card-sub" style={{ whiteSpace: "nowrap" }}>
                 {p.lift.toFixed(1)}× · {p.together} of {p.orders_with_it}
                 <button className="btn btn-ghost" style={{ marginLeft: 6, padding: "0 6px" }}

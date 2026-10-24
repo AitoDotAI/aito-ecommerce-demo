@@ -71,6 +71,7 @@ def _isolate(tmp_path, monkeypatch):
     yield
     store._l1.clear()
     store.set_namespace(None)
+    store.read_release_snapshots(None)
     store._aito = saved
 
 
@@ -267,3 +268,32 @@ def test_namespace_fallback_matches_the_config_property(monkeypatch):
     cfg = Config(aito_api_url="https://x", aito_api_key="k", public_demo=False,
                  use_v2=True, aito_env="master")
     assert store._current_namespace() == cfg.api_namespace == current_api_namespace()
+
+
+# ── The release env reads the snapshots filed for master (ADR 0035) ──
+
+
+def test_the_release_env_reads_the_snapshots_its_release_filed_for_master(tmp_path):
+    # `./do precompute --as master` on env observable wrote v2-master/supply.json.
+    (tmp_path / "v2-master").mkdir()
+    (tmp_path / "v2-master" / "supply.json").write_text(json.dumps({"data": {"reorder": 59}}))
+    store._aito = None
+    store.set_namespace("v2@observable")
+    assert store.get("supply") is None
+
+    store.read_release_snapshots("v2@master")
+
+    assert store.get("supply") == {"data": {"reorder": 59}}
+
+
+def test_only_the_release_env_borrows_masters_snapshots():
+    from src.config import Config
+    from src.precompute_store import release_snapshot_namespace
+    observable = Config(aito_api_url="https://x", aito_api_key="k", public_demo=False, use_v2=True,
+                        aito_env="observable")
+    master = Config(aito_api_url="https://x", aito_api_key="k", public_demo=False, use_v2=True,
+                    aito_env="master")
+
+    assert release_snapshot_namespace(observable, "observable") == "v2@master"
+    assert release_snapshot_namespace(observable, "states") is None    # not the release's data
+    assert release_snapshot_namespace(master, "observable") is None    # master reads its own

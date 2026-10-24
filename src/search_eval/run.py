@@ -29,6 +29,7 @@ from pathlib import Path
 
 from src.aito_client import AitoClient
 from src.config import load_config
+from src.evidence.result_file import run_info
 from src.search_service import TEXT_THETA
 from src.search_eval import arms as A
 from src.search_eval.metrics import mrr, ndcg_at_k, paired_bootstrap_ci, precision_at_k, recall_at_k
@@ -102,6 +103,8 @@ def run() -> int:
     random_ndcg = statistics.mean(r["ndcg10"] for r in rows["random (control)"].values())
 
     report = _report(queries, labels, rows, latency, best, shuffled, random_ndcg)
+    # What produced these numbers, for the Evidence page that renders them (ADR 0037 §2).
+    report["data"]["run"] = run_info(client, "./do search-eval")
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "search-eval.md").write_text(report["md"])
     (OUT / "search-eval.json").write_text(json.dumps(report["data"], indent=2))

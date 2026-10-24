@@ -74,3 +74,13 @@ def test_a_query_no_product_name_matches_says_so_and_returns_nothing():
 def test_an_empty_query_is_refused():
     with pytest.raises(ValueError, match="at least one word"):
         search_shop(FakeShopAito([]), "helena", "2026-04", [], "  ")
+
+
+def test_skus_that_share_a_name_show_as_one_result():
+    fake = FakeShopAito([product("SKU-A", 0.3, name="Fruit Drops 100g"), product("SKU-B", 0.25, name="Fruit Drops 100g"),
+                         product("SKU-C", 0.2, name="Hay Sticks")],
+                        text_scores={"SKU-A": 10.0, "SKU-B": 10.0, "SKU-C": 10.0}, last_order="SKU-X")
+
+    found = search_shop(fake, "helena", "2026-04", [], "treats")
+
+    assert [(i.sku, i.same_name_skus) for i in found.items] == [("SKU-A", ["SKU-B"]), ("SKU-C", [])]

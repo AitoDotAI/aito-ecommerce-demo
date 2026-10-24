@@ -82,3 +82,14 @@ def test_a_kit_items_alternatives_are_the_same_kind_of_kit():
     get_product_drawer(fake, "SKU-A", "helena", "2026-04", [])
 
     assert fake.recommends[0]["product_sku.name"] == {"$match": "Water Bottle"}
+
+
+def test_a_sku_of_the_products_own_name_is_no_alternative_and_twins_show_once():
+    # SKU-A is "Name SKU-A" (the fake's catalogue); SKU-TWIN shares that name.
+    fake = FakeAito([], alternatives=[product("SKU-TWIN", 0.5, name="Name SKU-A"),
+                                      product("SKU-ALT", 0.4, name="Other Hideout"),
+                                      product("SKU-ALT2", 0.3, name="Other Hideout")])
+
+    drawer = get_product_drawer(fake, "SKU-A", "helena", "2026-04", [])
+
+    assert [(a.sku, a.same_name_skus) for a in drawer.alternatives] == [("SKU-ALT", ["SKU-ALT2"])]

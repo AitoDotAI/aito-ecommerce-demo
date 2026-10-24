@@ -11,6 +11,9 @@ export interface MovedRoute {
   to: string;
   /** Shown while forwarding, and to a browser without JavaScript. */
   label: string;
+  /** Where a link naming one product (`?sku=`) goes instead: per-product
+   *  links open Product, catalogue links open `to`. */
+  productTo?: string;
 }
 
 export const MOVED_ROUTES: Record<string, MovedRoute> = {
@@ -19,6 +22,24 @@ export const MOVED_ROUTES: Record<string, MovedRoute> = {
   "/evaluation":        { to: "/evidence/model-checks/",         label: "Evidence › Model checks" },
   "/smart-search":      { to: "/evidence/personalised-search/",  label: "Evidence › Personalised search" },
   "/recommendations":   { to: "/query-patterns/",                label: "Query patterns" },
+  "/product-insights":  { to: "/product/",                       label: "Product" },
+  // Supply: one forecast, with markdown as an overstock row's action.
+  "/inventory":         { to: "/supply/",                        label: "Supply" },
+  "/demand":            { to: "/supply/",                        label: "Supply" },
+  "/markdown":          { to: "/supply/",                        label: "Supply" },
+  // Retention: the win-back offer is an at-risk row's action.
+  "/churn":             { to: "/retention/",                     label: "Retention" },
+  "/winback":           { to: "/retention/",                     label: "Retention" },
+  "/feedback":          { to: "/review-triage/",                 label: "Review triage" },
+  // Price split (ADR 0041): its catalogue table is Supply's price column;
+  // one product's curve and what-ifs are on Product.
+  "/price":             { to: "/supply/",                        label: "Supply", productTo: "/product/" },
+  // Merged views. Pattern Explorer's `?anchor=` is Patterns' anchor
+  // filter; Basket Rules' confidence and support are columns on Baskets;
+  // Purchase Analytics' trend and best sellers are on the Overview.
+  "/pattern-explorer":  { to: "/patterns/",                      label: "Patterns" },
+  "/basket-rules":      { to: "/patterns/",                      label: "Patterns" },
+  "/purchase-analytics": { to: "/",                              label: "Overview" },
   // Dropped views: their question is answered elsewhere, better measured.
   // Bought Together's category pairs are Patterns › Baskets; Cart
   // Completion's add-ons are the Shop's cart re-ranking "Picked for you".

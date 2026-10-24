@@ -1,8 +1,8 @@
 """Precompute-and-serve store for the demo's parameterless views.
 
-Seven views are served from offline snapshots: the six heavy ones
-(churn, demand, evaluation, inventory, markdown, winback) plus the
-dashboard landing page (light-looking, but ~321 sequential `_search`
+Four views are served from offline snapshots: the heavy ones (demand,
+retention, supply; `src/precompute.py` lists them) plus the
+Overview landing page (light-looking, but ~321 sequential `_search`
 calls / ~93 s cold — the heaviest cold page, and the first one every
 visitor loads; see ADR 0024).
 
@@ -11,7 +11,7 @@ The heavy views each run an `_evaluate` and/or a large `_predict` /
 the public
 deploy runs a **read-only** API key, so `src/cache.py`'s write-through
 L2 layer is disabled there — every restart starts cold and the startup
-warmup has to recompute all six.
+warmup has to recompute them all.
 
 This module inverts the write path. The heavy work runs **offline** in
 `./do precompute` (see `src/precompute.py`), which snapshots each
@@ -42,7 +42,7 @@ the *real* query cost from an honest snapshot, not a fabricated number.
 
 Contrast with `src/cache.py`: that is a *lazy* cache for the nine light
 endpoints (compute on first hit, write-through, disabled on the public
-key). This is a *precompute-and-serve* store for the six heavy ones
+key). This is a *precompute-and-serve* store for the heavy ones
 (compute offline, read-only at request time). Two mechanisms, one line
 between them: heavy/offline here, light/lazy there.
 
@@ -120,9 +120,9 @@ def _current_namespace() -> str:
     return _namespace if _namespace is not None else current_api_namespace()
 
 
-def _scoped(name: str) -> str:
+def _scoped(name: str, namespace: str | None = None) -> str:
     """Key used for L1 and for the `name` column in Aito."""
-    return f"{_current_namespace()}|{name}"
+    return f"{namespace or _current_namespace()}|{name}"
 
 
 def _namespace_dir(namespace: str) -> str:
@@ -131,8 +131,34 @@ def _namespace_dir(namespace: str) -> str:
     return namespace.replace("@", "-")
 
 
-def _fallback_path(name: str) -> Path:
-    return _FALLBACK_DIR / _namespace_dir(_current_namespace()) / f"{name}.json"
+def _fallback_path(name: str, namespace: str | None = None) -> Path:
+    return _FALLBACK_DIR / _namespace_dir(namespace or _current_namespace()) / f"{name}.json"
+
+
+# ── The release env reads the snapshots its release filed for master ──
+#
+# A release computes its snapshots on the release env and files them as
+# master (`./do precompute --as master`, ADR 0035), because after the
+# promote master holds the same rows. Before the promote, an app reading
+# the release env itself (staging, or `AITO_ENV=observable ./do dev`)
+# would find none under its own namespace. Its data is the release's (the
+# data release gate checks it), so it reads master's snapshots too, after
+# its own. Writes always go to the current namespace.
+
+_release_namespace: str | None = None
+
+
+def read_release_snapshots(namespace: str | None) -> None:
+    """Also read `namespace`'s snapshots on a miss (None: only our own)."""
+    global _release_namespace
+    _release_namespace = namespace
+
+
+def release_snapshot_namespace(config, release_env: str) -> str | None:
+    """Master's namespace when `config` reads the release env, else None."""
+    if config.aito_env == release_env and release_env != "master":
+        return f"{config.api_version}@master"
+    return None
 
 
 def init(client: AitoClient) -> None:
@@ -144,7 +170,8 @@ def init(client: AitoClient) -> None:
     set_namespace(client._config.api_namespace)
     try:
         schema = client.get_schema()
-        if PRECOMPUTE_TABLE not in schema.get("schema", {}):
+        # A read-only client (ADR 0043) reads the snapshots; it never creates the table.
+        if PRECOMPUTE_TABLE not in schema.get("schema", {}) and not client.read_only:
             client._request("PUT", f"/schema/{PRECOMPUTE_TABLE}", json=PRECOMPUTE_SCHEMA)
     except AitoError:
         # Read-only key (public deploy) or unreachable Aito: reads still
@@ -156,8 +183,18 @@ def init(client: AitoClient) -> None:
 
 
 def get(name: str) -> Any | None:
-    """Read a snapshot entry, falling back L1 → Aito → git JSON → None."""
-    key = _scoped(name)
+    """Read a snapshot entry, falling back L1 → Aito → git JSON → None.
+
+    On the release env, a miss is read again under master's namespace
+    (see `read_release_snapshots`)."""
+    found = _get_in(_current_namespace(), name)
+    if found is None and _release_namespace and _release_namespace != _current_namespace():
+        found = _get_in(_release_namespace, name)
+    return found
+
+
+def _get_in(namespace: str, name: str) -> Any | None:
+    key = _scoped(name, namespace)
     cached = _l1.get(key)
     if cached is not None:
         return cached
@@ -178,7 +215,7 @@ def get(name: str) -> Any | None:
         except (AitoError, KeyError, json.JSONDecodeError):
             pass  # fall through to the bootstrap file
 
-    path = _fallback_path(name)
+    path = _fallback_path(name, namespace)
     if path.is_file():
         try:
             with open(path) as f:
@@ -278,3 +315,5 @@ def invalidate(name: str | None = None) -> None:
             _l1.clear()
         else:
             _l1.pop(_scoped(name), None)
+            if _release_namespace:
+                _l1.pop(_scoped(name, _release_namespace), None)

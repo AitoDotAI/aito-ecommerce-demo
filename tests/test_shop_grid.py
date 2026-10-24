@@ -1,11 +1,14 @@
 """The Shop grid (src/shop_grid.py, src/shop_ranking.py), against a fake Aito."""
 
+from dataclasses import replace
+
 import pytest
 
 from src.aito_client import AitoError
 from src.lookup_errors import UnknownProductError
 from src.shop_grid import get_shop_grid
 from src.shop_reasons import Reason
+from src.shop_rescore import ScoreAdjustment
 from tests.fake_shop_aito import FakeShopAito as FakeAito, product
 
 def test_a_household_rule_is_a_filter_on_the_candidates():
@@ -84,3 +87,37 @@ def test_picked_for_you_shows_only_the_declared_pets_products():
 
     # Janne's household declared a dog: a rule on the candidates, like the diet.
     assert fake.recommends[0]["product_sku.pet_type"] == {"$or": ["dog"]}
+
+
+def test_skus_that_share_a_name_show_as_one_card_the_highest_ranked():
+    # The generator names SKU-PT-0542 and SKU-PT-0544 alike, with the same details.
+    fake = FakeAito([product("SKU-0544", 0.44, name="Veggie Crunch Treats 100g"),
+                     product("SKU-0554", 0.43, name="Fruit Drops Treats 200g"),
+                     product("SKU-0542", 0.37, name="Veggie Crunch Treats 100g")], last_order="SKU-X")
+
+    grid = get_shop_grid(fake, "helena", "2026-04", [])
+
+    assert [(i.sku, i.p, i.same_name_skus) for i in grid.items] == [
+        ("SKU-0544", 0.44, ["SKU-0542"]), ("SKU-0554", 0.43, [])]
+
+
+def test_in_the_sandbox_the_levered_sku_wins_its_name_and_its_rank_change_counts_cards(monkeypatch):
+    # Measured: the twin SKU-0564 is the 2nd card. The owner levered SKU-0563.
+    fake = FakeAito([product("SKU-W", 0.40, name="Exercise Wheel"),
+                     product("SKU-0564", 0.30, name="Trixie Hideout"),
+                     product("SKU-F", 0.29, name="Fruit Drops"),
+                     product("SKU-0563", 0.27, name="Trixie Hideout")], last_order="SKU-X")
+
+    def levered(client, items, month):
+        offer = ScoreAdjustment(aito_p=0.27, offer_band="20+", offer_factor=1.81, rating_band="4",
+                                rating_band_before="4", rating_factor=1.0, score=0.49)
+        measured = [replace(i, measured_rank=r) for r, i in enumerate(items, start=1)]
+        rescored = [replace(i, adjustment=offer) if i.sku == "SKU-0563" else i for i in measured]
+        return sorted(rescored, key=lambda i: -(i.adjustment.score if i.adjustment else i.p))
+    monkeypatch.setattr("src.shop_grid.rescore", levered)
+
+    grid = get_shop_grid(fake, "helena", "2026-05", [], rescored=True)
+
+    assert [i.sku for i in grid.items] == ["SKU-0563", "SKU-W", "SKU-F"]
+    # Its name was the 2nd card before the lever, now the 1st: "↑ 1", not "↑ 3".
+    assert grid.items[0].measured_rank == 2 and grid.items[0].same_name_skus == ["SKU-0564"]

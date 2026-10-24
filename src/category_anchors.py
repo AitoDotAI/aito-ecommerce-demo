@@ -6,7 +6,7 @@ order, written `<pet>_<category without hyphens>`: `dog_dryfood`,
 one Text feature (ADR 0008).
 
 This module names the anchors a picker offers and turns tokens back into
-readable labels. Pattern Explorer and Product Insights use it.
+readable labels. Pattern Explorer and the Product view use it.
 """
 
 from __future__ import annotations

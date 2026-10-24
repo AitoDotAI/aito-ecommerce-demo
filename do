@@ -108,9 +108,10 @@ _guard_uci_env() {
 # Ports: frontend on 8500 (user-facing), backend on 8501 (internal).
 # Allocated by the cross-demo framework doc — see
 # aito-demo-framework.md §2 "Port allocation". Don't reuse other
-# demos' pairs.
-PORT_FRONTEND=8500
-PORT_BACKEND=8501
+# demos' pairs. Override both to run a second copy beside the demo, e.g.
+# PORT_BACKEND=8640 ./do backend-dev from a worktree.
+PORT_FRONTEND="${PORT_FRONTEND:-8500}"
+PORT_BACKEND="${PORT_BACKEND:-8501}"
 
 cmd_help() {
   cat <<EOF
@@ -139,6 +140,11 @@ Data
                     --as master: compute on AITO_ENV's env, file as master (ADR 0035)
   release-file      <env>: write data/release-env.json from the env's row counts (read-only)
   release-check     [<env>]: does the env (default: the release's) match data/release-env.json? (read-only)
+  sandbox-template-load  Load the release fixtures into the sandbox DB's master, then warm it (ADR 0043)
+  sandbox-new       Branch a sandbox off the template, warm it, print its ?db= link
+  sandbox-list      The live sandboxes and when they expire (read-only)
+  sandbox-time      Time the lever → Shop loop 5× on a throwaway branch (deleted after)
+  agent-demo        <branch> ["question"]: an agent (aito-mcp, read-only key) on one sandbox branch
   uci-prepare       UCI Online Retail II xlsx → data/uci/*.json (local, no Aito; ADR 0034)
   uci-load          Load data/uci/ into Aito env uci (needs AITO_ENV=uci)
   workbook          (Re)create the console workbook from docs/aito-workbook-ecommerce-demo.json
@@ -151,6 +157,8 @@ Quality
   backtest-load     <name>: training orders → Aito env backtest-<name> (needs AITO_ENV=backtest-<name>)
   backtest          <uci|name> [--offline]: Aito vs three baselines → data/backtest/<name>/report.md
   search-eval       Score search arms on the judged query set (nDCG, recall, controls)
+  evidence          <entry>: rewrite data/evidence/<entry>.json (ADR 0037; reads only):
+                    search-relevance | model-checks | personalised-search [--probe]
   v2-env            Stage the v2 (Rep2) env — ADR 0025 (dry run unless --apply)
   verify <feature>  Run the adversary Playwright agent for one feature
   verify-demo       End-to-end demo-path check
@@ -176,6 +184,8 @@ EOF
 }
 
 cmd_dev() {
+  # A local app reads the shared demo DB: memory-only cache unless PUBLIC_DEMO=0 is set.
+  export PUBLIC_DEMO="${PUBLIC_DEMO:-1}"
   echo "Starting Predictive E-commerce"
   echo "  Backend:  http://localhost:${PORT_BACKEND} (internal)"
   echo "  Frontend: http://localhost:${PORT_FRONTEND} (open this)"
@@ -416,6 +426,71 @@ print(f'Wrote {RELEASE_FILE} for env {release.env}.')
 "
 }
 
+# The sandbox database (ADR 0043): AITO_SANDBOX_URL + AITO_SANDBOX_API_KEY.
+# src/sandbox_cli.py refuses unless the URL names a sandbox database.
+cmd_sandbox() {
+  cd "$SCRIPT_DIR"
+  echo "Sandbox database: ${AITO_SANDBOX_URL:-<unset>}"
+  [[ "$1" == "template-load" ]] && _ensure_impressions
+  uv run python -m src.sandbox_cli "$1"
+}
+
+# Flow 3 of the partner demo (ADR 0043): a merchant's agent, Claude Code
+# with aito-mcp as its only tools, reading one sandbox branch with the
+# sandbox database's read-only key. The key stays in its file: the MCP
+# config written here holds paths, never the key. Writes are refused twice,
+# by the key and by aito-mcp (no AITO_MCP_ALLOW_WRITES). The rehearsal is in
+# docs/notes/2026-10-26-ambientia-run-sheet.md.
+cmd_agent_demo() {
+  local branch="${1:-}"
+  [[ $# -gt 0 ]] && shift
+  local question="$*"
+  local pattern='^tmp-[0-9]{4}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9a-f]{16}$'
+  if [[ ! "$branch" =~ $pattern ]]; then
+    echo "Usage: ./do agent-demo <sandbox branch> [\"first question\"]" >&2
+    echo "  the branch is a live sandbox's ?db= value (./do sandbox-list), e.g." >&2
+    echo "  tmp-2026-10-26-11-30-00-3f9c2a1b7d4e6f80" >&2
+    exit 1
+  fi
+  local key_file="${SANDBOX_RO_KEY_FILE:-$HOME/.config/aito-mcp/sandbox-readonly-key}"
+  if [[ ! -r "$key_file" ]]; then
+    echo "⛔ REFUSING: no read-only key at $key_file." >&2
+    echo "   Put the sandbox database's read-only key there (one line, chmod 600)." >&2
+    exit 1
+  fi
+  local tool
+  for tool in claude uvx; do
+    command -v "$tool" >/dev/null || { echo "$tool is not on PATH" >&2; exit 1; }
+  done
+
+  local dir="$SCRIPT_DIR/scripts/agent-demo"
+  local db_url="${AITO_SANDBOX_URL:-https://shared.aito.ai/db/aito-ecommerce-sandbox}"
+  # The agent runs in an empty folder, so it reads no project files and no
+  # CLAUDE.md of this repo: a merchant's agent knows only its brief.
+  local workdir config
+  workdir="$(mktemp -d -t agent-demo-XXXXXX)"
+  config="$workdir/mcp.json"
+  cat > "$config" <<EOF
+{ "mcpServers": { "aito": {
+    "command": "$dir/aito-mcp-sandbox.sh",
+    "env": { "SANDBOX_BRANCH": "$branch", "SANDBOX_DB_URL": "$db_url", "SANDBOX_RO_KEY_FILE": "$key_file" } } } }
+EOF
+  echo "Agent on $db_url/env/$branch"
+  echo "  key: read-only, from $key_file; aito-mcp's writes: refused"
+  local read_tools="mcp__aito__get_schema,mcp__aito__search,mcp__aito__predict,mcp__aito__recommend"
+  read_tools+=",mcp__aito__relate,mcp__aito__match,mcp__aito__query,mcp__aito__evaluate"
+  local status=0
+  (cd "$workdir" && env -u AITO_API_KEY -u AITO_SANDBOX_API_KEY -u ADMIN_TOKEN -u AITO_MCP_ALLOW_WRITES \
+    claude ${question:+"$question"} \
+      --append-system-prompt "$(cat "$dir/brief.txt")" \
+      --mcp-config "$config" --strict-mcp-config \
+      --allowedTools "$read_tools" \
+      --disallowedTools "mcp__aito__put_schema,mcp__aito__upload_rows,Bash,Read,Write,Edit,Glob,Grep,WebFetch,WebSearch,Task,NotebookEdit") \
+      || status=$?
+  rm -rf "$workdir"
+  return "$status"
+}
+
 cmd_release_check() {
   # The cutover's pre-flight (ADR 0035), read-only: does an env hold the
   # release file's tables and row counts? Defaults to the release's own
@@ -547,17 +622,21 @@ cmd_workbook() {
 
 cmd_test() {
   cd "$SCRIPT_DIR"
+  # Live checks read the shared demo DB with the read-write key; they must never
+  # write its cache (aito-azure saw 14 cache writes on master on 2026-10-24).
+  export PUBLIC_DEMO="${PUBLIC_DEMO:-1}"
   # The backtest group adds numpy, which the EASE baseline's tests need (ADR 0036).
   uv run --group backtest pytest tests/ -v
 }
 
 cmd_aito_check() {
   cd "$SCRIPT_DIR"
+  export PUBLIC_DEMO="${PUBLIC_DEMO:-1}"   # reads only: no cache rows on the shared DB
   if [[ ! -f tests/test_aito_check.py ]]; then
     echo "tests/test_aito_check.py not implemented yet (lands with the first view that calls Aito)."
     exit 0
   fi
-  uv run pytest tests/test_aito_check.py -v
+  uv run pytest tests/test_aito_check.py -v "$@"
 }
 
 cmd_search_eval() {
@@ -566,6 +645,30 @@ cmd_search_eval() {
   # control (random arm, shuffled labels) scores too well to trust.
   cd "$SCRIPT_DIR"
   uv run python -m src.search_eval.run
+}
+
+cmd_evidence() {
+  # ADR 0037 §2: an Evidence page reads a committed result file, never a live
+  # benchmark. Each entry's writer is re-runnable; all of them only read Aito.
+  cd "$SCRIPT_DIR"
+  local entry="${1:-}"
+  shift || true
+  case "$entry" in
+    search-relevance)    uv run python -m src.evidence.search_relevance "$@" ;;
+    model-checks)        uv run python -m src.evidence.model_checks "$@" ;;
+    personalised-search)
+      # --probe: the query shapes and the BM25 agreement, before the run (ADR 0037 §3).
+      if [[ "${1:-}" == "--probe" ]]; then
+        uv run python -m src.personalised_search.probe
+      else
+        uv run python -m src.personalised_search.run "$@"
+      fi
+      ;;
+    *)
+      echo "Usage: ./do evidence <search-relevance|model-checks|personalised-search> [--probe]" >&2
+      exit 1
+      ;;
+  esac
 }
 
 cmd_verify() {
@@ -763,9 +866,15 @@ case "${1:-help}" in
   backtest-load)     shift; cmd_backtest_load "$@" ;;
   backtest)          shift; cmd_backtest "$@" ;;
   workbook)          cmd_workbook ;;
+  sandbox-template-load) cmd_sandbox template-load ;;
+  sandbox-new)       cmd_sandbox new ;;
+  sandbox-list)      cmd_sandbox list ;;
+  sandbox-time)      cmd_sandbox time ;;
+  agent-demo)        shift; cmd_agent_demo "$@" ;;
   test)              cmd_test ;;
-  aito-check)        cmd_aito_check ;;
+  aito-check)        shift; cmd_aito_check "$@" ;;
   search-eval)       cmd_search_eval ;;
+  evidence)          shift; cmd_evidence "$@" ;;
   v2-env)          cmd_v2_env "${@:2}" ;;
   verify)            shift; cmd_verify "$@" ;;
   verify-demo)       cmd_verify_demo ;;

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useShell } from "./ShellState";
+import { useSandboxEnv, withSandbox } from "@/lib/sandbox";
 
 interface NavItem {
   href: string;
@@ -25,9 +26,6 @@ interface NavHeading {
  * The site's two halves (ADR 0037) and its groups, one per person
  * (ADR 0041): the shopper, the owner, the operator, the evaluator, the
  * developer. Each entry is one job.
- *
- * Product, Supply and Retention point to the view each will be merged
- * from (Product Insights, Inventory, Churn) until the merge lands.
  */
 const NAV: NavHeading[] = [
   {
@@ -44,16 +42,16 @@ const NAV: NavHeading[] = [
         items: [
           { href: "/",                 label: "Overview",  icon: "📊" },
           { href: "/patterns",         label: "Patterns",  icon: "🔗" },
-          { href: "/product-insights", label: "Product",   icon: "🏷️" },
-          { href: "/inventory",        label: "Supply",    icon: "📦" },
-          { href: "/churn",            label: "Retention", icon: "🔁" },
+          { href: "/product",          label: "Product",   icon: "🏷️" },
+          { href: "/supply",           label: "Supply",    icon: "📦" },
+          { href: "/retention",        label: "Retention", icon: "🔁" },
         ],
       },
       {
         label: "Operate",
         items: [
           { href: "/product-filling", label: "Product filling", icon: "⚡" },
-          { href: "/feedback",        label: "Review triage",   icon: "💬" },
+          { href: "/review-triage",   label: "Review triage",   icon: "💬" },
         ],
       },
     ],
@@ -66,6 +64,7 @@ const NAV: NavHeading[] = [
           { href: "/evidence",                      label: "Index",               icon: "📋" },
           { href: "/evidence/business-reorders",    label: "Business reorders",   icon: "🧾", data: "Real" },
           { href: "/evidence/personalised-search",  label: "Personalised search", icon: "🔍", data: "Synthetic" },
+          { href: "/evidence/search-relevance",     label: "Search relevance",    icon: "🎯", data: "Synthetic" },
           { href: "/evidence/model-checks",         label: "Model checks",        icon: "🧪", data: "Synthetic" },
         ],
       },
@@ -83,6 +82,7 @@ const NAV: NavHeading[] = [
 export default function Sidebar() {
   const pathname = usePathname();
   const { sidebarCollapsed, mobileOpen, closeMobile } = useShell();
+  const sandbox = useSandboxEnv();   // sandbox mode: every view keeps ?db (ADR 0043)
 
   const isActive = (href: string) => {
     if (href === "/") return pathname === "/" || pathname === "";
@@ -114,7 +114,7 @@ export default function Sidebar() {
               {group.items.map((item) => (
                 <Link
                   key={item.href}
-                  href={item.href}
+                  href={withSandbox(item.href, sandbox)}
                   className={`nav-item${isActive(item.href) ? " active" : ""}`}
                   onClick={() => closeMobile()}
                 >

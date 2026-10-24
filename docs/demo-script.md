@@ -1,314 +1,311 @@
-# Demo script — the two-minute PetNord walkthrough
+# Demo script: the partner run (6–8 minutes)
 
-A narrated path through PetNord that hits every demo moment shown
-today (two are paused; see "Paused" below) in
-`TASK.md` order. Aim for two minutes; ninety seconds is better.
-Every beat names the page, the click, the expected Aito panel
-state, and the quote the sales engineer says.
+One shop, its owner and an agent, all on one Aito database. Monday's run
+goes from the owner's decisions to the shopper, then the agent, and closes
+on the real-data evidence:
 
-The demo runs at **ecommerce.aito.ai** (or `./do dev`
-locally → `http://localhost:8500`).
+1. **Supply's headlines** (30 s): what to reorder, what is overstocked.
+2. **Product what-if**: the decision for one product, before any lever.
+3. **The lever** in a sandbox: 20 % or more off, and the decision pushes
+   back to 10–15 %.
+4. **The Shop** as Päivi: her kit path, and the discounted hideout rising.
+5. **The agent** reads the same sandbox and sees the offer just set.
+6. **"How well?"** Evidence, ending on the real-data claim.
 
----
+Each beat lists what to click, what to say, the number on screen and its
+basis, the one caveat, and a recovery line. Every number was read on
+2026-10-24 through the code paths named below, on env `observable`, which
+holds the release data. The sandbox template is loaded from the same
+release files, so its numbers should match. Numbers marked **(Sunday)** can
+only be confirmed in Antti's sandbox run. The pre-flight is in the run
+sheet, `docs/notes/2026-10-26-ambientia-run-sheet.md`.
 
-## Setup
+The app runs at **ecommerce.aito.ai**, or locally with `./do dev` at
+`http://localhost:8500`. Until tonight's cutover (ADR 0035), run it
+locally with `AITO_ENV=observable ./do dev`. Sandbox mode needs the
+sandbox database in the server's config (ADR 0043). Without it, the lever
+and the agent don't run, and the banner doesn't show.
 
-- Open the running app to `/` (Dashboard).
-- Make sure the Aito panel is open on the right (lightning toggle
-  in the topbar opens it if it isn't).
-- Screen at 1440 px or wider — the side-by-side moments need
-  both panels visible without scrolling.
+**Setup:** a screen 1440 px wide or wider. Open the first tab with
+`?demo=1` (or start the server with `DEMO_MODE=1`): demo mode lasts for the
+tab's session. It starts the Aito panel collapsed (the tab on the right
+edge opens it), hides "Start free trial" and the Overview's year-on-year
+growth, and folds each view's fine print behind **Details**, leaving one
+plain caveat line. It changes no number: every basis is one click away.
+Keep the sandbox link from the pre-flight in a second tab.
 
----
-
-## Beat 1 — Dashboard (15 s)
-
-> "PetNord is a Nordic pet store. About 12 000 orders, 658 SKUs, 3 000
-> customers — twenty-four months of data, all live in Aito. The
-> top-pattern row says dog dry-food and dental treats co-occur
-> at 2.68× baseline — that's `_relate`, with no model training."
-
-Aito panel: `_relate` endpoint badge teal. Query body shows the
-`from: orders, where: {line_categories: {$match: dog_dryfood}}`
-shape. The 2.68× number on the dashboard tip-box matches the
-top-pattern bar — the same signal surfaces twice, no
-hard-coding.
-
-**Don't** linger here. The dashboard is the trust-building
-opener; the predictions live in the next four beats.
-
----
-
-## Beat 2 — Smart Search (25 s) — demo moment #1
-
-Click **Smart Search**.
-
-> "Type `food`, classic e-commerce query. On the left, text
-> relevance — BM25 over the product name, the way a good search
-> engine ranks. Dog food at the top. Now I switch the customer pill
-> to Maija, a cat owner."
-
-Click the **Maija** pill.
-
-> "Same query string. The right column is now entirely cat food,
-> and every row has a gold ★ — none of them are in the left
-> column's top 10. The Aito panel shows the one query behind it: a
-> `_search` over the `impressions` funnel that multiplies two
-> things — the probability that a cat owner *buys* each product,
-> and how well its name matches `food`. Prediction and search in a
-> single `orderBy`."
-
-Click **Saara** (large-breed dog).
-
-> "Switch to Saara — large-breed dog owner — and the right column
-> flips to dog food. The query holds only her customer id: Aito
-> reads what she buys from her own rows."
-
-Type `food for an old dog`, keep **Maija**.
-
-> "And the words still win when they're specific: Maija asked for
-> *dog* food, so she gets dog food, not her usual cat food. Before
-> this change, both columns returned nothing for a sentence like
-> this — the old search needed every word in the product name."
-
-**The phrase to say**: "same query, different list per
-customer — and the query still means what it says."
+**Not on the path:** Patterns (it stays in "If there's time"), and
+Retention. If Retention comes up, lead with who to reach and why, not with
+the €183 the win-back emails return: that is a small, synthetic sum.
 
 ---
 
-## Beat 3 — For You (15 s) — demo moment #2
+## 1. Supply's headlines (30 seconds)
 
-Click **For You**.
+**Click:** the sidebar's **Supply** (or its card on the Overview).
 
-> "Same idea, no query string. Pure recommendation grid for the
-> selected customer. Maija — cat products. Saara — dog products.
-> Olli — mostly the dog side of a dog-and-cat home. The browser
-> latency badge in the top bar
-> shows the actual round-trip time — Aito returns this in tens
-> of milliseconds."
+**Say:** "Every morning the owner asks two things: what runs out, and what
+is stuck on the shelf. Aito forecasts next month's sales per product; the
+euros follow from that forecast."
 
-Click each persona in turn to show the flip live. The grid
-re-ranks visibly under 300 ms (a screen-recording will show
-it as instant).
+| On screen | Number | Basis |
+|---|---|---|
+| Reorder these 59 now | an estimated €5,667 of May's sales can't be served without them; 403 units, €5,775 at cost | `_estimate units_sold` per SKU for May 2026, against stock and the reorder point (`src/supply_rows.py`); served from `data/precomputed/v2-master/supply.json` |
+| €26,576 tied up in 87 overstocked products | say only the €26,576. Don't present the markdown split ("11 don't clear") as a finding: it is the units model by price alone, which counts neither an offer's lift on purchases when shown (×1.81 at 20 %+) nor the higher place it earns in the shop, so it understates an offer and contradicts Product's "put it on offer" | the same `_estimate` at 5–20 % off, over 13 weeks; price only |
 
-> "Three crisply different shoppers from one underlying query
-> shape. The Aito panel on the right shows the exact
-> `_recommend` body that ran for each — only the customer id in
-> `where: {"context.customer": …}` changes per persona; the
-> `goal: {purchased: true}` is identical. No profile is handed
-> over: Aito learns each shopper from their own impressions."
+**Caveat (the page's one line):** the forecasts are Aito's estimates for
+May; the euros follow from them. **How well? →** opens the model checks.
 
-**Optional aside — rank for revenue, not clicks:** flip the goal
-from `{purchased: true}` to `{clicked: true}` and the grid
-reorders toward cheap, fun, attention-grabbing items (toys,
-treats) that get clicked but convert less. Same table, same
-context — you choose which funnel stage to optimise. Most
-recommenders can't separate the two; Aito reads them off the
-same `impressions` data.
+**Recovery:** if Supply is slow on its first visit, the snapshot is
+missing for this env; the Overview leaves its card out rather than wait.
+Go on to the Product view.
+
+## 2. Product what-if: the decision (about 1 minute)
+
+### The sandbox
+
+**Click:** **New sandbox** in the banner (it asks for the admin token
+once per tab), or open the link made in the pre-flight. The URL gains
+`?db=tmp-…`, and every view keeps it.
+
+**Say:** "This is a branch of the whole store, made in milliseconds. What
+I change here, the public shop never sees. It's thrown away in three
+hours."
+
+**Caveat:** the banner says it: a sandbox starts from the release data,
+not from the live shop.
+
+### The decision, before the lever
+
+**Click:** go straight to
+`/product/?sku=SKU-PT-0563&month=2026-05&tab=what-if&db=<branch>` (the
+Trixie Hideout). Until a lever writes May, the view shows April.
+
+| On screen | Number | Basis |
+|---|---|---|
+| The decision | "Put it on offer at 10–15 % off": bought when shown 10.6 % → 19.5 % (×1.84) | `_predict purchased` on `impressions` per discount band (`src/discount_what_if.py`); margin per showing (`src/product_decision.py`) |
+| Margin per 100 showings | €106.55 → €141.52 (+33 %); break-even ×1.38 | list price €22.28, cost €12.25, one unit per purchase |
+| Why | 12.4 % (all impressions) × 1.57 (10–15 % off, shop-wide) × 1.00 = 19.5 % | the band's `$why` |
+
+## 3. The lever: 20 % or more off, and the pushback (about 1½ minutes)
+
+**Click:** in "Pull a lever: May 2026, in this sandbox", press **20 % or
+more off**.
+
+**Say:** "The owner writes next month's state of this product. The app
+reads it back from the database before it shows anything."
+
+| On screen | Number | Basis |
+|---|---|---|
+| Read back | "May 2026, 20 % or more off, €17.27, 4 stars" | `src/product_levers.py`: April's list price €22.28 at the band's typical 22.5 % |
+| The what-if's 20 %+ row | 19.7 % bought when shown, ×1.85 vs. no discount, band's lift 1.59 | the same `_predict`; this product's own lift is left out of `$why` (it was shown 5 times at 20 %+) |
+| The decision, May **(Sunday)** | "Change its offer to 10–15 % off": margin per 100 showings €98.92 → €141.52 | the same estimates, with May's band as the current one |
+| Price model, May **(Sunday)** | 1.2 → 0.9 units, profit €6.22 → €6.53 | `_estimate units_sold`, regression, at €17.27 and €19.50 (`src/price_what_if.py`) |
+
+**Say:** "The decision pushes back. At 20 % off it sells about as well as
+at 10–15 %, so the extra discount is margin given away. The owner gets the
+estimate and the reason, and still decides."
+
+**Click:** press **10–15 % off**: the owner takes the advice. The read-back
+says "May 2026, 10–15 % off"; the decision should read "Keep its offer at
+10–15 % off" **(Sunday)**.
+
+| On screen | Number | Basis |
+|---|---|---|
+| The Shop's offer factor at 10–15 % | ×1.80, so the hideout's score stays 48 (0.265 × 1.80) | lift(10–15 %) 1.573 / lift(none) 0.875 (`src/shop_state_lifts.py`) |
+
+**Caveat:** the offer's lift is shop-wide. Aito learned what a discount
+does across all products, plus how this product sells. It hasn't learned
+this product's own response to a discount.
+
+## 4. The Shop as Päivi (about 1½ minutes)
+
+**Click:** **See the Shop react, as Päivi →**
+(`/shop/?shopper=paivi&month=2026-05&db=<branch>`).
+
+**Say:** "Päivi got a guinea pig in February: a cage and a water bottle so
+far. A shop sees what a visit is for, so it shows one view per intent."
+
+### Her kit path
+
+| On screen | Number | Basis |
+|---|---|---|
+| Next for their kit | PetNord Hideout 17 %, Trixie Hideout 15 % "+1 variant", PetNord Exercise Wheel 9 %, Trixie Exercise Wheel 9 % | `_predict product_sku` on `order_lines` where `owned_before` holds a small-animal cage and water bottle (`src/shop_suggestions.py`); read for May on `observable`, the same as April's |
+| Buy again | PetNord Senior Guinea Pig Mix Food 12kg, 67 % | `_predict skus.$feature` over her own orders before the month |
+
+**Say, on the kit:** "Shoppers who owned a cage and a bottle bought a
+hideout next. Aito reads that from their order lines. The app has no kit
+rules."
+
+**On "+1 variant":** the generated catalogue gives some products the same
+name under two or three SKUs (SKU-PT-0563 and SKU-PT-0564 are both "Trixie
+Hideout"). Each list shows a name once, as the SKU Aito ranked highest,
+with that SKU's own number; scores are never added (`src/same_name.py`).
+
+### The discounted hideout rising
+
+| On screen | Number | Basis |
+|---|---|---|
+| Before the lever | Trixie Hideout 7th card, "27 % buy it when shown" | the Shop's measured `_recommend` for May, top 40, one card per name (10th of 40 SKUs; read on `observable`) |
+| After **(Sunday)** | Trixie Hideout 1st: "Score 48 ↑ 6 since the offer" (at 20 %+ or at 10–15 %), chip "On offer ×1.8, learned across the shop" | `src/shop_rescore.py`: 0.265 × 1.81 = 0.48, above the next card's 0.335; the rank change counts cards, as the page shows them |
+| The card's explanation | "Aito's purchase probability 27 % (…) × offer band lift ×1.81 (shop-wide) × star band lift ×1.00 (shop-wide) = score 48" | offer factor = lift(20 %+) 1.588 / lift(none) 0.875, each from `$why` of `_predict purchased` (`src/shop_state_lifts.py`) |
+
+**Point at the Aito panel** (open it with the tab on the right edge):
+"The query holds only what a shop knows: the pets she told us, the month
+and her cart."
+
+**Say:** "The hideout rises to first, and the card says why: the
+explanation multiplies out to the number shown. The 27 % is Aito's, and so
+is the offer's lift. Multiplying them is this app's choice, and the panel
+says so."
+
+**Caveat (the page's one line):** the re-scored card shows a score, not a
+rate. The rest (the top 40, the multiplication) is behind **Details**. The
+re-scored Shop exists only in the sandbox.
+
+### Optional: a 1-star review
+
+**Optional. Click:** back on the product, add a 1-star review with any text.
+
+| On screen | Number | Basis |
+|---|---|---|
+| Read back | "Its star band changed: 4 stars → 3 stars (7 reviews, average 3.43)" | 6 reviews at 3.83 before; `rating_band` uses the generator's rule (`data/shoppers.py`) |
+| Shop card | chip "3 stars ×0.83, learned across the shop"; score 48 → 40 **(Sunday)** | lift(3 stars) 0.993 / lift(4 stars) 1.198 = 0.83 |
+
+**The honest case:** on PetNord Hideout (`?sku=SKU-PT-0558`), a 5-star
+review reads back "No change in its star band: still 1-2 stars (8 reviews,
+average 2.00)". **Say:** "One good review doesn't undo seven bad ones, and
+the view doesn't pretend it does."
+
+**Recovery:** if a lever answers 400, the sandbox has expired or belongs
+to another server: press **Reset: new sandbox**, or open the spare link.
+If the Shop doesn't move, check that the URL still has `?db=` and
+`month=2026-05`.
+
+**Without a sandbox:** the public Shop, `/shop/?shopper=paivi`, is April
+2026 and shows the same kit path and Buy again. Its "Picked for you" leads
+with PetNord Veggie Crunch Treats 100g, "44 % buy it when shown" (`_recommend
+impressions` with her declared pets, the month and the cart,
+`src/shop_ranking.py`), "+1 variant". Her Buy again rests on a single
+earlier order, so 67 % comes from very little history.
+
+**Recovery:** if the grid stays empty, the backend can't reach its data
+release (`/api/health`, `data_release.state`). Switch to the static
+screenshots.
+
+## 5. The agent (about 1½ minutes)
+
+**Click:** a terminal: `./do agent-demo <branch>`, the same branch as the
+browser's (setup and rehearsal: the run sheet).
+
+**Ask:** "What has the owner set for May, and what would an offer do for
+those products?"
+
+**Say:** "This is a merchant's agent: Claude, with Aito's MCP server as
+its only tools. It has a read-only key to this sandbox, and it may only
+propose."
+
+| Expected | Basis |
+|---|---|
+| It finds the Trixie Hideout's May row: 20 % or more off, €17.27 **(Sunday)** | `search product_states where {month: 2026-05}` |
+| It quotes 10.6 % at no discount and 19.7 % at 20 %+, calls the lift shop-wide, and calls 5 showings at 20 %+ thin **(Sunday)** | the same `_predict purchased` per band the Product view sends |
+
+**Caveat:** the agent's judgement varies from run to run on the same data.
+It proposes, and a person decides. Its brief tells it to quote only
+numbers a tool returned.
+
+**Recovery:** if a tool call fails or stalls, play `agentic-demo.mp4` from
+the deck folder (68 s, two real runs on the same data, recorded
+2026-10-24).
+
+## 6. How well? Evidence: the close (about 1 minute)
+
+**Click:** the sidebar's **Evidence**, then **Business reorders** (Real
+data).
+
+**Say, word for word:** "For buyers with 1–2 earlier orders, Aito's top
+suggestion was in their next orders 31 % of the time, against 15 % for
+the strongest of five classical baselines."
+
+| Number | Basis |
+|---|---|
+| 31 %: 197 of 636 buyers, 95 % [27.4, 34.6] | Aito core's pre-registered benchmark (aito-core 625867faca), reproduced by `./do uci-check` (`tests/test_aito_check.py`) |
+| 15 %: EASE, 15.4 % [12.6, 18.2] | the same benchmark (ADR 0034, ADR 0036) |
+
+**Say also:** "It's the top suggestion, not the whole order. For regular
+buyers, with 3 or more orders, Aito ties the best simple method. With no
+history, it equals popularity. The data is a UK giftware wholesaler's:
+public, CC BY 4.0."
+
+In demo mode the page keeps its method and intervals in view; only the
+longer interpretation notes fold behind **Details**.
+
+**On screen, don't dwell on:** the page's default buyer (12357) ordered
+131 products next, so a hit is easy for this buyer; the 31 % is the
+measure. Aito's 0.3–0.4 % per product is a probability among 4,415
+products, not a confidence in the order.
+
+**The caveat to say aloud:** "Everything on the PetNord screens is
+generated data with planted effects. It shows how Aito works, not how much
+it would lift your shop. The real-data number is the one on this page."
+
+**Optional, synthetic:** on months it hadn't seen, Aito's purchase
+estimate per discount band came within 6 % of what shoppers then did
+(`docs/aito-cheatsheet.md`, "A discount band as a what-if": Jan–Apr 2026
+held out, 56,005 impressions).
+
+## Close (20 seconds)
+
+> "One shop, five owner views, two back-office tools and an agent, all on
+> one Aito database. No model training, no retraining schedule. The query
+> in the panel is the call your frontend would make, and the source is on
+> GitHub."
 
 ---
 
-## Beat 4 — Bought Together (15 s) — demo moment #3
+## If there's time
 
-Click **Bought Together**.
+- **Patterns** stays out of the path; use it only if asked about baskets.
 
-> "Now we drill into the headline: anchor is dog dry-food.
-> Cross-sell tiles — dog dental treats at × 2.7, dog wet-food
-> at × 1.5, dog treats at × 1.5, dog accessories at × 1.6. The
-> Aito panel shows the live `_relate` body — that's exactly the
-> query the dashboard's top-patterns row quotes. **Same data,
-> live recompute, no precomputed cross-sell tables.**"
+- **Patterns** (`/patterns/?anchor=dog_dryfood`): dog dry food and dental
+  treats are in the same basket 2.66× more often than chance (interval
+  2.34–3.03). 67 % of dog dry-food orders have dental treats, and 97 %
+  the other way round. Source: `/api/shop-analytics/baskets`.
+- **What goes with a purchase** (Patterns): products on offer are 1.60×
+  over-represented in purchases ([1.49, 1.72], 3,998 rows). Say "on
+  generated data with a planted offer effect". Don't set it beside the
+  planted ×2.5: one is a share ratio, the other an odds ratio.
+- **Shop search:** switch to Janne and search "food": only grain-free
+  food, his household's rule.
+- **Product filling:** five fields predicted from a product's name and
+  brand, each with its `$why`.
 
-Pick another anchor — say cat litter — to show the picker live.
-
-> "Pick cat litter — top cross-sells are cat dry-food at 2.28×
-> and cat wet-food at 2.14×. Cat litter buyers stock up on cat
-> food in the same basket. Real co-occurrence, no rules, no
-> manual tagging."
-
-**Optional follow-on — Basket Rules (Analyze section):** where Bought
-Together drills into one anchor, **Basket Rules** mines the whole
-catalogue at once.
-
-> "Same `_relate`, swept across every anchor and ranked by lift —
-> a live association-rule table. `Dog dry-food → dental treats` at
-> 72% confidence; flip it and `dental treats → dog dry-food` is 94%.
-> That asymmetry is the rule. This is market-basket analysis with no
-> Apriori batch job — the database *is* the miner."
-
----
-
-## Beat 5 — Product Filling (15 s) — demo moment #4
-
-Click **Product Filling**.
-
-> "Catalog enrichment. This row — Hill's Science Plan Sensitive
-> Turkey Dog Food 2kg — is missing weight, dietary, and tax
-> class in the catalog. On the right, Aito fills five fields:
-> pet type 98 %, category 87 %, weight 98 %, dietary 95 %, tax
-> class 98 %. All from the product name plus the brand. Five
-> `_predict` calls in parallel, end-to-end in under half a
-> second."
-
-Hover the **?** icon on the **dietary** row.
-
-> "Click the `?` icon and you get the `$why` decomposition — the
-> tokens in the product name that drove the prediction:
-> 'Sensitive', 'Turkey', 'Dog Food'. Every prediction is
-> auditable down to the contributing words."
-
----
-
-## Beat 6 — Evaluation (20 s) — demo moment #5
-
-Click **Evaluation**.
-
-> "Last view. Aito's `_evaluate` runs each model against a held-
-> out sample: pet type from the product name, and the dietary
-> tag from product attributes. Each row shows the accuracy next
-> to the baseline — always guessing the most common answer — and
-> the gain between them."
-
-Pause. Point at the bottom row.
-
-> "And then Return Risk. The accuracy looks impressive, right?
-> The gain is **zero**. Aito learned nothing the prior didn't
-> already know. Few lines get returned in this data; without
-> specific signal, the model just predicts 'won't be returned'
-> for every line and is right by accident."
-
-Tap on the failed row to show the Aito panel updating.
-
-> "This is the part most demos hide. Aito tells you when it
-> can't predict. That row would be a disaster on a production
-> deployment under any metric that wasn't accuracy_gain. You
-> see the failure here so you don't ship a fake model."
-
----
-
-## Paused: Markdown and Win-back
-
-The Markdown and Win-back beats (demo moments #8 and #9) are paused.
-Their views are hidden (`frontend/lib/hidden-routes.ts`) until the
-purchase data is regenerated (ADR 0027): on today's synthetic data,
-Markdown's proposals lose margin on every row, and Win-back showed a
-raw purchase probability as a 96 % campaign response rate. The beats
-are in git history for when the views return. Demand Forecast and Cart
-Completion are hidden for the same reason and had no beat. Price is
-back (its demand curve now conditions on last month's units). An
-optional beat there: drag the what-if price and watch the waterfall and
-the profit move (ADR 0029).
-
----
-
-## Optional beat — the Shop (40 s)
-
-Open `/shop/?shopper=paivi`. "Päivi Salminen got a guinea pig in
-February: a cage and a water bottle so far. A shop sees what a visit
-is for, so it shows one view per intent."
-
-- **Next for their kit**: the hideout comes first. "Shoppers who owned a
-  cage and a bottle bought that next. Aito reads it from their order
-  lines; the app has no kit rules."
-- **Buy again**: "her routine, one probability per product, predicted
-  from her own orders."
-- **Picked for you**: "everything else, ranked for a household with her
-  pets, this month and this cart." Point at the teal chips: "Fits your
-  pets", "Sells in April". The grey ones are facts (an offer, the stars).
-  Add a cage to the cart and watch the grid move ("Goes with your cart").
-
-"Look at the query in the panel: it holds only what a shop knows — the
-pets she told us, the month and the cart. Nothing about her that she
-didn't say." Open a product: its alternatives, ranked for her. Switch to
-Janne and search "food": "only grain-free food, his household's rule."
-Switch to Helena and press "Fill my usual basket".
-
-## Optional beat — the owner's view (30 s)
-
-Open `/shop-analytics/`. "The same data, from the owner's side." Point at
-dog dry food with dental treats (about 2.8× more often together than
-chance), the 1–2 star products bought less, and summer health care.
-Then the footnote under a section: "every lift has its counts, an
-interval widened because one shopper's rows aren't independent, and a
-bar for the whole section. What doesn't clear it is listed as no clear
-effect, not hidden."
-
-## Optional beat — real data: a business buyer's next order (30 s)
-
-Open `/business-reorders/` (needs env `uci` loaded: `AITO_ENV=uci ./do
-uci-load`). "Now real data. This is a wholesaler's buyer with two earlier
-orders; here is the next order Aito drafts, and here is what they
-actually ordered." Point at the ✓ marks, then the claim box: it is the
-benchmark's number, worded as cleared, with the UCI citation. Pick a
-drafted product under Bought together for what is ordered with it.
-
-## Beat 7 — close (10 s)
-
-> "A dozen views, one Aito DB. No retraining, no MLOps, no
-> models to operationalise. The same
-> JSON body that runs in the panel is the call your frontend
-> would make. EU hosted, no PII stored."
-
-Pause. Look at audience.
-
-> "Predictive e-commerce in roughly fifteen hundred lines of
-> Python and three thousand lines of TypeScript. Source is on
-> GitHub — every panel has a link."
-
----
-
-## Performance note — heavy pages are snapshot-served
-
-The six heaviest views (Churn, Demand, Evaluation, Inventory, Markdown,
-Win-back) each run an `_evaluate` and/or a large fan-out — 14–32 s of
-real work — plus the **Dashboard** landing page (deceptively light: ~321
-sequential `_search` calls, ~93 s cold). They are **precompute-and-served**
-(ADR 0024): `./do precompute`
-runs that work offline and snapshots each result into an Aito table plus
-a git-committed JSON bootstrap, and the app only reads. So every one of
-them opens in well under a second, cold container included, and the pill
-still shows the real query cost. Refresh the snapshot with `./do precompute`
-— it's chained into `./do reset-data`, so a data reload can't leave it
-stale.
-
-## Quick recovery — if a moment doesn't land
+## Quick recovery
 
 | Symptom | Recovery |
 |---|---|
-| Smart Search doesn't flip (Saara still shows cat food on right) | Hit refresh — likely a cache leak from a previous session. `./do aito-check` pins the flip (`test_smart_search_food_flips_between_cat_and_dog_owner`). |
-| For You returns empty | Backend hasn't loaded. Run `./do load-data`. |
-| Pattern Explorer / Bought Together returns 400 | Schema regression. Run `./do reset-data`; the `orders.line_categories` Text column needs the denormalised tokens. |
-| Evaluation row stuck at 0/0/0 | Evaluation is precompute-served from a snapshot (ADR 0024), so it should be instant. If it's blank the snapshot is missing — run `./do precompute` (or `./do reset-data`, which chains it). |
-
----
+| Any view answers 400 with `?db=` | The sandbox expired (3 h) or isn't on this server. **Reset: new sandbox**, or the spare link. |
+| The first click after a pause takes about 5 s | DNS: the app keeps connections for 5 minutes, and this laptop's lookups can take 5 s. The run sheet has the hosts pin. |
+| The May Shop says "open a sandbox" | The URL lost `?db=`. Use the Product view's link back. |
+| The lever's read-back fails | Don't retry on stage: **Reset: new sandbox**, then pull again. |
+| The agent stalls | Play `agentic-demo.mp4`. |
+| Everything is slow | Switch to the deck's static screenshots (the run sheet's "Fallbacks"). |
 
 ## Common questions
 
-**"How fresh is this data?"**
-Twenty-four months of synthetic PetNord orders generated by
-`data/generate_fixtures.py` with a fixed RNG seed. Regenerate +
-re-upload with `./do reset-data` whenever the catalog changes.
+**"Is this real data?"** PetNord is generated, with planted effects, to
+show the mechanics. The Evidence section marks each page Real or
+Synthetic, and the real-data claim is on UCI Online Retail II.
 
-**"Does Aito learn the user's history?"**
-Yes, from their own rows. Smart Search and For You put only the
-customer id in the query (`context.customer`), and Aito reads that
-customer's impressions. Nothing a shop wouldn't know is in the
-data: customers hold what they declared (pets, a dog's size, a
-diet) and their history (ADR 0033). The Shop's "Picked for you"
-uses the declared pets instead of the id; ADR 0033's amendment of
-2026-10-21 has the reasoning.
+**"Does Aito learn the shopper's history?"** The Shop's query holds what
+she declared (her pets), the month and the cart, and Aito learns from
+every shopper's rows. Putting her id in the query measured no better
+(ADR 0033's amendment), so the Shop leaves it out.
 
-**"How long would a real merchant's data take?"**
-The full PetNord load takes ~50 s end-to-end. Per the framework
-doc, productive demos run on Aito's free tier with ≤ 100 k
-rows.
+**"What does a lever write?"** One `product_states` row for next month
+(and, for a review, one `reviews` row), through Aito's `_modify`, in a
+sandbox branch only. PetNord's database is read with a read-only key, and
+the code refuses any write to it (ADR 0043).
 
-**"What about new SKUs with no history?"**
-Aito's `_predict` reads off Text tokens in the product name
-(see Beat 5, the Filling moment). A brand-new SKU with a
-descriptive name predicts well from day one — no cold-start.
-
-**"Is this open source?"**
-Yes — every panel links to the GitHub source. The repo includes
-ADRs documenting each query shape and the Aito gotchas we
-found while building (see `docs/aito-cheatsheet.md`).
+**"How would my shop's data get in?"** As tables like these, through the
+same loader. The schema is in `src/schema.py`.

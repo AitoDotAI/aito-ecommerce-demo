@@ -10,8 +10,9 @@
    the household rule apply. Only `$p` is selected: a query word like
    "food" names hundreds of products.
 3. **Ranked by P x text lift**, Smart Search's blend (`TEXT_THETA`). The
-   top RESULTS are asked once more through the grid's ranking, for their
-   reasons, facts and the just-bought re-ask.
+   top ones are asked once more through the grid's ranking, for their
+   reasons, facts and the just-bought re-ask, and the page shows RESULTS
+   of them, one card per name (`src/same_name.py`).
 
 Why not Smart Search's one-query blend (`_search impressions get
 product_sku`)? Its `where` only conditions `$p`: a filter on
@@ -24,10 +25,13 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 
 from src.aito_client import AitoClient, AitoError
+from src.same_name import one_per_name
 from src.search_service import TEXT_THETA
 from src.shop_ranking import ShopItem, ranked_items, shop_scope
 
 RESULTS = 12
+# Asked for reasons before one card per name, so RESULTS cards remain.
+RANKED = 2 * RESULTS
 # Every product is scored by `$similarity` (1.0 when no word matches), so
 # the name query asks for the whole catalogue; a bigger one raises.
 CATALOGUE_LIMIT = 1000
@@ -59,12 +63,12 @@ def search_shop(client: AitoClient, shopper_key: str, month: str, cart_skus: lis
     where = scope.where(only=candidates)
     hits = client.recommend("impressions", where, "product_sku", {"purchased": True},
                             select=["sku", "$p"], limit=len(candidates))["hits"]
-    top = sorted(hits, key=lambda h: -h["$p"] * text_lift[h["sku"]])[:RESULTS]
+    top = sorted(hits, key=lambda h: -h["$p"] * text_lift[h["sku"]])[:RANKED]
 
-    items = ranked_items(client, scope, scope.where(only=[h["sku"] for h in top]), RESULTS)
+    items = ranked_items(client, scope, scope.where(only=[h["sku"] for h in top]), RANKED)
     items.sort(key=lambda i: -i.p * text_lift[i.sku])
     return ShopSearch(
-        query=query, text_matched=True, items=items,
+        query=query, text_matched=True, items=one_per_name(items)[:RESULTS],
         last_query={"endpoint": "_recommend", "body": {
             "from": "impressions", "where": where, "recommend": "product_sku",
             "goal": {"purchased": True}, "select": ["sku", "$p"], "limit": len(candidates)}},

@@ -1,6 +1,6 @@
 /* Shared TypeScript interfaces.
  *
- * Per-view DTOs (DashboardResponse, SmartSearchResponse, etc.) land
+ * Per-view DTOs (OverviewResponse, SmartSearchResponse, etc.) land
  * here as their views are built. For the scaffold step we only need
  * the cross-demo invariants — the AitoPanel contract and the
  * `WhyExplanation` shape used by `WhyTooltip` / `PredictionBadge`. */
@@ -115,73 +115,6 @@ export interface HealthResponse {
   aito_url?: string | null;
 }
 
-/* ─── Purchase Analytics (/api/purchase-analytics) ─── */
-
-export interface AnalyticsMonthly {
-  month: string;
-  orders: number;
-  revenue_eur: number;
-}
-
-export interface AnalyticsTopProduct {
-  sku: string;
-  name: string;
-  pet_type: string;
-  category: string;
-  line_count: number;
-}
-
-export interface AnalyticsSegment {
-  segment: string;
-  label: string;
-  customers: number;
-  orders: number;
-  revenue_eur: number;
-  avg_basket_eur: number;
-}
-
-export interface AnalyticsCategoryMixEntry {
-  pet_type: string;
-  category: string;
-  count: number;
-  share_pct: number;
-}
-
-export interface AnalyticsCategoryMixRow {
-  segment: string;
-  label: string;
-  top_categories: AnalyticsCategoryMixEntry[];
-}
-
-export interface AnalyticsResponse {
-  monthly: AnalyticsMonthly[];
-  top_products: AnalyticsTopProduct[];
-  segments: AnalyticsSegment[];
-  category_mix_by_segment: AnalyticsCategoryMixRow[];
-  last_query: { endpoint: string; body: Record<string, unknown> };
-  last_response_ms: number;
-}
-
-/* ─── Pattern Explorer (/api/pattern-explorer) ─── */
-
-export interface PatternEntry {
-  label: string;
-  token: string;
-  lift: number;
-  support: { f: number; f_on_condition: number };
-  p_given: number;
-  p_overall: number;
-  band: "positive" | "neutral" | "protective";
-}
-
-export interface PatternResponse {
-  anchor: { id: string; pet_type: string; category: string; display: string };
-  patterns: PatternEntry[];
-  available_anchors: Array<{ id: string; display: string }>;
-  last_query: { endpoint: string; body: Record<string, unknown> };
-  last_response_ms: number;
-}
-
 /* ─── Evaluation (/api/evaluation) ─── */
 
 export interface EvalModelResult {
@@ -233,25 +166,6 @@ export interface FillingResponse {
   };
   fields: FillingFieldOut[];
   candidate_skus: Array<{ sku: string; name: string }>;
-  last_query: { endpoint: string; body: Record<string, unknown> };
-  last_response_ms: number;
-}
-
-/* ─── Basket Rules (/api/basket-rules) ─── */
-
-export interface BasketRule {
-  antecedent: string;       // "Dog dry-food"
-  consequent: string;       // "Dog dental-treats"
-  confidence: number;       // P(consequent | antecedent), 0..1
-  lift: number;
-  support_orders: number;   // # orders the rule holds in
-  support_pct: number;      // support_orders / total_orders, 0..1
-}
-
-export interface BasketRulesResponse {
-  rules: BasketRule[];
-  anchors_mined: number;
-  total_orders: number;
   last_query: { endpoint: string; body: Record<string, unknown> };
   last_response_ms: number;
 }
@@ -318,62 +232,67 @@ export interface SmartSearchResponse {
   last_response_ms: number;
 }
 
-/* ─── Dashboard (/api/dashboard) ─── */
+/* ─── Overview (/api/overview, ADR 0041) ─── */
 
-export interface DashboardKpi {
-  value: number;
-  delta_label: string | null;
+export interface OverviewKpis {
+  first_month: string;          // the last 12 months: first_month … last_month
+  last_month: string;
+  orders: number;
+  orders_before: number;        // the 12 months before
+  months_before: number;        // how many of those 12 the data holds
+  revenue_eur: number;
+  revenue_before_eur: number;
+  avg_basket_eur: number;
+  customers_ordering: number;
+  customers: number;
+  products: number;
 }
 
-export interface DashboardPattern {
-  label: string;
-  lift: number;
-  bar_pct: number;
-  available: boolean;   // false: this pattern's query failed; show that
+export interface OverviewMonth {
+  month: string;
+  orders: number;
+  revenue_eur: number;
 }
 
-export interface DashboardSegment {
+export interface OverviewTopProduct {
+  sku: string;
+  name: string;
+  pet_type: string;
+  category: string;
+  units: number;                // in the last 12 months
+}
+
+export interface OverviewHousehold {
   id: string;
   emoji: string;
   label: string;
+  customers: number;
   share_pct: number;
   avg_basket_eur: number;
-  // Only the group that ranks first or last on a shown number has a pill.
   pill_text: string | null;
-  pill_tone: "orange" | "blue" | "grey" | null;
+  pill_tone: string | null;
 }
 
-export interface DashboardInsight {
+/** One owner view's headline, a link (src/overview_headlines.py). */
+export interface OverviewHeadline {
+  view: string;
+  href: string;
   headline: string;
-  body: string;
+  detail: string;
 }
 
-export interface DashboardRecentOrder {
-  order_id: string;
-  customer_short: string;
-  month: string;
-  line_summary: string;
-  total_eur: number;
-}
-
-export interface DashboardResponse {
-  kpis: {
-    products:       DashboardKpi;
-    orders_12mo:    DashboardKpi;
-    customers:      DashboardKpi;
-    avg_basket_eur: DashboardKpi;
-  };
-  top_patterns: DashboardPattern[];
-  segments: DashboardSegment[];
-  insight: DashboardInsight;
-  recent_orders: DashboardRecentOrder[];
+export interface OverviewResponse {
+  kpis: OverviewKpis;
+  monthly: OverviewMonth[];
+  top_products: OverviewTopProduct[];
+  households: OverviewHousehold[];
+  headlines: OverviewHeadline[];
   last_query: { endpoint: string; body: Record<string, unknown> };
-  last_response_ms: number;
 }
 
-/* ─── Feedback (/api/feedback) ─── */
+/* ─── Review triage (/api/review-triage) ─── */
 
-export interface FeedbackPredictedField {
+export interface ReviewTriageField {
   field: string;
   label: string;
   predicted_value: string | boolean | null;
@@ -383,7 +302,7 @@ export interface FeedbackPredictedField {
   why_explanation: WhyExplanationPayload | null;
 }
 
-export interface FeedbackReviewSummary {
+export interface ReviewTriageReview {
   review_id: string;
   customer_id: string;
   customer_short: string;
@@ -395,40 +314,42 @@ export interface FeedbackReviewSummary {
   actual_category: string;
   actual_sentiment: string;
   actual_assigned_to: string;
-  actual_churn_within_90d: boolean;
 }
 
-export interface FeedbackResponse {
-  review: FeedbackReviewSummary;
-  fields: FeedbackPredictedField[];
+export interface ReviewTriageResponse {
+  review: ReviewTriageReview;
+  fields: ReviewTriageField[];
   candidate_reviews: Array<{ review_id: string; rating: number; text_short: string }>;
   last_query: { endpoint: string; body: Record<string, unknown> };
   last_response_ms: number;
 }
 
-/* ─── Churn (/api/churn) ─── */
+/* ─── Retention (/api/retention) ─── */
 
-export interface ChurnKpi {
-  label: string;
-  value: number;
-  sub: string;
+export interface WinbackOffer {
+  sku: string;
+  name: string;
+  category: string;              // "small_animal/dry-food"
+  price_eur: number;
+  response_p: number;            // calibrated `_predict responded`
+  order_value_eur: number;       // expected order if they respond
+  expected_return_eur: number;   // response_p × order value − email cost
 }
 
-export interface ChurnAtRiskCustomer {
+export interface AtRiskRow {
   customer_id: string;
-  customer_short: string;
-  pets: string;            // declared (ADR 0033)
+  name: string;
+  pets: string;                  // declared (ADR 0033)
   dog_size: string | null;
   region: string;
   tenure_months: number;
-  visits: number;
-  purchases: number;
-  spent_eur: number;
+  last_order_month: string;
   latest_rating: number | null;
-  latest_sentiment: string | null;
-  risk_score: number;
-  confidence_band: "high" | "medium" | "low";
+  risk: "likely" | "very likely";
+  risk_p: number;                // for the $why popover; not shown as a rate
+  spend_12m_eur: number;
   why_explanation: WhyExplanationPayload | null;
+  offer: WinbackOffer | null;    // null: no past email sent a product for their pets
 }
 
 export interface ChurnDriverRow {
@@ -441,228 +362,128 @@ export interface ChurnDriverRow {
   churn_rate_overall: number;
 }
 
-export interface ChurnEvalSummary {
-  accuracy: number;
-  base_accuracy: number;
-  accuracy_gain_pp: number;
-  n: number;
-}
-
-export interface ChurnResponse {
-  kpis: ChurnKpi[];
-  at_risk: ChurnAtRiskCustomer[];
+export interface RetentionResponse {
+  as_of_month: string;
+  /** The last month whose three months of follow-up are in the data. */
+  learned_until: string;
+  decision: {
+    customers: number;
+    spend_12m_eur: number;
+    offers: number;
+    offers_expected_return_eur: number;
+    email_cost_eur: number;
+  };
+  counts: { active: number; likely_to_leave: number; churned: number };
+  at_risk: AtRiskRow[];
   drivers: ChurnDriverRow[];
   /** Profile fields related to churn whose every value stayed near lift 1. */
   driver_fields_without_effect: string[];
-  evaluation: ChurnEvalSummary;
   last_query: { endpoint: string; body: Record<string, unknown> };
   last_response_ms: number;
 }
 
-/* ─── Demand Forecast (/api/demand) ─── */
+/* ─── Supply (/api/supply) ─── */
 
-export interface DemandTopMover {
+export interface PriceBand {
+  list_price_eur: number;
+  mean_price_eur: number;
+  band_low_eur: number;
+  band_high_eur: number;
+  observations: number;
+  outlier: boolean;
+}
+
+export interface MarkdownPoint {
+  discount_pct: number;
+  price_eur: number;
+  monthly_units: number;
+  weeks_to_clear: number | null;   // null: an estimate of 0 units never clears
+}
+
+export interface MarkdownProposal {
+  action: "hold" | "markdown" | "wont_clear";
+  discount_pct: number;
+  price_eur: number;
+  weeks_to_clear: number | null;
+  units_cleared: number;
+  extra_units_vs_full_price: number;
+  capital_freed_eur: number;
+  margin_given_up_eur: number;
+  curve: MarkdownPoint[];
+}
+
+export interface SupplyReorderRow {
   sku: string;
   name: string;
-  pet_type: string;
+  category: string;
+  supplier: string;
+  lead_time_days: number;
+  current_stock: number;
+  reorder_point: number;
+  forecast_units: number | null;
+  order_qty: number;
+  order_cost_eur: number;
+  revenue_at_risk_eur: number;
+  why_explanation: AnyWhyPayload | null;
+  price: PriceBand | null;
+}
+
+export interface SupplyOverstockRow {
+  sku: string;
+  name: string;
+  category: string;
+  current_stock: number;
+  reorder_point: number;
+  excess_units: number;
+  unit_cost_eur: number;
+  tied_capital_eur: number;
+  price: PriceBand | null;
+  markdown: MarkdownProposal;
+}
+
+export interface SupplyMoverRow {
+  sku: string;
+  name: string;
   category: string;
   avg_monthly_units: number;
   last_month_units: number;
   forecast_units: number;
-  forecast_p: number;
+  current_stock: number;
   why_explanation: AnyWhyPayload | null;
 }
 
-export interface DemandSeasonRow {
-  season: string;
-  pet_type: string;
+export interface SupplyPriceOutlier {
+  sku: string;
+  name: string;
   category: string;
-  lift: number;
-  f_on_condition: number;
-  p_on_condition: number;
-  p_overall: number;
+  price: PriceBand;
+  above_band_pct: number;
 }
 
-export interface DemandEvalSummary {
-  accuracy: number;        // model: share of test rows in the right sales range
-  naive_accuracy: number;  // "same range as last month", same rows
-  base_accuracy: number;   // always the most common range
-  n: number;
-  method: string;          // how the split and scoring were done, shown verbatim
-}
-
-export interface DemandResponse {
+export interface SupplyResponse {
   forecast_month: string;
-  top_movers: DemandTopMover[];
-  seasonality: DemandSeasonRow[];
-  evaluation: DemandEvalSummary;
-  last_query: { endpoint: string; body: Record<string, unknown> };
-  last_response_ms: number;
-}
-
-/* ─── Inventory Intelligence (/api/inventory) ─── */
-
-export interface InventoryKpi {
-  label: string;
-  value: number;
-  sub: string;
-}
-
-export interface InventoryReorderRow {
-  sku: string;
-  name: string;
-  pet_type: string;
-  category: string;
-  current_stock: number;
-  reorder_point: number;
-  days_of_supply: number;
-  avg_monthly_units: number;
-  forecast_units: number;
-  suggested_reorder_qty: number;
-  unit_cost_eur: number;
-  revenue_at_risk_eur: number;
-  supplier: string;
-  lead_time_days: number;
-  why_explanation: AnyWhyPayload | null;
-}
-
-export interface InventoryOverstockRow {
-  sku: string;
-  name: string;
-  pet_type: string;
-  category: string;
-  current_stock: number;
-  reorder_point: number;
-  months_of_supply: number;
-  tied_capital_eur: number;
-  unit_cost_eur: number;
-}
-
-export interface InventoryResponse {
-  kpis: InventoryKpi[];
-  reorder_queue: InventoryReorderRow[];
-  overstock: InventoryOverstockRow[];
-  last_query: { endpoint: string; body: Record<string, unknown> };
-  last_response_ms: number;
-}
-
-/* ─── Markdown Decision (/api/markdown) ─── */
-
-export interface MarkdownCurvePoint {
-  discount_pct: number;
-  price_eur: number;
-  monthly_units: number;
-  weeks_to_clear: number;
-  margin_per_unit_eur: number;
-  recoverable_revenue_eur: number;
-}
-
-export interface MarkdownProposal {
-  sku: string;
-  name: string;
-  pet_type: string;
-  category: string;
-  current_stock: number;
-  reorder_point: number;
-  list_price_eur: number;
-  unit_cost_eur: number;
-  excess_units: number;
-  tied_capital_eur: number;
-  proposed_discount_pct: number;
-  proposed_price_eur: number;
-  proposed_weeks_to_clear: number;
-  proposed_recoverable_revenue_eur: number;
-  proposed_margin_lost_eur: number;
-  curve: MarkdownCurvePoint[];
-}
-
-export interface MarkdownResponse {
-  kpis: InventoryKpi[];
-  proposals: MarkdownProposal[];
-  last_query: { endpoint: string; body: Record<string, unknown> };
-  last_response_ms: number;
-}
-
-/* ─── Win-back Campaigns (/api/winback) ─── */
-
-export interface WinbackProductSuggestion {
-  sku: string;
-  name: string;
-  pet_type: string;
-  category: string;
-  brand: string;
-  price_eur: number;
-  response_p: number;
-  predicted_aov_eur: number;
-  expected_revenue_eur: number;
-  rank: number;
-}
-
-export interface WinbackTarget {
-  customer_id: string;
-  customer_name: string;
-  pets: string;                  // declared, e.g. "dog cat"
-  dog_size: string | null;
-  region: string;
-  staple_category: string;       // from their orders: "dog/dry-food", or "none"
-  recency_bucket: string;
-  last_order_month: string;
-  total_spent_eur: number;
-  total_orders: number;
-  suggestions: WinbackProductSuggestion[];
-  expected_recovered_eur: number;
-}
-
-export interface WinbackResponse {
-  kpis: InventoryKpi[];
-  targets: WinbackTarget[];
-  last_query: { endpoint: string; body: Record<string, unknown> };
-  last_response_ms: number;
-}
-
-/* ─── Price Intelligence (/api/price) ─── */
-
-export interface PriceFairBandRow {
-  sku: string;
-  name: string;
-  pet_type: string;
-  category: string;
-  list_price_eur: number;
-  mean_price_eur: number;
-  min_price_eur: number;
-  max_price_eur: number;
-  std_dev_eur: number;
-  observation_count: number;
-  outlier: boolean;
-  band_lower_eur: number;
-  band_upper_eur: number;
-}
-
-export interface PriceSweetSpotRow {
-  discount_band: "list" | "mild" | "promo";
-  category: string;
-  lift: number;
-  f_on_condition: number;
-  p_on_condition: number;
-  p_overall: number;
-}
-
-export interface PriceResponse {
-  fair_bands: PriceFairBandRow[];
-  sweet_spots: PriceSweetSpotRow[];
-  summary: {
-    total_skus: number;
-    observations: number;
-    outlier_skus: number;
-    promo_share_pct: number;
-    drilldown_sku?: string;
-    drilldown_agg_mean?: number;
+  band_counts: { critical: number; low: number; ok: number; overstock: number };
+  reorder: { skus: number; units: number; order_cost_eur: number; revenue_at_risk_eur: number };
+  overstock_decision: {
+    skus: number;
+    tied_capital_eur: number;
+    scored: number;
+    hold: number;
+    markdown: number;
+    wont_clear: number;
+    markdown_units_cleared: number;
+    markdown_capital_freed_eur: number;
+    markdown_margin_given_up_eur: number;
   };
+  reorder_queue: SupplyReorderRow[];
+  overstock: SupplyOverstockRow[];
+  top_movers: SupplyMoverRow[];
+  price_outliers: SupplyPriceOutlier[];
   last_query: { endpoint: string; body: Record<string, unknown> };
   last_response_ms: number;
 }
 
-/* ─── Price detail (/api/price/detail?sku=…) ─── */
+/* ─── Price curve (/api/product/price-curve?sku=…, ADR 0029) ─── */
 
 export interface PriceHistoricalPoint {
   month: string;
@@ -679,30 +500,19 @@ export interface PriceCurvePoint {
   adjustment_pct: number;
 }
 
-export interface PriceNeighborPoint {
-  month: string;
-  price_eur: number;
-  units_sold: number;
-  profit_eur: number;
-  weight: number;
-}
-
-export interface PriceDetail {
+export interface PriceCurve {
   sku: string;
   name: string;
-  pet_type: string;
-  category: string;
   list_price_eur: number;
   unit_cost_eur: number;
   mean_price_eur: number;
   historical: PriceHistoricalPoint[];
   curve: PriceCurvePoint[];
-  neighbors: PriceNeighborPoint[];
   last_query: { endpoint: string; body: Record<string, unknown> };
   last_response_ms: number;
 }
 
-/* ─── Price what-if (/api/price/what-if, ADR 0029) ─── */
+/* ─── Price what-if (/api/product/price-what-if, ADR 0029) ─── */
 
 export interface PriceWhatIfFactor {
   field: string;        // the `where` field, or "other" / "residual"
@@ -725,7 +535,7 @@ export interface PriceWhatIf {
   last_query: { endpoint: string; body: Record<string, unknown> };
 }
 
-/* ─── Discount what-if (/api/price/discount-what-if, ADR 0032) ─── */
+/* ─── Discount what-if (part of /api/product, ADR 0032) ─── */
 
 export interface DiscountBandEstimate {
   band: "none" | "10-15" | "15-20" | "20+";
@@ -738,7 +548,7 @@ export interface DiscountBandEstimate {
   calibrated: boolean;         // $why holds a `calibration` (rowCap) factor
   shown: number;               // this product's impressions at the band
   purchased: number;
-  current: boolean;            // the product's band in the latest month
+  current: boolean;            // the product's band in the month asked about
 }
 
 export interface DiscountWhatIf {
@@ -750,26 +560,80 @@ export interface DiscountWhatIf {
   last_query: { endpoint: string; body: Record<string, unknown> };
 }
 
-/* ─── Product Insights (/api/product-insights) ─── */
+/* ─── Product (/api/product?sku=&month=, ADR 0041) ─── */
 
-export interface ProductInsightsBuyerRow {
-  field: string;          // "context.customer.pets", "product_state.on_offer", ...
+export type DiscountBand = DiscountBandEstimate["band"];
+
+export interface ProductMonth {
+  month: string;
+  units_sold: number;
+  price_eur: number;
+  list_price_eur: number;
+  discount_band: DiscountBand;
+  rating_band: string;      // "unrated" | "1-2" | "3" | "4" | "5"
+  age: "new" | "established";
+  rival_launched: boolean;  // a rival product launched recently
+  price_change: "none" | "rise";
+  reviews: number;          // reviews written that month
+}
+
+export interface ProductHistory {
+  funnel: Array<{ step: "impressions" | "clicked" | "added_to_cart" | "purchased"; count: number }>;
+  surfaces: Array<{ surface: string; impressions: number; purchased: number }>;
+  months: ProductMonth[];
+  ratings: Record<string, number>;      // "1".."5"
+  sentiments: Record<string, number>;   // "positive" | "neutral" | "negative"
+}
+
+export interface ProductBuyerRow {
+  field: string;          // "order_id.customer_id.pets", ...
   value: string;
   lift: number;           // share among this product's lines / among all lines
   lines: number;          // this product's order lines with this profile
   lines_total: number;    // this product's order lines
 }
 
-export interface ProductInsightsResponse {
-  product: { sku: string; name: string; brand: string; pet_type: string; category: string; price_eur: number };
-  funnel: Array<{ step: "impressions" | "clicked" | "added_to_cart" | "purchased"; count: number }>;
-  surfaces: Array<{ surface: string; impressions: number; purchased: number }>;
-  buyers: ProductInsightsBuyerRow[];
-  monthly: Array<{ month: string; units_sold: number }>;
-  ratings: Record<string, number>;      // "1".."5"
-  sentiments: Record<string, number>;   // "positive" | "neutral" | "negative"
-  candidate_products: Array<{ sku: string; name: string; category: string; pet_type: string }>;
-  bought_together_anchor: string | null;
+export interface BandMargin {
+  band: DiscountBand;
+  price_eur: number;            // list price less the band's typical discount
+  p_purchase: number;           // Aito's estimate, bought when shown
+  margin_per_100_eur: number;   // 100 × p × (price − cost)
+}
+
+export interface OfferDecision {
+  action: "keep" | "offer" | "change" | "end_offer";
+  current_band: DiscountBand;
+  best_band: DiscountBand;
+  current: BandMargin;
+  best: BandMargin;
+  breakeven_ratio: number | null;   // sales needed at the best band vs list price
+  expected_ratio: number;           // Aito's p at the best band / at no discount
+  margins: BandMargin[];
+}
+
+export interface ProductCandidate {
+  sku: string;
+  name: string;
+  brand: string;
+  category: string;
+  pet_type: string;
+}
+
+export interface ProductView {
+  product: { sku: string; name: string; brand: string; pet_type: string; category: string;
+             price_eur: number; unit_cost_eur: number };
+  month: string;
+  forecast_month: string;
+  state: ProductMonth;
+  decision: OfferDecision;
+  discount: DiscountWhatIf;
+  price_now: PriceWhatIf;
+  price_best: PriceWhatIf | null;
+  history: ProductHistory;
+  buyers: ProductBuyerRow[];
+  shopper: { key: string; name: string; matches: string[] } | null;
+  basket_category: { token: string; label: string };
+  candidates: ProductCandidate[];
   last_query: { endpoint: string; body: Record<string, unknown> };
 }
 
@@ -805,6 +669,58 @@ export interface ShopItem extends ShopProduct {
   offer_pct: number | null;
   keeps_rule: boolean;
   p_if_new: number | null;     // bought last order: its P before Aito was told so
+  measured_rank: number | null;          // sandbox: its rank by Aito's $p, before re-scoring
+  adjustment: ScoreAdjustment | null;    // sandbox: set when its 2026-05 state re-scored it
+  same_name_skus: string[];    // other SKUs of the same name this card stands for (src/same_name.py)
+}
+
+/** Why a re-scored card's score differs from Aito's $p (ADR 0043, src/shop_rescore.py). */
+export interface ScoreAdjustment {
+  aito_p: number;
+  offer_band: string;
+  offer_factor: number;        // lift(offer band) / lift(no offer), shop-wide
+  rating_band: string;
+  rating_band_before: string;
+  rating_factor: number;       // lift(stars) / lift(April's stars), shop-wide
+  score: number;               // aito_p × offer_factor × rating_factor
+}
+
+/** `/api/sandbox` (ADR 0043). */
+export interface SandboxStatus {
+  configured: boolean;
+  can_create?: boolean;
+  month?: string;
+  max_live?: number;
+  max_age_hours?: number;
+  sandbox?: { env: string; expires_at: string; starts_from: string } | null;
+}
+
+/** A product's state row, as `product_states` holds it. */
+export interface ProductStateRow {
+  product_state_id: string;
+  product_sku: string;
+  month: string;
+  price_eur: number;
+  list_price_eur: number;
+  discount_pct: number;
+  on_offer: boolean;
+  discount_band: string;
+  rating_band: string;
+}
+
+/** `/api/levers/state`. */
+export interface LeverStates { april: ProductStateRow; next: ProductStateRow | null; next_month: string }
+
+/** `/api/levers/offer` and `/api/levers/review`: the row as read back. */
+export interface LeverResult {
+  sku: string;
+  lever: "offer" | "review";
+  state: ProductStateRow;
+  rating_band_before: string;
+  rating_band_changed: boolean;
+  reviews: number;
+  avg_rating: number | null;
+  review: { review_id: string; rating: number; text: string } | null;
 }
 
 export interface ShopSearch {
@@ -822,6 +738,7 @@ export interface ShopGrid {
   items: ShopItem[];
   last_order_skus: string[];
   last_query: { endpoint: string; body: Record<string, unknown> };
+  rescored: boolean;            // sandbox, 2026-05: re-scored by the levers' states (ADR 0043)
 }
 
 export interface ShopBasketPair {
@@ -830,6 +747,7 @@ export interface ShopBasketPair {
   lift: number;
   together: number;        // orders holding both
   orders_with_it: number;  // orders holding the drawer's product
+  same_name_skus: string[];
 }
 
 export interface ShopProductDrawer {
@@ -845,6 +763,7 @@ export interface ShopSuggestion {
   sku: string;
   name: string;
   p: number;
+  same_name_skus: string[];
 }
 
 export interface ShopSuggestions {
@@ -895,18 +814,27 @@ export interface ShopLiftSection extends ShopSectionBase {
   clustering: ShopClustering;
 }
 
+/** A basket pair as a rule with a direction (src/basket_pairs.py). */
 export interface ShopAnalyticsPair {
-  first: string;            // "Dog dry-food"
+  first: string;            // "Dog dry-food", the anchor mined
   second: string;           // "Dog dental-treats"
+  first_id: string;         // "dog_dryfood"
+  second_id: string;
   lift: number;
   interval_low: number;
   interval_high: number;
   orders_with_both: number;
   orders_with_first: number;
+  orders_with_second: number;
+  orders: number;
+  confidence: number;          // first → second
+  reverse_confidence: number;  // second → first
+  support: number;             // share of all orders holding both
 }
 
 export interface ShopBasketSection extends ShopSectionBase {
   pairs: ShopAnalyticsPair[];
+  anchors: Array<{ id: string; label: string }>;   // the anchor filter
   design_effects: Record<string, number>;   // per anchor category
 }
 
