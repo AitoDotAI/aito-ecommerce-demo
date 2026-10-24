@@ -1,6 +1,6 @@
 # ADR 0035: The data promotion is a step of the deploy
 
-**Status:** Proposed (2026-10-23; revised with aito-azure's review the same day)
+**Status:** Accepted (2026-10-24, Antti: "review, fix and merge all on green"). Revised with aito-azure's review on 2026-10-23. The key for the cutover (§Ownership and permissions) is still Antti's open decision; the cutover isn't run until it's made.
 
 ## Context
 
