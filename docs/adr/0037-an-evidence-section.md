@@ -96,8 +96,9 @@ that session, the nested-`from` pattern of the shop sweeps
 |---|---|
 | BM25 | Smart Search's left column: `_search products` ordered by `$similarity` over the name |
 | BM25, reference | a plain Okapi BM25 in Python (k1 = 1.2, b = 0.75, over the same names), to show the left column is a standard BM25 |
-| Aito, personalised | Smart Search's right column: `$multiply [$p{purchased}, $similarity name]` for this shopper, at the shipped θ (no re-tuning on this set) |
-| Personal only | the right column's `$p{purchased}` alone, with no query: how much the shopper explains without the words |
+| **Aito, the Shop's search** (primary) | `src/shop_search.py`, as shipped: the products the words name (`_search products`, `$similarity`), then the grid's `_recommend` restricted to them, with the household's declared pets, the month and the cart, and the household's rule as a filter; ranked by `$p` × the text lift at the shipped θ (no re-tuning on this set) |
+| Aito, with the shopper's history | Smart Search's right column: `$multiply [$p{purchased}, $similarity name]` with `context.customer`, at the shipped θ. It's the form the Shop dropped (ADR 0033, R1/R2); here it answers whether the shopper's own history adds anything over the household |
+| Household only | the Shop search's `$p` alone, with no text lift: how much the household explains without the words |
 | Generator's ranking | the generator's own weight for this shopper and product, restricted to products the query's words could have come from |
 
 The generator's ranking is the ceiling estimate. The purchase is drawn
@@ -111,11 +112,17 @@ byte-identical, and a test checks it.
 - **Primary:** hit@10.
 - **Secondary:** MRR.
 - **Slices:** the shopper's orders before the session: 0, 1–2, 3–5, 6+.
-  This is the curve on the page: BM25 flat, Aito rising with history, the
-  generator's ranking above both.
-- **Intervals:** paired 95 % over sessions, for Aito − BM25 and for the
-  generator − Aito, per slice. A slice under 30 sessions is "too few to
-  read".
+  The page shows each ranking per slice, with the generator's ranking as
+  the ceiling. The Shop's search reads the household, not the history, so
+  it isn't expected to rise with history; the history form is. Whether
+  the history form beats the Shop's search in any slice is a question the
+  run answers, not a claim.
+- **Intervals:** paired 95 % over sessions, per slice, for:
+  - the Shop's search − BM25;
+  - the history form − the Shop's search;
+  - the generator − the best Aito ranking.
+  
+  A slice under 30 sessions is "too few to read".
 
 The design is fixed in this ADR before any run. A change after a result
 is seen is an amendment, dated, with its reason.
@@ -125,17 +132,23 @@ is seen is an amendment, dated, with its reason.
 | Query | Status |
 |---|---|
 | `_search products`, `$similarity` over name | shipped (ADR 0026) |
+| The Shop's search (`_search products`, then the grid's `_recommend` over those products) | shipped (ADR 0031, amendment of 2026-10-17) |
 | Smart Search's `$multiply [$p{purchased}, $similarity]` | shipped (ADR 0026) |
-| Either, with a nested `from` that excludes the session | the sweeps' pattern; probed again on the search shape before the run |
-| `$p{purchased}` alone, no query | to probe before use |
+| Each, with a nested `from` that excludes the session | the sweeps' pattern; probed again on both search shapes before the run |
+| The Shop search's `$p` alone, no text lift | the grid's query, restricted; probed before use |
 
 **Before building on it:** a probe of how `$similarity` scores the names
 (tokens, stemming, length normalisation), compared with the Python BM25
 on 20 queries. If they disagree, that's reported, not hidden: the page
 then names the left column "Aito's text similarity", not BM25.
 
-**Cost:** about 3,000 sessions × 3 Aito rankings, on the release data's
-env, outside 08–10 Helsinki.
+**Cost:** about 3,000 sessions × 4 Aito queries (the Shop's search is
+two), on the release data's env, outside 08–10 Helsinki.
+
+**Revised 2026-10-24, before any run:** the primary Aito ranking is the
+Shop's search, not Smart Search's. The site review behind ADR 0041 found
+that the benchmark would otherwise measure a query the Shop doesn't run.
+Smart Search's form stays as the history comparison.
 
 ## Acceptance criteria
 
@@ -144,7 +157,7 @@ env, outside 08–10 Helsinki.
 - [ ] The Evidence index lists each entry with its Real or Synthetic
       mark and a one-line result worded by the rules in §2.
 - [ ] A user can open Personalised search and see hit@10 per history
-      slice for the five rankings, with intervals. The synthetic-data
+      slice for the six rankings, with intervals. The synthetic-data
       sentence is above the first number.
 - [ ] Every number on an evidence page comes from a committed file in
       `data/evidence/`. `./do evidence <entry>` rewrites it.
