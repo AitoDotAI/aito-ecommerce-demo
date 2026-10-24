@@ -1,0 +1,239 @@
+{
+ "entry": "search-relevance",
+ "data": "Synthetic",
+ "adr": "ADR 0026",
+ "script": "src/search_eval/run.py",
+ "report": "docs/verification/search-eval.md",
+ "run": {
+  "command": "./do search-eval",
+  "date": "2026-10-24",
+  "code_commit": "409e7de",
+  "aito_env": "observable",
+  "aito_api": "v2@observable",
+  "aito_version": "2.11.8",
+  "derived_by": "./do evidence search-relevance"
+ },
+ "theta": 4.0,
+ "thetas_tried": [
+  0.33,
+  1.0,
+  2.0,
+  3.0,
+  4.0,
+  6.0,
+  10.0
+ ],
+ "headline": "BM25 (left column) is ahead of $match (before): +0.225 nDCG@10 [+0.141, +0.318]; the interval excludes 0.",
+ "queries": 60,
+ "strata": {
+  "brand": 10,
+  "exact": 10,
+  "misspelling": 10,
+  "nordic": 10,
+  "paraphrase": 10,
+  "synonym": 10
+ },
+ "arms": [
+  {
+   "arm": "before: $match",
+   "ndcg10": 0.2927298076281704,
+   "p5": 0.2966666666666667,
+   "r20": 0.2077907099369284,
+   "mrr": 0.3,
+   "zero": 0.7
+  },
+  {
+   "arm": "left: bm25",
+   "ndcg10": 0.5180402476850573,
+   "p5": 0.6133333333333333,
+   "r20": 0.33194574822930156,
+   "mrr": 0.5291501322751323,
+   "zero": 0.3
+  },
+  {
+   "arm": "right θ4.0[maija]",
+   "ndcg10": 0.5892184494868641,
+   "p5": 0.68,
+   "r20": 0.34322127711892847,
+   "mrr": 0.6038657407407407,
+   "zero": 0.0
+  },
+  {
+   "arm": "right θ4.0[olli]",
+   "ndcg10": 0.5724438771621431,
+   "p5": 0.6666666666666666,
+   "r20": 0.35376950238670646,
+   "mrr": 0.6120475589225589,
+   "zero": 0.0
+  },
+  {
+   "arm": "right θ4.0[saara]",
+   "ndcg10": 0.5904017771839899,
+   "p5": 0.6866666666666666,
+   "r20": 0.3517995571191897,
+   "mrr": 0.6111111111111112,
+   "zero": 0.0
+  },
+  {
+   "arm": "random (control)",
+   "ndcg10": 0.09054257873543885,
+   "p5": 0.16666666666666669,
+   "r20": 0.02719788586645835,
+   "mrr": 0.1413717437246849,
+   "zero": 0.0
+  },
+  {
+   "arm": "table order (control)",
+   "ndcg10": 0.19649166019260106,
+   "p5": 0.31666666666666665,
+   "r20": 0.04189632596231721,
+   "mrr": 0.18471688034188033,
+   "zero": 0.0
+  }
+ ],
+ "by_stratum": [
+  {
+   "stratum": "brand",
+   "before: $match": 0.7,
+   "left: bm25": 0.8333333333333334,
+   "right θ4.0[maija]": 0.8455901084614935,
+   "right θ4.0[olli]": 0.8481162824248786,
+   "right θ4.0[saara]": 0.8411731602312009
+  },
+  {
+   "stratum": "exact",
+   "before: $match": 1.0,
+   "left: bm25": 1.0,
+   "right θ4.0[maija]": 1.0,
+   "right θ4.0[olli]": 1.0,
+   "right θ4.0[saara]": 1.0
+  },
+  {
+   "stratum": "misspelling",
+   "before: $match": 0.0,
+   "left: bm25": 0.3728351036669658,
+   "right θ4.0[maija]": 0.4198973470966821,
+   "right θ4.0[olli]": 0.3980116847236139,
+   "right θ4.0[saara]": 0.4922434526990046
+  },
+  {
+   "stratum": "nordic",
+   "before: $match": 0.0,
+   "left: bm25": 0.0,
+   "right θ4.0[maija]": 0.2,
+   "right θ4.0[olli]": 0.20791688592606145,
+   "right θ4.0[saara]": 0.2571384317730928
+  },
+  {
+   "stratum": "paraphrase",
+   "before: $match": 0.0,
+   "left: bm25": 0.520552127854188,
+   "right θ4.0[maija]": 0.4886955901234103,
+   "right θ4.0[olli]": 0.4941809869072089,
+   "right θ4.0[saara]": 0.5139597803881418
+  },
+  {
+   "stratum": "synonym",
+   "before: $match": 0.05637884576902256,
+   "left: bm25": 0.38152092125585685,
+   "right θ4.0[maija]": 0.5811276512395985,
+   "right θ4.0[olli]": 0.4864374229910952,
+   "right θ4.0[saara]": 0.4378958380124991
+  }
+ ],
+ "comparisons": [
+  {
+   "arm": "BM25 (left column)",
+   "base": "$match (before)",
+   "difference": 0.2253104400568869,
+   "low": 0.1414354737744744,
+   "high": 0.31785240454021096,
+   "sentence": "BM25 (left column) is ahead of $match (before): +0.225 nDCG@10 [+0.141, +0.318]; the interval excludes 0."
+  },
+  {
+   "arm": "Right column, Maija Lehtonen — cat owner",
+   "base": "BM25 (left column)",
+   "difference": 0.07117820180180674,
+   "low": 0.0067400413706242045,
+   "high": 0.15223608626822746,
+   "sentence": "Right column, Maija Lehtonen — cat owner is ahead of BM25 (left column): +0.071 nDCG@10 [+0.007, +0.152]; the interval excludes 0."
+  },
+  {
+   "arm": "Right column, Olli Mäkelä — multi-pet (small dog)",
+   "base": "BM25 (left column)",
+   "difference": 0.05440362947708568,
+   "low": 0.009159815977458132,
+   "high": 0.10198875199418257,
+   "sentence": "Right column, Olli Mäkelä — multi-pet (small dog) is ahead of BM25 (left column): +0.054 nDCG@10 [+0.009, +0.102]; the interval excludes 0."
+  },
+  {
+   "arm": "Right column, Saara Virtanen — dog owner (large breed)",
+   "base": "BM25 (left column)",
+   "difference": 0.07236152949893253,
+   "low": 0.01197024071787406,
+   "high": 0.1435440180091553,
+   "sentence": "Right column, Saara Virtanen — dog owner (large breed) is ahead of BM25 (left column): +0.072 nDCG@10 [+0.012, +0.144]; the interval excludes 0."
+  }
+ ],
+ "out_of_sample": {
+  "splits": 500,
+  "chosen": {
+   "0.33": 0,
+   "1.0": 0,
+   "2.0": 79,
+   "3.0": 100,
+   "4.0": 25,
+   "6.0": 6,
+   "10.0": 290
+  },
+  "median_gain_by_theta": {
+   "0.33": -0.1869775739482729,
+   "1.0": 0.046188782352133334,
+   "2.0": 0.06599734257637326,
+   "3.0": 0.06803683596741339,
+   "4.0": 0.06647800749272986,
+   "6.0": 0.06610397209517635,
+   "10.0": 0.06998131840199898
+  },
+  "median_gain": 0.0655533675638563,
+  "gain_90": [
+   0.03594947029276531,
+   0.09938804039810173
+  ],
+  "positive_share": 1.0,
+  "one_split": {
+   "seed": 0,
+   "theta": 10.0,
+   "queries": 30,
+   "by_persona": {
+    "maija": {
+     "difference": 0.05067158289781626,
+     "low": -0.026040541633690704,
+     "high": 0.1598522248808791,
+     "sentence": "Right column, Maija Lehtonen — cat owner and BM25 (left column): a tie, +0.051 nDCG@10 [-0.026, +0.160]; the interval spans 0."
+    },
+    "olli": {
+     "difference": 0.059353197031156144,
+     "low": -0.0030345471199478085,
+     "high": 0.12495845263072386,
+     "sentence": "Right column, Olli Mäkelä — multi-pet (small dog) and BM25 (left column): a tie, +0.059 nDCG@10 [-0.003, +0.125]; the interval spans 0."
+    },
+    "saara": {
+     "difference": 0.03802698530671191,
+     "low": -0.01970703129983055,
+     "high": 0.12201884927704683,
+     "sentence": "Right column, Saara Virtanen — dog owner (large breed) and BM25 (left column): a tie, +0.038 nDCG@10 [-0.020, +0.122]; the interval spans 0."
+    }
+   }
+  }
+ },
+ "controls": {
+  "random_ndcg10": 0.09054257873543885,
+  "shuffled_labels_ndcg10": 0.11032429048773726
+ },
+ "personas": {
+  "maija": "Maija Lehtonen — cat owner",
+  "olli": "Olli Mäkelä — multi-pet (small dog)",
+  "saara": "Saara Virtanen — dog owner (large breed)"
+ }
+}

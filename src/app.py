@@ -15,7 +15,7 @@ Lifecycle:
 
 import os
 
-from dataclasses import asdict, replace
+from dataclasses import replace
 from pathlib import Path
 
 from fastapi import FastAPI, Query, Request
@@ -41,8 +41,8 @@ from src.overview_headlines import owner_headlines
 from src.overview_service import get_overview
 from src.search_service import smart_search
 from src.recommend_service import get_for_you
+from src.evidence import result_file as evidence_file
 from src.filling_service import get_filling
-from src.eval_service import run_evaluation
 from src.product_service import DEFAULT_SKU, get_product_view, product_view_payload
 from src.shop_grid import get_shop_grid
 from src.shop_personas import SHOPPERS, UnknownShopperError
@@ -54,8 +54,6 @@ from src.search_words import get_search_words_section
 from src.shop_analytics_service import get_funnel_section, get_who_section
 from src.review_triage_service import get_review_triage
 from src.lookup_errors import ProductNotOnSaleError, UnknownPersonaError, UnknownProductError, UnknownReviewError
-from src.churn_evaluation import evaluate_churn
-from src.demand_evaluation import evaluate_demand
 from src.demand_forecast import LATEST_MONTH
 from src.demand_service import get_demand
 from src.retention_service import get_retention
@@ -419,17 +417,14 @@ def product_filling_endpoint(sku: str | None = None):
         )
 
 
-@app.get("/api/evaluation")
-def evaluation_endpoint():
-    """Run four `_evaluate` models in parallel and return pass/fail
-    per the +10 pp accuracy-gain threshold. See ADR 0010."""
+@app.get("/api/evidence/{entry}")
+def evidence_endpoint(entry: str):
+    """An Evidence page's committed result file (ADR 0037 §2): the page
+    never runs a benchmark live. `./do evidence <entry>` rewrites it."""
     try:
-        return precompute_store.serve("evaluation", lambda: run_evaluation(aito).to_dict())
-    except AitoError as exc:
-        return JSONResponse(
-            status_code=502,
-            content={"error": str(exc), "status_code": exc.status_code},
-        )
+        return evidence_file.served(entry)
+    except KeyError as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc.args[0])})
 
 
 # ── Shop (ADR 0031) ─────────────────────────────────────────────────
@@ -650,31 +645,6 @@ def demand_endpoint():
             status_code=502,
             content={"error": str(exc), "status_code": exc.status_code},
         )
-
-
-# ── Model checks for Evidence (ADR 0037): the accuracy behind the 360° views ──
-
-
-def _model_check(name: str, compute):
-    try:
-        return cache.get_or_compute(f"model-check:{name}", lambda: asdict(compute()), ttl=3600)
-    except AitoError as exc:
-        return JSONResponse(
-            status_code=502,
-            content={"error": str(exc), "status_code": exc.status_code},
-        )
-
-
-@app.get("/api/model-checks/churn")
-def churn_check_endpoint():
-    """Retention's churn score on a time split (`src/churn_evaluation.py`)."""
-    return _model_check("churn", lambda: evaluate_churn(aito))
-
-
-@app.get("/api/model-checks/demand")
-def demand_check_endpoint():
-    """Supply's demand forecast against "same as last month" (`src/demand_evaluation.py`)."""
-    return _model_check("demand", lambda: evaluate_demand(aito, LATEST_MONTH))
 
 
 # ── Business reorders, on UCI Online Retail II (ADR 0034) ──────────

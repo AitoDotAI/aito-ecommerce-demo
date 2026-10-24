@@ -24,7 +24,6 @@ from src.aito_client import AitoClient, AitoError
 from src import precompute_store as store
 from src.overview_service import get_overview
 from src.demand_service import get_demand
-from src.eval_service import run_evaluation
 from src.retention_service import get_retention
 from src.supply_service import get_supply
 
@@ -42,7 +41,6 @@ from src.supply_service import get_supply
 PRECOMPUTED_ENDPOINTS = [
     ("overview",   get_overview),
     ("demand",     lambda c: get_demand(c).to_dict()),
-    ("evaluation", lambda c: run_evaluation(c).to_dict()),
     ("retention",  lambda c: get_retention(c).to_dict()),
     ("supply",     lambda c: get_supply(c).to_dict()),
 ]

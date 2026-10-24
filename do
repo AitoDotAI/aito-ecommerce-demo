@@ -156,6 +156,8 @@ Quality
   backtest-load     <name>: training orders → Aito env backtest-<name> (needs AITO_ENV=backtest-<name>)
   backtest          <uci|name> [--offline]: Aito vs three baselines → data/backtest/<name>/report.md
   search-eval       Score search arms on the judged query set (nDCG, recall, controls)
+  evidence          <entry>: rewrite data/evidence/<entry>.json (ADR 0037; reads only):
+                    search-relevance | model-checks | personalised-search [--probe]
   v2-env            Stage the v2 (Rep2) env — ADR 0025 (dry run unless --apply)
   verify <feature>  Run the adversary Playwright agent for one feature
   verify-demo       End-to-end demo-path check
@@ -627,7 +629,7 @@ cmd_aito_check() {
     echo "tests/test_aito_check.py not implemented yet (lands with the first view that calls Aito)."
     exit 0
   fi
-  uv run pytest tests/test_aito_check.py -v
+  uv run pytest tests/test_aito_check.py -v "$@"
 }
 
 cmd_search_eval() {
@@ -636,6 +638,30 @@ cmd_search_eval() {
   # control (random arm, shuffled labels) scores too well to trust.
   cd "$SCRIPT_DIR"
   uv run python -m src.search_eval.run
+}
+
+cmd_evidence() {
+  # ADR 0037 §2: an Evidence page reads a committed result file, never a live
+  # benchmark. Each entry's writer is re-runnable; all of them only read Aito.
+  cd "$SCRIPT_DIR"
+  local entry="${1:-}"
+  shift || true
+  case "$entry" in
+    search-relevance)    uv run python -m src.evidence.search_relevance "$@" ;;
+    model-checks)        uv run python -m src.evidence.model_checks "$@" ;;
+    personalised-search)
+      # --probe: the query shapes and the BM25 agreement, before the run (ADR 0037 §3).
+      if [[ "${1:-}" == "--probe" ]]; then
+        uv run python -m src.personalised_search.probe
+      else
+        uv run python -m src.personalised_search.run "$@"
+      fi
+      ;;
+    *)
+      echo "Usage: ./do evidence <search-relevance|model-checks|personalised-search> [--probe]" >&2
+      exit 1
+      ;;
+  esac
 }
 
 cmd_verify() {
@@ -839,8 +865,9 @@ case "${1:-help}" in
   sandbox-time)      cmd_sandbox time ;;
   agent-demo)        shift; cmd_agent_demo "$@" ;;
   test)              cmd_test ;;
-  aito-check)        cmd_aito_check ;;
+  aito-check)        shift; cmd_aito_check "$@" ;;
   search-eval)       cmd_search_eval ;;
+  evidence)          shift; cmd_evidence "$@" ;;
   v2-env)          cmd_v2_env "${@:2}" ;;
   verify)            shift; cmd_verify "$@" ;;
   verify-demo)       cmd_verify_demo ;;

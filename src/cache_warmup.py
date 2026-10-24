@@ -17,7 +17,7 @@ dev server even starts.
 
 Scope: this warms the remaining light, parameterised views (For You /
 Smart Search per persona, plus the small ad-hoc ones). The six heavy
-endpoints (churn, demand, evaluation, inventory, markdown, winback)
+endpoints (demand, retention, supply)
 AND the Overview landing page are precompute-and-served via
 `./do precompute` (ADR 0024), not lazily cached here — that is what
 removes their cold cost on the read-only public deploy, where this
@@ -46,7 +46,7 @@ def warm_all(client: AitoClient, *, verbose: bool = True) -> None:
     find the L2 already warm and L1 fills again on this same
     boot's request path.
 
-    Everything runs sequentially: `evaluation` and the
+    Everything runs sequentially: the
     `_estimate`-heavy endpoints each fan out internally to ~20
     parallel Aito calls, so stacking *them* in parallel here
     blows past Aito's `inFlightWeight` capacity (48) and yields
@@ -87,7 +87,7 @@ def warm_all(client: AitoClient, *, verbose: bool = True) -> None:
          lambda: smart_search(client, query="food", persona_id="olli")),
         ("product-filling",    lambda: get_filling(client)),
         ("review-triage",      lambda: get_review_triage(client)),
-        # The heavy endpoints (demand, evaluation, retention, supply)
+        # The heavy endpoints (demand, retention, supply)
         # are deliberately NOT warmed here. They are
         # precompute-and-served from the Aito `precompute_entries` table
         # via `./do precompute` (ADR 0024) — offline snapshots read at
