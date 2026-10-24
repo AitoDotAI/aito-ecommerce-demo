@@ -166,27 +166,6 @@ def test_impression_funnel_is_monotone(client):
     assert _count(client, {"added_to_cart": False, "purchased": True}) == 0
 
 
-# ── Basket rule mining — order-level _relate sweep (ADR 0022) ─────────
-
-
-def test_basket_rules_mines_well_formed_association_rules(client):
-    """The Basket Rules sweep returns non-empty, well-formed rules:
-    confidence in [0,1], support in [0,1] (order-granular — never the
-    >100% the line-granular link-traversal shape produced), lift > 1,
-    and the canonical dog dry-food → dental-treats rule is present."""
-    from src.basket_rules_service import get_basket_rules
-
-    resp = get_basket_rules(client)
-    assert resp.rules, "no basket rules mined"
-    for r in resp.rules:
-        assert 0.0 <= r.confidence <= 1.0, r
-        assert 0.0 <= r.support_pct <= 1.0, r           # order-granular, never >1
-        assert r.lift > 1.0, r                          # positive association only
-        assert r.support_orders >= 50, r                # absolute-count gate held
-    pairs = {(r.antecedent, r.consequent) for r in resp.rules}
-    assert ("Dog dry-food", "Dog dental-treats") in pairs, sorted(pairs)
-
-
 # ── Instance health: are the tables actually optimized? ──────────────
 
 
@@ -675,6 +654,36 @@ def test_shop_analytics_dog_dry_food_goes_with_dental_treats(shop_analytics):
     pairs = {(p.first, p.second): p for p in shop_analytics["baskets"].pairs}
     pair = pairs.get(("Dog dry-food", "Dog dental-treats"))
     assert pair and pair.interval_low > 1, sorted(pairs)
+
+
+def test_patterns_basket_rule_has_a_direction_read_from_its_counts(client, shop_analytics):
+    """Basket Rules' confidence and support (ADR 0022), now columns on
+    Patterns › Baskets: `fs.f` is the orders holding the other category,
+    so the rule reads both ways. Dental treats almost never sell without
+    dry food; dry food often sells without dental treats."""
+    pairs = {(p.first, p.second): p for p in shop_analytics["baskets"].pairs}
+    pair = pairs[("Dog dry-food", "Dog dental-treats")]
+    dental = client.search("orders", where={"line_categories": {"$match": "dog_dentaltreats"}}, limit=0)["total"]
+
+    assert pair.orders_with_second == dental
+    assert pair.orders == client.search("orders", limit=0)["total"]
+    assert 0 < pair.support < pair.confidence < pair.reverse_confidence <= 1, pair
+
+
+def test_overview_totals_cover_every_order_and_name_the_strongest_pair(client):
+    """Overview pages every order and line with `_search` (it raises if the
+    pages don't add up), and leads Patterns with the strongest pair."""
+    from src.overview_service import get_overview
+
+    overview = get_overview(client)
+
+    kpis = overview["kpis"]
+    assert sum(m["orders"] for m in overview["monthly"]) == client.search("orders", limit=0)["total"]
+    assert kpis["orders"] > 0 and kpis["months_before"] == 12, kpis
+    assert overview["top_products"][0]["units"] >= overview["top_products"][-1]["units"] > 0
+    assert sum(h["customers"] for h in overview["households"]) <= kpis["customers"]
+    assert (overview["top_basket_pair"]["first"], overview["top_basket_pair"]["second"]) == (
+        "Dog dry-food", "Dog dental-treats")
 
 
 def test_shop_analytics_search_words_against_the_search_average(client, shop_analytics):

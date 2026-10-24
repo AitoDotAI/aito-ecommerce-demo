@@ -96,8 +96,8 @@ async function settleAfterInteraction(page, contentSelector) {
   const page = await ctx.newPage();
 
   // 1. Dashboard — wait for top-pattern bars to render
-  await gotoAndSettle(page, "/", ".lift-row");
-  await shot(page, "01-dashboard.png", "Dashboard — KPIs / top patterns / segments / orders");
+  await gotoAndSettle(page, "/", ".hbar-row");
+  await shot(page, "01-overview.png", "Overview — KPIs / headlines per owner view / best sellers / households");
 
   // 2. Smart Search — Saara default. Wait for at least one predictive row.
   await gotoAndSettle(page, "/smart-search/", ".pill-orange, .pill-blue");
@@ -146,17 +146,10 @@ async function settleAfterInteraction(page, contentSelector) {
   await page.waitForTimeout(WAIT_AFTER_NETWORK);
   await shot(page, "04-bought-together-aquarium.png", "Bought Together — aquarium anchor (niche)");
 
-  // 5. Purchase Analytics — wait for the hbar rows
-  await gotoAndSettle(page, "/purchase-analytics/", ".hbar-row");
-  await shot(page, "05-purchase-analytics.png", "Purchase Analytics");
-
-  // 6. Pattern Explorer — wait for at least one .lift-hint to appear
-  await gotoAndSettle(page, "/pattern-explorer/", ".lift-hint");
-  await shot(page, "06-pattern-explorer-dog-dryfood.png", "Pattern Explorer — dog dry-food anchor (full lift band)");
-
-  await page.selectOption("#anchor-picker", "cat_wetfood");
-  await settleAfterInteraction(page, ".lift-hint");
-  await shot(page, "06-pattern-explorer-cat-wetfood.png", "Pattern Explorer — cat wet-food anchor");
+  // 5–6. Patterns' baskets as rules, filtered to one anchor (ex Basket
+  // Rules and Pattern Explorer; Purchase Analytics is in the Overview)
+  await gotoAndSettle(page, "/patterns/?anchor=dog_dryfood", "#basket-rules");
+  await shot(page, "06-patterns-baskets-dog-dryfood.png", "Patterns — baskets as rules, dog dry-food anchor");
 
   // 7. Product Filling — wait for confidence chip
   await gotoAndSettle(page, "/product-filling/", ".fill-conf");

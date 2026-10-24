@@ -19,6 +19,12 @@ export const MOVED_ROUTES: Record<string, MovedRoute> = {
   "/evaluation":        { to: "/evidence/model-checks/",         label: "Evidence › Model checks" },
   "/smart-search":      { to: "/evidence/personalised-search/",  label: "Evidence › Personalised search" },
   "/recommendations":   { to: "/query-patterns/",                label: "Query patterns" },
+  // Merged views. Pattern Explorer's `?anchor=` is Patterns' anchor
+  // filter; Basket Rules' confidence and support are columns on Baskets;
+  // Purchase Analytics' trend and best sellers are on the Overview.
+  "/pattern-explorer":  { to: "/patterns/",                      label: "Patterns" },
+  "/basket-rules":      { to: "/patterns/",                      label: "Patterns" },
+  "/purchase-analytics": { to: "/",                              label: "Overview" },
   // Dropped views: their question is answered elsewhere, better measured.
   // Bought Together's category pairs are Patterns › Baskets; Cart
   // Completion's add-ons are the Shop's cart re-ranking "Picked for you".

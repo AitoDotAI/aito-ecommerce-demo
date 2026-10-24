@@ -8,6 +8,8 @@ import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
 import NotFoundNotice from "@/components/shell/NotFoundNotice";
 import { Card, LiftList, More, NoClearEffect, Row, Threshold, fmt, pct, useSection } from "@/components/shop-analytics/LiftParts";
+import { AnchorPicker, BasketRuleTable, pairsFor } from "@/components/patterns/BasketRules";
+import { basketLead, funnelLead, searchWordLead, whoLead } from "@/components/patterns/lead-sentences";
 import { useUrlState } from "@/lib/use-url-state";
 import type { ShopBasketSection, ShopLiftSection, ShopSearchWordRow, ShopSearchWordSection } from "@/lib/types";
 
@@ -15,11 +17,14 @@ import type { ShopBasketSection, ShopLiftSection, ShopSearchWordRow, ShopSearchW
 /**
  * Patterns (ADR 0041; called Shop analytics before) — the owner's side of
  * ADR 0031: what goes with a click and a purchase, who buys what and when,
- * baskets, and search words. The API keeps its `/api/shop-analytics/` paths.
- * Data layer: `src/shop_analytics_service.py`, `src/basket_pairs.py`,
+ * baskets as rules (Basket Rules' confidence and support, Pattern
+ * Explorer's anchor), and search words. Each section leads with what its
+ * strongest rows mean for the shop. The API keeps its `/api/shop-analytics/`
+ * paths. Data layer: `src/shop_analytics_service.py`, `src/basket_pairs.py`,
  * `src/search_words.py`. Each section has its own endpoint, so changing
- * the KPI re-asks only its section. The KPI and the "who/when" live in
- * the URL (`?kpi=clicked&who=grain-free`).
+ * the KPI re-asks only its section; the anchor filters Baskets in the page.
+ * The KPI, the "who/when" and the anchor live in the URL
+ * (`?kpi=clicked&who=grain-free&anchor=dog_dryfood`).
  */
 function PatternsView() {
   usePagePanel(shopAnalyticsPanel(), {
@@ -31,6 +36,7 @@ function PatternsView() {
   const { setPanel } = useShell();
   const [kpi, setKpi] = useUrlState("kpi", "purchased");
   const [who, setWho] = useUrlState("who", "summer");
+  const [anchor, setAnchor] = useUrlState("anchor", "");
   const funnel = useSection<ShopLiftSection>(`/api/shop-analytics/funnel?kpi=${encodeURIComponent(kpi)}`);
   const group = useSection<ShopLiftSection>(`/api/shop-analytics/who?who=${encodeURIComponent(who)}`);
   const baskets = useSection<ShopBasketSection>("/api/shop-analytics/baskets");
@@ -44,6 +50,9 @@ function PatternsView() {
 
   const error = funnel.error ?? group.error ?? baskets.error ?? words.error;
   const kpiNoun = kpi === "clicked" ? "clicks" : "purchases";
+  const unknownAnchor = baskets.data && anchor && !baskets.data.anchors.some((a) => a.id === anchor)
+    ? `No basket rules are mined for the anchor “${anchor}”; Patterns mines ${baskets.data.anchors.map((a) => a.label).join(", ")}`
+    : null;
   return (
     <div className="fade-in">
       <div className="page-header">
@@ -60,6 +69,7 @@ function PatternsView() {
       )}
       {funnel.badLink && <NotFoundNotice message={funnel.badLink} resetLabel="Show purchases" onReset={() => setKpi("purchased")} />}
       {group.badLink && <NotFoundNotice message={group.badLink} resetLabel="Show summer" onReset={() => setWho("summer")} />}
+      {unknownAnchor && <NotFoundNotice message={unknownAnchor} resetLabel="Show every anchor" onReset={() => setAnchor("")} />}
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(380px, 100%), 1fr))", gap: 16 }}>
         <Card title={`What goes with ${kpiNoun}`} sub={`Over- or under-represented among ${kpiNoun}, against all impressions`}
@@ -73,6 +83,7 @@ function PatternsView() {
                   ))}
                 </div>
               }>
+          {funnel.data && <Lead text={funnelLead(funnel.data, kpiNoun)} />}
           {funnel.data && <LiftSectionBody section={funnel.data} unit={kpiNoun} />}
         </Card>
 
@@ -87,15 +98,23 @@ function PatternsView() {
                   ))}
                 </select>
               }>
+          {group.data && <Lead text={whoLead(group.data)} />}
           {group.data && <LiftSectionBody section={group.data} unit="order lines" />}
         </Card>
 
-        <Card title="Baskets" sub="Category pairs in the same order more (or less) often than chance">
-          {baskets.data && <BasketList section={baskets.data} />}
-          <a href="/basket-rules/" style={{ fontSize: 13 }}>Rules with confidence and support in Basket Rules →</a>
-        </Card>
+        {/* Full width: the rules table has five columns. */}
+        <div style={{ gridColumn: "1 / -1" }}>
+          <Card title="Baskets" sub="Category pairs in the same order more (or less) often than chance, as rules"
+                controls={baskets.data && <AnchorPicker section={baskets.data} anchor={anchor} onChange={setAnchor} />}>
+            {baskets.data && !unknownAnchor && <Lead text={basketLead(pairsFor(baskets.data, anchor))} />}
+            {baskets.data && !unknownAnchor && (
+              <BasketRuleTable section={baskets.data} pairs={pairsFor(baskets.data, anchor)} filtered={anchor !== ""} />
+            )}
+          </Card>
+        </div>
 
         <Card title="Search words" sub="Words whose searches end in a purchase more or less often than the average search">
+          {words.data && <Lead text={searchWordLead(words.data)} />}
           {words.data && <SearchWordList section={words.data} />}
         </Card>
       </div>
@@ -115,29 +134,10 @@ function LiftSectionBody({ section, unit }: { section: ShopLiftSection; unit: st
   );
 }
 
-const TOGETHER_SHOWN = 8;
-const APART_SHOWN = 4;
-
-function BasketList({ section }: { section: ShopBasketSection }) {
-  const together = section.pairs.filter((p) => p.lift > 1);
-  const apart = section.pairs.filter((p) => p.lift < 1).sort((a, b) => a.lift - b.lift);
-  const effects = Object.values(section.design_effects);
-  const pair = (p: ShopBasketSection["pairs"][number]) => (
-    <Row key={`${p.first}-${p.second}`} lift={p.lift} low={p.interval_low} high={p.interval_high}
-         label={<>{p.first} + {p.second}</>}
-         counts={`${fmt(p.orders_with_both)} of ${fmt(p.orders_with_first)} orders with ${p.first.toLowerCase()}`} />
-  );
-  return (
-    <>
-      <div className="card-sub" style={{ marginBottom: 8 }}>{section.pairs.length} pairs clear the bar</div>
-      {together.slice(0, TOGETHER_SHOWN).map(pair)}
-      <More count={together.length - TOGETHER_SHOWN} what="pairs bought together" />
-      {apart.slice(0, APART_SHOWN).map(pair)}
-      <More count={apart.length - APART_SHOWN} what="pairs kept apart" />
-      <Threshold significance={section.significance}
-                 designEffect={`clustering by customer (design effect ${Math.min(...effects).toFixed(1)}–${Math.max(...effects).toFixed(1)} by anchor)`} />
-    </>
-  );
+/** A section's lead: what its strongest rows mean, and what to do. */
+function Lead({ text }: { text: string | null }) {
+  if (!text) return null;
+  return <div style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.45, margin: "0 0 12px" }}>{text}</div>;
 }
 
 const ABOVE_SHOWN = 8;
