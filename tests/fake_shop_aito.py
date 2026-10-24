@@ -10,10 +10,10 @@ CUSTOMERS = {
 }
 
 
-def product(sku, p=0.0, category="dry-food", pet_type="cat", reason=("context.month", "2026-04", 1.3)):
+def product(sku, p=0.0, category="dry-food", pet_type="cat", reason=("context.month", "2026-04", 1.3), name=None):
     """A `_recommend` hit, with a `$why` holding one reason for it."""
     field, value, lift = reason
-    return {"sku": sku, "name": f"Brand {sku}", "brand": "Brand", "pet_type": pet_type,
+    return {"sku": sku, "name": name or f"Brand {sku}", "brand": "Brand", "pet_type": pet_type,
             "category": category, "price_eur": 4.0, "avg_rating": 4.2, "$p": p,
             "$why": {"type": "product", "factors": [
                 {"type": "hitPropositionLift", "proposition": {"product_sku": {"$has": sku}}, "value": 2.0,

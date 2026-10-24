@@ -13,7 +13,7 @@ grid, search and a product's alternatives.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 
 from src.aito_client import AitoClient, AitoError
 from src.lookup_errors import UnknownProductError
@@ -44,6 +44,8 @@ class ShopItem:
     # The sandbox's re-scored Shop (ADR 0043, src/shop_rescore.py):
     measured_rank: int | None = None          # its rank by Aito's $p, before re-scoring
     adjustment: ScoreAdjustment | None = None  # set when its 2026-05 state re-scored it
+    # Other SKUs of the same name this card stands for (`src/same_name.py`).
+    same_name_skus: list[str] = field(default_factory=list)
 
 
 @dataclass(frozen=True)

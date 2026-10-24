@@ -104,7 +104,8 @@ def check_version(body: dict) -> str:
 STEPS = [
     Step("version", "/api/version", check_version),
     Step("overview", "/api/overview", check_overview),
-    Step("evaluation", "/api/evaluation", check_evaluation),
+    # Model checks read a committed file (ADR 0037); the check still holds its models to their bar.
+    Step("model checks", "/api/evidence/model-checks", check_evaluation),
     Step("retention", "/api/retention", nonempty("at_risk", "drivers", what="retention")),
     Step("supply", "/api/supply", nonempty("reorder_queue", "overstock", "top_movers", what="supply")),
     # not shown in the sidebar: shape only (demand's seasonality moves to Patterns)

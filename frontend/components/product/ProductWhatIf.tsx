@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { apiFetch, fmtEur } from "@/lib/api";
+import FinePrint from "@/components/shell/FinePrint";
 import type { PriceCurve, ProductView } from "@/lib/types";
 import DiscountWhatIf from "./DiscountWhatIf";
 import PriceScatterChart from "./PriceScatterChart";
@@ -10,7 +11,8 @@ import PriceWhatIf from "./PriceWhatIf";
 import { monthLabel } from "./labels";
 
 /**
- * Product › What if: the two levers side by side. The price (ADR 0029):
+ * Product › What if: the discount bands first, the measured lever (ADR 0032);
+ * the price curve folded beside them, because its slope is shop-wide. The price (ADR 0029):
  * a demand and profit curve from `_estimate units_sold` at seven prices,
  * and the units waterfall at a price the user picks. The discount
  * (ADR 0032): the chance it is bought when shown, per band.
@@ -42,13 +44,24 @@ export default function ProductWhatIf({ view, price, onPrice, onQuery }: {
     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 540px), 1fr))",
                   gap: 20, alignItems: "start" }}>
       <div>
-        <div className="card" style={{ marginBottom: 20 }}>
+        <DiscountWhatIf result={view.discount} margins={view.decision.margins} onQuery={onQuery} />
+      </div>
+      {/* Folded: the units model reads price in euros across all products, so its
+          slope is shop-wide and nearly flat for any one product (about 0.1 units
+          per € on 2026-10-24). The discount bands are the measured lever. */}
+      <details className="card" style={{ alignSelf: "start" }}>
+        <summary style={{ cursor: "pointer" }}>
+          <strong>Units by price.</strong>{" "}The units model reads price in euros across all products, so
+          it can&apos;t yet see one product&apos;s own response; the discount bands are the measured lever.
+        </summary>
+        <div style={{ marginTop: 14 }}>
           <div className="card-sub" style={{ marginBottom: 6 }}>
             Price what-if · {monthLabel(view.forecast_month)} · `_estimate units_sold` at seven prices
           </div>
           <div className="page-title" style={{ fontSize: 17, margin: "4px 0 8px" }}>
             Units and profit next month, by price
           </div>
+          <FinePrint summary="Details: the price effect is shop-wide">
           <div className="card-sub" style={{ marginBottom: 10, color: "var(--text-2)" }}>
             <strong>The price effect is shop-wide.</strong>{" "}Aito&apos;s regression learns one price effect
             from all products&apos; months, so this curve&apos;s slope
@@ -56,6 +69,7 @@ export default function ProductWhatIf({ view, price, onPrice, onQuery }: {
             {view.price_now.form === "add" ? "the same units per € for every product" : "the same share of units per € for every product"},
             not this product&apos;s own price sensitivity. Its own months are the dots.
           </div>
+          </FinePrint>
           {error && <div className="card-sub" style={{ color: "var(--red)" }}>Couldn&apos;t estimate the curve: {error}</div>}
           {!error && !curve && <div aria-busy="true" style={{ height: 360, background: "var(--border-light)", borderRadius: 4 }} />}
           {curve && (
@@ -72,10 +86,7 @@ export default function ProductWhatIf({ view, price, onPrice, onQuery }: {
           <PriceWhatIf detail={curve} price={price ?? view.price_now.price_eur} known={view.price_now}
                        onPrice={onPrice} onQuery={onQuery} />
         )}
-      </div>
-      <div>
-        <DiscountWhatIf result={view.discount} margins={view.decision.margins} onQuery={onQuery} />
-      </div>
+      </details>
     </div>
   );
 }

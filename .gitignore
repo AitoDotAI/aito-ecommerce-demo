@@ -40,3 +40,6 @@ data/uci/*
 !data/uci/README.md
 # A merchant's prepared orders and backtest reports (ADR 0036): never committed.
 data/backtest/
+
+# A personalised-search run in progress (ADR 0037): resumable, never committed.
+data/evidence/*.partial.jsonl

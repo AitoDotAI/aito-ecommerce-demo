@@ -1,6 +1,7 @@
 "use client";
 
-import type { ShopSuggestions } from "@/lib/types";
+import type { ShopSuggestion, ShopSuggestions } from "@/lib/types";
+import VariantNote from "@/components/shop/VariantNote";
 
 /** Two of the Shop's three views, one per intent (ADR 0033, amendment of
  *  2026-10-21): "Buy again" (the routine) and "Next for their kit" (the
@@ -30,7 +31,7 @@ export default function SuggestionsPanel({ suggestions, month, onAdd, onAddAll }
         </div>
         {suggestions.usual.length === 0 && <div className="card-sub">No routine yet.</div>}
         {suggestions.usual.map((s) => (
-          <Row key={s.sku} name={s.name} p={s.p} onAdd={() => onAdd(s.sku)} />
+          <Row key={s.sku} s={s} onAdd={() => onAdd(s.sku)} />
         ))}
         {suggestions.usual.length > 0 && (
           <div style={{ marginTop: 8 }}>
@@ -52,21 +53,21 @@ export default function SuggestionsPanel({ suggestions, month, onAdd, onAddAll }
           <div className="card-sub">{owned.length ? "Nothing left to add to the kit." : "Nothing to complete."}</div>
         )}
         {suggestions.next_for_pet.map((s) => (
-          <Row key={s.sku} name={s.name} p={s.p} onAdd={() => onAdd(s.sku)} />
+          <Row key={s.sku} s={s} onAdd={() => onAdd(s.sku)} />
         ))}
       </div>
     </div>
   );
 }
 
-function Row({ name, p, onAdd }: { name: string; p: number; onAdd: () => void }) {
+function Row({ s, onAdd }: { s: ShopSuggestion; onAdd: () => void }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", gap: 8, padding: "4px 0", fontSize: 13 }}>
-      <span>{name}</span>
+      <span>{s.name} <VariantNote skus={s.same_name_skus} /></span>
       <span style={{ whiteSpace: "nowrap" }}>
-        <span className="card-sub">{Math.round(p * 100)} %</span>
+        <span className="card-sub">{Math.round(s.p * 100)} %</span>
         <button className="btn btn-ghost" style={{ marginLeft: 6, padding: "0 8px" }} onClick={onAdd}
-                aria-label={`Add ${name}`}>+</button>
+                aria-label={`Add ${s.name}`}>+</button>
       </span>
     </div>
   );

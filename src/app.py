@@ -15,7 +15,7 @@ Lifecycle:
 
 import os
 
-from dataclasses import asdict, replace
+from dataclasses import replace
 from pathlib import Path
 
 from fastapi import FastAPI, Query, Request
@@ -41,8 +41,8 @@ from src.overview_headlines import owner_headlines
 from src.overview_service import get_overview
 from src.search_service import smart_search
 from src.recommend_service import get_for_you
+from src.evidence import result_file as evidence_file
 from src.filling_service import get_filling
-from src.eval_service import run_evaluation
 from src.product_service import DEFAULT_SKU, get_product_view, product_view_payload
 from src.shop_grid import get_shop_grid
 from src.shop_personas import SHOPPERS, UnknownShopperError
@@ -54,8 +54,6 @@ from src.search_words import get_search_words_section
 from src.shop_analytics_service import get_funnel_section, get_who_section
 from src.review_triage_service import get_review_triage
 from src.lookup_errors import ProductNotOnSaleError, UnknownPersonaError, UnknownProductError, UnknownReviewError
-from src.churn_evaluation import evaluate_churn
-from src.demand_evaluation import evaluate_demand
 from src.demand_forecast import LATEST_MONTH
 from src.demand_service import get_demand
 from src.retention_service import get_retention
@@ -133,8 +131,11 @@ def _drop_memory_caches() -> None:
 # The app waits for its data (ADR 0035): data routes answer 503 until
 # the env the app reads matches `data/release-env.json`, and the caches
 # are warmed only then. A malformed release file stops the startup here.
+release = load_release()
+# On the release env itself, the snapshots its release filed for master are its own.
+precompute_store.read_release_snapshots(precompute_store.release_snapshot_namespace(config, release.env))
 release_gate = DataReleaseGate(
-    load_release(),
+    release,
     read_counts=lambda: read_counts(aito),
     on_ready=_warm_cache,
     on_mismatch=_drop_memory_caches,
@@ -292,6 +293,8 @@ def version():
         # null sha: on a deployment this means BUILD_SHA was not set at
         # build time, so provenance is unverifiable.
         "pinned": info.get("source") == "BUILD_SHA",
+        # Whether pages open in presentation mode (DEMO_MODE=1); `?demo=` overrides per tab.
+        "demo_mode": config.demo_mode,
     }
 
 
@@ -348,21 +351,25 @@ def schema():
 # routes stay in this single file so the table-of-contents is
 # greppable.
 
-def _snapshot_data(name: str) -> dict | None:
-    """A precomputed view's data, or None when it has no snapshot."""
+def _view_data(name: str) -> dict | None:
+    """What a heavy view serves, without computing it: its snapshot, else its
+    live answer once a visit to the view has cached it (`_precomputed_view`),
+    else None."""
     entry = precompute_store.get(name)
-    return entry["data"] if isinstance(entry, dict) and "data" in entry else None
+    if isinstance(entry, dict) and "data" in entry:
+        return entry["data"]
+    return cache.get(f"{name}:view")
 
 
 @app.get("/api/overview")
 def overview_endpoint():
     """Overview (ADR 0041): the shop's last 12 months, best sellers,
     households, and one headline per owner view. The payload is
-    precomputed; the Supply and Retention headlines read those views'
-    own snapshots, so each headline matches the view it links to."""
+    precomputed; the Supply and Retention headlines read what those views
+    serve, so each headline matches the view it links to."""
     try:
         overview = precompute_store.serve("overview", lambda: get_overview(aito))
-        return {**overview, "headlines": owner_headlines(overview, _snapshot_data)}
+        return {**overview, "headlines": owner_headlines(overview, _view_data)}
     except AitoError as exc:
         return JSONResponse(
             status_code=502,
@@ -419,17 +426,14 @@ def product_filling_endpoint(sku: str | None = None):
         )
 
 
-@app.get("/api/evaluation")
-def evaluation_endpoint():
-    """Run four `_evaluate` models in parallel and return pass/fail
-    per the +10 pp accuracy-gain threshold. See ADR 0010."""
+@app.get("/api/evidence/{entry}")
+def evidence_endpoint(entry: str):
+    """An Evidence page's committed result file (ADR 0037 §2): the page
+    never runs a benchmark live. `./do evidence <entry>` rewrites it."""
     try:
-        return precompute_store.serve("evaluation", lambda: run_evaluation(aito).to_dict())
-    except AitoError as exc:
-        return JSONResponse(
-            status_code=502,
-            content={"error": str(exc), "status_code": exc.status_code},
-        )
+        return evidence_file.served(entry)
+    except KeyError as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc.args[0])})
 
 
 # ── Shop (ADR 0031) ─────────────────────────────────────────────────
@@ -650,31 +654,6 @@ def demand_endpoint():
             status_code=502,
             content={"error": str(exc), "status_code": exc.status_code},
         )
-
-
-# ── Model checks for Evidence (ADR 0037): the accuracy behind the 360° views ──
-
-
-def _model_check(name: str, compute):
-    try:
-        return cache.get_or_compute(f"model-check:{name}", lambda: asdict(compute()), ttl=3600)
-    except AitoError as exc:
-        return JSONResponse(
-            status_code=502,
-            content={"error": str(exc), "status_code": exc.status_code},
-        )
-
-
-@app.get("/api/model-checks/churn")
-def churn_check_endpoint():
-    """Retention's churn score on a time split (`src/churn_evaluation.py`)."""
-    return _model_check("churn", lambda: evaluate_churn(aito))
-
-
-@app.get("/api/model-checks/demand")
-def demand_check_endpoint():
-    """Supply's demand forecast against "same as last month" (`src/demand_evaluation.py`)."""
-    return _model_check("demand", lambda: evaluate_demand(aito, LATEST_MONTH))
 
 
 # ── Business reorders, on UCI Online Retail II (ADR 0034) ──────────

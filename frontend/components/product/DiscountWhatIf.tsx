@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { fmtEur } from "@/lib/api";
+import FinePrint from "@/components/shell/FinePrint";
 import { BAND_LABEL } from "./labels";
 import type { BandMargin, DiscountBandEstimate, DiscountWhatIf as DiscountWhatIfResult } from "@/lib/types";
 
@@ -67,6 +68,7 @@ export default function DiscountWhatIf({
         </table>
       </div>
       {chainBand && <Chain b={chainBand} />}
+      <FinePrint>
       {shown.bands.some((b) => b.calibrated) && (
         <div className="card-sub" style={{ marginTop: 6 }}>
           Few shoppers buy this product, and Aito holds its estimate at a
@@ -81,6 +83,7 @@ export default function DiscountWhatIf({
         band&apos;s, not this product&apos;s. &ldquo;In the data&rdquo; is this
         product&apos;s own impressions at the band.
       </div>
+      </FinePrint>
     </div>
   );
 }

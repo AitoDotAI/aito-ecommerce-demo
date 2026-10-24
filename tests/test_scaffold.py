@@ -20,6 +20,16 @@ def test_load_config_reads_env(monkeypatch):
     assert cfg.public_demo is False
 
 
+def test_demo_mode_is_off_unless_the_server_config_turns_it_on(monkeypatch):
+    monkeypatch.setenv("AITO_API_URL", "https://example.aito.app")
+    monkeypatch.setenv("AITO_API_KEY", "test-key")
+    monkeypatch.delenv("DEMO_MODE", raising=False)
+    assert config.load_config(use_dotenv=False).demo_mode is False
+
+    monkeypatch.setenv("DEMO_MODE", "1")
+    assert config.load_config(use_dotenv=False).demo_mode is True
+
+
 def test_load_config_strips_trailing_slash(monkeypatch):
     monkeypatch.setenv("AITO_API_URL", "https://example.aito.app/")
     monkeypatch.setenv("AITO_API_KEY", "test-key")

@@ -279,7 +279,6 @@ export interface OverviewHeadline {
   href: string;
   headline: string;
   detail: string;
-  available: boolean;
 }
 
 export interface OverviewResponse {
@@ -672,6 +671,7 @@ export interface ShopItem extends ShopProduct {
   p_if_new: number | null;     // bought last order: its P before Aito was told so
   measured_rank: number | null;          // sandbox: its rank by Aito's $p, before re-scoring
   adjustment: ScoreAdjustment | null;    // sandbox: set when its 2026-05 state re-scored it
+  same_name_skus: string[];    // other SKUs of the same name this card stands for (src/same_name.py)
 }
 
 /** Why a re-scored card's score differs from Aito's $p (ADR 0043, src/shop_rescore.py). */
@@ -747,6 +747,7 @@ export interface ShopBasketPair {
   lift: number;
   together: number;        // orders holding both
   orders_with_it: number;  // orders holding the drawer's product
+  same_name_skus: string[];
 }
 
 export interface ShopProductDrawer {
@@ -762,6 +763,7 @@ export interface ShopSuggestion {
   sku: string;
   name: string;
   p: number;
+  same_name_skus: string[];
 }
 
 export interface ShopSuggestions {

@@ -9,12 +9,13 @@ import { useShell } from "./ShellState";
  * renders whatever's currently in shell state.
  *
  * Stats above the body block are pinned. Body scrolls. CTA pinned
- * to the bottom — the "Start free trial" button is always reachable.
+ * to the bottom — the "Start free trial" button is always reachable,
+ * except in demo mode (lib/demo-mode.ts), where the room is a meeting.
  *
  * Matches `predictive-ecommerce-demo.html` lines 195–309 + 1462–1515.
  */
 export default function AitoPanel() {
-  const { aitoCollapsed, mobileOpen, panel, toggleAito } = useShell();
+  const { aitoCollapsed, mobileOpen, panel, toggleAito, demoMode } = useShell();
 
   const classes = [
     "aito-panel",
@@ -135,16 +136,18 @@ export default function AitoPanel() {
         </div>
       </div>
 
-      <div className="aito-panel-cta">
-        <a
-          className="aito-cta"
-          href="https://aito.ai"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Start free trial →
-        </a>
-      </div>
+      {!demoMode && (
+        <div className="aito-panel-cta">
+          <a
+            className="aito-cta"
+            href="https://aito.ai"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Start free trial →
+          </a>
+        </div>
+      )}
     </aside>
     </>
   );

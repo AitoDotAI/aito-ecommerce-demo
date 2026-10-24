@@ -115,8 +115,9 @@ function OverstockLine({ d }: { d: SupplyResponse["overstock_decision"] }) {
       Of the {d.scored} largest, <strong>{d.hold}</strong> sell through at full price within a quarter
       {d.markdown > 0 && <>; a markdown clears <strong>{d.markdown}</strong> ({d.markdown_units_cleared} units,
         an estimated {fmtEur(d.markdown_capital_freed_eur)} freed for {fmtEur(d.markdown_margin_given_up_eur)} of margin)</>}
-      {d.wont_clear > 0 && <>; <strong>{d.wont_clear}</strong> won&apos;t clear even at 20 % off, so a markdown
-        would only give margin away</>}.
+      {d.wont_clear > 0 && <>; <strong>{d.wont_clear}</strong> don&apos;t clear by price alone, even at 20 % off.
+        That counts price only: an offer&apos;s lift on purchases when shown, and the higher place it earns in the
+        shop, aren&apos;t in this estimate</>}.
     </>
   );
 }

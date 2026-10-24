@@ -23,7 +23,8 @@ const http = require("http");
 const path = require("path");
 
 const OUT = path.resolve(__dirname, "../out");
-const EVAL_SNAPSHOT = path.resolve(__dirname, "../../data/precomputed/v2-master/evaluation.json");
+// The Evidence pages read committed result files (ADR 0037): the stub serves the same files.
+const EVIDENCE_DIR = path.resolve(__dirname, "../../data/evidence");
 const PORT = 8611;
 const BASE = `http://localhost:${PORT}`;
 const TIMEOUT = 15000;
@@ -166,8 +167,10 @@ function stubResponse(apiPath, params) {
     case "/api/shop-analytics/search-words":
       return { ...EMPTY_SECTION, rows: [], never_bought: [], words: 0, search_impressions: 1, search_purchases: 0,
                clustering: CLUSTERING };
-    case "/api/evaluation":
-      return JSON.parse(fs.readFileSync(EVAL_SNAPSHOT, "utf8")).data;
+    case "/api/evidence/model-checks":
+    case "/api/evidence/search-relevance":
+    case "/api/evidence/personalised-search":
+      return JSON.parse(fs.readFileSync(path.join(EVIDENCE_DIR, `${apiPath.split("/").pop()}.json`), "utf8"));
     default:
       return null;   // Personalised search and Query patterns show their controls without data.
   }
@@ -443,13 +446,16 @@ async function main() {
 
     {
       const { context, page } = await openFresh(browser, `${BASE}/evidence/`);
-      // The total comes from the snapshot the test serves, so a new evaluation can't leave it stale.
-      const evaluated = JSON.parse(fs.readFileSync(EVAL_SNAPSHOT, "utf8")).data.models.length;
-      const modelLine = await appears(page.getByText(new RegExp(`\\d of ${evaluated} models beat that guess by 10 points or more`)));
+      // Each line is read from the committed result file its page renders (ADR 0037), as the stub serves it.
+      const checks = JSON.parse(fs.readFileSync(path.join(EVIDENCE_DIR, "model-checks.json"), "utf8"));
+      const passing = checks.models.filter((m) => m.verdict === "pass").length;
+      const modelLine = await appears(page.getByText(
+        new RegExp(`${passing} of ${checks.models.length} catalogue\\s+models beat it by \\d+ points or more`)));
+      const searchLine = await appears(page.getByText(/On \d+ judged queries: BM25/));
       const entries = await page.locator(".evidence-entry").count();
       const marked = await page.locator(".evidence-entry .pill", { hasText: /^(Real|Synthetic) data$/ }).count();
-      check(modelLine && entries === 3 && marked === 3,
-            `evidence: ${entries} entries, ${marked} marked Real or Synthetic; Model checks' line read from the evaluation`);
+      check(modelLine && searchLine && entries === 4 && marked === 4,
+            `evidence: ${entries} entries, ${marked} marked Real or Synthetic; lines read from the result files`);
       await context.close();
     }
   } finally {

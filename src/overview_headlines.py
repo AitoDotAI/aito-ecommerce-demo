@@ -1,18 +1,24 @@
 """Overview's headlines: one per owner view, each a link (ADR 0041).
 
 Every number in a headline comes from data: the Overview's own payload
-(`src/overview_service.py`) for Patterns and Product, and the snapshot
-the linked view itself serves for Supply and Retention, so the headline
-and the view it opens can't disagree. Nothing here queries Aito.
+(`src/overview_service.py`) for Patterns and Product, and the answer the
+linked view itself serves for Supply and Retention (its snapshot, or its
+live answer once that is cached), so the headline and the view it opens
+can't disagree. Nothing here queries Aito: computing Retention live takes
+20 s cold, too long for the landing page.
 
-A missing snapshot shows as an unavailable headline that names the
-command to make it, rather than as a quietly absent tile.
+When the view has no answer yet, its card is left out, and the server
+logs which one and why. The page never shows a command-line hint: the
+Overview is what a visitor sees first.
 """
 
 from __future__ import annotations
 
+import logging
 from dataclasses import asdict, dataclass
 from typing import Callable
+
+logger = logging.getLogger(__name__)
 
 # The precomputed view each headline reads (`src/precompute.py`).
 SUPPLY_SNAPSHOT = "supply"
@@ -25,12 +31,11 @@ class Headline:
     href: str          # "/patterns/?anchor=dog_dryfood"
     headline: str      # the decision, with its number
     detail: str        # the reason, or what else the view holds
-    available: bool = True
 
 
-def _missing(view: str, href: str, name: str) -> Headline:
-    return Headline(view, href, f"No {name} snapshot for this data yet",
-                    "Run ./do precompute to make one.", available=False)
+def _missing(view: str, name: str) -> None:
+    logger.warning("Overview leaves out the %s card: no %s snapshot, and the view's live answer "
+                   "isn't cached yet (./do precompute makes the snapshot)", view, name)
 
 
 def patterns_headline(overview: dict) -> Headline:
@@ -55,16 +60,16 @@ def product_headline(overview: dict) -> Headline:
     )
 
 
-def supply_headline(supply: dict | None) -> Headline:
+def supply_headline(supply: dict | None) -> Headline | None:
     """Supply's two decision lines (`src/supply_rows.py`), as Supply leads with them."""
     href = "/supply/"
     if supply is None:
-        return _missing("Supply", href, SUPPLY_SNAPSHOT)
+        return _missing("Supply", SUPPLY_SNAPSHOT)
     reorder, over = supply["reorder"], supply["overstock_decision"]
     detail = f"{over['skus']} overstocked products hold €{over['tied_capital_eur']:,.0f}"
     if over["wont_clear"]:
-        detail += (f"; of the {over['scored']} largest, {over['wont_clear']} won't clear even with a markdown, "
-                   f"by Aito's estimate")
+        detail += (f"; of the {over['scored']} largest, {over['wont_clear']} don't clear by price alone "
+                   f"(an offer's lift on purchases and placement isn't counted)")
     return Headline(
         "Supply", href,
         f"Reorder {reorder['skus']} products now: about €{reorder['revenue_at_risk_eur']:,.0f} of next month's "
@@ -73,11 +78,11 @@ def supply_headline(supply: dict | None) -> Headline:
     )
 
 
-def retention_headline(retention: dict | None) -> Headline:
+def retention_headline(retention: dict | None) -> Headline | None:
     """Retention's decision line (`src/retention_service.py`) and its strongest observed driver."""
     href = "/retention/"
     if retention is None:
-        return _missing("Retention", href, RETENTION_SNAPSHOT)
+        return _missing("Retention", RETENTION_SNAPSHOT)
     decision = retention["decision"]
     risers = [d for d in retention["drivers"] if d["lift"] > 1]
     detail = "Each has a win-back offer to send, where past emails can tell one."
@@ -100,12 +105,13 @@ EVIDENCE = Headline(
 )
 
 
-def owner_headlines(overview: dict, snapshot: Callable[[str], dict | None]) -> list[dict]:
-    """`snapshot(name)` returns a precomputed view's data, or None."""
-    return [asdict(h) for h in (
+def owner_headlines(overview: dict, view_data: Callable[[str], dict | None]) -> list[dict]:
+    """`view_data(name)` returns the data a view serves, or None when it has none ready."""
+    headlines = (
         patterns_headline(overview),
         product_headline(overview),
-        supply_headline(snapshot(SUPPLY_SNAPSHOT)),
-        retention_headline(snapshot(RETENTION_SNAPSHOT)),
+        supply_headline(view_data(SUPPLY_SNAPSHOT)),
+        retention_headline(view_data(RETENTION_SNAPSHOT)),
         EVIDENCE,
-    )]
+    )
+    return [asdict(h) for h in headlines if h is not None]

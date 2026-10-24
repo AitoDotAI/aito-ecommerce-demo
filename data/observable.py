@@ -70,14 +70,15 @@ def answer_key_row(customer) -> dict:
     of `src/schema.py`)."""
     row = {"customer_id": customer.customer_id, "pet_size": customer.pet_size,
            "diet_rule": customer.diet_rule, "pets": " ".join(customer.pets),
-           # What ADR 0037's personalised-search ceiling scores with.
-           "favorite_brands": "|".join(customer.favorite_brands) or None,
            # ADR 0039: the month the churn hazard ended the customer's history.
            "churn_month": customer.churn_month,
            # ADR 0044: whether the shop may record this customer's behaviour.
            "consent_behavioural": customer.consent_behavioural}
     row.update({trait: getattr(customer, trait) for trait in HIDDEN_TRAITS})
     row.update({f"{s}_sensitivity": customer.sensitivities[s] for s in SENSITIVITIES})
+    # The personalised-search benchmark's ceiling re-scores products with the
+    # generator's own weight, which reads the favourite brands (ADR 0037 §3).
+    row["favorite_brands"] = list(customer.favorite_brands)
     return {k: v for k, v in row.items() if v is not None}
 
 

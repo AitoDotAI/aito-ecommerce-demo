@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { apiFetch, fmtEur } from "@/lib/api";
+import FinePrint from "@/components/shell/FinePrint";
 import type { PriceCurve, PriceWhatIf as PriceWhatIfResult } from "@/lib/types";
 
 /**
@@ -152,11 +153,13 @@ function Waterfall({ result }: { result: PriceWhatIfResult }) {
         );
       })}
       <Row label="Estimate" change="" total={result.units} strong />
+      <FinePrint>
       <div className="card-sub" style={{ marginTop: 6 }}>
         Each effect {multiply ? "multiplies" : "adds to"}{" "}the units above it. They
         compare with a typical month in the data, not with this product&apos;s
         current price: move the price to see what changing it does.
       </div>
+      </FinePrint>
     </div>
   );
 }

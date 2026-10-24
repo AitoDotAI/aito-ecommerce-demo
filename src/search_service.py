@@ -117,10 +117,13 @@ PRODUCT_FIELDS = ["sku", "name", "brand", "pet_type", "category", "price_eur"]
 # words (a cat owner asking for "food for an old dog" got cat food, nDCG@10
 # 0.31). At 2.0 a cat owner's "dog food" still had cat food at ranks 7-10.
 # From 3.0 up the text holds (tests/test_aito_check.py) and the held-out
-# gain over BM25 plateaus: +0.062 at 3, +0.067 at 4, +0.066 at 6, +0.065 at
-# 10. 4.0 is the marginal peak, chosen out of sample (half the queries,
-# 500 splits). Ambiguous queries like "food" are still decided by the
-# customer. Every weight tried: docs/verification/search-eval.md.
+# gain over BM25 plateaus. 4.0 was chosen out of sample (half the queries,
+# 500 splits) on the 2026-09-28 data. Re-run on ADR 0033's data
+# (2026-10-24): +0.068 at 3, +0.066 at 4, +0.066 at 6, +0.070 at 10, and
+# the tuning halves pick 10 most often (290 of 500) and 4 in 25. The
+# plateau is flat within ±0.002 from 3 to 6; not re-tuned (ADR 0037).
+# Ambiguous queries like "food" are still decided by the customer. Every
+# weight tried: docs/verification/search-eval.md.
 TEXT_THETA = 4.0
 
 
