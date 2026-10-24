@@ -127,6 +127,15 @@ Per slice and for all sessions, hit@10, paired session by session, with a
   shopper the generator planted, not how large personalisation is in a real
   shop.
 
+## The run (recorded after it, not part of the design)
+
+2026-10-24, Aito 2.11.8, env `observable`, all 3,030 sessions, no subsample.
+It took about 2 h 10 min, not the 1.34 h the timing step estimated: a
+second read-only run (`./do search-eval`) shared the instance for most of
+it, and many calls paid this machine's ~5 s DNS lookups. The design held
+the full set, chosen on the timed estimate before the run, so no subsample
+was drawn. Results: `data/evidence/personalised-search.json`.
+
 ## Amendments
 
 None.
