@@ -121,3 +121,76 @@ cutover skips steps 1, 2, 5 and the cache clear.
   but each demo would add its own release file.
 - Automatic cleanup of old envs and backups. Keep the current and previous
   ones, by hand, for now.
+
+## Notes
+
+### What this repo built (2026-10-24, workstream C)
+
+- **The release file**, `data/release-env.json`: `{"env": ..., "counts":
+  {table: rows}}`, written by `./do release-file <env>` from the env's
+  live counts (one `_search` with `limit: 0` per table, read-only). The
+  two tables the app writes while running, `prediction_cache` and
+  `precompute_entries`, are not part of a release and aren't counted. The
+  committed file is for env `observable`. Format and checks:
+  `src/release_file.py`; a malformed file stops the app's startup.
+- **The pre-flight check**, `./do release-check [<env>]`: does the env
+  (default: the release file's own) hold exactly the file's tables and
+  counts? Read-only. Exits 1 and prints one line per differing table
+  (`orders: 11919 rows, release has 11909`, `contexts: missing ...`,
+  `price_history: not in the release ...`).
+- **The data wait**, `src/data_release_gate.py`. At startup and every 60 s
+  the app compares the env it reads with the release file. While they
+  differ, every `/api/` route except `/api/version`, `/api/health` and
+  `/api/uci/*` answers 503 `{"error": "data release pending", "state",
+  "release_env", "differences", "last_error"}` with `Retry-After: 60`.
+  On the change to ready it warms its caches; on a change back to pending
+  it drops its in-memory caches. `/api/health` carries the same status
+  under `data_release`, outside its 60 s cache. Details the decision
+  left open:
+  - *Which env is compared:* the one the app reads, `AITO_ENV` (default
+    `master`). So production compares master; staging, and local dev with
+    `AITO_ENV=observable ./do dev`, compare the release env itself and
+    are ready at once. A plain `./do dev` on master's old data stays
+    pending, as it should.
+  - *A failed read* (Aito unreachable) keeps the current state and is
+    reported in `last_error`: one failed read is not evidence that the
+    data changed.
+  - `/api/uci/*` isn't held: it reads env `uci`, which a release of the
+    pet shop's data doesn't touch.
+  - The frontend needs no change: its error state shows the server's
+    message, `API 503: /api/... — data release pending`.
+- **`./do precompute --as master`** computes on the env `AITO_ENV` names
+  and files the snapshots under master's namespace: the JSON in
+  `data/precomputed/v2-master/`, and the Aito rows (keyed
+  `v2@master|<view>`) in the release env's `precompute_entries`, which
+  the promote carries onto master. Without `--as`, behaviour is
+  unchanged.
+
+### The commands aito-azure's cutover calls
+
+Run from a checkout of the release commit, with the ecommerce
+credentials (`./do` reads them as for any other verb).
+
+Before the deploy (writes to the release env, not to master):
+
+    AITO_ENV=observable ./do precompute --as master
+    # commit data/precomputed/v2-master/ with the release
+
+Cutover:
+
+    # 1. pre-flight, read-only, also what --dry-run runs
+    #    (or read env and counts from data/release-env.json directly)
+    ./do release-check                  # exit 1 = refuse; names the tables
+    # 4. after the new image reports its build on /api/version, it is
+    #    pending: /api/health -> data_release.state == "pending"
+    # 5. backup + promote (aito-azure's own calls)
+    # 6. confirm master is the release, wait for the app, clear, smoke
+    ./do release-check master
+    # poll https://ecommerce.aito.ai/api/health until
+    #   .data_release.state == "ready"   (at most ~60 s after the promote)
+    AITO_ALLOW_PROD=1 ./do clear-cache
+    # then the warm-up queries and the smoke tests
+
+Rollback: after promoting the backup back, `/api/health` turns
+`pending` within 60 s on the new image (data routes 503) until the
+previous image replaces it.

@@ -51,13 +51,20 @@ PRECOMPUTED_ENDPOINTS = [
 ]
 
 
-def precompute_all(client: AitoClient, *, verbose: bool = True) -> None:
+def precompute_all(client: AitoClient, *, verbose: bool = True, write_as_env: str | None = None) -> None:
     """Snapshot every precompute-served view into Aito + the git bootstrap.
 
     Runs sequentially: the heavy views each fan out internally to ~20
     parallel Aito calls, so stacking them would blow past Aito's
     inFlightWeight ceiling and 429 (same reason `cache_warmup` is
     sequential).
+
+    `write_as_env` files the snapshots under another env's namespace than
+    the one computed on. A release computes on its own env as `master`
+    (ADR 0035): the promote makes master hold the same rows, so the
+    snapshots are master's from the moment it lands. The Aito rows go to
+    the computed env's `precompute_entries`, which the promote carries
+    onto master with the rest of the env.
     """
     if not client.check_connectivity():
         if verbose:
@@ -65,9 +72,13 @@ def precompute_all(client: AitoClient, *, verbose: bool = True) -> None:
         return
 
     store.init(client)
+    namespace = client._config.api_namespace
+    if write_as_env is not None:
+        namespace = f"{client._config.api_version}@{write_as_env}"
+        store.set_namespace(namespace)
 
     if verbose:
-        print("Precomputing views…")
+        print(f"Precomputing views as {namespace}…")
 
     for name, compute_fn in PRECOMPUTED_ENDPOINTS:
         try:
