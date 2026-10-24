@@ -765,3 +765,74 @@ generator changes after this. These older ranges moved, each with its cause:
 | Signal #6, a region's churn ≥ 1.25× | oulu 1.22× | fewer orders a customer means more churn from sparse ordering, which has no driver; among hazard churn, oulu's rate is still 4× helsinki's | ≥ 1.2× (still clears the view's \|lift − 1\| ≥ 0.15) |
 | S8 sample floor ≥ 600 | 359 just-bought list impressions | S8 now reads lists only, as registered, and a restocked staple is shown in buy-again, not the list | ≥ 300; its ratio, 0.34 against ≤ 0.5, holds |
 | Signal #3, Maija's top 5 pairs | 4 pairs | her 12 orders hold staples and accessories only: since ADR 0045 a list sells only what its odds sell, and she is low on treats | compare each persona's top pairs, up to 5. Disjointness, the point of the test, reads 0 shared |
+
+### Results with ADR 0045 and partial pet profiles (2026-10-24; seeds 42, 7, 99)
+
+Full table: `actionable-states-data.md`. **118 of 136 judged rows pass.** Nothing
+was retuned after the run. The failures are reported, by check:
+
+| # | threshold | seed 42 | seed 7 | seed 99 | result |
+|:--|:--|--:|--:|--:|:--|
+| **O2**, units at a 20 %+ offer ÷ offers-off null | ≥ 1.8 | 1.64 | 1.59 | 1.65 | **fail** every seed |
+| **O3a**, showings on offer ÷ placement-off null | ≥ 1.2 | 1.21 | 1.20 | 1.20 | **fail** on 7 and 99 (just under) |
+| O3b, list slots clicked as often as the slot above | 0 | 0 | 0 | 0 | pass (clicks fall at every slot) |
+| O4 | live | | | | **pending** `release2` |
+| **P8** high ÷ low | ≥ 1.5 | 1.38 | 1.94 | 1.74 | **fail** on 42 |
+| **P9** high ÷ low | ≥ 1.5 | 2.01 | 1.68 | 1.30 | **fail** on 99 |
+| **V1** | ≥ 1.2 | 1.22 | 1.28 | 1.14 | **fail** on 99 |
+| **R1** | ≥ 1.4 | 1.69 | 1.34 | 1.37 | **fail** on 7 and 99 |
+| **R2a** | ≥ 1.8 | 2.15 | 1.75 | 1.60 | **fail** on 7 and 99 |
+| **R5** | ≥ 1.4 | 1.50 | 2.33 | 1.15 | **fail** on 99 |
+| **P2c** (older) | ≤ 0.95 | 0.958 | 0.961 | 0.982 | **fail** every seed |
+| **P3a** (older) | ≤ 0.92 | 0.920 | 0.940 | 0.943 | **fail** on 7 and 99 |
+| R2b (accepted failure before) | ≤ 0.8 | 0.713 | 0.715 | 0.786 | pass |
+| P6, P7, P10, P1a, P1b, P4a, R3, R4, F1–F5, C1–C3, P2b, P5a, K1 | as registered | | | | pass |
+| R6 | reported | 0.94 | 0.92 | 0.99 | — (offer response no longer reads ε, as registered) |
+
+**What changed the noise (diagnosed after the run; nothing changed for it).**
+
+- **Before ADR 0045,** an impression effect's null changed only the
+  impressions that effect touched (common random numbers).
+- **Now** every sale is a purchased showing. So switching off P7 or P9
+  changes orders, and with them stars, `popular` labels, stock, experiences
+  and churn, and every later session. A planted ÷ null ratio now carries the
+  divergence of two whole histories.
+- **The spread across seeds** grew several-fold:
+  - P9 high ÷ low read 1.57–1.66 before and 1.30–2.01 now;
+  - P8 read 2.15–2.29 and now 1.38–1.94.
+- The registered noise model no longer holds for the impression checks.
+  Their misses are more likely noise than a weaker effect. That is not
+  shown here, and they are reported as failures.
+
+**What the run shows about O2 and O3.**
+
+- **Placement:** an offer raises a product's recorded showings ×1.20 (O3a),
+  not the ×1.3–1.5 expected. Sampling 6–14 products from an
+  affinity-weighted pool spreads the ×1.3–1.8 factor thin.
+- **Units:** units at a 20 %+ offer rise ×1.6 against the null, below the
+  ADR's ≥ 1.8.
+- **Order:** clicks fall with the slot at every position (O3b).
+
+**What a fix would need**, decided by Antti and amended here before any re-run:
+- **for the noise:** more seeds, or a pooled metric for the impression
+  checks;
+- **for O2 and O3:** a stronger placement factor, or one that reaches the
+  candidate pool rather than only the draw from it.
+
+**Rows (seed 42):**
+
+| table | rows |
+|:--|--:|
+| impressions | 96,028 |
+| contexts | 61,484 (54,760 visitors before a first order) |
+| orders | 10,834 |
+| order lines | 36,771 |
+| reviews | 4,795 |
+| nps_responses | 3,274 |
+| customer_months | 27,003 |
+| product_states, monthly_sales | 15,157 |
+
+### The Shop sweep for shoppers without a pet profile
+
+Registered above; it waits for `release2`. Its sessions exist: customers with no
+`pets`, with an earlier order and a purchase in the session.
