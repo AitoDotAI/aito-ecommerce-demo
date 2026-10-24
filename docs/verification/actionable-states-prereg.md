@@ -593,3 +593,136 @@ on seed 99. Nothing was retuned.
   amended.
 - **Rows:** impressions 100,450, contexts 61,995 (54,670 before a first
   order). Every other table is unchanged in rows.
+
+## Addendum (2026-10-24): ADR 0045, one source for showings and sales, and partial pet profiles
+
+Written **before** the generator changes for ADR 0045. Everything registered above
+stands unless an item below says it moves, and why.
+
+### The session model, fixed now
+
+- **Sessions:** every customer has one session in each month they plan to
+  order, consenting or not, until churn. Consent decides only whether its
+  `contexts` and `impressions` rows are written (ADR 0044).
+- **Orders:** a session's purchases are its order, so there is at most one
+  order a month (D4 keeps its meaning). A session without purchases leaves no
+  order.
+- **Before the first order:** a session before the customer's first purchase
+  is a visitor's session, with no `customer` and the first source.
+- **What a session shows:** one page, recorded in a new column
+  `impressions.placement`. ADR 0045 doesn't name it; it is needed so a
+  position means one thing.
+  - **`buy_again`** — what the household came for, computed exactly as the
+    old order lines were chosen:
+    - the starter kit (first order);
+    - each staple (first choice, restock, or a switch, as now);
+    - the next add-on (as now);
+    - the December gift and summer care lines (S4, as now).
+
+    Each is purchased with its intent probability, as odds with every
+    state and price odd applied:
+
+    | item | intent probability |
+    |:--|--:|
+    | a restock | 0.6 (`RESTOCK_P`) |
+    | a first choice or a switch, a kit item | 0.95 |
+    | an add-on, a seasonal line | 0.9 |
+  - **`list`** — 6–14 products the shop's ranker picked and ordered,
+    shown on 70 % of sessions; the other 30 % are `direct`, reorders without
+    browsing (ADR 0045).
+    - Candidates are drawn by the old affinity and filler weights, times the
+      **merchandising factor**:
+      - offer band ×1.3 (10–15 %), ×1.5 (15–20 %), ×1.8 (20 %+);
+      - new ×2.0 (P2's pull);
+      - a rival's launch ×0.75;
+      - stars, R5's ×1.3 / ×0.6;
+      - the season (S4).
+    - They are ordered by that factor × lognormal noise (σ 0.5).
+    - The funnel is the old one. On top of it:
+      - clicks × 0.9 per slot (position bias);
+      - × 2.0 click odds for a month the household shops;
+      - owned durables × 0.02;
+      - an out-of-order add-on × 0.2 (the old skip of 0.8).
+  - **`checkout`** — a dental chew after dog dry food was bought, with the
+    old probabilities by treat affinity, at intent 0.9 (Signal #2).
+- **Price acts in one place: each showing's odds.**
+  - The offer, by discount sensitivity (P6).
+  - The list price against the original, as (price ÷ original)^ε, with ε by
+    the product's stars (P3, R6).
+  - Quantities no longer stock up on offer.
+  - No pick weight reads price.
+- **Product states are drawn at each month's start,** from what happened
+  before it:
+  - `popular`: last month's units;
+  - stars and review counts: reviews before the month;
+  - `stock: low`: the opening stock (after this month's delivery, or none
+    if it is late) is under the month's forecast plus two weeks;
+  - late deliveries become 15 %, so the low share stays near 10 %.
+
+  The old `low`, which read the month's own demand, can't be known before
+  the month.
+- **`monthly_sales` = Σ purchased order lines,** plus:
+  - `price_index`: price ÷ that month's list price;
+  - `discount_band`;
+  - `showings`: recorded impressions of the product that month.
+- **Derived shares** (`offer_share` …) are now read from the customer's
+  earlier order lines. Every purchase is now a showing, so orders and
+  impressions agree. This replaces choice 10's "impression purchases only".
+
+### Partial pet profiles (Antti, 2026-10-24)
+
+- **`customers.pets` becomes nullable:** about 40 % fill a pet profile (own
+  RNG per customer, independent of the traits). `dog_size` exists only
+  with a profile. The generator personas (CUST-00001…3) keep theirs.
+  `customer_months.pets` and `dog_size` copy them and become nullable too.
+- **`contexts.pets_from_orders`** (whitespace Text): the pet types of the
+  products in the customer's orders before the month. It is derived visibly
+  and computed in one place (`data/observable.py`), as ADR 0033 asks.
+- **Personas:** Päivi keeps a declared profile, or is re-picked to a customer
+  with one. One more Shop shopper has no profile.
+
+### The new checks
+
+| # | null | metric | expected | pass when |
+|:--|:--|:--|:--|:--|
+| O1 | — | `monthly_sales.units_sold` = Σ that month's purchased order lines, every product and month; every purchased impression has its order line (same customer, month, SKU) | exact | test |
+| O2 | offers off (P6 and the merchandising offer factor) | units per state-month at a 20 %+ offer, planted ÷ null | ≈ 2.0–3.0 (per-showing lift ≈ 2 on lists, ≈ 1.2 on buy-again; placement ≈ 1.5 on lists) | ≥ 1.8 (ADR) |
+| O3a | placement off (the offer factor only) | recorded showings per on-offer state-month, planted ÷ null | ≈ 1.3–1.5 | ≥ 1.2 (ADR) |
+| O3b | — | customers' list click rate by position, slots 0–9 | falls ≈ 10 % a slot | falls at every slot (monotone) |
+| O4 | — (live, env `release2`) | `_estimate units_sold` with `price_index`, within product, on a held-out month: the implied ε | ≈ −2 … −3 | in [−2.5, −0.5] (ADR). **Pending:** needs the loaded env |
+| O5 | — | every older check re-run | — | moved ranges amended, dated |
+
+### What ADR 0045 moves, expected now
+
+| check | why | expected | change, made now |
+|:--|:--|:--|:--|
+| Impression checks (P6–P10, V1, P1, P4a, R1, R2, F3c, K1, S5b, S6, S8, C-none) | they read the shop's lists; buy-again and checkout showings are intent | as before, minus some compression from the click intent | they read `placement: list` only; thresholds unchanged |
+| D5, median fitted elasticity in [−2, −1] | offers now act through P6 (by sensitivity) and placement, not ε | ≈ −3 (units ≈ ×1.9 at 17.5 % off) | range becomes [−4, −1]: demand still falls with price, more steeply |
+| R6, offer response by stars | offers no longer read ε, so this metric no longer measures R6. R6 acts only on list-price changes (60 rises: too few to judge) | — | **reported**, not judged; flagged to Antti |
+| P10 | the low share falls with the causal stock state; late deliveries go to 15 % to keep it near 10 % | ≈ 1.04 | unchanged ≥ 1.03; high risk |
+| Review volume 4k–7k, D2 (starter share ≥ 60 %) | order lines are now purchases from a page | lines ≈ 30–35 k, reviews ≈ 4.0–4.6 k; D2 ≈ 0.6 | unchanged; at risk, amended with a reason if they move |
+| Signal #3, persona separation | personas' histories re-drawn | — | re-picked or amended if it moves |
+
+### A sweep for the Shop, to run once `release2` is loaded (design only)
+
+**Question:** for a shopper without a pet profile, what should "Picked for you"
+condition on?
+
+- **Sessions:** 1,400 held-out customer sessions from 2025-05 on, drawn with
+  `random.Random(0).sample`. Each comes from a customer without `pets`, with
+  at least one earlier order and at least one product bought in the session.
+  Each session is left out of the data (nested `from`, as ADR 0033's sweep).
+- **Query:** the Shop's "Picked for you" query (month, cart words,
+  `just_bought: false`, the diet rule when declared). Three variants:
+  - **I:** identity, `context.customer`;
+  - **P:** `context.pets_from_orders` as evidence, and as the candidate
+    filter that declared pets are for others;
+  - **I+P:** both.
+- **Metrics:**
+  - **primary:** hit@12;
+  - **secondary:** Brier score of `$p` over the products shown.
+- **Comparisons:** paired 95 % CIs over sessions, for P − I, I+P − P and
+  I+P − I.
+- **Decision:** the Shop uses the best variant on hit@12 whose Brier score
+  is within 0.01 of the best. A difference whose CI includes 0 is a tie, and
+  a tie goes to P, which needs no identity.
