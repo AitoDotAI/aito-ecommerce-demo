@@ -26,9 +26,6 @@ interface NavHeading {
  * The site's two halves (ADR 0037) and its groups, one per person
  * (ADR 0041): the shopper, the owner, the operator, the evaluator, the
  * developer. Each entry is one job.
- *
- * Product, Supply and Retention point to the view each will be merged
- * from (Product Insights, Inventory, Churn) until the merge lands.
  */
 const NAV: NavHeading[] = [
   {
