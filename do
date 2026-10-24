@@ -179,6 +179,7 @@ Quality
   verify-mobile     Mobile-viewport screenshot sweep of every sidebar view
   test-urls         Build the static export; check every view's link opens as shared
   planted-effects   Generate planted and null fixtures for 3 seeds; judge every planted effect (~30 min)
+  pooled-effects    The impression-side checks over 10 seeds, pooled with intervals (~45 min)
   check             Pre-merge gate (test + fmt + aito-check)
   fmt               Format code
 
@@ -728,6 +729,13 @@ cmd_planted_effects() {
   PYTHONPATH=. uv run python scripts/planted_effects.py
 }
 
+cmd_pooled_effects() {
+  # The impression-side checks over 10 seeds, pooled (ADR 0045's amendment):
+  # writes docs/verification/actionable-states-pooled.md; leaves data/ alone.
+  cd "$SCRIPT_DIR"
+  PYTHONPATH=. uv run python scripts/pooled_effects.py
+}
+
 cmd_verify_mobile() {
   # Mobile layout sanity-check — runs `frontend/scripts/inspect-mobile.cjs`
   # against the already-running dev server (./do dev). Captures every
@@ -907,6 +915,7 @@ case "${1:-help}" in
   verify-mobile)     cmd_verify_mobile ;;
   test-urls)         cmd_test_urls ;;
   planted-effects)   cmd_planted_effects ;;
+  pooled-effects)    cmd_pooled_effects ;;
   check)             cmd_check ;;
   fmt)               cmd_fmt ;;
   npm-install)       cmd_npm_install ;;
