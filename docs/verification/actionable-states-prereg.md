@@ -889,3 +889,17 @@ O3a, O3b.
   (`actionable-states-data.md`). The pooled run writes
   `actionable-states-pooled.md`.
 - **Unchanged:** every other check keeps its per-seed judgement.
+
+### Note on the pooled run (2026-10-24, before it was re-run)
+
+The first attempt stopped. Two seeds of the seven new ones met cases the three
+registered seeds never had; both are generator bugs, fixed without changing a
+byte of seeds 42, 7 and 99.
+
+- **Seed 13:** a household's diet rule left no dog wet food on sale that
+  it could keep, and the staple choice asserted. Now that household has no
+  such staple until one is on sale (and a switch with nothing else to keep
+  the rule stays with the current staple). The same assert existed before
+  ADR 0045.
+- **Seed 23:** five litter products shared a name, and the litter variants
+  listed only four. Two more variants were added, after the existing ones.

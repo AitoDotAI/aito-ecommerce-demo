@@ -840,7 +840,7 @@ VARIANTS_BY_CATEGORY: dict[str, tuple[str, ...]] = {
     "wet-food":    ("classic recipe", "light recipe", "multipack", "value pack", "family pack", "trial pack"),
     "treats":      ("classic", "soft", "crunchy", "value pack", "multipack", "trial pack"),
     "dental-treats": ("small dogs", "medium dogs", "large dogs", "value pack", "multipack", "trial pack"),
-    "litter":      ("unscented", "lavender scent", "value pack", "multipack"),
+    "litter":      ("unscented", "lavender scent", "value pack", "multipack", "fresh scent", "trial pack"),
 }
 PACK_VARIANTS = ("single", "twin pack", "triple pack", "value pack", "refill", "starter pack")
 
@@ -1551,16 +1551,20 @@ def _pick_staple(
     exclude: str | None,
     novelty: Callable[[str], float],
     avoid_poorly_made: bool = False,
-) -> Product:
+) -> Product | None:
     """The consumable a customer settles on for one pet and category,
     keeping the household's diet rule (ADR 0030, S1). Someone leaving a
     poorly made one moves to one that isn't (S5). A product new this month
-    draws new customers and switchers (`novelty`, ADR 0032 P2)."""
+    draws new customers and switchers (`novelty`, ADR 0032 P2).
+
+    None when nothing on sale this month keeps the rule (a seed's catalogue
+    may have no puppy wet food, say): the household has no such staple yet."""
     pool = [p for p in products_by_pet_cat.get((pet, category), [])
             if lifecycle.is_staple(p, pet) and p.sku != exclude
             and shoppers.keeps_diet_rule(p.name, pet, category, customer.diet_rule)
             and not (avoid_poorly_made and _is_poor(p.sku))]
-    assert pool, f"no staple products for {pet}/{category}"
+    if not pool:
+        return None
     return rng.choices(pool, weights=[_customer_product_score(p, customer) * novelty(p.sku) for p in pool], k=1)[0]
 
 
@@ -1981,9 +1985,10 @@ def _buy_again(shop: _Shop, life: _Household, rng: random.Random, month: str) ->
         for category in life.staple_cats[pet]:
             key = (pet, category)
             if key not in life.staples:
-                life.staples[key] = _pick_staple(rng, products_by_pet_cat, pet, category, customer,
-                                                 exclude=None, novelty=novelty)
-                want(life.staples[key], "first")
+                first = _pick_staple(rng, products_by_pet_cat, pet, category, customer, exclude=None, novelty=novelty)
+                if first is not None:
+                    life.staples[key] = first
+                    want(first, "first")
                 continue
             current = life.staples[key]
             poor = _is_poor(current.sku)
@@ -1999,8 +2004,10 @@ def _buy_again(shop: _Shop, life: _Household, rng: random.Random, month: str) ->
                     life.staples[key] = rng.choices(
                         rivals, weights=[_customer_product_score(p, customer) for p in rivals], k=1)[0]
                 else:
+                    # Nothing else keeps the rule this month: they stay with what they have.
                     life.staples[key] = _pick_staple(rng, products_by_pet_cat, pet, category, customer,
-                                                     exclude=current.sku, novelty=novelty, avoid_poorly_made=poor)
+                                                     exclude=current.sku, novelty=novelty,
+                                                     avoid_poorly_made=poor) or current
                 want(life.staples[key], "first")
             else:
                 want(current, "restock")
