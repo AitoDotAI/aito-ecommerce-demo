@@ -66,6 +66,7 @@ const NAV: NavHeading[] = [
           { href: "/evidence",                      label: "Index",               icon: "📋" },
           { href: "/evidence/business-reorders",    label: "Business reorders",   icon: "🧾", data: "Real" },
           { href: "/evidence/personalised-search",  label: "Personalised search", icon: "🔍", data: "Synthetic" },
+          { href: "/evidence/search-relevance",     label: "Search relevance",    icon: "🎯", data: "Synthetic" },
           { href: "/evidence/model-checks",         label: "Model checks",        icon: "🧪", data: "Synthetic" },
         ],
       },

@@ -1,0 +1,251 @@
+{
+ "entry": "model-checks",
+ "data": "Synthetic",
+ "adr": "ADR 0010, 0013, 0014",
+ "script": "src/evidence/model_checks.py",
+ "run": {
+  "command": "./do evidence model-checks",
+  "date": "2026-10-24",
+  "code_commit": "3b77792",
+  "aito_env": "observable",
+  "aito_api": "v2@observable",
+  "aito_version": "2.11.8"
+ },
+ "threshold_pp": 10.0,
+ "models": [
+  {
+   "id": "pet_type_from_name",
+   "label": "Pet type from product name",
+   "table": "products",
+   "predict": "pet_type",
+   "features": [
+    "name",
+    "brand"
+   ],
+   "accuracy": 0.915,
+   "base_accuracy": 0.4,
+   "accuracy_gain": 0.515,
+   "n": 200,
+   "threshold_pp": 10.0,
+   "verdict": "pass",
+   "last_query": {
+    "endpoint": "_evaluate",
+    "body": {
+     "test": {
+      "$sample": {
+       "n": 200,
+       "seed": 0
+      }
+     },
+     "evaluate": {
+      "from": "products",
+      "where": {
+       "name": {
+        "$get": "name"
+       },
+       "brand": {
+        "$get": "brand"
+       }
+      },
+      "predict": "pet_type"
+     },
+     "select": [
+      "accuracy",
+      "baseAccuracy",
+      "n"
+     ]
+    }
+   },
+   "error": null,
+   "accuracy_low": 0.8763489689658867,
+   "accuracy_high": 0.9536510310341134,
+   "comparisons": [
+    {
+     "baseline": "the most common value",
+     "difference": 0.515,
+     "low": 0.43687303794463783,
+     "high": 0.5931269620553622,
+     "sentence": "Pet type from product name is ahead of the most common value: +51.5 pp [+43.7, +59.3]; the interval excludes 0."
+    }
+   ]
+  },
+  {
+   "id": "dietary_from_name",
+   "label": "Dietary tag from product attributes",
+   "table": "products",
+   "predict": "dietary",
+   "features": [
+    "name",
+    "brand",
+    "category",
+    "pet_type"
+   ],
+   "accuracy": 0.6667,
+   "base_accuracy": 0.2619,
+   "accuracy_gain": 0.4048,
+   "n": 126,
+   "threshold_pp": 10.0,
+   "verdict": "pass",
+   "last_query": {
+    "endpoint": "_evaluate",
+    "body": {
+     "test": {
+      "$sample": {
+       "n": 200,
+       "seed": 0
+      }
+     },
+     "evaluate": {
+      "from": "products",
+      "where": {
+       "name": {
+        "$get": "name"
+       },
+       "brand": {
+        "$get": "brand"
+       },
+       "category": {
+        "$get": "category"
+       },
+       "pet_type": {
+        "$get": "pet_type"
+       }
+      },
+      "predict": "dietary"
+     },
+     "select": [
+      "accuracy",
+      "baseAccuracy",
+      "n"
+     ]
+    }
+   },
+   "error": null,
+   "accuracy_low": 0.5843897950271859,
+   "accuracy_high": 0.749010204972814,
+   "comparisons": [
+    {
+     "baseline": "the most common value",
+     "difference": 0.40479999999999994,
+     "low": 0.29224455647696695,
+     "high": 0.517355443523033,
+     "sentence": "Dietary tag from product attributes is ahead of the most common value: +40.5 pp [+29.2, +51.7]; the interval excludes 0."
+    }
+   ]
+  },
+  {
+   "id": "return_risk",
+   "label": "Return risk (deliberate honest-failure case)",
+   "table": "order_lines",
+   "predict": "returned",
+   "features": [
+    "product.category",
+    "product.pet_type"
+   ],
+   "accuracy": 0.98,
+   "base_accuracy": 0.98,
+   "accuracy_gain": 0.0,
+   "n": 200,
+   "threshold_pp": 10.0,
+   "verdict": "fail",
+   "last_query": {
+    "endpoint": "_evaluate",
+    "body": {
+     "test": {
+      "$sample": {
+       "n": 200,
+       "seed": 0
+      }
+     },
+     "evaluate": {
+      "from": "order_lines",
+      "where": {
+       "product_sku.category": {
+        "$get": "product_sku.category"
+       },
+       "product_sku.pet_type": {
+        "$get": "product_sku.pet_type"
+       }
+      },
+      "predict": "returned"
+     },
+     "select": [
+      "accuracy",
+      "baseAccuracy",
+      "n"
+     ]
+    }
+   },
+   "error": null,
+   "accuracy_low": 0.9605969899242411,
+   "accuracy_high": 0.9994030100757588,
+   "comparisons": [
+    {
+     "baseline": "the most common value",
+     "difference": 0.0,
+     "low": -0.02744000000000001,
+     "high": 0.02744000000000001,
+     "sentence": "Return risk (deliberate honest-failure case) and the most common value: a tie, +0.0 pp [-2.7, +2.7]; the interval spans 0."
+    }
+   ]
+  }
+ ],
+ "churn": {
+  "label": "Churn in the next 3 months",
+  "table": "customer_months",
+  "predict": "churned_in_3_months",
+  "features": [
+   "pets",
+   "region",
+   "tenure_months_at_month",
+   "visits",
+   "purchases",
+   "spent_eur"
+  ],
+  "accuracy": 0.96,
+  "base_accuracy": 0.6533333333333333,
+  "gain_pp": 30.666666666666664,
+  "n": 300,
+  "method": "300 customer-months held out at random by Aito's `_evaluate`; the baseline always guesses the most common answer (stays).",
+  "accuracy_low": 0.9378251313419899,
+  "accuracy_high": 0.9821748686580101,
+  "comparisons": [
+   {
+    "baseline": "always “stays”",
+    "difference": 0.30666666666666664,
+    "low": 0.2484258689513321,
+    "high": 0.3649074643820012,
+    "sentence": "Aito is ahead of always “stays”: +30.7 pp [+24.8, +36.5]; the interval excludes 0."
+   }
+  ]
+ },
+ "demand": {
+  "label": "Next month's sales range",
+  "table": "monthly_sales",
+  "predict": "units_bucket",
+  "accuracy": 0.3769,
+  "naive_accuracy": 0.4103,
+  "base_accuracy": 0.1049,
+  "n": 658,
+  "method": "Scores Aito predicting each month's sales range (0, 1, 2-3, 4-7, 8-15, 16-31, 32+) from last month's range and the product, not the unit forecast in the table. Time split: trained on every month before 2026-04, tested on 2026-04.",
+  "test_month": "2026-04",
+  "accuracy_low": 0.33987158956876723,
+  "accuracy_high": 0.4139284104312328,
+  "comparisons": [
+   {
+    "baseline": "naive (last month's range)",
+    "difference": -0.033399999999999985,
+    "low": -0.08616080151989045,
+    "high": 0.019360801519890482,
+    "sentence": "Aito and naive (last month's range): a tie, -3.3 pp [-8.6, +1.9]; the interval spans 0."
+   },
+   {
+    "baseline": "the most common range",
+    "difference": 0.272,
+    "low": 0.2281902301112854,
+    "high": 0.3158097698887147,
+    "sentence": "Aito is ahead of the most common range: +27.2 pp [+22.8, +31.6]; the interval excludes 0."
+   }
+  ]
+ }
+}

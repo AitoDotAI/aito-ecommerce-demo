@@ -1,7 +1,7 @@
 """Precompute-and-serve store for the demo's parameterless views.
 
-Seven views are served from offline snapshots: the six heavy ones
-(churn, demand, evaluation, inventory, markdown, winback) plus the
+Six views are served from offline snapshots: the five heavy ones
+(churn, demand, inventory, markdown, winback) plus the
 dashboard landing page (light-looking, but ~321 sequential `_search`
 calls / ~93 s cold — the heaviest cold page, and the first one every
 visitor loads; see ADR 0024).

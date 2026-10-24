@@ -104,7 +104,8 @@ def check_version(body: dict) -> str:
 STEPS = [
     Step("version", "/api/version", check_version),
     Step("dashboard", "/api/dashboard", check_dashboard),
-    Step("evaluation", "/api/evaluation", check_evaluation),
+    # Model checks read a committed file (ADR 0037); the check still holds its models to their bar.
+    Step("model checks", "/api/evidence/model-checks", check_evaluation),
     Step("churn", "/api/churn", nonempty("at_risk", "drivers", what="churn")),
     # hidden views (ADR 0027): shape only, until their unhide criteria pass
     Step("demand", "/api/demand", shape_only("top_movers", "seasonality", what="demand")),

@@ -559,7 +559,7 @@ cmd_aito_check() {
     echo "tests/test_aito_check.py not implemented yet (lands with the first view that calls Aito)."
     exit 0
   fi
-  uv run pytest tests/test_aito_check.py -v
+  uv run pytest tests/test_aito_check.py -v "$@"
 }
 
 cmd_search_eval() {
@@ -790,7 +790,7 @@ case "${1:-help}" in
   backtest)          shift; cmd_backtest "$@" ;;
   workbook)          cmd_workbook ;;
   test)              cmd_test ;;
-  aito-check)        cmd_aito_check ;;
+  aito-check)        shift; cmd_aito_check "$@" ;;
   search-eval)       cmd_search_eval ;;
   evidence)          shift; cmd_evidence "$@" ;;
   v2-env)          cmd_v2_env "${@:2}" ;;

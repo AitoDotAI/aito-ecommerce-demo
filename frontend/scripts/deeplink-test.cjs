@@ -23,7 +23,8 @@ const http = require("http");
 const path = require("path");
 
 const OUT = path.resolve(__dirname, "../out");
-const EVAL_SNAPSHOT = path.resolve(__dirname, "../../data/precomputed/v2-master/evaluation.json");
+// The Evidence pages read committed result files (ADR 0037): the stub serves the same files.
+const EVIDENCE_DIR = path.resolve(__dirname, "../../data/evidence");
 const PORT = 8611;
 const BASE = `http://localhost:${PORT}`;
 const TIMEOUT = 15000;
@@ -167,8 +168,10 @@ function stubResponse(apiPath, params) {
     case "/api/shop-analytics/search-words":
       return { ...EMPTY_SECTION, rows: [], never_bought: [], words: 0, search_impressions: 1, search_purchases: 0,
                clustering: CLUSTERING };
-    case "/api/evaluation":
-      return JSON.parse(fs.readFileSync(EVAL_SNAPSHOT, "utf8")).data;
+    case "/api/evidence/model-checks":
+    case "/api/evidence/search-relevance":
+    case "/api/evidence/personalised-search":
+      return JSON.parse(fs.readFileSync(path.join(EVIDENCE_DIR, `${apiPath.split("/").pop()}.json`), "utf8"));
     default:
       return null;   // Personalised search and Query patterns show their controls without data.
   }

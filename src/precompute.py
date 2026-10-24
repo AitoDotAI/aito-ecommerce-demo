@@ -25,7 +25,6 @@ from src import precompute_store as store
 from src.overview_service import get_dashboard
 from src.churn_service import get_churn
 from src.demand_service import get_demand
-from src.eval_service import run_evaluation
 from src.inventory_service import get_inventory
 from src.markdown_service import get_markdowns
 from src.winback_service import get_winback
@@ -44,7 +43,6 @@ PRECOMPUTED_ENDPOINTS = [
     ("dashboard",  lambda c: get_dashboard(c).to_dict()),
     ("churn",      lambda c: get_churn(c).to_dict()),
     ("demand",     lambda c: get_demand(c).to_dict()),
-    ("evaluation", lambda c: run_evaluation(c).to_dict()),
     ("inventory",  lambda c: get_inventory(c).to_dict()),
     ("markdown",   lambda c: get_markdowns(c).to_dict()),
     ("winback",    lambda c: get_winback(c).to_dict()),

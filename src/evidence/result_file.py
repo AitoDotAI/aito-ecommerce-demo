@@ -45,3 +45,9 @@ def read(entry: str) -> dict:
     if not path.exists():
         raise FileNotFoundError(f"{path} is missing: run `./do evidence {entry}`")
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def served(entry: str) -> dict:
+    """What `/api/evidence/<entry>` answers: the file, less the per-session rows
+    a reader may recompute intervals from but the page doesn't need."""
+    return {k: v for k, v in read(entry).items() if k != "per_session"}

@@ -766,3 +766,86 @@ def test_uci_backtest_why_names_the_buyer_and_agrees_with_the_measured_ranking(u
     why = explain_top_suggestion(uci_client, buyer, top_code)   # raises if the two rankings disagree
 
     assert why.startswith("base ") and " when " in why, why
+
+
+# ── Evidence › Personalised search: the held-out shapes (ADR 0037 §3) ─
+
+
+def _search_session(session_id: str):
+    """A session as the benchmark scores it, from the committed contexts (no impressions needed)."""
+    import json
+    from pathlib import Path
+
+    from src.personalised_search.sessions import Session
+
+    data = Path(__file__).resolve().parent.parent / "data"
+    context = next(c for c in json.loads((data / "contexts.json").read_text()) if c["context_id"] == session_id)
+    customer = next(c for c in json.loads((data / "customers.json").read_text())
+                    if c["customer_id"] == context["customer"])
+    return Session(session_id=session_id, customer=context["customer"], month=context["month"],
+                   query=context["search_query"], pets=customer["pets"], rule=customer.get("diet"),
+                   cart=tuple((context.get("basket") or "").split()),
+                   last_order=tuple((context.get("prev_basket") or "").split()), prior_orders=0,
+                   bought=frozenset())
+
+
+def test_a_nested_from_leaves_the_scored_session_out(client):
+    """`{"from": "impressions", "where": {"$not": {"context": s}}}` holds none of s's rows,
+    so a held-out ranking never reads the purchase it is scored on."""
+    from src.personalised_search.rankings import held_out
+
+    assert _count(client, {"context": "SESS-000694"}) > 0
+    res = client.search(held_out("SESS-000694"), where={"context": "SESS-000694"}, limit=0)
+    assert res["total"] == 0
+
+
+def test_the_shops_search_held_out_scores_every_allowed_match_and_keeps_the_rule(client):
+    """Step 2 of the Shop's search over a nested `from`: a $p in [0, 1] for each
+    name match the household's rule allows, and none for rule-breaking food."""
+    from src.personalised_search.rankings import shop_search_p, text_lift
+
+    session = _search_session("SESS-008388")          # "dog food", a `sensitive` household
+    p = shop_search_p(client, session, list(text_lift(client, session.query)))
+    rows = client.search("products", where={"sku": {"$or": list(p)}},
+                         select=["sku", "name", "category", "pet_type"], limit=len(p))["hits"]
+    assert p and all(0 <= v <= 1 for v in p.values())
+    rule_food = [r for r in rows if r["category"] in ("dry-food", "wet-food") and r["pet_type"] in ("dog", "cat")]
+    assert rule_food and all("Sensitive" in r["name"] for r in rule_food)
+
+
+def test_the_history_form_held_out_returns_distinct_products(client):
+    """Smart Search's one-query blend, `get product_sku` over a nested `from`."""
+    from src.personalised_search.rankings import history_form_ranking
+
+    ranked = history_form_ranking(client, _search_session("SESS-000694"), 20)
+    assert len(ranked) == 20 and len(set(ranked)) == 20
+
+
+def test_the_just_bought_reask_runs_in_a_batch_over_a_nested_from(client):
+    from src.personalised_search.rankings import held_out, shop_context
+    from src.shop_ranking import _p_true
+
+    session = _search_session("SESS-008388")
+    sku = session.last_order[0]
+    [answer] = client.batch([{"from": held_out(session.session_id), "predict": "purchased",
+                              "where": {**shop_context(session), "product_sku": sku, "just_bought": True}}])
+    assert 0 <= _p_true(answer, sku) <= 1
+
+
+def test_similarity_over_the_name_is_a_standard_bm25(client):
+    """ADR 0037's probe, kept: `ln($score)` at θ = 1 follows the Python Okapi BM25,
+    so the page may call the left column BM25."""
+    import math
+    import statistics
+
+    from src.personalised_search.bm25 import Bm25
+    from src.personalised_search.sessions import load_products
+
+    products = load_products()
+    reference = Bm25({sku: p["name"] for sku, p in products.items()})
+    res = client.search("products", order_by={"$similarity": {"name": "senior chicken dog"}, "theta": 1.0},
+                        select=["sku", "$score"], limit=1000)
+    aito = [h["sku"] for h in res["hits"] if h["$score"] > 1.0]
+    assert aito[:10] == reference.ranked("senior chicken dog")[:10]
+    ratio = [math.log(h["$score"]) / reference.score("senior chicken dog", h["sku"]) for h in res["hits"][:20]]
+    assert 0.95 < statistics.median(ratio) < 1.05, ratio

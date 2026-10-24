@@ -34,8 +34,8 @@ from src.overview_service import get_dashboard
 from src.search_service import smart_search
 from src.recommend_service import get_for_you
 from src.basket_rules_service import get_basket_rules
+from src.evidence import result_file as evidence_file
 from src.filling_service import get_filling
-from src.eval_service import run_evaluation
 from src.analytics_service import get_analytics
 from src.product_insights_service import get_product_insights
 from src.shop_grid import get_shop_grid
@@ -366,17 +366,14 @@ def product_filling_endpoint(sku: str | None = None):
         )
 
 
-@app.get("/api/evaluation")
-def evaluation_endpoint():
-    """Run four `_evaluate` models in parallel and return pass/fail
-    per the +10 pp accuracy-gain threshold. See ADR 0010."""
+@app.get("/api/evidence/{entry}")
+def evidence_endpoint(entry: str):
+    """An Evidence page's committed result file (ADR 0037 §2): the page
+    never runs a benchmark live. `./do evidence <entry>` rewrites it."""
     try:
-        return precompute_store.serve("evaluation", lambda: run_evaluation(aito).to_dict())
-    except AitoError as exc:
-        return JSONResponse(
-            status_code=502,
-            content={"error": str(exc), "status_code": exc.status_code},
-        )
+        return evidence_file.served(entry)
+    except KeyError as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc.args[0])})
 
 
 @app.get("/api/purchase-analytics")
