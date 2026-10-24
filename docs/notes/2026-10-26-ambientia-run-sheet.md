@@ -37,6 +37,16 @@ https://shared.aito.ai/`. Optional for the day: pin the host in
 `/etc/hosts` with the address `getent hosts shared.aito.ai` gives, and
 remove the line on Tuesday (the address can change).
 
+**First visits (measured 2026-10-24, local, env observable).** Warm, every
+view on the path loads in 0.7–2.1 s. The Shop is the slowest, because its grid
+query takes 0.7 s. Cold, each page's first visit costs 1–2 s more, because
+`./do dev` compiles the page then. So the 14:50 warm-up must open **every**
+view the talk visits, sandbox and non-sandbox: Shop, Product (all three
+tabs), Overview, Patterns, Supply, Retention, Evidence, Business reorders.
+Retention computed live took 22.6 s cold on `observable`. On master after the
+promote it reads its precomputed snapshot; check on Sunday that `/retention/`
+opens in about 1 s on the first visit after restarting the app.
+
 **Idle branches.** Aito evicts an env idle for 30 minutes from memory. The
 app re-warms a branch idle for 25 minutes on its next request, which costs
 that request some seconds. The 14:50 warm-up plus clicks keep it warm.
