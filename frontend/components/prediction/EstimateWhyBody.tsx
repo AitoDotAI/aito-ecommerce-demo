@@ -102,7 +102,7 @@ function Row({ label, change, total, color, strong, muted, italic }: {
 }) {
   return (
     <div style={{
-      display: "grid", gridTemplateColumns: "1fr 84px 52px", gap: 8, padding: "3px 0",
+      display: "grid", gridTemplateColumns: "1fr 100px 52px", gap: 8, padding: "3px 0",
       fontWeight: strong ? 700 : 400, fontStyle: italic ? "italic" : undefined,
       color: muted ? "var(--text-muted)" : undefined, fontSize: muted ? 10.5 : undefined,
     }}>

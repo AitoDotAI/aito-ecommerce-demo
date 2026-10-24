@@ -1288,6 +1288,77 @@ Probed 2026-10-20 and 2026-10-21 on the test env `observable`
   (`from: {from: impressions, where: {"$not": {"context": session}}}`),
   is `scripts/shop_query_sweep.py`.
 
+## A discount band as a what-if — `_predict purchased` with `product_state.*`
+
+Probed 2026-10-24 on env `observable` (Aito 2.11.8), read-only. The
+Price view's discount what-if (ADR 0032, `src/discount_what_if.py`).
+The band goes in `where` through the impression's `product_state` link
+(one link), next to the product:
+
+```json
+POST /_predict
+{
+  "from": "impressions",
+  "where": { "product_sku": "SKU-PT-0143", "product_state.discount_band": "20+" },
+  "predict": "purchased",
+  "select": ["$p", "feature", "$why"]
+}
+```
+
+Both classes come back; the `true` hit's `$why` (abridged):
+
+```json
+{ "$p": 0.2756, "feature": true, "$why": { "type": "product", "factors": [
+  { "type": "baseP", "value": 0.1241, "proposition": { "purchased": { "$has": true } } },
+  { "type": "product", "factors": [
+    { "type": "normalizer", "name": "exclusiveness", "value": 0.9662 },
+    { "type": "normalizer", "name": "trueFalseExclusiveness", "value": 1.0 } ] },
+  { "type": "relatedPropositionLift", "proposition": { "product_state.discount_band": "20+" }, "value": 1.5877 },
+  { "type": "relatedPropositionLift", "proposition": { "product_sku": "SKU-PT-0143" }, "value": 1.4477 } ] } }
+```
+
+- **The band is a lift of its own** (v2 returns the String value bare),
+  and the chain multiplies out to `$p` exactly: 0.1241 × 0.9662 ×
+  1.5877 × 1.4477 = 0.2756. The band's lift is the same for every
+  product (10-15 ×1.573, 15-20 ×1.645, 20+ ×1.588, none ×0.875 on all
+  658): with two facts as evidence Aito multiplies their lifts.
+- **A band the product never had works**: SKU-PT-0158 was never shown
+  at 20+ and gets 0.245 (0.139 at none). That is the what-if.
+- **When the band is implied by the product, its lift is left out.**
+  For the 9 products only ever shown undiscounted, `none` has no band
+  factor in `$why`: its `$p` equals the product-only `$p`.
+- **Aito can leave the product's own lift out.** In 68 products'
+  answers the `product_sku` lift is missing from `$why` in some bands
+  (17 products: in all four); the estimate is then the base rate × the
+  band's lift × the normaliser, the band's across all products. Where
+  the same products keep it in other bands it is 0.94–1.52, so it isn't
+  only near-1 lifts that go. The view shows "not in $why" and says so.
+- **A product that is rarely bought is held at a floor.** 71 products
+  (0–6 purchases in 32–291 impressions) get `$p` = 0.01923 (1/52) at
+  `none`, and `$why` gains `{"type": "calibration", "name": "rowCap"}`
+  inside the normaliser product (×1.24 for SKU-PT-0495), which lifts the
+  chain up to it. For 10 of them every band stays at the floor; for the
+  others a discount lifts `$p` to at most 0.043. The band's lift is still
+  listed when it doesn't move `$p`. Show the factor; don't present the
+  band as moving such a product.
+- **`context.surface` conditions too**: SKU-PT-0143 at 20+ is 0.245 on
+  `category`, 0.297 on `search`, 0.313 on `bought_together` (0.139,
+  0.173, 0.184 at none). The view doesn't use it.
+- **Calibration against the data.** Observed purchase rate per band over
+  all 117,026 impressions: none 10.85 %, 10-15 19.54 %, 15-20 20.43 %,
+  20+ 19.72 %. Predicted, weighted by each product's impressions in the
+  band: 10.72 %, 21.55 %, 22.12 %, 20.96 % (in-sample, −1 % to +10 %
+  relative). Held out (the query's population excludes Jan–Apr 2026,
+  `from: {from: impressions, where: {"$not": {"context.month": {"$or":
+  [...]}}}}`, scored on those months' 56,005 impressions): −6 %, −4 %,
+  −0.4 %, −5 %. So `$p` is shown as a rate here.
+- **Counting** the observed rate per band works with the link in
+  `where`: `_search` `{"product_sku": …, "product_state.discount_band":
+  …, "purchased": true}` with `limit: 0` gave exactly the counts of the
+  joined rows (317 shown / 54 bought at none for SKU-PT-0143). One
+  `_batch` carries the four predicts and the eight counts. v2's `_batch`
+  answers `{"kind": "batch", "data": [...]}`.
+
 ## `AitoClient` method ↔ endpoint cheat reference
 
 | Method | Endpoint | First view that uses it |

@@ -422,6 +422,29 @@ def test_the_forecast_popover_splits_the_knn_estimate_into_rows_that_chain_to_it
     assert len(fields) == len(forecast_where("SKU-PT-0206", sales[0], 0)), fields
 
 
+# ── Discount what-if: `_predict purchased` per discount band (ADR 0032) ──
+
+
+def test_discount_what_if_gives_each_band_a_rate_and_a_lift_that_chain_to_it(client):
+    """Each band's `$p` is in [0, 1] and is its `$why` multiplied out
+    (`band_estimate` raises otherwise); a discount lifts the band above
+    1 and the estimate above no discount; a band the product was never
+    shown at still answers (the what-if)."""
+    from src.discount_what_if import BANDS, get_discount_what_if
+
+    # Never shown at 15-20 or 20+ on env `observable`.
+    result = get_discount_what_if(client, "SKU-PT-0107")
+
+    assert [b.band for b in result.bands] == list(BANDS)
+    assert sum(b.current for b in result.bands) == 1
+    for band in result.bands:
+        assert 0.0 <= band.p_purchase <= 1.0, band
+    for band in result.bands[1:]:
+        assert band.band_lift is not None and band.band_lift > 1, band
+        assert band.vs_no_discount > 1, band
+    assert any(b.shown == 0 for b in result.bands), result.bands
+
+
 # ── ADR 0030: shoppers with a story (docs/verification/shoppers-data-prereg.md) ──
 
 

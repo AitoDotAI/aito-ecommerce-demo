@@ -474,13 +474,15 @@ export function markdownPanel(): AitoPanelConfig {
 export function pricePanel(): AitoPanelConfig {
   return {
     operation: "Price",
-    endpoints: ["_search", "_aggregate", "_estimate", "_relate"],
+    endpoints: ["_search", "_aggregate", "_estimate", "_predict", "_relate"],
     description:
       `Fair bands from one bulk <code style="color:var(--aito-teal);">_search</code> of ` +
       `product_states, with the stats computed in Python; the selected SKU also gets an ` +
       `<code style="color:var(--aito-teal);">_aggregate</code>. The demand curve asks ` +
       `<code style="color:var(--aito-teal);">_estimate units_sold</code> for next month at ` +
-      `seven prices within ±10 % of its average selling price.`,
+      `seven prices within ±10 % of its average selling price. The discount what-if asks ` +
+      `<code style="color:var(--aito-teal);">_predict purchased</code> on impressions with ` +
+      `the product and <code style="color:var(--aito-teal);">product_state.discount_band</code>, per band.`,
     query:
 `${k('"aggregate"')}: {
   ${n('"from"')}: ${s('"product_states"')},

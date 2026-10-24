@@ -8,6 +8,7 @@ import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
 import PriceScatterChart from "@/components/prediction/PriceScatterChart";
 import PriceWhatIf from "@/components/prediction/PriceWhatIf";
+import DiscountWhatIf from "@/components/prediction/DiscountWhatIf";
 import { useSetUrlParams, useUrlState } from "@/lib/use-url-state";
 import type {
   PriceResponse, PriceFairBandRow, PriceSweetSpotRow, PriceDetail,
@@ -23,8 +24,8 @@ function PriceView() {
   usePagePanel(pricePanel(), {
     title: "Price",
     description:
-      "Per-SKU fair-price band from history, and a demand curve " +
-      "from `_estimate` at seven prices.",
+      "Per-SKU fair-price band from history, a demand curve " +
+      "from `_estimate` at seven prices, and a discount what-if from `_predict`.",
     breadcrumb: "Price",
   });
 
@@ -202,7 +203,10 @@ function PriceView() {
       })()}
 
       {!error && detail && detail.sku === selectedSku && data?.fair_bands.some((f) => f.sku === selectedSku) && (
-        <PriceWhatIf detail={detail} price={whatIfPrice} onPrice={pickPrice} onQuery={showQuery} />
+        <>
+          <PriceWhatIf detail={detail} price={whatIfPrice} onPrice={pickPrice} onQuery={showQuery} />
+          <DiscountWhatIf sku={detail.sku} onQuery={showQuery} />
+        </>
       )}
 
       {/* The sweet-spots card is shown only when Aito finds a category

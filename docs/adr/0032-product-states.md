@@ -83,6 +83,12 @@ changed in the diff with its reason.
   its purchased impressions, `on_offer` true and false).
 - **Pricing** gains a conversion-level what-if: `_predict purchased` for
   a shown product with `product_state.discount_band` set, per band.
+  Built 2026-10-24 (`src/discount_what_if.py`): per band, the estimate,
+  the band's and the product's lifts from `$why`, and the product's own
+  shown/bought counts. `$p` is shown as a rate because it matched the
+  observed rate per band (in-sample within 10 %, held-out Jan–Apr 2026
+  within 6 %); the probe is in the cheatsheet ("A discount band as a
+  what-if").
 - **Shop analytics** relates purchases to `product_state.*` (offer, age,
   stars, a rival's launch) beside the product and shopper fields.
 

@@ -797,6 +797,31 @@ export interface PriceWhatIf {
   last_query: { endpoint: string; body: Record<string, unknown> };
 }
 
+/* ─── Discount what-if (/api/price/discount-what-if, ADR 0032) ─── */
+
+export interface DiscountBandEstimate {
+  band: "none" | "10-15" | "15-20" | "20+";
+  p_purchase: number;          // Aito's $p that the product is bought when shown
+  vs_no_discount: number;      // p_purchase / p_purchase at "none"
+  band_lift: number | null;    // the band's lift in $why; null when Aito leaves it out
+  product_lift: number | null;
+  base_p: number;              // purchase rate of all impressions
+  normaliser: number;          // Aito's normalisers multiplied (exclusiveness, calibration)
+  calibrated: boolean;         // $why holds a `calibration` (rowCap) factor
+  shown: number;               // this product's impressions at the band
+  purchased: number;
+  current: boolean;            // the product's band in the latest month
+}
+
+export interface DiscountWhatIf {
+  sku: string;
+  name: string;
+  current_band: string;
+  month: string;
+  bands: DiscountBandEstimate[];
+  last_query: { endpoint: string; body: Record<string, unknown> };
+}
+
 /* ─── Product Insights (/api/product-insights) ─── */
 
 export interface ProductInsightsBuyerRow {
