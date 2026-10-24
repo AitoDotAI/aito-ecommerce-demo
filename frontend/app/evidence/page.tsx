@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import Link from "next/link";
 
-import { apiFetch } from "@/lib/api";
 import { usePagePanel } from "@/components/shell/ShellState";
 import { CLAIM as BUSINESS_REORDERS_CLAIM } from "@/components/business-reorders/ClaimBox";
 import { DataMark, SYNTHETIC_DATA_SENTENCE, type EvidenceData } from "@/components/evidence/EvidenceHeader";
-import type { EvalResponse } from "@/lib/types";
+import type { ModelChecksFile, PersonalisedSearchFile, SearchRelevanceFile } from "@/lib/evidence-types";
+import { useEvidence, type EvidenceEntry } from "@/lib/use-evidence";
 
 
 interface Entry {
@@ -22,10 +22,10 @@ interface Entry {
 /**
  * The Evidence index (ADR 0037): "how well does it work, against what?",
  * kept apart from the 360° views, which carry no accuracy numbers. Each
- * entry is marked Real or Synthetic data and has a one-line result. A
- * result is either worded as cleared (Business reorders), read from what
- * its page shows (Model checks), or says plainly that the page measures
- * nothing yet (Personalised search). Only entries with a page are listed.
+ * entry is marked Real or Synthetic data and has a one-line result: worded
+ * as cleared (Business reorders), or read from the committed result file
+ * its page renders (`data/evidence/*.json`), so the two can't disagree.
+ * Only entries with a page are listed.
  */
 export default function EvidenceIndexPage() {
   usePagePanel(null, {
@@ -47,15 +47,23 @@ export default function EvidenceIndexPage() {
       title: "Personalised search",
       data: "Synthetic",
       adr: "ADR 0037",
-      result: "An illustration, not a measurement: the same words ranked by text alone and with the shopper's " +
-              "history, side by side, live for three shoppers.",
+      result: <FileLine<PersonalisedSearchFile> entry="personalised-search"
+                        line={(f) => <>Held out, {f.run.sessions.toLocaleString("en")} search sessions, hit@10: {f.headline}</>} />,
+    },
+    {
+      href: "/evidence/search-relevance/",
+      title: "Search relevance",
+      data: "Synthetic",
+      adr: "ADR 0026",
+      result: <FileLine<SearchRelevanceFile> entry="search-relevance"
+                        line={(f) => <>On {f.queries} judged queries: {f.headline}</>} />,
     },
     {
       href: "/evidence/model-checks/",
       title: "Model checks",
       data: "Synthetic",
       adr: "ADR 0010",
-      result: <ModelChecksResult />,
+      result: <FileLine<ModelChecksFile> entry="model-checks" line={modelChecksLine} />,
     },
   ];
 
@@ -96,31 +104,26 @@ export default function EvidenceIndexPage() {
 }
 
 
-/** Model checks' line, read from the evaluation its page shows, so the two
- *  can't disagree after a re-run. */
-function ModelChecksResult() {
-  const [data, setData] = useState<EvalResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
+/** An entry's line, read from the committed result file its page renders. */
+function FileLine<T>({ entry, line }: { entry: EvidenceEntry; line: (file: T) => ReactNode }) {
+  const { data, error } = useEvidence<T>(entry);
+  if (error) return <>Couldn&apos;t load the result: {error}</>;
+  if (!data) return <>Loading the result…</>;
+  return <>{line(data)}</>;
+}
 
-  useEffect(() => {
-    apiFetch<EvalResponse>("/api/evaluation").then(setData, (e) => setError(String(e)));
-  }, []);
 
-  if (error) return <>Couldn&apos;t load the evaluation: {error}</>;
-  if (!data) return <>Loading the evaluation…</>;
-  const thresholds = new Set(data.models.map((m) => m.threshold_pp));
-  if (thresholds.size !== 1) throw new Error(`Model checks: expected one pass threshold, got ${[...thresholds].join(", ")}`);
-  const errored = data.models.filter((m) => m.error !== null);
-  const scored = data.models.filter((m) => m.error === null);
-  const passing = scored.filter((m) => m.verdict === "pass");
-  const failing = scored.filter((m) => m.verdict === "fail");
-  const names = (models: typeof scored) => models.map((m) => m.label).join(", ");
+function modelChecksLine(f: ModelChecksFile): ReactNode {
+  const passing = f.models.filter((m) => m.verdict === "pass");
+  const failing = f.models.filter((m) => m.verdict === "fail");
+  const naive = f.demand.comparisons.find((c) => c.baseline.startsWith("naive"));
+  if (!naive) throw new Error("Model checks: the demand result has no comparison with the naive forecast");
   return (
     <>
-      Held-out accuracy against always guessing the most common value: {passing.length} of {scored.length}{" "}
-      models beat that guess by {[...thresholds][0]} points or more.
-      {failing.length > 0 && <> {names(failing)} {failing.length === 1 ? "doesn't" : "don't"}, and the page shows it.</>}
-      {errored.length > 0 && <> {names(errored)} couldn&apos;t be evaluated in this run.</>}
+      Held out, against always guessing the most common value: {passing.length} of {f.models.length} catalogue
+      models beat it by {f.threshold_pp} points or more
+      {failing.length > 0 && <>; {failing.map((m) => m.label).join(", ")} {failing.length === 1 ? "doesn't" : "don't"}, and the page shows it</>}.
+      {" "}Churn: {f.churn.comparisons[0].sentence} Demand: {naive.sentence}
     </>
   );
 }

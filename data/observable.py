@@ -54,6 +54,9 @@ def answer_key_row(customer) -> dict:
     row = {"customer_id": customer.customer_id, "pet_size": customer.pet_size,
            "diet_rule": customer.diet_rule, "pets": " ".join(customer.pets)}
     row.update({trait: getattr(customer, trait) for trait in HIDDEN_TRAITS})
+    # The personalised-search benchmark's ceiling re-scores products with the
+    # generator's own weight, which reads the favourite brands (ADR 0037 §3).
+    row["favorite_brands"] = list(customer.favorite_brands)
     return {k: v for k, v in row.items() if v is not None}
 
 

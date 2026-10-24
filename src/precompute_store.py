@@ -1,7 +1,7 @@
 """Precompute-and-serve store for the demo's parameterless views.
 
-Five views are served from offline snapshots: the heavy ones (demand,
-evaluation, retention, supply; `src/precompute.py` lists them) plus the
+Four views are served from offline snapshots: the heavy ones (demand,
+retention, supply; `src/precompute.py` lists them) plus the
 Overview landing page (light-looking, but ~321 sequential `_search`
 calls / ~93 s cold — the heaviest cold page, and the first one every
 visitor loads; see ADR 0024).

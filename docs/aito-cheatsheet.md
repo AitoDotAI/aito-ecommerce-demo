@@ -1496,6 +1496,29 @@ query's top code (`src/backtest_aito.py` raises if not), and the tree
 parses with `src/why_processor.py` to a baseP and lifts whose conditions
 are named (expected: `invoice.customer_id` for a buyer with history).
 
+## Held-out search rankings, and what `$similarity` is (ADR 0037 §3), probed on 2.11.8
+
+Probed 2026-10-24 on env `observable` by `./do evidence personalised-search
+--probe`; kept as live checks in `tests/test_aito_check.py`.
+
+- **A nested `from` holds a session out of every shape the benchmark runs.**
+  `{"from": "impressions", "where": {"$not": {"context": "SESS-…"}}}` as
+  the `from` of `_recommend` (the Shop's step 2), of `_search … get
+  product_sku` with a `$multiply` `orderBy` (Smart Search's one-query
+  blend), and of `_predict` inside a `_batch` (the just-bought re-ask).
+  A `_search` with that `from` and `where {"context": s}` counts 0 rows.
+- **`$similarity` over a Text name is a standard Okapi BM25.** At θ = 1,
+  `ln($score)` ≈ 0.99 × a Python Okapi BM25 (k1 1.2, b 0.75, Lucene's
+  IDF, lower-cased letter-and-digit tokens): the same top 10 on 20 of 20
+  queries, Pearson r ≥ 0.995. `$score` is `exp(θ · bm25)`, so θ never
+  changes the order of a plain `_search products`, only how strongly the
+  text lift weighs in a `$multiply`.
+- **The engine's version is at the host's root.** `GET https://<host>/version`
+  needs no key and answers `{"version": "2.11.8", …}`; sent with a
+  database's key under the database's own URL or its `/env/<env>` path, it
+  answers 401.
+  `AitoClient.engine_version()`; every Evidence result file records it.
+
 ## Retention and Supply (ADR 0041), probed on env `observable`, 2026-10-24
 
 **A population for `_predict`: a nested `from`.** Retention's churn score
