@@ -204,3 +204,27 @@ no discount."
 3. A test env, loaded by Antti at night, then Q7–Q9 and ADRs 0039/0040's
    probes.
 4. The views, one PR each. The release goes live with ADR 0035's cutover.
+
+
+## Notes
+
+### Amendment (2026-10-24): "for whom" (Q8) is not delivered
+
+Acceptance criterion 4 ("compare the estimate for shoppers with high and low
+`offer_share`, and for a discount the high group's lift is larger") **is not
+met and is not claimed by any view.** Probed on `release2`:
+
+- Putting the shopper (`context.customer` or `context.offer_share`) and the
+  band in one `where` makes Aito multiply the shopper's lift by the band's
+  lift, so the band's effect comes out the same for everyone: 20+ ÷ none is
+  0.885 for `offer_share` high and 0.883 for low, and 0.87–0.88 for four
+  customers of both sensitivities.
+- Restricting the population to a band-by-share cell separates `none` from the
+  others, but the derived `offer_share` does not track the hidden sensitivity
+  (high 1.88, low 2.30 on list showings). The answer key says ×2.99, ×1.99 and
+  ×1.33 for high, mid and low.
+
+It stays an open research item: a query shape that lets the offer's effect
+depend on the shopper, or a better derived band. Q7's state lifts
+(`docs/aito-cheatsheet.md`) also need the list population before a view shows
+them (ADR 0045, Notes).

@@ -1,5 +1,6 @@
 """ADR 0032's absolute data checks: nothing of a launched product before its
-launch (P2a), and every row linked to its month's state (P6).
+launch (P2a), and every row linked to its month's state (P0; P6 in ADR 0032's
+pre-registration, renamed for ADR 0038's P6).
 
 The planted effects themselves (P1–P5) are judged against null generations
 of the same seed, which a test can't afford: `./do planted-effects`
@@ -43,7 +44,7 @@ def test_p2a_nothing_of_a_launched_product_exists_before_its_launch(launches):
     assert len(launches) == 50
     month_of_order = {o["order_id"]: o["month"] for o in _load("orders.json")}
     dated = (
-        [(r["product_sku"], r["month"]) for r in impressions_in_context()]
+        [(r["product_sku"], r["month"]) for r in impressions_in_context(include_visitors=True)]
         + [(r["product_sku"], month_of_order[r["order_id"]]) for r in _load("order_lines.json")]
         + [(r["product_sku"], r["month"]) for r in _load("monthly_sales.json")]
         + [(r["product_sku"], r["month"]) for r in _load("product_states.json")]
@@ -52,10 +53,10 @@ def test_p2a_nothing_of_a_launched_product_exists_before_its_launch(launches):
     assert not early, early[:5]
 
 
-def test_p6_every_row_links_to_its_months_state(states):
+def test_p0_every_row_links_to_its_months_state(states):
     month_of_order = {o["order_id"]: o["month"] for o in _load("orders.json")}
     rows = (
-        [(r["product_state"], r["product_sku"], r["month"]) for r in impressions_in_context()]
+        [(r["product_state"], r["product_sku"], r["month"]) for r in impressions_in_context(include_visitors=True)]
         + [(r["product_state"], r["product_sku"], month_of_order[r["order_id"]]) for r in _load("order_lines.json")]
         + [(r["product_state"], r["product_sku"], r["month"]) for r in _load("monthly_sales.json")]
     )

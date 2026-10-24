@@ -179,7 +179,9 @@ frontend/              Next.js (App Router), one page per view
   app/<view>/page.tsx    pages; app/evidence/ for Evidence
   components/            shell (sidebar, Aito panel, sandbox banner), shop, product, ...
   lib/moved-routes.ts    old routes and their new home
-data/                  deterministic fixtures, the release's counts, UCI outcomes
+data/                  deterministic fixtures, the release's counts, UCI outcomes;
+                       contexts and impressions are generated, not committed;
+                       answer_key/ is the generator's hidden model, never loaded
 scripts/               sweeps and probes; agent-demo/ for Flow 3's agent
 tests/                 pytest: query shapes and services, read as usage examples
 docs/

@@ -6,13 +6,14 @@ next item, is judged against its null by `./do planted-effects`.
 
 import re
 
-from data.observable import HIDDEN_TRAITS, kit_status
+from data.observable import HIDDEN_FIELDS, HIDDEN_TRAITS, kit_status
 from src.schema import SCHEMAS
 from tests.fixture_joins import load
 
 # A column is a copy of a hidden trait if it is named after one, with or
-# without the `customer_` prefix the old denormalised copies carried.
-HIDDEN = re.compile(rf"^(customer_)?({'|'.join(HIDDEN_TRAITS)})$")
+# without the `customer_` prefix the old denormalised copies carried. ADR
+# 0038's sensitivities and ADR 0039's quality and experience are hidden too.
+HIDDEN = re.compile(rf"^(customer_)?({'|'.join(HIDDEN_TRAITS + HIDDEN_FIELDS)})$")
 
 
 def test_o1_no_table_aito_sees_has_a_hidden_trait_column():

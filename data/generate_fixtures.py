@@ -22,9 +22,11 @@ from collections import Counter
 from dataclasses import dataclass, asdict, field
 from datetime import date
 from pathlib import Path
-from typing import Callable, Iterable
+from typing import Callable, Iterable, Iterator
 
-from data import catalogue_events, lifecycle, observable, shoppers
+from data import (acquisition, catalogue_events, lifecycle, merchandising, observable, person_data, planted_switches,
+                  review_chain, sensitivities, shop_levers, shoppers)
+from data.planted_switches import stream
 
 RNG_SEED = 42
 DATA_DIR = Path(__file__).resolve().parent
@@ -361,6 +363,8 @@ class Product:
     # (ADR 0030, S5). None / "unrated" for a product nobody reviewed.
     avg_rating: float | None = None
     rating_band: str = "unrated"
+    # Set only where another product would share the name: "large", "value pack".
+    variant: str | None = None
 
 
 @dataclass
@@ -404,6 +408,26 @@ class Customer:
     diet_rule: str | None = None
     # The pets the household keeps, as it would declare them (ADR 0033).
     pets: tuple[str, ...] = ()
+    # ADR 0038: discount, stars, newness, labels → high | mid | low. Hidden.
+    sensitivities: dict[str, str] = field(default_factory=dict)
+    # ADR 0040: the device and the source of the visit with the first order,
+    # and what followed from it (filled after the orders).
+    visitor: str | None = None
+    first_source: str = "direct"
+    joined_month: str | None = None
+    first_basket_categories: str | None = None
+    became_regular: bool | None = None      # None: joined too late to tell
+    # ADR 0039: the month the churn hazard ended the customer's history. Hidden.
+    churn_month: str | None = None
+    # ADR 0044: behavioural consent, the purchase form, the account and the
+    # declared interests (`data/person_data.py`).
+    consent_behavioural: bool = True
+    pet_profile: bool = True                # declared pets and dog size (about 40 %)
+    sex: str | None = None
+    postcode_area: str = ""
+    delivery_method: str = ""
+    loyalty_member: bool = False
+    interests: str | None = None
 
 
 @dataclass
@@ -421,13 +445,15 @@ class Review:
     sentiment: str     # positive / negative / neutral
     assigned_to: str   # support-team member
     created_at: str    # YYYY-MM
-    # Forward-looking label: True iff the customer has no orders in
-    # the 3 months after this review. Backfilled in a post-pass once
-    # we know each customer's last_order_month. Gives the Feedback
-    # view a 4th `_predict` — "churn risk from text" — alongside
-    # category / sentiment / assigned_to. See ADR 0013 §"Forward
-    # labels".
+    # Forward-looking label: True iff the customer churned and placed no
+    # order after this review's month. Backfilled once churn has happened
+    # (ADR 0039: churn follows experiences; it never writes the review).
+    # Gives the Feedback view a 4th `_predict`, "churn risk from text".
     churn_within_90d: bool = False
+    # ADR 0039: the shop replied (40 % of negative reviews, at random), and
+    # the order line the review is about.
+    replied: bool = False
+    order_line: str = ""
 
 
 @dataclass
@@ -449,7 +475,7 @@ class CustomerMonth:
     visits: int                     # synthetic per-month site visits
     purchases: int                  # orders this month
     spent_eur: float                # sum of order totals this month
-    pets: str                       # declared by the household (ADR 0033): "dog cat"
+    pets: str | None                # declared, with a pet profile (ADR 0033): "dog cat"
     dog_size: str | None            # declared, when a dog is among them
     region: str                     # denormalised
     tenure_months_at_month: int     # months since first order at this row's month
@@ -457,6 +483,11 @@ class CustomerMonth:
     latest_sentiment: str | None    # sentiment of that review
     latest_category: str | None     # category of that review
     churned_in_3_months: bool       # the forward target
+    # ADR 0039: the latest NPS answer so far, and a negative review written
+    # this month or in the 2 before it (and whether the shop replied).
+    nps_latest_group: str | None
+    had_negative_review: bool
+    review_replied: bool
 
 
 @dataclass
@@ -491,6 +522,11 @@ class MonthlySale:
     units_bucket: str
     units_last_month_bucket: str
     product_state: str          # link → product_states: this product in this month (ADR 0032)
+    # ADR 0045: price ÷ that month's list price, the offer band, and the
+    # product's recorded impressions that month.
+    price_index: float = 1.0
+    discount_band: str = "none"
+    showings: int = 0
 
 
 @dataclass
@@ -553,7 +589,10 @@ class Impression:
     context: str                   # link → contexts.context_id
     product_sku: str               # link → products.sku
     product_state: str             # link → product_states (ADR 0032)
-    position: int                  # 0-based rank in the shown list
+    position: int                  # 0-based slot within its placement
+    # ADR 0045: the part of the page: buy_again (what the household came
+    # for), list (the shop's ranked list) or checkout (bought together).
+    placement: str = "list"
     just_bought: bool = False      # the product was in the customer's last order (S8)
     clicked: bool = False
     added_to_cart: bool = False
@@ -589,6 +628,19 @@ class OrderLine:
     returned: bool
     # ADR 0032: link → product_states, the product as it was that month.
     product_state: str | None = None
+    # ADR 0039: the delivery of this line's order was late or damaged.
+    incident: bool = False
+
+
+@dataclass
+class NpsResponse:
+    """A survey answer after an order (ADR 0039, R3): 0–10, and its group."""
+    nps_response_id: str
+    customer: str                   # link → customers.customer_id
+    surveyed_order: str             # link → orders.order_id, the order surveyed
+    month: str
+    score: int
+    nps_group: str                  # promoter (9–10) | passive (7–8) | detractor (0–6)
 
 
 # ── Generation ──────────────────────────────────────────────────────
@@ -765,6 +817,7 @@ def gen_products(rng: random.Random) -> list[Product]:
         if "tax_class" in nulled:
             p.tax_class = None
 
+    name_variants(products)
     return products
 
 
@@ -775,6 +828,39 @@ def gen_products(rng: random.Random) -> list[Product]:
 FILLABLE_CATEGORIES: set[str] = {
     "dry-food", "wet-food", "treats", "dental-treats", "litter",
 }
+
+
+
+# What tells two otherwise identical products apart, by category (data release 2:
+# a merchant reads two SKUs with one name as a duplicate).
+VARIANTS_BY_CATEGORY: dict[str, tuple[str, ...]] = {
+    "accessories": ("small", "medium", "large", "extra large", "natural wood", "grey"),
+    "toys":        ("small", "medium", "large", "blue", "red", "green"),
+    "dry-food":    ("classic recipe", "light recipe", "value pack", "multipack", "family pack", "trial pack"),
+    "wet-food":    ("classic recipe", "light recipe", "multipack", "value pack", "family pack", "trial pack"),
+    "treats":      ("classic", "soft", "crunchy", "value pack", "multipack", "trial pack"),
+    "dental-treats": ("small dogs", "medium dogs", "large dogs", "value pack", "multipack", "trial pack"),
+    "litter":      ("unscented", "lavender scent", "value pack", "multipack", "fresh scent", "trial pack"),
+}
+PACK_VARIANTS = ("single", "twin pack", "triple pack", "value pack", "refill", "starter pack")
+
+
+def name_variants(products: list[Product]) -> None:
+    """Products sharing a name get a distinguishing variant, in SKU order:
+    "Trixie Hideout, small", "Trixie Hideout, medium". No RNG draw, so
+    nothing else in the data moves. The variant follows a comma, which
+    `lifecycle.item_type` drops."""
+    by_name: dict[str, list[Product]] = {}
+    for p in products:
+        by_name.setdefault(p.name, []).append(p)
+    for same in by_name.values():
+        if len(same) < 2:
+            continue
+        variants = VARIANTS_BY_CATEGORY.get(same[0].category, PACK_VARIANTS)
+        assert len(same) <= len(variants), f"{len(same)} products named {same[0].name!r}"
+        for p, variant in zip(sorted(same, key=lambda p: p.sku), variants):
+            p.variant = variant
+            p.name = f"{p.name}, {variant}"
 
 
 def _compose_name(brand: str, flavour: str, dietary: str | None,
@@ -996,6 +1082,18 @@ def gen_customers(rng: random.Random) -> list[Customer]:
         ))
 
     return customers
+
+
+
+def assign_sources_and_sensitivities(customers: list[Customer]) -> None:
+    """Each customer's first source (ADR 0040) and their hidden sensitivities
+    (ADR 0038), which depend on it (F3). Own RNGs per customer, so the
+    generator's other draws stay where they were."""
+    for c in customers:
+        c.first_source = acquisition.draw_first_source(stream(RNG_SEED, "first-source", c.customer_id))
+        c.sensitivities = sensitivities.draw_sensitivities(
+            stream(RNG_SEED, "sensitivities", c.customer_id),
+            c.lifestyle, c.health_focus, c.brand_loyalty, c.first_source)
 
 
 def _synthesize_tags(
@@ -1453,372 +1551,657 @@ def _pick_staple(
     exclude: str | None,
     novelty: Callable[[str], float],
     avoid_poorly_made: bool = False,
-) -> Product:
+) -> Product | None:
     """The consumable a customer settles on for one pet and category,
     keeping the household's diet rule (ADR 0030, S1). Someone leaving a
     poorly made one moves to one that isn't (S5). A product new this month
-    draws new customers and switchers (`novelty`, ADR 0032 P2)."""
+    draws new customers and switchers (`novelty`, ADR 0032 P2).
+
+    None when nothing on sale this month keeps the rule (a seed's catalogue
+    may have no puppy wet food, say): the household has no such staple yet."""
     pool = [p for p in products_by_pet_cat.get((pet, category), [])
             if lifecycle.is_staple(p, pet) and p.sku != exclude
             and shoppers.keeps_diet_rule(p.name, pet, category, customer.diet_rule)
-            and not (avoid_poorly_made and shoppers.is_poorly_made(p.sku))]
-    assert pool, f"no staple products for {pet}/{category}"
+            and not (avoid_poorly_made and _is_poor(p.sku))]
+    if not pool:
+        return None
     return rng.choices(pool, weights=[_customer_product_score(p, customer) * novelty(p.sku) for p in pool], k=1)[0]
 
 
-def _price_factor(promotions: lifecycle.Promotions, events: catalogue_events.CatalogueEvents,
-                  sku: str, month: str) -> float:
-    """How much more (or less) of a SKU is bought at this month's price than
-    at its original list price: (price / original list)^ε, for this month's
-    offer and any list-price rise (ADR 0027, ADR 0032 P3)."""
-    ratio = (1.0 - promotions.discount.get((sku, month), 0.0)) * events.raised_since(sku, month)
-    return ratio ** promotions.elasticity[sku] if ratio != 1.0 else 1.0
+@dataclass
+class OrderHistory:
+    """What the session loop draws: what a shop records, and what it can't see."""
+    orders: list[Order]
+    lines: list[OrderLine]
+    reviews: list[Review]
+    nps: list[NpsResponse]
+    experience_of: dict[str, str]          # line_id → bad | ok | good (hidden: the answer key)
+    states: list[catalogue_events.ProductState]
+    contexts: list[observable.Context]     # recorded: consenting customers' sessions only
+    impressions: list[Impression]
+
+
+@dataclass
+class _Session:
+    """One customer's session, recorded or not (ADR 0044: consent decides)."""
+    context: observable.Context
+    impressions: list[Impression]
+    purchased: bool
+
+
+@dataclass
+class _Shop:
+    """What every customer's sessions read and write, month by month."""
+    products: list[Product]
+    promotions: lifecycle.Promotions
+    events: catalogue_events.CatalogueEvents
+    by_pet_in: dict[str, dict[str, list[Product]]]
+    by_pet_cat_in: dict[str, dict[tuple[str, str], list[Product]]]
+    by_cat_in: dict[str, dict[str, list[Product]]]
+    product_of: dict[str, Product]
+    stars: review_chain.StarsSoFar
+    persona_ids: set[str]
+    phrases: dict[str, list[Product]]
+    phrases_of: dict[str, list[str]]
+    stock: shop_levers.StockBook
+    # The month's product states, drawn at its start from what happened before.
+    states: dict[str, dict[str, catalogue_events.ProductState]] = field(default_factory=dict)
+    units: dict[str, Counter] = field(default_factory=dict)        # month → sku → units sold
+    # Per customer, in order: (order, its lines, their experiences), reviews,
+    # NPS answers, sessions.
+    orders_of: dict[str, list[tuple[Order, list[OrderLine], list[str]]]] = field(default_factory=dict)
+    reviews_of: dict[str, list[Review]] = field(default_factory=dict)
+    nps_of: dict[str, list[NpsResponse]] = field(default_factory=dict)
+    sessions_of: dict[str, list[_Session]] = field(default_factory=dict)
+
+    def begin_month(self, month: str) -> None:
+        """This month's product states, from the stars, labels, stock and prices
+        known at its start (ADR 0038, ADR 0045)."""
+        skus = [p.sku for p in self.products if self.events.on_sale(p.sku, month)]
+        previous = _add_months(month, -1)
+        labels = shop_levers.labels_for_month(RNG_SEED, month, skus, self.units.get(previous) if month != _MONTH_WINDOW[0] else None,
+                                              {p.sku: p.category for p in self.products})
+        low = {sku for sku in skus if self.stock.opens_low(sku, month)}
+        stars = {sku: (self.stars.band(sku), self.stars.count(sku)) for sku in skus if self.stars.count(sku)}
+        states = catalogue_events.states_for_month(RNG_SEED, month, self.products, self.events,
+                                                   self.promotions.discount, stars, labels, low)
+        self.states[month] = {st.product_sku: st for st in states}
+        self.units[month] = Counter()
+
+    def close_month(self, month: str) -> None:
+        """The month's reviews become stars; its units leave the shelves."""
+        self.stars.close_month()
+        for sku in self.states[month]:
+            self.stock.close_month(sku, self.units[month][sku])
+
+
+class _ChurnClock:
+    """One customer's monthly churn hazard (ADR 0039, R4).
+
+    The base hazard is `_churn_propensity`, spread over the customer's window
+    from their first order to the frozen today. Each bad experience raises it
+    for `CHURN_RISE_MONTHS`. One uniform per month from the customer's own RNG,
+    so a null that changes the hazard changes only when the clock stops."""
+
+    def __init__(self, customer: Customer, n_orders: int, first_month: str, never: bool):
+        self.rng = stream(RNG_SEED, "churn", customer.customer_id)
+        p = _churn_propensity(customer, n_orders)
+        window = max(1, _months_between(first_month, DEMO_TODAY_YYYYMM))
+        self.base = 1.0 - (1.0 - p) ** (1.0 / window)
+        self.walked = first_month
+        self.month: str | None = None          # the month the customer churned
+        self.never = never
+        self.rises: list[tuple[str, float]] = []
+
+    def rise(self, month: str, factor: float) -> None:
+        self.rises.append((month, factor))
+
+    def hazard(self, month: str) -> float:
+        h = self.base
+        for since, factor in self.rises:
+            if since < month <= _add_months(since, review_chain.CHURN_RISE_MONTHS):
+                h *= factor
+        return min(1.0, h)
+
+    def churned_by(self, month: str) -> bool:
+        """Walk the clock up to and including `month`; whether the customer has churned."""
+        while self.month is None and self.walked < month:
+            self.walked = _add_months(self.walked, 1)
+            if self.rng.random() < self.hazard(self.walked) and not self.never:
+                self.month = self.walked
+        return self.month is not None
+
+
+def _review_text(rng: random.Random, category: str, pet: str) -> str:
+    """A templated review in `category`'s words (ADR 0012)."""
+    text = rng.choice(_REVIEW_TEMPLATES[category])
+    for slot in ("timing", "pack_quality", "detail", "product_noun",
+                 "scent", "reaction", "quality_adj", "action", "size",
+                 "fit_adj", "accuracy_adj", "feature", "question_clause",
+                 "condition"):
+        placeholder = "{" + slot + "}"
+        if placeholder in text:
+            text = text.replace(placeholder, rng.choice(_REVIEW_VOCAB[slot]))
+    return text.replace("{pet}", pet)
+
+
+def _is_poor(sku: str) -> bool:
+    return review_chain.quality(sku) == "poor"
 
 
 def gen_orders_and_lines(
-    rng: random.Random,
     customers: list[Customer],
     products: list[Product],
     promotions: lifecycle.Promotions,
     events: catalogue_events.CatalogueEvents,
-) -> tuple[list[Order], list[OrderLine]]:
-    """Generate orders + lines with the engineered signal baked in.
+) -> OrderHistory:
+    """Every customer's sessions, and the orders their purchases make (ADR 0045).
 
-    Signal strategy — see ADR 0002 §Engineered signal:
+    The shop runs month by month. At a month's start its product states are
+    drawn from what happened before (stars, labels, stock). Each customer's
+    history is a generator (`_customer_life`) that yields the month of its
+    next session; once every session of a month is drawn, its reviews become
+    stars and its units leave the shelves. Each customer draws from their own
+    RNGs, so the order in which customers are resumed doesn't change anything.
 
-      1. Cat-product share for large-breed dog owners: enforced by
-         `LARGE_BREED_PET_TYPE_WEIGHTS` (cat ≈ 0.3 %).
-      2. Dog-food → dental-treats lift: when an order for a
-         dog/multi-pet customer contains dry-food + a dog product,
-         we add a dental-treat with P=0.35. Baseline P(dental-treat
-         in any order) stays ~0.10. Lift ≈ 3.2.
-      3. Maija/Olli/Saara persona orders are hand-curated by the
-         same generator, but with their dedicated category-bias
-         table to guarantee disjoint top-5 (pet_type, category) pairs.
-      4. 5 % of products are nulled on attribute fields (in
-         `gen_products`).
-      5. ~3 % of order_lines have `returned=true`.
+    The engineered signals of ADR 0002 stay: large-breed dog owners' cat
+    share, the dog-food → dental-treats lift, the personas' separation, the
+    null-attribute pile and the returned share.
     """
-    orders: list[Order] = []
-    lines: list[OrderLine] = []
-    order_counter = 1
-    line_counter = 1
-
-    # ADR 0032: each month's catalogue holds only what is on sale then, so
-    # no draw below can pick a product before its launch.
     by_pet_in: dict[str, dict[str, list[Product]]] = {}
     by_pet_cat_in: dict[str, dict[tuple[str, str], list[Product]]] = {}
+    by_cat_in: dict[str, dict[str, list[Product]]] = {}
+    # ADR 0032: each month's catalogue holds only what is on sale then, so
+    # no draw below can pick a product before its launch.
     for m in _MONTH_WINDOW:
         by_pet_in[m] = {pt: [] for pt in PET_TYPES}
-        by_pet_cat_in[m] = {}
+        by_pet_cat_in[m], by_cat_in[m] = {}, {}
         for p in products:
             if events.on_sale(p.sku, m):
                 by_pet_in[m][p.pet_type].append(p)
                 by_pet_cat_in[m].setdefault((p.pet_type, p.category), []).append(p)
-    category_of = {p.sku: p.category for p in products}
-    product_of = {p.sku: p for p in products}
+                by_cat_in[m].setdefault(p.category, []).append(p)
+    phrases = shoppers.query_phrases(products)
+    phrases_of: dict[str, list[str]] = {}
+    for phrase, matching in phrases.items():
+        for p in matching:
+            phrases_of.setdefault(p.sku, []).append(phrase)
+    shop = _Shop(products, promotions, events, by_pet_in, by_pet_cat_in, by_cat_in, {p.sku: p for p in products},
+                 review_chain.StarsSoFar(), {p.customer_id for p in PERSONAS}, phrases, phrases_of,
+                 shop_levers.StockBook(RNG_SEED))
+    persona_of = {p.customer_id: p for p in PERSONAS}
 
-    # Persona orders first so they get the lowest ids (CUST-00001's
-    # orders are ORD-00001..). Nice for debugging in the JSON.
-    persona_ids = {p.customer_id: p for p in PERSONAS}
-    persona_id_set = set(persona_ids)
+    lives = [_customer_life(c, persona_of.get(c.customer_id), shop) for c in customers]
+    waiting: dict[str, list[int]] = {}
+    for i, life in enumerate(lives):
+        first = next(life, None)
+        if first is not None:
+            waiting.setdefault(first, []).append(i)
+    for month in _MONTH_WINDOW:
+        shop.begin_month(month)
+        for i in sorted(waiting.pop(month, [])):
+            following = next(lives[i], None)
+            if following is not None:
+                assert following > month, f"{customers[i].customer_id} went back from {month} to {following}"
+                waiting.setdefault(following, []).append(i)
+        shop.close_month(month)
+    assert not waiting, f"sessions planned outside the window: {sorted(waiting)}"
+    return _number_history(customers, shop)
 
-    for customer in customers:
-        persona = persona_ids.get(customer.customer_id)
-        # How many orders, and in which months, from the customer's own RNG:
-        # `churned` follows from the months, so it must not shift whenever a
-        # change upstream changes how many draws the shared RNG has made.
-        months_rng = random.Random(f"months:{customer.customer_id}")
-        if persona is not None:
-            n_orders = persona.target_orders
-        else:
-            n_orders = _orders_per_customer(months_rng, customer)
 
-        if persona is not None and persona.pet_type_weights is not None:
-            pet_type_weights = persona.pet_type_weights
-        else:
-            pet_type_weights = _segment_pet_type_weights(customer.segment, customer.pet_size)
-        cat_bias = _category_bias(customer.segment, customer.pet_size)
-        # Layer treat_affinity onto cat_bias for generic customers only.
-        # Personas keep their segment-level cat_bias untouched so their
-        # hand-curated top-5 (pet_type, category) overlap signal stays
-        # byte-identical.
-        if persona is None:
-            cat_bias = _category_bias_for_customer(cat_bias, customer)
-
-        # Pick the month window for this customer's orders. Churning
-        # customers' orders cluster in months ≤ CHURN_WINDOW_MAX so
-        # their `last_order_month` falls before the 90-day cutoff. The
-        # decision is keyed off `customer.customer_id` (sub-RNG) so it
-        # doesn't perturb the main RNG sequence — the persona overlaps,
-        # dog-food→dental lift, etc. all stay byte-identical.
-        eligible_months = _MONTH_WINDOW[-(customer.tenure_months + 1):]
-        if _is_churning(customer, n_orders):
-            churn_eligible = [m for m in eligible_months if m <= CHURN_WINDOW_MAX]
-            # If a customer is too new for the churn window to overlap
-            # their tenure-bounded month range, fall back to active —
-            # they're literally too new to have churned.
-            if churn_eligible:
-                eligible_months = churn_eligible
-
-        # ADR 0027: the customer's life with their pets. Orders are a
-        # sequence in time; staples are restocked; each pet starts with a
-        # kit whose add-ons follow; durables are bought once.
-        # At most one order a month: a heavy customer's orders are capped by
-        # the months they were a customer (churners' windows are shorter).
-        n_orders = min(n_orders, len(eligible_months))
-        order_months = _order_months(months_rng, eligible_months, n_orders)
-        if persona is not None and order_months[-1] != eligible_months[-1]:
-            # A persona anchors the demo's default views, so it must not read
-            # as churned: its history reaches the latest month by rule, not by
-            # luck of the seed.
-            order_months = order_months[1:] + [eligible_months[-1]]
-        pets = lifecycle.main_pets(pet_type_weights)
-        customer.pets = tuple(pets)
-        # ADR 0030: the household's diet rule (personas keep none) and the
-        # season's lift. New effects draw from their own seeded RNGs so the
-        # ADR 0027 signals keep their draws.
-        if persona is None:
-            customer.diet_rule = shoppers.assign_diet_rule(random.Random(f"diet:{customer.customer_id}"), pets)
-        story_rng = random.Random(f"story:{customer.customer_id}")
-        staple_cats = {pet: lifecycle.staple_categories(rng, pet) for pet in pets}
-        staples: dict[tuple[str, str], Product] = {}
-        owned_durables: set[str] = set()
-        owned_tokens: set[str] = set()            # per pet: "small_animal_cage"
-        prev_skus: str | None = None
-
-        for order_index, month in enumerate(order_months):
-            order_id = f"ORD-{order_counter:05d}"
-            order_counter += 1
-            products_by_pet = by_pet_in[month]
-            products_by_pet_cat = by_pet_cat_in[month]
-            novelty = lambda sku, m=month: events.pick_factor(sku, m)
-            owned_before = " ".join(sorted(owned_tokens)) or None
-
-            # 1-6 lines, mode at 2-3. The lifecycle lines count towards it.
-            n_lines = rng.choices(
-                [1, 2, 3, 4, 5, 6],
-                weights=[0.12, 0.30, 0.28, 0.18, 0.08, 0.04],
-            )[0]
-
-            order_skus: set[str] = set()
-            this_orders_lines: list[OrderLine] = []
-            order_total = 0.0
-
-            def add(product: Product, stock_up: bool = False) -> None:
-                nonlocal line_counter, order_total
-                if product.sku in order_skus:
-                    return
-                order_skus.add(product.sku)
-                kind = lifecycle.item_type(product.name, product.brand)
-                if kind in lifecycle.DURABLE_TYPES:
-                    owned_durables.add(kind)
-                    owned_tokens.add(shoppers.token(product.pet_type, kind))
-                qty = rng.choices([1, 2, 3], weights=[0.78, 0.18, 0.04])[0]
-                if stock_up:
-                    # A promoted staple: stock up, (price / list)^ε the usual.
-                    wanted = qty * _price_factor(promotions, events, product.sku, month)
-                    qty = int(wanted) + (rng.random() < wanted - int(wanted))
-                # Returned rate modulated by lifestyle — budget customers
-                # return more (price-sensitive, less satisfied), premium
-                # return less. Overall share stays in the 2.5-3.5 % band
-                # that signal-test #5 asserts.
-                returned_rate = {"premium": 0.018, "mid": 0.030, "budget": 0.042}[customer.lifestyle]
-                this_orders_lines.append(OrderLine(
-                    line_id=f"LN-{line_counter:06d}",
-                    order_id=order_id,
-                    product_sku=product.sku,
-                    qty=qty,
-                    returned=rng.random() < returned_rate,
-                    product_state=f"{product.sku}-{month}",
-                ))
-                line_counter += 1
-                order_total += events.list_price(product.sku, month) * qty
-
-            # Starter kit, first order only.
-            if order_index == 0:
-                for pet in pets:
-                    for kind in lifecycle.STARTER_KITS.get(pet, ()):
-                        kit_item = _pick_of_type(rng, products_by_pet, pet, kind, customer)
-                        if kit_item is not None:
-                            add(kit_item)
-
-            # Staples: bought first time round, then restocked (sometimes switched).
-            for pet in pets:
-                for category in staple_cats[pet]:
-                    key = (pet, category)
-                    if key not in staples:
-                        staples[key] = _pick_staple(rng, products_by_pet_cat, pet, category, customer,
-                                                    exclude=None, novelty=novelty)
-                    elif rng.random() < lifecycle.RESTOCK_P:
-                        # A poorly made staple is dropped more often (S5).
-                        poor = shoppers.is_poorly_made(staples[key].sku)
-                        switch_p = shoppers.POOR_SWITCH_P if poor else lifecycle.SWITCH_P
-                        # ADR 0032: a price rise or a rival's launch makes regulars reconsider.
-                        switch_p = min(1.0, switch_p * events.reconsider_factor(staples[key].sku, month))
-                        if rng.random() < switch_p:
-                            # Reconsidering because a rival launched, they try the rival.
-                            rivals = [product_of[r] for r in events.rivals(staples[key].sku, month)
-                                      if catalogue_events.SWITCH_TO_RIVAL
-                                      and lifecycle.is_staple(product_of[r], pet)
-                                      and shoppers.keeps_diet_rule(product_of[r].name, pet, category,
-                                                                   customer.diet_rule)]
-                            if rivals:
-                                staples[key] = rng.choices(
-                                    rivals, weights=[_customer_product_score(p, customer) for p in rivals], k=1)[0]
-                            else:
-                                staples[key] = _pick_staple(rng, products_by_pet_cat, pet, category, customer,
-                                                            exclude=staples[key].sku, novelty=novelty,
-                                                            avoid_poorly_made=poor)
-                    else:
-                        continue
-                    add(staples[key], stock_up=True)
-
-            # An add-on the kit implies, not yet owned.
-            if order_index > 0 and rng.random() < lifecycle.ADD_ON_P:
-                # The kit's add-ons come in order (S2): mostly the next one.
-                needing = [pet for pet in pets
-                           if any(k not in owned_durables for k in lifecycle.ADD_ONS.get(pet, ()))]
-                if needing:
-                    pet = rng.choice(needing)
-                    kind = shoppers.next_add_on(story_rng, lifecycle.ADD_ONS[pet], owned_durables)
-                    add_on = _pick_of_type(rng, products_by_pet, pet, kind, customer)
-                    if add_on is not None:
-                        add(add_on)
-
-            # The rest of the basket: the segment- and trait-driven draw, where
-            # this month's price, the season and a new product's pull move it.
-            demand = lambda sku, m=month: (_price_factor(promotions, events, sku, m)
-                                           * events.pick_factor(sku, m)
-                                           * shoppers.season_factor(category_of[sku], m))
-            for _line_i in range(max(0, n_lines - len(this_orders_lines))):
-                # Pick a pet_type for this line, then a category-biased product.
-                pet_type = rng.choices(
-                    list(pet_type_weights.keys()),
-                    weights=list(pet_type_weights.values()),
-                )[0]
-                if not products_by_pet[pet_type]:
-                    pet_type = rng.choice(list(products_by_pet.keys()))
-                # P5: the pack size fits the dog. The re-pick below already
-                # weighs it, through the customer's score.
-                product = _pick_product(rng, products_by_pet, pet_type, cat_bias,
-                                        lambda sku: demand(sku) * catalogue_events.pack_fit(product_of[sku],
-                                                                                            customer.pet_size))
-                # Customer-preference substitution within (pet_type,
-                # category), sub-RNG keyed on (customer_id, line_counter).
-                product = _customer_preference_substitute(
-                    product, products_by_pet_cat, customer,
-                    persona_id_set, line_counter, demand,
-                )
-                # D1: a customer who has settled on a food buys that one, not
-                # a random other food in the same category.
-                staple = staples.get((product.pet_type, product.category))
-                if staple is not None and rng.random() < lifecycle.STAPLE_LOYALTY:
-                    product = staple
-                kind = lifecycle.item_type(product.name, product.brand)
-                if kind in owned_durables and rng.random() >= lifecycle.REPLACEMENT_P:
-                    continue   # already owns one
-                if (shoppers.out_of_order(product.pet_type, kind, owned_durables)
-                        and story_rng.random() < shoppers.OUT_OF_ORDER_SKIP_P):
-                    continue   # the kit's add-ons come in order (S2)
-                if not shoppers.keeps_diet_rule(product.name, product.pet_type, product.category,
-                                                customer.diet_rule):
-                    # The household's rule wins (S1): the same kind of food that keeps it.
-                    keeping = [p for p in products_by_pet_cat[(product.pet_type, product.category)]
-                               if shoppers.keeps_diet_rule(p.name, p.pet_type, p.category, customer.diet_rule)]
-                    if not keeping:
-                        continue
-                    product = story_rng.choices(keeping, weights=[demand(p.sku) for p in keeping], k=1)[0]
-                add(product)
-
-            # A gift before Christmas, care in summer (S4): one line for one of the pets.
-            for line_p, categories in ((shoppers.GIFT_LINE_P, shoppers.GIFT_CATEGORIES),
-                                       (shoppers.CARE_LINE_P, shoppers.CARE_CATEGORIES)):
-                if pets and story_rng.random() < line_p.get(int(month[5:]), 0.0):
-                    pet = story_rng.choice(pets)
-                    seasonal = [p for c in categories for p in products_by_pet_cat.get((pet, c), [])]
-                    if seasonal:
-                        # What's on offer this month is picked more often, as in the basket draw.
-                        add(story_rng.choices(seasonal, weights=[demand(p.sku) for p in seasonal], k=1)[0])
-
-            # ── Signal #2: dog-food → dental-treats co-occurrence ───
-            #
-            # If this order is from a dog-leaning customer and contains
-            # a dog dry-food line, add a dental-treats line with P=0.35.
-            # Baseline P(dental-treat) is ~0.10; this drives lift ≈ 3.2
-            # under the condition.
-            if customer.segment in ("dog_owner", "multi_pet"):
-                has_dog_dryfood = any(
-                    _sku_to_product(products, ln.product_sku).category == "dry-food"
-                    and _sku_to_product(products, ln.product_sku).pet_type == "dog"
-                    for ln in this_orders_lines
-                )
-                # Treat-loving owners add dental chews more often. Flat 0.70 used
-                # to drown the treat-affinity signal once dry food became a
-                # staple restocked in most dog orders (ADR 0027).
-                dental_p = {"high": 0.90, "medium": 0.70, "low": 0.35}[customer.treat_affinity]
-                if has_dog_dryfood and rng.random() < dental_p:
-                    dental_pool = [
-                        p for p in products_by_pet["dog"]
-                        if p.category == "dental-treats" and p.sku not in order_skus
-                    ]
-                    if dental_pool:
-                        product = rng.choice(dental_pool)
-                        qty = rng.choices([1, 2], weights=[0.85, 0.15])[0]
-                        returned = rng.random() < 0.02  # dental treats rarely returned
-                        line = OrderLine(
-                            line_id=f"LN-{line_counter:06d}",
-                            order_id=order_id,
-                            product_sku=product.sku,
-                            qty=qty,
-                            returned=returned,
-                            product_state=f"{product.sku}-{month}",
-                        )
-                        line_counter += 1
-                        this_orders_lines.append(line)
-                        order_total += events.list_price(product.sku, month) * qty
-
-            if not this_orders_lines:
-                # Edge case: every line we tried collided. Skip the
-                # order rather than ship an order with zero lines.
-                order_counter -= 1
+def _number_history(customers: list[Customer], shop: _Shop) -> OrderHistory:
+    """Final ids, customer by customer and month by month, so a persona's
+    orders keep the lowest ids (CUST-00001's are ORD-00001…). Sessions before
+    a customer's first order are a visitor's (no `customer`, ADR 0040); the one
+    with it is marked `first_order`. Only consenting customers' sessions are
+    recorded (ADR 0044)."""
+    states = [st for month in _MONTH_WINDOW for st in shop.states[month].values()]
+    history = OrderHistory([], [], [], [], {}, states, [], [])
+    line_id: dict[str, str] = {}
+    order_id: dict[str, str] = {}
+    for c in customers:
+        for order, lines, experiences in shop.orders_of.get(c.customer_id, []):
+            order_id[order.order_id] = f"ORD-{len(history.orders) + 1:05d}"
+            order.order_id = order_id[order.order_id]
+            history.orders.append(order)
+            for line, experience in zip(lines, experiences):
+                line_id[line.line_id] = f"LN-{len(history.lines) + 1:06d}"
+                line.line_id, line.order_id = line_id[line.line_id], order.order_id
+                history.lines.append(line)
+                history.experience_of[line.line_id] = experience
+    for c in customers:
+        for review in shop.reviews_of.get(c.customer_id, []):
+            review.review_id = f"REV-{len(history.reviews) + 1:05d}"
+            review.order_line = line_id[review.order_line]
+            history.reviews.append(review)
+        for answer in shop.nps_of.get(c.customer_id, []):
+            answer.nps_response_id = f"NPS-{len(history.nps) + 1:05d}"
+            answer.surveyed_order = order_id[answer.surveyed_order]
+            history.nps.append(answer)
+    for c in customers:
+        joined = False
+        for session in shop.sessions_of.get(c.customer_id, []):
+            session.context.first_order = session.purchased and not joined
+            if not joined and not session.purchased:
+                session.context.customer = None      # still a visitor
+            joined |= session.purchased
+            if not c.consent_behavioural:
                 continue
-
-            lines.extend(this_orders_lines)
-            # Build the denormalised `line_categories` Text field from
-            # each line's product. Aito tokenises Text on whitespace
-            # AND on hyphens, so `dry-food` would split into `dry`
-            # and `food`. We strip hyphens from category names when
-            # forming the token (`dry-food` → `dryfood`,
-            # `dental-treats` → `dentaltreats`), keeping each
-            # (pet_type, category) pair as one indivisible token.
-            line_tokens: list[str] = []
-            for ln in this_orders_lines:
-                prod = _sku_to_product(products, ln.product_sku)
-                clean_cat = prod.category.replace("-", "")
-                line_tokens.append(f"{prod.pet_type}_{clean_cat}")
-            orders.append(Order(
-                order_id=order_id,
-                customer_id=customer.customer_id,
-                month=month,
-                total_eur=_round_eur(order_total),
-                line_categories=" ".join(line_tokens),
-                skus=" ".join(ln.product_sku for ln in this_orders_lines),
-                prev_skus=prev_skus,
-                owned_before=owned_before,
-            ))
-            prev_skus = " ".join(ln.product_sku for ln in this_orders_lines)
-
-    return orders, lines
+            session.context.visitor = c.customer_id     # the device's id is assigned with the visitors'
+            session.context.context_id = f"SESS-{len(history.contexts) + 1:06d}"
+            history.contexts.append(session.context)
+            for imp in session.impressions:
+                imp.impression_id = f"IMP-{len(history.impressions) + 1:07d}"
+                imp.context = session.context.context_id
+                history.impressions.append(imp)
+    for context in history.contexts:
+        context.weekday = random.Random(f"weekday:{context.context_id}").choice(WEEKDAYS)
+    return history
 
 
-# Linear scan — fine for fixture generation (we run it once per regen).
-# Avoids dragging in a global lookup we don't need at runtime.
-def _sku_to_product(products: list[Product], sku: str) -> Product:
-    for p in products:
-        if p.sku == sku:
-            return p
-    raise KeyError(sku)
+def _customer_life(customer: Customer, persona: Persona | None, shop: _Shop) -> Iterator[str]:
+    """One customer's sessions: a generator that yields the month of its next
+    session, and draws it when the shop resumes it in that month.
+
+    ADR 0027: the customer's life with their pets. Staples are restocked; each
+    pet starts with a kit whose add-ons follow; durables are bought once.
+    ADR 0045: every purchase is a showing in a session (`_draw_session`), and
+    a session's purchases are its order. ADR 0039: each line's experience
+    comes from the product's quality; it may be reviewed, the order may be
+    surveyed, and a bad one raises the churn hazard. ADR 0040: a regular
+    customer orders at least 3 times in their first 6 months."""
+    cid = customer.customer_id
+    rng = stream(RNG_SEED, "orders", cid)
+    experience_rng, incident_rng = stream(RNG_SEED, "experience", cid), stream(RNG_SEED, "incident", cid)
+    review_rng, reply_rng = stream(RNG_SEED, "review", cid), stream(RNG_SEED, "reply", cid)
+    nps_rng = stream(RNG_SEED, "nps", cid)
+    # How many sessions, and in which months, from the customer's own RNG.
+    months_rng = random.Random(f"months:{cid}")
+    n_orders = persona.target_orders if persona is not None else _orders_per_customer(months_rng, customer)
+
+    if persona is not None and persona.pet_type_weights is not None:
+        pet_type_weights = persona.pet_type_weights
+    else:
+        pet_type_weights = _segment_pet_type_weights(customer.segment, customer.pet_size)
+    cat_bias = _category_bias(customer.segment, customer.pet_size)
+    # Personas keep their segment-level bias: their top-5 pairs stay separated.
+    if persona is None:
+        cat_bias = _category_bias_for_customer(cat_bias, customer)
+
+    eligible_months = _MONTH_WINDOW[-(customer.tenure_months + 1):]
+    # At most one session a month, so at most one order.
+    n_orders = min(n_orders, len(eligible_months))
+    plan = _order_months(months_rng, eligible_months, n_orders)
+    if persona is not None and plan[-1] != eligible_months[-1]:
+        # A persona anchors the demo's default views, so it must not read
+        # as churned: its history reaches the latest month by rule.
+        plan = plan[1:] + [eligible_months[-1]]
+    pets = lifecycle.main_pets(pet_type_weights)
+    customer.pets = tuple(pets)
+    # ADR 0030: the household's diet rule (personas keep none), from its own seeded RNG.
+    if persona is None:
+        customer.diet_rule = shoppers.assign_diet_rule(random.Random(f"diet:{cid}"), pets)
+    staple_cats = {pet: lifecycle.staple_categories(rng, pet) for pet in pets}
+    # ADR 0040: some households start their staples with their second order.
+    first_staple_order = 0 if persona is not None or (
+        stream(RNG_SEED, "first-staple", cid).random() < acquisition.FIRST_ORDER_STAPLE_P) else 1
+    life = _Household(customer, persona, pet_type_weights, cat_bias, pets, staple_cats, first_staple_order,
+                      story_rng=random.Random(f"story:{cid}"), visit_rng=stream(RNG_SEED, "visit-source", cid))
+    churn = _ChurnClock(customer, n_orders, plan[0], never=persona is not None)
+    shop.orders_of[cid], shop.reviews_of[cid], shop.nps_of[cid], shop.sessions_of[cid] = [], [], [], []
+
+    while plan:
+        month = plan.pop(0)
+        if churn.churned_by(month):
+            break
+        yield month
+        order_ref = f"{cid}#{len(shop.orders_of[cid])}"
+        session, bought = _draw_session(shop, life, rng, month, len(shop.sessions_of[cid]))
+        shop.sessions_of[cid].append(session)
+        if not bought:
+            continue     # a visit without a purchase: no order this month
+        this_orders_lines = _order_lines(rng, customer, order_ref, month, bought)
+        for ln in this_orders_lines:
+            shop.units[month][ln.product_sku] += ln.qty
+        life.record_order(month, [p for p, _ in bought], [st for _, st in bought])
+        line_tokens = [f"{p.pet_type}_{p.category.replace('-', '')}" for p, _ in bought]
+        order = Order(order_id=order_ref, customer_id=cid, month=month,
+                      total_eur=_round_eur(sum(shop.events.list_price(ln.product_sku, month) * ln.qty
+                                               for ln in this_orders_lines)),
+                      line_categories=" ".join(line_tokens),
+                      skus=" ".join(ln.product_sku for ln in this_orders_lines),
+                      prev_skus=life.prev_skus, owned_before=session.context.owned)
+        life.prev_skus = order.skus
+
+        # ADR 0039: what the order was like, and what followed from it.
+        incident = incident_rng.random() < review_chain.INCIDENT_P
+        experiences = []
+        replied_negative = False
+        for ln in this_orders_lines:
+            ln.incident = incident
+            experience = review_chain.draw_experience(experience_rng, ln.product_sku)
+            experiences.append(experience)
+            drawn = review_chain.draw_review(review_rng, reply_rng, experience) \
+                if planted_switches.REVIEWS_WRITTEN else None
+            if drawn is None:
+                continue
+            replied_negative |= drawn.replied
+            shop.reviews_of[cid].append(Review(
+                review_id="", customer_id=cid, product_sku=ln.product_sku, rating=drawn.rating,
+                text=_review_text(review_rng, drawn.category, shop.product_of[ln.product_sku].pet_type),
+                category=drawn.category, sentiment=_sentiment_for(drawn.rating),
+                assigned_to=REVIEW_CATEGORY_TO_AGENT[drawn.category], created_at=month,
+                replied=drawn.replied, order_line=ln.line_id))
+            shop.stars.add(ln.product_sku, drawn.rating)
+        experience = review_chain.order_experience(experiences)
+        score = review_chain.nps_score(nps_rng, experience, incident, replied_negative)
+        if score is not None:
+            shop.nps_of[cid].append(NpsResponse(
+                nps_response_id="", customer=cid, surveyed_order=order_ref, month=month,
+                score=score, nps_group=review_chain.nps_group(score)))
+        if experience == "bad":
+            churn.rise(month, review_chain.churn_rise(replied_negative))
+        first_order = not shop.orders_of[cid]
+        shop.orders_of[cid].append((order, this_orders_lines, experiences))
+
+        if first_order and persona is None:
+            # ADR 0040, F4 and F5: whether this customer becomes a regular.
+            regular_rng = stream(RNG_SEED, "regular", cid)
+            staple_first = any(acquisition.is_staple_line(p) for p, _ in bought)
+            regular = regular_rng.random() < acquisition.regular_probability(customer.first_source, staple_first)
+            plan = acquisition.plan_first_months(regular_rng, plan, month, eligible_months, regular)
+
+    # The clock runs to today: the answer key records when the customer left.
+    churn.churned_by(DEMO_TODAY_YYYYMM)
+    customer.churn_month = churn.month
+
+
+def _order_lines(rng: random.Random, customer: Customer, order_ref: str, month: str,
+                 bought: list[tuple[Product, catalogue_events.ProductState]]) -> list[OrderLine]:
+    """A session's purchases as order lines. Quantities don't read price: an
+    offer acts on the chance to buy (ADR 0045)."""
+    lines = []
+    for product, _ in bought:
+        qty = rng.choices([1, 2, 3], weights=[0.78, 0.18, 0.04])[0]
+        # Budget customers return more, premium less; dental treats rarely (2.5-3.5 % overall).
+        returned_rate = 0.02 if product.category == "dental-treats" else \
+            {"premium": 0.018, "mid": 0.030, "budget": 0.042}[customer.lifestyle]
+        lines.append(OrderLine(line_id=f"{order_ref}.{len(lines)}", order_id=order_ref, product_sku=product.sku,
+                               qty=qty, returned=rng.random() < returned_rate,
+                               product_state=f"{product.sku}-{month}"))
+    return lines
+
+
+class _Household:
+    """What one customer's sessions remember between months: the staples they
+    settled on, the kit they own, their last order, and what they bought."""
+
+    def __init__(self, customer: Customer, persona: Persona | None, pet_type_weights: dict[str, float],
+                 cat_bias: dict[str, float] | None, pets: list[str], staple_cats: dict[str, tuple[str, ...]],
+                 first_staple_order: int, story_rng: random.Random, visit_rng: random.Random):
+        self.customer, self.persona = customer, persona
+        self.pet_type_weights, self.cat_bias, self.pets = pet_type_weights, cat_bias, pets
+        self.staple_cats, self.first_staple_order = staple_cats, first_staple_order
+        self.story_rng, self.visit_rng = story_rng, visit_rng
+        self.staples: dict[tuple[str, str], Product] = {}
+        self.owned_durables: set[str] = set()
+        self.owned_tokens: set[str] = set()          # per pet: "small_animal_cage"
+        self.prev_skus: str | None = None
+        self.orders = 0
+        self.bought: list[tuple[str, catalogue_events.ProductState]] = []   # (month, state) per purchase
+        self.pets_bought: list[tuple[str, str]] = []                        # (month, pet type) per purchase
+
+    def record_order(self, month: str, products: list[Product], states: list) -> None:
+        self.orders += 1
+        for product, state in zip(products, states):
+            kind = lifecycle.item_type(product.name, product.brand)
+            if kind in lifecycle.DURABLE_TYPES:
+                self.owned_durables.add(kind)
+                self.owned_tokens.add(shoppers.token(product.pet_type, kind))
+            self.bought.append((month, state))
+            self.pets_bought.append((month, product.pet_type))
+
+
+def _buy_again(shop: _Shop, life: _Household, rng: random.Random, month: str) -> list[tuple[Product, str]]:
+    """What the household came for, each with its intent (`merchandising.INTENT_P`):
+    the old order's lifecycle lines (ADR 0027, ADR 0030), now shown and bought
+    with odds (ADR 0045)."""
+    customer, events = life.customer, shop.events
+    products_by_pet, products_by_pet_cat = shop.by_pet_in[month], shop.by_pet_cat_in[month]
+    # A fresh pick of a staple: a new one pulls (ADR 0032, P2), and the stars so far move it (R5).
+    novelty = lambda sku: events.pick_factor(sku, month) * shop.stars.pick_factor(sku)
+    wanted: list[tuple[Product, str]] = []
+
+    def want(product: Product | None, intent: str) -> None:
+        if product is not None and all(product.sku != p.sku for p, _ in wanted):
+            wanted.append((product, intent))
+
+    if life.orders == 0:
+        for pet in life.pets:
+            for kind in lifecycle.STARTER_KITS.get(pet, ()):
+                want(_pick_of_type(rng, products_by_pet, pet, kind, customer), "kit")
+    # Staples: chosen the first time, then restocked (sometimes switched).
+    for pet in life.pets if life.orders >= life.first_staple_order else ():
+        for category in life.staple_cats[pet]:
+            key = (pet, category)
+            if key not in life.staples:
+                first = _pick_staple(rng, products_by_pet_cat, pet, category, customer, exclude=None, novelty=novelty)
+                if first is not None:
+                    life.staples[key] = first
+                    want(first, "first")
+                continue
+            current = life.staples[key]
+            poor = _is_poor(current.sku)
+            # A poorly made staple is dropped more often (S5); a price rise or a
+            # rival's launch makes regulars reconsider (ADR 0032).
+            switch_p = min(1.0, (shoppers.POOR_SWITCH_P if poor else lifecycle.SWITCH_P)
+                           * events.reconsider_factor(current.sku, month))
+            if rng.random() < lifecycle.RESTOCK_P and rng.random() < switch_p:
+                rivals = [shop.product_of[r] for r in events.rivals(current.sku, month)
+                          if catalogue_events.SWITCH_TO_RIVAL and lifecycle.is_staple(shop.product_of[r], pet)
+                          and shoppers.keeps_diet_rule(shop.product_of[r].name, pet, category, customer.diet_rule)]
+                if rivals:
+                    life.staples[key] = rng.choices(
+                        rivals, weights=[_customer_product_score(p, customer) for p in rivals], k=1)[0]
+                else:
+                    # Nothing else keeps the rule this month: they stay with what they have.
+                    life.staples[key] = _pick_staple(rng, products_by_pet_cat, pet, category, customer,
+                                                     exclude=current.sku, novelty=novelty,
+                                                     avoid_poorly_made=poor) or current
+                want(life.staples[key], "first")
+            else:
+                want(current, "restock")
+    # An add-on the kit implies, not yet owned: mostly the next one (S2).
+    if life.orders > 0 and rng.random() < lifecycle.ADD_ON_P:
+        needing = [pet for pet in life.pets
+                   if any(k not in life.owned_durables for k in lifecycle.ADD_ONS.get(pet, ()))]
+        if needing:
+            pet = rng.choice(needing)
+            kind = shoppers.next_add_on(life.story_rng, lifecycle.ADD_ONS[pet], life.owned_durables)
+            want(_pick_of_type(rng, products_by_pet, pet, kind, customer), "add_on")
+    # A gift before Christmas, care in summer (S4): one line for one of the pets.
+    for line_p, categories in ((shoppers.GIFT_LINE_P, shoppers.GIFT_CATEGORIES),
+                               (shoppers.CARE_LINE_P, shoppers.CARE_CATEGORIES)):
+        if life.pets and life.story_rng.random() < line_p.get(int(month[5:]), 0.0):
+            pet = life.story_rng.choice(life.pets)
+            seasonal = [p for c in categories for p in products_by_pet_cat.get((pet, c), [])]
+            if seasonal:
+                want(life.story_rng.choices(seasonal, weights=[novelty(p.sku) for p in seasonal], k=1)[0], "seasonal")
+    return wanted
+
+
+def _price_and_state_odds(shop, customer: Customer, product: Product, state) -> tuple[float, float, float]:
+    """(click, cart-and-purchase, purchase-only) odds from the product's state,
+    its price and its quality: every price effect sits here (ADR 0045)."""
+    click, odds, purchase_only = sensitivities.state_odds(state, customer.sensitivities)
+    price = merchandising.list_price_odds(
+        shop.events.raised_since(product.sku, state.month),
+        review_chain.rating_elasticity(state.rating_band, shop.promotions.elasticity[product.sku]))
+    quality = review_chain.POOR_QUALITY_ODDS if planted_switches.ON["quality"] and _is_poor(product.sku) else 1.0
+    return click * price, odds * price * quality, purchase_only
+
+
+def _merchandising_weight(events: catalogue_events.CatalogueEvents, product: Product, state) -> float:
+    """How much the shop's ranker favours a product this month: its offer
+    (placement), being new or a rival's launch (P2), its stars (R5), the season (S4)."""
+    return (merchandising.placement_factor(state) * events.pick_factor(product.sku, state.month)
+            * review_chain.rating_pick_factor(state.rating_band) * shoppers.season_factor(product.category, state.month))
+
+
+def _draw_session(shop: _Shop, life: _Household, rng: random.Random, month: str,
+                  index: int) -> tuple[_Session, list[tuple[Product, catalogue_events.ProductState]]]:
+    """One session: what it showed, and what it sold (ADR 0045). Returns the
+    session and its purchases (the order's lines, in order of showing)."""
+    customer, cid = life.customer, life.customer.customer_id
+    states = shop.states[month]
+    funnel = lambda placement, position: stream(RNG_SEED, "funnel", cid, index, placement, position)
+    impressions: list[Impression] = []
+    bought: list[tuple[Product, catalogue_events.ProductState]] = []
+    just_bought_skus = set(life.prev_skus.split()) if life.prev_skus else set()
+    owned_before = set(life.owned_tokens)
+
+    def show(product: Product, placement: str, position: int, clicked: bool, added: bool, purchased: bool) -> None:
+        state = states[product.sku]
+        impressions.append(Impression(impression_id="", context="", product_sku=product.sku,
+                                      product_state=state.product_state_id, position=position,
+                                      placement=placement, just_bought=product.sku in just_bought_skus,
+                                      clicked=clicked, added_to_cart=added, purchased=purchased))
+        if purchased:
+            bought.append((product, state))
+
+    # 1. Buy again: what the household came for. Bought with its intent, as odds.
+    for position, (product, intent) in enumerate(_buy_again(shop, life, rng, month)):
+        _, odds, purchase_only = _price_and_state_odds(shop, customer, product, states[product.sku])
+        p = _scale_odds(merchandising.INTENT_P[intent], odds * purchase_only)
+        purchased = funnel("buy_again", position).random() < p
+        show(product, "buy_again", position, purchased, purchased, purchased)
+    basket_rows = [p for p, _ in bought]
+    basket = shoppers.basket_tokens(basket_rows)
+
+    # 2. The shop's list, unless the session is a direct reorder.
+    query: str | None = None
+    if rng.random() < merchandising.DIRECT_P:
+        surface = "direct"
+    else:
+        surface = rng.choices(list(_SURFACE_WEIGHTS), weights=list(_SURFACE_WEIGHTS.values()))[0]
+        query = _show_list(shop, life, rng, month, surface, basket, owned_before, just_bought_skus,
+                           {imp.product_sku for imp in impressions}, funnel, show)
+
+    # 3. Checkout: dental chews with dog dry food (Signal #2), treat-loving owners more often.
+    if customer.segment in ("dog_owner", "multi_pet") and any(
+            p.pet_type == "dog" and p.category == "dry-food" for p, _ in bought):
+        dental_p = {"high": 0.90, "medium": 0.70, "low": 0.35}[customer.treat_affinity]
+        if rng.random() < dental_p:
+            shown = {imp.product_sku for imp in impressions}
+            dental = [p for p in shop.by_pet_in[month]["dog"] if p.category == "dental-treats" and p.sku not in shown]
+            if dental:
+                product = rng.choice(dental)
+                _, odds, purchase_only = _price_and_state_odds(shop, customer, product, states[product.sku])
+                p = _scale_odds(merchandising.INTENT_P["checkout"], odds * purchase_only)
+                purchased = funnel("checkout", 0).random() < p
+                show(product, "checkout", 0, purchased, purchased, purchased)
+
+    # ADR 0040: where the visit came from; ADR 0038 and pets_from_orders: what
+    # the shop can derive from the customer's earlier purchases.
+    source = customer.first_source if life.orders == 0 else acquisition.draw_returning_source(life.visit_rng)
+    interest = _interest_category(stream(RNG_SEED, "interest", cid, index), life.pet_type_weights, life.cat_bias)
+    landing, landing_category = acquisition.draw_landing(stream(RNG_SEED, "landing", cid, index), source, interest)
+    before = [st for m, st in life.bought if m < month]
+    context = observable.Context(
+        context_id="", customer=cid, visitor="", month=month, weekday="", surface=surface, source=source,
+        landing=landing, landing_category=landing_category,
+        offer_share=observable.share_band("offer", sum(st.on_offer for st in before), len(before)),
+        new_share=observable.share_band("new", sum(st.age == "new" for st in before), len(before)),
+        label_share=observable.share_band("label", sum(st.label != "none" for st in before), len(before)),
+        pets_from_orders=observable.pets_from_orders(pet for m, pet in life.pets_bought if m < month),
+        search_query=query,
+        basket=" ".join(sorted(p.sku for p in basket_rows)) or None,
+        basket_categories=" ".join(basket) or None,
+        prev_basket=life.prev_skus,
+        owned=" ".join(sorted(owned_before)) or None,
+    )
+    return _Session(context, impressions, bool(bought)), bought
+
+
+def _show_list(shop: _Shop, life: _Household, rng: random.Random, month: str, surface: str, basket: list[str],
+               owned: set[str], just_bought_skus: set[str], already: set[str], funnel, show) -> str | None:
+    """The shop's list for a browsing session: 6–14 products its ranker picked
+    and ordered, each with the funnel (ADR 0021) and a click that falls with
+    its slot (ADR 0045). Returns the search query, for a search."""
+    customer = life.customer
+    catalogue = [p for in_category in shop.by_cat_in[month].values() for p in in_category]
+    query: str | None = None
+    if surface == "search":
+        # A phrase from a product this customer is drawn to (S7).
+        query = _search_query(life.story_rng, catalogue, shop.phrases_of, life.pet_type_weights, life.cat_bias, customer)
+        pool = [p for p in shop.phrases[query] if p.sku in shop.states[month]]
+    elif surface == "category":
+        # One category the customer leans toward, across pet types.
+        cat = _pick_product(rng, {"x": catalogue}, "x", life.cat_bias).category \
+            if life.cat_bias else rng.choice(list(shop.by_cat_in[month]))
+        pool = list(shop.by_cat_in[month].get(cat, []))
+    else:
+        pool = list(catalogue)
+    pool = [p for p in pool if p.sku not in already] or [p for p in catalogue if p.sku not in already]
+
+    # What a good recommender would surface (65 %) and filler (35 %), each
+    # weighted by the shop's merchandising: an offer is shown more.
+    merch = [_merchandising_weight(shop.events, p, shop.states[month][p.sku]) for p in pool]
+    weights = [w * m for w, m in zip(_browse_weights(pool, customer, life.pet_type_weights, life.cat_bias), merch)]
+    filler = [shoppers.browse_weight(p.name, p.pet_type, p.category, customer.diet_rule) * m
+              for p, m in zip(pool, merch)]
+    n_shown = min(rng.randint(*merchandising.LIST_SIZE), len(pool))
+    shown: list[Product] = []
+    seen: set[str] = set()
+    # "Bought together" shows complements of the basket first (S6).
+    if surface == "bought_together" and basket:
+        complements = [p for p in pool if shoppers.complements_basket(_product_row(p), basket)]
+        for pick in life.story_rng.sample(complements, min(len(complements), n_shown // 2)):
+            seen.add(pick.sku)
+            shown.append(pick)
+    guard = 0
+    while len(shown) < n_shown and guard < n_shown * 8:
+        guard += 1
+        pick = rng.choices(pool, weights=weights if rng.random() < 0.65 else filler, k=1)[0]
+        if pick.sku not in seen:
+            seen.add(pick.sku)
+            shown.append(pick)
+    score = {p.sku: w for p, w in zip(pool, weights)}
+    ordered = merchandising.list_order(rng, shown, lambda p: score[p.sku])
+
+    for position, product in enumerate(ordered):
+        odds = click_odds = 1.0
+        if not shoppers.keeps_diet_rule(product.name, product.pet_type, product.category, customer.diet_rule):
+            odds = 0.0   # a rule household looks, but never buys it (S1)
+        kind = lifecycle.item_type(product.name, product.brand)
+        if kind in life.owned_durables:
+            odds *= merchandising.OWNED_DURABLE_ODDS      # nobody needs a second cage (D3)
+        if shoppers.out_of_order(product.pet_type, kind, life.owned_durables):
+            odds *= merchandising.OUT_OF_ORDER_ADD_ON_ODDS
+        staple = life.staples.get((product.pet_type, product.category))
+        if staple is not None and staple.sku != product.sku:
+            odds *= merchandising.OTHER_FOOD_ODDS          # they buy the food they settled on (D1)
+        if product.sku in just_bought_skus:
+            # Still stocked up (S8): less likely to look, or to buy.
+            odds *= shoppers.JUST_BOUGHT_ODDS
+            click_odds *= shoppers.JUST_BOUGHT_ODDS
+        if basket and shoppers.complements_basket(_product_row(product), basket,
+                                                  include_kit=not observable.KIT_PROGRESSION):
+            odds *= shoppers.COMPLEMENT_ODDS
+            click_odds *= shoppers.COMPLEMENT_ODDS
+        if observable.KIT_PROGRESSION:
+            # K1: where the household is in its kit, from the basket and what it owns.
+            kit = observable.kit_odds(_product_row(product), set(basket), owned)
+            odds *= kit
+            click_odds *= kit
+        state_click, state_odds, purchase_odds = _price_and_state_odds(shop, customer, product,
+                                                                       shop.states[month][product.sku])
+        click_odds *= merchandising.SHOPPING_CLICK_ODDS * merchandising.position_click_odds(position)
+        clicked, added, purchased = _impression_funnel(
+            funnel("list", position), product, customer, life.pet_type_weights, life.cat_bias,
+            odds * state_odds, click_odds * state_click, purchase_odds)
+        show(product, "list", position, clicked, added, purchased)
+    return query
 
 
 # ── Customer aggregates (post-pass after orders) ────────────────────
@@ -1858,6 +2241,26 @@ def backfill_customer_aggregates(
             c.last_order_month is not None
             and c.last_order_month <= CHURN_CUTOFF_YYYYMM
         )
+
+
+
+def backfill_first_orders(customers: list[Customer], orders: list[Order]) -> None:
+    """ADR 0040: when each customer joined, their first basket, and whether
+    they became a regular: 3 or more orders in their first 6 months, known
+    only for customers who joined 6 months before the data ends."""
+    by_customer: dict[str, list[Order]] = {}
+    for o in orders:
+        by_customer.setdefault(o.customer_id, []).append(o)
+    last_knowable = _add_months(DEMO_TODAY_YYYYMM, -(acquisition.REGULAR_WINDOW_MONTHS - 1))
+    for c in customers:
+        own = sorted(by_customer.get(c.customer_id, []), key=lambda o: o.month)
+        if not own:
+            continue
+        c.joined_month = own[0].month
+        c.first_basket_categories = own[0].line_categories
+        if c.joined_month <= last_knowable:
+            window_end = _add_months(c.joined_month, acquisition.REGULAR_WINDOW_MONTHS - 1)
+            c.became_regular = sum(o.month <= window_end for o in own) >= acquisition.REGULAR_MIN_ORDERS
 
 
 # ── Reviews ────────────────────────────────────────────────────────
@@ -1951,157 +2354,10 @@ _REVIEW_VOCAB: dict[str, list[str]] = {
     "condition":      ["allergies", "sensitive stomach", "diabetes", "joint issues", "anxiety"],
 }
 
-# Category share is conditioned on **customer.churned** so the
-# rating column becomes a meaningful predictor of churn:
-# unhappy/churning customers cluster in shipping/quality/fit
-# (low ratings); active customers cluster in praise (high
-# ratings). The weighted average across the customer population
-# preserves the original net share (~40 % praise / 22 % quality /
-# 18 % shipping / 10 % fit / 10 % question).
-_REVIEW_CATEGORY_WEIGHTS_ACTIVE: dict[str, float] = {
-    "praise":   0.55,
-    "quality":  0.16,
-    "shipping": 0.12,
-    "fit":      0.07,
-    "question": 0.10,
-}
-_REVIEW_CATEGORY_WEIGHTS_CHURNED: dict[str, float] = {
-    "praise":   0.12,
-    "quality":  0.34,
-    "shipping": 0.28,
-    "fit":      0.16,
-    "question": 0.10,
-}
-
-_RATING_BY_CATEGORY: dict[str, dict[int, float]] = {
-    "praise":   {5: 0.65, 4: 0.30, 3: 0.05},
-    "quality":  {1: 0.20, 2: 0.30, 3: 0.30, 4: 0.15, 5: 0.05},
-    "shipping": {1: 0.25, 2: 0.35, 3: 0.30, 4: 0.08, 5: 0.02},
-    "fit":      {1: 0.15, 2: 0.30, 3: 0.35, 4: 0.15, 5: 0.05},
-    "question": {3: 0.50, 4: 0.30, 5: 0.10, 2: 0.07, 1: 0.03},
-}
-
-
 def _sentiment_for(rating: int) -> str:
     if rating >= 4: return "positive"
     if rating <= 2: return "negative"
     return "neutral"
-
-
-def gen_reviews(
-    rng: random.Random,
-    products: list[Product],
-    customers: list[Customer],
-    orders: list[Order],
-    lines: list[OrderLine],
-) -> list[Review]:
-    """Generate ~6000 customer reviews tied to actual order lines.
-
-    Every review is anchored on a real `(customer_id, product_sku)`
-    pair from the line history — so the Aito panel can show "this
-    review is from a real customer about a real product" without
-    inventing relationships.
-
-    Volume rationale: 6000 reviews across ~30 templates lands at
-    ~200 supporting cases per template, which is what makes the
-    Feedback view's `$why` factors tight — Aito's lift values
-    stabilise once each pattern has hundreds of supporting cases.
-    Fewer reviews = noisier `$why`, less authoritative explanations.
-
-    Category distribution roughly matches real e-commerce review
-    distributions (~40 % praise, 30-40 % product/shipping complaints,
-    10-15 % questions). Rating distribution is conditioned on
-    category so positive categories cluster on 4-5★ and complaint
-    categories cluster on 1-3★ — gives the demo's `_predict
-    sentiment` query a learnable signal that *isn't* just keyword
-    matching on the text.
-    """
-    reviews: list[Review] = []
-    sku_to_pet: dict[str, str] = {p.sku: p.pet_type for p in products}
-    sku_to_cat: dict[str, str] = {p.sku: p.category for p in products}
-    order_to_customer: dict[str, str] = {o.order_id: o.customer_id for o in orders}
-    order_to_month: dict[str, str] = {o.order_id: o.month for o in orders}
-    # Customer churn lookup — drives the conditional category weights
-    # so 1-star reviews preferentially come from churning customers.
-    customer_churned: dict[str, bool] = {c.customer_id: c.churned for c in customers}
-
-    # Pick ~6000 (customer, product) pairs from the line history.
-    # Each line has a moderate probability of producing a review; the
-    # per-customer cap stops one heavy buyer from monopolising the
-    # set (we want pattern diversity, not 50 reviews from one person).
-    per_customer: dict[str, int] = {}
-    target = 6000
-    review_counter = 1
-    rng.shuffle(lines)  # shuffle so we don't bias toward early customers
-    for ln in lines:
-        if len(reviews) >= target:
-            break
-        cust = order_to_customer.get(ln.order_id)
-        if cust is None or per_customer.get(cust, 0) >= 5:
-            continue
-        if rng.random() > 0.22:   # ~22 % of lines get a review
-            continue
-
-        pet = sku_to_pet.get(ln.product_sku, "pet")
-        # Pick category weights conditional on this customer's overall
-        # churn status. Churning customers' reviews skew toward
-        # complaint categories (low ratings); active customers' skew
-        # toward praise. Aito then learns "rating=1 ⇒ elevated
-        # P(churn)" from the conditional rate gap.
-        cat_weights = (
-            _REVIEW_CATEGORY_WEIGHTS_CHURNED
-            if customer_churned.get(cust, False)
-            else _REVIEW_CATEGORY_WEIGHTS_ACTIVE
-        )
-        category = rng.choices(
-            REVIEW_CATEGORIES,
-            weights=[cat_weights[c] for c in REVIEW_CATEGORIES],
-        )[0]
-        rating_dist = _RATING_BY_CATEGORY[category]
-        rating = rng.choices(
-            list(rating_dist.keys()),
-            weights=list(rating_dist.values()),
-        )[0]
-        # A poorly made product (ADR 0030, S5) mostly draws quality
-        # complaints and low stars. Its own RNG, so other reviews keep theirs.
-        if shoppers.is_poorly_made(ln.product_sku):
-            poor_rng = random.Random(f"review:{ln.line_id}")
-            if poor_rng.random() < 0.6:
-                category = "quality"
-            weights = shoppers.RATING_WEIGHTS[True]
-            rating = poor_rng.choices(list(weights), weights=list(weights.values()))[0]
-
-        # Pick a template and fill its slots from the vocab map. Some
-        # slots (like {pet}) draw from the actual product context;
-        # others draw randomly.
-        template = rng.choice(_REVIEW_TEMPLATES[category])
-        text = template
-        for slot in ("timing", "pack_quality", "detail", "product_noun",
-                     "scent", "reaction", "quality_adj", "action", "size",
-                     "fit_adj", "accuracy_adj", "feature", "question_clause",
-                     "condition"):
-            placeholder = "{" + slot + "}"
-            if placeholder in text:
-                text = text.replace(placeholder, rng.choice(_REVIEW_VOCAB[slot]))
-        if "{pet}" in text:
-            text = text.replace("{pet}", pet)
-
-        review_id = f"REV-{review_counter:05d}"
-        review_counter += 1
-        reviews.append(Review(
-            review_id=review_id,
-            customer_id=cust,
-            product_sku=ln.product_sku,
-            rating=rating,
-            text=text,
-            category=category,
-            sentiment=_sentiment_for(rating),
-            assigned_to=REVIEW_CATEGORY_TO_AGENT[category],
-            created_at=order_to_month.get(ln.order_id, DEMO_TODAY_YYYYMM),
-        ))
-        per_customer[cust] = per_customer.get(cust, 0) + 1
-
-    return reviews
 
 
 # ── Customer-months panel + review churn label ─────────────────────
@@ -2122,13 +2378,12 @@ def backfill_review_churn_label(
     reviews: list[Review],
     customers: list[Customer],
 ) -> None:
-    """Set `review.churn_within_90d` from the customer's overall churn
-    status + the review's month.
+    """Set `review.churn_within_90d` from the churn that followed the review.
 
-    True iff the customer is churned overall (`customer.churned`) AND
-    the review's month is at or after the customer's last order month
-    — i.e., the review was written at the tail end of their activity,
-    not when they were still buying afterwards.
+    True iff the customer is churned (`customer.churned`) AND the review's
+    month is at or after their last order month: they never ordered again.
+    Reviews are drawn from experiences only (ADR 0039), so this label reads
+    what happened after a review, not what wrote it.
 
     The text-to-churn signal Aito learns from this label is the
     Feedback view's "4th predict" — given a review's text, predict
@@ -2144,10 +2399,10 @@ def backfill_review_churn_label(
 
 
 def gen_customer_months(
-    rng: random.Random,
     customers: list[Customer],
     orders: list[Order],
     reviews: list[Review],
+    nps: list[NpsResponse],
     *,
     cutoff_month: str = DEMO_TODAY_YYYYMM,
 ) -> list[CustomerMonth]:
@@ -2161,9 +2416,19 @@ def gen_customer_months(
       - latest review snapshot in this month (if any)
       - `tenure_months_at_month` from first-order distance
       - `churned_in_3_months` forward-looking label
+      - ADR 0039: the latest NPS group so far, and a negative review in this
+        month or the 2 before it, replied to or not
 
     Volumes: ~3000 customers × ~12 months avg ≈ 35-40k rows.
     """
+    rng = stream(RNG_SEED, "visits")
+    nps_by_cm: dict[tuple[str, str], NpsResponse] = {}
+    for answer in nps:
+        nps_by_cm[(answer.customer, answer.month)] = answer     # the month's last answer
+    negative_by_cm: dict[tuple[str, str], list[Review]] = {}
+    for r in reviews:
+        if r.rating <= 2:
+            negative_by_cm.setdefault((r.customer_id, r.created_at), []).append(r)
     # Index orders by (customer_id, month) for fast per-month aggregates.
     orders_by_cm: dict[tuple[str, str], list[Order]] = {}
     first_order_month: dict[str, str] = {}
@@ -2207,8 +2472,12 @@ def gen_customer_months(
         if c.customer_id in persona_ids:
             base_visits = int(base_visits * 1.3)
 
+        latest_nps: str | None = None
         for i in range(n_months):
             m = _add_months(first_m, i)
+            if (c.customer_id, m) in nps_by_cm:
+                latest_nps = nps_by_cm[(c.customer_id, m)].nps_group
+            negative = [r for k in range(3) for r in negative_by_cm.get((c.customer_id, _add_months(m, -k)), [])]
             decay = _decay_factor(is_churning_customer, m, c.last_order_month)
             # Visit count: base × decay + gaussian noise. Floor at 0.
             visits = max(0, int(base_visits * decay + rng.gauss(0, 1.5)))
@@ -2237,14 +2506,17 @@ def gen_customer_months(
                 visits=visits,
                 purchases=n_purchases,
                 spent_eur=_round_eur(spent),
-                pets=" ".join(c.pets),
-                dog_size=c.pet_size if "dog" in c.pets else None,
+                pets=" ".join(c.pets) if c.pet_profile else None,
+                dog_size=c.pet_size if c.pet_profile and "dog" in c.pets else None,
                 region=c.region,
                 tenure_months_at_month=i,
                 latest_rating=review.rating if review is not None else None,
                 latest_sentiment=review.sentiment if review is not None else None,
                 latest_category=review.category if review is not None else None,
                 churned_in_3_months=label,
+                nps_latest_group=latest_nps,
+                had_negative_review=bool(negative),
+                review_replied=any(r.replied for r in negative),
             ))
             cm_counter += 1
 
@@ -2484,6 +2756,19 @@ def backfill_monthly_sales_prices(
         state = state_by_id[ms.product_state]   # every sales month is a month on sale
         ms.price_eur = state.price_eur
         ms.revenue_eur = _round_eur(state.price_eur * ms.units_sold)
+        # ADR 0045: what `_estimate units_sold` can read of the price, in one hop.
+        ms.price_index = round(state.price_eur / state.list_price_eur, 3)
+        ms.discount_band = state.discount_band
+
+
+def backfill_showings(monthly_sales: list[MonthlySale], contexts: list[observable.Context],
+                      impressions: list[Impression]) -> None:
+    """`monthly_sales.showings`: the product's recorded impressions that month
+    (consenting shoppers' only, so an observable proxy, ADR 0045)."""
+    month_of = {c.context_id: c.month for c in contexts}
+    showings = Counter((imp.product_sku, month_of[imp.context]) for imp in impressions)
+    for ms in monthly_sales:
+        ms.showings = showings[(ms.product_sku, ms.month)]
 
 
 def gen_winback_campaigns(
@@ -2715,12 +3000,15 @@ def _impression_funnel(
     cat_bias: dict[str, float] | None,
     odds: float = 1.0,
     click_odds: float = 1.0,
+    purchase_odds: float = 1.0,
+    can_buy: bool = True,
 ) -> tuple[bool, bool, bool]:
     """Draw (clicked, added_to_cart, purchased) for one shown product.
 
     `odds` scales the add-to-cart and purchase odds: below 1 for a poorly
     made product, above 1 for a complement of the basket. `click_odds`
     scales the click: a complement of the basket draws the eye (ADR 0030).
+    `purchase_odds` scales the last step only (low stock, ADR 0038 P10).
 
     Two deliberately *different* signals, so ranking by clicks differs
     visibly from ranking by purchases (the ADR 0021 demo beat):
@@ -2734,7 +3022,10 @@ def _impression_funnel(
         cat owner essentially never *buys* a dog product even if a
         stray impression shows one.
 
-    Monotone by construction: purchase requires cart requires click.
+    Monotone by construction: purchase requires cart requires click. `rng`
+    is the impression's own: its three uniforms are drawn whatever happens,
+    so a null generation that changes the odds compares the same draws.
+    A visitor who hasn't bought yet never buys (`can_buy`, ADR 0040).
     """
     pt = pet_type_weights.get(product.pet_type, 0.003)          # 0..~1
     cat = cat_bias.get(product.category, 0.05) if cat_bias else 0.10
@@ -2764,11 +3055,13 @@ def _impression_funnel(
                        0.05, 0.95)
 
     click_p = _scale_odds(click_p, click_odds)
-    cart_p, purchase_p = _scale_odds(cart_p, odds), _scale_odds(purchase_p, odds)
+    cart_p = _scale_odds(cart_p, odds)
+    purchase_p = _scale_odds(purchase_p, odds * purchase_odds)
 
-    clicked = rng.random() < click_p
-    added = clicked and rng.random() < cart_p
-    purchased = added and rng.random() < purchase_p
+    u_click, u_cart, u_purchase = rng.random(), rng.random(), rng.random()
+    clicked = u_click < click_p
+    added = clicked and u_cart < cart_p
+    purchased = can_buy and added and u_purchase < purchase_p
     return clicked, added, purchased
 
 
@@ -2777,219 +3070,192 @@ def _scale_odds(p: float, odds: float) -> float:
     return p * odds / (1 - p + p * odds)
 
 
-def _sessions_for(rng: random.Random, customer: Customer) -> int:
-    """How many browsing sessions this customer has. Loosely scaled by
-    purchase activity (more orders ⇒ more browsing) with noise, so the
-    impressions table mirrors the order distribution without copying it.
-    Personas browse more — they carry the For You / Smart Search demo.
-    """
-    base = 1 + customer.total_orders // 2 + rng.randint(0, 3)
-    return max(1, min(base, 16))
+@dataclass
+class _ImpressionWorld:
+    """What a visitor's landing page reads: this month's catalogue and states, and the search phrases."""
+    state_of: dict[tuple[str, str], catalogue_events.ProductState]
+    on_sale_in: dict[str, list[Product]]
+    by_cat_in: dict[str, dict[str, list[Product]]]
+    phrases: dict[str, list[Product]]
+    phrases_of: dict[str, list[str]]
+    events: catalogue_events.CatalogueEvents
+    promotions: lifecycle.Promotions
+    contexts: list[observable.Context] = field(default_factory=list)
+    impressions: list[Impression] = field(default_factory=list)
+
+    def next_context_id(self) -> str:
+        return f"SESS-{len(self.contexts) + 1:06d}"
+
+    def next_impression_id(self) -> str:
+        return f"IMP-{len(self.impressions) + 1:07d}"
 
 
 def gen_impressions(
-    rng: random.Random,
     customers: list[Customer],
     products: list[Product],
-    orders: list[Order],
-    lines: list[OrderLine],
-    states: list[catalogue_events.ProductState],
+    history: OrderHistory,
+    events: catalogue_events.CatalogueEvents,
+    promotions: lifecycle.Promotions,
 ) -> tuple[list[observable.Context], list[Impression]]:
-    """Product impressions with the funnel outcome baked in.
+    """Every recorded visit, and the products each showed.
 
-    Reuses the order-generation affinity machinery
-    (`_segment_pet_type_weights`, `_category_bias[_for_customer]`,
-    `_customer_product_score`) so the products a customer *buys* in
-    impressions line up with what they buy in `order_lines` — one
-    coherent story across both tables. See ADR 0021.
-
-    Each session shows a mix of affinity-relevant and filler products
-    so `goal: {purchased: true}` has both a positive and a negative
-    class to rank on: relevant items convert, filler mostly doesn't.
+    Customers' sessions come from the order loop (ADR 0045), recorded for
+    those who consented (ADR 0044). Visitors who never buy come after, from
+    `acquisition.never_buy_sessions`, and visitor ids are assigned to all.
     """
-    contexts: list[observable.Context] = []
-    impressions: list[Impression] = []
-    imp_counter = 1
-    session_counter = 1
-
-    # ADR 0032: a session shows only what is on sale that month, and a
-    # product's state that month (an offer, being new, its stars) moves
-    # whether it converts.
-    state_of = {(st.product_sku, st.month): st for st in states}
-    on_sale_in: dict[str, list[Product]] = {
-        m: [p for p in products if (p.sku, m) in state_of] for m in _MONTH_WINDOW}
+    state_of = {(st.product_sku, st.month): st for st in history.states}
+    on_sale_in = {m: [p for p in products if (p.sku, m) in state_of] for m in _MONTH_WINDOW}
     by_cat_in: dict[str, dict[str, list[Product]]] = {}
     for m, on_sale in on_sale_in.items():
         by_cat_in[m] = {}
         for p in on_sale:
             by_cat_in[m].setdefault(p.category, []).append(p)
-
-    # ADR 0030: the basket a customer had each month (S6), the rows the
-    # complement rule reads, and the search phrases with their products (S7).
-    by_sku = {p.sku: p for p in products}
-    row_of = {p.sku: {"pet_type": p.pet_type, "name": p.name, "brand": p.brand, "category": p.category}
-              for p in products}
-    customer_of_order = {o.order_id: (o.customer_id, o.month) for o in orders}
-    basket_products: dict[tuple[str, str], list[Product]] = {}
-    for ln in lines:
-        basket_products.setdefault(customer_of_order[ln.order_id], []).append(by_sku[ln.product_sku])
-    baskets = {key: shoppers.basket_tokens(ps) for key, ps in basket_products.items()}
-    # Each customer's orders in time order, to find the last one before a session.
-    order_history: dict[str, list[tuple[str, str]]] = {}
-    for o in sorted(orders, key=lambda o: o.month):
-        order_history.setdefault(o.customer_id, []).append((o.month, o.skus))
     phrases = shoppers.query_phrases(products)
     phrases_of: dict[str, list[str]] = {}
     for phrase, matching in phrases.items():
         for p in matching:
             phrases_of.setdefault(p.sku, []).append(phrase)
-    persona_id_set = {p.customer_id for p in PERSONAS}
-    persona_by_id = {p.customer_id: p for p in PERSONAS}
+    world = _ImpressionWorld(state_of, on_sale_in, by_cat_in, phrases, phrases_of, events, promotions,
+                             contexts=list(history.contexts), impressions=list(history.impressions))
 
-    for customer in customers:
-        persona = persona_by_id.get(customer.customer_id)
-        if persona is not None and persona.pet_type_weights is not None:
-            pet_type_weights = persona.pet_type_weights
-        else:
-            pet_type_weights = _segment_pet_type_weights(customer.segment, customer.pet_size)
-        cat_bias = _category_bias(customer.segment, customer.pet_size)
-        if customer.customer_id not in persona_id_set:
-            cat_bias = _category_bias_for_customer(cat_bias, customer)
+    visitor_keys: list[tuple[str, int]] = [("customer", i) for i in range(len(customers))]
+    first_orders = Counter((c.first_source, c.joined_month) for c in customers if c.joined_month)
+    anonymous_from = len(world.contexts)
+    for visitor in _never_buy_visits(world, first_orders):
+        visitor_keys.append(("anonymous", visitor))
+    _assign_visitor_ids(world, customers, visitor_keys, anonymous_from)
+    return world.contexts, world.impressions
 
-        eligible_months = _MONTH_WINDOW[-(customer.tenure_months + 1):]
-        n_sessions = _sessions_for(rng, customer)
-        if persona is not None:
-            n_sessions = max(n_sessions, 14)  # personas anchor the demo views
 
-        story_rng = random.Random(f"sessions:{customer.customer_id}")
-        for _ in range(n_sessions):
-            session_id = f"SESS-{session_counter:06d}"
-            session_counter += 1
-            month = rng.choice(eligible_months)
-            catalogue = on_sale_in[month]
-            products_by_cat = by_cat_in[month]
-            surface = rng.choices(
-                list(_SURFACE_WEIGHTS.keys()),
-                weights=list(_SURFACE_WEIGHTS.values()),
-            )[0]
-            basket = baskets.get((customer.customer_id, month), [])
-            basket_skus = " ".join(sorted(p.sku for p in basket_products.get((customer.customer_id, month), []))) or None
-            earlier = [skus for m, skus in order_history.get(customer.customer_id, []) if m < month]
-            last_order_skus = earlier[-1] if earlier else None
-            just_bought_skus = set(last_order_skus.split()) if last_order_skus else set()
-            # ADR 0033: the kit items the household owns from earlier orders.
-            owned = {shoppers.token(p.pet_type, kind)
-                     for skus in earlier for p in (by_sku[s] for s in skus.split())
-                     if (kind := lifecycle.item_type(p.name, p.brand)) in lifecycle.DURABLE_TYPES}
+def _browse_weights(pool: list[Product], shopper: Customer, pet_type_weights: dict[str, float],
+                    cat_bias: dict[str, float] | None) -> list[float]:
+    """How likely each product is to be shown to this shopper: pet type,
+    category, their product score, and their diet rule (S1)."""
+    weights = []
+    for p in pool:
+        pt = pet_type_weights.get(p.pet_type, 0.003)
+        cb = cat_bias.get(p.category, 0.05) if cat_bias else 0.1
+        weights.append(max(pt * (0.5 + 5 * cb) * _customer_product_score(p, shopper)
+                           * shoppers.browse_weight(p.name, p.pet_type, p.category, shopper.diet_rule), 1e-4))
+    return weights
 
-            # Build the candidate pool for this session + the query.
-            query: str | None = None
-            if surface == "search":
-                # A phrase from a product this customer is drawn to (S7).
-                query = _search_query(story_rng, catalogue, phrases_of, pet_type_weights, cat_bias, customer)
-                pool = [p for p in phrases[query] if (p.sku, month) in state_of]
-            elif surface == "category":
-                # One category the customer leans toward, across pet types.
-                cat = _pick_product(rng, {"x": catalogue}, "x", cat_bias).category \
-                    if cat_bias else rng.choice(list(products_by_cat))
-                pool = list(products_by_cat.get(cat, []))
-            else:
-                # for_you / bought_together — personalised: the whole
-                # catalogue, sampled affinity-weighted below.
-                pool = list(catalogue)
-            if not pool:
-                pool = list(catalogue)
 
-            # Show 6-14 distinct products: ~65% affinity-weighted (what a
-            # good recommender would surface) + ~35% uniform filler (so
-            # there's a negative class). Weighting blends pet-type pref,
-            # category bias, and the customer's product score.
-            n_shown = min(rng.randint(6, 14), len(pool))
-            weights = []
-            for p in pool:
-                pt = pet_type_weights.get(p.pet_type, 0.003)
-                cb = cat_bias.get(p.category, 0.05) if cat_bias else 0.1
-                weights.append(max(pt * (0.5 + 5 * cb) * _customer_product_score(p, customer)
-                                   * shoppers.browse_weight(p.name, p.pet_type, p.category, customer.diet_rule), 1e-4))
-            # Filler (the funnel's negatives) is uniform, except that a rule
-            # household still mostly sees food that keeps its rule (S1).
-            filler_weights = [shoppers.browse_weight(p.name, p.pet_type, p.category, customer.diet_rule)
-                              for p in pool]
+def _interest_category(rng: random.Random, pet_type_weights: dict[str, float],
+                       cat_bias: dict[str, float] | None) -> str:
+    """The category a visit came for: one of the shopper's pets, then a
+    category by their bias (ADR 0040's landing category)."""
+    pet = rng.choices(list(pet_type_weights), weights=list(pet_type_weights.values()), k=1)[0]
+    categories = [c for pt, c in PET_CATEGORY_PAIRS if pt == pet]
+    weights = [cat_bias.get(c, 0.05) if cat_bias else 1.0 for c in categories]
+    return rng.choices(categories, weights=weights, k=1)[0]
 
-            shown: list[Product] = []
-            seen: set[str] = set()
-            # "Bought together" shows complements of the basket first (S6).
-            if surface == "bought_together" and basket:
-                complements = [p for p in pool if shoppers.complements_basket(row_of[p.sku], basket)]
-                for pick in story_rng.sample(complements, min(len(complements), n_shown // 2)):
-                    seen.add(pick.sku)
-                    shown.append(pick)
-            guard = 0
-            while len(shown) < n_shown and guard < n_shown * 8:
-                guard += 1
-                if rng.random() < 0.65:
-                    pick = rng.choices(pool, weights=weights, k=1)[0]
-                else:
-                    pick = rng.choices(pool, weights=filler_weights, k=1)[0]
-                if pick.sku in seen:
-                    continue
-                seen.add(pick.sku)
+
+def _product_row(p: Product) -> dict:
+    """The products.json-style row the S6 and K1 rules read."""
+    return {"pet_type": p.pet_type, "name": p.name, "brand": p.brand, "category": p.category}
+
+
+def _anonymous_shopper(visitor: int, source: str) -> tuple[Customer, dict[str, float], dict[str, float] | None]:
+    """A visitor who never buys still has tastes: a hidden profile drawn as a
+    customer's is, kept in memory only."""
+    rng = stream(RNG_SEED, "anonymous", visitor)
+    segment = rng.choices(SEGMENTS, weights=[SEGMENT_WEIGHTS[s] for s in SEGMENTS])[0]
+    pet_size = rng.choices(PET_SIZES, weights=[0.18, 0.42, 0.40])[0] if segment in ("dog_owner", "multi_pet") else None
+    lifestyle, health_focus, treat_affinity, brand_loyalty = _sample_customer_traits(rng, segment)
+    shopper = Customer(customer_id=f"visitor-{visitor}", name="", segment=segment, pet_size=pet_size,
+                       region="", tenure_months=0, lifestyle=lifestyle, health_focus=health_focus,
+                       treat_affinity=treat_affinity, brand_loyalty=brand_loyalty,
+                       favorite_brands=_pick_favorite_brands(rng, segment, lifestyle, brand_loyalty))
+    shopper.sensitivities = sensitivities.draw_sensitivities(rng, lifestyle, health_focus, brand_loyalty, source)
+    pet_type_weights = _segment_pet_type_weights(segment, pet_size)
+    return shopper, pet_type_weights, _category_bias_for_customer(_category_bias(segment, pet_size), shopper)
+
+
+def _never_buy_visits(world: _ImpressionWorld, first_orders: Counter) -> list[int]:
+    """The visits of visitors who never buy (ADR 0040, F2's denominator).
+    Most bounce: a context with no impressions. The rest see a few products
+    on the page they landed on. Returns the visitors, in order."""
+    visitors: list[int] = []
+    session_of: Counter = Counter()
+    profiles: dict[int, tuple] = {}
+    for source, month, visitor in acquisition.never_buy_sessions(RNG_SEED, first_orders):
+        if not person_data.visitor_consents(RNG_SEED, visitor):
+            continue   # ADR 0044: a visitor who declined tracking leaves no rows
+        if visitor not in profiles:
+            profiles[visitor] = _anonymous_shopper(visitor, source)
+            visitors.append(visitor)
+        shopper, pet_type_weights, cat_bias = profiles[visitor]
+        k = session_of[visitor]
+        session_of[visitor] += 1
+        interest = _interest_category(stream(RNG_SEED, "interest", "visitor", visitor, k), pet_type_weights,
+                                      cat_bias)
+        landing, landing_category = acquisition.draw_landing(stream(RNG_SEED, "landing", "visitor", visitor, k),
+                                                             source, interest)
+        rng = stream(RNG_SEED, "landing-page", visitor, k)
+        context = observable.Context(
+            context_id=world.next_context_id(), customer=None, visitor=f"visitor-{visitor}", month=month,
+            weekday="", surface="landing", source=source, landing=landing, landing_category=landing_category)
+        context.weekday = random.Random(f"weekday:{context.context_id}").choice(WEEKDAYS)
+        world.contexts.append(context)
+        if rng.random() < acquisition.BOUNCE_P:
+            continue
+        pool = _landing_pool(world, rng, month, landing, landing_category, shopper, pet_type_weights, cat_bias)
+        n_shown = min(rng.randint(*acquisition.LANDING_PAGE_PRODUCTS), len(pool))
+        weights = [w * _merchandising_weight(world.events, p, world.state_of[(p.sku, month)])
+                   for p, w in zip(pool, _browse_weights(pool, shopper, pet_type_weights, cat_bias))]
+        shown: list[Product] = []
+        while len(shown) < n_shown:
+            pick = rng.choices(pool, weights=weights, k=1)[0]
+            if pick not in shown:
                 shown.append(pick)
+        score = {p.sku: w for p, w in zip(pool, weights)}
+        for position, product in enumerate(merchandising.list_order(rng, shown, lambda p: score[p.sku])):
+            state = world.state_of[(product.sku, month)]
+            state_click, state_odds, purchase_odds = _price_and_state_odds(world, shopper, product, state)
+            clicked, added, purchased = _impression_funnel(
+                stream(RNG_SEED, "funnel", "visitor", visitor, k, position), product, shopper,
+                pet_type_weights, cat_bias, state_odds, state_click * merchandising.position_click_odds(position),
+                purchase_odds, can_buy=False)
+            world.impressions.append(Impression(
+                impression_id=world.next_impression_id(), context=context.context_id,
+                product_sku=product.sku, product_state=state.product_state_id, position=position,
+                clicked=clicked, added_to_cart=added, purchased=purchased))
+    return visitors
 
-            contexts.append(observable.Context(
-                context_id=session_id,
-                customer=customer.customer_id,
-                month=month,
-                weekday=random.Random(f"weekday:{session_id}").choice(WEEKDAYS),
-                surface=surface,
-                search_query=query,
-                basket=basket_skus,
-                basket_categories=" ".join(basket) or None,
-                prev_basket=last_order_skus,
-                owned=" ".join(sorted(owned)) or None,
-            ))
-            for position, product in enumerate(shown):
-                odds = click_odds = 1.0
-                if not shoppers.keeps_diet_rule(product.name, product.pet_type, product.category,
-                                                customer.diet_rule):
-                    odds = 0.0   # a rule household looks, but never buys it (S1)
-                if shoppers.is_poorly_made(product.sku):
-                    odds *= shoppers.POOR_CONVERSION_ODDS
-                if product.sku in just_bought_skus:
-                    # Still stocked up (S8): less likely to look, or to buy.
-                    odds *= shoppers.JUST_BOUGHT_ODDS
-                if basket and shoppers.complements_basket(row_of[product.sku], basket,
-                                                          include_kit=not observable.KIT_PROGRESSION):
-                    odds *= shoppers.COMPLEMENT_ODDS
-                    click_odds *= shoppers.COMPLEMENT_ODDS
-                if observable.KIT_PROGRESSION:
-                    # K1: where the household is in its kit, from the basket and what it owns.
-                    kit = observable.kit_odds(row_of[product.sku], set(basket), owned)
-                    odds *= kit
-                    click_odds *= kit
-                if product.sku in just_bought_skus:
-                    click_odds *= shoppers.JUST_BOUGHT_ODDS
-                state = state_of[(product.sku, month)]
-                state_odds, state_click_odds = catalogue_events.impression_odds(state, customer)
-                odds *= state_odds
-                click_odds *= state_click_odds
-                clicked, added, purchased = _impression_funnel(
-                    rng, product, customer, pet_type_weights, cat_bias, odds, click_odds,
-                )
-                impressions.append(Impression(
-                    impression_id=f"IMP-{imp_counter:07d}",
-                    context=session_id,
-                    product_sku=product.sku,
-                    product_state=state.product_state_id,
-                    position=position,
-                    just_bought=product.sku in just_bought_skus,
-                    clicked=clicked,
-                    added_to_cart=added,
-                    purchased=purchased,
-                ))
-                imp_counter += 1
 
-    return contexts, impressions
+def _landing_pool(world: _ImpressionWorld, rng: random.Random, month: str, landing: str,
+                  landing_category: str | None, shopper: Customer, pet_type_weights: dict[str, float],
+                  cat_bias: dict[str, float] | None) -> list[Product]:
+    """The products a landing page can show."""
+    catalogue = world.on_sale_in[month]
+    if landing == "search":
+        query = _search_query(rng, catalogue, world.phrases_of, pet_type_weights, cat_bias, shopper)
+        pool = [p for p in world.phrases[query] if (p.sku, month) in world.state_of]
+    elif landing == "offer":
+        pool = [p for p in world.by_cat_in[month].get(landing_category, catalogue)
+                if world.state_of[(p.sku, month)].on_offer]
+    elif landing in ("product", "category"):
+        pool = list(world.by_cat_in[month].get(landing_category, []))
+    else:
+        pool = list(catalogue)
+    return pool or list(catalogue)
+
+
+def _assign_visitor_ids(world: _ImpressionWorld, customers: list[Customer],
+                        visitor_keys: list[tuple[str, int]], anonymous_from: int) -> None:
+    """Visitor ids in a shuffled order, so an id says nothing about whether
+    the visitor became a customer."""
+    order = list(range(len(visitor_keys)))
+    stream(RNG_SEED, "visitor-ids").shuffle(order)
+    vis_id = {key: f"VIS-{order[i] + 1:07d}" for i, key in enumerate(visitor_keys)}
+    customer_index = {c.customer_id: i for i, c in enumerate(customers)}
+    for c in customers:
+        c.visitor = vis_id[("customer", customer_index[c.customer_id])]
+    for context in world.contexts[:anonymous_from]:
+        # Set to the customer's id when numbered: before a first order the context has no customer.
+        context.visitor = vis_id[("customer", customer_index[context.visitor])]
+    for context in world.contexts[anonymous_from:]:
+        context.visitor = vis_id[("anonymous", int(context.visitor.removeprefix("visitor-")))]
 
 
 # ── Output ──────────────────────────────────────────────────────────
@@ -3042,59 +3308,59 @@ def main() -> None:
 
     products = gen_products(rng)
     customers = gen_customers(rng)
+    assign_sources_and_sensitivities(customers)
     # ADR 0027: promotions are decided before any order, on their own
     # RNG, so demand can respond to price rather than price to demand.
     promotions = lifecycle.plan_promotions(random.Random(RNG_SEED + 27), products, _MONTH_WINDOW)
     # ADR 0032: launches and price rises, decided before any order too.
     events = catalogue_events.plan_catalogue_events(random.Random(RNG_SEED + 32), products, _MONTH_WINDOW,
                                                     promotions.mispriced)
-    orders, lines = gen_orders_and_lines(rng, customers, products, promotions, events)
+    # ADR 0039: orders month by month, with what each led to: experiences,
+    # reviews (whose stars the next month's orders see), NPS answers, churn.
+    # ADR 0044: consent decides what is recorded of the sessions below.
+    person_data.assign_consent(RNG_SEED, customers, always_consenting={p.customer_id for p in PERSONAS})
+    # ADR 0045: every sale is a purchase in a session, month by month, with what
+    # each order led to (ADR 0039): experiences, reviews, NPS answers, churn.
+    history = gen_orders_and_lines(customers, products, promotions, events)
+    orders, lines, reviews = history.orders, history.lines, history.reviews
 
     # Post-pass: derive customer-level aggregates from the order
     # history (total_orders, total_spent_eur, last_order_month,
     # churned). Powers the Churn view's `_predict` features.
     backfill_customer_aggregates(customers, orders)
-
-    # Reviews come last — they consume a few RNG draws but no
-    # earlier signal depends on them. The RNG state at this point is
-    # deterministic given the seed; reviews land byte-identical
-    # across runs.
-    reviews = gen_reviews(rng, products, customers, orders, lines)
+    backfill_first_orders(customers, orders)
+    # ADR 0044: what each person told the shop, and whether they consented to
+    # behavioural tracking. After the orders: the diet rule is drawn there.
+    person_data.assign(RNG_SEED, customers, always_with_profile={p.customer_id for p in PERSONAS})
     rate_products(products, reviews)
-
-    # Forward-looking churn label per review, derived from each
-    # customer's overall churn status + the review's month.
+    # Forward-looking churn label per review, from the churn that followed it.
     backfill_review_churn_label(reviews, customers)
 
     # Customer-month panel — the training shape for time-series churn
     # prediction. Drives the Churn view's at-risk leaderboard + the
     # `_evaluate` accuracy band. See ADR 0013.
-    customer_months = gen_customer_months(rng, customers, orders, reviews)
+    customer_months = gen_customer_months(customers, orders, reviews, history.nps)
 
     # Operate-section tables: SKU × month sales aggregate (drives the
     # Demand Forecast view + feeds Inventory's daily-demand), per-SKU
-    # stock snapshot (Inventory's reorder workflow), and price-history
-    # observations (Price Intelligence's fair-band + sweet-spot
-    # `_relate`). See ADRs 0014 / 0015 / 0016.
+    # stock snapshot (Inventory's reorder workflow). See ADRs 0014 / 0015.
+    # ADR 0045: monthly_sales is the sum of purchased order lines.
     monthly_sales = gen_monthly_sales(products, orders, lines, events)
     inventory = gen_inventory(rng, products, monthly_sales)
-    # ADR 0032: each product as it was each month on sale: price, offer, the
-    # stars its reviews gave by then, new or not, a rival's launch, a rise.
-    product_states = catalogue_events.gen_product_states(
-        rng, products, _MONTH_WINDOW, events, promotions.discount,
-        catalogue_events.ratings_by_month(reviews, _MONTH_WINDOW))
+    # Each product as it was each month on sale, drawn at the month's start in
+    # the session loop (ADR 0032, ADR 0038, ADR 0045).
+    product_states = history.states
     backfill_monthly_sales_prices(monthly_sales, product_states)
     # Historical re-engagement campaigns — drives the Win-back
     # view's `_predict responded` per current-churned customer.
     # See ADR 0020.
     winback_campaigns = gen_winback_campaigns(rng, customers, products, orders, lines, events)
 
-    # Product impressions with the funnel outcome — gives the
-    # recommendation surfaces a real conversion KPI to rank on
-    # (`_recommend goal: {purchased: true}`). Generated after the
-    # customer-aggregate backfill so `_sessions_for` can scale session
-    # count by purchase activity. See ADR 0021.
-    contexts, impressions = gen_impressions(rng, customers, products, orders, lines, product_states)
+    # Visits, and the products they showed with the funnel outcome: the
+    # recommendation surfaces' conversion KPI (`_recommend goal:
+    # {purchased: true}`, ADR 0021), and ADR 0040's never-buy visitors.
+    contexts, impressions = gen_impressions(customers, products, history, events, promotions)
+    backfill_showings(monthly_sales, contexts, impressions)
 
     write_json(DATA_DIR / "products.json", products)
     # ADR 0033: what a shop has; the hidden traits stay in the generator.
@@ -3102,6 +3368,7 @@ def main() -> None:
     write_json(DATA_DIR / "orders.json", orders)
     write_json(DATA_DIR / "order_lines.json", lines)
     write_json(DATA_DIR / "reviews.json", reviews)
+    write_json(DATA_DIR / "nps_responses.json", history.nps)
     write_json(DATA_DIR / "customer_months.json", customer_months)
     write_json(DATA_DIR / "monthly_sales.json", monthly_sales)
     write_json(DATA_DIR / "inventory.json", inventory)
@@ -3109,8 +3376,13 @@ def main() -> None:
     write_json(DATA_DIR / "winback_campaigns.json", winback_campaigns)
     write_json(DATA_DIR / "contexts.json", contexts)
     # The generator's answer key, for the data checks; Aito never sees it.
-    (DATA_DIR / "answer_key").mkdir(exist_ok=True)
-    write_json(DATA_DIR / "answer_key" / "customer_traits.json", [observable.answer_key_row(c) for c in customers])
+    answer_key = DATA_DIR / "answer_key"
+    answer_key.mkdir(exist_ok=True)
+    write_json(answer_key / "customer_traits.json", [observable.answer_key_row(c) for c in customers])
+    write_json(answer_key / "product_quality.json",
+               [{"sku": p.sku, "quality": review_chain.quality(p.sku)} for p in products])
+    write_json(answer_key / "line_experiences.json",
+               [{"line_id": line_id, "experience": e} for line_id, e in history.experience_of.items()])
     write_json(DATA_DIR / "impressions.json", impressions)
 
     # ── Summary print ───────────────────────────────────────────────
@@ -3119,12 +3391,13 @@ def main() -> None:
     print(f"  orders          {len(orders):>6}")
     print(f"  order_lines     {len(lines):>6}")
     print(f"  reviews         {len(reviews):>6}")
+    print(f"  nps_responses   {len(history.nps):>6}")
     print(f"  customer_months {len(customer_months):>6}")
     print(f"  monthly_sales   {len(monthly_sales):>6}")
     print(f"  inventory       {len(inventory):>6}")
     print(f"  winback         {len(winback_campaigns):>6}")
     print(f"  product_states  {len(product_states):>6}")
-    print(f"  contexts        {len(contexts):>6}")
+    print(f"  contexts        {len(contexts):>6}  ({sum(c.customer is None for c in contexts)} before a first order)")
     print(f"  impressions     {len(impressions):>6}")
     _print_impression_funnel(impressions)
 
