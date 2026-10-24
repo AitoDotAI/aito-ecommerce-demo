@@ -903,3 +903,34 @@ byte of seeds 42, 7 and 99.
   ADR 0045.
 - **Seed 23:** five litter products shared a name, and the litter variants
   listed only four. Two more variants were added, after the existing ones.
+
+### Pooled results (2026-10-24; seeds 42, 7, 99, 1, 2, 3, 11, 13, 17, 23)
+
+Full table, with every seed's value: `actionable-states-pooled.md`. **16 of 17
+pooled checks pass.** The three-seed table above stays as recorded. The
+pooled run's values for seeds 42, 7 and 99 equal it exactly, so the
+two bug fixes left those seeds unchanged.
+
+| # | threshold | pooled | 95 % interval | result |
+|:--|:--|--:|:--|:--|
+| P6 high ÷ low (high alone) | ≥ 1.5 (≥ 1.3) | 1.96 (2.25) | 1.81–2.12 (2.15–2.35) | pass |
+| P7 high ÷ low (high alone) | ≥ 1.5 (≥ 1.3) | 2.73 (3.36) | 2.23–3.35 (3.05–3.70) | pass |
+| P8 high ÷ low (high alone) | ≥ 1.5 (≥ 1.3) | 2.06 (1.86) | 1.74–2.43 (1.71–2.02) | pass |
+| P9 high ÷ low (high alone) | ≥ 1.5 (≥ 1.3) | 1.65 (1.62) | 1.49–1.84 (1.50–1.75) | pass |
+| P10 | ≥ 1.03 | 1.056 | 1.036–1.076 | pass |
+| V1 | ≥ 1.2 | 1.25 | 1.20–1.30 | pass |
+| R1 | ≥ 1.4 | 1.44 | 1.35–1.54 | pass |
+| R2a | ≥ 1.8 | 1.86 | 1.64–2.10 | pass |
+| R2b | ≤ 0.8 | 0.765 | 0.730–0.801 | pass |
+| R5 | ≥ 1.4 | 1.54 | 1.34–1.77 | pass |
+| **O2** | ≥ 1.8 | **1.61** | 1.57–1.65 | **fail** (accepted, as decided above) |
+| O3a | ≥ 1.2 | 1.204 | 1.199–1.209 | pass (it missed two seeds by 0.001) |
+| O3b | 0 | 0 | 0 on every seed | pass |
+
+- **The one-seed misses were noise, as diagnosed.** P8, P9, V1, R1, R2a and
+  R5 each pass pooled, with intervals above 1.
+- **O2 is a precisely measured shortfall,** not noise: ×1.61, interval
+  1.57–1.65, against ×1.8. The views quote ×1.6.
+- **The rule's interval bars:** R1, R2a and R5 clear their thresholds only by
+  their point estimates (their intervals reach below them); the rule asks
+  only that intervals exclude 1.0.
