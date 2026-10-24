@@ -89,10 +89,10 @@ uci_aito = AitoClient(replace(config, aito_env="uci"), writes=petnord_writes)
 # PUBLIC_DEMO=1 so the demo runs against a read-only API key.
 if aito.check_connectivity():
     cache.init_persistent_cache(aito)
-    # Register the read-only precompute-and-serve store for the seven
-    # precomputed views — the six heavy endpoints plus the dashboard
-    # landing page (ADR 0024). Reads only — populated by `./do precompute`,
-    # never written at request time.
+    # Register the read-only precompute-and-serve store for the views served
+    # from snapshots: Overview (the landing page), Supply, Retention and Demand
+    # (ADR 0024, ADR 0041). Reads only — populated by `./do precompute`, never
+    # written at request time.
     precompute_store.init(aito)
 else:
     # Don't fail startup — the public-demo container may be racing the
