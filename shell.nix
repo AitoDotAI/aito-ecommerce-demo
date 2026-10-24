@@ -12,7 +12,7 @@ pkgs.mkShell {
     pkgs.uv
 
     # Node / Next.js frontend (future)
-    pkgs.nodejs_20
+    pkgs.nodejs_22
     pkgs.corepack
 
     # Playwright system dependencies
