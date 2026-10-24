@@ -351,15 +351,15 @@ async function main() {
 
     {
       const visit = await openFresh(browser, `${BASE}/evidence/model-checks/`);
-      await visit.page.locator("tr", { hasText: /segment/i }).first().click();
-      const followed = await urlMatches(visit.page, /model=segment_from_product/);
+      await visit.page.locator("tr", { hasText: /return risk/i }).first().click();
+      const followed = await urlMatches(visit.page, /model=return_risk/);
       const copied = visit.page.url();
       await visit.context.close();
       check(followed, `model-checks: a row click puts the model in the address bar (${copied})`);
 
       const reopened = await openFresh(browser, copied);
-      const focused = await appears(reopened.page.locator("tr[style*='solid']", { hasText: /segment/i }).first());
-      check(focused, "model-checks: the copied URL reopens with the segment row focused");
+      const focused = await appears(reopened.page.locator("tr[style*='solid']", { hasText: /return risk/i }).first());
+      check(focused, "model-checks: the copied URL reopens with the return-risk row focused");
       await reopened.context.close();
     }
 
@@ -382,11 +382,11 @@ async function main() {
       const { context, page } = await openFresh(browser, `${BASE}/evidence/model-checks/?model=dietary_from_name`);
       const focusedDietary = page.locator("tr[style*='solid']", { hasText: /diet/i }).first();
       check(await appears(focusedDietary), "model-checks?model=dietary_from_name focuses the dietary row");
-      await page.locator("tr", { hasText: /segment/i }).first().click();
-      const forward = await urlMatches(page, /model=segment_from_product/);
+      await page.locator("tr", { hasText: /return risk/i }).first().click();
+      const forward = await urlMatches(page, /model=return_risk/);
       await page.goBack();
       const back = await urlMatches(page, /model=dietary_from_name/) && await appears(focusedDietary);
-      check(forward && back, "model-checks: segment → back restores the dietary focus");
+      check(forward && back, "model-checks: return risk → back restores the dietary focus");
       await context.close();
     }
 
@@ -437,7 +437,9 @@ async function main() {
 
     {
       const { context, page } = await openFresh(browser, `${BASE}/evidence/`);
-      const modelLine = await appears(page.getByText(/3 of 4 models beat that guess by 10 points or more/));
+      // The total comes from the snapshot the test serves, so a new evaluation can't leave it stale.
+      const evaluated = JSON.parse(fs.readFileSync(EVAL_SNAPSHOT, "utf8")).data.models.length;
+      const modelLine = await appears(page.getByText(new RegExp(`\\d of ${evaluated} models beat that guess by 10 points or more`)));
       const entries = await page.locator(".evidence-entry").count();
       const marked = await page.locator(".evidence-entry .pill", { hasText: /^(Real|Synthetic) data$/ }).count();
       check(modelLine && entries === 3 && marked === 3,
