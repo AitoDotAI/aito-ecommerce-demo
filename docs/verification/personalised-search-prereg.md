@@ -200,3 +200,31 @@ No ranking of this benchmark was run on `release2`.
    (4 at a time), that is about 31 minutes.
 6. **Tests.** `tests/test_personalised_search_sessions.py` holds these
    counts for env `release2`.
+
+### Amendment 2 (2026-10-24, before any run on release 2): K-fold hold-out
+
+aito-core explained the 502s seen in the Shop sweep (ticket
+td-20261024151214916465): each nested `from` is a full in-heap copy of
+`impressions` cached by its kept rows, so a "not this session" population is
+a new build per session and fills the heap. The "Held out" section above
+(every ranking reads the impressions with that one session left out) can't
+be run that way on the shared instance.
+
+**From now on, for release 2:** the K-fold form registered for the Shop sweep
+(`actionable-states-prereg.md`, "Amendment (2026-10-24, before any further
+run)"). K = 10, a session's fold is `int(sha256(session_id).hexdigest(), 16) % 10`,
+and a session is ranked by a model that has not seen its fold's scored
+sessions: 10 populations in all, each built once. Every Aito ranking uses it:
+the Shop's search, the history form, household only, and the just-bought
+re-ask.
+
+- **Same estimand,** with about 115 of the 1,150 sessions' rows also absent
+  (a tenth of the scored sessions; 0.1 × 1,150 ≈ 115 contexts out of 61,484).
+- **A deviation,** not a change to the metrics, the six rankings, the
+  comparisons or the wording.
+- **Release 1's result stays valid as run,** with its per-session hold-out.
+- **The probe's check** that a held-out session has 0 rows inside its `from`
+  is repeated per fold (each fold's sessions have 0).
+- **Timing.** 10 builds plus the queries; the 306-session partial of the Shop
+  sweep is a guide, not a bound. If a fold's build or a query returns a 502,
+  the run stops there and is reported.

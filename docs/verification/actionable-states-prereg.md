@@ -1101,3 +1101,72 @@ the shared instance until after 26.10 (decision above).
   purchases than without the offer"), not a rate (ADR 0038).
 - **Reported, not judged:** per-product `$p` against its own observed rate in
   deciles; a product with fewer than 30 list showings is left out of them.
+
+## Amendment (2026-10-24, before any further run): K-fold hold-out for the sweep, the benchmark and O4
+
+**Why.** aito-core answered the 502s (ticket td-20261024151214916465). Each
+nested `from` is a full in-heap copy of `impressions`, cached by the content
+of its kept rows. A "not this session" population is therefore a new full
+build for every session, and the heap fills: our wall at 153 sessions fits.
+Core's two safe options are used below. Nothing runs before Tuesday 27.10
+(decision above).
+
+### What changes, for the Shop sweep and the personalised-search benchmark
+
+- **Hold-out becomes K-fold, K = 10.**
+  - A session's fold is `int(sha256(session_id).hexdigest(), 16) % 10`,
+    so folds are reproducible and don't depend on the sample's order.
+  - For a session in fold *k*, Aito learns from `from: {from: impressions,
+    where: {"$not": {"context": {"$or": [the scored sessions of fold k]}}}}`.
+    There are K populations in all, each built once and reused by the
+    sessions of its fold.
+  - The set is the scored sessions of the fold (sweep: the 1,400 sampled;
+    benchmark: its 1,150), not every context.
+- **Same estimand, a slightly smaller training set.** Each session is still
+  scored by a model that has not seen its own rows. It now also hasn't seen
+  its fold-mates' rows, about a tenth of the scored sessions (140 of 1,400;
+  115 of 1,150), which are 0.1 × 1,400 ÷ 61,484 ≈ 0.2 % of `contexts` for the
+  sweep. The registered metrics, variants, intervals and decision rule
+  (hit@12 and Brier, paired 95 % intervals, the Brier margin 0.01 and the
+  tie rule) are unchanged. Recorded as a **deviation** from "each session
+  left out (nested `from`)".
+- **The 306-session partial** (`data/evidence/no-profile-shop-sweep.partial.jsonl`,
+  per-session hold-out) is kept **as a sanity comparison only.** When the
+  K-fold sweep has scored the same 306 sessions, their means and paired
+  differences are reported beside the per-session ones. They are not
+  pooled, and a gap between the two is not judged by a threshold. It is a
+  check that the K-fold form didn't change the story.
+- **Resuming.** The K-fold sweep starts from scratch (a different
+  population per query), in fold order, and checkpoints per session as
+  before. The first run is a time check on one fold (140 sessions): the
+  instance's heap and a 502 are watched for, and the run stops on a 502.
+- **The personalised-search benchmark** moves to the same K-fold form
+  (amendment 2 in `personalised-search-prereg.md`). Its release-1 result
+  stays valid as run, with its per-session hold-out.
+
+### Q7 on list showings, calibration: unchanged in meaning
+
+It already uses one population (list showings before 2026-02), built once
+and shared by all 8 cells. It is a time split, not a per-session hold-out,
+so it is the K-fold form's best case. Nothing changes.
+
+### O4, option (b): a branch with the held-out rows deleted
+
+`_estimate` refuses a nested `from` on purpose (501, no ticket). Core's
+other route has the same restricted-population meaning:
+
+- A branch of `release2` is created, the 658 `monthly_sales` rows of
+  2026-04 are deleted from it, and `_estimate units_sold` runs on that
+  branch's path (`/env/<branch>/api/v2/_estimate`) with the procedure above
+  unchanged (regression, `price_index` 1.00 and 0.83, per product).
+- **Recorded as a deviation:** the held-out month is removed by deletion, not
+  by a nested `from`. The `monthly_sales` held-out accuracy stays on 2026-04's
+  rows read from the fixtures.
+- **A shared write.** Creating a branch and deleting rows write to
+  `shared.aito.ai`. **Antti decides before it runs;** it isn't started from
+  here. The delete is unmeasured at this size: it is timed once on the
+  branch, and the branch is deleted afterwards.
+- It is the same route as the sweep's alternative (b), a branch with the
+  held-out sessions' impressions deleted and plain queries. That would avoid
+  population builds altogether, but the K folds are used first because they
+  need no write.

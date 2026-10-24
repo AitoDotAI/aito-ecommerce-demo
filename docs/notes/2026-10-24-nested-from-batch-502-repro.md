@@ -47,3 +47,14 @@ Whether the 502 is the upstream timing out, the engine restarting under the
 load of many distinct populations, or memory. We guessed the last, with no
 evidence. Please run `batch.json` in a loop with a different held-out session
 each time against a local engine, and watch its memory and restarts.
+
+## Update (2026-10-24, aito-core's answer, td-20261024151214916465)
+
+Each held-out population is a full in-heap copy of `impressions`, cached by
+the content of its kept rows. A "NOT this session" population is a new full
+build per session and fills the heap. Core's safe options: (a) K folds, K
+populations each built once; (b) one env branch with the held-out rows
+deleted, then plain queries. We use (a) for the Shop sweep and the
+personalised-search benchmark, and (b) for O4 (`_estimate`'s 501 on a nested
+`from` is deliberate), after Antti's say-so for the branch writes. See the
+two prereg amendments of 2026-10-24.
