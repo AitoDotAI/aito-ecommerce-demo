@@ -175,7 +175,7 @@ function ShopView() {
               </div>
               <div className="shop-grid" aria-busy={!found && !searchError}>
                 {found?.items.map((item) => (
-                  <ProductCard key={item.sku} item={item}
+                  <ProductCard key={item.sku} item={item} scope={{ shopper: shopperKey, month, cart: cartParam }}
                                onAdd={() => addToCart([item.sku])}
                                onOpen={() => setUrl({ product: item.sku })} />
                 ))}
@@ -212,7 +212,7 @@ function ShopView() {
                 <div key={i} className="card" style={{ height: 170, background: "var(--border-light)" }} />
               ))}
               {shown?.items.map((item, i) => (
-                <ProductCard key={item.sku} item={item} rank={i + 1}
+                <ProductCard key={item.sku} item={item} rank={i + 1} scope={{ shopper: shopperKey, month, cart: cartParam }}
                              onAdd={() => addToCart([item.sku])}
                              onOpen={() => setUrl({ product: item.sku })} />
               ))}

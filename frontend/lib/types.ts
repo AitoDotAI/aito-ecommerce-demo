@@ -947,3 +947,14 @@ export interface AcquisitionSection {
   queries_sent: number;
   example_query: { from: string; where: Record<string, unknown>; relate: string; limit: number };
 }
+
+/** `/api/shop/card-features` (src/shop_card_features.py): the product's features behind a card's pull. */
+export interface CardFeature { label: string; marked_text: string | null }
+export interface CardFeaturePattern { lift: number; features: CardFeature[] }
+export interface CardFeatures {
+  sku: string;
+  p: number;                       // this query's probability, not the card's
+  base_p: number;
+  patterns: CardFeaturePattern[];  // one feature, one lift; biggest effect first
+  joint: CardFeaturePattern[];     // several features, one lift for them together
+}

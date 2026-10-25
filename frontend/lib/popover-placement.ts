@@ -13,7 +13,7 @@ const MARGIN = 12;
  * side was clipped.
  *
  * On a wide screen it sits under its button, right-aligned to it, clamped inside the viewport
- * on both axes.
+ * on both axes, and slid up when the button is low so it keeps most of the screen's height.
  */
 export function popoverStyle(
   anchor: DOMRect,
@@ -33,7 +33,9 @@ export function popoverStyle(
   }
   const width = Math.min(preferredWidth, viewport.width - 2 * MARGIN);
   const left = Math.min(Math.max(MARGIN, anchor.right - width), viewport.width - MARGIN - width);
-  const top = Math.max(MARGIN, Math.min(anchor.bottom + 8, viewport.height - 240));
+  // Room for a popover that grows when a section opens: slide it up rather than cramp it low.
+  const room = Math.min(560, Math.round(viewport.height * 0.7));
+  const top = Math.max(MARGIN, Math.min(anchor.bottom + 8, viewport.height - room));
   return {
     position: "fixed",
     top,

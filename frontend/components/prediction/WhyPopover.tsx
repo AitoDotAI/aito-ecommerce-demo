@@ -43,6 +43,8 @@ interface WhyPopoverProps {
   why: WhyExplanationPayload | WhyEstimatePayload;
   /** Optional one-line summary shown as the title — "Why {title}?" */
   title?: string;
+  /** Extra content under the chain, e.g. a term's parts fetched on demand. */
+  children?: React.ReactNode;
 }
 
 
@@ -57,7 +59,7 @@ interface WhyPopoverProps {
  * protective factor; render it with a downward arrow but keep the
  * chain intact.
  */
-export default function WhyPopover({ why, title }: WhyPopoverProps) {
+export default function WhyPopover({ why, title, children }: WhyPopoverProps) {
   const [open, setOpen] = useState(false);
   const [placement, setPlacement] = useState<CSSProperties>({});
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -140,6 +142,7 @@ export default function WhyPopover({ why, title }: WhyPopoverProps) {
           {isEstimatePayload(why)
             ? <EstimateWhyBody why={why} />
             : renderPredictBody(why)}
+          {children}
         </div>,
         document.body,
       )}
@@ -430,7 +433,7 @@ function PartLine({ label, lift }: { label: React.ReactNode; lift: number }) {
  * That's the project's safety convention (CLAUDE.md prime
  * directive #2 — never silently inject).
  */
-function renderMarkedText(text: string, positive: boolean): React.ReactNode {
+export function renderMarkedText(text: string, positive: boolean): React.ReactNode {
   // Match either «...» or ‹...› spans; capture them so .split keeps them.
   const parts = text.split(/(«[^»]*»|‹[^›]*›)/);
   return parts.map((part, i) => {

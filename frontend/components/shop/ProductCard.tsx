@@ -3,6 +3,7 @@
 import { fmtEur } from "@/lib/api";
 import { lastLever } from "@/lib/sandbox";
 import type { ScoreAdjustment, ShopItem } from "@/lib/types";
+import CardFeatures from "@/components/shop/CardFeatures";
 import HelpPopover from "@/components/prediction/HelpPopover";
 import WhyPopover from "@/components/prediction/WhyPopover";
 import ProductHighlights from "@/components/shop/ProductHighlights";
@@ -16,8 +17,9 @@ const WORTH_SHOWING_PCT = 10;
  *  probability for this shopper, and the strongest of Aito's reasons. For
  *  something they bought last order, how far that pulled it down. In a sandbox's 2026-05, a product a lever changed
  *  shows its re-scored score and that score's own explanation instead (ADR 0043). */
-export default function ProductCard({ item, rank, onAdd, onOpen }: {
+export default function ProductCard({ item, scope, rank, onAdd, onOpen }: {
   item: ShopItem;
+  scope: { shopper: string; month: string; cart: string };   // for the ? popover's feature query
   rank?: number;           // its place in the grid, for the sandbox's rank change
   onAdd: () => void;
   onOpen: () => void;
@@ -49,7 +51,7 @@ export default function ProductCard({ item, rank, onAdd, onOpen }: {
         <div className="card-sub" style={{ marginTop: 2, display: "flex", alignItems: "center", gap: 6 }}>
           {item.adjustment
             ? <>Score {Math.round(shown * 100)} <RankChange item={item} rank={rank} /></>
-            : <>{Math.round(item.p * 100)} % buy it when shown <ShownExplainer item={item} /></>}
+            : <>{Math.round(item.p * 100)} % buy it when shown <ShownExplainer item={item} scope={scope} /></>}
         </div>
       </div>
       {item.p_if_new !== null && (
@@ -72,9 +74,13 @@ export default function ProductCard({ item, rank, onAdd, onOpen }: {
 /** Why "X % buy it when shown": Aito's `$why` chain for the card. A card whose probability was
  *  re-asked (bought last order) has no chain of the new number, so it gets the plain
  *  explanation of what the percentage is: a per-showing purchase chance, not a click rate. */
-function ShownExplainer({ item }: { item: ShopItem }) {
+function ShownExplainer({ item, scope }: { item: ShopItem; scope: { shopper: string; month: string; cart: string } }) {
   if (item.why_explanation) {
-    return <WhyPopover why={item.why_explanation} title={`${Math.round(item.p * 100)} % buy ${item.name} when it is shown`} />;
+    return (
+      <WhyPopover why={item.why_explanation} title={`${Math.round(item.p * 100)} % buy ${item.name} when it is shown`}>
+        <CardFeatures sku={item.sku} {...scope} />
+      </WhyPopover>
+    );
   }
   return (
     <HelpPopover label="What does this percentage mean?" title="Chance to buy when shown">

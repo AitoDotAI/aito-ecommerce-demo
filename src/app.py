@@ -54,6 +54,7 @@ from src.search_words import get_search_words_section
 from src.acquisition_service import get_acquisition
 from src.design_effect import DesignEffect
 from src.reviews_service import get_reply_effect, get_reviews_section
+from src.shop_card_features import get_card_features
 from src.shop_analytics_service import get_funnel_section, get_who_section
 from src.review_triage_service import get_review_triage
 from src.lookup_errors import ProductNotOnSaleError, UnknownPersonaError, UnknownProductError, UnknownReviewError
@@ -501,6 +502,12 @@ def shop_product_endpoint(request: Request, sku: str, shopper: str, month: str =
     """A product's drawer: details, alternatives for this shopper, often in
     the same basket, and in your orders before `month`."""
     return _shop(lambda: get_product_drawer(_shop_reader(request, month), sku, shopper, month, _cart_skus(cart)))
+
+
+@app.get("/api/shop/card-features")
+def shop_card_features_endpoint(request: Request, sku: str, shopper: str, month: str = Query(pattern=MONTH), cart: str = ""):
+    """The features behind a card's pull, one lift each (opened from the card's ?)."""
+    return _shop(lambda: get_card_features(_shop_reader(request, month), shopper, month, _cart_skus(cart), sku))
 
 
 @app.get("/api/shop/suggestions")
