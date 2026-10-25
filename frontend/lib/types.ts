@@ -950,3 +950,8 @@ export interface AcquisitionSection {
   queries_sent: number;
   example_query: { from: string; where: Record<string, unknown>; relate: string; limit: number };
 }
+
+/** `/api/ask` (ADR 0042): GET says whether Ask is on, POST answers a question with the lever tools. */
+export interface AskStatus { enabled: boolean; model: string | null }
+export interface AskToolCall { name: string; input: Record<string, unknown>; ms: number; error: string | null }
+export interface AskAnswer { answer: string; tool_calls: AskToolCall[]; model: string; input_tokens: number; output_tokens: number }

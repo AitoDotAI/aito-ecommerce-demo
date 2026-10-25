@@ -41,12 +41,12 @@ export function shortSandboxName(env: string): string {
 }
 
 /** The operator's admin token, asked once per tab. */
-export function adminToken(): string | null {
+export function adminToken(purpose: string = "a new sandbox"): string | null {
   try {
     const kept = window.sessionStorage.getItem(ADMIN_TOKEN_KEY);
     if (kept) return kept;
   } catch { /* storage blocked: ask every time */ }
-  const typed = window.prompt("Admin token for a new sandbox");
+  const typed = window.prompt(`Admin token for ${purpose}`);
   if (!typed) return null;
   try { window.sessionStorage.setItem(ADMIN_TOKEN_KEY, typed); } catch { /* not kept */ }
   return typed;

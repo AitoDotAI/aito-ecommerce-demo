@@ -335,7 +335,7 @@ a { color: inherit; text-decoration: none; }
   .store-sub  { display: none; }
   /* Only the top bar's ghost button ("Export"): page controls such as the
      Shop's cart and close buttons use .btn-ghost too and must stay. */
-  .topbar-actions .btn-ghost { display: none; }
+  .topbar-actions .btn-ghost:not(.ask-btn) { display: none; }
   /* Topbar-actions on mobile are pruned to just the essentials —
      the rightmost area becomes the breadcrumb's home and the
      Aito FAB (bottom-right) carries the CTA path. */
