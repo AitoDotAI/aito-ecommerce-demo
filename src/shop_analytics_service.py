@@ -105,7 +105,7 @@ def field_body(table: str, where: dict, field: str) -> dict:
 IDENTIFIED = {"context.customer": {"$exists": True}}
 
 
-def _lift_section(client: AitoClient, *, table: str, customer_field: str, month_field: str,
+def lift_section(client: AitoClient, *, table: str, customer_field: str, month_field: str,
                   condition: dict, fields: list[str], selected: str, options: list[dict]) -> LiftSection:
     identified = IDENTIFIED if customer_field == "context.customer" else {}
     condition = {**condition, **identified}
@@ -141,7 +141,7 @@ def _lift_section(client: AitoClient, *, table: str, customer_field: str, month_
 def get_funnel_section(client: AitoClient, kpi: str = "purchased") -> LiftSection:
     if kpi not in KPIS:
         raise ValueError(f"Unknown kpi {kpi!r}; expected one of {KPIS}")
-    return _lift_section(client, table="impressions", customer_field="context.customer", month_field="context.month",
+    return lift_section(client, table="impressions", customer_field="context.customer", month_field="context.month",
                          condition={kpi: True}, fields=FUNNEL_FIELDS, selected=kpi, options=[])
 
 
@@ -150,6 +150,6 @@ def get_who_section(client: AitoClient, who: str = DEFAULT_WHO) -> LiftSection:
     if where is None:
         raise ValueError(f"Unknown who {who!r}; expected one of {[o[0] for o in WHO_OPTIONS]}")
     options = [{"id": i, "label": label, "group": group} for i, label, group, _ in WHO_OPTIONS]
-    return _lift_section(client, table="order_lines", customer_field="order_id.customer_id",
+    return lift_section(client, table="order_lines", customer_field="order_id.customer_id",
                          month_field="order_id.month", condition=where, fields=WHO_FIELDS,
                          selected=who, options=options)

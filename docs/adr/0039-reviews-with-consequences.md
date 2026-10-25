@@ -169,3 +169,22 @@ rise as planted, but small in what a shop observes.
 **Also:** `nps_responses.order` is named `surveyed_order`, so the column is
 clear of any reserved word in Aito.
 
+
+## Amendment 2 (2026-10-25): what the Reviews view reads, probed on release 2
+
+- **Q10 does not hold.** `_relate` cannot follow an order to its lines (`hop 'order_lines'
+  is not a link`, 400), and `customers` has no `had_negative_review`. So `nps_responses`
+  gains two columns the shop can read: `product_state` (the order's first product, as it
+  was that month) and `wrote_negative_review` (the respondent reviewed a product of that
+  order at 1–2 stars). No draw changes; only `nps_responses.json` differs.
+- **Q11 holds.** Boolean `_relate` on `customer_months` by `had_negative_review` and
+  `review_replied` answers.
+- **Q12 is replaced.** `_estimate units_sold` by rating band reads the band's mean, and
+  shop-wide it runs backwards (5 stars 4.8 units a product-month, 4 stars 6.3), since a
+  product's stars follow how much it has sold. The view does not claim demand from the
+  stars; it points to one product's own months (Product › History) and the price what-if.
+- **What the view shows on `release2`:** at 1–2 stars clicks ×0.74 and purchases ×0.57,
+  at 5 stars ×1.16 and ×1.24, intervals clear of 1; detractors include writers of a
+  negative review ×1.90 [1.28, 2.81], while the stars of the surveyed order's product
+  don't separate them; churn is not separated by reviews or replies (design effect 9.2),
+  and the reply comparison is a tie (0.80, [0.32, 1.99]; 62 of 564 against 95 of 691).

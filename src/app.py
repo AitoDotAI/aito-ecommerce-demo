@@ -51,6 +51,8 @@ from src.shop_search import search_shop
 from src.shop_suggestions import get_suggestions
 from src.basket_pairs import get_basket_section
 from src.search_words import get_search_words_section
+from src.design_effect import DesignEffect
+from src.reviews_service import get_reply_effect, get_reviews_section
 from src.shop_analytics_service import get_funnel_section, get_who_section
 from src.review_triage_service import get_review_triage
 from src.lookup_errors import ProductNotOnSaleError, UnknownPersonaError, UnknownProductError, UnknownReviewError
@@ -584,6 +586,23 @@ def shop_analytics_funnel_endpoint(kpi: str = "purchased"):
 def shop_analytics_who_endpoint(who: str = "summer"):
     """Which categories a season, segment or diet rule buys more or less."""
     return _shop_analytics_section(f"who:{who}", lambda: get_who_section(aito, who=who))
+
+
+@app.get("/api/reviews")
+def reviews_endpoint(section: str = "purchased"):
+    """What a product's stars and a customer's reviews go with (ADR 0039)."""
+    return _shop_analytics_section(f"reviews:{section}", lambda: get_reviews_section(aito, section))
+
+
+@app.get("/api/reviews/reply-effect")
+def reviews_reply_effect_endpoint():
+    """Churn after a negative review, replied ÷ not replied, with its interval."""
+    def load():
+        churn = cache.get_or_compute("shop-analytics:reviews:churn",
+                                     lambda: get_reviews_section(aito, "churn").to_dict(), ttl=1800)
+        clustering = DesignEffect(**churn["clustering"])
+        return get_reply_effect(aito, clustering)
+    return _shop_analytics_section("reviews:reply-effect", load)
 
 
 @app.get("/api/shop-analytics/baskets")

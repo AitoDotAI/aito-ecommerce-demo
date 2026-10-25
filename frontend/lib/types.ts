@@ -899,3 +899,17 @@ export interface UciBoughtTogether {
   bought_with: UciBoughtWith[];
   query: Record<string, unknown>;
 }
+
+
+/* ─── Reviews (/api/reviews/*) ─── */
+
+export interface ReviewsReplyEffect {
+  replied_months: number;
+  replied_churned: number;
+  unreplied_months: number;
+  unreplied_churned: number;
+  risk_ratio: number;
+  interval_low: number;
+  interval_high: number;
+  verdict: "fewer leave" | "more leave" | "a tie";
+}

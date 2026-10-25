@@ -43,6 +43,7 @@ const NAV: NavHeading[] = [
           { href: "/",                 label: "Overview",  icon: "📊" },
           { href: "/patterns",         label: "Patterns",  icon: "🔗" },
           { href: "/product",          label: "Product",   icon: "🏷️" },
+          { href: "/reviews",          label: "Reviews",   icon: "⭐" },
           { href: "/supply",           label: "Supply",    icon: "📦" },
           { href: "/retention",        label: "Retention", icon: "🔁" },
         ],

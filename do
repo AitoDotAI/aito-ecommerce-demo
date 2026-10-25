@@ -125,6 +125,7 @@ _guard_named_env() {
 # PORT_BACKEND=8640 ./do backend-dev from a worktree.
 PORT_FRONTEND="${PORT_FRONTEND:-8500}"
 PORT_BACKEND="${PORT_BACKEND:-8501}"
+export PORT_BACKEND   # next.config.ts proxies the dev API to it
 
 cmd_help() {
   cat <<EOF

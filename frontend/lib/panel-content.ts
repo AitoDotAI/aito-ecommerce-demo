@@ -181,6 +181,23 @@ export function shopAnalyticsPanel(queriesSent?: number): AitoPanelConfig {
 }
 
 
+export function reviewsPanel(queriesSent?: number): AitoPanelConfig {
+  const c = (t: string) => `<code style="color:var(--aito-teal);">${t}</code>`;
+  return {
+    operation: "Reviews",
+    endpoints: ["_relate", "_search"],
+    description:
+      `Each section is ${c("_relate")}: which stars, review and reply facts are over- or under-represented ` +
+      `among clicks, purchases, NPS detractors and churned customer-months. ${c("_relate")} cannot follow an ` +
+      `order to its lines, so an NPS answer carries its order's first product as it was that month. ` +
+      `The reply comparison counts customer-months with ${c("_search")}. A lift is shown when its interval ` +
+      `excludes 1 for the whole section. The query below is one of the ${queriesSent ?? "…"} sent.`,
+    query: "",
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
 export function productFillingPanel(): AitoPanelConfig {
   return {
     operation: "Product Filling",

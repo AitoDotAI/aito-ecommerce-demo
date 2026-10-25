@@ -1040,3 +1040,41 @@ def test_similarity_over_the_name_is_a_standard_bm25(client):
     assert aito[:10] == reference.ranked("senior chicken dog")[:10]
     ratio = [math.log(h["$score"]) / reference.score("senior chicken dog", h["sku"]) for h in res["hits"][:20]]
     assert 0.95 < statistics.median(ratio) < 1.05, ratio
+
+
+# ── Reviews (ADR 0039): stars, NPS and churn on data release 2 ───────
+
+
+def test_reviews_low_stars_cut_clicks_and_purchases_and_high_stars_lift_them(client):
+    """R1 and R2: a product shown at 1-2 stars is clicked and bought less than
+    the average showing, at 5 stars more, each interval clear of 1."""
+    from src.reviews_service import get_reviews_section
+
+    for kpi in ("clicked", "purchased"):
+        section = get_reviews_section(client, kpi)
+        low = _row(section.rows, "product_state.rating_band", "1-2")
+        high = _row(section.rows, "product_state.rating_band", "5")
+        assert low and low.interval_high < 1, (kpi, low)
+        assert high and high.interval_low > 1, (kpi, high)
+
+
+def test_reviews_a_negative_review_writer_is_over_represented_among_nps_detractors(client):
+    """R3, as the shop sees it: the experience is hidden, but a 1-2 star review
+    marks one, and detractors include more of those writers."""
+    from src.reviews_service import get_reviews_section
+
+    row = _row(get_reviews_section(client, "nps").rows, "wrote_negative_review", "true")
+    assert row and row.interval_low > 1, row
+
+
+def test_reviews_the_reply_comparison_counts_every_negative_review_month(client):
+    """R4b (ADR 0039's amendment): replied and not replied cover every
+    customer-month with a negative review, and the ratio sits inside its interval."""
+    from src.reviews_service import get_reply_effect, get_reviews_section
+
+    churn = get_reviews_section(client, "churn")
+    effect = get_reply_effect(client, churn.clustering)
+    negative = client.search("customer_months", where={"had_negative_review": True}, limit=0)["total"]
+
+    assert effect.replied_months + effect.unreplied_months == negative
+    assert effect.interval_low < effect.risk_ratio < effect.interval_high
