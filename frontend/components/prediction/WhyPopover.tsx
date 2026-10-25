@@ -30,6 +30,8 @@ export interface WhyLiftEntry {
   /** A sentence naming what the term is, shown in place of "When field is value" chips when
    *  the entry has none of its own (the Shop card's product terms, src/shop_why.py). */
   label?: string;
+  /** Names a fold-out the caller can supply under this term (WhyPopover's `entryDetail`). */
+  detail?: string;
 }
 
 export interface WhyExplanationPayload {
@@ -43,8 +45,9 @@ interface WhyPopoverProps {
   why: WhyExplanationPayload | WhyEstimatePayload;
   /** Optional one-line summary shown as the title — "Why {title}?" */
   title?: string;
-  /** Extra content under the chain, e.g. a term's parts fetched on demand. */
-  children?: React.ReactNode;
+  /** Content folded under a term of the chain, fetched on demand by the caller: given a term's
+   *  `detail` name, e.g. the features behind "this product's features". */
+  entryDetail?: (detail: string) => React.ReactNode;
 }
 
 
@@ -59,7 +62,7 @@ interface WhyPopoverProps {
  * protective factor; render it with a downward arrow but keep the
  * chain intact.
  */
-export default function WhyPopover({ why, title, children }: WhyPopoverProps) {
+export default function WhyPopover({ why, title, entryDetail }: WhyPopoverProps) {
   const [open, setOpen] = useState(false);
   const [placement, setPlacement] = useState<CSSProperties>({});
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -141,8 +144,7 @@ export default function WhyPopover({ why, title, children }: WhyPopoverProps) {
 
           {isEstimatePayload(why)
             ? <EstimateWhyBody why={why} />
-            : renderPredictBody(why)}
-          {children}
+            : renderPredictBody(why, entryDetail)}
         </div>,
         document.body,
       )}
@@ -158,7 +160,7 @@ function isEstimatePayload(
 }
 
 
-function renderPredictBody(why: WhyExplanationPayload): React.ReactNode {
+function renderPredictBody(why: WhyExplanationPayload, entryDetail?: (detail: string) => React.ReactNode): React.ReactNode {
   // The lifts are marginal per-pattern factors; Aito's posterior is NOT
   // their naive product. Aito normalises overlapping evidence, so with
   // weak evidence the product does land on the model's probability, but
@@ -210,7 +212,7 @@ function renderPredictBody(why: WhyExplanationPayload): React.ReactNode {
 
       {/* Pattern match cards */}
       {why.lifts.map((entry, i) => (
-        <PatternMatchCard key={i} entry={entry} />
+        <PatternMatchCard key={i} entry={entry} entryDetail={entryDetail} />
       ))}
 
       {/* Evidence chain. The normalising constant is shown as its own
@@ -267,7 +269,7 @@ function renderPredictBody(why: WhyExplanationPayload): React.ReactNode {
 }
 
 
-function PatternMatchCard({ entry }: { entry: WhyLiftEntry }) {
+function PatternMatchCard({ entry, entryDetail }: { entry: WhyLiftEntry; entryDetail?: (detail: string) => React.ReactNode }) {
   const up = entry.lift >= 1;
   // Use the highlighted-sentence rendering only when the source field
   // has *surrounding text* — i.e., it's a Text-typed column where the
@@ -332,6 +334,7 @@ function PatternMatchCard({ entry }: { entry: WhyLiftEntry }) {
           </div>
         )}
         {members.length > 0 && <Parts entry={entry} members={members} />}
+        {entry.detail && entryDetail?.(entry.detail)}
       </div>
       <div style={{
         fontFamily: "var(--mono)",

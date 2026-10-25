@@ -70,3 +70,9 @@ def test_an_unknown_term_fails_loudly_rather_than_dropping_out_of_the_chain():
 def test_a_why_without_a_base_probability_fails_loudly():
     with pytest.raises(AitoError, match="baseP"):
         shop_why({"type": "product", "factors": []}, 0.5, CONTEXT)
+
+
+def test_the_products_features_term_offers_a_fold_out_for_the_page_to_fill():
+    lifts = shop_why(WHY, 0.512, CONTEXT)["lifts"]
+
+    assert [e["detail"] for e in lifts if "detail" in e] == ["features"]

@@ -40,7 +40,8 @@ def shop_why(why: dict, p: float, context: dict) -> dict:
         elif kind == "hitLinkPropositionLift":
             features = {"label": "Products with this one's features (brand, category, price), "
                                  "whatever the situation",
-                        "lift": float(factor["value"]), "propositions": [], "highlight": None}
+                        "lift": float(factor["value"]), "propositions": [], "highlight": None,
+                        "detail": "features"}
         elif kind == "hitPropositionLift":
             members = by_impact([_entry(f, context) for f in factor.get("factors", [])])
             itself = {"label": "This product in your situation: how each part of it lifts this product",

@@ -77,9 +77,8 @@ export default function ProductCard({ item, scope, rank, onAdd, onOpen }: {
 function ShownExplainer({ item, scope }: { item: ShopItem; scope: { shopper: string; month: string; cart: string } }) {
   if (item.why_explanation) {
     return (
-      <WhyPopover why={item.why_explanation} title={`${Math.round(item.p * 100)} % buy ${item.name} when it is shown`}>
-        <CardFeatures sku={item.sku} {...scope} />
-      </WhyPopover>
+      <WhyPopover why={item.why_explanation} title={`${Math.round(item.p * 100)} % buy ${item.name} when it is shown`}
+                  entryDetail={(detail) => detail === "features" ? <CardFeatures sku={item.sku} {...scope} /> : null} />
     );
   }
   return (

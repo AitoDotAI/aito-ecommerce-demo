@@ -26,10 +26,10 @@ export default function CardFeatures({ sku, shopper, month, cart }: {
   }
 
   return (
-    <details style={{ marginTop: 10, borderTop: "1px solid var(--border-light)", paddingTop: 8 }}
+    <details style={{ marginTop: 6, fontSize: 11.5 }}
              onToggle={(e) => load((e.target as HTMLDetailsElement).open)}>
-      <summary style={{ cursor: "pointer", fontSize: 12, fontWeight: 600 }}>
-        Which of the product&apos;s features?
+      <summary style={{ cursor: "pointer", color: "var(--text-muted)" }}>
+        Which features?
       </summary>
       <div style={{ fontSize: 12, marginTop: 6 }}>
         {error && <div style={{ color: "var(--red)" }}>Couldn&apos;t load: {error}</div>}

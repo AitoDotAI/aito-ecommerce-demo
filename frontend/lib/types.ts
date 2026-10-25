@@ -75,6 +75,8 @@ export interface WhyExplanationPayload {
     }>;
     /** A sentence naming a term that has no conditions of its own. */
     label?: string;
+    /** Names a fold-out the page can supply under this term. */
+    detail?: string;
   }>;
   final_p: number | null;
 }
