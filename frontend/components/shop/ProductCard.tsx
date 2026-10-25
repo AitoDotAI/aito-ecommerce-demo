@@ -3,6 +3,7 @@
 import { fmtEur } from "@/lib/api";
 import { lastLever } from "@/lib/sandbox";
 import type { ScoreAdjustment, ShopItem } from "@/lib/types";
+import HelpPopover from "@/components/prediction/HelpPopover";
 import ProductHighlights from "@/components/shop/ProductHighlights";
 import VariantNote from "@/components/shop/VariantNote";
 
@@ -44,10 +45,10 @@ export default function ProductCard({ item, rank, onAdd, onOpen }: {
         <div style={{ height: 5, background: "var(--border-light)", borderRadius: 3 }}>
           <div style={{ width: `${Math.min(100, Math.round(shown * 100))}%`, height: "100%", background: "var(--cta)", borderRadius: 3 }} />
         </div>
-        <div className="card-sub" style={{ marginTop: 2 }}>
+        <div className="card-sub" style={{ marginTop: 2, display: "flex", alignItems: "center", gap: 6 }}>
           {item.adjustment
             ? <>Score {Math.round(shown * 100)} <RankChange item={item} rank={rank} /></>
-            : `${Math.round(item.p * 100)} % buy it when shown`}
+            : <>{Math.round(item.p * 100)} % buy it when shown <ShownExplainer /></>}
         </div>
       </div>
       {item.p_if_new !== null && (
@@ -64,6 +65,29 @@ export default function ProductCard({ item, rank, onAdd, onOpen }: {
         <button className="btn btn-ghost" onClick={onOpen} aria-label={`Details of ${item.name}`}>Details</button>
       </div>
     </div>
+  );
+}
+
+/** What "X % buy it when shown" is: a per-showing purchase chance, which is not a click rate. */
+function ShownExplainer() {
+  return (
+    <HelpPopover label="What does this percentage mean?" title="Chance to buy when shown">
+      <p style={{ margin: "0 0 8px" }}>
+        Out of 100 times this product is shown to a shopper like this one, in this context, this many end
+        in a <strong>purchase</strong>. It is not a click-through rate: a click is only a step on the way,
+        and most clicks don&apos;t end in a purchase.
+      </p>
+      <p style={{ margin: "0 0 8px" }}>
+        Aito estimates it from the shop&apos;s logged showings (<code>_predict purchased</code>). It uses what
+        the shopper has in common with earlier buyers, such as their pets, their past orders and the season,
+        and how this product did when shown in those situations. The reasons on the card (×1.8 and so on) are
+        the factors that raised it, read from <code>$why</code>.
+      </p>
+      <p style={{ margin: 0, color: "var(--text-muted)" }}>
+        It is a model estimate learned from past showings, not a count, and it is for ranking. Compare the
+        cards with each other rather than reading a single figure as a forecast of sales.
+      </p>
+    </HelpPopover>
   );
 }
 
