@@ -8,21 +8,22 @@ on the real-data evidence:
 2. **Product what-if**: the decision for one product, before any lever.
 3. **The lever** in a sandbox: 20 % or more off, and the decision pushes
    back to 10–15 %.
-4. **The Shop** as Päivi: her kit path, and the discounted hideout rising.
+4. **The Shop** as Anna (shopper key `paivi`): her kit path, and the discounted hideout rising.
 5. **The agent** reads the same sandbox and sees the offer just set.
 6. **"How well?"** Evidence, ending on the real-data claim.
 
 Each beat lists what to click, what to say, the number on screen and its
 basis, the one caveat, and a recovery line. Every number was read on
-2026-10-24 through the code paths named below, on env `observable`, which
-holds the release data. The sandbox template is loaded from the same
-release files, so its numbers should match. Numbers marked **(Sunday)** can
-only be confirmed in Antti's sandbox run. The pre-flight is in the run
-sheet, `docs/notes/2026-10-26-ambientia-run-sheet.md`.
+2026-10-25 through the code paths named below, on env `release2`, which
+holds data release 2 (ADR 0045, amendment 2). The sandbox template is loaded
+from the same release files, so its numbers should match. Numbers that need a
+sandbox are marked **(Sunday)** and carry no figure until Antti's sandbox run
+reads them: release 1's values for them are gone, not carried over. The
+pre-flight is in the run sheet, `docs/notes/2026-10-26-ambientia-run-sheet.md`.
 
 The app runs at **ecommerce.aito.ai**, or locally with `./do dev` at
-`http://localhost:8500`. Until tonight's cutover (ADR 0035), run it
-locally with `AITO_ENV=observable ./do dev`. Sandbox mode needs the
+`http://localhost:8500`. Before the cutover to release 2, run it locally
+with `AITO_ENV=release2 ./do dev`. Sandbox mode needs the
 sandbox database in the server's config (ADR 0043). Without it, the lever
 and the agent don't run, and the banner doesn't show.
 
@@ -36,7 +37,7 @@ Keep the sandbox link from the pre-flight in a second tab.
 
 **Not on the path:** Patterns (it stays in "If there's time"), and
 Retention. If Retention comes up, lead with who to reach and why, not with
-the €183 the win-back emails return: that is a small, synthetic sum.
+the €135 the win-back emails return: that is a small, synthetic sum.
 
 ---
 
@@ -50,8 +51,8 @@ euros follow from that forecast."
 
 | On screen | Number | Basis |
 |---|---|---|
-| Reorder these 59 now | an estimated €5,667 of May's sales can't be served without them; 403 units, €5,775 at cost | `_estimate units_sold` per SKU for May 2026, against stock and the reorder point (`src/supply_rows.py`); served from `data/precomputed/v2-master/supply.json` |
-| €26,576 tied up in 87 overstocked products | say only the €26,576. Don't present the markdown split ("11 don't clear") as a finding: it is the units model by price alone, which counts neither an offer's lift on purchases when shown (×1.81 at 20 %+) nor the higher place it earns in the shop, so it understates an offer and contradicts Product's "put it on offer" | the same `_estimate` at 5–20 % off, over 13 weeks; price only |
+| Reorder these 83 now | an estimated €11,097 of May's sales can't be served without them; 676 units, €10,659 at cost | `_estimate units_sold` per SKU for May 2026, against stock and the reorder point (`src/supply_rows.py`); served from `data/precomputed/v2-master/supply.json` |
+| €28,298 tied up in 79 overstocked products | say only the €28,298. Don't present the markdown split ("14 won't clear, none worth marking down") as a finding: it is the units model by price alone, which counts neither an offer's lift on purchases when shown (×1.79 at 20 %+) nor the higher place it earns in the shop, so it understates an offer and contradicts Product's "put it on offer" | the same `_estimate` at 5–20 % off, over 13 weeks; price only |
 
 **Caveat (the page's one line):** the forecasts are Aito's estimates for
 May; the euros follow from them. **How well? →** opens the model checks.
@@ -83,9 +84,9 @@ Trixie Hideout). Until a lever writes May, the view shows April.
 
 | On screen | Number | Basis |
 |---|---|---|
-| The decision | "Put it on offer at 10–15 % off": bought when shown 10.6 % → 19.5 % (×1.84) | `_predict purchased` on `impressions` per discount band (`src/discount_what_if.py`); margin per showing (`src/product_decision.py`) |
-| Margin per 100 showings | €106.55 → €141.52 (+33 %); break-even ×1.38 | list price €22.28, cost €12.25, one unit per purchase |
-| Why | 12.4 % (all impressions) × 1.57 (10–15 % off, shop-wide) × 1.00 = 19.5 % | the band's `$why` |
+| The decision | "Put it on offer at 10–15 % off": bought when shown 20.6 % → 37.1 % (×1.80) | `_predict purchased` on `impressions` per discount band (`src/discount_what_if.py`); margin per showing (`src/product_decision.py`) |
+| Margin per 100 showings | €206.67 → €269.17 (+30 %); break-even ×1.38 | list price €22.28, cost €12.25, one unit per purchase |
+| Why | 14.2 % (all impressions) × 1.59 (10–15 % off, shop-wide) × 1.73 (this product's own) × 0.95 (Aito's normalising constant) = 37.1 % | the band's `$why`; at 10–15 % it was shown 6 times, at 20 %+ twice |
 
 ## 3. The lever: 20 % or more off, and the pushback (about 1½ minutes)
 
@@ -97,10 +98,10 @@ reads it back from the database before it shows anything."
 
 | On screen | Number | Basis |
 |---|---|---|
-| Read back | "May 2026, 20 % or more off, €17.27, 4 stars" | `src/product_levers.py`: April's list price €22.28 at the band's typical 22.5 % |
-| The what-if's 20 %+ row | 19.7 % bought when shown, ×1.85 vs. no discount, band's lift 1.59 | the same `_predict`; this product's own lift is left out of `$why` (it was shown 5 times at 20 %+) |
-| The decision, May **(Sunday)** | "Change its offer to 10–15 % off": margin per 100 showings €98.92 → €141.52 | the same estimates, with May's band as the current one |
-| Price model, May **(Sunday)** | 1.2 → 0.9 units, profit €6.22 → €6.53 | `_estimate units_sold`, regression, at €17.27 and €19.50 (`src/price_what_if.py`) |
+| Read back | "May 2026, 20 % or more off, €17.27, 3 stars" **(Sunday)** | `src/product_levers.py`: April's list price €22.28 at the band's typical 22.5 %; April's stars are 3 (2 reviews) |
+| The what-if's 20 %+ row | 40.8 % bought when shown, ×1.98 vs. no discount, band's lift 1.79 | the same `_predict`; it was shown twice at 20 %+, so the band's lift is the shop-wide one |
+| The decision, May **(Sunday)** | "Change its offer to 10–15 % off": margin per 100 showings €204.84 (20 %+) → €269.17 (10–15 %) | the same estimates, with May's band as the current one |
+| Price model, May **(Sunday)** | units and profit at €17.27 and €19.50: read in the sandbox | `_estimate units_sold`, regression (`src/price_what_if.py`) |
 
 **Say:** "The decision pushes back. At 20 % off it sells about as well as
 at 10–15 %, so the extra discount is margin given away. The owner gets the
@@ -112,51 +113,52 @@ says "May 2026, 10–15 % off"; the decision should read "Keep its offer at
 
 | On screen | Number | Basis |
 |---|---|---|
-| The Shop's offer factor at 10–15 % | ×1.80, so the hideout's score stays 48 (0.265 × 1.80) | lift(10–15 %) 1.573 / lift(none) 0.875 (`src/shop_state_lifts.py`) |
+| The Shop's offer factor at 10–15 % **(Sunday)** | read in the sandbox: the card's score is Aito's probability × this factor | lift(10–15 %) / lift(none), each from the `$why` of `_predict purchased` (`src/shop_state_lifts.py`) |
 
 **Caveat:** the offer's lift is shop-wide. Aito learned what a discount
 does across all products, plus how this product sells. It hasn't learned
 this product's own response to a discount.
 
-## 4. The Shop as Päivi (about 1½ minutes)
+## 4. The Shop as Anna (about 1½ minutes)
 
-**Click:** **See the Shop react, as Päivi →**
+**Click:** **See the Shop react →**
 (`/shop/?shopper=paivi&month=2026-05&db=<branch>`).
 
-**Say:** "Päivi got a guinea pig in February: a cage and a water bottle so
+**Say:** "Anna got a guinea pig in February: a cage and a water bottle so
 far. A shop sees what a visit is for, so it shows one view per intent."
 
 ### Her kit path
 
 | On screen | Number | Basis |
 |---|---|---|
-| Next for their kit | PetNord Hideout 17 %, Trixie Hideout 15 % "+1 variant", PetNord Exercise Wheel 9 %, Trixie Exercise Wheel 9 % | `_predict product_sku` on `order_lines` where `owned_before` holds a small-animal cage and water bottle (`src/shop_suggestions.py`); read for May on `observable`, the same as April's |
-| Buy again | PetNord Senior Guinea Pig Mix Food 12kg, 67 % | `_predict skus.$feature` over her own orders before the month |
+| Next for their kit | Trixie Hideout, small 25 %, Trixie Hideout, medium 16 %, PetNord Hideout 14 %, Trixie Exercise Wheel 13 % | `_predict product_sku` on `order_lines` where `owned_before` holds a small-animal cage and water bottle (`src/shop_suggestions.py`); read on `release2` for April; May's list in the sandbox **(Sunday)** |
+| Buy again | PetNord Guinea Pig Mix Food 15kg, 67 % | `_predict skus.$feature` over her own orders before the month |
 
 **Say, on the kit:** "Shoppers who owned a cage and a bottle bought a
 hideout next. Aito reads that from their order lines. The app has no kit
 rules."
 
-**On "+1 variant":** the generated catalogue gives some products the same
-name under two or three SKUs (SKU-PT-0563 and SKU-PT-0564 are both "Trixie
-Hideout"). Each list shows a name once, as the SKU Aito ranked highest,
-with that SKU's own number; scores are never added (`src/same_name.py`).
+**On variants:** in release 2 a product's variants carry their size in the
+name ("Trixie Hideout, small" and "Trixie Hideout, medium"), so each shows as
+its own card with its own number. Where two SKUs still share a name, a list
+shows it once, as the SKU Aito ranked highest; scores are never added
+(`src/same_name.py`).
 
 ### The discounted hideout rising
 
 | On screen | Number | Basis |
 |---|---|---|
-| Before the lever | Trixie Hideout 7th card, "27 % buy it when shown" | the Shop's measured `_recommend` for May, top 40, one card per name (10th of 40 SKUs; read on `observable`) |
-| After **(Sunday)** | Trixie Hideout 1st: "Score 48 ↑ 6 since the offer" (at 20 %+ or at 10–15 %), chip "On offer ×1.8, learned across the shop" | `src/shop_rescore.py`: 0.265 × 1.81 = 0.48, above the next card's 0.335; the rank change counts cards, as the page shows them |
-| The card's explanation | "Aito's purchase probability 27 % (…) × offer band lift ×1.81 (shop-wide) × star band lift ×1.00 (shop-wide) = score 48" | offer factor = lift(20 %+) 1.588 / lift(none) 0.875, each from `$why` of `_predict purchased` (`src/shop_state_lifts.py`) |
+| Before the lever | Trixie Hideout, small is the 10th card, "36 % buy it when shown" (April; May's rank **(Sunday)**) | the Shop's measured `_recommend`, top 40, read on `release2` |
+| After **(Sunday)** | Trixie Hideout, small rises, with "Score … ↑ … since the offer" and the chip "On offer ×…, learned across the shop" | `src/shop_rescore.py`: Aito's probability × the offer band's factor; the rank change counts cards, as the page shows them |
+| The card's explanation | "Aito's purchase probability … × offer band lift (shop-wide) × star band lift (shop-wide) = score …" | offer factor = lift(band) / lift(none), each from `$why` of `_predict purchased` (`src/shop_state_lifts.py`) |
 
 **Point at the Aito panel** (open it with the tab on the right edge):
 "The query holds only what a shop knows: the pets she told us, the month
 and her cart."
 
 **Say:** "The hideout rises to first, and the card says why: the
-explanation multiplies out to the number shown. The 27 % is Aito's, and so
-is the offer's lift. Multiplying them is this app's choice, and the panel
+explanation multiplies out to the number shown. The probability is Aito's,
+and so is the offer's lift. Multiplying them is this app's choice, and the panel
 says so."
 
 **Caveat (the page's one line):** the re-scored card shows a score, not a
@@ -169,13 +171,15 @@ re-scored Shop exists only in the sandbox.
 
 | On screen | Number | Basis |
 |---|---|---|
-| Read back | "Its star band changed: 4 stars → 3 stars (7 reviews, average 3.43)" | 6 reviews at 3.83 before; `rating_band` uses the generator's rule (`data/shoppers.py`) |
-| Shop card | chip "3 stars ×0.83, learned across the shop"; score 48 → 40 **(Sunday)** | lift(3 stars) 0.993 / lift(4 stars) 1.198 = 0.83 |
+| Read back **(Sunday)** | the star band before and after, with the review count and average | April: Trixie Hideout, small is in the 3-star band with 2 reviews; `rating_band` uses the generator's rule (`data/shoppers.py`) |
+| Shop card **(Sunday)** | a chip "… stars ×…, learned across the shop" and the new score | lift(new stars) / lift(April's stars), from `$why` (`src/shop_state_lifts.py`) |
 
-**The honest case:** on PetNord Hideout (`?sku=SKU-PT-0558`), a 5-star
-review reads back "No change in its star band: still 1-2 stars (8 reviews,
-average 2.00)". **Say:** "One good review doesn't undo seven bad ones, and
-the view doesn't pretend it does."
+**The honest case, to pick on Sunday:** release 2's products carry few
+reviews (the hideouts have 2), so one review often moves the band. The
+"no change" example (a 5-star review on a product with many 1–2 star ones,
+read back as "No change in its star band") needs a product with many
+reviews; find one in the sandbox and write it here. **Say:** "One good
+review doesn't undo many bad ones, and the view doesn't pretend it does."
 
 **Recovery:** if a lever answers 400, the sandbox has expired or belongs
 to another server: press **Reset: new sandbox**, or open the spare link.
@@ -184,10 +188,11 @@ If the Shop doesn't move, check that the URL still has `?db=` and
 
 **Without a sandbox:** the public Shop, `/shop/?shopper=paivi`, is April
 2026 and shows the same kit path and Buy again. Its "Picked for you" leads
-with PetNord Veggie Crunch Treats 100g, "44 % buy it when shown" (`_recommend
-impressions` with her declared pets, the month and the cart,
-`src/shop_ranking.py`), "+1 variant". Her Buy again rests on a single
-earlier order, so 67 % comes from very little history.
+with PetNord Fruit Drops Treats 100g, crunchy, "56 % buy it when shown", ★ 4.3, −18 % this month
+(`_recommend impressions` with her pets read from her orders, the month and the cart,
+`src/shop_ranking.py`). Press the **?** on a card for the `$why` chain behind its
+percentage. Her Buy again rests on a single earlier order, so 67 % comes from
+very little history.
 
 **Recovery:** if the grid stays empty, the backend can't reach its data
 release (`/api/health`, `data_release.state`). Switch to the static

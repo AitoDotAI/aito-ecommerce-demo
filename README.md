@@ -18,17 +18,17 @@ shows them in a working shop.
 Live at **[ecommerce.aito.ai](https://ecommerce.aito.ai)**. The partner
 walkthrough (5–7 minutes) is [`docs/demo-script.md`](docs/demo-script.md).
 
-**The Shop.** Päivi got a guinea pig in February. "Next for their kit"
+**The Shop.** Anna got a guinea pig in February. "Next for their kit"
 leads with the hideout, which shoppers who owned a cage and a bottle
-bought next. "Picked for you" is one `_recommend` with her declared pets,
-the month and her cart.
+bought next. "Picked for you" is one `_recommend` with her pets, the month and
+her cart, and the **?** on each card opens the `$why` chain behind its percentage.
 
-![The Shop, as Päivi](screenshots/shop-paivi.png)
+![The Shop, as Anna](screenshots/shop-paivi.png)
 
 **The owner's decision.** One product: the chance it is bought when shown
 at each discount band, the margin per 100 showings, and the reasons from
 Aito's `$why`. In a sandbox, the owner pulls the lever and watches
-Päivi's Shop react.
+Anna's Shop react.
 
 ![Product: the offer decision](screenshots/product-what-if.png)
 
