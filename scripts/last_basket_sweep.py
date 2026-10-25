@@ -24,7 +24,7 @@ from pathlib import Path
 
 import httpx
 
-from src.aito_client import AitoClient
+from src.aito_client import AitoClient, AitoError
 from src.chained_baskets import add_columns, link_contexts, link_orders
 from src.config import load_config
 from src.shop_context import FOOD, RULE_WORDS, basket_words, pets_filter, rule_filter
@@ -102,8 +102,9 @@ def where_for(variant: str, s: dict) -> dict:
     return where
 
 
-BATCH_SIZE = 100
-WORKERS = 6
+BATCH_SIZE = 25
+WORKERS = 4
+RETRIES = 2
 
 
 def candidate_rows(s: dict, products: dict[str, dict]) -> list[dict]:
@@ -117,11 +118,21 @@ def candidate_rows(s: dict, products: dict[str, dict]) -> list[dict]:
 
 
 def recommend_many(client: AitoClient, bodies: list[dict]) -> list[list[dict]]:
-    """The hits of each `_recommend`, 100 to a `_batch`. The time here is the wire, not Aito (about 1.3 s of
+    """The hits of each `_recommend`, 25 to a `_batch`. The time here is the wire, not Aito (about 1.3 s of
     overhead against 0.1 s of Aito per call from a laptop), so one round trip per hundred is the speed-up."""
     chunks = [bodies[i:i + BATCH_SIZE] for i in range(0, len(bodies), BATCH_SIZE)]
+    def run(chunk: list[dict]) -> list:
+        for attempt in range(RETRIES + 1):
+            try:
+                return client.batch(chunk)
+            except AitoError as exc:    # a read that timed out is run again, and said so; any other error stops the sweep
+                if "timed out" not in str(exc) or attempt == RETRIES:
+                    raise
+                print(f"  a batch of {len(chunk)} timed out; again ({attempt + 1}/{RETRIES})", flush=True)
+        raise AssertionError("unreachable")
+
     with ThreadPoolExecutor(max_workers=WORKERS) as pool:
-        answers = list(pool.map(client.batch, chunks))
+        answers = list(pool.map(run, chunks))
     return [a["hits"] for chunk in answers for a in chunk]
 
 
