@@ -147,18 +147,17 @@ def test_a_shopper_without_a_profile_or_an_order_is_refused_loudly():
         get_shop_grid(fake, "eemil", "2024-05", [])   # the fake's earliest order is 2025-11
 
 
-def test_the_customer_is_in_the_query_only_when_asked_for_and_brings_their_declared_pets():
+def test_the_customer_is_in_the_query_only_when_asked_for_beside_their_pets():
     plain, personal = FakeAito([product("SKU-A", 0.5)]), FakeAito([product("SKU-A", 0.5)])
 
     get_shop_grid(plain, "helena", "2026-04", [])
     grid = get_shop_grid(personal, "helena", "2026-04", [], identity=True)
 
-    assert "context.customer" not in plain.recommends[0] and "context.customer.pets" in plain.recommends[0]
-    # The link to the customer's row carries the declared pets as a prior, so they aren't also evidence,
-    # and the candidates aren't narrowed to the household's pets: the personalisation decides.
+    assert "context.customer" not in plain.recommends[0]
+    # An id condition brings none of the customer's fields (and none at all when the id has no rows),
+    # so the declared pets stay as a path, and the pets filter stays unless asked to trust.
     assert personal.recommends[0]["context.customer"] == "CUST-00053" and grid.identity is True
-    assert "context.customer.pets" not in personal.recommends[0]
-    assert "product_sku.pet_type" in personal.recommends[0]    # the pets filter stays unless asked to trust
+    assert "context.customer.pets" in personal.recommends[0] and "product_sku.pet_type" in personal.recommends[0]
 
 
 def test_trusting_the_customer_drops_the_pets_filter_too():

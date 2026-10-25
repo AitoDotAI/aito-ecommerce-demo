@@ -91,7 +91,7 @@ IDENTITY = "context.customer"    # the customer themselves: their own showings a
 
 def shop_scope(client: AitoClient, shopper_key: str, month: str, cart_skus: list[str],
                *, identity: bool = False) -> ShopScope:
-    """`identity`: condition on the customer themselves (`context.customer`) in place of their declared pets.
+    """`identity`: also condition on the customer themselves (`context.customer`), beside their pets.
     Off by default: the sweeps found it ties on ranking and overconfides the probabilities (ADR 0033);
     it is an experiment."""
     s = shopper(shopper_key)
@@ -112,9 +112,9 @@ def shop_scope(client: AitoClient, shopper_key: str, month: str, cart_skus: list
                 f"{s.customer_id} declared no pets and has no order before {month}: the Shop has nothing to read")
         context = shopper_where_from_orders(pets, cart, month)
     if identity:
-        # The link to the customer's row brings its declared pets as a prior, so they aren't also
-        # evidence. A household with no declared pets has none to bring: its orders' pets stay.
-        context = {**{k: v for k, v in context.items() if k != "context.customer.pets"}, IDENTITY: s.customer_id}
+        # An id condition uses only the rows that carry that id: it brings none of the customer's fields,
+        # and an id with no rows is no evidence at all (core, 2026-10-25). The pets stay, as a path.
+        context = {**context, IDENTITY: s.customer_id}
     return ShopScope(shopper=s, month=month, rule=customer.get("diet"), pets=pets, pets_declared=bool(declared),
                      cart=cart, context=context, orders=orders)
 
