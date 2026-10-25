@@ -116,3 +116,23 @@ the first basket is why."
   before the views.
 - `customers` gains a link to visitors that only some rows have; probed
   (Q15).
+
+## Amendment (2026-10-25): what the Acquisition view reads, probed on release 2
+
+- **Sessions exist only for visitors who accepted tracking** (ADR 0044), so conversion is
+  first orders over a new visitor's recorded sessions (first-order sessions and landing
+  pages nobody bought from). Stay is counted over every customer: `first_source` is on the
+  purchase, not on a tracked visit.
+- **Q14 holds:** `_relate landing_category` by `source`. A batched `_relate` keeps v2's bare
+  `related` values, so the service sends each one singly.
+- **Q13, as the view uses it:** `_predict became_regular` where `first_source` alone, with the
+  source's one lift in `$why`. The first basket is read by `_relate` on regulars instead
+  (one row per customer, so no clustering). Q15, a session without a customer, is not used.
+- **On `release2`:** conversion email 6.1 % [5.2, 7.0], direct 5.0 %, paid search 3.9 %,
+  affiliate 3.5 %, organic search 3.0 %, social 1.2 % [1.0, 1.4]. Became regular within 6
+  months: organic search 70.3 %, email 64.4 %, direct 52.6 %, paid search 43.2 %, social
+  22.9 %, affiliate 21.5 % [16.4, 27.6]. Affiliate converts better than organic search and
+  keeps a third as many customers. Only two first-basket words clear the bar (cat dry food
+  ×1.21, cat litter ×1.20): F5's staple effect is modest in what a shop observes.
+- **Value by source** (the fourth view element) is not shown: no column holds a customer's
+  first 6 months of spend. The stay rate is the value measure.

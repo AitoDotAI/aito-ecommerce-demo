@@ -37,7 +37,7 @@ const FIELD_LABELS: Record<string, string> = {
   // Reviews (ADR 0039)
   "product_state.rating_band": "stars when shown", "product_state.review_count_band": "reviews so far",
   wrote_negative_review: "wrote a 1–2 star review", had_negative_review: "has written a negative review",
-  review_replied: "the shop replied", nps_latest_group: "latest NPS answer",
+  first_basket_categories: "first basket held", review_replied: "the shop replied", nps_latest_group: "latest NPS answer",
 };
 export const fieldLabel = (field: string) => FIELD_LABELS[field] ?? field;
 

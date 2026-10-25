@@ -913,3 +913,26 @@ export interface ReviewsReplyEffect {
   interval_high: number;
   verdict: "fewer leave" | "more leave" | "a tie";
 }
+
+
+/* ─── Acquisition (/api/acquisition) ─── */
+
+export interface AcquisitionRate { successes: number; total: number; low: number; high: number }
+
+export interface AcquisitionSource {
+  source: string;
+  sessions: number;
+  conversion: AcquisitionRate;
+  labelled_customers: number;
+  regular: AcquisitionRate;
+  predicted_regular: number;
+  source_lift: number;
+  landing: { category: string; lift: number }[];
+}
+
+export interface AcquisitionSection {
+  sources: AcquisitionSource[];
+  regular_basket: ShopLiftRow[];
+  queries_sent: number;
+  example_query: { from: string; where: Record<string, unknown>; relate: string; limit: number };
+}

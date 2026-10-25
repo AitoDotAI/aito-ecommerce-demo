@@ -198,6 +198,23 @@ export function reviewsPanel(queriesSent?: number): AitoPanelConfig {
 }
 
 
+export function acquisitionPanel(queriesSent?: number): AitoPanelConfig {
+  const c = (t: string) => `<code style="color:var(--aito-teal);">${t}</code>`;
+  return {
+    operation: "Acquisition",
+    endpoints: ["_search", "_predict", "_relate"],
+    description:
+      `Per source: ${c("_search")} counts give the sessions that end in a first order and the customers who ` +
+      `became regular; ${c("_predict became_regular")} from the first source alone gives the expected stay with the ` +
+      `source's lift in ${c("$why")}; ${c("_relate")} on the context gives where its visitors land, and on customers ` +
+      `which first-basket words go with becoming regular. Rates carry a 95 % Wilson interval. ` +
+      `The query below is one of the ${queriesSent ?? "…"} sent.`,
+    query: "",
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
 export function productFillingPanel(): AitoPanelConfig {
   return {
     operation: "Product Filling",

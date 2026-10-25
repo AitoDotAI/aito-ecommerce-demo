@@ -51,6 +51,7 @@ from src.shop_search import search_shop
 from src.shop_suggestions import get_suggestions
 from src.basket_pairs import get_basket_section
 from src.search_words import get_search_words_section
+from src.acquisition_service import get_acquisition
 from src.design_effect import DesignEffect
 from src.reviews_service import get_reply_effect, get_reviews_section
 from src.shop_analytics_service import get_funnel_section, get_who_section
@@ -586,6 +587,12 @@ def shop_analytics_funnel_endpoint(kpi: str = "purchased"):
 def shop_analytics_who_endpoint(who: str = "summer"):
     """Which categories a season, segment or diet rule buys more or less."""
     return _shop_analytics_section(f"who:{who}", lambda: get_who_section(aito, who=who))
+
+
+@app.get("/api/acquisition")
+def acquisition_endpoint():
+    """Where customers come from, how each source converts and whether its customers stay (ADR 0040)."""
+    return _shop_analytics_section("acquisition", lambda: get_acquisition(aito))
 
 
 @app.get("/api/reviews")

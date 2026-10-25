@@ -56,6 +56,7 @@ const STATES = [
   { name: "supply", url: "/supply/?demo=1" },
   { name: "supply-row-details", url: "/supply/?demo=1", open: async (p) => { await p.getByText("Details", { exact: true }).first().click(); } },
   { name: "reviews", url: "/reviews/?demo=1" },
+  { name: "acquisition", url: "/acquisition/?demo=1" },
   { name: "retention", url: "/retention/?demo=1" },
   { name: "retention-winback", url: "/retention/?demo=1", open: async (p) => { await p.getByText(/win-back offer/i).first().click(); } },
   { name: "product-filling", url: "/product-filling/" },

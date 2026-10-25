@@ -1078,3 +1078,20 @@ def test_reviews_the_reply_comparison_counts_every_negative_review_month(client)
 
     assert effect.replied_months + effect.unreplied_months == negative
     assert effect.interval_low < effect.risk_ratio < effect.interval_high
+
+
+# ── Acquisition (ADR 0040): sources convert and stay differently ─────
+
+
+def test_acquisition_sources_convert_and_stay_as_planted(client):
+    """F2 and F4: email converts best and social worst, each interval apart; the
+    affiliate and social customers become regular far less than organic search's."""
+    from src.acquisition_service import get_acquisition
+
+    rows = {r.source: r for r in get_acquisition(client).sources}
+
+    assert rows["email"].conversion.low > rows["organic_search"].conversion.high
+    assert rows["social"].conversion.high < rows["organic_search"].conversion.low
+    for source in ("affiliate", "social"):
+        assert rows[source].regular.high < rows["organic_search"].regular.low, source
+        assert rows[source].source_lift < 1 < rows["organic_search"].source_lift
