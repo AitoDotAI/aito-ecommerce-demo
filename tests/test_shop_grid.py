@@ -145,3 +145,46 @@ def test_a_shopper_without_a_profile_or_an_order_is_refused_loudly():
 
     with pytest.raises(UnknownShopperProfileError, match="CUST-01896"):
         get_shop_grid(fake, "eemil", "2024-05", [])   # the fake's earliest order is 2025-11
+
+
+def test_the_customer_is_in_the_query_only_when_asked_for_beside_their_pets():
+    plain, personal = FakeAito([product("SKU-A", 0.5)]), FakeAito([product("SKU-A", 0.5)])
+
+    get_shop_grid(plain, "helena", "2026-04", [])
+    grid = get_shop_grid(personal, "helena", "2026-04", [], identity=True)
+
+    assert "context.customer" not in plain.recommends[0]
+    # An id condition brings none of the customer's fields (and none at all when the id has no rows),
+    # so the declared pets stay as a path, and the pets filter stays unless asked to trust.
+    assert personal.recommends[0]["context.customer"] == "CUST-00053" and grid.identity is True
+    assert "context.customer.pets" in personal.recommends[0] and "product_sku.pet_type" in personal.recommends[0]
+
+
+def test_trusting_the_customer_drops_the_pets_filter_too():
+    trusting = FakeAito([product("SKU-A", 0.5)])
+
+    grid = get_shop_grid(trusting, "helena", "2026-04", [], identity=True, trust=True)
+
+    assert "product_sku.pet_type" not in trusting.recommends[0] and grid.trust is True
+
+
+def test_trust_means_nothing_without_the_customer():
+    fake = FakeAito([product("SKU-A", 0.5)])
+
+    grid = get_shop_grid(fake, "helena", "2026-04", [], trust=True)
+
+    assert "product_sku.pet_type" in fake.recommends[0] and grid.trust is False
+
+
+def test_starting_from_the_last_order_puts_its_words_in_the_query_and_names_the_reason():
+    fake = FakeAito([product("SKU-A", 0.5, reason=("context.basket_categories", "cat_dryfood", 1.6))])
+    # The fake's `$why` carries one cart-word reason; its proposition is a plain value, as one word of the cart.
+    plain = FakeAito([product("SKU-A", 0.5)])
+
+    grid = get_shop_grid(fake, "helena", "2026-04", [], recent=True)
+    get_shop_grid(plain, "helena", "2026-04", [])
+
+    assert "context.basket_categories" not in plain.recommends[0]
+    assert {"$match": "cat_dryfood"} in fake.recommends[0]["context.basket_categories"]["$and"]
+    assert grid.recent is True
+    assert [r.label for r in grid.items[0].reasons] == ["Goes with your last order"]
