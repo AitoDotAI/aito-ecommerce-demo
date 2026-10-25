@@ -102,27 +102,53 @@ def where_for(variant: str, s: dict) -> dict:
     return where
 
 
-def score(client: AitoClient, variant: str, s: dict, products: dict[str, dict]) -> tuple[int, float]:
-    where = where_for(variant, s)
-    top = client.recommend("impressions", where, "product_sku", {"purchased": True}, select=["sku"], limit=TOP)["hits"]
-    hit = int(bool({r["product_sku"] for r in s["shown"] if r["purchased"]} & {h["sku"] for h in top}))
+BATCH_SIZE = 100
+WORKERS = 6
+
+
+def candidate_rows(s: dict, products: dict[str, dict]) -> list[dict]:
+    """The shown products the query can return: not the cart's items, not other pets' products (the
+    declared-pets filter), not food that breaks the diet (the rule filter)."""
     basket = (s.get("basket") or "").split()
-    # The candidates the query can return: not the cart's items, not other pets' products (the
-    # declared-pets filter), not food that breaks the diet (the rule filter).
-    shown = [r for r in s["shown"] if r["product_sku"] not in basket
-             and products[r["product_sku"]]["pet_type"] in s["pets"].split() and not (
+    return [r for r in s["shown"] if r["product_sku"] not in basket
+            and products[r["product_sku"]]["pet_type"] in s["pets"].split() and not (
         s["diet"] and products[r["product_sku"]]["category"] in FOOD and products[r["product_sku"]]["pet_type"] in ("dog", "cat")
         and RULE_WORDS[s["diet"]] not in products[r["product_sku"]]["name"])]
-    skus = sorted({r["product_sku"] for r in shown})
-    if not skus:
-        return hit, float("nan")
-    p = {h["sku"]: h["$p"] for h in client.recommend(
-        "impressions", {**where, "product_sku": {"$or": skus}}, "product_sku", {"purchased": True},
-        select=["sku", "$p"], limit=len(skus))["hits"]}
-    missing = [x for x in skus if x not in p]
-    if missing:
-        raise RuntimeError(f"{variant}: no $p for shown {missing[:3]} in {s['context_id']}")
-    return hit, statistics.mean((p[r["product_sku"]] - r["purchased"]) ** 2 for r in shown)
+
+
+def recommend_many(client: AitoClient, bodies: list[dict]) -> list[list[dict]]:
+    """The hits of each `_recommend`, 100 to a `_batch`. The time here is the wire, not Aito (about 1.3 s of
+    overhead against 0.1 s of Aito per call from a laptop), so one round trip per hundred is the speed-up."""
+    chunks = [bodies[i:i + BATCH_SIZE] for i in range(0, len(bodies), BATCH_SIZE)]
+    with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+        answers = list(pool.map(client.batch, chunks))
+    return [a["hits"] for chunk in answers for a in chunk]
+
+
+def score_many(client: AitoClient, variant: str, sessions: list[dict], products: dict[str, dict]) -> list[tuple[int, float]]:
+    """hit@12 and the Brier score for each session, in the same two queries as before, batched."""
+    wheres = [where_for(variant, s) for s in sessions]
+    ranks = recommend_many(client, [{"from": "impressions", "where": w, "recommend": "product_sku",
+                                     "goal": {"purchased": True}, "limit": TOP} for w in wheres])
+    shown = [candidate_rows(s, products) for s in sessions]
+    sku_lists = [sorted({r["product_sku"] for r in rows}) for rows in shown]
+    asked = [i for i, skus in enumerate(sku_lists) if skus]
+    restricted = recommend_many(client, [{"from": "impressions", "where": {**wheres[i], "product_sku": {"$or": sku_lists[i]}},
+                                          "recommend": "product_sku", "goal": {"purchased": True},
+                                          "limit": len(sku_lists[i])} for i in asked])
+    p_of = {i: {h["$value"]: h["$p"] for h in hits} for i, hits in zip(asked, restricted)}
+    out = []
+    for i, (sess, hits) in enumerate(zip(sessions, ranks)):
+        bought = {r["product_sku"] for r in sess["shown"] if r["purchased"]}
+        hit = int(bool(bought & {h["$value"] for h in hits}))
+        if i not in p_of:
+            out.append((hit, float("nan")))
+            continue
+        missing = [x for x in sku_lists[i] if x not in p_of[i]]
+        if missing:
+            raise RuntimeError(f"{variant}: no $p for shown {missing[:3]} in {sess['context_id']}")
+        out.append((hit, statistics.mean((p_of[i][r["product_sku"]] - r["purchased"]) ** 2 for r in shown[i])))
+    return out
 
 
 def checked(r: httpx.Response) -> httpx.Response:
@@ -179,12 +205,9 @@ def main() -> int:
             left = client.search("impressions", where={"context": {"$or": ids}}, limit=0)["total"]
             if left:
                 raise RuntimeError(f"fold {k}: {left} held-out impressions still on the branch")
-            with ThreadPoolExecutor(max_workers=4) as pool:
-                scored = list(pool.map(lambda s: [score(client, v, s, products) for v in VARIANTS], by_fold[k]))
-            for s, row in zip(by_fold[k], scored):
-                for v, res in zip(VARIANTS, row):
-                    results[v].append(res)
-                kept.append(s)
+            for v in VARIANTS:
+                results[v].extend(score_many(client, v, by_fold[k], products))
+            kept.extend(by_fold[k])
             print(f"  fold {k}: {len(by_fold[k])} sessions scored", flush=True)
         finally:
             http.delete(f"{base}/api/v1/_envs/{name}")
