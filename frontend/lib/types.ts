@@ -66,6 +66,15 @@ export interface WhyExplanationPayload {
      *  full source string with `«…»` sentinels around the matched
      *  tokens. Frontend splits on the sentinels — never raw HTML. */
     highlight?: { field: string; marked_text: string } | null;
+    /** On a group, or on the Shop card's product term (src/shop_why.py): the parts it is made of. */
+    joint_lift?: number;
+    members?: Array<{
+      lift: number;
+      propositions: Array<{ field: string; value: string; negate?: boolean }>;
+      highlight?: { field: string; marked_text: string } | null;
+    }>;
+    /** A sentence naming a term that has no conditions of its own. */
+    label?: string;
   }>;
   final_p: number | null;
 }
@@ -665,6 +674,7 @@ export interface ShopReason {
 export interface ShopItem extends ShopProduct {
   p: number;                   // P(purchased) for this shopper, now
   reasons: ShopReason[];       // Aito's: what lifts this product for this shopper
+  why_explanation: WhyExplanationPayload | null;   // the `$why` chain behind p; null once re-asked (just bought)
   avg_rating: number | null;   // facts, shown beside the reasons, not as reasons
   offer_pct: number | null;
   keeps_rule: boolean;

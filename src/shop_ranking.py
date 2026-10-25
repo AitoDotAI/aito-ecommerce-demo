@@ -23,6 +23,7 @@ from src.shop_offers import offers_this_month
 from src.shop_personas import Shopper, shopper
 from src.shop_reasons import PETS, Reason, reasons_for
 from src.shop_rescore import ScoreAdjustment
+from src.shop_why import shop_why
 
 PRODUCT_FIELDS = ["sku", "name", "brand", "pet_type", "category", "price_eur", "avg_rating"]
 
@@ -46,6 +47,9 @@ class ShopItem:
     adjustment: ScoreAdjustment | None = None  # set when its 2026-05 state re-scored it
     # Other SKUs of the same name this card stands for (`src/same_name.py`).
     same_name_skus: list[str] = field(default_factory=list)
+    # The full `$why` chain behind `p`, for the card's ? popover (src/shop_why.py); `reasons`
+    # above is its short form. None once `p` is re-asked (just bought): the chain is the old one.
+    why_explanation: dict | None = None
 
 
 @dataclass(frozen=True)
@@ -120,7 +124,7 @@ def ranked_items(client: AitoClient, scope: ShopScope, where: dict, limit: int) 
     hits = client.recommend("impressions", where, "product_sku", {"purchased": True},
                             select=PRODUCT_FIELDS + ["$p", "$why"], limit=limit)["hits"]
     offers = offers_this_month(client, [h["sku"] for h in hits], scope.month)
-    items = [_item(h, offers.get(h["sku"]), scope.rule is not None, scope.pets.split()) for h in hits]
+    items = [_item(h, scope.context, offers.get(h["sku"]), scope.rule is not None, scope.pets.split()) for h in hits]
     items = _reask_just_bought(client, scope.context, items, set(scope.last_order_skus))
     return sorted(items, key=lambda i: -i.p)
 
@@ -147,7 +151,7 @@ def _reask_just_bought(client: AitoClient, context: dict, items: list[ShopItem],
         for i in just
     ])
     p_now = {i.sku: _p_true(a, i.sku) for i, a in zip(just, answers)}
-    return [replace(i, p=p_now[i.sku], p_if_new=i.p) if i.sku in p_now else i for i in items]
+    return [replace(i, p=p_now[i.sku], p_if_new=i.p, why_explanation=None) if i.sku in p_now else i for i in items]
 
 
 def _p_true(answer: dict, sku: str) -> float:
@@ -157,7 +161,7 @@ def _p_true(answer: dict, sku: str) -> float:
     raise AitoError(f"_predict purchased for {sku} had no `true` hit: {str(answer)[:200]}")
 
 
-def _item(hit: dict, offer_pct: float | None, has_rule: bool, pets: list[str]) -> ShopItem:
+def _item(hit: dict, context: dict, offer_pct: float | None, has_rule: bool, pets: list[str]) -> ShopItem:
     rating = hit.get("avg_rating")
     reasons = reasons_for(hit["$why"], hit["sku"])
     if hit["pet_type"] not in pets:
@@ -168,6 +172,7 @@ def _item(hit: dict, offer_pct: float | None, has_rule: bool, pets: list[str]) -
         sku=hit["sku"], name=hit["name"], brand=hit["brand"], pet_type=hit["pet_type"],
         category=hit["category"], price_eur=float(hit["price_eur"]), p=float(hit["$p"]),
         reasons=reasons,
+        why_explanation=shop_why(hit["$why"], float(hit["$p"]), context),
         avg_rating=None if rating is None else float(rating),
         offer_pct=offer_pct,
         # The rule filter lets through only food that keeps the rule.

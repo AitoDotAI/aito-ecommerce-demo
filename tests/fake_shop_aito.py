@@ -19,6 +19,7 @@ def product(sku, p=0.0, category="dry-food", pet_type="cat", reason=("context.mo
     return {"sku": sku, "name": name or f"Brand {sku}", "brand": "Brand", "pet_type": pet_type,
             "category": category, "price_eur": 4.0, "avg_rating": 4.2, "$p": p,
             "$why": {"type": "product", "factors": [
+                {"type": "baseP", "value": 0.14, "proposition": {"purchased": True}},
                 {"type": "hitPropositionLift", "proposition": {"product_sku": {"$has": sku}}, "value": 2.0,
                  "factors": [{"type": "relatedPropositionLift", "proposition": {field: value}, "value": lift}]}]}}
 

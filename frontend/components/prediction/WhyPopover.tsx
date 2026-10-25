@@ -27,6 +27,9 @@ export interface WhyLiftEntry {
    *  so the rows still multiply out; the parts are listed inside the card. */
   joint_lift?: number;
   members?: WhyLiftEntry[];
+  /** A sentence naming what the term is, shown in place of "When field is value" chips when
+   *  the entry has none of its own (the Shop card's product terms, src/shop_why.py). */
+  label?: string;
 }
 
 export interface WhyExplanationPayload {
@@ -272,7 +275,7 @@ function PatternMatchCard({ entry }: { entry: WhyLiftEntry }) {
   // And only when something in it is actually marked: Aito often returns the plain sentence
   // for a one-word match, and printing it unmarked makes every card look like a copy of the
   // same row. Then the card states the proposition itself ("name has the word Turkey").
-  const isTextMatch = Boolean(entry.highlight && _hasSurroundingText(entry.highlight.marked_text));
+  const isTextMatch = Boolean(entry.highlight && _isTextHighlight(entry.highlight.marked_text));
   const highlight = isTextMatch && entry.highlight && /[«‹]/.test(entry.highlight.marked_text)
     ? entry.highlight
     : null;
@@ -320,7 +323,9 @@ function PatternMatchCard({ entry }: { entry: WhyLiftEntry }) {
           </div>
         ) : (
           <div style={{ fontSize: 12, color: "var(--text)" }}>
-            <Conditions entry={entry} up={up} />
+            {entry.label
+              ? <>{entry.label}{entry.propositions.length > 0 && <>: <Conditions entry={entry} up={up} /></>}</>
+              : <Conditions entry={entry} up={up} />}
           </div>
         )}
         {members.length > 0 && <Parts entry={entry} members={members} />}
@@ -343,7 +348,7 @@ function PatternMatchCard({ entry }: { entry: WhyLiftEntry }) {
 function Conditions({ entry, up }: { entry: WhyLiftEntry; up: boolean }) {
   // Only the free-text column (the highlight's field) matches on a word; a plain-value
   // column such as `brand` matches the whole value.
-  const textField = entry.highlight && _hasSurroundingText(entry.highlight.marked_text)
+  const textField = entry.highlight && _isTextHighlight(entry.highlight.marked_text)
     ? entry.highlight.field
     : null;
   return (
@@ -382,16 +387,18 @@ function Conditions({ entry, up }: { entry: WhyLiftEntry; up: boolean }) {
  */
 function Parts({ entry, members }: { entry: WhyLiftEntry; members: WhyLiftEntry[] }) {
   const part = (m: WhyLiftEntry) => m.propositions.map((p) => `${p.field} ${p.negate ? "not " : ""}${p.value}`).join(" and ");
-  const joint = entry.joint_lift ?? 1;
-  const hover = [`together ×${joint.toFixed(2)}`, ...members.map((m) => `${part(m)} ×${m.lift.toFixed(2)}`)].join("\n");
+  const joint = entry.joint_lift;   // absent when the parts are all there is to the lift
+  const hover = [...(joint === undefined ? [] : [`together ×${joint.toFixed(2)}`]),
+                 ...members.map((m) => `${part(m)} ×${m.lift.toFixed(2)}`)].join("\n");
   return (
     <details style={{ marginTop: 6, fontSize: 11.5 }}>
       <summary title={hover} style={{ cursor: "pointer", color: "var(--text-muted)" }}>
-        {members.length + 1} parts multiplied: ×{joint.toFixed(2)} together
-        {members.map((m) => ` × ${m.lift.toFixed(2)}`).join("")}
+        {joint === undefined
+          ? `${members.length} parts multiplied:${members.map((m, i) => `${i ? " ×" : ""} ${m.lift.toFixed(2)}`).join("")}`
+          : `${members.length + 1} parts multiplied: ×${joint.toFixed(2)} together${members.map((m) => ` × ${m.lift.toFixed(2)}`).join("")}`}
       </summary>
       <div style={{ marginTop: 4, display: "grid", gap: 3 }}>
-        <PartLine label={<span>All of them together</span>} lift={joint} />
+        {joint !== undefined && <PartLine label={<span>All of them together</span>} lift={joint} />}
         {members.map((m, i) => (
           <PartLine key={i} lift={m.lift} label={<Conditions entry={m} up={m.lift >= 1} />} />
         ))}
@@ -455,6 +462,13 @@ function renderMarkedText(text: string, positive: boolean): React.ReactNode {
     }
     return <span key={i}>{part}</span>;
   });
+}
+
+
+/** A highlight worth showing as a sentence: a Text field's value, which has words around the
+ *  marks or several marked words (a Shop cart's category words). One lone mark is a plain value. */
+function _isTextHighlight(s: string): boolean {
+  return _hasSurroundingText(s) || (s.match(/[«‹]/g) ?? []).length > 1;
 }
 
 

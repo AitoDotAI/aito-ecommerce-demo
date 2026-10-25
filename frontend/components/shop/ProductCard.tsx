@@ -4,6 +4,7 @@ import { fmtEur } from "@/lib/api";
 import { lastLever } from "@/lib/sandbox";
 import type { ScoreAdjustment, ShopItem } from "@/lib/types";
 import HelpPopover from "@/components/prediction/HelpPopover";
+import WhyPopover from "@/components/prediction/WhyPopover";
 import ProductHighlights from "@/components/shop/ProductHighlights";
 import VariantNote from "@/components/shop/VariantNote";
 
@@ -48,7 +49,7 @@ export default function ProductCard({ item, rank, onAdd, onOpen }: {
         <div className="card-sub" style={{ marginTop: 2, display: "flex", alignItems: "center", gap: 6 }}>
           {item.adjustment
             ? <>Score {Math.round(shown * 100)} <RankChange item={item} rank={rank} /></>
-            : <>{Math.round(item.p * 100)} % buy it when shown <ShownExplainer /></>}
+            : <>{Math.round(item.p * 100)} % buy it when shown <ShownExplainer item={item} /></>}
         </div>
       </div>
       {item.p_if_new !== null && (
@@ -68,8 +69,13 @@ export default function ProductCard({ item, rank, onAdd, onOpen }: {
   );
 }
 
-/** What "X % buy it when shown" is: a per-showing purchase chance, which is not a click rate. */
-function ShownExplainer() {
+/** Why "X % buy it when shown": Aito's `$why` chain for the card. A card whose probability was
+ *  re-asked (bought last order) has no chain of the new number, so it gets the plain
+ *  explanation of what the percentage is: a per-showing purchase chance, not a click rate. */
+function ShownExplainer({ item }: { item: ShopItem }) {
+  if (item.why_explanation) {
+    return <WhyPopover why={item.why_explanation} title={`${Math.round(item.p * 100)} % buy ${item.name} when it is shown`} />;
+  }
   return (
     <HelpPopover label="What does this percentage mean?" title="Chance to buy when shown">
       <p style={{ margin: "0 0 8px" }}>
