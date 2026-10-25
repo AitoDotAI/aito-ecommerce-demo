@@ -35,11 +35,17 @@ FOLDS = 5
 SOURCE = "release2"
 DATA = Path(__file__).resolve().parent.parent / "data"
 ALL_VARIANTS = {"A": "A shop today", "B": "B + last order (cart words)", "C1": "C1 last order by link",
-                "C2": "C2 two orders by link"}
-# B was run 2026-10-25 (it lost); C1 and C2 are registered after it (last-basket-prereg.md), A is their control.
+                "C2": "C2 two orders by link", "C3": "C3 last order id only",
+                "C4": "C4 customer id + last order by link", "D": "D customer id"}
+# B was run 2026-10-25 (it lost); C1 and C2 are registered after it, C3, C4 and D after them
+# (last-basket-prereg.md); A is their control.
 _picked = sys.argv[sys.argv.index("--variants") + 1].split(",") if "--variants" in sys.argv else ["A", "C1", "C2"]
 VARIANTS = tuple(ALL_VARIANTS[v] for v in _picked)
 apply = "--apply" in sys.argv
+# Folds by customer hide all of a customer's ranked sessions; folds by session hide only the scored one, so
+# the customer id has evidence left (some of it from the customer's later sessions, which flatters it).
+FOLD_BY = sys.argv[sys.argv.index("--folds-by") + 1] if "--folds-by" in sys.argv else "customer"
+BRANCH = f"lb-{FOLD_BY[:4]}-fold"
 N_SESSIONS = int(sys.argv[sys.argv.index("--sessions") + 1]) if "--sessions" in sys.argv else 10**9   # all eligible
 
 
@@ -73,11 +79,12 @@ def eligible_sessions() -> list[dict]:
         last = [products[s] for o in earlier if o["month"] == last_month for s in set(o["skus"].split())]
         declared = customers[who].get("pets")
         pets = declared or " ".join(sorted({products[s]["pet_type"] for o in earlier for s in o["skus"].split()}))
-        last_order = linked_orders[linked_contexts[cid]["last_order"]]
+        last_order_id = linked_contexts[cid]["last_order"]
+        last_order = linked_orders[last_order_id]
         before = linked_orders.get(last_order.get("previous_order"))
         sessions.append({**ctx, "shown": rows, "last_words": basket_words(last), "pets": pets,
                          "diet": customers[who].get("diet"),
-                         "path_words": last_order["basket_categories"].split(),
+                         "path_words": last_order["basket_categories"].split(), "last_order_id": last_order_id,
                          "path2_words": before["basket_categories"].split() if before else []})
     return random.Random(0).sample(sessions, min(N_SESSIONS, len(sessions)))
 
@@ -92,6 +99,12 @@ def where_for(variant: str, s: dict) -> dict:
     if words:
         where["context.basket_categories"] = {"$and": [{"$match": w} for w in sorted(words)]}
     if variant in (ALL_VARIANTS["C1"], ALL_VARIANTS["C2"]):
+        where[LAST_ORDER_PATH] = {"$and": [{"$match": w} for w in s["path_words"]]}
+    if variant == ALL_VARIANTS["C3"]:
+        where["context.last_order"] = s["last_order_id"]
+    if variant in (ALL_VARIANTS["C4"], ALL_VARIANTS["D"]):
+        where["context.customer"] = s["customer"]
+    if variant == ALL_VARIANTS["C4"]:
         where[LAST_ORDER_PATH] = {"$and": [{"$match": w} for w in s["path_words"]]}
     if variant == ALL_VARIANTS["C2"] and s["path2_words"]:
         where[PREVIOUS_ORDER_PATH] = {"$and": [{"$match": w} for w in s["path2_words"]]}
@@ -169,11 +182,11 @@ def checked(r: httpx.Response) -> httpx.Response:
     return r
 
 
-def fold_of(customer: str) -> int:
-    return int(hashlib.md5(customer.encode()).hexdigest(), 16) % FOLDS
+def fold_of(session: dict) -> int:
+    return int(hashlib.md5(session[FOLD_BY if FOLD_BY == "customer" else "context_id"].encode()).hexdigest(), 16) % FOLDS
 
 
-Z = 1.96 if len(VARIANTS) <= 2 else 2.24    # 95 %, or 97.5 % each when two variants share a control
+Z = {1: 1.96, 2: 2.24}.get(len(VARIANTS) - 1, 2.39)    # 95 %, 97.5 % (two), 98.3 % (three) when variants share a control
 
 
 def paired(a: list[float], b: list[float]) -> tuple[float, float, float]:
@@ -189,7 +202,7 @@ def main() -> int:
     sessions = eligible_sessions()
     by_fold = defaultdict(list)
     for s in sessions:
-        by_fold[fold_of(s["customer"])].append(s)
+        by_fold[fold_of(s)].append(s)
     kit = lambda s: any(p not in ("dog", "cat") for p in s["pets"].split())
     print(f"{len(sessions)} eligible sessions, {len({s['customer'] for s in sessions})} customers; "
           f"{sum(kit(s) for s in sessions)} in households with a pet other than dog or cat; "
@@ -203,7 +216,7 @@ def main() -> int:
     results: dict[str, list[tuple[int, float]]] = {v: [] for v in VARIANTS}
     kept: list[dict] = []
     for k in range(FOLDS):
-        name = f"lb-fold-{k}"
+        name = f"{BRANCH}-{k}"
         try:
             checked(http.post(f"{base}/api/v1/_envs", json={"name": name, "basedOn": f"env.{SOURCE}"}))
             if any(v.startswith("C") for v in VARIANTS):
@@ -234,7 +247,7 @@ def main() -> int:
             m, lo, hi = paired([hits[a][i] for i in idx], [hits[b][i] for i in idx])
             bm, blo, bhi = paired([brier[a][i] for i in idx], [brier[b][i] for i in idx])
             print(f"{b[:2]} - A, {label:<24} n={len(idx):>5}  hit@12 {m:+.3f} [{lo:+.3f}, {hi:+.3f}]  "
-                  f"Brier {bm:+.4f} [{blo:+.4f}, {bhi:+.4f}]   ({"97.5" if Z > 2 else "95"} % intervals)")
+                  f"Brier {bm:+.4f} [{blo:+.4f}, {bhi:+.4f}]   ({ {1.96: "95", 2.24: "97.5"}.get(Z, "98.3") } % intervals)")
     return 0
 
 

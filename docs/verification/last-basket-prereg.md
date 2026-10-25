@@ -138,3 +138,23 @@ over C1 held for hit@12 as a direction but C2 is worse than C1 (deeper history c
 The reading that fits all three runs: the pets already say what the last basket would say, and extra
 conditions dilute the probabilities (Brier) before they move the ranking (hit@12). The Shop select keeps
 the last-order options as an experiment, labelled so; they are not the default.
+
+## Amendment (2026-10-25, after C1 and C2, before any run of C3, C4 or D): ids instead of words
+
+Antti asked whether a bare reference to the last order would do, and whether the customer link and the order
+link work together. Registered, each against A, on the same 3,880 sessions:
+
+- **C3, the last order's id only:** A, plus `context.last_order: <order id>`. **Prediction: equal to A.** An
+  order is the "last order" of exactly one later session, and that session's impressions are hidden, so the
+  id has no rows to learn from (a link id uses only the rows that carry it).
+- **D, the customer id:** A, plus `context.customer: <customer id>` (the Shop's "identity" option).
+  Prediction: a gain if the customer has other sessions left, none if not.
+- **C4, customer id and last order by link:** D, plus the path of C1. Prediction: no better than D, since C1
+  lost to A on Brier.
+- **Two readings of the folds**, because the customer id needs other rows of the customer to work. *By
+  customer* (as before) hides all the customer's ranked sessions: a cold reading, it understates the id.
+  *By session* hides only the scored session: the id keeps the customer's other sessions, including later
+  ones, which flatters it. The truth lies between; both are reported, neither is judged alone.
+- **Decision rule** as before, for each of C3, C4, D against A: hit@12 lower bound above 0 and Brier at most
+  +0.01 worse. Three variants share the control, so each interval is 98.3 % (z = 2.39). The rule must hold in
+  *both* fold readings for a variant to qualify; C4 is also compared with D (reported, not judged).
