@@ -174,3 +174,17 @@ def test_trust_means_nothing_without_the_customer():
     grid = get_shop_grid(fake, "helena", "2026-04", [], trust=True)
 
     assert "product_sku.pet_type" in fake.recommends[0] and grid.trust is False
+
+
+def test_starting_from_the_last_order_puts_its_words_in_the_query_and_names_the_reason():
+    fake = FakeAito([product("SKU-A", 0.5, reason=("context.basket_categories", "cat_dryfood", 1.6))])
+    # The fake's `$why` carries one cart-word reason; its proposition is a plain value, as one word of the cart.
+    plain = FakeAito([product("SKU-A", 0.5)])
+
+    grid = get_shop_grid(fake, "helena", "2026-04", [], recent=True)
+    get_shop_grid(plain, "helena", "2026-04", [])
+
+    assert "context.basket_categories" not in plain.recommends[0]
+    assert {"$match": "cat_dryfood"} in fake.recommends[0]["context.basket_categories"]["$and"]
+    assert grid.recent is True
+    assert [r.label for r in grid.items[0].reasons] == ["Goes with your last order"]

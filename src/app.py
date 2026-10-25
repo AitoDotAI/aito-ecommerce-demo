@@ -488,12 +488,12 @@ def shop_shoppers_endpoint():
 
 @app.get("/api/shop/grid")
 def shop_grid_endpoint(request: Request, shopper: str, month: str = Query(pattern=MONTH), cart: str = "",
-                       identity: bool = False, trust: bool = False):
+                       identity: bool = False, trust: bool = False, recent: bool = False):
     """What to show this shopper now: `_recommend` with profile, month and
     cart as context, the household rule as a filter, recency re-asked. In
     sandbox mode for 2026-05, re-scored by the levers' states (ADR 0043)."""
     return _shop(lambda: get_shop_grid(_shop_reader(request, month), shopper, month, _cart_skus(cart),
-                                       rescored=month == NEXT_MONTH, identity=identity, trust=trust))
+                                       rescored=month == NEXT_MONTH, identity=identity, trust=trust, recent=recent))
 
 
 @app.get("/api/shop/search")

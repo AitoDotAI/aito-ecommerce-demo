@@ -38,6 +38,7 @@ from src.aito_client import AitoError
 MIN_REASON_LIFT = 1.15
 
 CART = "Goes with your cart"
+LAST_ORDER = "Goes with your last order"      # the cart words of the last order, when the cart is empty
 PETS = "Fits your pets"
 YOURS = "Your own history"                        # `context.customer`: the identity experiment
 PETS_FROM_ORDERS = "Fits the pets you buy for"   # no declared profile: read from earlier orders (ADR 0045)
@@ -49,7 +50,7 @@ class Reason:
     lift: float   # how much it multiplies this product's odds of a purchase
 
 
-def reasons_for(why: dict, sku: str) -> list[Reason]:
+def reasons_for(why: dict, sku: str, cart_label: str = CART) -> list[Reason]:
     """The largest lifts behind `sku`'s probability, each at least MIN_REASON_LIFT."""
     own = [f for f in why["factors"]
            if f["type"] == "hitPropositionLift" and f["proposition"] == {"product_sku": {"$has": sku}}]
@@ -61,6 +62,8 @@ def reasons_for(why: dict, sku: str) -> list[Reason]:
     lifts: dict[str, float] = {}
     for factor in own[0].get("factors", []):
         label = _label(factor["proposition"])
+        if label == CART:
+            label = cart_label
         if label is not None:
             lifts[label] = lifts.get(label, 1.0) * float(factor["value"])
     reasons = [Reason(label, round(lift, 2)) for label, lift in lifts.items() if lift >= MIN_REASON_LIFT]

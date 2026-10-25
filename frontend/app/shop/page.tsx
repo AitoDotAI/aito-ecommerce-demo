@@ -45,7 +45,9 @@ function ShopView() {
   // An experiment: also rank by the customer themselves (`context.customer`, ADR 0033), not only their pets.
   const [identityParam] = useUrlState("identity", "");
   const [trustParam] = useUrlState("trust", "");
-  const identity = identityParam === "1" ? `&identity=1${trustParam === "1" ? "&trust=1" : ""}` : "";
+  const [recentParam] = useUrlState("recent", "");
+  const identity = (identityParam === "1" ? `&identity=1${trustParam === "1" ? "&trust=1" : ""}` : "") +
+    (recentParam === "1" ? "&recent=1" : "");
   const [openSku] = useUrlState("product", "");
   const [query] = useUrlState("q", "");
   const [typed, setTyped] = useState(query);
@@ -147,6 +149,12 @@ function ShopView() {
           <option value="own">By their own history (pets filter kept)</option>
           <option value="trust">By their own history, no pets filter</option>
         </select>
+        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}
+               title="Put the items of their last order in the query as if they were in the cart">
+          <input type="checkbox" checked={recentParam === "1"}
+                 onChange={(e) => setUrl({ recent: e.target.checked ? "1" : null })} />
+          Start from their last order
+        </label>
       </div>
       {identityParam === "1" && (
         <div className="card-sub" style={{ margin: "4px 0" }}>
