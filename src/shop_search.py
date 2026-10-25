@@ -50,10 +50,11 @@ class ShopSearch:
         return asdict(self)
 
 
-def search_shop(client: AitoClient, shopper_key: str, month: str, cart_skus: list[str], query: str) -> ShopSearch:
+def search_shop(client: AitoClient, shopper_key: str, month: str, cart_skus: list[str], query: str,
+                *, identity: bool = False) -> ShopSearch:
     if not query.strip():
         raise ValueError("Search needs at least one word")
-    scope = shop_scope(client, shopper_key, month, cart_skus)
+    scope = shop_scope(client, shopper_key, month, cart_skus, identity=identity)
     text_lift = _name_matches(client, query)
     candidates = [sku for sku in text_lift if sku not in cart_skus]
     if not candidates:

@@ -42,6 +42,10 @@ function ShopView() {
   const [month, setMonth] = useUrlState("month", sandbox ? SANDBOX_MONTH : "2026-04");
   const months = sandbox ? [SANDBOX_MONTH, ...MONTHS] : MONTHS;
   const [cartParam] = useUrlState("cart", "");
+  // An experiment: also rank by the customer themselves (`context.customer`, ADR 0033), not only their pets.
+  const [identityParam] = useUrlState("identity", "");
+  const [trustParam] = useUrlState("trust", "");
+  const identity = identityParam === "1" ? `&identity=1${trustParam === "1" ? "&trust=1" : ""}` : "";
   const [openSku] = useUrlState("product", "");
   const [query] = useUrlState("q", "");
   const [typed, setTyped] = useState(query);
@@ -67,7 +71,7 @@ function ShopView() {
     let current = true;
     setError(null);
     setNotFound(null);
-    apiFetch<ShopGrid>(`/api/shop/grid?shopper=${shopperKey}&month=${month}&cart=${encodeURIComponent(cartParam)}`)
+    apiFetch<ShopGrid>(`/api/shop/grid?shopper=${shopperKey}&month=${month}&cart=${encodeURIComponent(cartParam)}${identity}`)
       .then((g) => {
         if (!current) return;
         setGrid(g);
@@ -78,7 +82,7 @@ function ShopView() {
         else setError(String(e));
       });
     return () => { current = false; };
-  }, [shopperKey, month, cartParam, query, setPanel]);
+  }, [shopperKey, month, cartParam, identity, query, setPanel]);
 
   useEffect(() => {
     // A search is ranked as the grid is: same shopper, month, cart and rule.
@@ -87,14 +91,14 @@ function ShopView() {
     setSearchError(null);
     if (!query) { setSearch(null); return; }
     apiFetch<ShopSearch>(`/api/shop/search?q=${encodeURIComponent(query)}&shopper=${shopperKey}&month=${month}` +
-                         `&cart=${encodeURIComponent(cartParam)}`)
+                         `&cart=${encodeURIComponent(cartParam)}${identity}`)
       .then((r) => {
         if (!current) return;
         setSearch(r);
         setPanel({ ...shopPanel(), query: highlightQuery(r.last_query.body) });
       }, (e) => { if (current) setSearchError(String(e)); });
     return () => { current = false; };
-  }, [query, shopperKey, month, cartParam, setPanel]);
+  }, [query, shopperKey, month, cartParam, identity, setPanel]);
 
   useEffect(() => {
     // As of the picked month and the cart, like the grid: later orders haven't
@@ -136,7 +140,21 @@ function ShopView() {
                 value={month} onChange={(e) => setMonth(e.target.value)}>
           {months.map((m) => <option key={m} value={m}>{monthLabel(m)}{m === SANDBOX_MONTH ? " (sandbox)" : ""}</option>)}
         </select>
+        <select aria-label="Personalisation" className="search-input" style={{ width: "auto", paddingLeft: 12 }}
+                value={identityParam === "1" ? (trustParam === "1" ? "trust" : "own") : "pets"}
+                onChange={(e) => setUrl({ identity: e.target.value === "pets" ? null : "1", trust: e.target.value === "trust" ? "1" : null })}>
+          <option value="pets">Personalised by pets</option>
+          <option value="own">By their own history (pets filter kept)</option>
+          <option value="trust">By their own history, no pets filter</option>
+        </select>
       </div>
+      {identityParam === "1" && (
+        <div className="card-sub" style={{ margin: "4px 0" }}>
+          Experiment: ranked with the customer themselves in the query. The sweeps found this ties on ranking and
+          overconfides the percentages on average (ADR 0033). A long history personalises well; a thin one
+          (Anna has two orders) does not: with no pets filter she is shown dog treats.
+        </div>
+      )}
       {shown && (
         <div className="card-sub" style={{ margin: "4px 0 12px" }}>
           {shown.shopper.story}

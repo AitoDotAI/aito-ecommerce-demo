@@ -86,7 +86,14 @@ class ShopScope:
         return where
 
 
-def shop_scope(client: AitoClient, shopper_key: str, month: str, cart_skus: list[str]) -> ShopScope:
+IDENTITY = "context.customer"    # the customer themselves: their own showings and what they did
+
+
+def shop_scope(client: AitoClient, shopper_key: str, month: str, cart_skus: list[str],
+               *, identity: bool = False) -> ShopScope:
+    """`identity`: condition on the customer themselves (`context.customer`) in place of their declared pets.
+    Off by default: the sweeps found it ties on ranking and overconfides the probabilities (ADR 0033);
+    it is an experiment."""
     s = shopper(shopper_key)
     customer = client.search("customers", where={"customer_id": s.customer_id}, limit=1)["hits"][0]
     cart = _cart(client, cart_skus)
@@ -104,6 +111,10 @@ def shop_scope(client: AitoClient, shopper_key: str, month: str, cart_skus: list
             raise UnknownShopperProfileError(
                 f"{s.customer_id} declared no pets and has no order before {month}: the Shop has nothing to read")
         context = shopper_where_from_orders(pets, cart, month)
+    if identity:
+        # The link to the customer's row brings its declared pets as a prior, so they aren't also
+        # evidence. A household with no declared pets has none to bring: its orders' pets stay.
+        context = {**{k: v for k, v in context.items() if k != "context.customer.pets"}, IDENTITY: s.customer_id}
     return ShopScope(shopper=s, month=month, rule=customer.get("diet"), pets=pets, pets_declared=bool(declared),
                      cart=cart, context=context, orders=orders)
 

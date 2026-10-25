@@ -211,9 +211,23 @@ function renderPredictBody(why: WhyExplanationPayload, entryDetail?: (detail: st
       </div>
 
       {/* Pattern match cards */}
-      {why.lifts.map((entry, i) => (
+      {why.lifts.filter((e) => !nearOne(e.lift)).map((entry, i) => (
         <PatternMatchCard key={i} entry={entry} entryDetail={entryDetail} />
       ))}
+      {/* A factor that rounds to ×1.0 moves nothing the reader can see; folded, not dropped, and
+          still in the chain below, so the multiplication reconciles. */}
+      {why.lifts.some((e) => nearOne(e.lift)) && (
+        <details style={{ margin: "0 0 8px", fontSize: 11.5 }}>
+          <summary style={{ cursor: "pointer", color: "var(--text-muted)" }}>
+            {why.lifts.filter((e) => nearOne(e.lift)).length} factors within 5 % of ×1.0
+          </summary>
+          <div style={{ marginTop: 6 }}>
+            {why.lifts.filter((e) => nearOne(e.lift)).map((entry, i) => (
+              <PatternMatchCard key={i} entry={entry} entryDetail={entryDetail} />
+            ))}
+          </div>
+        </details>
+      )}
 
       {/* Evidence chain. The normalising constant is shown as its own
           term whenever it moves the result, so the equation reconciles
@@ -489,6 +503,12 @@ function _hasSurroundingText(s: string): boolean {
     .replace(/‹[^›]*›/g, "")
     .trim();
   return stripped.length > 0;
+}
+
+
+/** A lift that shows as ×1.0: within 5 % of no effect. */
+function nearOne(lift: number): boolean {
+  return Math.abs(Math.log(lift)) < Math.log(1.05);
 }
 
 

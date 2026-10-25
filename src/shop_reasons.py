@@ -39,6 +39,7 @@ MIN_REASON_LIFT = 1.15
 
 CART = "Goes with your cart"
 PETS = "Fits your pets"
+YOURS = "Your own history"                        # `context.customer`: the identity experiment
 PETS_FROM_ORDERS = "Fits the pets you buy for"   # no declared profile: read from earlier orders (ADR 0045)
 
 
@@ -79,6 +80,8 @@ def _label(proposition: dict) -> str | None:
         return CART
     if "context.customer.pets" in text:   # the declared pets, as `$and` of `$match`
         return PETS
+    if proposition.keys() == {"context.customer"}:
+        return YOURS
     if "context.pets_from_orders" in text:
         return PETS_FROM_ORDERS
     if len(proposition) != 1:
