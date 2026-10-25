@@ -34,12 +34,19 @@ const FIELD_LABELS: Record<string, string> = {
   "product_state.on_offer": "on offer", "product_state.discount_band": "discount",
   "product_state.age": "new or established", "product_state.rival_launched": "a rival launched",
   "product_state.price_change": "price change",
+  // Reviews (ADR 0039)
+  "product_state.rating_band": "stars when shown", "product_state.review_count_band": "reviews so far",
+  wrote_negative_review: "wrote a 1–2 star review", had_negative_review: "has written a negative review",
+  first_basket_categories: "first basket held", review_replied: "the shop replied", nps_latest_group: "latest NPS answer",
 };
 export const fieldLabel = (field: string) => FIELD_LABELS[field] ?? field;
 
 export function valueLabel(row: ShopLiftRow): string {
-  if (row.field === "just_bought") return row.value === "true" ? "yes" : "no";
-  if (row.field === "product_sku.rating_band") return row.value === "unrated" ? "unrated" : `${row.value.replace("-", "–")} stars`;
+  if (["just_bought", "wrote_negative_review", "had_negative_review", "review_replied"].includes(row.field)) {
+    return row.value === "true" ? "yes" : "no";
+  }
+  if (row.field === "product_sku.rating_band" || row.field === "product_state.rating_band") return row.value === "unrated" ? "unrated" : `${row.value.replace("-", "–")} stars`;
+  if (row.field === "product_state.review_count_band") return row.value.replace("-", "–");
   return row.value.replace(/[_-]/g, " ");
 }
 

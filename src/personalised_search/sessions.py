@@ -1,10 +1,14 @@
 """The scored sessions of the personalised-search benchmark (ADR 0037 §3).
 
 A scored session is a generated search session in which the shopper
-bought something, except the three hand-curated personas. A hit is any
-product bought in that session. Everything here is read from the
-committed fixtures (and the regenerated, gitignored `impressions.json`),
-so the set is fixed before Aito is asked anything.
+bought something from the search results (`placement: list`), except the
+three hand-curated personas. A hit is any product bought from those
+results. Since ADR 0045 a session also shows what the household came for
+(`buy_again`), bought whatever was searched, so those purchases aren't
+search hits (the re-registration of 2026-10-24 for data release 2).
+Everything here is read from the committed fixtures (and the regenerated,
+gitignored `impressions.json`), so the set is fixed before Aito is asked
+anything.
 """
 
 from __future__ import annotations
@@ -27,9 +31,12 @@ class Session:
     customer: str
     month: str
     query: str
-    pets: str                   # the household's declared pets: "dog cat"
+    pets: str | None            # the household's declared pets: "dog cat"; most declare none
+    pets_from_orders: str | None  # the pet types of their earlier orders, as the context records them
     rule: str | None            # the household's declared diet: "grain-free"
-    cart: tuple[str, ...]       # this month's basket, as the Shop's cart
+    # Empty: the search is scored on arrival. Since ADR 0045 a session's
+    # basket is its own order, so as the cart it would hold the answer.
+    cart: tuple[str, ...]
     last_order: tuple[str, ...]  # the last order before this month
     prior_orders: int
     bought: frozenset[str]
@@ -60,15 +67,17 @@ def load_products() -> dict[str, dict]:
 
 
 def scored_sessions() -> list[Session]:
-    """Every search session with a purchase, personas left out, in id order."""
+    """Every search session with a purchase from its results, personas left out, in id order."""
     release = json.loads((DATA / "release-env.json").read_text(encoding="utf-8"))["counts"]
     impressions = load("impressions")
-    if len(impressions) != release["impressions"]:
+    # The log is loaded as two tables (src/showing_split.py); together they are the file.
+    loaded = release["impressions"] + release["unranked_showings"]
+    if len(impressions) != loaded:
         raise ValueError(f"data/impressions.json has {len(impressions)} rows, the release "
-                         f"{release['impressions']}: regenerate it before scoring")
+                         f"{loaded}: regenerate it before scoring")
     bought: dict[str, set[str]] = {}
     for row in impressions:
-        if row["purchased"]:
+        if row["purchased"] and row["placement"] == "list":
             bought.setdefault(row["context"], set()).add(row["product_sku"])
     customers = {c["customer_id"]: c for c in load("customers")}
     order_months: dict[str, list[str]] = {}
@@ -83,8 +92,8 @@ def scored_sessions() -> list[Session]:
         customer = customers[c["customer"]]
         sessions.append(Session(
             session_id=c["context_id"], customer=c["customer"], month=c["month"], query=c["search_query"],
-            pets=customer["pets"], rule=customer.get("diet"),
-            cart=tuple((c.get("basket") or "").split()), last_order=tuple((c.get("prev_basket") or "").split()),
+            pets=customer.get("pets"), pets_from_orders=c.get("pets_from_orders"), rule=customer.get("diet"),
+            cart=(), last_order=tuple((c.get("prev_basket") or "").split()),
             prior_orders=sum(1 for m in order_months.get(c["customer"], []) if m < c["month"]),
             bought=frozenset(bought[c["context_id"]]),
         ))

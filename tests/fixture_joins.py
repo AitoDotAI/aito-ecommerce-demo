@@ -52,16 +52,23 @@ def order_lines_with_customer() -> list[dict]:
     return [_present({**ln, **_as_customer_columns(customer_of[ln["order_id"]])}) for ln in load("order_lines.json")]
 
 
-def impressions_in_context() -> list[dict]:
+def impressions_in_context(include_visitors: bool = False) -> list[dict]:
     """impressions with their context's fields under the names they had
     before ADR 0033, the customer's hidden model as `customer_*`, and the
-    product's pet type and category."""
+    product's pet type and category.
+
+    Customers' impressions only, unless `include_visitors`: a visitor who
+    hasn't bought yet (ADR 0040) has no hidden model and never buys."""
     contexts = {c["context_id"]: c for c in load("contexts.json")}
     products = {p["sku"]: p for p in load("products.json")}
     out = []
     for imp in load("impressions.json"):
         ctx = contexts[imp["context"]]
         product = products[imp["product_sku"]]
+        if "customer" not in ctx:
+            if include_visitors:
+                out.append({**imp, "month": ctx["month"], "surface": ctx["surface"]})
+            continue
         out.append(_present({
             **imp,
             "customer_id": ctx["customer"], "month": ctx["month"], "surface": ctx["surface"],

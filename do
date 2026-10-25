@@ -105,6 +105,19 @@ _guard_uci_env() {
   exit 1
 }
 
+# Refuse a write that replaces every table unless AITO_ENV names an env
+# other than master: a data release is loaded into its own env first, and
+# reaches master only through ADR 0035's promote.
+_guard_named_env() {
+  local verb="$1"
+  case "${AITO_ENV:-}" in
+    ""|master)
+      echo "⛔ REFUSING '$verb' — it drops and reloads every table, and AITO_ENV is '${AITO_ENV:-<unset>}' (master)."
+      echo "   Run it as:  AITO_ENV=<a new env> ./do $verb"
+      exit 1 ;;
+  esac
+}
+
 # Ports: frontend on 8500 (user-facing), backend on 8501 (internal).
 # Allocated by the cross-demo framework doc — see
 # aito-demo-framework.md §2 "Port allocation". Don't reuse other
@@ -112,6 +125,7 @@ _guard_uci_env() {
 # PORT_BACKEND=8640 ./do backend-dev from a worktree.
 PORT_FRONTEND="${PORT_FRONTEND:-8500}"
 PORT_BACKEND="${PORT_BACKEND:-8501}"
+export PORT_BACKEND   # next.config.ts proxies the dev API to it
 
 cmd_help() {
   cat <<EOF
@@ -131,6 +145,7 @@ Common
 Data
   generate-fixtures (Re)run data/generate_fixtures.py
   load-data         Upload schema + fixtures to Aito
+  env-load          Drop and reload every table into a named env (needs AITO_ENV=<env>; refuses master)
   reset-data        Drop and reload all Aito tables + warm the cache
   optimize          Merge batch segments on all tables for faster reads
   clear-cache       Clear in-memory + Aito persistent prediction cache
@@ -164,7 +179,8 @@ Quality
   verify-demo       End-to-end demo-path check
   verify-mobile     Mobile sweep of every view: screenshots, then an overflow check that fails on any overflow
   test-urls         Build the static export; check every view's link opens as shared
-  planted-effects   Generate planted and null fixtures for 3 seeds; judge ADR 0032's effects (~5 min)
+  planted-effects   Generate planted and null fixtures for 3 seeds; judge every planted effect (~30 min)
+  pooled-effects    The impression-side checks over 10 seeds, pooled with intervals (~45 min)
   check             Pre-merge gate (test + fmt + aito-check)
   fmt               Format code
 
@@ -280,14 +296,19 @@ cmd_generate_fixtures() {
   uv run python -m data.generate_fixtures
 }
 
-# The impressions fixture is gitignored (too large to commit, see
-# ADR 0021). Regenerate the whole deterministic fixture set if it's
-# absent — a no-op for the committed tables (seed=42 ⇒ byte-identical).
+# The impressions and contexts fixtures are gitignored (too large to
+# commit, see ADR 0021 and ADR 0040). Regenerate the whole deterministic
+# fixture set if either is absent — a no-op for the committed tables
+# (seed=42 ⇒ byte-identical).
 _ensure_impressions() {
-  if [[ ! -f "$SCRIPT_DIR/data/impressions.json" ]]; then
-    echo "data/impressions.json missing (gitignored) — regenerating fixtures..."
-    cmd_generate_fixtures
-  fi
+  local table
+  for table in impressions contexts; do
+    if [[ ! -f "$SCRIPT_DIR/data/$table.json" ]]; then
+      echo "data/$table.json missing (gitignored) — regenerating fixtures..."
+      cmd_generate_fixtures
+      return
+    fi
+  done
 }
 
 cmd_load_data() {
@@ -300,6 +321,17 @@ cmd_load_data() {
   _show_target
   _ensure_impressions
   uv run python -m src.data_loader "$@"
+}
+
+cmd_env_load() {
+  # A data release goes into its own env (ADR 0035): every table of
+  # src/schema.py, dropped and reloaded. The env must exist already.
+  cd "$SCRIPT_DIR"
+  _guard_named_env env-load
+  _show_target
+  echo "   env: $AITO_ENV"
+  _ensure_impressions
+  uv run python -m src.data_loader --reset --refuse-master "$@"
 }
 
 cmd_reset_data() {
@@ -626,7 +658,7 @@ cmd_test() {
   # write its cache (aito-azure saw 14 cache writes on master on 2026-10-24).
   export PUBLIC_DEMO="${PUBLIC_DEMO:-1}"
   # The backtest group adds numpy, which the EASE baseline's tests need (ADR 0036).
-  uv run --group backtest pytest tests/ -v
+  uv run --group backtest pytest "${@:-tests/}" -v
 }
 
 cmd_aito_check() {
@@ -697,10 +729,18 @@ cmd_test_urls() {
 }
 
 cmd_planted_effects() {
-  # Each ADR 0032 effect against the same seed's generation without it, for
-  # three seeds. Writes docs/verification/product-states-data.md; leaves data/ alone.
+  # Each planted effect (ADRs 0032, 0033, 0038-0040) against the same seed's
+  # generation without it, for three seeds in parallel. Writes
+  # docs/verification/actionable-states-data.md; leaves data/ alone.
   cd "$SCRIPT_DIR"
   PYTHONPATH=. uv run python scripts/planted_effects.py
+}
+
+cmd_pooled_effects() {
+  # The impression-side checks over 10 seeds, pooled (ADR 0045's amendment):
+  # writes docs/verification/actionable-states-pooled.md; leaves data/ alone.
+  cd "$SCRIPT_DIR"
+  PYTHONPATH=. uv run python scripts/pooled_effects.py
 }
 
 cmd_verify_mobile() {
@@ -855,6 +895,7 @@ case "${1:-help}" in
   demo)              cmd_demo ;;
   generate-fixtures) cmd_generate_fixtures ;;
   load-data)         shift; cmd_load_data "$@" ;;
+  env-load)          shift; cmd_env_load "$@" ;;
   reset-data)        shift; cmd_reset_data "$@" ;;
   clear-cache)       cmd_clear_cache ;;
   warm-cache)        cmd_warm_cache ;;
@@ -874,7 +915,7 @@ case "${1:-help}" in
   sandbox-list)      cmd_sandbox list ;;
   sandbox-time)      cmd_sandbox time ;;
   agent-demo)        shift; cmd_agent_demo "$@" ;;
-  test)              cmd_test ;;
+  test)              shift; cmd_test "$@" ;;
   aito-check)        shift; cmd_aito_check "$@" ;;
   search-eval)       cmd_search_eval ;;
   evidence)          shift; cmd_evidence "$@" ;;
@@ -884,6 +925,7 @@ case "${1:-help}" in
   verify-mobile)     cmd_verify_mobile ;;
   test-urls)         cmd_test_urls ;;
   planted-effects)   cmd_planted_effects ;;
+  pooled-effects)    cmd_pooled_effects ;;
   check)             cmd_check ;;
   fmt)               cmd_fmt ;;
   npm-install)       cmd_npm_install ;;

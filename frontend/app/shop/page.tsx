@@ -155,7 +155,7 @@ function ShopView() {
       </form>
 
       {notFound && (
-        <NotFoundNotice message={notFound} resetLabel="Start over as Päivi, with an empty cart"
+        <NotFoundNotice message={notFound} resetLabel="Start over with the first shopper, with an empty cart"
                         onReset={() => setUrl({ shopper: null, cart: null, product: null })} />
       )}
       {error && <ErrorState title="Couldn't load the shop" message={error} />}

@@ -3,8 +3,14 @@
 import { fmtEur } from "@/lib/api";
 import { lastLever } from "@/lib/sandbox";
 import type { ScoreAdjustment, ShopItem } from "@/lib/types";
+import HelpPopover from "@/components/prediction/HelpPopover";
+import WhyPopover from "@/components/prediction/WhyPopover";
 import ProductHighlights from "@/components/shop/ProductHighlights";
 import VariantNote from "@/components/shop/VariantNote";
+
+/** Smaller offers aren't badged: the data's lift starts at the 10–15 % band (Reviews and
+ *  Product what-if), and a badge on every card teaches shoppers to wait for one. */
+const WORTH_SHOWING_PCT = 10;
 
 /** One recommended product: its name, price and offer, Aito's purchase
  *  probability for this shopper, and the strongest of Aito's reasons. For
@@ -28,7 +34,10 @@ export default function ProductCard({ item, rank, onAdd, onOpen }: {
       </button>
       <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6 }}>
         <span style={{ fontWeight: 600 }}>{fmtEur(item.price_eur, 2)}</span>
-        {item.offer_pct !== null && <span className="shop-fact shop-fact-offer">−{Math.round(item.offer_pct)} % this month</span>}
+        {item.avg_rating !== null && <span className="shop-fact" title="Average review rating">★ {item.avg_rating.toFixed(1)}</span>}
+        {item.offer_pct !== null && item.offer_pct >= WORTH_SHOWING_PCT && (
+          <span className="shop-fact shop-fact-offer">−{Math.round(item.offer_pct)} % this month</span>
+        )}
         <VariantNote skus={item.same_name_skus} />
       </div>
       <div title={item.adjustment
@@ -37,10 +46,10 @@ export default function ProductCard({ item, rank, onAdd, onOpen }: {
         <div style={{ height: 5, background: "var(--border-light)", borderRadius: 3 }}>
           <div style={{ width: `${Math.min(100, Math.round(shown * 100))}%`, height: "100%", background: "var(--cta)", borderRadius: 3 }} />
         </div>
-        <div className="card-sub" style={{ marginTop: 2 }}>
+        <div className="card-sub" style={{ marginTop: 2, display: "flex", alignItems: "center", gap: 6 }}>
           {item.adjustment
             ? <>Score {Math.round(shown * 100)} <RankChange item={item} rank={rank} /></>
-            : `${Math.round(item.p * 100)} % buy it when shown`}
+            : <>{Math.round(item.p * 100)} % buy it when shown <ShownExplainer item={item} /></>}
         </div>
       </div>
       {item.p_if_new !== null && (
@@ -57,6 +66,34 @@ export default function ProductCard({ item, rank, onAdd, onOpen }: {
         <button className="btn btn-ghost" onClick={onOpen} aria-label={`Details of ${item.name}`}>Details</button>
       </div>
     </div>
+  );
+}
+
+/** Why "X % buy it when shown": Aito's `$why` chain for the card. A card whose probability was
+ *  re-asked (bought last order) has no chain of the new number, so it gets the plain
+ *  explanation of what the percentage is: a per-showing purchase chance, not a click rate. */
+function ShownExplainer({ item }: { item: ShopItem }) {
+  if (item.why_explanation) {
+    return <WhyPopover why={item.why_explanation} title={`${Math.round(item.p * 100)} % buy ${item.name} when it is shown`} />;
+  }
+  return (
+    <HelpPopover label="What does this percentage mean?" title="Chance to buy when shown">
+      <p style={{ margin: "0 0 8px" }}>
+        Out of 100 times this product is shown to a shopper like this one, in this context, this many end
+        in a <strong>purchase</strong>. It is not a click-through rate: a click is only a step on the way,
+        and most clicks don&apos;t end in a purchase.
+      </p>
+      <p style={{ margin: "0 0 8px" }}>
+        Aito estimates it from the shop&apos;s logged showings (<code>_predict purchased</code>). It uses what
+        the shopper has in common with earlier buyers, such as their pets, their past orders and the season,
+        and how this product did when shown in those situations. The reasons on the card (×1.8 and so on) are
+        the factors that raised it, read from <code>$why</code>.
+      </p>
+      <p style={{ margin: 0, color: "var(--text-muted)" }}>
+        It is a model estimate learned from past showings, not a count, and it is for ranking. Compare the
+        cards with each other rather than reading a single figure as a forecast of sales.
+      </p>
+    </HelpPopover>
   );
 }
 

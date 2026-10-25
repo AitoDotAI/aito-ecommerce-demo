@@ -5,8 +5,11 @@ same queries is checked in test_aito_check.py.
 
 CUSTOMERS = {
     # Declared and recorded fields only (ADR 0033).
-    "CUST-00049": {"customer_id": "CUST-00049", "pets": "dog", "dog_size": "medium", "diet": "grain-free"},
+    "CUST-00152": {"customer_id": "CUST-00152", "pets": "dog", "dog_size": "medium", "diet": "grain-free"},
     "CUST-00053": {"customer_id": "CUST-00053", "pets": "cat"},
+    # No pet profile (most customers, ADR 0045): the key is absent, as Aito leaves a null out.
+    "CUST-01896": {"customer_id": "CUST-01896"},
+    "CUST-00330": {"customer_id": "CUST-00330"},
 }
 
 
@@ -16,6 +19,7 @@ def product(sku, p=0.0, category="dry-food", pet_type="cat", reason=("context.mo
     return {"sku": sku, "name": name or f"Brand {sku}", "brand": "Brand", "pet_type": pet_type,
             "category": category, "price_eur": 4.0, "avg_rating": 4.2, "$p": p,
             "$why": {"type": "product", "factors": [
+                {"type": "baseP", "value": 0.14, "proposition": {"purchased": True}},
                 {"type": "hitPropositionLift", "proposition": {"product_sku": {"$has": sku}}, "value": 2.0,
                  "factors": [{"type": "relatedPropositionLift", "proposition": {field: value}, "value": lift}]}]}}
 

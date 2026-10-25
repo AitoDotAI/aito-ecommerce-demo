@@ -687,6 +687,10 @@ def test_shop_a_cage_in_the_cart_changes_what_is_recommended(client):
     assert empty != with_cage, empty
 
 
+@pytest.mark.xfail(strict=True, reason=(
+    "ADR 0045, amendment 2: the ranked table holds 359 just-bought showings (the shop's list "
+    "rarely shows what was just bought; the rest are buy-again lists), too few to judge. "
+    "Direction is as registered (clicks 0.198 against 0.315); the sample floor of 600 is not met."))
 def test_shop_an_item_bought_last_order_scores_lower_as_just_bought(client):
     """A8's shop form: re-asked with just_bought: true, a product's purchase
     probability drops below what it was before the shopper bought it."""
@@ -804,6 +808,10 @@ def test_shop_analytics_low_rated_products_sell_less(shop_analytics):
     assert row and row.interval_high < 1, row
 
 
+@pytest.mark.xfail(strict=True, reason=(
+    "ADR 0045, amendment 2: the ranked table holds 359 just-bought showings (the shop's list "
+    "rarely shows what was just bought; the rest are buy-again lists), too few to judge. "
+    "Direction is as registered (clicks 0.198 against 0.315); the sample floor of 600 is not met."))
 def test_shop_analytics_just_bought_products_are_clicked_less(shop_analytics):
     """S8: a product in the last order draws fewer clicks (109 of 24,950)."""
     row = _row(shop_analytics["clicked"].rows, "just_bought", "true")
@@ -966,8 +974,8 @@ def _search_session(session_id: str):
     customer = next(c for c in json.loads((data / "customers.json").read_text())
                     if c["customer_id"] == context["customer"])
     return Session(session_id=session_id, customer=context["customer"], month=context["month"],
-                   query=context["search_query"], pets=customer["pets"], rule=customer.get("diet"),
-                   cart=tuple((context.get("basket") or "").split()),
+                   query=context["search_query"], pets=customer.get("pets"),
+                   pets_from_orders=context.get("pets_from_orders"), rule=customer.get("diet"), cart=(),
                    last_order=tuple((context.get("prev_basket") or "").split()), prior_orders=0,
                    bought=frozenset())
 
@@ -977,8 +985,8 @@ def test_a_nested_from_leaves_the_scored_session_out(client):
     so a held-out ranking never reads the purchase it is scored on."""
     from src.personalised_search.rankings import held_out
 
-    assert _count(client, {"context": "SESS-000694"}) > 0
-    res = client.search(held_out("SESS-000694"), where={"context": "SESS-000694"}, limit=0)
+    assert _count(client, {"context": "SESS-000037"}) > 0
+    res = client.search(held_out("SESS-000037"), where={"context": "SESS-000037"}, limit=0)
     assert res["total"] == 0
 
 
@@ -987,7 +995,7 @@ def test_the_shops_search_held_out_scores_every_allowed_match_and_keeps_the_rule
     name match the household's rule allows, and none for rule-breaking food."""
     from src.personalised_search.rankings import shop_search_p, text_lift
 
-    session = _search_session("SESS-008388")          # "dog food", a `sensitive` household
+    session = _search_session("SESS-000136")          # "cat food", a `sensitive` household
     p = shop_search_p(client, session, list(text_lift(client, session.query)))
     rows = client.search("products", where={"sku": {"$or": list(p)}},
                          select=["sku", "name", "category", "pet_type"], limit=len(p))["hits"]
@@ -1000,7 +1008,7 @@ def test_the_history_form_held_out_returns_distinct_products(client):
     """Smart Search's one-query blend, `get product_sku` over a nested `from`."""
     from src.personalised_search.rankings import history_form_ranking
 
-    ranked = history_form_ranking(client, _search_session("SESS-000694"), 20)
+    ranked = history_form_ranking(client, _search_session("SESS-000037"), 20)
     assert len(ranked) == 20 and len(set(ranked)) == 20
 
 
@@ -1008,7 +1016,7 @@ def test_the_just_bought_reask_runs_in_a_batch_over_a_nested_from(client):
     from src.personalised_search.rankings import held_out, shop_context
     from src.shop_ranking import _p_true
 
-    session = _search_session("SESS-008388")
+    session = _search_session("SESS-000136")
     sku = session.last_order[0]
     [answer] = client.batch([{"from": held_out(session.session_id), "predict": "purchased",
                               "where": {**shop_context(session), "product_sku": sku, "just_bought": True}}])
@@ -1032,3 +1040,58 @@ def test_similarity_over_the_name_is_a_standard_bm25(client):
     assert aito[:10] == reference.ranked("senior chicken dog")[:10]
     ratio = [math.log(h["$score"]) / reference.score("senior chicken dog", h["sku"]) for h in res["hits"][:20]]
     assert 0.95 < statistics.median(ratio) < 1.05, ratio
+
+
+# ── Reviews (ADR 0039): stars, NPS and churn on data release 2 ───────
+
+
+def test_reviews_low_stars_cut_clicks_and_purchases_and_high_stars_lift_them(client):
+    """R1 and R2: a product shown at 1-2 stars is clicked and bought less than
+    the average showing, at 5 stars more, each interval clear of 1."""
+    from src.reviews_service import get_reviews_section
+
+    for kpi in ("clicked", "purchased"):
+        section = get_reviews_section(client, kpi)
+        low = _row(section.rows, "product_state.rating_band", "1-2")
+        high = _row(section.rows, "product_state.rating_band", "5")
+        assert low and low.interval_high < 1, (kpi, low)
+        assert high and high.interval_low > 1, (kpi, high)
+
+
+def test_reviews_a_negative_review_writer_is_over_represented_among_nps_detractors(client):
+    """R3, as the shop sees it: the experience is hidden, but a 1-2 star review
+    marks one, and detractors include more of those writers."""
+    from src.reviews_service import get_reviews_section
+
+    row = _row(get_reviews_section(client, "nps").rows, "wrote_negative_review", "true")
+    assert row and row.interval_low > 1, row
+
+
+def test_reviews_the_reply_comparison_counts_every_negative_review_month(client):
+    """R4b (ADR 0039's amendment): replied and not replied cover every
+    customer-month with a negative review, and the ratio sits inside its interval."""
+    from src.reviews_service import get_reply_effect, get_reviews_section
+
+    churn = get_reviews_section(client, "churn")
+    effect = get_reply_effect(client, churn.clustering)
+    negative = client.search("customer_months", where={"had_negative_review": True}, limit=0)["total"]
+
+    assert effect.replied_months + effect.unreplied_months == negative
+    assert effect.interval_low < effect.risk_ratio < effect.interval_high
+
+
+# ── Acquisition (ADR 0040): sources convert and stay differently ─────
+
+
+def test_acquisition_sources_convert_and_stay_as_planted(client):
+    """F2 and F4: email converts best and social worst, each interval apart; the
+    affiliate and social customers become regular far less than organic search's."""
+    from src.acquisition_service import get_acquisition
+
+    rows = {r.source: r for r in get_acquisition(client).sources}
+
+    assert rows["email"].conversion.low > rows["organic_search"].conversion.high
+    assert rows["social"].conversion.high < rows["organic_search"].conversion.low
+    for source in ("affiliate", "social"):
+        assert rows[source].regular.high < rows["organic_search"].regular.low, source
+        assert rows[source].source_lift < 1 < rows["organic_search"].source_lift

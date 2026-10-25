@@ -89,7 +89,7 @@ export default function LeverPanel({ sku, states, sandbox, onPulled }: {
         Next month&apos;s units follow the price only: Aito&apos;s <code>_estimate</code> can&apos;t take the
         discount band (it lives on the linked state), so the units what-if is at the offer&apos;s price.
         {" "}<Link href={withSandbox(`/shop/?shopper=paivi&month=${SANDBOX_MONTH}`, sandbox)}>
-          See the Shop react, as Päivi →
+          See the Shop react →
         </Link>
       </div>
     </div>

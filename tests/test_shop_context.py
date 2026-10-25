@@ -46,3 +46,10 @@ def test_a_rule_keeps_non_food_other_pets_food_and_food_that_names_it():
         {"product_sku.name": {"$match": "Grain"}},
     ]}
     assert rule_filter(None) is None
+
+def test_a_variant_after_the_comma_is_not_part_of_the_item_type():
+    # ADR 0044: products that shared a name carry a variant ("Trixie Cage, small").
+    from src.shop_context import item_type
+
+    assert item_type("Trixie Cage, small", "Trixie") == "Cage"
+    assert item_type("PetNord Water Bottle 500ml, large", "PetNord") == "Water Bottle"

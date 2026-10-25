@@ -66,6 +66,15 @@ export interface WhyExplanationPayload {
      *  full source string with `«…»` sentinels around the matched
      *  tokens. Frontend splits on the sentinels — never raw HTML. */
     highlight?: { field: string; marked_text: string } | null;
+    /** On a group, or on the Shop card's product term (src/shop_why.py): the parts it is made of. */
+    joint_lift?: number;
+    members?: Array<{
+      lift: number;
+      propositions: Array<{ field: string; value: string; negate?: boolean }>;
+      highlight?: { field: string; marked_text: string } | null;
+    }>;
+    /** A sentence naming a term that has no conditions of its own. */
+    label?: string;
   }>;
   final_p: number | null;
 }
@@ -339,7 +348,8 @@ export interface WinbackOffer {
 export interface AtRiskRow {
   customer_id: string;
   name: string;
-  pets: string;                  // declared (ADR 0033)
+  pets: string;                  // declared (ADR 0033), else read from their orders
+  pets_declared: boolean;
   dog_size: string | null;
   region: string;
   tenure_months: number;
@@ -665,6 +675,7 @@ export interface ShopReason {
 export interface ShopItem extends ShopProduct {
   p: number;                   // P(purchased) for this shopper, now
   reasons: ShopReason[];       // Aito's: what lifts this product for this shopper
+  why_explanation: WhyExplanationPayload | null;   // the `$why` chain behind p; null once re-asked (just bought)
   avg_rating: number | null;   // facts, shown beside the reasons, not as reasons
   offer_pct: number | null;
   keeps_rule: boolean;
@@ -898,4 +909,41 @@ export interface UciBoughtTogether {
   invoices_with_product: number;
   bought_with: UciBoughtWith[];
   query: Record<string, unknown>;
+}
+
+
+/* ─── Reviews (/api/reviews/*) ─── */
+
+export interface ReviewsReplyEffect {
+  replied_months: number;
+  replied_churned: number;
+  unreplied_months: number;
+  unreplied_churned: number;
+  risk_ratio: number;
+  interval_low: number;
+  interval_high: number;
+  verdict: "fewer leave" | "more leave" | "a tie";
+}
+
+
+/* ─── Acquisition (/api/acquisition) ─── */
+
+export interface AcquisitionRate { successes: number; total: number; low: number; high: number }
+
+export interface AcquisitionSource {
+  source: string;
+  sessions: number;
+  conversion: AcquisitionRate;
+  labelled_customers: number;
+  regular: AcquisitionRate;
+  predicted_regular: number;
+  source_lift: number;
+  landing: { category: string; lift: number }[];
+}
+
+export interface AcquisitionSection {
+  sources: AcquisitionSource[];
+  regular_basket: ShopLiftRow[];
+  queries_sent: number;
+  example_query: { from: string; where: Record<string, unknown>; relate: string; limit: number };
 }

@@ -37,7 +37,7 @@ https://shared.aito.ai/`. Optional for the day: pin the host in
 `/etc/hosts` with the address `getent hosts shared.aito.ai` gives, and
 remove the line on Tuesday (the address can change).
 
-**First visits (measured 2026-10-24, local, env observable).** Warm, every
+**First visits (measured 2026-10-24, local, env observable: release 1; re-measure on release 2).** Warm, every
 view on the path loads in 0.7–2.1 s. The Shop is the slowest, because its grid
 query takes 0.7 s. Cold, each page's first visit costs 1–2 s more, because
 `./do dev` compiles the page then. So the 14:50 warm-up must open **every**
@@ -61,17 +61,17 @@ tab hasn't had it yet.
 
 | Beat | URL | Lands on |
 |---|---|---|
-| 1 Supply (30 s) | `/supply/?demo=1` | "Reorder these 59 now", about €5,667 of May's sales at risk; €26,576 tied up in 87 overstocked. Don't present "these don't clear by markdown" as a finding: it's by price alone (no offer lift, no placement) |
-| 2 Product what-if | New sandbox, then `/product/?sku=SKU-PT-0563&month=2026-05&tab=what-if&db=<branch>` | "Put it on offer at 10–15 % off", 10.6 % → 19.5 % |
-| 3 Lever | press **20 % or more off**, then **10–15 % off** | Read back "May 2026, 20 % or more off, €17.27, 4 stars"; the decision pushes back to 10–15 % |
-| 4 Shop | **See the Shop react, as Päivi →** (`/shop/?shopper=paivi&month=2026-05&db=<branch>`) | Kit: PetNord Hideout 17 %, Trixie Hideout 15 % (+1 variant); Trixie Hideout card 1st, "Score 48 ↑ 6 since the offer" |
-| 4 Variant (optional) | a 1-star review on the same product; the honest case `?sku=SKU-PT-0558` with 5 stars | 4 → 3 stars ×0.83; "No change in its star band" |
+| 1 Supply (30 s) | `/supply/?demo=1` | "Reorder these 83 now", about €11,097 of May's sales at risk; €28,298 tied up in 79 overstocked. Don't present "these don't clear by markdown" as a finding: it's by price alone (no offer lift, no placement) |
+| 2 Product what-if | New sandbox, then `/product/?sku=SKU-PT-0563&month=2026-05&tab=what-if&db=<branch>` | "Put it on offer at 10–15 % off", 20.6 % → 37.1 % (April; May's read in the sandbox) |
+| 3 Lever | press **20 % or more off**, then **10–15 % off** | Read back "May 2026, 20 % or more off, €17.27, 3 stars" (confirm on Sunday); the decision pushes back to 10–15 % (€204.84 vs €269.17 margin per 100 showings) |
+| 4 Shop | **See the Shop react →** (`/shop/?shopper=paivi&month=2026-05&db=<branch>`, the shopper is Anna) | April kit: Trixie Hideout, small 25 %, Trixie Hideout, medium 16 %, PetNord Hideout 14 %; after the lever the small hideout rises (read the May numbers on Sunday); **?** on a card opens its `$why` |
+| 4 Variant (optional) | a 1-star review on the same product; for the honest case pick a product with many reviews on Sunday (the hideouts have 2) | read the band change and the card chip on Sunday |
 | 5 Agent | `./do agent-demo <branch>` | It reads the May row and the per-band estimates |
 | 6 Evidence (close) | `/evidence/`, then **Business reorders** | The claim, word for word |
 
 **Notes for the run:**
 
-- Don't lead Retention with the €183 the win-back emails return; it isn't
+- Don't lead Retention with the €135 the win-back emails return; it isn't
   on the path.
 - Patterns stays out of the path.
 - Demo mode is presentation only. Every caveat is behind **Details** or
