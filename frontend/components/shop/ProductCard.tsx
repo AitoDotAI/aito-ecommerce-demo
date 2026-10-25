@@ -3,6 +3,7 @@
 import { fmtEur } from "@/lib/api";
 import { lastLever } from "@/lib/sandbox";
 import type { ScoreAdjustment, ShopItem } from "@/lib/types";
+import FeatureTokens from "@/components/shop/FeatureTokens";
 import HelpPopover from "@/components/prediction/HelpPopover";
 import WhyPopover from "@/components/prediction/WhyPopover";
 import ProductHighlights from "@/components/shop/ProductHighlights";
@@ -74,7 +75,10 @@ export default function ProductCard({ item, rank, onAdd, onOpen }: {
  *  explanation of what the percentage is: a per-showing purchase chance, not a click rate. */
 function ShownExplainer({ item }: { item: ShopItem }) {
   if (item.why_explanation) {
-    return <WhyPopover why={item.why_explanation} title={`${Math.round(item.p * 100)} % buy ${item.name} when it is shown`} />;
+    return (
+      <WhyPopover why={item.why_explanation} title={`${Math.round(item.p * 100)} % buy ${item.name} when it is shown`}
+                  entryDetail={(detail) => detail === "features" ? <FeatureTokens features={item.features} /> : null} />
+    );
   }
   return (
     <HelpPopover label="What does this percentage mean?" title="Chance to buy when shown">

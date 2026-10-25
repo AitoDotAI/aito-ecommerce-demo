@@ -31,18 +31,25 @@ def test_the_chain_has_the_base_the_situation_the_features_and_the_product_itsel
     payload = shop_why(WHY, 0.512, CONTEXT)
 
     assert payload["base_p"] == 0.1417 and payload["final_p"] == 0.512
-    assert [e["lift"] for e in payload["lifts"]] == [0.648, 0.91, 1.115, 10.259]
+    assert sorted(e["lift"] for e in payload["lifts"]) == [0.648, 0.91, 1.115, 10.259]
+
+
+def test_the_biggest_effect_comes_first_whichever_way_it_points():
+    payload = shop_why(WHY, 0.512, CONTEXT)
+
+    # |log 10.259| > |log 0.648| (a drop to two thirds) > |log 1.115| > |log 0.91|
+    assert [e["lift"] for e in payload["lifts"]] == [10.259, 0.648, 1.115, 0.91]
 
 
 def test_the_products_own_lift_holds_the_single_conditions_that_make_it_up():
-    own = shop_why(WHY, 0.512, CONTEXT)["lifts"][-1]
+    own = next(e for e in shop_why(WHY, 0.512, CONTEXT)["lifts"] if "members" in e)
 
-    assert [m["lift"] for m in own["members"]] == [0.997, 3.525, 2.2]
-    assert "members" not in shop_why(WHY, 0.512, CONTEXT)["lifts"][0]
+    assert [m["lift"] for m in own["members"]] == [3.525, 2.2, 0.997]
+    assert sum("members" in e for e in shop_why(WHY, 0.512, CONTEXT)["lifts"]) == 1
 
 
 def test_a_text_condition_shows_the_contexts_text_with_the_matched_word_marked():
-    pets = shop_why(WHY, 0.512, CONTEXT)["lifts"][0]
+    pets = next(e for e in shop_why(WHY, 0.512, CONTEXT)["lifts"] if e["lift"] == 0.648)
 
     assert pets["highlight"] == {"field": "pets_from_orders", "marked_text": "«cat» dog"}
 
@@ -50,7 +57,7 @@ def test_a_text_condition_shows_the_contexts_text_with_the_matched_word_marked()
 def test_a_product_with_no_impressions_of_its_own_has_no_own_lift():
     without_own = {**WHY, "factors": [f for f in WHY["factors"] if f["type"] != "hitPropositionLift"]}
 
-    assert [e["lift"] for e in shop_why(without_own, 0.3, CONTEXT)["lifts"]] == [0.648, 0.91, 1.115]
+    assert [e["lift"] for e in shop_why(without_own, 0.3, CONTEXT)["lifts"]] == [0.648, 1.115, 0.91]
 
 
 def test_an_unknown_term_fails_loudly_rather_than_dropping_out_of_the_chain():
@@ -63,3 +70,9 @@ def test_an_unknown_term_fails_loudly_rather_than_dropping_out_of_the_chain():
 def test_a_why_without_a_base_probability_fails_loudly():
     with pytest.raises(AitoError, match="baseP"):
         shop_why({"type": "product", "factors": []}, 0.5, CONTEXT)
+
+
+def test_the_products_features_term_offers_a_fold_out_for_the_page_to_fill():
+    lifts = shop_why(WHY, 0.512, CONTEXT)["lifts"]
+
+    assert [e["detail"] for e in lifts if "detail" in e] == ["features"]

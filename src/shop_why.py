@@ -19,6 +19,7 @@ multiply to the probability once the popover adds Aito's normalising constant.
 from __future__ import annotations
 
 import json
+import math
 
 from src.aito_client import AitoError
 from src.why_processor import _flatten_proposition
@@ -39,9 +40,10 @@ def shop_why(why: dict, p: float, context: dict) -> dict:
         elif kind == "hitLinkPropositionLift":
             features = {"label": "Products with this one's features (brand, category, price), "
                                  "whatever the situation",
-                        "lift": float(factor["value"]), "propositions": [], "highlight": None}
+                        "lift": float(factor["value"]), "propositions": [], "highlight": None,
+                        "detail": "features"}
         elif kind == "hitPropositionLift":
-            members = [_entry(f, context) for f in factor.get("factors", [])]
+            members = by_impact([_entry(f, context) for f in factor.get("factors", [])])
             itself = {"label": "This product in your situation: how each part of it lifts this product",
                       "lift": float(factor["value"]), "propositions": [], "highlight": None,
                       "members": members}
@@ -49,9 +51,14 @@ def shop_why(why: dict, p: float, context: dict) -> dict:
             raise AitoError(f"Unexpected `$why` term {kind!r}: {json.dumps(factor)[:200]}")
     if base_p is None:
         raise AitoError(f"`$why` has no baseP: {json.dumps(why)[:300]}")
-    lifts = situation + [e for e in (features, itself) if e is not None]
+    lifts = by_impact(situation + [e for e in (features, itself) if e is not None])
     return {"base_p": round(base_p, 4), "predicted_value": "purchased", "lifts": lifts,
             "final_p": round(p, 4)}
+
+
+def by_impact(entries: list[dict]) -> list[dict]:
+    """Biggest effect first, whichever way it points: a lift of 0.5 moves the odds as far as 2.0."""
+    return sorted(entries, key=lambda e: -abs(math.log(e["lift"])))
 
 
 def _entry(factor: dict, context: dict, label: str | None = None) -> dict:
