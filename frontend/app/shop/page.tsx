@@ -153,7 +153,7 @@ function ShopView() {
                title="Put the items of their last order in the query as if they were in the cart">
           <input type="checkbox" checked={recentParam === "1"}
                  onChange={(e) => setUrl({ recent: e.target.checked ? "1" : null })} />
-          Start from their last order
+          Start from their last order <span className="card-sub">(experiment: measured to lose, last-basket-prereg.md)</span>
         </label>
       </div>
       {identityParam === "1" && (
