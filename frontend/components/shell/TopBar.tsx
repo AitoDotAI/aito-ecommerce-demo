@@ -1,5 +1,6 @@
 "use client";
 
+import AskStore from "./AskStore";
 import LatencyBadge from "./LatencyBadge";
 import { useShell } from "./ShellState";
 
@@ -70,6 +71,7 @@ export default function TopBar() {
         </div>
         <div className="topbar-actions">
           <LatencyBadge />
+          <AskStore />
           <button type="button" className="btn btn-ghost">Export</button>
           <a
             className="btn btn-primary"

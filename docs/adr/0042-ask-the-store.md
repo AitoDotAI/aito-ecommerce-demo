@@ -131,3 +131,34 @@ sales?" Answer: "7 views; the data can't tell."
 - A model dependency and its cost. Recorded answers keep the public demo free of it.
 - Recorded answers can go stale when the data changes; each release re-records them (the
   ADR 0035 precompute step is the natural place).
+
+## Amendment (2026-10-25, Antti: "we could have that ask button if the LLM is specified … we can use Claude for this, as we now have credits")
+
+**A live Ask button, on when a model key is configured. Built; not yet run against the live model.**
+
+- **On or off.** `GET /api/ask` says `enabled` only when the server has `ANTHROPIC_API_KEY` **and**
+  `ADMIN_TOKEN` (the sandbox's). The top bar shows **Ask** only then. Without a key there is
+  no button, and `POST /api/ask` answers 404.
+- **Who may ask.** `POST /api/ask` needs the admin token in `X-Admin-Token`, asked once per tab
+  as for "New sandbox". A question costs credits and goes to an outside service, and ecommerce.aito.ai
+  is public, so on a public deploy a question is the presenter's, not a visitor's. Recorded answers
+  for visitors remain the plan above, and are not built.
+- **The model.** The Anthropic Python SDK (a new dependency, `anthropic`), model `claude-opus-5-5`
+  (`ASK_MODEL` overrides), adaptive thinking, effort `medium`, at most 8 rounds of tool calls.
+  A refusal, a cut-off answer and a loop that never stops are errors shown to the person, never
+  an empty answer. The refusal-fallback beta is not used yet: untested without a key.
+- **The tools** (`src/ask_tools.py`) wrap the services the views call: `find_products`,
+  `offer_what_if`, `price_what_if`, `reorder_queue`, `overstock`, `at_risk_customers`. Each returns only
+  fields of that service's result and a `view` path; `offer_what_if` marks a band shown under 30
+  times `thin`. Supply and Retention read the same precompute snapshots as their pages. All read.
+  PetNord's database, or the sandbox the request names (`?db=`), is read through the same client the
+  views use.
+- **The panel** (`AskStore.tsx`) shows the answer with the app paths it names as links (the
+  sandbox kept), and under "N Aito queries it rested on" every tool call with its time and any error.
+- **Settings:** `ANTHROPIC_API_KEY`, `ADMIN_TOKEN`, optionally `ASK_MODEL`; documented in the
+  example settings file. The key is read from the environment and never leaves the server.
+- **Tested** against a scripted stand-in for the Messages API (the loop, errors, limits), the tools
+  over the views' result shapes, and the routes (off without a key or token, 403, error mapping). The
+  first live question is the real check: until then the model call itself is unproven.
+- **Not done:** recorded answers, the "Agent answers, checked" Evidence entry, the `petnord-levers`
+  MCP server for outside agents, and the `thin` rules beyond the offer bands.

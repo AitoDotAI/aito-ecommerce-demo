@@ -26,6 +26,7 @@ from fastapi.staticfiles import StaticFiles
 from src.aito_client import AitoClient, AitoError
 from src.aito_client import WRITES_ANY, WRITES_ENVS, WRITES_NONE
 from src.demo_mode import ENV_HEADER, DemoClients, requested_sandbox
+from src.ask_routes import router as ask_router
 from src.lever_routes import router as lever_router
 from src.sandbox_config import load_sandbox_setting
 from src.sandbox_envs import SandboxBranches, SandboxEnvError
@@ -236,6 +237,10 @@ async def uncaught_aito_error(request: Request, exc: AitoError):
 app.state.sandbox_gate = sandbox_gate
 app.state.admin_token = sandbox_setting.admin_token
 app.include_router(lever_router)
+# Ask the store (ADR 0042) reads the same two snapshot views the Supply and Retention pages serve.
+app.state.ask_supply = lambda: _view_dict("supply", lambda: get_supply(aito))
+app.state.ask_retention = lambda: _view_dict("retention", lambda: get_retention(aito))
+app.include_router(ask_router)
 
 
 @app.middleware("http")
@@ -639,12 +644,17 @@ def review_triage_endpoint(review: str | None = None):
         )
 
 
+def _view_dict(name: str, compute) -> dict:
+    """A heavy view's precompute snapshot, else computed live and cached for 30 minutes (ADR 0024)."""
+    return precompute_store.serve(
+        name, lambda: cache.get_or_compute(f"{name}:view", lambda: compute().to_dict(), ttl=1800))
+
+
 def _precomputed_view(name: str, compute):
     """A heavy view: its precompute snapshot, else computed live and cached
     for 30 minutes (ADR 0024). An Aito failure is a 502."""
     try:
-        return precompute_store.serve(
-            name, lambda: cache.get_or_compute(f"{name}:view", lambda: compute().to_dict(), ttl=1800))
+        return _view_dict(name, compute)
     except AitoError as exc:
         return JSONResponse(
             status_code=502,
