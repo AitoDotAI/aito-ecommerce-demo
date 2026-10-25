@@ -6,6 +6,10 @@ import type { ScoreAdjustment, ShopItem } from "@/lib/types";
 import ProductHighlights from "@/components/shop/ProductHighlights";
 import VariantNote from "@/components/shop/VariantNote";
 
+/** Smaller offers aren't badged: the data's lift starts at the 10–15 % band (Reviews and
+ *  Product what-if), and a badge on every card teaches shoppers to wait for one. */
+const WORTH_SHOWING_PCT = 10;
+
 /** One recommended product: its name, price and offer, Aito's purchase
  *  probability for this shopper, and the strongest of Aito's reasons. For
  *  something they bought last order, how far that pulled it down. In a sandbox's 2026-05, a product a lever changed
@@ -28,7 +32,10 @@ export default function ProductCard({ item, rank, onAdd, onOpen }: {
       </button>
       <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6 }}>
         <span style={{ fontWeight: 600 }}>{fmtEur(item.price_eur, 2)}</span>
-        {item.offer_pct !== null && <span className="shop-fact shop-fact-offer">−{Math.round(item.offer_pct)} % this month</span>}
+        {item.avg_rating !== null && <span className="shop-fact" title="Average review rating">★ {item.avg_rating.toFixed(1)}</span>}
+        {item.offer_pct !== null && item.offer_pct >= WORTH_SHOWING_PCT && (
+          <span className="shop-fact shop-fact-offer">−{Math.round(item.offer_pct)} % this month</span>
+        )}
         <VariantNote skus={item.same_name_skus} />
       </div>
       <div title={item.adjustment
