@@ -108,3 +108,33 @@ each against the same control A, on the same 3,880 sessions and folds:
   interval is 97.5 % (z = 2.24), not 95 %.** If both qualify, the shallower one (C1) is the default: depth is
   only worth adding if C2 beats C1 on the same rule, and that comparison is reported, not judged.
 - **Strata** (402 and 3,478) are reported, not judged separately, as before.
+
+## Result of C1 and C2 (2026-10-25, full run, 3,880 held-out sessions, 1,383 customers, 5 folds)
+
+| variant | hit@12 | Brier |
+|---|---|---|
+| A shop today | 0.135 | 0.1516 |
+| C1 last order by link | 0.128 | 0.1660 |
+| C2 two orders by link | 0.121 | 0.1736 |
+
+Differences against A (97.5 % intervals, z = 2.24):
+
+| comparison | stratum | n | hit@12 | Brier |
+|---|---|---|---|---|
+| C1 − A | all | 3,880 | −0.006 [−0.015, +0.003] | +0.0144 [+0.0113, +0.0175] |
+| C1 − A | pet other than dog/cat | 402 | +0.000 [−0.026, +0.026] | −0.0001 [−0.0069, +0.0067] |
+| C1 − A | dog/cat only | 3,478 | −0.007 [−0.017, +0.003] | +0.0158 [+0.0125, +0.0191] |
+| C2 − A | all | 3,880 | −0.013 [−0.024, −0.003] | +0.0220 [+0.0183, +0.0257] |
+| C2 − A | pet other than dog/cat | 402 | −0.005 [−0.033, +0.023] | +0.0023 [−0.0050, +0.0096] |
+| C2 − A | dog/cat only | 3,478 | −0.014 [−0.026, −0.003] | +0.0239 [+0.0199, +0.0279] |
+
+**Decision under the registered rule: neither qualifies.** The hit@12 lower bound is below 0 for both, and
+the Brier of both is more than 0.01 worse than A. Shop's default stays A (pets, no last order). One batch
+timed out once and was run again (the retry the sweep has for that).
+
+Against the predictions: the dog/cat tie for C1 was wrong on Brier (+0.016, a real loss) while hit@12 is a
+tie; the "gain for other pets" was wrong again (±0.000, interval ±0.026), as it was for B; C2 adding nothing
+over C1 held for hit@12 as a direction but C2 is worse than C1 (deeper history costs, it does not help).
+The reading that fits all three runs: the pets already say what the last basket would say, and extra
+conditions dilute the probabilities (Brier) before they move the ranking (hit@12). The Shop select keeps
+the last-order options as an experiment, labelled so; they are not the default.
