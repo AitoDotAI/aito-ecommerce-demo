@@ -17,12 +17,12 @@ from dataclasses import dataclass, field, replace
 
 from src.aito_client import AitoClient, AitoError
 from src.lookup_errors import UnknownProductError
-from src.shop_context import FOOD, rule_filter, shopper_where, shopper_where_from_orders
+from src.shop_context import FOOD, basket_words, rule_filter, shopper_where, shopper_where_from_orders
 from src.shop_history import orders_before
 from src.shop_features import ProductFeature, product_features
 from src.shop_offers import offers_of, states_this_month
 from src.shop_personas import Shopper, shopper
-from src.shop_reasons import PETS, Reason, reasons_for
+from src.shop_reasons import CART, LAST_ORDER, PETS, Reason, reasons_for
 from src.shop_rescore import ScoreAdjustment
 from src.shop_why import shop_why
 
@@ -67,6 +67,7 @@ class ShopScope:
     cart: list[dict]
     context: dict           # the `where` as context: declared pets, month, cart
     orders: list[dict]      # the shopper's orders before `month`, oldest first
+    recent_basket: bool = False   # the last order's items are in the context as if in the cart (an experiment)
 
     @property
     def last_order_skus(self) -> list[str]:
@@ -86,7 +87,14 @@ class ShopScope:
         return where
 
 
-def shop_scope(client: AitoClient, shopper_key: str, month: str, cart_skus: list[str]) -> ShopScope:
+IDENTITY = "context.customer"    # the customer themselves: their own showings and what they did
+
+
+def shop_scope(client: AitoClient, shopper_key: str, month: str, cart_skus: list[str],
+               *, identity: bool = False, recent_basket: bool = False) -> ShopScope:
+    """`identity`: also condition on the customer themselves (`context.customer`), beside their pets.
+    Off by default: the sweeps found it ties on ranking and overconfides the probabilities (ADR 0033);
+    it is an experiment."""
     s = shopper(shopper_key)
     customer = client.search("customers", where={"customer_id": s.customer_id}, limit=1)["hits"][0]
     cart = _cart(client, cart_skus)
@@ -104,8 +112,18 @@ def shop_scope(client: AitoClient, shopper_key: str, month: str, cart_skus: list
             raise UnknownShopperProfileError(
                 f"{s.customer_id} declared no pets and has no order before {month}: the Shop has nothing to read")
         context = shopper_where_from_orders(pets, cart, month)
+    if recent_basket and orders:
+        # Start from the last order: its items give the pets, and where the shopper is (the first items for a
+        # terrarium, or a new puppy's second week), as the cart's words do for the session in hand.
+        last = _cart(client, sorted(set(orders[-1]["skus"].split())))
+        words = basket_words(last + cart)
+        context = {**context, "context.basket_categories": {"$and": [{"$match": w} for w in words]}}
+    if identity:
+        # An id condition uses only the rows that carry that id: it brings none of the customer's fields,
+        # and an id with no rows is no evidence at all (core, 2026-10-25). The pets stay, as a path.
+        context = {**context, IDENTITY: s.customer_id}
     return ShopScope(shopper=s, month=month, rule=customer.get("diet"), pets=pets, pets_declared=bool(declared),
-                     cart=cart, context=context, orders=orders)
+                     cart=cart, context=context, orders=orders, recent_basket=recent_basket)
 
 
 class UnknownShopperProfileError(LookupError):
@@ -129,7 +147,8 @@ def ranked_items(client: AitoClient, scope: ShopScope, where: dict, limit: int) 
                             select=PRODUCT_FIELDS + ["$p", "$why"], limit=limit)["hits"]
     states = states_this_month(client, [h["sku"] for h in hits], scope.month)
     offers = offers_of(states)
-    items = [_item(h, scope.context, states.get(h["sku"]), offers.get(h["sku"]), scope.rule is not None, scope.pets.split())
+    items = [_item(h, scope.context, states.get(h["sku"]), offers.get(h["sku"]), scope.rule is not None, scope.pets.split(),
+                   LAST_ORDER if scope.recent_basket and not scope.cart else CART)
              for h in hits]
     items = _reask_just_bought(client, scope.context, items, set(scope.last_order_skus))
     return sorted(items, key=lambda i: -i.p)
@@ -167,9 +186,10 @@ def _p_true(answer: dict, sku: str) -> float:
     raise AitoError(f"_predict purchased for {sku} had no `true` hit: {str(answer)[:200]}")
 
 
-def _item(hit: dict, context: dict, state: dict | None, offer_pct: float | None, has_rule: bool, pets: list[str]) -> ShopItem:
+def _item(hit: dict, context: dict, state: dict | None, offer_pct: float | None, has_rule: bool, pets: list[str],
+          cart_label: str = CART) -> ShopItem:
     rating = hit.get("avg_rating")
-    reasons = reasons_for(hit["$why"], hit["sku"])
+    reasons = reasons_for(hit["$why"], hit["sku"], cart_label)
     if hit["pet_type"] not in pets:
         # Search shows other pets' products too (a gift). The declared pets can
         # still lift one, on a handful of impressions, but "fits your pets" it doesn't.

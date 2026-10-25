@@ -30,19 +30,25 @@ class ShopGrid:
     last_order_skus: list[str]
     last_query: dict
     rescored: bool = False   # re-scored by the sandbox's 2026-05 states (ADR 0043)
+    identity: bool = False   # also conditioned on the customer themselves (the experiment)
+    trust: bool = False      # ...and not narrowed to the household's pets
+    recent: bool = False     # the last order's items are in the context as if in the cart
 
     def to_dict(self) -> dict:
         return asdict(self)
 
 
 def get_shop_grid(client: AitoClient, shopper_key: str, month: str, cart_skus: list[str],
-                  *, rescored: bool = False) -> ShopGrid:
+                  *, rescored: bool = False, identity: bool = False, trust: bool = False,
+                  recent: bool = False) -> ShopGrid:
     """`rescored`: the sandbox's Shop for 2026-05, its top RESCORED candidates
     re-scored by the states the owner's levers wrote (`src/shop_rescore.py`)."""
-    scope = shop_scope(client, shopper_key, month, cart_skus)
+    scope = shop_scope(client, shopper_key, month, cart_skus, identity=identity, recent_basket=recent)
     # "Picked for you" shows the household's own pets' products; search and a
     # product's alternatives don't (a cat owner may look for a dog gift).
-    where = {**scope.where(), **pets_filter(scope.pets)}
+    # `trust`: with the customer in the query, let their own history decide and don't also filter by pets.
+    # A thin history then shows other pets' products (a guinea pig household sees dog treats).
+    where = scope.where() if identity and trust else {**scope.where(), **pets_filter(scope.pets)}
     candidates = RESCORED if rescored else CANDIDATES
     items = ranked_items(client, scope, where, candidates)
     items = _rescored(client, items, month) if rescored else one_per_name(items)
@@ -52,7 +58,7 @@ def get_shop_grid(client: AitoClient, shopper_key: str, month: str, cart_skus: l
         last_query={"endpoint": "_recommend", "body": {
             "from": "impressions", "where": where, "recommend": "product_sku",
             "goal": {"purchased": True}, "select": PRODUCT_FIELDS + ["$p", "$why"], "limit": candidates}},
-        rescored=rescored,
+        rescored=rescored, identity=identity, trust=identity and trust, recent=recent,
     )
 
 
