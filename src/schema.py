@@ -331,6 +331,12 @@ SCHEMAS: dict[str, dict] = {
             "score":           {"type": "Int",    "nullable": False},
             # promoter (9–10) | passive (7–8) | detractor (0–6)
             "nps_group":       {"type": "String", "nullable": False},
+            # `_relate` cannot follow an order to its lines (one-to-many), so the order's
+            # first product as it was that month is here, and whether the respondent
+            # reviewed a product of the order at 1-2 stars.
+            "product_state":   {"type": "String", "nullable": False,
+                                "link": "product_states.product_state_id"},
+            "wrote_negative_review": {"type": "Boolean", "nullable": False},
         },
     },
     # 7. monthly_sales — SKU × month sales aggregate. Drives the

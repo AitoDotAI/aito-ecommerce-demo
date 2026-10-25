@@ -641,6 +641,10 @@ class NpsResponse:
     month: str
     score: int
     nps_group: str                  # promoter (9–10) | passive (7–8) | detractor (0–6)
+    # What the shop can read beside the answer. `relate` cannot follow the order to its
+    # lines (one-to-many), so the order's first product, as it was that month, is here:
+    product_state: str              # link → product_states
+    wrote_negative_review: bool     # the respondent reviewed a product of this order at 1–2 stars
 
 
 # ── Generation ──────────────────────────────────────────────────────
@@ -1877,6 +1881,7 @@ def _customer_life(customer: Customer, persona: Persona | None, shop: _Shop) -> 
         incident = incident_rng.random() < review_chain.INCIDENT_P
         experiences = []
         replied_negative = False
+        wrote_negative = False
         for ln in this_orders_lines:
             ln.incident = incident
             experience = review_chain.draw_experience(experience_rng, ln.product_sku)
@@ -1886,6 +1891,7 @@ def _customer_life(customer: Customer, persona: Persona | None, shop: _Shop) -> 
             if drawn is None:
                 continue
             replied_negative |= drawn.replied
+            wrote_negative |= drawn.rating <= 2
             shop.reviews_of[cid].append(Review(
                 review_id="", customer_id=cid, product_sku=ln.product_sku, rating=drawn.rating,
                 text=_review_text(review_rng, drawn.category, shop.product_of[ln.product_sku].pet_type),
@@ -1898,7 +1904,8 @@ def _customer_life(customer: Customer, persona: Persona | None, shop: _Shop) -> 
         if score is not None:
             shop.nps_of[cid].append(NpsResponse(
                 nps_response_id="", customer=cid, surveyed_order=order_ref, month=month,
-                score=score, nps_group=review_chain.nps_group(score)))
+                score=score, nps_group=review_chain.nps_group(score),
+                product_state=this_orders_lines[0].product_state, wrote_negative_review=wrote_negative))
         if experience == "bad":
             churn.rise(month, review_chain.churn_rise(replied_negative))
         first_order = not shop.orders_of[cid]
