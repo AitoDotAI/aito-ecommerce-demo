@@ -105,50 +105,6 @@ SCHEMAS: dict[str, dict] = {
             "interests":           {"type": "Text",    "nullable": True, "analyzer": "whitespace"},
         },
     },
-    # 2c. contexts — one moment a customer was shown products (ADR 0033):
-    # who, when, where, and what the basket, the previous basket and the
-    # household's kit held. Impressions link here; queries reach the
-    # customer through it (`context.customer`).
-    "contexts": {
-        "type": "table",
-        "columns": {
-            "context_id":   {"type": "String", "nullable": False},
-            # Absent before the visitor's first order (ADR 0040).
-            "customer":     {"type": "String", "nullable": True,
-                             "link": "customers.customer_id"},
-            "visitor":      {"type": "String", "nullable": False},
-            "month":        {"type": "String", "nullable": False},
-            "weekday":      {"type": "String", "nullable": False},
-            # search | for_you | category | bought_together; `direct` for a
-            # reorder without browsing (ADR 0045); `landing` for the page a
-            # visitor who never buys landed on.
-            "surface":      {"type": "String", "nullable": False},
-            # ADR 0040: where the visit came from and the page it landed on;
-            # `first_order` marks the visit with the visitor's first order.
-            "source":           {"type": "String",  "nullable": False},
-            "landing":          {"type": "String",  "nullable": False},
-            "landing_category": {"type": "String",  "nullable": True},
-            "first_order":      {"type": "Boolean", "nullable": False},
-            # ADR 0038, derived from the shopper's purchases in earlier months
-            # (none | low | high): the share bought on offer, new, labelled.
-            "offer_share":  {"type": "String", "nullable": False},
-            "new_share":    {"type": "String", "nullable": False},
-            "label_share":  {"type": "String", "nullable": False},
-            # Derived from the customer's earlier orders: the pet types they
-            # bought for ("cat dog"); most customers declare no pet profile.
-            "pets_from_orders": {"type": "Text", "nullable": True, "analyzer": "whitespace"},
-            # Text so `where {"context.search_query": {"$match": "food"}}` token-matches.
-            "search_query": {"type": "Text",   "nullable": True, "analyzer": "whitespace"},
-            # This month's basket, as SKUs and as words ("dog_dryfood
-            # small_animal_cage"; no hyphens or spaces, which the analyzer splits).
-            "basket":            {"type": "Text", "nullable": True, "analyzer": "whitespace"},
-            "basket_categories": {"type": "Text", "nullable": True, "analyzer": "whitespace"},
-            # The last order before this month (recency, S8), and the kit items
-            # the household owns from its earlier orders (K1).
-            "prev_basket":  {"type": "Text",   "nullable": True, "analyzer": "whitespace"},
-            "owned":        {"type": "Text",   "nullable": True, "analyzer": "whitespace"},
-        },
-    },
     # 2b. product_states — each product as it was in each month on sale
     # (ADR 0032): what a shopper saw. Replaces `price_history` (same id and
     # price columns). Impressions, order lines and monthly sales link here,
@@ -203,6 +159,57 @@ SCHEMAS: dict[str, dict] = {
             "skus":         {"type": "Text", "nullable": False, "analyzer": "whitespace"},
             "prev_skus":    {"type": "Text", "nullable": True,  "analyzer": "whitespace"},
             "owned_before": {"type": "Text", "nullable": True,  "analyzer": "whitespace"},
+            # ADR 0047, chained baskets: the customer's order before this one (absent for their first),
+            # and this order's words in the vocabulary `contexts.basket_categories` uses.
+            "previous_order":    {"type": "String", "nullable": True, "link": "orders.order_id"},
+            "basket_categories": {"type": "Text",   "nullable": True, "analyzer": "whitespace"},
+        },
+    },
+    # 2c. contexts — one moment a customer was shown products (ADR 0033):
+    # who, when, where, and what the basket, the previous basket and the
+    # household's kit held. Impressions link here; queries reach the
+    # customer through it (`context.customer`).
+    "contexts": {
+        "type": "table",
+        "columns": {
+            "context_id":   {"type": "String", "nullable": False},
+            # Absent before the visitor's first order (ADR 0040).
+            "customer":     {"type": "String", "nullable": True,
+                             "link": "customers.customer_id"},
+            "visitor":      {"type": "String", "nullable": False},
+            "month":        {"type": "String", "nullable": False},
+            "weekday":      {"type": "String", "nullable": False},
+            # search | for_you | category | bought_together; `direct` for a
+            # reorder without browsing (ADR 0045); `landing` for the page a
+            # visitor who never buys landed on.
+            "surface":      {"type": "String", "nullable": False},
+            # ADR 0040: where the visit came from and the page it landed on;
+            # `first_order` marks the visit with the visitor's first order.
+            "source":           {"type": "String",  "nullable": False},
+            "landing":          {"type": "String",  "nullable": False},
+            "landing_category": {"type": "String",  "nullable": True},
+            "first_order":      {"type": "Boolean", "nullable": False},
+            # ADR 0038, derived from the shopper's purchases in earlier months
+            # (none | low | high): the share bought on offer, new, labelled.
+            "offer_share":  {"type": "String", "nullable": False},
+            "new_share":    {"type": "String", "nullable": False},
+            "label_share":  {"type": "String", "nullable": False},
+            # Derived from the customer's earlier orders: the pet types they
+            # bought for ("cat dog"); most customers declare no pet profile.
+            "pets_from_orders": {"type": "Text", "nullable": True, "analyzer": "whitespace"},
+            # Text so `where {"context.search_query": {"$match": "food"}}` token-matches.
+            "search_query": {"type": "Text",   "nullable": True, "analyzer": "whitespace"},
+            # This month's basket, as SKUs and as words ("dog_dryfood
+            # small_animal_cage"; no hyphens or spaces, which the analyzer splits).
+            "basket":            {"type": "Text", "nullable": True, "analyzer": "whitespace"},
+            "basket_categories": {"type": "Text", "nullable": True, "analyzer": "whitespace"},
+            # The last order before this month (recency, S8), and the kit items
+            # the household owns from its earlier orders (K1).
+            "prev_basket":  {"type": "Text",   "nullable": True, "analyzer": "whitespace"},
+            "owned":        {"type": "Text",   "nullable": True, "analyzer": "whitespace"},
+            # ADR 0047: the customer's latest order of an earlier month, as a link, so the history is
+            # reachable by path (`context.last_order.basket_categories`, `.previous_order.…`).
+            "last_order":   {"type": "String", "nullable": True, "link": "orders.order_id"},
         },
     },
     # 4. order_lines — links to orders, products and product_states.
