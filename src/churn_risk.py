@@ -54,7 +54,7 @@ _WHY_SELECT = ["$p", "feature", {"$why": {"highlight": {
 class ScoredCustomer:
     customer_id: str
     name: str
-    pets: str
+    pets: str | None               # declared; most households declare none (src/retention_pets.py)
     dog_size: str | None
     region: str
     last_order_month: str
@@ -129,7 +129,7 @@ def _true_hit(answer: dict, evidence: dict) -> dict:
 def _scored(customer: dict, row: dict, hit: dict) -> ScoredCustomer:
     p = float(hit["$p"])
     return ScoredCustomer(
-        customer_id=customer["customer_id"], name=customer["name"], pets=customer["pets"],
+        customer_id=customer["customer_id"], name=customer["name"], pets=customer.get("pets"),
         dog_size=customer.get("dog_size"), region=customer["region"],
         last_order_month=customer["last_order_month"],
         tenure_months=int(row["tenure_months_at_month"]), visits=int(row["visits"]),

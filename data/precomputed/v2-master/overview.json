@@ -3,173 +3,173 @@
     "kpis": {
       "first_month": "2025-05",
       "last_month": "2026-04",
-      "orders": 9601,
-      "orders_before": 2308,
+      "orders": 8733,
+      "orders_before": 2101,
       "months_before": 12,
-      "revenue_eur": 772073.43,
-      "revenue_before_eur": 201332.17,
-      "avg_basket_eur": 80.42,
-      "customers_ordering": 2862,
+      "revenue_eur": 680739.22,
+      "revenue_before_eur": 167274.43,
+      "avg_basket_eur": 77.95,
+      "customers_ordering": 2854,
       "customers": 3000,
       "products": 658
     },
     "monthly": [
       {
         "month": "2024-05",
-        "orders": 109,
-        "revenue_eur": 12447.56
+        "orders": 102,
+        "revenue_eur": 9232.59
       },
       {
         "month": "2024-06",
-        "orders": 123,
-        "revenue_eur": 11406.64
+        "orders": 105,
+        "revenue_eur": 8562.33
       },
       {
         "month": "2024-07",
-        "orders": 131,
-        "revenue_eur": 14384.79
+        "orders": 117,
+        "revenue_eur": 10226.31
       },
       {
         "month": "2024-08",
-        "orders": 123,
-        "revenue_eur": 11202.2
+        "orders": 108,
+        "revenue_eur": 8941.49
       },
       {
         "month": "2024-09",
-        "orders": 154,
-        "revenue_eur": 13534.59
+        "orders": 133,
+        "revenue_eur": 10945.15
       },
       {
         "month": "2024-10",
-        "orders": 158,
-        "revenue_eur": 13141.95
+        "orders": 140,
+        "revenue_eur": 11225.08
       },
       {
         "month": "2024-11",
-        "orders": 178,
-        "revenue_eur": 16812.57
+        "orders": 175,
+        "revenue_eur": 13700.0
       },
       {
         "month": "2024-12",
-        "orders": 193,
-        "revenue_eur": 16288.27
+        "orders": 179,
+        "revenue_eur": 13500.68
       },
       {
         "month": "2025-01",
-        "orders": 234,
-        "revenue_eur": 19488.71
+        "orders": 215,
+        "revenue_eur": 17700.18
       },
       {
         "month": "2025-02",
-        "orders": 253,
-        "revenue_eur": 20550.47
+        "orders": 240,
+        "revenue_eur": 17007.64
       },
       {
         "month": "2025-03",
-        "orders": 294,
-        "revenue_eur": 22912.03
+        "orders": 270,
+        "revenue_eur": 22491.08
       },
       {
         "month": "2025-04",
-        "orders": 358,
-        "revenue_eur": 29162.39
+        "orders": 317,
+        "revenue_eur": 23741.9
       },
       {
         "month": "2025-05",
-        "orders": 401,
-        "revenue_eur": 31702.84
+        "orders": 345,
+        "revenue_eur": 24746.9
       },
       {
         "month": "2025-06",
-        "orders": 437,
-        "revenue_eur": 39330.47
+        "orders": 396,
+        "revenue_eur": 31043.16
       },
       {
         "month": "2025-07",
-        "orders": 436,
-        "revenue_eur": 36592.94
+        "orders": 377,
+        "revenue_eur": 30455.6
       },
       {
         "month": "2025-08",
-        "orders": 576,
-        "revenue_eur": 49345.09
+        "orders": 493,
+        "revenue_eur": 40565.69
       },
       {
         "month": "2025-09",
-        "orders": 596,
-        "revenue_eur": 51306.03
+        "orders": 488,
+        "revenue_eur": 43562.51
       },
       {
         "month": "2025-10",
-        "orders": 741,
-        "revenue_eur": 61384.79
+        "orders": 611,
+        "revenue_eur": 49553.73
       },
       {
         "month": "2025-11",
-        "orders": 853,
-        "revenue_eur": 69953.55
+        "orders": 679,
+        "revenue_eur": 55000.92
       },
       {
         "month": "2025-12",
-        "orders": 770,
-        "revenue_eur": 60453.37
+        "orders": 790,
+        "revenue_eur": 60704.99
       },
       {
         "month": "2026-01",
-        "orders": 953,
-        "revenue_eur": 74357.33
+        "orders": 924,
+        "revenue_eur": 71549.14
       },
       {
         "month": "2026-02",
-        "orders": 1142,
-        "revenue_eur": 90524.43
+        "orders": 1098,
+        "revenue_eur": 85712.07
       },
       {
         "month": "2026-03",
-        "orders": 1336,
-        "revenue_eur": 105858.02
+        "orders": 1270,
+        "revenue_eur": 97763.25
       },
       {
         "month": "2026-04",
-        "orders": 1360,
-        "revenue_eur": 101264.57
+        "orders": 1262,
+        "revenue_eur": 90081.26
       }
     ],
     "top_products": [
       {
-        "sku": "SKU-PT-0487",
-        "name": "PetNord Silica Crystals Cat Litter 7kg",
-        "pet_type": "cat",
-        "category": "litter",
-        "units": 490
+        "sku": "SKU-PT-0213",
+        "name": "Trixie Collar, large",
+        "pet_type": "dog",
+        "category": "accessories",
+        "units": 423
       },
       {
-        "sku": "SKU-PT-0488",
-        "name": "PetNord Silica Crystals Cat Litter 5kg",
+        "sku": "SKU-PT-0493",
+        "name": "PetNord Recycled Paper Cat Litter 7kg, lavender scent",
         "pet_type": "cat",
         "category": "litter",
-        "units": 425
+        "units": 409
       },
       {
-        "sku": "SKU-PT-0486",
-        "name": "PetNord Silica Crystals Cat Litter 7kg",
+        "sku": "SKU-PT-0484",
+        "name": "PetNord Clumping Clay Cat Litter 7kg, lavender scent",
         "pet_type": "cat",
         "category": "litter",
-        "units": 418
+        "units": 388
       },
       {
-        "sku": "SKU-PT-0483",
-        "name": "PetNord Clumping Clay Cat Litter 7kg",
-        "pet_type": "cat",
-        "category": "litter",
-        "units": 404
+        "sku": "SKU-PT-0212",
+        "name": "Trixie Collar, medium",
+        "pet_type": "dog",
+        "category": "accessories",
+        "units": 387
       },
       {
         "sku": "SKU-PT-0203",
         "name": "PetNord Collar",
         "pet_type": "dog",
         "category": "accessories",
-        "units": 400
+        "units": 384
       }
     ],
     "households": [
@@ -177,9 +177,9 @@
         "id": "dog",
         "emoji": "🐕",
         "label": "Dog households",
-        "customers": 1264,
-        "share_pct": 42.1,
-        "avg_basket_eur": 74.34,
+        "customers": 515,
+        "share_pct": 17.2,
+        "avg_basket_eur": 70.81,
         "pill_text": "Largest group",
         "pill_tone": "blue"
       },
@@ -187,9 +187,9 @@
         "id": "cat",
         "emoji": "🐈",
         "label": "Cat households",
-        "customers": 894,
-        "share_pct": 29.8,
-        "avg_basket_eur": 74.74,
+        "customers": 361,
+        "share_pct": 12.0,
+        "avg_basket_eur": 75.32,
         "pill_text": null,
         "pill_tone": null
       },
@@ -197,9 +197,9 @@
         "id": "dog cat",
         "emoji": "🐾",
         "label": "Dog & cat households",
-        "customers": 455,
-        "share_pct": 15.2,
-        "avg_basket_eur": 108.38,
+        "customers": 174,
+        "share_pct": 5.8,
+        "avg_basket_eur": 94.54,
         "pill_text": null,
         "pill_tone": null
       },
@@ -207,9 +207,9 @@
         "id": "small_animal",
         "emoji": "🐹",
         "label": "Small-animal households",
-        "customers": 218,
-        "share_pct": 7.3,
-        "avg_basket_eur": 119.48,
+        "customers": 84,
+        "share_pct": 2.8,
+        "avg_basket_eur": 110.09,
         "pill_text": "Highest basket",
         "pill_tone": "orange"
       },
@@ -217,11 +217,11 @@
         "id": "aquarium",
         "emoji": "🐟",
         "label": "Aquarium households",
-        "customers": 169,
-        "share_pct": 5.6,
-        "avg_basket_eur": 63.05,
-        "pill_text": "Lowest basket",
-        "pill_tone": "grey"
+        "customers": 74,
+        "share_pct": 2.5,
+        "avg_basket_eur": 70.82,
+        "pill_text": null,
+        "pill_tone": null
       }
     ],
     "top_basket_pair": {
@@ -229,20 +229,20 @@
       "second": "Dog dental-treats",
       "first_id": "dog_dryfood",
       "second_id": "dog_dentaltreats",
-      "lift": 2.66,
-      "interval_low": 2.34,
-      "interval_high": 3.03,
-      "orders_with_both": 2911,
-      "orders_with_first": 4325,
-      "orders_with_second": 3008,
-      "orders": 11909,
-      "confidence": 0.673,
-      "reverse_confidence": 0.968,
-      "support": 0.244
+      "lift": 3.26,
+      "interval_low": 2.82,
+      "interval_high": 3.75,
+      "orders_with_both": 2067,
+      "orders_with_first": 3200,
+      "orders_with_second": 2148,
+      "orders": 10834,
+      "confidence": 0.646,
+      "reverse_confidence": 0.962,
+      "support": 0.191
     },
     "basket_significance": {
-      "tested": 47,
-      "z": 3.27,
+      "tested": 45,
+      "z": 3.26,
       "family_confidence": 0.95
     },
     "last_query": {
@@ -263,171 +263,171 @@
   "timings": [
     [
       "_search",
-      13.33
+      12.86
     ],
     [
       "_search",
-      13.8
+      12.87
     ],
     [
       "_search",
-      6.89
+      3.16
     ],
     [
       "_search",
-      1.05
+      0.55
     ],
     [
       "_search",
-      15.02
+      12.57
     ],
     [
       "_search",
-      15.8
+      11.6
     ],
     [
       "_search",
-      16.32
+      19.19
     ],
     [
       "_search",
-      16.57
+      18.06
     ],
     [
       "_search",
-      28.18
+      12.5
     ],
     [
       "_search",
-      17.76
+      12.68
     ],
     [
       "_search",
-      18.21
+      13.13
     ],
     [
       "_search",
-      16.46
+      6.97
     ],
     [
       "_search",
-      2.69
+      1.58
     ],
     [
       "_search",
-      2.41
+      2.09
     ],
     [
       "_search",
-      0.45
+      0.32
     ],
     [
       "_relate",
-      11.5
+      10.43
     ],
     [
       "_relate",
-      2.58
+      3.53
     ],
     [
       "_relate",
-      1.46
+      1.22
     ],
     [
       "_relate",
-      12.18
+      35.23
     ],
     [
       "_relate",
-      12.06
+      3.51
     ],
     [
       "_relate",
-      16.06
+      12.13
     ],
     [
       "_relate",
-      11.94
+      8.7
     ],
     [
       "_relate",
-      14.55
+      45.14
     ],
     [
       "_relate",
-      17.52
+      12.7
     ],
     [
       "_relate",
-      5.24
+      14.62
     ],
     [
       "_relate",
-      107.02
+      142.54
     ],
     [
       "_relate",
-      18.04
+      18.73
     ],
     [
       "_relate",
-      10.7
+      38.68
     ],
     [
       "_relate",
-      116.3
+      9.29
     ],
     [
       "_relate",
-      110.33
+      82.53
     ],
     [
       "_relate",
-      114.55
+      110.88
     ],
     [
       "_relate",
-      108.53
+      109.88
     ],
     [
       "_relate",
-      44.84
+      141.43
     ],
     [
       "_relate",
-      142.17
+      106.35
     ],
     [
       "_relate",
-      143.48
+      88.13
     ],
     [
       "_relate",
-      240.94
+      236.28
     ],
     [
       "_batch",
-      2.37
+      3.1
     ],
     [
       "_aggregate",
-      19.82
+      19.81
     ],
     [
       "_aggregate",
-      12.89
+      18.95
     ],
     [
       "_aggregate",
-      8.12
+      7.43
     ],
     [
       "_aggregate",
-      3.78
+      3.59
     ],
     [
       "_aggregate",
-      3.03
+      3.06
     ]
   ]
 }

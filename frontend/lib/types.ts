@@ -348,7 +348,8 @@ export interface WinbackOffer {
 export interface AtRiskRow {
   customer_id: string;
   name: string;
-  pets: string;                  // declared (ADR 0033)
+  pets: string;                  // declared (ADR 0033), else read from their orders
+  pets_declared: boolean;
   dog_size: string | null;
   region: string;
   tenure_months: number;

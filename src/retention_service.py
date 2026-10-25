@@ -28,6 +28,7 @@ from src.aito_client import AitoClient
 from src.catalogue_reads import read_all
 from src.churn_drivers import DriverRow, get_churn_drivers
 from src.churn_risk import LABEL_KNOWN_UNTIL, LATEST_MONTH, LIKELY, ScoredCustomer, explain, predict_body, score_active_customers
+from src.retention_pets import household_pets
 from src.winback_offer import EMAIL_COST_EUR, WinbackOffer, offers_for
 
 AT_RISK_SHOWN = 20
@@ -38,7 +39,8 @@ SPEND_WINDOW_FROM = "2025-05"     # the 12 months ending LATEST_MONTH
 class AtRiskRow:
     customer_id: str
     name: str
-    pets: str
+    pets: str                      # declared, else read from their orders
+    pets_declared: bool
     dog_size: str | None
     region: str
     tenure_months: int
@@ -83,8 +85,9 @@ def get_retention(client: AitoClient) -> RetentionResponse:
     spend = spend_last_12_months(client, [c.customer_id for c in likely]) if likely else {}
     shown = sorted(likely, key=lambda c: -c.risk_p * spend[c.customer_id])[:AT_RISK_SHOWN]
     whys = explain(client, shown)
-    offers = offers_for(client, {c.customer_id: c.pets.split() for c in shown})
-    rows = [_row(c, spend[c.customer_id], whys[c.customer_id], offers[c.customer_id]) for c in shown]
+    pets = household_pets(client, shown)
+    offers = offers_for(client, {cid: p.split() for cid, p in pets.items()})
+    rows = [_row(c, pets[c.customer_id], spend[c.customer_id], whys[c.customer_id], offers[c.customer_id]) for c in shown]
     drivers = get_churn_drivers(client)
     churned = client.search("customers", where={"churned": True}, limit=0)["total"]
 
@@ -108,9 +111,9 @@ def get_retention(client: AitoClient) -> RetentionResponse:
     )
 
 
-def _row(c: ScoredCustomer, spend: float, why: dict | None, offer: WinbackOffer | None) -> AtRiskRow:
+def _row(c: ScoredCustomer, pets: str, spend: float, why: dict | None, offer: WinbackOffer | None) -> AtRiskRow:
     return AtRiskRow(
-        customer_id=c.customer_id, name=c.name, pets=c.pets, dog_size=c.dog_size, region=c.region,
+        customer_id=c.customer_id, name=c.name, pets=pets, pets_declared=c.pets is not None, dog_size=c.dog_size, region=c.region,
         tenure_months=c.tenure_months, last_order_month=c.last_order_month,
         latest_rating=c.latest_rating, risk=c.risk, risk_p=c.risk_p,
         spend_12m_eur=round(spend, 2), why_explanation=why, offer=offer,
