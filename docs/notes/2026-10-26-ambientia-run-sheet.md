@@ -63,7 +63,7 @@ tab hasn't had it yet.
 |---|---|---|
 | 1 Supply (30 s) | `/supply/?demo=1` | "Reorder these 83 now", about €11,097 of May's sales at risk; €28,298 tied up in 79 overstocked. Don't present "these don't clear by markdown" as a finding: it's by price alone (no offer lift, no placement) |
 | 2 Product what-if | New sandbox, then `/product/?sku=SKU-PT-0563&month=2026-05&tab=what-if&db=<branch>` | "Put it on offer at 10–15 % off", 20.6 % → 37.1 % (April; May's read in the sandbox) |
-| 3 Lever | press **20 % or more off**, then **10–15 % off** | Read back "May 2026, 20 % or more off, €17.27, 3 stars" (confirm on Sunday); the decision pushes back to 10–15 % (€204.84 vs €269.17 margin per 100 showings) |
+| 3 Lever | press **20 % or more off** under Offer (the form on the left), then **10–15 % off** | Read back "May 2026, 20 % or more off, €17.27, 3 stars" (confirm on Sunday); the decision pushes back to 10–15 % (€204.84 vs €269.17 margin per 100 showings) |
 | 4 Shop | **See the Shop react →** (`/shop/?shopper=paivi&month=2026-05&db=<branch>`, the shopper is Anna) | April kit: Trixie Hideout, small 25 %, Trixie Hideout, medium 16 %, PetNord Hideout 14 %; after the lever the small hideout rises (read the May numbers on Sunday); **?** on a card opens its `$why` |
 | 4 Variant (optional) | a 1-star review on the same product; for the honest case pick a product with many reviews on Sunday (the hideouts have 2) | read the band change and the card chip on Sunday |
 | 5 Agent | `./do agent-demo <branch>` | It reads the May row and the per-band estimates |

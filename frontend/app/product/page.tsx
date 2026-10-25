@@ -2,7 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useState } from "react";
 
-import { ApiError, apiFetch, fmtEur } from "@/lib/api";
+import { ApiError, apiFetch } from "@/lib/api";
 import { highlightQuery } from "@/lib/highlight-query";
 import { productPanel } from "@/lib/panel-content";
 import { usePagePanel, useShell } from "@/components/shell/ShellState";
@@ -13,9 +13,8 @@ import ProductBuyers from "@/components/product/ProductBuyers";
 import ProductHistory from "@/components/product/ProductHistory";
 import ProductPicker from "@/components/product/ProductPicker";
 import ProductWhatIf from "@/components/product/ProductWhatIf";
-import LeverPanel from "@/components/product/LeverPanel";
+import ProductEditor from "@/components/product/ProductEditor";
 import { SANDBOX_MONTH, SANDBOX_PARAM } from "@/lib/sandbox";
-import { BAND_LABEL, monthLabel, words } from "@/components/product/labels";
 import { useSetUrlParams, useUrlState } from "@/lib/use-url-state";
 import type { LeverStates, ProductCandidate, ProductView as ProductViewData } from "@/lib/types";
 
@@ -58,6 +57,9 @@ function ProductView() {
   const [states, setStates] = useState<LeverStates | null>(null);
   const [pulled, setPulled] = useState(0);
   const [noMayYet, setNoMayYet] = useState(false);
+  // Outside a sandbox the offer is a preview: the band the owner picked, shown against today's.
+  const [previewBand, setPreviewBand] = useState<string | null>(null);
+  useEffect(() => { setPreviewBand(null); }, [sku, month]);
 
   useEffect(() => {
     // Only the request for the product and month now in the URL may update the page.
@@ -122,8 +124,12 @@ function ProductView() {
 
       {shown && (
         <>
-          <ProductHeader view={shown} />
-          <OfferDecision view={shown} />
+          <div className="workbench">
+            <ProductEditor view={shown} sandbox={sandbox || null} states={states} previewBand={previewBand}
+                           onPreview={setPreviewBand}
+                           onPulled={() => { if (month === SANDBOX_MONTH) setPulled((n) => n + 1); else setMonth(SANDBOX_MONTH); }} />
+            <OfferDecision view={shown} previewBand={sandbox && states ? null : previewBand} />
+          </div>
           <div role="tablist" aria-label="Product sections" style={{ display: "flex", gap: 6, marginBottom: 14 }}>
             {TABS.map((t) => (
               <button key={t.id} id={`tab-${t.id}`} role="tab" aria-selected={tab === t.id}
@@ -133,14 +139,6 @@ function ProductView() {
               </button>
             ))}
           </div>
-          {tab === "what-if" && sandbox && (
-            states ? (
-              <LeverPanel sku={shown.product.sku} states={states} sandbox={sandbox}
-                          onPulled={() => { if (month === SANDBOX_MONTH) setPulled((n) => n + 1); else setMonth(SANDBOX_MONTH); }} />
-            ) : (
-              <div className="card card-sub">Pick a product to pull a lever on it in this sandbox.</div>
-            )
-          )}
           {noMayYet && (
             <div className="card-sub" style={{ marginBottom: 8 }}>
               May 2026 has no state for this product yet, so the page shows April: pull a lever to write May.
@@ -154,30 +152,6 @@ function ProductView() {
           {tab === "for-whom" && <ProductBuyers view={shown} />}
         </>
       )}
-    </div>
-  );
-}
-
-function ProductHeader({ view }: { view: ProductViewData }) {
-  const { product: p, state: s } = view;
-  const facts = [
-    s.discount_band === "none" ? `at list price, ${fmtEur(s.price_eur, 2)}` : `${BAND_LABEL[s.discount_band]}, ${fmtEur(s.price_eur, 2)}`,
-    s.rating_band === "unrated" ? "no stars yet" : `${s.rating_band} stars`,
-    s.age,
-    ...(s.rival_launched ? ["a rival launched recently"] : []),
-    ...(s.price_change === "rise" ? ["after a price rise"] : []),
-    `sold ${s.units_sold}`,
-    `${s.reviews} review${s.reviews === 1 ? "" : "s"}`,
-  ];
-  return (
-    <div style={{ margin: "4px 0 14px" }}>
-      <div style={{ fontWeight: 700, fontSize: 18 }}>{p.name}</div>
-      <div className="card-sub">
-        {p.brand} · {words(p.pet_type)} · {words(p.category)} · list {fmtEur(p.price_eur, 2)} · cost {fmtEur(p.unit_cost_eur, 2)}
-      </div>
-      <div style={{ fontSize: 13, marginTop: 4 }}>
-        <strong>{monthLabel(view.month)}:</strong> {facts.join(" · ")}
-      </div>
     </div>
   );
 }

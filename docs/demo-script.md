@@ -90,8 +90,10 @@ Trixie Hideout). Until a lever writes May, the view shows April.
 
 ## 3. The lever: 20 % or more off, and the pushback (about 1½ minutes)
 
-**Click:** in "Pull a lever: May 2026, in this sandbox", press **20 % or
-more off**.
+**Click:** on the left, in the product's form (in a sandbox it writes May 2026),
+press **20 % or more off** under **Offer**. The KPIs on the right ask again;
+each has a **?** that explains it. (Outside a sandbox the same buttons are a
+preview and write nothing.)
 
 **Say:** "The owner writes next month's state of this product. The app
 reads it back from the database before it shows anything."
