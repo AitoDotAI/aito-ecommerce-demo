@@ -66,6 +66,23 @@ The sample is all eligible sessions, fixed above; there is no peeking at a subse
 
 ## Results
 
-_Not run._ Run: `PYTHONPATH=. AITO_ENV=release2 python scripts/last_basket_sweep.py --apply`, with
+**Pilot, 2026-10-25 (100 sessions, 96 customers, 9 in households with a pet other than dog or cat; not
+a decision, the full set above is).** The script ran end to end on 5 throwaway branches, which it
+deleted (none left). Two fixes came out of it: `_delete` takes `$in`, not `$or`, on a column; and the
+Brier set must also leave out other pets' products, which the candidate filter removes.
+
+| | hit@12 | Brier |
+|:--|--:|--:|
+| A, the Shop today | 0.150 | 0.1462 |
+| B, + last order | 0.140 | 0.1436 |
+| B − A, all (n = 100) | −0.010 [−0.054, +0.034] | −0.0026 [−0.0249, +0.0197] |
+| B − A, dog/cat (n = 91) | −0.011 [−0.059, +0.037] | −0.0045 [−0.0292, +0.0202] |
+| B − A, other pets (n = 9) | 0.000 | +0.0139 [−0.0070, +0.0347] |
+
+Underpowered by design (the intervals are ±0.05; earlier sweeps needed n ≈ 1,400 to resolve ±0.02, and the
+kit stratum has 9 sessions here against 402 in the full set), so it says only that the machinery works
+and that nothing large shows up. The full set is still to run.
+
+**Full run:** not run. Run: `PYTHONPATH=. AITO_ENV=release2 python scripts/last_basket_sweep.py --apply`, with
 Antti's go-ahead (it writes to throwaway branches on the shared server). A pilot first:
 `--sessions 100 --apply`.

@@ -91,7 +91,10 @@ def score(client: AitoClient, variant: str, s: dict, products: dict[str, dict]) 
     top = client.recommend("impressions", where, "product_sku", {"purchased": True}, select=["sku"], limit=TOP)["hits"]
     hit = int(bool({r["product_sku"] for r in s["shown"] if r["purchased"]} & {h["sku"] for h in top}))
     basket = (s.get("basket") or "").split()
-    shown = [r for r in s["shown"] if r["product_sku"] not in basket and not (
+    # The candidates the query can return: not the cart's items, not other pets' products (the
+    # declared-pets filter), not food that breaks the diet (the rule filter).
+    shown = [r for r in s["shown"] if r["product_sku"] not in basket
+             and products[r["product_sku"]]["pet_type"] in s["pets"].split() and not (
         s["diet"] and products[r["product_sku"]]["category"] in FOOD and products[r["product_sku"]]["pet_type"] in ("dog", "cat")
         and RULE_WORDS[s["diet"]] not in products[r["product_sku"]]["name"])]
     skus = sorted({r["product_sku"] for r in shown})
@@ -104,6 +107,13 @@ def score(client: AitoClient, variant: str, s: dict, products: dict[str, dict]) 
     if missing:
         raise RuntimeError(f"{variant}: no $p for shown {missing[:3]} in {s['context_id']}")
     return hit, statistics.mean((p[r["product_sku"]] - r["purchased"]) ** 2 for r in shown)
+
+
+def checked(r: httpx.Response) -> httpx.Response:
+    """The response, or a failure that carries what Aito said."""
+    if r.status_code >= 400:
+        raise RuntimeError(f"{r.request.method} {r.request.url.path} answered {r.status_code}: {r.text[:400]}")
+    return r
 
 
 def fold_of(customer: str) -> int:
@@ -139,11 +149,10 @@ def main() -> int:
     for k in range(FOLDS):
         name = f"lb-fold-{k}"
         try:
-            r = http.post(f"{base}/api/v1/_envs", json={"name": name, "basedOn": f"env.{SOURCE}"})
-            r.raise_for_status()
+            checked(http.post(f"{base}/api/v1/_envs", json={"name": name, "basedOn": f"env.{SOURCE}"}))
             ids = [s["context_id"] for s in by_fold[k]]
-            r = http.post(f"{base}/env/{name}/api/v2/data/_delete", json={"from": "impressions", "where": {"context": {"$or": ids}}})
-            r.raise_for_status()
+            checked(http.post(f"{base}/env/{name}/api/v2/data/_delete",
+                              json={"from": "impressions", "where": {"context": {"$in": ids}}}))
             client = AitoClient(dataclasses.replace(cfg, aito_env=name))
             left = client.search("impressions", where={"context": {"$or": ids}}, limit=0)["total"]
             if left:
