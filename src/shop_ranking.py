@@ -67,7 +67,9 @@ class ShopScope:
     cart: list[dict]
     context: dict           # the `where` as context: declared pets, month, cart
     orders: list[dict]      # the shopper's orders before `month`, oldest first
-    recent_basket: bool = False   # the last order's items are in the context as if in the cart (an experiment)
+    # An experiment, how the last order enters the query: "" not at all; "cart" as cart words (measured to lose,
+    # last-basket-prereg.md); "path" / "path2" by the chained-basket links (ADR 0047), one or two orders back.
+    recent_basket: str = ""
 
     @property
     def last_order_skus(self) -> list[str]:
@@ -87,11 +89,13 @@ class ShopScope:
         return where
 
 
+LAST_ORDER_PATH = "context.last_order.basket_categories"
+PREVIOUS_ORDER_PATH = "context.last_order.previous_order.basket_categories"
 IDENTITY = "context.customer"    # the customer themselves: their own showings and what they did
 
 
 def shop_scope(client: AitoClient, shopper_key: str, month: str, cart_skus: list[str],
-               *, identity: bool = False, recent_basket: bool = False) -> ShopScope:
+               *, identity: bool = False, recent_basket: str = "") -> ShopScope:
     """`identity`: also condition on the customer themselves (`context.customer`), beside their pets.
     Off by default: the sweeps found it ties on ranking and overconfides the probabilities (ADR 0033);
     it is an experiment."""
@@ -113,11 +117,7 @@ def shop_scope(client: AitoClient, shopper_key: str, month: str, cart_skus: list
                 f"{s.customer_id} declared no pets and has no order before {month}: the Shop has nothing to read")
         context = shopper_where_from_orders(pets, cart, month)
     if recent_basket and orders:
-        # Start from the last order: its items give the pets, and where the shopper is (the first items for a
-        # terrarium, or a new puppy's second week), as the cart's words do for the session in hand.
-        last = _cart(client, sorted(set(orders[-1]["skus"].split())))
-        words = basket_words(last + cart)
-        context = {**context, "context.basket_categories": {"$and": [{"$match": w} for w in words]}}
+        context = {**context, **_last_order_context(client, orders, cart, recent_basket)}
     if identity:
         # An id condition uses only the rows that carry that id: it brings none of the customer's fields,
         # and an id with no rows is no evidence at all (core, 2026-10-25). The pets stay, as a path.
@@ -128,6 +128,25 @@ def shop_scope(client: AitoClient, shopper_key: str, month: str, cart_skus: list
 
 class UnknownShopperProfileError(LookupError):
     """A shopper with no declared pets and no earlier order."""
+
+
+def _last_order_context(client: AitoClient, orders: list[dict], cart: list[dict], mode: str) -> dict:
+    """The last order as conditions: "cart" puts its words in the cart's field (a different claim from the
+    one the cart's words learned); "path" and "path2" condition on the order the session links to,
+    and the one before it, by path (ADR 0047), with the words stored on the orders."""
+    if mode == "cart":
+        words = basket_words(_cart(client, sorted(set(orders[-1]["skus"].split()))) + cart)
+        return {"context.basket_categories": {"$and": [{"$match": w} for w in words]}}
+    if mode not in ("path", "path2"):
+        raise ValueError(f"Unknown way to use the last order: {mode!r}")
+    last = orders[-1]
+    if "basket_categories" not in last:
+        raise AitoError("This database has no chained baskets (ADR 0047): run scripts/add_chained_baskets.py on its env")
+    where = {LAST_ORDER_PATH: {"$and": [{"$match": w} for w in last["basket_categories"].split()]}}
+    before = next((o for o in orders if o["order_id"] == last.get("previous_order")), None)
+    if mode == "path2" and before is not None:
+        where[PREVIOUS_ORDER_PATH] = {"$and": [{"$match": w} for w in before["basket_categories"].split()]}
+    return where
 
 
 def _pets_of_orders(client: AitoClient, orders: list[dict]) -> str:
@@ -148,7 +167,7 @@ def ranked_items(client: AitoClient, scope: ShopScope, where: dict, limit: int) 
     states = states_this_month(client, [h["sku"] for h in hits], scope.month)
     offers = offers_of(states)
     items = [_item(h, scope.context, states.get(h["sku"]), offers.get(h["sku"]), scope.rule is not None, scope.pets.split(),
-                   LAST_ORDER if scope.recent_basket and not scope.cart else CART)
+                   LAST_ORDER if scope.recent_basket == "cart" and not scope.cart else CART)
              for h in hits]
     items = _reask_just_bought(client, scope.context, items, set(scope.last_order_skus))
     return sorted(items, key=lambda i: -i.p)

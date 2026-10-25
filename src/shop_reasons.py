@@ -38,6 +38,7 @@ from src.aito_client import AitoError
 MIN_REASON_LIFT = 1.15
 
 CART = "Goes with your cart"
+BEFORE_LAST_ORDER = "Goes with the order before"
 LAST_ORDER = "Goes with your last order"      # the cart words of the last order, when the cart is empty
 PETS = "Fits your pets"
 YOURS = "Your own history"                        # `context.customer`: the identity experiment
@@ -79,6 +80,10 @@ def _label(proposition: dict) -> str | None:
     if "$group" in proposition:
         return None
     text = json.dumps(proposition)
+    if "context.last_order.previous_order" in text:      # ADR 0047: the order before the last
+        return BEFORE_LAST_ORDER
+    if "context.last_order" in text:
+        return LAST_ORDER
     if "context.basket" in text:
         return CART
     if "context.customer.pets" in text:   # the declared pets, as `$and` of `$match`

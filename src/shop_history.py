@@ -32,7 +32,7 @@ def orders_before(client: AitoClient, customer_id: str, month: str) -> list[dict
     res = client.search("orders", where={"customer_id": customer_id}, limit=MAX_ORDERS)
     if res["total"] > len(res["hits"]):
         raise AitoError(f"{customer_id} has {res['total']} orders, more than the {MAX_ORDERS} read")
-    return sorted((o for o in res["hits"] if o["month"] < month), key=lambda o: o["month"])
+    return sorted((o for o in res["hits"] if o["month"] < month), key=lambda o: (o["month"], o["order_id"]))
 
 
 def owned_kit(client: AitoClient, orders: list[dict]) -> dict[str, set[str]]:

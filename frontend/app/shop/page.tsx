@@ -47,7 +47,7 @@ function ShopView() {
   const [trustParam] = useUrlState("trust", "");
   const [recentParam] = useUrlState("recent", "");
   const identity = (identityParam === "1" ? `&identity=1${trustParam === "1" ? "&trust=1" : ""}` : "") +
-    (recentParam === "1" ? "&recent=1" : "");
+    (recentParam ? `&recent=${recentParam}` : "");
   const [openSku] = useUrlState("product", "");
   const [query] = useUrlState("q", "");
   const [typed, setTyped] = useState(query);
@@ -149,12 +149,13 @@ function ShopView() {
           <option value="own">By their own history (pets filter kept)</option>
           <option value="trust">By their own history, no pets filter</option>
         </select>
-        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}
-               title="Put the items of their last order in the query as if they were in the cart">
-          <input type="checkbox" checked={recentParam === "1"}
-                 onChange={(e) => setUrl({ recent: e.target.checked ? "1" : null })} />
-          Start from their last order <span className="card-sub">(experiment: measured to lose, last-basket-prereg.md)</span>
-        </label>
+        <select aria-label="Last order" className="search-input" style={{ width: "auto", paddingLeft: 12 }}
+                value={recentParam || "none"} onChange={(e) => setUrl({ recent: e.target.value === "none" ? null : e.target.value })}>
+          <option value="none">Last order: not used</option>
+          <option value="path">Last order, by link (chained baskets)</option>
+          <option value="path2">Last two orders, by link</option>
+          <option value="cart">Last order as cart words (measured to lose)</option>
+        </select>
       </div>
       {identityParam === "1" && (
         <div className="card-sub" style={{ margin: "4px 0" }}>

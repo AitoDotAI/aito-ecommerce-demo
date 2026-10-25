@@ -755,7 +755,7 @@ export interface ShopGrid {
   rescored: boolean;            // sandbox, 2026-05: re-scored by the levers' states (ADR 0043)
   identity: boolean;            // also conditioned on the customer themselves (an experiment)
   trust: boolean;               // ...and not narrowed to the household's pets
-  recent: boolean;              // the last order's items are in the context as if in the cart
+  recent: string;               // how the last order entered the query: "", cart, path, path2
 }
 
 export interface ShopBasketPair {

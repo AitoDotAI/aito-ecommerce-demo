@@ -25,14 +25,20 @@ from pathlib import Path
 import httpx
 
 from src.aito_client import AitoClient
+from src.chained_baskets import add_columns, link_contexts, link_orders
 from src.config import load_config
 from src.shop_context import FOOD, RULE_WORDS, basket_words, pets_filter, rule_filter
+from src.shop_ranking import LAST_ORDER_PATH, PREVIOUS_ORDER_PATH
 
 TOP = 12
 FOLDS = 5
 SOURCE = "release2"
 DATA = Path(__file__).resolve().parent.parent / "data"
-VARIANTS = ("A shop today", "B + last order")
+ALL_VARIANTS = {"A": "A shop today", "B": "B + last order (cart words)", "C1": "C1 last order by link",
+                "C2": "C2 two orders by link"}
+# B was run 2026-10-25 (it lost); C1 and C2 are registered after it (last-basket-prereg.md), A is their control.
+_picked = sys.argv[sys.argv.index("--variants") + 1].split(",") if "--variants" in sys.argv else ["A", "C1", "C2"]
+VARIANTS = tuple(ALL_VARIANTS[v] for v in _picked)
 apply = "--apply" in sys.argv
 N_SESSIONS = int(sys.argv[sys.argv.index("--sessions") + 1]) if "--sessions" in sys.argv else 10**9   # all eligible
 
@@ -52,6 +58,8 @@ def eligible_sessions() -> list[dict]:
     orders_of: dict[str, list[dict]] = defaultdict(list)
     for o in load("orders"):
         orders_of[o["customer_id"]].append(o)
+    linked_orders = {o["order_id"]: o for o in link_orders(load("orders"), products)}
+    linked_contexts = {c["context_id"]: c for c in link_contexts(load("contexts"), load("orders"))}
     sessions = []
     for cid, rows in sorted(shown.items()):
         ctx = contexts[cid]
@@ -65,8 +73,12 @@ def eligible_sessions() -> list[dict]:
         last = [products[s] for o in earlier if o["month"] == last_month for s in set(o["skus"].split())]
         declared = customers[who].get("pets")
         pets = declared or " ".join(sorted({products[s]["pet_type"] for o in earlier for s in o["skus"].split()}))
+        last_order = linked_orders[linked_contexts[cid]["last_order"]]
+        before = linked_orders.get(last_order.get("previous_order"))
         sessions.append({**ctx, "shown": rows, "last_words": basket_words(last), "pets": pets,
-                         "diet": customers[who].get("diet")})
+                         "diet": customers[who].get("diet"),
+                         "path_words": last_order["basket_categories"].split(),
+                         "path2_words": before["basket_categories"].split() if before else []})
     return random.Random(0).sample(sessions, min(N_SESSIONS, len(sessions)))
 
 
@@ -75,10 +87,14 @@ def where_for(variant: str, s: dict) -> dict:
     where: dict = {"context.customer.pets": {"$and": [{"$match": p} for p in s["pets"].split()]},
                    "context.month": s["month"], "just_bought": False, **pets_filter(s["pets"])}
     words = set((s.get("basket_categories") or "").split())
-    if variant == VARIANTS[1]:
+    if variant == ALL_VARIANTS["B"]:
         words |= set(s["last_words"])
     if words:
         where["context.basket_categories"] = {"$and": [{"$match": w} for w in sorted(words)]}
+    if variant in (ALL_VARIANTS["C1"], ALL_VARIANTS["C2"]):
+        where[LAST_ORDER_PATH] = {"$and": [{"$match": w} for w in s["path_words"]]}
+    if variant == ALL_VARIANTS["C2"] and s["path2_words"]:
+        where[PREVIOUS_ORDER_PATH] = {"$and": [{"$match": w} for w in s["path2_words"]]}
     if (keeps_rule := rule_filter(s["diet"])) is not None:
         where.update(keeps_rule)
     if skus := (s.get("basket") or "").split():
@@ -120,11 +136,14 @@ def fold_of(customer: str) -> int:
     return int(hashlib.md5(customer.encode()).hexdigest(), 16) % FOLDS
 
 
+Z = 1.96 if len(VARIANTS) <= 2 else 2.24    # 95 %, or 97.5 % each when two variants share a control
+
+
 def paired(a: list[float], b: list[float]) -> tuple[float, float, float]:
-    """Mean difference b - a with a normal-approximation 95 % interval over sessions."""
+    """Mean difference b - a with a normal-approximation interval over sessions (Z)."""
     d = [y - x for x, y in zip(a, b) if x == x and y == y]
     m, se = statistics.mean(d), statistics.stdev(d) / math.sqrt(len(d))
-    return m, m - 1.96 * se, m + 1.96 * se
+    return m, m - Z * se, m + Z * se
 
 
 def main() -> int:
@@ -150,6 +169,9 @@ def main() -> int:
         name = f"lb-fold-{k}"
         try:
             checked(http.post(f"{base}/api/v1/_envs", json={"name": name, "basedOn": f"env.{SOURCE}"}))
+            if any(v.startswith("C") for v in VARIANTS):
+                add_columns(AitoClient(dataclasses.replace(cfg, aito_env=name)),
+                            {"orders": link_orders(load("orders"), products), "contexts": link_contexts(load("contexts"), load("orders"))})
             ids = [s["context_id"] for s in by_fold[k]]
             checked(http.post(f"{base}/env/{name}/api/v2/data/_delete",
                               json={"from": "impressions", "where": {"context": {"$in": ids}}}))
@@ -171,12 +193,14 @@ def main() -> int:
     print(f"\n{'variant':<16} {'hit@12':>8} {'Brier':>8}   (n = {len(kept)} held-out sessions)")
     for v in VARIANTS:
         print(f"{v:<16} {statistics.mean(hits[v]):>8.3f} {statistics.fmean(b for b in brier[v] if b == b):>8.4f}")
-    a, b = VARIANTS
-    for label, pick in (("all", lambda s: True), ("pet other than dog/cat", kit), ("dog/cat only", lambda s: not kit(s))):
-        idx = [i for i, s in enumerate(kept) if pick(s)]
-        m, lo, hi = paired([hits[a][i] for i in idx], [hits[b][i] for i in idx])
-        bm, blo, bhi = paired([brier[a][i] for i in idx], [brier[b][i] for i in idx])
-        print(f"B - A, {label:<24} n={len(idx):>5}  hit@12 {m:+.3f} [{lo:+.3f}, {hi:+.3f}]  Brier {bm:+.4f} [{blo:+.4f}, {bhi:+.4f}]")
+    a = VARIANTS[0]
+    for b in VARIANTS[1:]:
+        for label, pick in (("all", lambda s: True), ("pet other than dog/cat", kit), ("dog/cat only", lambda s: not kit(s))):
+            idx = [i for i, s in enumerate(kept) if pick(s)]
+            m, lo, hi = paired([hits[a][i] for i in idx], [hits[b][i] for i in idx])
+            bm, blo, bhi = paired([brier[a][i] for i in idx], [brier[b][i] for i in idx])
+            print(f"{b[:2]} - A, {label:<24} n={len(idx):>5}  hit@12 {m:+.3f} [{lo:+.3f}, {hi:+.3f}]  "
+                  f"Brier {bm:+.4f} [{blo:+.4f}, {bhi:+.4f}]   ({"97.5" if Z > 2 else "95"} % intervals)")
     return 0
 
 

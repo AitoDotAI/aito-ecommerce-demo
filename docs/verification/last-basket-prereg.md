@@ -86,3 +86,25 @@ and that nothing large shows up. The full set is still to run.
 **Full run:** not run. Run: `PYTHONPATH=. AITO_ENV=release2 python scripts/last_basket_sweep.py --apply`, with
 Antti's go-ahead (it writes to throwaway branches on the shared server). A pilot first:
 `--sessions 100 --apply`.
+
+## Amendment (2026-10-25, after B's result, before any run of C1 or C2): the path forms
+
+B lost. The hypothesis recorded with it: B put the last order's words in the cart's field, which learned a
+different claim. ADR 0047 gives the same history a field of its own, so two variants are registered now,
+each against the same control A, on the same 3,880 sessions and folds:
+
+- **C1, the last order by link:** A, with `context.last_order.basket_categories` conditioned on the words
+  stored on the session's last order (`{"$and": [{"$match": w}, …]}`). The cart's field is untouched.
+- **C2, two orders by link:** C1, plus `context.last_order.previous_order.basket_categories` conditioned on
+  the words of the order before it (when there is one; with none, C2 equals C1 for that session).
+- **Held out as before** (5 branches of `release2`, the fold's impressions deleted on the branch). Each branch
+  first gets the three chained-basket columns in place (`src/chained_baskets.add_columns`, verified on a
+  throwaway branch), so `release2` itself is not touched.
+- **Predictions:** C1 is a tie for dog and cat households (the pets already say it). C1 is a **gain** for the
+  402 households with another pet, where a kit progresses, but I held the same prediction for B and it was
+  wrong, so I hold it loosely. C2 adds nothing over C1: a kit progresses one item at a time.
+- **Decision rule:** as above, for each of C1 and C2: the hit@12 interval lower bound for the variant minus A
+  above 0 over all sessions, and Brier at most +0.01 worse. **Two variants share one control, so each
+  interval is 97.5 % (z = 2.24), not 95 %.** If both qualify, the shallower one (C1) is the default: depth is
+  only worth adding if C2 beats C1 on the same rule, and that comparison is reported, not judged.
+- **Strata** (402 and 3,478) are reported, not judged separately, as before.

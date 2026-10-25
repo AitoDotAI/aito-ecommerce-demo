@@ -24,8 +24,10 @@ class FakeAito(FakeShopAito):
             skus = where["sku"]["$or"] if isinstance(where["sku"], dict) else [where["sku"]]
             return {"hits": [{**product(s), "name": f"Name {s}"} for s in skus if s != "NOPE"]}
         if table == "orders":
-            orders = [{"month": "2025-06", "skus": "SKU-Z"}, {"month": "2025-11", "skus": "SKU-A"},
-                      {"month": "2026-02", "skus": "SKU-A SKU-Z"}, {"month": "2026-05", "skus": "SKU-A"}]
+            orders = [{"order_id": "ORD-1", "month": "2025-06", "skus": "SKU-Z"},
+                      {"order_id": "ORD-2", "month": "2025-11", "skus": "SKU-A"},
+                      {"order_id": "ORD-3", "month": "2026-02", "skus": "SKU-A SKU-Z"},
+                      {"order_id": "ORD-4", "month": "2026-05", "skus": "SKU-A"}]
             return {"hits": orders, "total": len(orders)}
         return super().search(table, where=where, limit=limit, **kwargs)
 

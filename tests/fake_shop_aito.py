@@ -25,7 +25,8 @@ def product(sku, p=0.0, category="dry-food", pet_type="cat", reason=("context.mo
 
 
 class FakeShopAito:
-    def __init__(self, ranked, last_order="SKU-B SKU-X", reasked_p=0.02, offers=None, text_scores=None):
+    def __init__(self, ranked, last_order="SKU-B SKU-X", reasked_p=0.02, offers=None, text_scores=None, orders=None):
+        self.orders = orders
         self.ranked = ranked
         self.last_order = last_order
         self.reasked_p = reasked_p
@@ -50,7 +51,8 @@ class FakeShopAito:
                      "rival_launched": False}
                     for s in where["product_sku"]["$or"]]
             return {"hits": rows, "total": len(rows)}
-        orders = [{"month": "2026-03", "skus": self.last_order}, {"month": "2025-11", "skus": "SKU-OLD"}]
+        orders = self.orders or [{"order_id": "ORD-2", "month": "2026-03", "skus": self.last_order},
+                                  {"order_id": "ORD-1", "month": "2025-11", "skus": "SKU-OLD"}]
         return {"hits": orders, "total": len(orders)}
 
     def recommend(self, table, where, recommend_field, goal, *, select=None, limit=8, **_):

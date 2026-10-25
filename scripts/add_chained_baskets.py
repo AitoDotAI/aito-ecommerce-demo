@@ -14,15 +14,9 @@ from __future__ import annotations
 import sys
 
 from src.aito_client import AitoClient
+from src.chained_baskets import COLUMNS, add_columns, missing_columns
 from src.config import load_config
 from src.data_loader import load_fixture
-
-BATCH = 4000
-COLUMNS = (
-    ("orders", "previous_order", {"type": "String", "nullable": True, "link": "orders.order_id"}, "order_id"),
-    ("orders", "basket_categories", {"type": "Text", "nullable": True, "analyzer": "whitespace"}, "order_id"),
-    ("contexts", "last_order", {"type": "String", "nullable": True, "link": "orders.order_id"}, "context_id"),
-)
 
 
 def main() -> int:
@@ -32,22 +26,13 @@ def main() -> int:
     for table in rows:
         live = client.search(table, limit=0)["total"]
         assert live == len(rows[table]), f"{cfg.aito_env} holds {live} {table}, the fixture {len(rows[table])}"
-    have = {t: set(client._request("GET", f"/schema/{t}")["columns"]) for t in rows}
-    todo = [c for c in COLUMNS if c[1] not in have[c[0]]]
+    todo = missing_columns(client)
     print(f"env {cfg.aito_env}: columns to add: {[f'{t}.{c}' for t, c, _, _ in todo] or 'none, already there'}")
     if not apply_requested():
         print("Dry run: nothing written. Re-run with --apply.")
         return 0
-    for table, column, spec, key in todo:
-        client._request("PUT", f"/schema/{table}/{column}", json=spec)
-        with_value = [r for r in rows[table] if column in r]
-        for i in range(0, len(with_value), BATCH):
-            chunk = with_value[i:i + BATCH]
-            client._request("POST", f"/data/{table}/_backfill", json={
-                "key": key, "keys": [r[key] for r in chunk], "columns": {column: [r[column] for r in chunk]}})
-        print(f"added {table}.{column}: {len(with_value)} rows carry a value")
-    for table in rows:
-        client._request("POST", f"/data/{table}/optimize", json={})
+    add_columns(client, rows, todo)
+    print(f"added: {[f'{t}.{c}' for t, c, _, _ in todo] or 'nothing'}")
     # Verify: every row's value reads back as the loader derives it.
     for table, column, _, key in COLUMNS:
         want = {r[key]: r[column] for r in rows[table] if column in r}
