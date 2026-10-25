@@ -44,7 +44,10 @@ class FakeShopAito:
             skus = where["sku"]["$or"] if isinstance(where["sku"], dict) else [where["sku"]]
             return {"hits": [product(s) for s in skus if s.startswith("SKU-")]}
         if table == "product_states":
-            rows = [{"product_sku": s, "discount_pct": self.offers.get(s, 0.0), "on_offer": s in self.offers}
+            rows = [{"product_sku": s, "discount_pct": self.offers.get(s, 0.0), "on_offer": s in self.offers,
+                     "discount_band": "10-15" if s in self.offers else "none", "rating_band": "4", "age": "established",
+                     "label": "none", "stock": "in_stock", "review_count_band": "1-4", "price_change": "none",
+                     "rival_launched": False}
                     for s in where["product_sku"]["$or"]]
             return {"hits": rows, "total": len(rows)}
         orders = [{"month": "2026-03", "skus": self.last_order}, {"month": "2025-11", "skus": "SKU-OLD"}]

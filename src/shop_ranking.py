@@ -19,13 +19,14 @@ from src.aito_client import AitoClient, AitoError
 from src.lookup_errors import UnknownProductError
 from src.shop_context import FOOD, rule_filter, shopper_where, shopper_where_from_orders
 from src.shop_history import orders_before
-from src.shop_offers import offers_this_month
+from src.shop_features import ProductFeature, product_features
+from src.shop_offers import offers_of, states_this_month
 from src.shop_personas import Shopper, shopper
 from src.shop_reasons import PETS, Reason, reasons_for
 from src.shop_rescore import ScoreAdjustment
 from src.shop_why import shop_why
 
-PRODUCT_FIELDS = ["sku", "name", "brand", "pet_type", "category", "price_eur", "avg_rating"]
+PRODUCT_FIELDS = ["sku", "name", "brand", "pet_type", "category", "price_eur", "avg_rating", "tags"]
 
 
 @dataclass(frozen=True)
@@ -50,6 +51,9 @@ class ShopItem:
     # The full `$why` chain behind `p`, for the card's ? popover (src/shop_why.py); `reasons`
     # above is its short form. None once `p` is re-asked (just bought): the chain is the old one.
     why_explanation: dict | None = None
+    # The tokens behind "this one's features" (src/shop_features.py): the one term of the chain
+    # `$why` can't break down.
+    features: list[ProductFeature] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -123,8 +127,10 @@ def ranked_items(client: AitoClient, scope: ShopScope, where: dict, limit: int) 
     """The `_recommend` for `where`, with reasons, facts and the just-bought re-ask, by P."""
     hits = client.recommend("impressions", where, "product_sku", {"purchased": True},
                             select=PRODUCT_FIELDS + ["$p", "$why"], limit=limit)["hits"]
-    offers = offers_this_month(client, [h["sku"] for h in hits], scope.month)
-    items = [_item(h, scope.context, offers.get(h["sku"]), scope.rule is not None, scope.pets.split()) for h in hits]
+    states = states_this_month(client, [h["sku"] for h in hits], scope.month)
+    offers = offers_of(states)
+    items = [_item(h, scope.context, states.get(h["sku"]), offers.get(h["sku"]), scope.rule is not None, scope.pets.split())
+             for h in hits]
     items = _reask_just_bought(client, scope.context, items, set(scope.last_order_skus))
     return sorted(items, key=lambda i: -i.p)
 
@@ -161,7 +167,7 @@ def _p_true(answer: dict, sku: str) -> float:
     raise AitoError(f"_predict purchased for {sku} had no `true` hit: {str(answer)[:200]}")
 
 
-def _item(hit: dict, context: dict, offer_pct: float | None, has_rule: bool, pets: list[str]) -> ShopItem:
+def _item(hit: dict, context: dict, state: dict | None, offer_pct: float | None, has_rule: bool, pets: list[str]) -> ShopItem:
     rating = hit.get("avg_rating")
     reasons = reasons_for(hit["$why"], hit["sku"])
     if hit["pet_type"] not in pets:
@@ -173,6 +179,7 @@ def _item(hit: dict, context: dict, offer_pct: float | None, has_rule: bool, pet
         category=hit["category"], price_eur=float(hit["price_eur"]), p=float(hit["$p"]),
         reasons=reasons,
         why_explanation=shop_why(hit["$why"], float(hit["$p"]), context),
+        features=product_features(hit, state),
         avg_rating=None if rating is None else float(rating),
         offer_pct=offer_pct,
         # The rule filter lets through only food that keeps the rule.

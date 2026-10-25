@@ -678,6 +678,7 @@ export interface ShopItem extends ShopProduct {
   p: number;                   // P(purchased) for this shopper, now
   reasons: ShopReason[];       // Aito's: what lifts this product for this shopper
   why_explanation: WhyExplanationPayload | null;   // the `$why` chain behind p; null once re-asked (just bought)
+  features: Array<{ field: string; tokens: string[] }>;  // the tokens behind "this one's features" (src/shop_features.py)
   avg_rating: number | null;   // facts, shown beside the reasons, not as reasons
   offer_pct: number | null;
   keeps_rule: boolean;
@@ -948,15 +949,4 @@ export interface AcquisitionSection {
   regular_basket: ShopLiftRow[];
   queries_sent: number;
   example_query: { from: string; where: Record<string, unknown>; relate: string; limit: number };
-}
-
-/** `/api/shop/card-features` (src/shop_card_features.py): the product's features behind a card's pull. */
-export interface CardFeature { label: string; marked_text: string | null }
-export interface CardFeaturePattern { lift: number; features: CardFeature[] }
-export interface CardFeatures {
-  sku: string;
-  p: number;                       // this query's probability, not the card's
-  base_p: number;
-  patterns: CardFeaturePattern[];  // one feature, one lift; biggest effect first
-  joint: CardFeaturePattern[];     // several features, one lift for them together
 }
