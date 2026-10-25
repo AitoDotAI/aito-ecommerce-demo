@@ -83,3 +83,13 @@ def test_an_unknown_proposition_raises_rather_than_being_dropped():
 def test_the_declared_pets_are_a_reason():
     pets = {"$and": [{"context.customer.pets": {"$match": "small_animal"}}]}
     assert reasons_for(why((pets, 1.8)), SKU) == [Reason("Fits your pets", 1.8)]
+
+
+def test_pets_read_from_earlier_orders_are_a_reason_of_their_own():
+    # A household with no pet profile, or one that declined tracking (ADR 0045),
+    # is matched on `context.pets_from_orders`, which used to fail the whole Shop.
+    from src.shop_reasons import PETS_FROM_ORDERS
+
+    reasons = reasons_for(why(({"context.pets_from_orders": {"$and": [{"$match": "cat"}]}}, 1.6)), SKU)
+
+    assert reasons == [Reason(PETS_FROM_ORDERS, 1.6)]
