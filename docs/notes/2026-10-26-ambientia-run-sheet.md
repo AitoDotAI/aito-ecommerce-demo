@@ -74,6 +74,16 @@ tab hasn't had it yet.
 - Don't lead Retention with the €135 the win-back emails return; it isn't
   on the path.
 - Patterns stays out of the path.
+- Engine caveats from the CPO's drift study (td-20261025083407788425), checked 2026-10-25:
+  - No served query uses `basedOn`, the shape with the known overflow bug (the agent's brief now
+    says not to use it). **Flow 3 must be run once on a throwaway branch after this brief change;**
+    note the run here: _not yet run (needs the sandbox database, Antti's Sunday setup)_.
+  - The discount effect is the shop-wide band lift: say it aloud. A price change inside a band
+    doesn't move the what-if, and no view claims stock changes a purchase probability.
+  - Say "recommendations are computed in the background" if asked about large catalogues; don't
+    quote latency, and keep the header's "aito … ms" pill out of the story.
+  - Safe lines: a product keeps its history when its price or stock state changes (a stable
+    product link); with in-stock filters, out-of-stock products never appeared (0 of 60 lists).
 - Demo mode is presentation only. Every caveat is behind **Details** or
   **How well? →**, one click away; open one if asked "how do you know?".
 - Every Shop list shows a name once ("+1 variant"): the generated catalogue
