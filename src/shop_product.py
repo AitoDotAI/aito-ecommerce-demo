@@ -63,12 +63,12 @@ class ProductDrawer:
 
 
 def get_product_drawer(client: AitoClient, sku: str, shopper_key: str, month: str,
-                       cart_skus: list[str]) -> ProductDrawer:
+                       cart_skus: list[str], season: bool = True) -> ProductDrawer:
     found = client.search("products", where={"sku": sku}, limit=1)["hits"]
     if not found:
         raise UnknownProductError(f"No product {sku} in the catalogue")
     product = found[0]
-    scope = shop_scope(client, shopper_key, month, cart_skus)
+    scope = shop_scope(client, shopper_key, month, cart_skus, season=season)
     same_kind = {**scope.where(exclude=[sku]),
                  "product_sku.category": product["category"], "product_sku.pet_type": product["pet_type"]}
     if (kind := item_type(product["name"], product["brand"])) in DURABLE_TYPES:
