@@ -4,18 +4,21 @@
  *  shop's own history without a pets filter, starting from the last order. Both are experiments the held-out
  *  sweeps did not favour (ADR 0033, last-basket-prereg.md), so the measurement is stated beside them. */
 export type LastOrder = "" | "cart" | "path" | "path2";
+export type StateRank = "" | "offer" | "change";
 export type Personalisation = "history" | "history-pets" | "pets";
 
-export default function ShopSettings({ personalisation, lastOrder, season, month, months, onPersonalisation, onLastOrder, onSeason, onMonth }: {
+export default function ShopSettings({ personalisation, lastOrder, season, month, months, stateRank, onPersonalisation, onLastOrder, onSeason, onMonth, onStateRank }: {
   personalisation: Personalisation;
   lastOrder: LastOrder;
   season: boolean;
   month: string;
   months: Array<{ value: string; label: string }>;
+  stateRank: StateRank;
   onPersonalisation: (value: Personalisation) => void;
   onLastOrder: (mode: LastOrder) => void;
   onSeason: (on: boolean) => void;
   onMonth: (month: string) => void;
+  onStateRank: (mode: StateRank) => void;
 }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -38,6 +41,15 @@ export default function ShopSettings({ personalisation, lastOrder, season, month
           <option value="">Not used</option>
         </select>
       </label>
+      <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        <span style={{ fontWeight: 600 }}>Product state in the ranking</span>
+        <select aria-label="Product state" className="search-input" style={{ paddingLeft: 10 }} value={stateRank}
+                onChange={(e) => onStateRank(e.target.value as StateRank)}>
+          <option value="">Not used: Aito&apos;s order only</option>
+          <option value="offer">Offers lift: score × the offer band&apos;s lift</option>
+          <option value="change">Changes lift: what is new since last month (offer, stars)</option>
+        </select>
+      </label>
       <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <input type="checkbox" checked={season} onChange={(e) => onSeason(e.target.checked)} />
         <span><strong>Use the season</strong>: the month counts as evidence ("Sells in April ×2.0")</span>
@@ -52,6 +64,10 @@ export default function ShopSettings({ personalisation, lastOrder, season, month
         </label>
       )}
       <div className="card-sub" style={{ lineHeight: 1.5 }}>
+        Product state is an experiment: the score is Aito&apos;s probability times the shop-wide lifts Aito learned for the
+        month&apos;s offer band and stars, a multiplication this app does, not one Aito query. Whether it ranks better is
+        what <code>state-rank-prereg.md</code> measures on held-out sessions.
+        <br /><br />
         Season is off by default: it is the same shop-wide lift for every product, and it lifted other pets&apos;
         products over a dog household&apos;s own. What the held-out sweeps measured: ranking by the customer&apos;s own history ties on ranking and overconfides the
         percentages on average (ADR 0033); a long history personalises well and a thin one (Anna has two orders) does

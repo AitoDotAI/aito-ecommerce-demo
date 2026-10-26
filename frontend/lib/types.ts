@@ -753,6 +753,7 @@ export interface ShopGrid {
   last_order_skus: string[];
   last_query: { endpoint: string; body: Record<string, unknown> };
   rescored: boolean;            // sandbox, 2026-05: re-scored by the levers' states (ADR 0043)
+  state: string;                // the month's state in the ranking: "offer", "change", or "" (not used)
   identity: boolean;            // also conditioned on the customer themselves (an experiment)
   trust: boolean;               // ...and not narrowed to the household's pets
   recent: string;               // how the last order entered the query: "", cart, path, path2
