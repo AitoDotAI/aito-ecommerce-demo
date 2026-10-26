@@ -83,9 +83,31 @@ Underpowered by design (the intervals are ±0.05; earlier sweeps needed n ≈ 1,
 kit stratum has 9 sessions here against 402 in the full set), so it says only that the machinery works
 and that nothing large shows up. The full set is still to run.
 
-**Full run:** not run. Run: `PYTHONPATH=. AITO_ENV=release2 python scripts/last_basket_sweep.py --apply`, with
-Antti's go-ahead (it writes to throwaway branches on the shared server). A pilot first:
-`--sessions 100 --apply`.
+**Full run, 2026-10-25 (all 3,880 eligible sessions, 1,383 customers, 5 folds by customer, 5 throwaway
+branches of `release2`, none left).**
+
+| | hit@12 | Brier |
+|:--|--:|--:|
+| A, the Shop today | 0.135 | 0.1516 |
+| B, + last order's words as cart words | 0.122 | 0.1609 |
+| **B − A, all (n = 3,880)** | **−0.012 [−0.019, −0.005]** | **+0.0094 [+0.0072, +0.0115]** |
+| B − A, dog and cat only (n = 3,478) | −0.014 [−0.021, −0.006] | +0.0098 [+0.0076, +0.0120] |
+| B − A, a pet other than dog or cat (n = 402) | +0.000 [−0.020, +0.020] | +0.0047 [−0.0036, +0.0130] |
+
+**Under the rule: B is not adopted.** The hit@12 interval lies below 0 (a loss, not a tie), and Brier is
+worse, by 0.0094, inside the +0.01 allowance but with an interval that excludes 0. **The prediction was
+wrong on both counts:** no gain for the kit households (a tie, wide), and a loss for dog and cat
+households, where I predicted a tie.
+
+**What this does and doesn't say.** It tests one query form: the last order's words placed in the
+**cart's** field (`context.basket_categories`). That field learned "this session's cart holds X", so the
+last order's words claim something the data never said (a cart that held them), and the loss is
+plausibly that mismatch. This is a hypothesis, not tested here. The ADR 0047 path
+(`context.last_order.basket_categories`) learns "customers whose last order held X", a different feature
+with a different lift (probed 2026-10-25: a different top 3 for the same words), and was not tested. A
+fair test of "does the last basket help" needs the path form, on an env with the chained-basket columns
+(`scripts/add_chained_baskets.py`), pre-registered as its own variant, **C**, before it runs. The Shop's
+"Start from their last order" option (PR #99) is the variant measured here and should not be the default.
 
 ## Amendment (2026-10-25, after B's result, before any run of C1 or C2): the path forms
 
