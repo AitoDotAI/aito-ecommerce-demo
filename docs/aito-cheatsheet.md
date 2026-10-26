@@ -1781,3 +1781,24 @@ example with the actual response shape pasted in.
 - Sister cheatsheets:
   - `aito-accounting-demo/docs/aito-cheatsheet.md`
   - `aito-erp-demo/docs/aito-cheatsheet.md`
+
+## KPIs by the product's properties — `_predict clicked|purchased` with `product_sku.*` and `product_state.*`
+
+Probed 2026-10-26 on master (Aito 2.11.8), read-only; `src/product_kpi.py`, ADR 0048. The product's properties,
+not its SKU, go in `where`, each through a link:
+
+```json
+POST /_predict
+{"from": "impressions",
+ "where": {"product_sku.brand": "Trixie", "product_sku.category": "accessories", "product_sku.pet_type": "small_animal",
+           "product_state.discount_band": "20+", "product_state.rating_band": "3", "product_state.label": "recommended",
+           "product_state.age": "established", "product_state.stock": "in_stock", "product_state.rival_launched": false},
+ "predict": "purchased", "select": ["$p", "feature", "$why"]}
+```
+
+- **A property the product never had still answers**: that is what makes it a what-if.
+- **`$why` holds one lift per property, and sometimes one for a `$group`** of correlated ones
+  (`{"$group": [{"product_state.label": "none"}, {"product_state.age": "established"}]}`): read the proposition,
+  don't assume a single key. A property with no evidence is left out.
+- **It leaves the product itself out**, so for a product with a strong record of its own it undershoots (a hideout
+  at 8 % by properties, 28 % actually, 11 of 39 showings). Show both.

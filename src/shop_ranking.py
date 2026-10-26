@@ -95,10 +95,14 @@ IDENTITY = "context.customer"    # the customer themselves: their own showings a
 
 
 def shop_scope(client: AitoClient, shopper_key: str, month: str, cart_skus: list[str],
-               *, identity: bool = False, recent_basket: str = "") -> ShopScope:
+               *, identity: bool = False, recent_basket: str = "", season: bool = True) -> ShopScope:
     """`identity`: also condition on the customer themselves (`context.customer`), beside their pets.
     Off by default: the sweeps found it ties on ranking and overconfides the probabilities (ADR 0033);
-    it is an experiment."""
+    it is an experiment.
+
+    `season`: the month is evidence (`context.month`). Without it the month still decides which orders and
+    offers count as "now"; it just isn't a condition. The shop-wide lift of a month ("Sells in April ×2.0")
+    is the same for every product, so it can lift a cat product over a dog household's own (2026-10-26)."""
     s = shopper(shopper_key)
     customer = client.search("customers", where={"customer_id": s.customer_id}, limit=1)["hits"][0]
     cart = _cart(client, cart_skus)
@@ -116,6 +120,8 @@ def shop_scope(client: AitoClient, shopper_key: str, month: str, cart_skus: list
             raise UnknownShopperProfileError(
                 f"{s.customer_id} declared no pets and has no order before {month}: the Shop has nothing to read")
         context = shopper_where_from_orders(pets, cart, month)
+    if not season:
+        context = {k: v for k, v in context.items() if k != "context.month"}
     if recent_basket and orders:
         context = {**context, **_last_order_context(client, orders, cart, recent_basket)}
     if identity:

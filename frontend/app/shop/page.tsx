@@ -8,6 +8,9 @@ import { shopPanel } from "@/lib/panel-content";
 import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
 import FinePrint from "@/components/shell/FinePrint";
+import HelpPopover from "@/components/prediction/HelpPopover";
+import ShopperProfile from "@/components/shop/ShopperProfile";
+import ShopSettings, { type LastOrder, type Personalisation } from "@/components/shop/ShopSettings";
 import NotFoundNotice from "@/components/shell/NotFoundNotice";
 import CartPanel from "@/components/shop/CartPanel";
 import ProductCard from "@/components/shop/ProductCard";
@@ -39,15 +42,23 @@ function ShopView() {
   const [shopperKey, setShopperKey] = useUrlState("shopper", "paivi");
   // In a sandbox (ADR 0043) the Shop opens on May 2026: the month the levers write.
   const [sandbox] = useUrlState(SANDBOX_PARAM, "");
-  const [month, setMonth] = useUrlState("month", sandbox ? SANDBOX_MONTH : "2026-04");
+  const [monthParam, setMonth] = useUrlState("month", sandbox ? SANDBOX_MONTH : "2026-04");
   const months = sandbox ? [SANDBOX_MONTH, ...MONTHS] : MONTHS;
   const [cartParam] = useUrlState("cart", "");
   // An experiment: also rank by the customer themselves (`context.customer`, ADR 0033), not only their pets.
-  const [identityParam] = useUrlState("identity", "");
-  const [trustParam] = useUrlState("trust", "");
-  const [recentParam] = useUrlState("recent", "");
-  const identity = (identityParam === "1" ? `&identity=1${trustParam === "1" ? "&trust=1" : ""}` : "") +
-    (recentParam ? `&recent=${recentParam}` : "");
+  // How "Picked for you" is personalised (the ⚙ next to it). Defaults: own history, no pets filter, from the
+  // last order; the URL holds only what differs (`personalise=pets|history-pets`, `last=none|path|path2`).
+  const [personaliseParam] = useUrlState("personalise", "history");
+  const [lastParam] = useUrlState("last", "cart");
+  // The season (the month as evidence) is off by default; the Month select is in the ⚙, shown with it on. A
+  // sandbox needs its own month, so it keeps the select. Without the season the month is the latest one.
+  const [seasonParam] = useUrlState("season", "0");
+  const season = seasonParam === "1";
+  const month = season || sandbox ? monthParam : "2026-04";
+  const personalisation = (["history", "history-pets", "pets"].includes(personaliseParam) ? personaliseParam : "history") as Personalisation;
+  const lastOrder = (["path", "path2", "cart"].includes(lastParam) ? lastParam : "") as LastOrder;
+  const identity = (personalisation === "pets" ? "" : `&identity=1${personalisation === "history" ? "&trust=1" : ""}`) +
+    (lastOrder ? `&recent=${lastOrder}` : "") + (season ? "" : "&season=0");
   const [openSku] = useUrlState("product", "");
   const [query] = useUrlState("q", "");
   const [typed, setTyped] = useState(query);
@@ -138,32 +149,13 @@ function ShopView() {
             <span aria-hidden="true">{s.emoji}</span>{s.name}
           </button>
         ))}
-        <select aria-label="Month" className="search-input" style={{ width: "auto", paddingLeft: 12 }}
-                value={month} onChange={(e) => setMonth(e.target.value)}>
-          {months.map((m) => <option key={m} value={m}>{monthLabel(m)}{m === SANDBOX_MONTH ? " (sandbox)" : ""}</option>)}
-        </select>
-        <select aria-label="Personalisation" className="search-input" style={{ width: "auto", paddingLeft: 12 }}
-                value={identityParam === "1" ? (trustParam === "1" ? "trust" : "own") : "pets"}
-                onChange={(e) => setUrl({ identity: e.target.value === "pets" ? null : "1", trust: e.target.value === "trust" ? "1" : null })}>
-          <option value="pets">Personalised by pets</option>
-          <option value="own">By their own history (pets filter kept)</option>
-          <option value="trust">By their own history, no pets filter</option>
-        </select>
-        <select aria-label="Last order" className="search-input" style={{ width: "auto", paddingLeft: 12 }}
-                value={recentParam || "none"} onChange={(e) => setUrl({ recent: e.target.value === "none" ? null : e.target.value })}>
-          <option value="none">Last order: not used</option>
-          <option value="path">Last order, by link (chained baskets)</option>
-          <option value="path2">Last two orders, by link</option>
-          <option value="cart">Last order as cart words (measured to lose)</option>
-        </select>
+        {sandbox && (
+          <select aria-label="Month" className="search-input" style={{ width: "auto", paddingLeft: 12 }}
+                  value={month} onChange={(e) => setMonth(e.target.value)}>
+            {months.map((m) => <option key={m} value={m}>{monthLabel(m)}{m === SANDBOX_MONTH ? " (sandbox)" : ""}</option>)}
+          </select>
+        )}
       </div>
-      {identityParam === "1" && (
-        <div className="card-sub" style={{ margin: "4px 0" }}>
-          Experiment: ranked with the customer themselves in the query. The sweeps found this ties on ranking and
-          overconfides the percentages on average (ADR 0033). A long history personalises well; a thin one
-          (Anna has two orders) does not: with no pets filter she is shown dog treats.
-        </div>
-      )}
       {shown && (
         <div className="card-sub" style={{ margin: "4px 0 12px" }}>
           {shown.shopper.story}
@@ -219,9 +211,22 @@ function ShopView() {
             )}
             {suggestions && <SuggestionsPanel suggestions={suggestions} month={monthLabel(month)}
                                               onAdd={(sku) => addToCart([sku])} onAddAll={addToCart} />}
-            <div className="page-title" style={{ fontSize: 16, margin: "16px 0 4px" }}>Picked for you</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "16px 0 4px" }}>
+              <div className="page-title" style={{ fontSize: 16, margin: 0 }}>Picked for you</div>
+              <HelpPopover icon="⚙" label="How these are picked" title="How these are picked" width={420}>
+                <ShopSettings personalisation={personalisation} lastOrder={lastOrder} season={season} month={month}
+                              months={months.map((m) => ({ value: m, label: monthLabel(m) }))}
+                              onSeason={(on) => setUrl({ season: on ? "1" : null })} onMonth={setMonth}
+                              onPersonalisation={(v) => setUrl({ personalise: v === "history" ? null : v })}
+                              onLastOrder={(mode) => setUrl({ last: mode === "cart" ? null : mode || "none" })} />
+              </HelpPopover>
+              <HelpPopover label={`What the shop knows about ${shopperName}`} title={shopperName} width={460}>
+                <ShopperProfile shopper={shopperKey} month={month} />
+              </HelpPopover>
+            </div>
             <div className="card-sub" style={{ marginBottom: 8 }}>
-              Ranked by Aito for a household with these pets, this month and this cart
+              Ranked by Aito for {shopperName}: {personalisation === "pets" ? "a household with these pets" : "their own history"}
+              {lastOrder && shown && shown.cart.length === 0 ? ", starting from their last order" : ""}, {season ? `, ${monthLabel(month)}` : ""} and this cart
             </div>
             {shown?.rescored && (
               <div className="card card-sub" style={{ marginBottom: 8, fontSize: 12 }}>
@@ -254,7 +259,7 @@ function ShopView() {
       )}
 
       {openSku && (
-        <ProductDrawer sku={openSku} shopper={shopperKey} month={month} cart={cartParam}
+        <ProductDrawer sku={openSku} shopper={shopperKey} month={month} cart={cartParam} season={season}
                        onClose={() => setUrl({ product: null })}
                        onAdd={(sku) => addToCart([sku])} onOpen={(sku) => setUrl({ product: sku })} />
       )}

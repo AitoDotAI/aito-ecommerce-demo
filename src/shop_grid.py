@@ -40,10 +40,10 @@ class ShopGrid:
 
 def get_shop_grid(client: AitoClient, shopper_key: str, month: str, cart_skus: list[str],
                   *, rescored: bool = False, identity: bool = False, trust: bool = False,
-                  recent: str = "") -> ShopGrid:
+                  recent: str = "", season: bool = True) -> ShopGrid:
     """`rescored`: the sandbox's Shop for 2026-05, its top RESCORED candidates
     re-scored by the states the owner's levers wrote (`src/shop_rescore.py`)."""
-    scope = shop_scope(client, shopper_key, month, cart_skus, identity=identity, recent_basket=recent)
+    scope = shop_scope(client, shopper_key, month, cart_skus, identity=identity, recent_basket=recent, season=season)
     # "Picked for you" shows the household's own pets' products; search and a
     # product's alternatives don't (a cat owner may look for a dog gift).
     # `trust`: with the customer in the query, let their own history decide and don't also filter by pets.
