@@ -23,12 +23,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 
+from src import cache
 from src.aito_client import AitoClient, AitoError
 from src.demand_forecast import LATEST_MONTH
 from src.shop_history import NEXT_MONTH
 from src.shop_state_lifts import StateLifts, read_state_lifts
 
 RESCORED = 40
+STATE_MODES = ("offer", "change")
 
 
 @dataclass(frozen=True)
@@ -60,8 +62,50 @@ def rescore(client: AitoClient, items: list, month: str) -> list:
     return sorted(adjusted, key=lambda i: -(i.adjustment.score if i.adjustment else i.p))
 
 
-def adjustment(p: float, state: dict, before: dict, lifts: StateLifts) -> ScoreAdjustment:
-    offer = lifts.offer_factor(state["discount_band"])
+def state_rescore(client: AitoClient, items: list, month: str, mode: str) -> list:
+    """`items` re-ranked by the state of their product in `month`, for the Shop's "state in the ranking" option.
+
+    `offer`: score = $p × lift(this month's offer band) / lift(no offer), stars ignored.
+    `change`: score = $p × what changed since last month: the offer band and the star band each against
+    last month's. $p already carries the product's usual state, so only a change should move it.
+    """
+    if mode not in STATE_MODES:
+        raise ValueError(f"state mode must be one of {STATE_MODES}, not {mode!r}")
+    measured = [replace(item, measured_rank=rank) for rank, item in enumerate(items, start=1)]
+    now = _states(client, [i.sku for i in items], month)
+    before = _states(client, list(now), previous_month(month)) if mode == "change" else {}
+    lifts = _month_lifts(client)
+    adjusted = []
+    for item in measured:
+        if item.sku not in now:
+            adjusted.append(item)
+            continue
+        last = before.get(item.sku, now[item.sku])      # a product with no row last month has no change
+        adjusted.append(replace(item, adjustment=adjustment(
+            item.p, now[item.sku], last if mode == "change" else {"rating_band": now[item.sku]["rating_band"]},
+            lifts, offer_against=last["discount_band"] if mode == "change" else "none")))
+    return sorted(adjusted, key=lambda i: -(i.adjustment.score if i.adjustment else i.p))
+
+
+def _month_lifts(client: AitoClient) -> StateLifts:
+    """The shop-wide lifts, read once per half hour and database: they are the same for every product and
+    shopper, and nine `_predict`s are most of what the option adds to a request."""
+    cached = cache.get(f"state-lifts:{client.env}")
+    if cached:
+        return StateLifts(**cached)
+    lifts = read_state_lifts(client)
+    cache.set(f"state-lifts:{client.env}", {"discount": lifts.discount, "rating": lifts.rating}, ttl=1800)
+    return lifts
+
+
+def previous_month(month: str) -> str:
+    year, number = int(month[:4]), int(month[5:])
+    return f"{year - 1}-12" if number == 1 else f"{year}-{number - 1:02d}"
+
+
+def adjustment(p: float, state: dict, before: dict, lifts: StateLifts, offer_against: str = "none") -> ScoreAdjustment:
+    """The offer band against `offer_against` (no offer in the sandbox), the star band against `before`'s."""
+    offer = lifts.offer_factor(state["discount_band"]) / lifts.offer_factor(offer_against)
     stars = lifts.rating_factor(state["rating_band"], before["rating_band"])
     return ScoreAdjustment(
         aito_p=p, offer_band=state["discount_band"], offer_factor=offer,

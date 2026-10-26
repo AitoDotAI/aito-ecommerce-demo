@@ -10,7 +10,7 @@ import ErrorState from "@/components/shell/ErrorState";
 import FinePrint from "@/components/shell/FinePrint";
 import HelpPopover from "@/components/prediction/HelpPopover";
 import ShopperProfile from "@/components/shop/ShopperProfile";
-import ShopSettings, { type LastOrder, type Personalisation } from "@/components/shop/ShopSettings";
+import ShopSettings, { type LastOrder, type Personalisation, type StateRank } from "@/components/shop/ShopSettings";
 import NotFoundNotice from "@/components/shell/NotFoundNotice";
 import CartPanel from "@/components/shop/CartPanel";
 import ProductCard from "@/components/shop/ProductCard";
@@ -52,13 +52,15 @@ function ShopView() {
   const [lastParam] = useUrlState("last", "cart");
   // The season (the month as evidence) is off by default; the Month select is in the ⚙, shown with it on. A
   // sandbox needs its own month, so it keeps the select. Without the season the month is the latest one.
+  const [stateParam] = useUrlState("state", "");
+  const stateRank = (["offer", "change"].includes(stateParam) ? stateParam : "") as StateRank;
   const [seasonParam] = useUrlState("season", "0");
   const season = seasonParam === "1";
   const month = season || sandbox ? monthParam : "2026-04";
   const personalisation = (["history", "history-pets", "pets"].includes(personaliseParam) ? personaliseParam : "history") as Personalisation;
   const lastOrder = (["path", "path2", "cart"].includes(lastParam) ? lastParam : "") as LastOrder;
   const identity = (personalisation === "pets" ? "" : `&identity=1${personalisation === "history" ? "&trust=1" : ""}`) +
-    (lastOrder ? `&recent=${lastOrder}` : "") + (season ? "" : "&season=0");
+    (lastOrder ? `&recent=${lastOrder}` : "") + (season ? "" : "&season=0") + (stateRank ? `&state=${stateRank}` : "");
   const [openSku] = useUrlState("product", "");
   const [query] = useUrlState("q", "");
   const [typed, setTyped] = useState(query);
@@ -215,7 +217,8 @@ function ShopView() {
               <div className="page-title" style={{ fontSize: 16, margin: 0 }}>Picked for you</div>
               <HelpPopover icon="⚙" label="How these are picked" title="How these are picked" width={420}>
                 <ShopSettings personalisation={personalisation} lastOrder={lastOrder} season={season} month={month}
-                              months={months.map((m) => ({ value: m, label: monthLabel(m) }))}
+                              months={months.map((m) => ({ value: m, label: monthLabel(m) }))} stateRank={stateRank}
+                              onStateRank={(mode) => setUrl({ state: mode || null })}
                               onSeason={(on) => setUrl({ season: on ? "1" : null })} onMonth={setMonth}
                               onPersonalisation={(v) => setUrl({ personalise: v === "history" ? null : v })}
                               onLastOrder={(mode) => setUrl({ last: mode === "cart" ? null : mode || "none" })} />
@@ -228,6 +231,16 @@ function ShopView() {
               Ranked by Aito for {shopperName}: {personalisation === "pets" ? "a household with these pets" : "their own history"}
               {lastOrder && shown && shown.cart.length === 0 ? ", starting from their last order" : ""}, {season ? `, ${monthLabel(month)}` : ""} and this cart
             </div>
+            {shown && shown.state && !shown.rescored && (
+              <div className="card card-sub" style={{ marginBottom: 8, fontSize: 12 }}>
+                <strong>Product state in the ranking:</strong> the top 40 by Aito, re-scored by {monthLabel(month)}&apos;s
+                {shown.state === "offer" ? " offer band" : " offer and star changes since last month"}.
+                <FinePrint>
+                  {" "}Score = Aito&apos;s purchase probability × the band&apos;s lift (and the star band&apos;s), each
+                  learned by Aito across the whole shop. The multiplication is this app&apos;s, not one Aito query.
+                </FinePrint>
+              </div>
+            )}
             {shown?.rescored && (
               <div className="card card-sub" style={{ marginBottom: 8, fontSize: 12 }}>
                 <strong>Sandbox, May 2026:</strong> a product whose May state you changed is re-scored, so its
@@ -244,7 +257,7 @@ function ShopView() {
                 <div key={i} className="card" style={{ height: 170, background: "var(--border-light)" }} />
               ))}
               {shown?.items.map((item, i) => (
-                <ProductCard key={item.sku} item={item} rank={i + 1}
+                <ProductCard key={item.sku} item={item} rank={i + 1} inSandbox={!!shown.rescored}
                              onAdd={() => addToCart([item.sku])}
                              onOpen={() => setUrl({ product: item.sku })} />
               ))}

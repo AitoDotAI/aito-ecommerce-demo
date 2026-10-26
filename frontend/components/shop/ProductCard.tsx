@@ -18,8 +18,9 @@ const WORTH_SHOWING_PCT = 10;
  *  probability for this shopper, and the strongest of Aito's reasons. For
  *  something they bought last order, how far that pulled it down. In a sandbox's 2026-05, a product a lever changed
  *  shows its re-scored score and that score's own explanation instead (ADR 0043). */
-export default function ProductCard({ item, rank, onAdd, onOpen }: {
+export default function ProductCard({ item, rank, inSandbox = false, onAdd, onOpen }: {
   item: ShopItem;
+  inSandbox?: boolean;     // the sandbox's May, not a month of the data re-scored by the Shop's state option
   rank?: number;           // its place in the grid, for the sandbox's rank change
   onAdd: () => void;
   onOpen: () => void;
@@ -46,14 +47,14 @@ export default function ProductCard({ item, rank, onAdd, onOpen }: {
         <VariantNote skus={item.same_name_skus} />
       </div>
       <div title={item.adjustment
-        ? "This app's score: Aito's probability times the shop-wide lifts of the product's May state"
+        ? `This app's score: Aito's probability times the shop-wide lifts of the product's ${inSandbox ? "May" : "month's"} state`
         : "Aito's probability that this shopper buys it when it is shown to them"}>
         <div style={{ height: 5, background: "var(--border-light)", borderRadius: 3 }}>
           <div style={{ width: `${Math.min(100, Math.round(shown * 100))}%`, height: "100%", background: "var(--cta)", borderRadius: 3 }} />
         </div>
         <div className="card-sub" style={{ marginTop: 2, display: "flex", alignItems: "center", gap: 6 }}>
           {item.adjustment
-            ? <>Score {Math.round(shown * 100)} <RankChange item={item} rank={rank} /></>
+            ? <>Score {Math.round(shown * 100)} <RankChange item={item} rank={rank} inSandbox={inSandbox} /></>
             : <>{Math.round(item.p * 100)} % buy it when shown <ShownExplainer item={item} /></>}
         </div>
       </div>
@@ -118,7 +119,7 @@ function AdjustedScore({ item, adjustment: a }: { item: ShopItem; adjustment: Sc
           </span>
         )}
         {a.rating_band !== a.rating_band_before && (
-          <span className="shop-lever" title="Aito's lift of this star band over April's, across every product">
+          <span className="shop-lever" title="Aito's lift of this star band over the earlier one, across every product">
             {stars} ×{a.rating_factor.toFixed(2)}, learned across the shop
           </span>
         )}
@@ -134,12 +135,12 @@ function AdjustedScore({ item, adjustment: a }: { item: ShopItem; adjustment: Sc
   );
 }
 
-function RankChange({ item, rank }: { item: ShopItem; rank?: number }) {
+function RankChange({ item, rank, inSandbox }: { item: ShopItem; rank?: number; inSandbox: boolean }) {
   if (!rank || item.measured_rank === null || item.measured_rank === rank) return null;
   const moved = item.measured_rank - rank;
   const lever = lastLever();
-  const since = lever?.sku === item.sku ? (lever.lever === "offer" ? "since the offer" : "since the review")
-    : "with its May state";
+  const since = inSandbox && lever?.sku === item.sku ? (lever.lever === "offer" ? "since the offer" : "since the review")
+    : inSandbox ? "with its May state" : "with its state";
   return (
     <span className={moved > 0 ? "shop-rank-up" : "shop-rank-down"}>
       {moved > 0 ? "↑" : "↓"} {Math.abs(moved)} {since}

@@ -189,11 +189,16 @@ def fold_of(session: dict) -> int:
 Z = {1: 1.96, 2: 2.24}.get(len(VARIANTS) - 1, 2.39)    # 95 %, 97.5 % (two), 98.3 % (three) when variants share a control
 
 
-def paired(a: list[float], b: list[float]) -> tuple[float, float, float]:
-    """Mean difference b - a with a normal-approximation interval over sessions (Z)."""
+def paired_at(z: float, a: list[float], b: list[float]) -> tuple[float, float, float]:
+    """Mean difference b - a with a normal-approximation interval over sessions (z standard errors)."""
     d = [y - x for x, y in zip(a, b) if x == x and y == y]
     m, se = statistics.mean(d), statistics.stdev(d) / math.sqrt(len(d))
-    return m, m - Z * se, m + Z * se
+    return m, m - z * se, m + z * se
+
+
+def paired(a: list[float], b: list[float]) -> tuple[float, float, float]:
+    """`paired_at` with this run's Z."""
+    return paired_at(Z, a, b)
 
 
 def main() -> int:
