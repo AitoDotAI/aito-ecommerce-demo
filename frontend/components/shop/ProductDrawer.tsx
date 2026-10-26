@@ -7,6 +7,7 @@ import { apiFetch, fmtEur } from "@/lib/api";
 import { useSandboxEnv, withSandbox } from "@/lib/sandbox";
 import type { ShopProductDrawer } from "@/lib/types";
 import ProductHighlights from "@/components/shop/ProductHighlights";
+import ProductImage from "@/components/shop/ProductImage";
 import VariantNote from "@/components/shop/VariantNote";
 
 /** A product, opened: its details, what this shopper would buy instead
@@ -67,7 +68,8 @@ export default function ProductDrawer({ sku, shopper, month, cart, onClose, onAd
       {drawer && product && (
         <>
           <section className="pdp-buy">
-            <div>
+            <ProductImage petType={product.pet_type} category={product.category} size="page" />
+            <div style={{ flex: 1, minWidth: 140 }}>
               <div className="pdp-price">{fmtEur(product.price_eur, 2)}</div>
               <ProductHighlights reasons={[]} offerPct={drawer.offer_pct} rating={product.avg_rating} keepsRule={false} />
             </div>

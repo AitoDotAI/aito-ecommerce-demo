@@ -837,3 +837,10 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 520px) { .pdp-actions { width: 100%; } }
 .pdp-actions .btn { background: var(--cta); border-color: var(--cta); color: var(--primary); font-weight: 600; padding: 8px 14px; }
 .pdp-pair-name .pdp-meter { max-width: 260px; }
+
+/* A product photo's stand-in (components/shop/ProductImage.tsx). */
+.product-image { position: relative; display: flex; align-items: center; justify-content: center; border-radius: 8px; overflow: hidden; }
+.product-image-card { width: 100%; aspect-ratio: 4 / 3; }
+.product-image-page { width: 160px; aspect-ratio: 1; flex: none; }
+.product-image-thumb { width: 48px; aspect-ratio: 1; flex: none; }
+.product-image-kind { position: absolute; right: 8%; bottom: 6%; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2)); }
