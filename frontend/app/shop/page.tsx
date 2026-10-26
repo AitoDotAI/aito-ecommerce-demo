@@ -8,6 +8,9 @@ import { shopPanel } from "@/lib/panel-content";
 import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
 import FinePrint from "@/components/shell/FinePrint";
+import HelpPopover from "@/components/prediction/HelpPopover";
+import ShopperProfile from "@/components/shop/ShopperProfile";
+import ShopSettings, { type Personalisation } from "@/components/shop/ShopSettings";
 import NotFoundNotice from "@/components/shell/NotFoundNotice";
 import CartPanel from "@/components/shop/CartPanel";
 import ProductCard from "@/components/shop/ProductCard";
@@ -43,11 +46,14 @@ function ShopView() {
   const months = sandbox ? [SANDBOX_MONTH, ...MONTHS] : MONTHS;
   const [cartParam] = useUrlState("cart", "");
   // An experiment: also rank by the customer themselves (`context.customer`, ADR 0033), not only their pets.
-  const [identityParam] = useUrlState("identity", "");
-  const [trustParam] = useUrlState("trust", "");
-  const [recentParam] = useUrlState("recent", "");
-  const identity = (identityParam === "1" ? `&identity=1${trustParam === "1" ? "&trust=1" : ""}` : "") +
-    (recentParam === "1" ? "&recent=1" : "");
+  // How "Picked for you" is personalised (the ⚙ next to it). Defaults: own history, no pets filter, from the
+  // last order; the URL holds only what differs (`personalise=pets|history-pets`, `last=0`).
+  const [personaliseParam] = useUrlState("personalise", "history");
+  const [lastParam] = useUrlState("last", "1");
+  const personalisation = (["history", "history-pets", "pets"].includes(personaliseParam) ? personaliseParam : "history") as Personalisation;
+  const lastOrder = lastParam !== "0";
+  const identity = (personalisation === "pets" ? "" : `&identity=1${personalisation === "history" ? "&trust=1" : ""}`) +
+    (lastOrder ? "&recent=1" : "");
   const [openSku] = useUrlState("product", "");
   const [query] = useUrlState("q", "");
   const [typed, setTyped] = useState(query);
@@ -142,27 +148,7 @@ function ShopView() {
                 value={month} onChange={(e) => setMonth(e.target.value)}>
           {months.map((m) => <option key={m} value={m}>{monthLabel(m)}{m === SANDBOX_MONTH ? " (sandbox)" : ""}</option>)}
         </select>
-        <select aria-label="Personalisation" className="search-input" style={{ width: "auto", paddingLeft: 12 }}
-                value={identityParam === "1" ? (trustParam === "1" ? "trust" : "own") : "pets"}
-                onChange={(e) => setUrl({ identity: e.target.value === "pets" ? null : "1", trust: e.target.value === "trust" ? "1" : null })}>
-          <option value="pets">Personalised by pets</option>
-          <option value="own">By their own history (pets filter kept)</option>
-          <option value="trust">By their own history, no pets filter</option>
-        </select>
-        <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}
-               title="Put the items of their last order in the query as if they were in the cart">
-          <input type="checkbox" checked={recentParam === "1"}
-                 onChange={(e) => setUrl({ recent: e.target.checked ? "1" : null })} />
-          Start from their last order <span className="card-sub">(experiment: measured to lose, last-basket-prereg.md)</span>
-        </label>
       </div>
-      {identityParam === "1" && (
-        <div className="card-sub" style={{ margin: "4px 0" }}>
-          Experiment: ranked with the customer themselves in the query. The sweeps found this ties on ranking and
-          overconfides the percentages on average (ADR 0033). A long history personalises well; a thin one
-          (Anna has two orders) does not: with no pets filter she is shown dog treats.
-        </div>
-      )}
       {shown && (
         <div className="card-sub" style={{ margin: "4px 0 12px" }}>
           {shown.shopper.story}
@@ -218,9 +204,20 @@ function ShopView() {
             )}
             {suggestions && <SuggestionsPanel suggestions={suggestions} month={monthLabel(month)}
                                               onAdd={(sku) => addToCart([sku])} onAddAll={addToCart} />}
-            <div className="page-title" style={{ fontSize: 16, margin: "16px 0 4px" }}>Picked for you</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "16px 0 4px" }}>
+              <div className="page-title" style={{ fontSize: 16, margin: 0 }}>Picked for you</div>
+              <HelpPopover icon="⚙" label="How these are picked" title="How these are picked" width={420}>
+                <ShopSettings personalisation={personalisation} lastOrder={lastOrder}
+                              onPersonalisation={(v) => setUrl({ personalise: v === "history" ? null : v })}
+                              onLastOrder={(on) => setUrl({ last: on ? null : "0" })} />
+              </HelpPopover>
+              <HelpPopover label={`What the shop knows about ${shopperName}`} title={shopperName} width={460}>
+                <ShopperProfile shopper={shopperKey} month={month} />
+              </HelpPopover>
+            </div>
             <div className="card-sub" style={{ marginBottom: 8 }}>
-              Ranked by Aito for a household with these pets, this month and this cart
+              Ranked by Aito for {shopperName}: {personalisation === "pets" ? "a household with these pets" : "their own history"}
+              {lastOrder && shown && shown.cart.length === 0 ? ", starting from their last order" : ""}, this month and this cart
             </div>
             {shown?.rescored && (
               <div className="card card-sub" style={{ marginBottom: 8, fontSize: 12 }}>

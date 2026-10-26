@@ -49,6 +49,7 @@ from src.product_service import DEFAULT_SKU, get_product_view, product_view_payl
 from src.shop_grid import get_shop_grid
 from src.shop_personas import SHOPPERS, UnknownShopperError
 from src.shop_product import get_product_drawer
+from src.shop_profile import get_shopper_profile
 from src.shop_search import search_shop
 from src.shop_suggestions import get_suggestions
 from src.basket_pairs import get_basket_section
@@ -503,6 +504,12 @@ def shop_search_endpoint(request: Request, q: str, shopper: str, month: str = Qu
     """The products whose name the query matches, ranked as the grid ranks them."""
     return _shop(lambda: search_shop(_shop_reader(request, month), shopper, month, _cart_skus(cart), q,
                                     identity=identity))
+
+
+@app.get("/api/shop/profile")
+def shop_profile_endpoint(request: Request, shopper: str, month: str = Query(pattern=MONTH)):
+    """What the shop knows about a shopper as of `month`: what they declared, their last basket and history."""
+    return _shop(lambda: get_shopper_profile(_shop_reader(request, month), shopper, month))
 
 
 @app.get("/api/shop/product")
