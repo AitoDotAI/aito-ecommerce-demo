@@ -995,3 +995,21 @@ export interface ProductKpis {
   estimates: Record<KpiName, KpiEstimate>;
   last_query: { endpoint: string; body: Record<string, unknown> };
 }
+
+/* ─── The Shop's shopper profile (/api/shop/profile) ─── */
+
+export interface ShopProfileOrder { month: string; total_eur: number | null; items: string[] }
+
+export interface ShopperProfile {
+  key: string;
+  name: string;
+  story: string;
+  pets: string;
+  pets_declared: boolean;
+  diet: string | null;
+  facts: Record<string, string | number | boolean>;
+  orders_total: number;
+  spent_eur: number;
+  last_basket: ShopProfileOrder | null;
+  history: ShopProfileOrder[];
+}

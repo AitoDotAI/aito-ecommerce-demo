@@ -49,6 +49,7 @@ from src.product_service import DEFAULT_SKU, get_product_view, product_view_payl
 from src.shop_grid import get_shop_grid
 from src.shop_personas import SHOPPERS, UnknownShopperError
 from src.shop_product import get_product_drawer
+from src.shop_profile import get_shopper_profile
 from src.shop_search import search_shop
 from src.shop_suggestions import get_suggestions
 from src.basket_pairs import get_basket_section
@@ -489,27 +490,35 @@ def shop_shoppers_endpoint():
 
 @app.get("/api/shop/grid")
 def shop_grid_endpoint(request: Request, shopper: str, month: str = Query(pattern=MONTH), cart: str = "",
-                       identity: bool = False, trust: bool = False, recent: bool = False):
+                       identity: bool = False, trust: bool = False, recent: bool = False,
+                       season: bool = True):
     """What to show this shopper now: `_recommend` with profile, month and
     cart as context, the household rule as a filter, recency re-asked. In
     sandbox mode for 2026-05, re-scored by the levers' states (ADR 0043)."""
     return _shop(lambda: get_shop_grid(_shop_reader(request, month), shopper, month, _cart_skus(cart),
-                                       rescored=month == NEXT_MONTH, identity=identity, trust=trust, recent=recent))
+                                       rescored=month == NEXT_MONTH, identity=identity, trust=trust, recent=recent, season=season))
 
 
 @app.get("/api/shop/search")
 def shop_search_endpoint(request: Request, q: str, shopper: str, month: str = Query(pattern=MONTH), cart: str = "",
-                         identity: bool = False):
+                         identity: bool = False, season: bool = True):
     """The products whose name the query matches, ranked as the grid ranks them."""
     return _shop(lambda: search_shop(_shop_reader(request, month), shopper, month, _cart_skus(cart), q,
-                                    identity=identity))
+                                    identity=identity, season=season))
+
+
+@app.get("/api/shop/profile")
+def shop_profile_endpoint(request: Request, shopper: str, month: str = Query(pattern=MONTH)):
+    """What the shop knows about a shopper as of `month`: what they declared, their last basket and history."""
+    return _shop(lambda: get_shopper_profile(_shop_reader(request, month), shopper, month))
 
 
 @app.get("/api/shop/product")
-def shop_product_endpoint(request: Request, sku: str, shopper: str, month: str = Query(pattern=MONTH), cart: str = ""):
+def shop_product_endpoint(request: Request, sku: str, shopper: str, month: str = Query(pattern=MONTH), cart: str = "",
+                          season: bool = True):
     """A product's drawer: details, alternatives for this shopper, often in
     the same basket, and in your orders before `month`."""
-    return _shop(lambda: get_product_drawer(_shop_reader(request, month), sku, shopper, month, _cart_skus(cart)))
+    return _shop(lambda: get_product_drawer(_shop_reader(request, month), sku, shopper, month, _cart_skus(cart), season))
 
 
 @app.get("/api/shop/suggestions")

@@ -13,11 +13,12 @@ import VariantNote from "@/components/shop/VariantNote";
 /** A product, opened: its details, what this shopper would buy instead
  *  (ranked by Aito, with why), what is often in the same basket (from all
  *  orders), and when this shopper bought it (their own history). */
-export default function ProductDrawer({ sku, shopper, month, cart, onClose, onAdd, onOpen }: {
+export default function ProductDrawer({ sku, shopper, month, cart, season, onClose, onAdd, onOpen }: {
   sku: string;
   shopper: string;
   month: string;
   cart: string;           // the cart's SKUs, comma-separated: context for the alternatives
+  season: boolean;        // whether the month is evidence for the alternatives
   onClose: () => void;
   onAdd: (sku: string) => void;
   onOpen: (sku: string) => void;
@@ -41,10 +42,10 @@ export default function ProductDrawer({ sku, shopper, month, cart, onClose, onAd
     setDrawer(null);
     setError(null);
     apiFetch<ShopProductDrawer>(
-      `/api/shop/product?sku=${encodeURIComponent(sku)}&shopper=${shopper}&month=${month}&cart=${encodeURIComponent(cart)}`)
+      `/api/shop/product?sku=${encodeURIComponent(sku)}&shopper=${shopper}&month=${month}&cart=${encodeURIComponent(cart)}${season ? "" : "&season=0"}`)
       .then((d) => { if (current) setDrawer(d); }, (e) => { if (current) setError(String(e)); });
     return () => { current = false; };
-  }, [sku, shopper, month, cart]);
+  }, [sku, shopper, month, cart, season]);
 
   // A modal over a backdrop, above the Aito side panel (which would cover a
   // drawer pinned to the right edge). A click on the backdrop closes it.

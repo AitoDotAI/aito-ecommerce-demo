@@ -10,10 +10,12 @@ import { popoverStyle } from "@/lib/popover-placement";
  * Same look and placement as WhyPopover, but the body is text, not an Aito `$why` chain:
  * for explaining what a figure means, not why Aito predicted it.
  */
-export default function HelpPopover({ label, title, children }: {
+export default function HelpPopover({ label, title, children, icon = "?", width = 380 }: {
   label: string;      // the button's accessible name, e.g. "What does this percentage mean?"
   title: string;
   children: ReactNode;
+  icon?: string;      // what the button shows; "?" unless the popover is a setting, not an explanation
+  width?: number;
 }) {
   const [open, setOpen] = useState(false);
   const [placement, setPlacement] = useState<CSSProperties>({});
@@ -31,7 +33,7 @@ export default function HelpPopover({ label, title, children }: {
   }, [open]);
 
   function toggle() {
-    if (!open && btnRef.current) setPlacement(popoverStyle(btnRef.current.getBoundingClientRect(), 380));
+    if (!open && btnRef.current) setPlacement(popoverStyle(btnRef.current.getBoundingClientRect(), width));
     setOpen(!open);
   }
 
@@ -49,7 +51,7 @@ export default function HelpPopover({ label, title, children }: {
           display: "inline-flex", alignItems: "center", justifyContent: "center",
         }}
       >
-        ?
+        {icon}
       </button>
       {open && typeof document !== "undefined" && createPortal(
         <div
