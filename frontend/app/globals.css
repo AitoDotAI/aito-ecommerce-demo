@@ -802,3 +802,38 @@ a { color: inherit; text-decoration: none; }
 /* Product view: the product's properties on the left, what the offer does on the right. */
 .workbench { display: grid; grid-template-columns: minmax(280px, 1fr) minmax(0, 2fr); gap: 20px; align-items: start; margin-bottom: 20px; }
 @media (max-width: 900px) { .workbench { grid-template-columns: minmax(0, 1fr); } }
+
+/* The shop's product page (a modal): header, the buy box, then Aito's sections as cards and rows. */
+.pdp-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.25); z-index: 1000;
+  display: flex; align-items: center; justify-content: center; padding: 16px; }
+.pdp { width: min(720px, 100%); max-height: 88vh; overflow-y: auto; box-shadow: 0 8px 30px rgba(0,0,0,0.25); }
+.pdp-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.pdp-name { margin: 0; font-size: 22px; line-height: 1.25; color: var(--primary); }
+.pdp-crumbs { margin-top: 4px; font-size: 12px; color: var(--text-muted); text-transform: capitalize; }
+.pdp-crumbs span { margin: 0 2px; }
+.pdp-buy { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
+  margin: 14px 0 10px; padding: 14px 16px; background: var(--bg); border: 1px solid var(--border-light); border-radius: 8px; }
+.pdp-price { font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+.pdp-actions { display: flex; flex-direction: column; align-items: stretch; gap: 6px; min-width: 180px; text-align: center; }
+.pdp-actions a { font-size: 12px; }
+.pdp-facts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
+.pdp-fact { padding: 2px 8px; border: 1px solid var(--border); border-radius: 12px; color: var(--text-2); background: var(--white); }
+.pdp-fact b { font-weight: 600; margin-right: 4px; color: var(--text-muted); }
+.pdp-section { margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--border-light); }
+.pdp-section h3 { margin: 0; font-size: 15px; color: var(--primary); }
+.pdp-section p { margin: 2px 0 10px; font-size: 12px; color: var(--text-muted); }
+.pdp-alts { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; }
+.pdp-alt { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border: 1px solid var(--border-light); border-radius: 8px; }
+.pdp-alt-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+.pdp-alt .btn, .pdp-pair .btn { padding: 2px 8px; font-size: 12px; }
+.pdp-meter { display: flex; flex-direction: column; gap: 2px; font-size: 11px; color: var(--text-muted); }
+.pdp-meter > div { height: 5px; background: var(--border-light); border-radius: 3px; }
+.pdp-meter > div > div { height: 100%; background: var(--cta); border-radius: 3px; }
+.pdp-pair { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; align-items: center; gap: 10px;
+  padding: 8px 0; border-top: 1px solid var(--border-light); font-size: 13px; }
+.pdp-pair:first-of-type { border-top: none; }
+.pdp-pair > .shop-reason { justify-self: start; font-weight: 600; }
+.pdp-pair-name { display: flex; flex-direction: column; gap: 3px; }
+@media (max-width: 520px) { .pdp-actions { width: 100%; } }
+.pdp-actions .btn { background: var(--cta); border-color: var(--cta); color: var(--primary); font-weight: 600; padding: 8px 14px; }
+.pdp-pair-name .pdp-meter { max-width: 260px; }

@@ -47,92 +47,104 @@ export default function ProductDrawer({ sku, shopper, month, cart, onClose, onAd
 
   // A modal over a backdrop, above the Aito side panel (which would cover a
   // drawer pinned to the right edge). A click on the backdrop closes it.
+  const product = drawer?.product;
   return (
-    <div onClick={onClose}
-         style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.25)", zIndex: 1000,
-                  display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-    <div role="dialog" aria-modal="true" aria-label="Product" className="card" onClick={(e) => e.stopPropagation()}
-         style={{ width: "min(420px, 100%)", maxHeight: "80vh", overflowY: "auto",
-                  boxShadow: "0 8px 30px rgba(0,0,0,0.25)" }}>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <div className="page-title" style={{ fontSize: 16, margin: 0 }}>{drawer?.product.name ?? sku}</div>
+    <div className="pdp-backdrop" onClick={onClose}>
+    <div role="dialog" aria-modal="true" aria-label="Product" className="card pdp" onClick={(e) => e.stopPropagation()}>
+      <header className="pdp-head">
+        <div>
+          <h2 className="pdp-name">{product?.name ?? sku}</h2>
+          {product && (
+            <div className="pdp-crumbs">
+              {product.brand} <span>›</span> {product.pet_type.replace("_", " ")} <span>›</span> {product.category.replace("-", " ")}
+            </div>
+          )}
+        </div>
         <button ref={closeButton} className="btn btn-ghost" onClick={onClose} aria-label="Close product">×</button>
-      </div>
+      </header>
       {error && <div className="card-sub" style={{ color: "var(--red)" }}>Couldn&apos;t load: {error}</div>}
       {!drawer && !error && <div style={{ height: 120, background: "var(--border-light)", borderRadius: 4 }} />}
-      {drawer && (
+      {drawer && product && (
         <>
-          <div className="card-sub">
-            {drawer.product.brand} · {drawer.product.pet_type.replace("_", " ")} · {drawer.product.category.replace("-", " ")}
-            {" · "}{fmtEur(drawer.product.price_eur, 2)}
-          </div>
-          <div style={{ margin: "6px 0" }}>
-            <ProductHighlights reasons={[]} offerPct={drawer.offer_pct} rating={drawer.product.avg_rating}
-                               keepsRule={false} />
-          </div>
-          <div className="card-sub">
-            {drawer.product.dietary && <>Diet: {drawer.product.dietary} · </>}{drawer.product.tags}
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-            <button className="btn" style={{ margin: "10px 0" }} onClick={() => onAdd(drawer.product.sku)}>Add to cart</button>
-            <Link href={withSandbox(`/product/?sku=${encodeURIComponent(drawer.product.sku)}&month=${month}`, sandbox)}
-                  style={{ fontSize: 13 }}>
-              Owner view of this product →
-            </Link>
-          </div>
+          <section className="pdp-buy">
+            <div>
+              <div className="pdp-price">{fmtEur(product.price_eur, 2)}</div>
+              <ProductHighlights reasons={[]} offerPct={drawer.offer_pct} rating={product.avg_rating} keepsRule={false} />
+            </div>
+            <div className="pdp-actions">
+              <button className="btn" onClick={() => onAdd(product.sku)}>Add to cart</button>
+              <Link href={withSandbox(`/product/?sku=${encodeURIComponent(product.sku)}&month=${month}`, sandbox)}>
+                Owner view of this product →
+              </Link>
+            </div>
+          </section>
+          {(product.dietary || product.tags) && (
+            <div className="pdp-facts">
+              {product.dietary && <span className="pdp-fact"><b>Diet</b> {product.dietary}</span>}
+              {product.tags.split(/\s+/).filter(Boolean).map((tag) => <span key={tag} className="pdp-fact">{tag}</span>)}
+            </div>
+          )}
 
-          <div style={{ fontWeight: 600, fontSize: 13, marginTop: 6 }}>Instead, this shopper might buy</div>
-          <div className="card-sub" style={{ marginBottom: 4 }}>
-            The same kind of product, ranked by Aito for them, with why
-          </div>
-          {drawer.alternatives.length === 0 && <div className="card-sub">No other product of this kind to offer them.</div>}
-          {drawer.alternatives.map((a) => (
-            <div key={a.sku} style={{ padding: "5px 0", borderTop: "1px solid var(--border-light)" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", gap: 8, fontSize: 13 }}>
-                <span>
-                  <button className="shop-card-name" style={{ fontWeight: 400 }} onClick={() => onOpen(a.sku)}
-                          aria-label={`Open ${a.name}`}>{a.name}</button>
-                  {" "}<VariantNote skus={a.same_name_skus} />
+          <section className="pdp-section">
+            <h3>Instead, this shopper might buy</h3>
+            <p>The same kind of product, ranked by Aito for them, with why</p>
+            {drawer.alternatives.length === 0 && <p>No other product of this kind to offer them.</p>}
+            <div className="pdp-alts">
+              {drawer.alternatives.map((a) => (
+                <div key={a.sku} className="pdp-alt">
+                  <button className="shop-card-name" onClick={() => onOpen(a.sku)} aria-label={`Open ${a.name}`}>{a.name}</button>
+                  <VariantNote skus={a.same_name_skus} />
+                  <div className="pdp-alt-row">
+                    <b>{fmtEur(a.price_eur, 2)}</b>
+                    <button className="btn btn-ghost" onClick={() => onAdd(a.sku)} aria-label={`Add ${a.name}`}>+ Add</button>
+                  </div>
+                  <Meter value={a.p} label={`${Math.round(a.p * 100)} % buy it when shown`} />
+                  <ProductHighlights reasons={a.reasons} offerPct={a.offer_pct} rating={a.avg_rating} keepsRule={a.keeps_rule} />
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="pdp-section">
+            <h3>Often in the same basket</h3>
+            <p>From all orders; pairs seen in at least 5 orders, more often than chance</p>
+            {drawer.same_basket.length === 0 && <p>No pair is common enough to show.</p>}
+            {drawer.same_basket.map((p) => (
+              <div key={p.sku} className="pdp-pair">
+                <span className="shop-reason" title="How much more often than chance the two are bought together">{p.lift.toFixed(1)}×</span>
+                <span className="pdp-pair-name">
+                  <button className="shop-card-name" style={{ fontWeight: 400 }} onClick={() => onOpen(p.sku)}
+                          aria-label={`Open ${p.name}`}>{p.name}</button>
+                  <VariantNote skus={p.same_name_skus} />
+                  <Meter value={p.together / p.orders_with_it} label={`${p.together} of ${p.orders_with_it} orders with it`} />
                 </span>
-                <span className="card-sub" style={{ whiteSpace: "nowrap" }}>
-                  {Math.round(a.p * 100)} % · {fmtEur(a.price_eur, 2)}
-                  <button className="btn btn-ghost" style={{ marginLeft: 6, padding: "0 6px" }}
-                          onClick={() => onAdd(a.sku)} aria-label={`Add ${a.name}`}>+</button>
-                </span>
+                <button className="btn btn-ghost" onClick={() => onAdd(p.sku)} aria-label={`Add ${p.name}`}>+ Add</button>
               </div>
-              <ProductHighlights reasons={a.reasons} offerPct={a.offer_pct} rating={a.avg_rating} keepsRule={a.keeps_rule} />
-            </div>
-          ))}
+            ))}
+          </section>
 
-          <div style={{ fontWeight: 600, fontSize: 13, marginTop: 12 }}>Often in the same basket</div>
-          <div className="card-sub" style={{ marginBottom: 4 }}>
-            From all orders; pairs seen in at least 5 orders, more often than chance
-          </div>
-          {drawer.same_basket.length === 0 && <div className="card-sub">No pair is common enough to show.</div>}
-          {drawer.same_basket.map((p) => (
-            <div key={p.sku} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, padding: "3px 0" }}>
-              <span>
-                <button className="shop-card-name" style={{ fontWeight: 400 }} onClick={() => onOpen(p.sku)}
-                        aria-label={`Open ${p.name}`}>{p.name}</button>
-                {" "}<VariantNote skus={p.same_name_skus} />
-              </span>
-              <span className="card-sub" style={{ whiteSpace: "nowrap" }}>
-                {p.lift.toFixed(1)}× · {p.together} of {p.orders_with_it}
-                <button className="btn btn-ghost" style={{ marginLeft: 6, padding: "0 6px" }}
-                        onClick={() => onAdd(p.sku)} aria-label={`Add ${p.name}`}>+</button>
-              </span>
-            </div>
-          ))}
-
-          <div style={{ fontWeight: 600, fontSize: 13, marginTop: 12 }}>In this shopper&apos;s orders</div>
-          <div className="card-sub">
-            {drawer.your_orders.length
-              ? `Bought in ${drawer.your_orders.join(", ")} (their history before ${month}, not a prediction).`
-              : `Not bought by this shopper before ${month}.`}
-          </div>
+          <section className="pdp-section">
+            <h3>In this shopper&apos;s orders</h3>
+            {drawer.your_orders.length ? (
+              <div className="pdp-facts">
+                {drawer.your_orders.map((m) => <span key={m} className="pdp-fact">{m}</span>)}
+                <p style={{ margin: 0 }}>their history before {month}, not a prediction</p>
+              </div>
+            ) : <p>Not bought by this shopper before {month}.</p>}
+          </section>
         </>
       )}
     </div>
+    </div>
+  );
+}
+
+/** A share as a thin bar with its caption: how likely, or how often. */
+function Meter({ value, label }: { value: number; label: string }) {
+  return (
+    <div className="pdp-meter">
+      <div><div style={{ width: `${Math.min(100, Math.max(2, Math.round(value * 100)))}%` }} /></div>
+      <span>{label}</span>
     </div>
   );
 }
