@@ -30,11 +30,11 @@ export default function ProductPicker({ products, sku, months, month, onSku, onM
       <input
         aria-label="Find a product by name" className="search-input" placeholder="Find a product: dental, Acana, litter…"
         value={query} onChange={(e) => setQuery(e.target.value)}
-        style={{ paddingLeft: 12, width: 260 }}
+        style={{ paddingLeft: 12, width: 190 }}
       />
       <select
         id="sku-picker" aria-label="Product" className="search-input"
-        style={{ paddingLeft: 12, width: "auto", minWidth: 300, maxWidth: "100%" }}
+        style={{ paddingLeft: 12, width: "auto", minWidth: 220, flex: "1 1 220px", maxWidth: "100%" }}
         value={sku} onChange={(e) => onSku(e.target.value)}
       >
         {groupByCategory(listed).map(([group, items]) => (

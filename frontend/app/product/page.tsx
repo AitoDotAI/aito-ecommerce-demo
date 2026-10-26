@@ -13,6 +13,7 @@ import ProductBuyers from "@/components/product/ProductBuyers";
 import ProductHistory from "@/components/product/ProductHistory";
 import ProductPicker from "@/components/product/ProductPicker";
 import ProductWhatIf from "@/components/product/ProductWhatIf";
+import ProductHero from "@/components/product/ProductHero";
 import ProductEditor from "@/components/product/ProductEditor";
 import KpiPanel from "@/components/product/KpiPanel";
 import { SANDBOX_MONTH, SANDBOX_PARAM } from "@/lib/sandbox";
@@ -168,6 +169,7 @@ function ProductView() {
 
       {shown && (
         <>
+          <ProductHero view={shown} />
           <div className="workbench">
             <ProductEditor view={shown} sandbox={sandbox || null} states={states} previewBand={previewBand}
                            onPreview={setPreviewBand}
