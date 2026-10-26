@@ -145,3 +145,85 @@ def test_a_shopper_without_a_profile_or_an_order_is_refused_loudly():
 
     with pytest.raises(UnknownShopperProfileError, match="CUST-01896"):
         get_shop_grid(fake, "eemil", "2024-05", [])   # the fake's earliest order is 2025-11
+
+
+def test_the_customer_is_in_the_query_only_when_asked_for_beside_their_pets():
+    plain, personal = FakeAito([product("SKU-A", 0.5)]), FakeAito([product("SKU-A", 0.5)])
+
+    get_shop_grid(plain, "helena", "2026-04", [])
+    grid = get_shop_grid(personal, "helena", "2026-04", [], identity=True)
+
+    assert "context.customer" not in plain.recommends[0]
+    # An id condition brings none of the customer's fields (and none at all when the id has no rows),
+    # so the declared pets stay as a path, and the pets filter stays unless asked to trust.
+    assert personal.recommends[0]["context.customer"] == "CUST-00053" and grid.identity is True
+    assert "context.customer.pets" in personal.recommends[0] and "product_sku.pet_type" in personal.recommends[0]
+
+
+def test_trusting_the_customer_drops_the_pets_filter_too():
+    trusting = FakeAito([product("SKU-A", 0.5)])
+
+    grid = get_shop_grid(trusting, "helena", "2026-04", [], identity=True, trust=True)
+
+    assert "product_sku.pet_type" not in trusting.recommends[0] and grid.trust is True
+
+
+def test_trust_means_nothing_without_the_customer():
+    fake = FakeAito([product("SKU-A", 0.5)])
+
+    grid = get_shop_grid(fake, "helena", "2026-04", [], trust=True)
+
+    assert "product_sku.pet_type" in fake.recommends[0] and grid.trust is False
+
+
+def test_starting_from_the_last_order_puts_its_words_in_the_query_and_names_the_reason():
+    fake = FakeAito([product("SKU-A", 0.5, reason=("context.basket_categories", "cat_dryfood", 1.6))])
+    # The fake's `$why` carries one cart-word reason; its proposition is a plain value, as one word of the cart.
+    plain = FakeAito([product("SKU-A", 0.5)])
+
+    grid = get_shop_grid(fake, "helena", "2026-04", [], recent="cart")
+    get_shop_grid(plain, "helena", "2026-04", [])
+
+    assert "context.basket_categories" not in plain.recommends[0]
+    assert {"$match": "cat_dryfood"} in fake.recommends[0]["context.basket_categories"]["$and"]
+    assert grid.recent == "cart"
+    assert [r.label for r in grid.items[0].reasons] == ["Goes with your last order"]
+
+
+CHAINED = [{"order_id": "ORD-1", "month": "2025-11", "skus": "SKU-OLD", "basket_categories": "cat_litter"},
+           {"order_id": "ORD-2", "month": "2026-03", "skus": "SKU-B SKU-X", "basket_categories": "cat_dryfood cat_bowl",
+            "previous_order": "ORD-1"}]
+
+
+def test_the_last_order_by_link_conditions_on_the_path_with_the_words_stored_on_the_order():
+    fake = FakeAito([product("SKU-A", 0.5)], orders=CHAINED)
+
+    grid = get_shop_grid(fake, "helena", "2026-04", [], recent="path")
+
+    where = fake.recommends[0]
+    assert where["context.last_order.basket_categories"]["$and"] == [{"$match": "cat_dryfood"}, {"$match": "cat_bowl"}]
+    assert "context.last_order.previous_order.basket_categories" not in where and "context.basket_categories" not in where
+    assert grid.recent == "path"
+
+
+def test_two_orders_back_adds_the_order_before_the_last():
+    fake = FakeAito([product("SKU-A", 0.5)], orders=CHAINED)
+
+    get_shop_grid(fake, "helena", "2026-04", [], recent="path2")
+
+    assert fake.recommends[0]["context.last_order.previous_order.basket_categories"]["$and"] == [{"$match": "cat_litter"}]
+
+
+def test_a_customer_with_one_order_has_nothing_before_it_to_add():
+    fake = FakeAito([product("SKU-A", 0.5)], orders=[{k: v for k, v in CHAINED[1].items() if k != "previous_order"}])
+
+    get_shop_grid(fake, "helena", "2026-04", [], recent="path2")
+
+    assert "context.last_order.previous_order.basket_categories" not in fake.recommends[0]
+
+
+def test_a_database_without_chained_baskets_says_how_to_add_them():
+    fake = FakeAito([product("SKU-A", 0.5)])      # orders with no basket_categories
+
+    with pytest.raises(AitoError, match="add_chained_baskets"):
+        get_shop_grid(fake, "helena", "2026-04", [], recent="path")

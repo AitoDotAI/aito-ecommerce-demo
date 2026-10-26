@@ -45,3 +45,34 @@ def link_contexts(contexts: list[dict], orders: list[dict]) -> list[dict]:
         earlier = [o for o in by_customer.get(context.get("customer"), []) if o["month"] < context["month"]]
         linked.append({**context, "last_order": earlier[-1]["order_id"]} if earlier else context)
     return linked
+
+
+# ── Adding the columns to an env loaded before ADR 0047 ──────────────────────────────────────────
+#
+# v2's in-place schema evolution (`PUT /schema` + `_backfill`, never a drop and reload, which would land
+# the table on the v1 engine), verified on a throwaway branch of release2 on 2026-10-25.
+
+BATCH = 4000
+COLUMNS = (
+    ("orders", "previous_order", {"type": "String", "nullable": True, "link": "orders.order_id"}, "order_id"),
+    ("orders", "basket_categories", {"type": "Text", "nullable": True, "analyzer": "whitespace"}, "order_id"),
+    ("contexts", "last_order", {"type": "String", "nullable": True, "link": "orders.order_id"}, "context_id"),
+)
+
+
+def missing_columns(client, tables=("orders", "contexts")) -> list[tuple]:
+    have = {t: set(client._request("GET", f"/schema/{t}")["columns"]) for t in tables}
+    return [c for c in COLUMNS if c[1] not in have[c[0]]]
+
+
+def add_columns(client, rows: dict[str, list[dict]], todo: list[tuple] | None = None) -> None:
+    """Add the columns an env lacks and backfill them from `rows` ({"orders": linked, "contexts": linked})."""
+    for table, column, spec, key in missing_columns(client) if todo is None else todo:
+        client._request("PUT", f"/schema/{table}/{column}", json=spec)
+        with_value = [r for r in rows[table] if column in r]
+        for i in range(0, len(with_value), BATCH):
+            chunk = with_value[i:i + BATCH]
+            client._request("POST", f"/data/{table}/_backfill", json={
+                "key": key, "keys": [r[key] for r in chunk], "columns": {column: [r[column] for r in chunk]}})
+    for table in rows:
+        client._request("POST", f"/data/{table}/optimize", json={})

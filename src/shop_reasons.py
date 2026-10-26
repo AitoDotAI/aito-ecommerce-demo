@@ -38,7 +38,10 @@ from src.aito_client import AitoError
 MIN_REASON_LIFT = 1.15
 
 CART = "Goes with your cart"
+BEFORE_LAST_ORDER = "Goes with the order before"
+LAST_ORDER = "Goes with your last order"      # the cart words of the last order, when the cart is empty
 PETS = "Fits your pets"
+YOURS = "Your own history"                        # `context.customer`: the identity experiment
 PETS_FROM_ORDERS = "Fits the pets you buy for"   # no declared profile: read from earlier orders (ADR 0045)
 
 
@@ -48,7 +51,7 @@ class Reason:
     lift: float   # how much it multiplies this product's odds of a purchase
 
 
-def reasons_for(why: dict, sku: str) -> list[Reason]:
+def reasons_for(why: dict, sku: str, cart_label: str = CART) -> list[Reason]:
     """The largest lifts behind `sku`'s probability, each at least MIN_REASON_LIFT."""
     own = [f for f in why["factors"]
            if f["type"] == "hitPropositionLift" and f["proposition"] == {"product_sku": {"$has": sku}}]
@@ -60,6 +63,8 @@ def reasons_for(why: dict, sku: str) -> list[Reason]:
     lifts: dict[str, float] = {}
     for factor in own[0].get("factors", []):
         label = _label(factor["proposition"])
+        if label == CART:
+            label = cart_label
         if label is not None:
             lifts[label] = lifts.get(label, 1.0) * float(factor["value"])
     reasons = [Reason(label, round(lift, 2)) for label, lift in lifts.items() if lift >= MIN_REASON_LIFT]
@@ -75,10 +80,16 @@ def _label(proposition: dict) -> str | None:
     if "$group" in proposition:
         return None
     text = json.dumps(proposition)
+    if "context.last_order.previous_order" in text:      # ADR 0047: the order before the last
+        return BEFORE_LAST_ORDER
+    if "context.last_order" in text:
+        return LAST_ORDER
     if "context.basket" in text:
         return CART
     if "context.customer.pets" in text:   # the declared pets, as `$and` of `$match`
         return PETS
+    if proposition.keys() == {"context.customer"}:
+        return YOURS
     if "context.pets_from_orders" in text:
         return PETS_FROM_ORDERS
     if len(proposition) != 1:
