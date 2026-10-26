@@ -24,7 +24,7 @@ export default function AtRiskTable({ rows }: { rows: AtRiskRow[] }) {
             <th style={{ textAlign: "left" }}>Customer</th>
             <th style={{ textAlign: "left" }}>Last order</th>
             <th style={{ textAlign: "right" }}>Spent<br /><span style={{ fontWeight: 400 }}>last 12 months</span></th>
-            <th style={{ textAlign: "left" }}>Risk</th>
+            <th style={{ textAlign: "left", paddingLeft: 28 }}>Risk</th>
             <th style={{ textAlign: "left" }}>Action</th>
           </tr>
         </thead>
@@ -41,7 +41,7 @@ export default function AtRiskTable({ rows }: { rows: AtRiskRow[] }) {
                 </td>
                 <td>{monthName(c.last_order_month)}</td>
                 <td style={{ textAlign: "right", fontWeight: 700 }}>{fmtEur(c.spend_12m_eur)}</td>
-                <td style={{ whiteSpace: "nowrap" }}>
+                <td style={{ whiteSpace: "nowrap", paddingLeft: 28 }}>
                   <span className={`pill ${c.risk === "very likely" ? "pill-red" : "pill-orange"}`}>{c.risk} to stop</span>
                   {c.why_explanation && (
                     <span style={{ marginLeft: 4 }}>

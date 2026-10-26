@@ -64,7 +64,7 @@ export default function ProductEditor({ view, sandbox, states, previewBand, onPr
   return (
     <div className="card" style={{ borderColor: live ? "var(--orange-border)" : undefined }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-        <div className="card-title" style={{ margin: 0 }}>The product · {monthLabel(view.month)}</div>
+        <div className="card-title" style={{ margin: 0 }}>Change it · {monthLabel(view.month)}</div>
         <HelpPopover label="What can I change here?" title="What can I change here?">
           <p style={{ margin: "0 0 8px" }}>
             <strong>The offer</strong> and <strong>a review</strong> are the two things the shop data shows moving
@@ -81,20 +81,6 @@ export default function ProductEditor({ view, sandbox, states, previewBand, onPr
             little. A new product with no history is where its properties matter most.
           </p>
         </HelpPopover>
-      </div>
-
-      <div style={{ margin: "10px 0", fontSize: 13, display: "grid", gridTemplateColumns: "auto 1fr", gap: "4px 12px" }}>
-        <span className="card-sub">Name</span><strong>{p.name}</strong>
-        <span className="card-sub">Brand</span><span>{p.brand}</span>
-        <span className="card-sub">Pet</span><span>{words(p.pet_type)}</span>
-        <span className="card-sub">Category</span><span>{words(p.category)}</span>
-        <span className="card-sub">List price</span><span>{fmtEur(p.price_eur, 2)}</span>
-        <span className="card-sub">Cost</span><span>{fmtEur(p.unit_cost_eur, 2)}</span>
-        <span className="card-sub">Stars</span>
-        <span>{starsLabel(s.rating_band)} · {s.reviews} review{s.reviews === 1 ? "" : "s"}</span>
-        <span className="card-sub">This month</span>
-        <span>{[`sold ${s.units_sold}`, s.age, ...(s.rival_launched ? ["a rival launched recently"] : []),
-                ...(s.price_change === "rise" ? ["after a price rise"] : [])].join(" · ")}</span>
       </div>
 
       <div style={{ fontSize: 13, fontWeight: 600, margin: "12px 0 6px" }}>Offer{!live && <span className="card-sub" style={{ fontWeight: 400 }}> · preview</span>}</div>
