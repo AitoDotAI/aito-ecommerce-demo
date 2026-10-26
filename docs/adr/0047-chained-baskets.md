@@ -1,6 +1,6 @@
 # ADR 0047: Chained baskets — each order points to the one before it
 
-**Status:** Proposed (2026-10-25, Antti: "shopping baskets could be chained so that each basket has
+**Status:** Accepted, data side built (2026-10-25); the Shop's use waits for the migration and PR #99. (Proposed 2026-10-25, Antti: "shopping baskets could be chained so that each basket has
 reference to previously one. Then context could point out prev one, so that you can examine even longer
 history if you want")
 **Date:** 2026-10-25
@@ -64,8 +64,10 @@ Reported with intervals. The depth the data supports becomes the Shop's default,
       customer with an earlier order has `last_order`, and it names an order of an earlier month.
 - [ ] A test asserts no context links to an order of its own month or later.
 - [ ] The chain has no cycle and no two orders share a `previous_order` (each customer's orders form one chain).
-- [ ] The Shop's last-order option reads the link by path, with no words derived in the app, and its
-      result for the same sessions equals the derived-words version's (the equivalence test).
+- [ ] The Shop's last-order option conditions on `context.last_order.basket_categories` and reads the
+      words from the stored order, not recomputed in the app. (The first draft asked for the same result as
+      the derived-words version, which put the words on `context.basket_categories`. That is the wrong test:
+      see "Probed" below.)
 - [ ] The depth sweep reports hit@12 and Brier per depth, with intervals.
 
 ## Demo impact
@@ -90,3 +92,31 @@ popover names the order a lift comes from. `docs/demo-script.md` is unchanged un
 - A data release: two links and a column, and a loader change; existing environments need them added in
   place (`PUT /schema` + `_backfill`, never a drop and reload, which would land the table on the v1 engine).
 - A path through a nullable link may behave unlike the cart words (the probes above).
+
+## Built and probed (2026-10-25)
+
+- **Data side:** `src/chained_baskets.py` derives the links at load time; `orders` gets `previous_order`
+  and `basket_categories`, `contexts` gets `last_order` and loads after `orders` (`src/schema.py`).
+  `tests/test_chained_baskets.py` holds the acceptance criteria that don't need Aito: one chain per
+  customer, no fork or cycle, a link target loads before its source, no context links to an order of its
+  own month or later. The fixtures already carry `contexts.prev_basket` (the last order's SKUs, 4,934
+  contexts): the links agree with it exactly, set for set, on the same 4,934 contexts.
+- **In place:** `scripts/add_chained_baskets.py` adds the three columns to an existing env (`PUT /schema` +
+  `_backfill` + optimize) and reads every value back. Run on a throwaway branch of `release2`: all 7,834
+  `previous_order`, 10,834 `basket_categories` and 4,934 `last_order` values read back equal the
+  loader's, and a second run finds nothing to add. `release2` itself is untouched; the migration of a real
+  env is Antti's call.
+- **Probes** (`scripts/chained_baskets_probe.py`, throwaway branch of `release2`, Aito 2.11.8):
+  - A one-hop path conditions `_recommend` (`context.last_order.basket_categories` with `$match` words),
+    in 0.4 s; a two-hop path (`context.last_order.previous_order.basket_categories`) in 0.7 s.
+  - `$why` reports each path as its own proposition with its own lift (for example `last_order.basket_categories
+    cat_litter` ×0.77 overall and ×1.5 for the hit), so the popover can say "your last order".
+  - The count of impressions whose last order holds a word (10,463 of 43,938 for `cat_litter`) is a path
+    match over linked rows; contexts with no link don't match.
+  - **The path is not the cart words.** The same words as `context.basket_categories` give a different
+    top 3 (Salmon Dry Food in place of Whimzees on one session): the cart field learned "this session's cart
+    holds X", the path learns "customers whose last order held X". The path is the right feature for a
+    last order; the app-derived words put the last order in the cart's field. That is why the equivalence
+    criterion above was dropped.
+- **Not done:** the Shop reading the path (it waits on PR #99's options and an env with the columns), and
+  the depth sweep (depth 0 to 3), to follow the last-basket sweep.

@@ -32,7 +32,7 @@ class ShopGrid:
     rescored: bool = False   # re-scored by the sandbox's 2026-05 states (ADR 0043)
     identity: bool = False   # also conditioned on the customer themselves (the experiment)
     trust: bool = False      # ...and not narrowed to the household's pets
-    recent: bool = False     # the last order's items are in the context as if in the cart
+    recent: str = ""         # how the last order entered the query: "", cart, path, path2 (shop_ranking)
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -40,7 +40,7 @@ class ShopGrid:
 
 def get_shop_grid(client: AitoClient, shopper_key: str, month: str, cart_skus: list[str],
                   *, rescored: bool = False, identity: bool = False, trust: bool = False,
-                  recent: bool = False, season: bool = True) -> ShopGrid:
+                  recent: str = "", season: bool = True) -> ShopGrid:
     """`rescored`: the sandbox's Shop for 2026-05, its top RESCORED candidates
     re-scored by the states the owner's levers wrote (`src/shop_rescore.py`)."""
     scope = shop_scope(client, shopper_key, month, cart_skus, identity=identity, recent_basket=recent, season=season)

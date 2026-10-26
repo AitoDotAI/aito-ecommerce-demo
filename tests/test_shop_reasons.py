@@ -99,3 +99,12 @@ def test_the_customers_own_history_is_a_reason_when_the_query_names_them():
     reasons = reasons_for(why(({"context.customer": "CUST-00053"}, 1.8), ({"context.month": "2026-04"}, 1.3)), SKU)
 
     assert reasons == [Reason("Your own history", 1.8), Reason("Sells in April", 1.3)]
+
+
+def test_the_chained_basket_paths_are_reasons_with_their_own_names():
+    path = {"$and": [{"context.last_order.basket_categories": {"$match": "cat_litter"}}]}
+    before = {"$and": [{"context.last_order.previous_order.basket_categories": {"$match": "cat_bowl"}}]}
+
+    reasons = reasons_for(why((path, 1.6), (before, 1.3)), SKU)
+
+    assert reasons == [Reason("Goes with your last order", 1.6), Reason("Goes with the order before", 1.3)]

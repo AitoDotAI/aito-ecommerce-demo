@@ -3,16 +3,17 @@
 /** How "Picked for you" is personalised: two choices behind a ⚙ next to its title. The defaults are the
  *  shop's own history without a pets filter, starting from the last order. Both are experiments the held-out
  *  sweeps did not favour (ADR 0033, last-basket-prereg.md), so the measurement is stated beside them. */
+export type LastOrder = "" | "cart" | "path" | "path2";
 export type Personalisation = "history" | "history-pets" | "pets";
 
 export default function ShopSettings({ personalisation, lastOrder, season, month, months, onPersonalisation, onLastOrder, onSeason, onMonth }: {
   personalisation: Personalisation;
-  lastOrder: boolean;
+  lastOrder: LastOrder;
   season: boolean;
   month: string;
   months: Array<{ value: string; label: string }>;
   onPersonalisation: (value: Personalisation) => void;
-  onLastOrder: (on: boolean) => void;
+  onLastOrder: (mode: LastOrder) => void;
   onSeason: (on: boolean) => void;
   onMonth: (month: string) => void;
 }) {
@@ -27,9 +28,15 @@ export default function ShopSettings({ personalisation, lastOrder, season, month
           <option value="pets">Their pets only</option>
         </select>
       </label>
-      <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <input type="checkbox" checked={lastOrder} onChange={(e) => onLastOrder(e.target.checked)} />
-        <span><strong>Start from their last order</strong>: its items count as if they were in the cart</span>
+      <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+        <span style={{ fontWeight: 600 }}>Start from their last order</span>
+        <select aria-label="Last order" className="search-input" style={{ paddingLeft: 10 }} value={lastOrder}
+                onChange={(e) => onLastOrder(e.target.value as LastOrder)}>
+          <option value="cart">Its items, as if they were in the cart</option>
+          <option value="path">By link: its words on the order (chained baskets)</option>
+          <option value="path2">By link: the last two orders</option>
+          <option value="">Not used</option>
+        </select>
       </label>
       <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <input type="checkbox" checked={season} onChange={(e) => onSeason(e.target.checked)} />

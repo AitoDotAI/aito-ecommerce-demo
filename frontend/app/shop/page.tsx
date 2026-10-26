@@ -10,7 +10,7 @@ import ErrorState from "@/components/shell/ErrorState";
 import FinePrint from "@/components/shell/FinePrint";
 import HelpPopover from "@/components/prediction/HelpPopover";
 import ShopperProfile from "@/components/shop/ShopperProfile";
-import ShopSettings, { type Personalisation } from "@/components/shop/ShopSettings";
+import ShopSettings, { type LastOrder, type Personalisation } from "@/components/shop/ShopSettings";
 import NotFoundNotice from "@/components/shell/NotFoundNotice";
 import CartPanel from "@/components/shop/CartPanel";
 import ProductCard from "@/components/shop/ProductCard";
@@ -47,18 +47,18 @@ function ShopView() {
   const [cartParam] = useUrlState("cart", "");
   // An experiment: also rank by the customer themselves (`context.customer`, ADR 0033), not only their pets.
   // How "Picked for you" is personalised (the ⚙ next to it). Defaults: own history, no pets filter, from the
-  // last order; the URL holds only what differs (`personalise=pets|history-pets`, `last=0`).
+  // last order; the URL holds only what differs (`personalise=pets|history-pets`, `last=none|path|path2`).
   const [personaliseParam] = useUrlState("personalise", "history");
-  const [lastParam] = useUrlState("last", "1");
+  const [lastParam] = useUrlState("last", "cart");
   // The season (the month as evidence) is off by default; the Month select is in the ⚙, shown with it on. A
   // sandbox needs its own month, so it keeps the select. Without the season the month is the latest one.
   const [seasonParam] = useUrlState("season", "0");
   const season = seasonParam === "1";
   const month = season || sandbox ? monthParam : "2026-04";
   const personalisation = (["history", "history-pets", "pets"].includes(personaliseParam) ? personaliseParam : "history") as Personalisation;
-  const lastOrder = lastParam !== "0";
+  const lastOrder = (["path", "path2", "cart"].includes(lastParam) ? lastParam : "") as LastOrder;
   const identity = (personalisation === "pets" ? "" : `&identity=1${personalisation === "history" ? "&trust=1" : ""}`) +
-    (lastOrder ? "&recent=1" : "") + (season ? "" : "&season=0");
+    (lastOrder ? `&recent=${lastOrder}` : "") + (season ? "" : "&season=0");
   const [openSku] = useUrlState("product", "");
   const [query] = useUrlState("q", "");
   const [typed, setTyped] = useState(query);
@@ -218,7 +218,7 @@ function ShopView() {
                               months={months.map((m) => ({ value: m, label: monthLabel(m) }))}
                               onSeason={(on) => setUrl({ season: on ? "1" : null })} onMonth={setMonth}
                               onPersonalisation={(v) => setUrl({ personalise: v === "history" ? null : v })}
-                              onLastOrder={(on) => setUrl({ last: on ? null : "0" })} />
+                              onLastOrder={(mode) => setUrl({ last: mode === "cart" ? null : mode || "none" })} />
               </HelpPopover>
               <HelpPopover label={`What the shop knows about ${shopperName}`} title={shopperName} width={460}>
                 <ShopperProfile shopper={shopperKey} month={month} />

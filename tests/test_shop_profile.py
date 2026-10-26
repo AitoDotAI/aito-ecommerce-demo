@@ -6,10 +6,10 @@ import pytest
 from src.shop_profile import get_shopper_profile
 from tests.fake_shop_aito import FakeShopAito, product
 
-ORDERS = [{"month": "2025-06", "skus": "SKU-Z", "total_eur": 10.0},
-          {"month": "2025-11", "skus": "SKU-A", "total_eur": 20.5},
-          {"month": "2026-02", "skus": "SKU-A SKU-Z", "total_eur": 30.0},
-          {"month": "2026-05", "skus": "SKU-A", "total_eur": 99.0}]    # not yet: the month asked is April
+ORDERS = [{"order_id": "ORD-1", "month": "2025-06", "skus": "SKU-Z", "total_eur": 10.0},
+          {"order_id": "ORD-2", "month": "2025-11", "skus": "SKU-A", "total_eur": 20.5},
+          {"order_id": "ORD-3", "month": "2026-02", "skus": "SKU-A SKU-Z", "total_eur": 30.0},
+          {"order_id": "ORD-4", "month": "2026-05", "skus": "SKU-A", "total_eur": 99.0}]    # not yet: the month asked is April
 
 
 class FakeAito(FakeShopAito):

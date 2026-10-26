@@ -18,6 +18,8 @@ import os
 from dataclasses import replace
 from pathlib import Path
 
+from typing import Literal
+
 from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -490,8 +492,8 @@ def shop_shoppers_endpoint():
 
 @app.get("/api/shop/grid")
 def shop_grid_endpoint(request: Request, shopper: str, month: str = Query(pattern=MONTH), cart: str = "",
-                       identity: bool = False, trust: bool = False, recent: bool = False,
-                       season: bool = True):
+                       identity: bool = False, trust: bool = False,
+                       recent: Literal["", "cart", "path", "path2"] = "", season: bool = True):
     """What to show this shopper now: `_recommend` with profile, month and
     cart as context, the household rule as a filter, recency re-asked. In
     sandbox mode for 2026-05, re-scored by the levers' states (ADR 0043)."""

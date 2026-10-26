@@ -28,6 +28,7 @@ import sys
 from pathlib import Path
 
 from src.aito_client import AitoClient, AitoError
+from src.chained_baskets import link_contexts, link_orders
 from src.config import load_config
 from src.schema import SCHEMAS
 from src.showing_split import split_showings
@@ -48,6 +49,10 @@ def load_fixture(table: str) -> list[dict]:
     if table in ("impressions", "unranked_showings"):
         ranked, unranked = split_showings(_read_fixture("impressions"), _read_fixture("contexts"))
         return ranked if table == "impressions" else unranked
+    if table == "orders":
+        return link_orders(_read_fixture("orders"), {p["sku"]: p for p in _read_fixture("products")})
+    if table == "contexts":
+        return link_contexts(_read_fixture("contexts"), _read_fixture("orders"))
     return _read_fixture(table)
 
 
