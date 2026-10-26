@@ -17,12 +17,12 @@ from dataclasses import dataclass, field, replace
 
 from src.aito_client import AitoClient, AitoError
 from src.lookup_errors import UnknownProductError
-from src.shop_context import FOOD, rule_filter, shopper_where, shopper_where_from_orders
+from src.shop_context import FOOD, basket_words, rule_filter, shopper_where, shopper_where_from_orders
 from src.shop_history import orders_before
 from src.shop_features import ProductFeature, product_features
 from src.shop_offers import offers_of, states_this_month
 from src.shop_personas import Shopper, shopper
-from src.shop_reasons import PETS, Reason, reasons_for
+from src.shop_reasons import CART, LAST_ORDER, PETS, Reason, reasons_for
 from src.shop_rescore import ScoreAdjustment
 from src.shop_why import shop_why
 
@@ -67,6 +67,9 @@ class ShopScope:
     cart: list[dict]
     context: dict           # the `where` as context: declared pets, month, cart
     orders: list[dict]      # the shopper's orders before `month`, oldest first
+    # An experiment, how the last order enters the query: "" not at all; "cart" as cart words (measured to lose,
+    # last-basket-prereg.md); "path" / "path2" by the chained-basket links (ADR 0047), one or two orders back.
+    recent_basket: str = ""
 
     @property
     def last_order_skus(self) -> list[str]:
@@ -86,7 +89,20 @@ class ShopScope:
         return where
 
 
-def shop_scope(client: AitoClient, shopper_key: str, month: str, cart_skus: list[str]) -> ShopScope:
+LAST_ORDER_PATH = "context.last_order.basket_categories"
+PREVIOUS_ORDER_PATH = "context.last_order.previous_order.basket_categories"
+IDENTITY = "context.customer"    # the customer themselves: their own showings and what they did
+
+
+def shop_scope(client: AitoClient, shopper_key: str, month: str, cart_skus: list[str],
+               *, identity: bool = False, recent_basket: str = "", season: bool = True) -> ShopScope:
+    """`identity`: also condition on the customer themselves (`context.customer`), beside their pets.
+    Off by default: the sweeps found it ties on ranking and overconfides the probabilities (ADR 0033);
+    it is an experiment.
+
+    `season`: the month is evidence (`context.month`). Without it the month still decides which orders and
+    offers count as "now"; it just isn't a condition. The shop-wide lift of a month ("Sells in April ×2.0")
+    is the same for every product, so it can lift a cat product over a dog household's own (2026-10-26)."""
     s = shopper(shopper_key)
     customer = client.search("customers", where={"customer_id": s.customer_id}, limit=1)["hits"][0]
     cart = _cart(client, cart_skus)
@@ -104,12 +120,39 @@ def shop_scope(client: AitoClient, shopper_key: str, month: str, cart_skus: list
             raise UnknownShopperProfileError(
                 f"{s.customer_id} declared no pets and has no order before {month}: the Shop has nothing to read")
         context = shopper_where_from_orders(pets, cart, month)
+    if not season:
+        context = {k: v for k, v in context.items() if k != "context.month"}
+    if recent_basket and orders:
+        context = {**context, **_last_order_context(client, orders, cart, recent_basket)}
+    if identity:
+        # An id condition uses only the rows that carry that id: it brings none of the customer's fields,
+        # and an id with no rows is no evidence at all (core, 2026-10-25). The pets stay, as a path.
+        context = {**context, IDENTITY: s.customer_id}
     return ShopScope(shopper=s, month=month, rule=customer.get("diet"), pets=pets, pets_declared=bool(declared),
-                     cart=cart, context=context, orders=orders)
+                     cart=cart, context=context, orders=orders, recent_basket=recent_basket)
 
 
 class UnknownShopperProfileError(LookupError):
     """A shopper with no declared pets and no earlier order."""
+
+
+def _last_order_context(client: AitoClient, orders: list[dict], cart: list[dict], mode: str) -> dict:
+    """The last order as conditions: "cart" puts its words in the cart's field (a different claim from the
+    one the cart's words learned); "path" and "path2" condition on the order the session links to,
+    and the one before it, by path (ADR 0047), with the words stored on the orders."""
+    if mode == "cart":
+        words = basket_words(_cart(client, sorted(set(orders[-1]["skus"].split()))) + cart)
+        return {"context.basket_categories": {"$and": [{"$match": w} for w in words]}}
+    if mode not in ("path", "path2"):
+        raise ValueError(f"Unknown way to use the last order: {mode!r}")
+    last = orders[-1]
+    if "basket_categories" not in last:
+        raise AitoError("This database has no chained baskets (ADR 0047): run scripts/add_chained_baskets.py on its env")
+    where = {LAST_ORDER_PATH: {"$and": [{"$match": w} for w in last["basket_categories"].split()]}}
+    before = next((o for o in orders if o["order_id"] == last.get("previous_order")), None)
+    if mode == "path2" and before is not None:
+        where[PREVIOUS_ORDER_PATH] = {"$and": [{"$match": w} for w in before["basket_categories"].split()]}
+    return where
 
 
 def _pets_of_orders(client: AitoClient, orders: list[dict]) -> str:
@@ -129,7 +172,8 @@ def ranked_items(client: AitoClient, scope: ShopScope, where: dict, limit: int) 
                             select=PRODUCT_FIELDS + ["$p", "$why"], limit=limit)["hits"]
     states = states_this_month(client, [h["sku"] for h in hits], scope.month)
     offers = offers_of(states)
-    items = [_item(h, scope.context, states.get(h["sku"]), offers.get(h["sku"]), scope.rule is not None, scope.pets.split())
+    items = [_item(h, scope.context, states.get(h["sku"]), offers.get(h["sku"]), scope.rule is not None, scope.pets.split(),
+                   LAST_ORDER if scope.recent_basket == "cart" and not scope.cart else CART)
              for h in hits]
     items = _reask_just_bought(client, scope.context, items, set(scope.last_order_skus))
     return sorted(items, key=lambda i: -i.p)
@@ -167,9 +211,10 @@ def _p_true(answer: dict, sku: str) -> float:
     raise AitoError(f"_predict purchased for {sku} had no `true` hit: {str(answer)[:200]}")
 
 
-def _item(hit: dict, context: dict, state: dict | None, offer_pct: float | None, has_rule: bool, pets: list[str]) -> ShopItem:
+def _item(hit: dict, context: dict, state: dict | None, offer_pct: float | None, has_rule: bool, pets: list[str],
+          cart_label: str = CART) -> ShopItem:
     rating = hit.get("avg_rating")
-    reasons = reasons_for(hit["$why"], hit["sku"])
+    reasons = reasons_for(hit["$why"], hit["sku"], cart_label)
     if hit["pet_type"] not in pets:
         # Search shows other pets' products too (a gift). The declared pets can
         # still lift one, on a handful of impressions, but "fits your pets" it doesn't.

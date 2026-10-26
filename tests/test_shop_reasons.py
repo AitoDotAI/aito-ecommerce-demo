@@ -60,10 +60,10 @@ def test_just_bought_is_never_a_reason():
 
 
 def test_a_condition_the_grid_does_not_send_fails_loudly():
-    # Identity and the owned kit left the grid's `where` (ADR 0033, 2026-10-21);
-    # seeing one in `$why` means the query changed under the reasons.
+    # The owned kit left the grid's `where` (ADR 0033, 2026-10-21); seeing it in `$why` means
+    # the query changed under the reasons. (The customer is a known condition: the identity experiment.)
     with pytest.raises(AitoError, match="Unexpected"):
-        reasons_for(why(({"context.customer": "CUST-01177"}, 2.0),), SKU)
+        reasons_for(why(({"context.owned": "small_animal_cage"}, 2.0),), SKU)
 
 
 def test_a_product_aito_knows_only_by_its_features_has_no_reasons():
@@ -93,3 +93,18 @@ def test_pets_read_from_earlier_orders_are_a_reason_of_their_own():
     reasons = reasons_for(why(({"context.pets_from_orders": {"$and": [{"$match": "cat"}]}}, 1.6)), SKU)
 
     assert reasons == [Reason(PETS_FROM_ORDERS, 1.6)]
+
+
+def test_the_customers_own_history_is_a_reason_when_the_query_names_them():
+    reasons = reasons_for(why(({"context.customer": "CUST-00053"}, 1.8), ({"context.month": "2026-04"}, 1.3)), SKU)
+
+    assert reasons == [Reason("Your own history", 1.8), Reason("Sells in April", 1.3)]
+
+
+def test_the_chained_basket_paths_are_reasons_with_their_own_names():
+    path = {"$and": [{"context.last_order.basket_categories": {"$match": "cat_litter"}}]}
+    before = {"$and": [{"context.last_order.previous_order.basket_categories": {"$match": "cat_bowl"}}]}
+
+    reasons = reasons_for(why((path, 1.6), (before, 1.3)), SKU)
+
+    assert reasons == [Reason("Goes with your last order", 1.6), Reason("Goes with the order before", 1.3)]

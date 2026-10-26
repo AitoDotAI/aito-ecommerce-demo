@@ -753,6 +753,9 @@ export interface ShopGrid {
   last_order_skus: string[];
   last_query: { endpoint: string; body: Record<string, unknown> };
   rescored: boolean;            // sandbox, 2026-05: re-scored by the levers' states (ADR 0043)
+  identity: boolean;            // also conditioned on the customer themselves (an experiment)
+  trust: boolean;               // ...and not narrowed to the household's pets
+  recent: string;               // how the last order entered the query: "", cart, path, path2
 }
 
 export interface ShopBasketPair {
@@ -955,3 +958,58 @@ export interface AcquisitionSection {
 export interface AskStatus { enabled: boolean; model: string | null }
 export interface AskToolCall { name: string; input: Record<string, unknown>; ms: number; error: string | null }
 export interface AskAnswer { answer: string; tool_calls: AskToolCall[]; model: string; input_tokens: number; output_tokens: number }
+
+/* ─── Product KPIs by properties (/api/product/kpi, ADR 0048) ─── */
+
+export type KpiName = "clicked" | "purchased";
+
+export interface KpiFactor {
+  fields: string[];     // short property names; several when Aito gave one lift for a correlated group
+  values: Array<string | boolean>;
+  lift: number;
+}
+
+export interface KpiEstimate {
+  kpi: KpiName;
+  p: number;
+  base_p: number;
+  normaliser: number;
+  factors: KpiFactor[];
+  similar_shown: number;
+  similar_hits: number;
+  product_shown: number;
+  product_hits: number;
+}
+
+/** The properties the owner can change, by the name the API takes them under. */
+export interface KpiProperties {
+  brand: string; category: string; pet_type: string;
+  discount_band: string; rating_band: string; label: string; age: string; stock: string; rival_launched: boolean;
+}
+
+export interface ProductKpis {
+  sku: string;
+  month: string;
+  properties: KpiProperties;
+  changed: string[];
+  estimates: Record<KpiName, KpiEstimate>;
+  last_query: { endpoint: string; body: Record<string, unknown> };
+}
+
+/* ─── The Shop's shopper profile (/api/shop/profile) ─── */
+
+export interface ShopProfileOrder { month: string; total_eur: number | null; items: string[] }
+
+export interface ShopperProfile {
+  key: string;
+  name: string;
+  story: string;
+  pets: string;
+  pets_declared: boolean;
+  diet: string | null;
+  facts: Record<string, string | number | boolean>;
+  orders_total: number;
+  spent_eur: number;
+  last_basket: ShopProfileOrder | null;
+  history: ShopProfileOrder[];
+}

@@ -108,3 +108,75 @@ with a different lift (probed 2026-10-25: a different top 3 for the same words),
 fair test of "does the last basket help" needs the path form, on an env with the chained-basket columns
 (`scripts/add_chained_baskets.py`), pre-registered as its own variant, **C**, before it runs. The Shop's
 "Start from their last order" option (PR #99) is the variant measured here and should not be the default.
+
+## Amendment (2026-10-25, after B's result, before any run of C1 or C2): the path forms
+
+B lost. The hypothesis recorded with it: B put the last order's words in the cart's field, which learned a
+different claim. ADR 0047 gives the same history a field of its own, so two variants are registered now,
+each against the same control A, on the same 3,880 sessions and folds:
+
+- **C1, the last order by link:** A, with `context.last_order.basket_categories` conditioned on the words
+  stored on the session's last order (`{"$and": [{"$match": w}, …]}`). The cart's field is untouched.
+- **C2, two orders by link:** C1, plus `context.last_order.previous_order.basket_categories` conditioned on
+  the words of the order before it (when there is one; with none, C2 equals C1 for that session).
+- **Held out as before** (5 branches of `release2`, the fold's impressions deleted on the branch). Each branch
+  first gets the three chained-basket columns in place (`src/chained_baskets.add_columns`, verified on a
+  throwaway branch), so `release2` itself is not touched.
+- **Predictions:** C1 is a tie for dog and cat households (the pets already say it). C1 is a **gain** for the
+  402 households with another pet, where a kit progresses, but I held the same prediction for B and it was
+  wrong, so I hold it loosely. C2 adds nothing over C1: a kit progresses one item at a time.
+- **Decision rule:** as above, for each of C1 and C2: the hit@12 interval lower bound for the variant minus A
+  above 0 over all sessions, and Brier at most +0.01 worse. **Two variants share one control, so each
+  interval is 97.5 % (z = 2.24), not 95 %.** If both qualify, the shallower one (C1) is the default: depth is
+  only worth adding if C2 beats C1 on the same rule, and that comparison is reported, not judged.
+- **Strata** (402 and 3,478) are reported, not judged separately, as before.
+
+## Result of C1 and C2 (2026-10-25, full run, 3,880 held-out sessions, 1,383 customers, 5 folds)
+
+| variant | hit@12 | Brier |
+|---|---|---|
+| A shop today | 0.135 | 0.1516 |
+| C1 last order by link | 0.128 | 0.1660 |
+| C2 two orders by link | 0.121 | 0.1736 |
+
+Differences against A (97.5 % intervals, z = 2.24):
+
+| comparison | stratum | n | hit@12 | Brier |
+|---|---|---|---|---|
+| C1 − A | all | 3,880 | −0.006 [−0.015, +0.003] | +0.0144 [+0.0113, +0.0175] |
+| C1 − A | pet other than dog/cat | 402 | +0.000 [−0.026, +0.026] | −0.0001 [−0.0069, +0.0067] |
+| C1 − A | dog/cat only | 3,478 | −0.007 [−0.017, +0.003] | +0.0158 [+0.0125, +0.0191] |
+| C2 − A | all | 3,880 | −0.013 [−0.024, −0.003] | +0.0220 [+0.0183, +0.0257] |
+| C2 − A | pet other than dog/cat | 402 | −0.005 [−0.033, +0.023] | +0.0023 [−0.0050, +0.0096] |
+| C2 − A | dog/cat only | 3,478 | −0.014 [−0.026, −0.003] | +0.0239 [+0.0199, +0.0279] |
+
+**Decision under the registered rule: neither qualifies.** The hit@12 lower bound is below 0 for both, and
+the Brier of both is more than 0.01 worse than A. Shop's default stays A (pets, no last order). One batch
+timed out once and was run again (the retry the sweep has for that).
+
+Against the predictions: the dog/cat tie for C1 was wrong on Brier (+0.016, a real loss) while hit@12 is a
+tie; the "gain for other pets" was wrong again (±0.000, interval ±0.026), as it was for B; C2 adding nothing
+over C1 held for hit@12 as a direction but C2 is worse than C1 (deeper history costs, it does not help).
+The reading that fits all three runs: the pets already say what the last basket would say, and extra
+conditions dilute the probabilities (Brier) before they move the ranking (hit@12). The Shop select keeps
+the last-order options as an experiment, labelled so; they are not the default.
+
+## Amendment (2026-10-25, after C1 and C2, before any run of C3, C4 or D): ids instead of words
+
+Antti asked whether a bare reference to the last order would do, and whether the customer link and the order
+link work together. Registered, each against A, on the same 3,880 sessions:
+
+- **C3, the last order's id only:** A, plus `context.last_order: <order id>`. **Prediction: equal to A.** An
+  order is the "last order" of exactly one later session, and that session's impressions are hidden, so the
+  id has no rows to learn from (a link id uses only the rows that carry it).
+- **D, the customer id:** A, plus `context.customer: <customer id>` (the Shop's "identity" option).
+  Prediction: a gain if the customer has other sessions left, none if not.
+- **C4, customer id and last order by link:** D, plus the path of C1. Prediction: no better than D, since C1
+  lost to A on Brier.
+- **Two readings of the folds**, because the customer id needs other rows of the customer to work. *By
+  customer* (as before) hides all the customer's ranked sessions: a cold reading, it understates the id.
+  *By session* hides only the scored session: the id keeps the customer's other sessions, including later
+  ones, which flatters it. The truth lies between; both are reported, neither is judged alone.
+- **Decision rule** as before, for each of C3, C4, D against A: hit@12 lower bound above 0 and Brier at most
+  +0.01 worse. Three variants share the control, so each interval is 98.3 % (z = 2.39). The rule must hold in
+  *both* fold readings for a variant to qualify; C4 is also compared with D (reported, not judged).
