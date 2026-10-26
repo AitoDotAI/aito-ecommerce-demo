@@ -7,6 +7,7 @@ import FeatureTokens from "@/components/shop/FeatureTokens";
 import HelpPopover from "@/components/prediction/HelpPopover";
 import WhyPopover from "@/components/prediction/WhyPopover";
 import ProductHighlights from "@/components/shop/ProductHighlights";
+import ProductImage from "@/components/shop/ProductImage";
 import VariantNote from "@/components/shop/VariantNote";
 
 /** Smaller offers aren't badged: the data's lift starts at the 10–15 % band (Reviews and
@@ -26,6 +27,9 @@ export default function ProductCard({ item, rank, onAdd, onOpen }: {
   const shown = item.adjustment ? item.adjustment.score : item.p;
   return (
     <div className="card" style={{ padding: 12, display: "flex", flexDirection: "column", gap: 6 }}>
+      <button onClick={onOpen} className="shop-card-name" aria-label={`Open ${item.name}`} tabIndex={-1} style={{ display: "block" }}>
+        <ProductImage petType={item.pet_type} category={item.category} />
+      </button>
       <button
         onClick={onOpen}
         className="shop-card-name"

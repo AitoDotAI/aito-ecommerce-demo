@@ -44,6 +44,7 @@ from src.search_service import smart_search
 from src.recommend_service import get_for_you
 from src.evidence import result_file as evidence_file
 from src.filling_service import get_filling
+from src.product_kpi import get_product_kpis
 from src.product_service import DEFAULT_SKU, get_product_view, product_view_payload
 from src.shop_grid import get_shop_grid
 from src.shop_personas import SHOPPERS, UnknownShopperError
@@ -534,6 +535,23 @@ def product_endpoint(request: Request, sku: str | None = None, month: str = Quer
             status_code=502,
             content={"error": str(exc), "status_code": exc.status_code},
         )
+
+
+@app.get("/api/product/kpi")
+def product_kpi_endpoint(request: Request, sku: str, month: str = Query(LATEST_MONTH, pattern=MONTH),
+                         discount_band: str | None = None, rating_band: str | None = None, label: str | None = None,
+                         age: str | None = None, stock: str | None = None, rival_launched: bool | None = None):
+    """Clicks and purchases by the product's properties (ADR 0048), with the properties the owner
+    changed applied: what the shop's showings say a product with these properties earns."""
+    asked = {"discount_band": discount_band, "rating_band": rating_band, "label": label, "age": age,
+             "stock": stock, "rival_launched": rival_launched}
+    changes = {name: value for name, value in asked.items() if value is not None}
+    try:
+        return get_product_kpis(_reader(request), sku, month, changes).to_dict()
+    except UnknownProductError as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
+    except AitoError as exc:
+        return JSONResponse(status_code=502, content={"error": str(exc), "status_code": exc.status_code})
 
 
 @app.get("/api/product/price-curve")

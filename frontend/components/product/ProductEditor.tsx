@@ -6,23 +6,32 @@ import { useState } from "react";
 import HelpPopover from "@/components/prediction/HelpPopover";
 import { ApiError, apiFetch, fmtEur } from "@/lib/api";
 import { SANDBOX_MONTH, rememberLever, withSandbox } from "@/lib/sandbox";
-import type { LeverResult, LeverStates, ProductStateRow, ProductView } from "@/lib/types";
+import type { KpiProperties, LeverResult, LeverStates, ProductStateRow, ProductView } from "@/lib/types";
 import { BAND_LABEL, monthLabel, words } from "./labels";
 
 const BANDS = ["none", "10-15", "15-20", "20+"];
+/** The properties an owner can set, beside the offer. Stock and a rival's launch are in the estimates but not
+ *  here: the first moves little in the data, the second isn't the owner's to change. */
+const PROPERTY_CHOICES: Array<{ name: string; label: string; options: Array<[string, string]> }> = [
+  { name: "rating_band", label: "Stars", options: [["unrated", "No stars yet"], ["1-2", "1–2 stars"], ["3", "3 stars"], ["4", "4 stars"], ["5", "5 stars"]] },
+  { name: "label", label: "Shop label", options: [["none", "None"], ["popular", "Popular"], ["recommended", "Recommended"], ["staff_pick", "Staff pick"]] },
+];
 
 /** The product's properties, on the left of the Product view (ADR 0041, the "edit the product" form):
  *  what it is (read-only), and what the owner can change: the offer and a review. In a sandbox
  *  (ADR 0043) a change writes next month's state, reads it back, and the page asks its estimates
  *  again (`onPulled`). Outside one, the offer is a preview: the numbers on the right show the chosen
  *  band, nothing is saved. Backend: src/product_levers.py. */
-export default function ProductEditor({ view, sandbox, states, previewBand, onPreview, onPulled }: {
+export default function ProductEditor({ view, sandbox, states, previewBand, onPreview, onPulled, properties, changes, onChange }: {
   view: ProductView;
   sandbox: string | null;
   states: LeverStates | null;
   previewBand: string | null;
   onPreview: (band: string | null) => void;
   onPulled: () => void;
+  properties: KpiProperties | null;                           // the state's, as the KPI estimates read them
+  changes: Record<string, string | boolean>;                  // what the owner has changed, to preview
+  onChange: (name: string, value: string | boolean | null) => void;
 }) {
   const { product: p, state: s, decision } = view;
   const live = !!sandbox && !!states;
@@ -103,6 +112,34 @@ export default function ProductEditor({ view, sandbox, states, previewBand, onPr
         Price {fmtEur(priceOf(selected), 2)}: list less the band&apos;s typical discount
         {selected !== decision.current_band && !live && <> · now {BAND_LABEL[decision.current_band].toLowerCase()}, {fmtEur(priceOf(decision.current_band), 2)}</>}.
       </div>
+
+      {properties && (
+        <>
+          <div style={{ fontSize: 13, fontWeight: 600, margin: "16px 0 6px" }}>
+            Other properties <span className="card-sub" style={{ fontWeight: 400 }}> · preview, nothing is saved</span>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "6px 12px", alignItems: "center", fontSize: 13 }}>
+            {PROPERTY_CHOICES.map(({ name, label, options }) => {
+              const now = String(properties[name as keyof KpiProperties]);
+              const asked = name in changes ? String(changes[name]) : now;
+              return (
+                <label key={name} style={{ display: "contents" }}>
+                  <span className="card-sub">{label}</span>
+                  <select className="search-input" style={{ paddingLeft: 8, borderColor: asked !== now ? "var(--cta)" : undefined }}
+                          value={asked} aria-label={label}
+                          onChange={(e) => onChange(name, e.target.value === now ? null : name === "rival_launched" ? e.target.value === "true" : e.target.value)}>
+                    {options.map(([value, text]) => <option key={value} value={value}>{text}{value === now ? " (now)" : ""}</option>)}
+                  </select>
+                </label>
+              );
+            })}
+          </div>
+          {Object.keys(changes).length > 0 && (
+            <button type="button" className="btn btn-ghost" style={{ marginTop: 8 }}
+                    onClick={() => Object.keys(changes).forEach((n) => onChange(n, null))}>Reset the changes</button>
+          )}
+        </>
+      )}
 
       {live && (
         <>

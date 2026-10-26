@@ -14,11 +14,18 @@ import ProductHistory from "@/components/product/ProductHistory";
 import ProductPicker from "@/components/product/ProductPicker";
 import ProductWhatIf from "@/components/product/ProductWhatIf";
 import ProductEditor from "@/components/product/ProductEditor";
+import KpiPanel from "@/components/product/KpiPanel";
 import { SANDBOX_MONTH, SANDBOX_PARAM } from "@/lib/sandbox";
 import { useSetUrlParams, useUrlState } from "@/lib/use-url-state";
-import type { LeverStates, ProductCandidate, ProductView as ProductViewData } from "@/lib/types";
+import type { KpiName, LeverStates, ProductCandidate, ProductKpis, ProductView as ProductViewData } from "@/lib/types";
 
 const LATEST_MONTH = "2026-04";
+/** The right side: two KPIs explained by the product's properties, and the offer decision. */
+const KPI_TABS: Array<{ id: KpiName | "decision"; label: string }> = [
+  { id: "clicked", label: "Clicks" },
+  { id: "purchased", label: "Purchases" },
+  { id: "decision", label: "Offer & margin" },
+];
 const TABS = [
   { id: "what-if", label: "What if" },
   { id: "history", label: "History" },
@@ -60,6 +67,18 @@ function ProductView() {
   // Outside a sandbox the offer is a preview: the band the owner picked, shown against today's.
   const [previewBand, setPreviewBand] = useState<string | null>(null);
   useEffect(() => { setPreviewBand(null); }, [sku, month]);
+  // The KPI tabs (ADR 0048): the properties the owner changed (previews, never saved), and the
+  // estimates for them against the estimates without them.
+  const [kpiTab, setKpiTab] = useUrlState("kpi", "decision");
+  const [changes, setChanges] = useState<Record<string, string | boolean>>({});
+  const [kpis, setKpis] = useState<ProductKpis | null>(null);
+  const [baseline, setBaseline] = useState<ProductKpis | null>(null);
+  const [kpiLoading, setKpiLoading] = useState(false);
+  useEffect(() => { setChanges({}); }, [sku, month]);
+  const setChange = useCallback((name: string, value: string | boolean | null) => setChanges((c) => {
+    const { [name]: _, ...rest } = c;
+    return value === null ? rest : { ...rest, [name]: value };
+  }), []);
 
   useEffect(() => {
     // Only the request for the product and month now in the URL may update the page.
@@ -95,6 +114,31 @@ function ProductView() {
     return () => { current = false; };
   }, [sku, month, sandbox, pulled, setPanel]);
 
+  const shownSku = view?.product.sku;
+  const live = !!sandbox && !!states;
+  // The offer preview is one more property to change.
+  const asked = { ...changes, ...(previewBand && !live ? { discount_band: previewBand } : {}) };
+  const askedKey = JSON.stringify(asked);
+  useEffect(() => {
+    if (!shownSku) return;
+    let current = true;
+    const url = (extra: Record<string, string | boolean>) => {
+      const q = new URLSearchParams({ sku: shownSku, month });
+      Object.entries(extra).forEach(([k, v]) => q.set(k, String(v)));
+      return `/api/product/kpi?${q}`;
+    };
+    setKpiLoading(true);
+    const base = apiFetch<ProductKpis>(url({}));
+    const now = Object.keys(asked).length ? apiFetch<ProductKpis>(url(asked)) : base;
+    Promise.all([base, now]).then(([b, n]) => {
+      if (!current) return;
+      setBaseline(b); setKpis(n); setKpiLoading(false);
+    }, (e) => { if (current) { setKpiLoading(false); setError(String(e)); } });
+    return () => { current = false; };
+    // `asked` is read through its key: a new object on every render must not refetch.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shownSku, month, askedKey, pulled]);
+
   const showQuery = useCallback(
     (body: Record<string, unknown>) => setPanel({ ...productPanel(), query: highlightQuery(body) }),
     [setPanel],
@@ -127,8 +171,24 @@ function ProductView() {
           <div className="workbench">
             <ProductEditor view={shown} sandbox={sandbox || null} states={states} previewBand={previewBand}
                            onPreview={setPreviewBand}
+                           properties={baseline?.properties ?? null} changes={changes} onChange={setChange}
                            onPulled={() => { if (month === SANDBOX_MONTH) setPulled((n) => n + 1); else setMonth(SANDBOX_MONTH); }} />
-            <OfferDecision view={shown} previewBand={sandbox && states ? null : previewBand} />
+            <div>
+              <div role="tablist" aria-label="Estimates" style={{ display: "flex", gap: 6, marginBottom: 10, flexWrap: "wrap" }}>
+                {KPI_TABS.map((t) => (
+                  <button key={t.id} role="tab" aria-selected={kpiTab === t.id}
+                          className={`toggle-btn${kpiTab === t.id ? " active" : ""}`} onClick={() => setKpiTab(t.id)}
+                          style={{ width: "auto", height: "auto", padding: "6px 14px", whiteSpace: "nowrap", fontSize: 13 }}>
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+              {(kpiTab === "clicked" || kpiTab === "purchased") && kpis
+                ? <KpiPanel kpi={kpiTab} current={kpis} baseline={baseline} loading={kpiLoading} />
+                : (kpiTab === "clicked" || kpiTab === "purchased")
+                  ? <div className="card" style={{ height: 240, background: "var(--border-light)" }} />
+                  : <OfferDecision view={shown} previewBand={sandbox && states ? null : previewBand} />}
+            </div>
           </div>
           <div role="tablist" aria-label="Product sections" style={{ display: "flex", gap: 6, marginBottom: 14 }}>
             {TABS.map((t) => (

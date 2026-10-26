@@ -1,6 +1,6 @@
 {
   "name": "PetNord — Aito Predictive E-commerce Tour",
-  "description": "A guided, runnable tour of the predictive capabilities behind the PetNord demo: predictive re-ranking, cross-sell discovery, churn prediction, product filling and price intelligence. Every query below is a verified shape running live against the aito-ecommerce-demo data.",
+  "description": "A guided, runnable tour of the queries behind the PetNord demo: picked-for-you ranking with $why, smart search, cross-sell, churn, product filling, offers, win-back and review triage. Every query is run against the demo data before it is published.",
   "sections": [
     {
       "title": "Start here",
@@ -10,7 +10,7 @@
           "title": "What this workbook is",
           "size": "full",
           "config": {
-            "content": "# PetNord — Aito Predictive E-commerce Tour\n\nPetNord is a fictional pet-supplies retailer. This workbook walks through the Aito queries that power its demo app — each one is **runnable**: hit *Run* on any query widget, then edit the query and run again to explore.\n\nThe data is a single denormalised e-commerce dataset:\n\n| Table | Rows about |\n|---|---|\n| `products` | catalog (sku, brand, category, pet_type, price) |\n| `customers` / `customer_months` | customer profiles + monthly snapshots |\n| `orders` / `order_lines` | transactions (line-level, with denormalised customer context) |\n| `monthly_sales` / `price_history` | demand & pricing time series |\n| `reviews` | review text + sentiment + churn label |\n\nNo model training, no feature engineering — Aito predicts directly from the rows already in the database.\n\n**Tour stops:** Explore the data → Predictive re-ranking → Bought Together → Churn prediction → Product Filling → Price Intelligence → Winback (conversion KPI)."
+            "content": "# PetNord — Aito Predictive E-commerce Tour\n\nPetNord is a fictional pet-supplies retailer. This workbook walks through the Aito queries behind its demo app (ecommerce.aito.ai); every query is **runnable**: hit *Run*, then edit the query and run again.\n\nThe data is synthetic and relational: `customers` → `contexts` (one per visit) → `impressions` (what was shown, and whether it was bought), `orders`, `products` → `product_states` (a product's price, offer and rating in one month), `reviews`, `winback_campaigns`, `customer_months`. Links such as `context.customer.pets` or `product_state.discount_band` follow those relations inside a query.\n\nTwo habits worth copying: ask for `$p` (a calibrated probability) and for `$why` (what each part of the context contributed to it)."
           }
         },
         {
@@ -18,7 +18,14 @@
           "title": "Instance activity",
           "size": "full",
           "config": {
-            "displayFields": ["status", "lastRequest", "requests5min", "requests1hr", "memory", "disk"],
+            "displayFields": [
+              "status",
+              "lastRequest",
+              "requests5min",
+              "requests1hr",
+              "memory",
+              "disk"
+            ],
             "refreshIntervalSeconds": 30
           }
         }
@@ -26,14 +33,16 @@
     },
     {
       "title": "1 · Explore the data",
-      "description": "Plain queries to get a feel for the tables. Edit the `from` and `where` and re-run.",
       "widgets": [
         {
           "type": "query",
           "title": "Browse the product catalog",
           "size": "full",
           "config": {
-            "query": { "from": "products", "limit": 10 },
+            "query": {
+              "from": "products",
+              "limit": 10
+            },
             "endpoint": "query",
             "displayMode": "playground",
             "outputFormat": "table",
@@ -43,9 +52,15 @@
         {
           "type": "query",
           "title": "Customers in one region",
-          "size": "medium",
+          "size": "full",
           "config": {
-            "query": { "from": "customers", "where": { "region": "helsinki" }, "limit": 10 },
+            "query": {
+              "from": "customers",
+              "where": {
+                "region": "helsinki"
+              },
+              "limit": 10
+            },
             "endpoint": "query",
             "displayMode": "playground",
             "outputFormat": "table",
@@ -55,10 +70,36 @@
         {
           "type": "query",
           "title": "Average order value across all orders",
-          "size": "medium",
+          "size": "full",
           "config": {
-            "query": { "from": "orders", "aggregate": ["total_eur.$mean", "total_eur.$min", "total_eur.$max"] },
+            "query": {
+              "from": "orders",
+              "aggregate": [
+                "total_eur.$mean",
+                "total_eur.$min",
+                "total_eur.$max"
+              ]
+            },
             "endpoint": "aggregate",
+            "displayMode": "playground",
+            "outputFormat": "table",
+            "runPolicy": "manual"
+          }
+        },
+        {
+          "type": "query",
+          "title": "One product's state in one month",
+          "size": "full",
+          "config": {
+            "query": {
+              "from": "product_states",
+              "where": {
+                "product_sku": "SKU-PT-0563",
+                "month": "2026-04"
+              },
+              "limit": 1
+            },
+            "endpoint": "query",
             "displayMode": "playground",
             "outputFormat": "table",
             "runPolicy": "manual"
@@ -67,31 +108,125 @@
       ]
     },
     {
-      "title": "2 · Predictive re-ranking (Smart Search)",
-      "description": "Rank products by P(customer-segment | line containing this product). Products a segment historically buys float to the top.",
+      "title": "2 · Picked for you (Shop)",
       "widgets": [
         {
           "type": "text",
           "title": "How it works",
           "size": "full",
           "config": {
-            "content": "A plain text search for `food` returns hundreds of matches in no useful order. Aito re-ranks them for *this customer* using `_recommend`:\n\n- `where` filters the order lines (products whose name matches `food`, for a small-pet household)\n- `recommend: \"product_sku\"` asks Aito to rank candidate SKUs\n- `goal: { customer_segment: \"dog_owner\" }` ranks by **P(dog_owner | this product)** — products dog owners actually buy rise to the top\n- `basedOn` curates which product features feed the prior, trimming ~13% off latency\n\nChange `customer_segment` to `cat_owner` and re-run — the ranking flips to cat products.\n\n**Why segment, not a purchase/click KPI?** `order_lines` records only purchases — there's no negative class to learn a `P(purchase)` from, and its one outcome field (`returned`) is uniform at ~3%, so a `goal: { returned: false }` collapses to baseline. Here, segment affinity *is* the purchase-propensity signal: by Bayes, `P(dog_owner | product)` is highest for the products dog owners disproportionately buy. For a recommendation conditioned on a true conversion KPI, see the **Winback** section below — it has a real `responded` outcome to rank on."
+            "content": "`_recommend` over `impressions` with the goal `purchased: true` ranks every product by the probability that *this* shopper buys it when it is shown.\n\n- `context.customer.pets` is a path through the link `impressions.context → contexts.customer → customers.pets`: a shopper with small animals gets small-animal products, with no per-pet rule in the app.\n- `context.month` is the month; `just_bought: false` ranks as if nothing had been bought yet.\n- `$p` is the probability; `$why` is its factorisation — the base rate times one lift per piece of context. Sort it by size to read it."
           }
         },
         {
           "type": "query",
-          "title": "Re-rank 'food' results for a dog-owner household",
+          "title": "Picked for a small-animal household",
           "size": "full",
           "config": {
             "query": {
-              "from": "order_lines",
+              "from": "impressions",
               "where": {
-                "product_sku.name": { "$match": "food" },
-                "customer_pet_size": "small"
+                "context.customer.pets": {
+                  "$and": [
+                    {
+                      "$match": "small_animal"
+                    }
+                  ]
+                },
+                "context.month": "2026-04",
+                "just_bought": false
               },
               "recommend": "product_sku",
-              "goal": { "customer_segment": "dog_owner" },
-              "basedOn": ["pet_type", "brand", "dietary", "category"],
+              "goal": {
+                "purchased": true
+              },
+              "select": [
+                "sku",
+                "name",
+                "category",
+                "pet_type",
+                "price_eur",
+                "$p",
+                "$why"
+              ],
+              "limit": 10
+            },
+            "endpoint": "recommend",
+            "displayMode": "playground",
+            "outputFormat": "table",
+            "runPolicy": "manual"
+          }
+        },
+        {
+          "type": "query",
+          "title": "The same, with a cage in the cart",
+          "size": "full",
+          "config": {
+            "query": {
+              "from": "impressions",
+              "where": {
+                "context.customer.pets": {
+                  "$and": [
+                    {
+                      "$match": "small_animal"
+                    }
+                  ]
+                },
+                "context.month": "2026-04",
+                "just_bought": false,
+                "context.basket_categories": {
+                  "$and": [
+                    {
+                      "$match": "small_animal_cage"
+                    }
+                  ]
+                }
+              },
+              "recommend": "product_sku",
+              "goal": {
+                "purchased": true
+              },
+              "select": [
+                "sku",
+                "name",
+                "category",
+                "pet_type",
+                "price_eur",
+                "$p",
+                "$why"
+              ],
+              "limit": 10
+            },
+            "endpoint": "recommend",
+            "displayMode": "playground",
+            "outputFormat": "table",
+            "runPolicy": "manual"
+          }
+        },
+        {
+          "type": "query",
+          "title": "Without the pets: what is the pull of the context?",
+          "size": "full",
+          "config": {
+            "query": {
+              "from": "impressions",
+              "where": {
+                "context.month": "2026-04",
+                "just_bought": false
+              },
+              "recommend": "product_sku",
+              "goal": {
+                "purchased": true
+              },
+              "select": [
+                "sku",
+                "name",
+                "category",
+                "pet_type",
+                "price_eur",
+                "$p",
+                "$why"
+              ],
               "limit": 10
             },
             "endpoint": "recommend",
@@ -103,15 +238,69 @@
       ]
     },
     {
-      "title": "3 · Bought Together (cross-sell)",
-      "description": "Statistical co-occurrence between order contents, surfaced with `_relate`.",
+      "title": "3 · Smart search",
       "widgets": [
         {
           "type": "text",
           "title": "How it works",
           "size": "full",
           "config": {
-            "content": "`orders.line_categories` is a denormalised text column listing each order's lines as `<pet>_<category>` tokens. `_relate` returns the **lift** of token co-occurrence within an order:\n\n- `lift > 1` → bought together more often than chance (cross-sell)\n- `lift < 1` → rarely bought together (protective / substitute)\n\nRead the `related.line_categories.$has` column against `lift`. Swap `dog_dryfood` for `cat_wetfood` to explore a different basket."
+            "content": "A plain text search for `food` returns hundreds of matches in no useful order. Adding the shopper's pets and the same `_recommend` goal re-ranks the matches for *this* household: `product_sku.name` follows the link to the product and `$match` finds the word."
+          }
+        },
+        {
+          "type": "query",
+          "title": "Re-rank 'food' for a dog household",
+          "size": "full",
+          "config": {
+            "query": {
+              "from": "impressions",
+              "where": {
+                "product_sku.name": {
+                  "$match": "food"
+                },
+                "context.customer.pets": {
+                  "$and": [
+                    {
+                      "$match": "dog"
+                    }
+                  ]
+                },
+                "context.month": "2026-04",
+                "just_bought": false
+              },
+              "recommend": "product_sku",
+              "goal": {
+                "purchased": true
+              },
+              "select": [
+                "sku",
+                "name",
+                "category",
+                "pet_type",
+                "price_eur",
+                "$p",
+                "$why"
+              ],
+              "limit": 10
+            },
+            "endpoint": "recommend",
+            "displayMode": "playground",
+            "outputFormat": "table",
+            "runPolicy": "manual"
+          }
+        }
+      ]
+    },
+    {
+      "title": "4 · Bought together (cross-sell)",
+      "widgets": [
+        {
+          "type": "text",
+          "title": "How it works",
+          "size": "full",
+          "config": {
+            "content": "`orders.line_categories` lists each order's lines as `<pet>_<category>` tokens. `_relate` returns the **lift** of token co-occurrence within an order: `lift > 1` means bought together more often than chance."
           }
         },
         {
@@ -121,7 +310,11 @@
           "config": {
             "query": {
               "from": "orders",
-              "where": { "line_categories": { "$match": "dog_dryfood" } },
+              "where": {
+                "line_categories": {
+                  "$match": "dog_dryfood"
+                }
+              },
               "relate": "line_categories",
               "limit": 12
             },
@@ -134,15 +327,14 @@
       ]
     },
     {
-      "title": "4 · Churn prediction",
-      "description": "Predict whether a customer will churn in the next 3 months — and measure how accurate the prediction is.",
+      "title": "5 · Churn prediction",
       "widgets": [
         {
           "type": "text",
           "title": "How it works",
           "size": "full",
           "config": {
-            "content": "`customer_months` holds a monthly snapshot per customer, labelled `churned_in_3_months` (true iff they placed no order in the following 3 months). `_predict` returns P(true) and P(false) for a customer described by `where` — no model training needed.\n\nThe profile below describes a small-dog owner in Helsinki who just left a negative, low-rated review — a classic at-risk signal. Edit the fields and re-run to see the probability move.\n\nThe **accuracy widget** below holds out a random sample, hides the label, predicts it from the same features, and compares against ground truth — Aito's built-in cross-validation."
+            "content": "`customer_months` holds a monthly snapshot per customer, labelled `churned_in_3_months` (true iff no order in the following three months). `_predict` returns P(true) and P(false) for a customer described by `where`; no model is trained. The evaluation widget scores the same query on held-out rows."
           }
         },
         {
@@ -153,11 +345,10 @@
             "query": {
               "from": "customer_months",
               "where": {
-                "segment": "dog_owner",
-                "pet_size": "small",
                 "region": "helsinki",
                 "latest_sentiment": "negative",
-                "latest_rating": 2
+                "latest_rating": 2,
+                "had_negative_review": true
               },
               "predict": "churned_in_3_months",
               "limit": 2
@@ -178,29 +369,46 @@
               "from": "customer_months",
               "predict": "churned_in_3_months",
               "where": {
-                "segment": { "$get": "segment" },
-                "region": { "$get": "region" },
-                "tenure_months_at_month": { "$get": "tenure_months_at_month" },
-                "visits": { "$get": "visits" },
-                "purchases": { "$get": "purchases" },
-                "spent_eur": { "$get": "spent_eur" }
+                "region": {
+                  "$get": "region"
+                },
+                "tenure_months_at_month": {
+                  "$get": "tenure_months_at_month"
+                },
+                "visits": {
+                  "$get": "visits"
+                },
+                "purchases": {
+                  "$get": "purchases"
+                },
+                "spent_eur": {
+                  "$get": "spent_eur"
+                },
+                "latest_sentiment": {
+                  "$get": "latest_sentiment"
+                },
+                "had_negative_review": {
+                  "$get": "had_negative_review"
+                }
               }
             },
-            "testSelection": { "type": "random", "percentage": 20 }
+            "testSelection": {
+              "type": "random",
+              "percentage": 20
+            }
           }
         }
       ]
     },
     {
-      "title": "5 · Product Filling",
-      "description": "Predict missing product attributes from the product name and brand.",
+      "title": "6 · Product filling",
       "widgets": [
         {
           "type": "text",
           "title": "How it works",
           "size": "full",
           "config": {
-            "content": "A new product arrives with only a name and brand. Aito fills the rest of the catalog record by predicting each field from the products it already knows. Here we predict `category` from the name token `food` + brand — change `predict` to `pet_type`, `dietary`, or `tax_class` to fill a different field, or edit the `$match` name to describe a different product."
+            "content": "A new product arrives with only a name and brand. Aito fills the rest of the record by predicting each field from the products it already knows. Change `predict` to `pet_type`, `dietary` or `tags`."
           }
         },
         {
@@ -211,7 +419,9 @@
             "query": {
               "from": "products",
               "where": {
-                "name": { "$match": "Royal Canin Chicken Dog Food" },
+                "name": {
+                  "$match": "Royal Canin Chicken Dog Food"
+                },
                 "brand": "Royal Canin"
               },
               "predict": "category",
@@ -226,15 +436,14 @@
       ]
     },
     {
-      "title": "6 · Price Intelligence",
-      "description": "Server-side price statistics per SKU with `_aggregate`.",
+      "title": "7 · Price and offers",
       "widgets": [
         {
           "type": "text",
           "title": "How it works",
           "size": "full",
           "config": {
-            "content": "`_aggregate` computes mean / min / max over `price_history` for one SKU, server-side. `$mean` also returns variance, standard deviation and standard error in the same response — useful for spotting price outliers and discount depth. Swap the `product_sku` to inspect a different product's price band."
+            "content": "A product's price, offer and rating in one month is a row of `product_states`. `_aggregate` gives the fair band for a SKU server-side; `_predict` over `impressions` follows the link `product_state` to ask what an offer does to the chance of a purchase."
           }
         },
         {
@@ -243,11 +452,55 @@
           "size": "full",
           "config": {
             "query": {
-              "from": "price_history",
-              "where": { "product_sku": "SKU-PT-0001" },
-              "aggregate": ["price_eur.$mean", "price_eur.$min", "price_eur.$max"]
+              "from": "product_states",
+              "where": {
+                "product_sku": "SKU-PT-0001"
+              },
+              "aggregate": [
+                "price_eur.$mean",
+                "price_eur.$min",
+                "price_eur.$max"
+              ]
             },
             "endpoint": "aggregate",
+            "displayMode": "playground",
+            "outputFormat": "table",
+            "runPolicy": "manual"
+          }
+        },
+        {
+          "type": "query",
+          "title": "P(purchase) when a product is shown with a 20 %+ offer",
+          "size": "full",
+          "config": {
+            "query": {
+              "from": "impressions",
+              "where": {
+                "product_state.discount_band": "20+"
+              },
+              "predict": "purchased",
+              "limit": 2
+            },
+            "endpoint": "predict",
+            "displayMode": "playground",
+            "outputFormat": "table",
+            "runPolicy": "manual"
+          }
+        },
+        {
+          "type": "query",
+          "title": "P(purchase) with no offer",
+          "size": "full",
+          "config": {
+            "query": {
+              "from": "impressions",
+              "where": {
+                "product_state.discount_band": "none"
+              },
+              "predict": "purchased",
+              "limit": 2
+            },
+            "endpoint": "predict",
             "displayMode": "playground",
             "outputFormat": "table",
             "runPolicy": "manual"
@@ -256,32 +509,38 @@
       ]
     },
     {
-      "title": "7 · Winback — recommend by conversion probability",
-      "description": "The textbook recommendation shape: rank products by the probability the customer actually converts.",
+      "title": "8 · Win-back — recommend by conversion probability",
       "widgets": [
         {
           "type": "text",
           "title": "How it works",
           "size": "full",
           "config": {
-            "content": "Unlike `order_lines`, the `winback_campaigns` table records a real **outcome**: each row is a campaign send with `responded: true|false`. That gives Aito a conversion KPI to optimise directly.\n\n- `recommend: \"product_sku\"` over `winback_campaigns`\n- `goal: { responded: true }` ranks candidates by **P(responded = true | this product, this customer's context)**\n- `where` pins the customer's profile (segment, lifestyle, recency since last order)\n\nThe app's Winback view then multiplies this response probability by a predicted `order_value_eur` to estimate €-recoverable revenue per send. The `_predict` widget below reads the *absolute* response probability for one product context (`_recommend`'s `$p` is normalised against goal-positives, so use `_predict` when you need the calibrated number)."
+            "content": "Unlike `impressions`, `winback_campaigns` records a real **outcome**: each row is a campaign send with `responded: true|false`. `_recommend` optimises that directly: which product, sent to a lapsed customer with this staple category, is most likely to be responded to."
           }
         },
         {
           "type": "query",
-          "title": "Best winback products for a lapsed premium dog-owner",
+          "title": "Best win-back products for a lapsed dog dry-food customer",
           "size": "full",
           "config": {
             "query": {
               "from": "winback_campaigns",
               "where": {
-                "customer_segment": "dog_owner",
-                "customer_lifestyle": "premium",
-                "recency_bucket": "90-180d"
+                "customer_staple_category": "dog/dry-food",
+                "recency_bucket": "90-180d",
+                "product_pet_type": "dog"
               },
               "recommend": "product_sku",
-              "goal": { "responded": true },
-              "basedOn": ["pet_type", "category", "brand"],
+              "goal": {
+                "responded": true
+              },
+              "select": [
+                "sku",
+                "name",
+                "category",
+                "$p"
+              ],
               "limit": 8
             },
             "endpoint": "recommend",
@@ -298,13 +557,47 @@
             "query": {
               "from": "winback_campaigns",
               "where": {
-                "customer_segment": "dog_owner",
-                "customer_lifestyle": "premium",
+                "customer_staple_category": "dog/dry-food",
                 "recency_bucket": "90-180d",
-                "product_category": "dry-food"
+                "product_category": "dry-food",
+                "product_pet_type": "dog"
               },
               "predict": "responded",
               "limit": 2
+            },
+            "endpoint": "predict",
+            "displayMode": "playground",
+            "outputFormat": "table",
+            "runPolicy": "manual"
+          }
+        }
+      ]
+    },
+    {
+      "title": "9 · Review triage",
+      "widgets": [
+        {
+          "type": "text",
+          "title": "How it works",
+          "size": "full",
+          "config": {
+            "content": "`reviews.text` is free text. `_predict` on `category` reads it with `$match`, so a new review is routed (praise, quality, shipping, fit, question) without a rule list."
+          }
+        },
+        {
+          "type": "query",
+          "title": "Which category is this review?",
+          "size": "full",
+          "config": {
+            "query": {
+              "from": "reviews",
+              "where": {
+                "text": {
+                  "$match": "arrived late and the box was damaged"
+                }
+              },
+              "predict": "category",
+              "limit": 3
             },
             "endpoint": "predict",
             "displayMode": "playground",
