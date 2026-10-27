@@ -39,7 +39,9 @@ export default function FunnelPanel({ funnel, loading }: { funnel: ProductFunnel
             <strong> Profit</strong> is purchases times (price − cost), less the month&apos;s ad spend.
           </p>
           <p style={{ margin: "0 0 8px" }}>
-            Purchases are counted from the showing, as the shop&apos;s data counts them, not as clicks times a conversion.
+            Purchases are counted from the showing, as the shop&apos;s data counts them, not as clicks times a conversion,
+            and they are units: this product has sold {funnel.units_per_purchase.toFixed(2)} units for each showing that ended
+            in a purchase (shoppers take several, and some re-order without a showing).
           </p>
           <p style={{ margin: 0, color: "var(--text-muted)" }}>
             Ad spend is our assumption until the shop declares its own: {Object.entries(funnel.ad_spend_assumed)

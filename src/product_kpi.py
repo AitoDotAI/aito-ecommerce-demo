@@ -33,7 +33,7 @@ EDITABLE = {"discount_band": "product_state.discount_band", "rating_band": "prod
             "label": "product_state.label", "age": "product_state.age", "stock": "product_state.stock",
             "rival_launched": "product_state.rival_launched",
             # ADR 0049, 0050: the list price and how the shop lists the product.
-            "list_price_index": "product_state.list_price_index", "image_count": "product_state.image_count",
+            "list_price_index": "product_state.list_price_band", "image_count": "product_state.image_count",
             "description_quality": "product_state.description_quality", "ad_level": "product_state.ad_level"}
 
 
@@ -76,7 +76,18 @@ def where_for(product: dict, state: dict, changes: dict[str, object]) -> dict:
     if unknown:
         raise ValueError(f"Not an editable property: {sorted(unknown)}; the editable ones are {sorted(EDITABLE)}")
     return {**{path: product[name] for name, path in FIXED.items()},
-            **{path: changes.get(name, state[name]) for name, path in EDITABLE.items()}}
+            **{path: _evidence(name, changes.get(name, state[name])) for name, path in EDITABLE.items()}}
+
+
+def _evidence(name: str, value: object) -> object:
+    """The value `_predict` conditions on. The list price goes in as its band: a decimal index only matches
+    impressions whose state has the same cents, so an index between price points would fall back to the base rate."""
+    return list_price_band(float(value)) if name == "list_price_index" else value
+
+
+def list_price_band(list_price_index: float) -> str:
+    """The same rule as the data's (data/catalogue_events.py): percent of the original list, to the nearest 5."""
+    return str(round(list_price_index * 100 / 5) * 5)
 
 
 def with_list_price_index(state: dict, changes: dict[str, object]) -> dict[str, object]:
@@ -113,7 +124,8 @@ def get_product_kpis(client: AitoClient, sku: str, month: str, changes: dict[str
     estimates = {kpi: kpi_estimate(kpi, answer, similar_shown=similar[0], similar_hits=similar[1 + i],
                                    product_shown=own[0], product_hits=own[1 + i])
                  for i, (kpi, answer) in enumerate(zip(KPIS, predictions))}
-    shown = {name: where[path] for name, path in {**FIXED, **EDITABLE}.items()}
+    shown = {**{name: where[path] for name, path in FIXED.items()},
+             **{name: changes.get(name, states[0][name]) for name in EDITABLE}}
     return ProductKpis(sku=sku, month=month, properties=shown, changed=sorted(changes), estimates=estimates,
                        last_query={"endpoint": "_predict", "body": predict_body("clicked", where)})
 

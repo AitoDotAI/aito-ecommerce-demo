@@ -9,7 +9,7 @@ import src.product_funnel as product_funnel
 from src.lookup_errors import ProductNotOnSaleError
 from src.product_funnel import AD_SPEND_EUR, get_product_funnel
 
-STATE = {"list_price_eur": 10.0, "list_price_index": 1.0, "discount_pct": 0.0, "on_offer": False,
+STATE = {"list_price_eur": 10.0, "list_price_index": 1.0, "list_price_band": "100", "discount_pct": 0.0, "on_offer": False,
          "discount_band": "none", "ad_level": "none"}
 SALES = [{"month": f"2026-0{m}", "showings": 10, "units_sold": 2, "price_index": 1.0, "units_index": 1.0}
          for m in range(1, 5)]
@@ -18,10 +18,12 @@ SALES = [{"month": f"2026-0{m}", "showings": 10, "units_sold": 2, "price_index":
 class FakeAito:
     """Showings rise 50 % with an advertisement and 80 % with a 20 %+ offer; units follow the price."""
 
-    def __init__(self, state=STATE, sales=SALES):
-        self.state, self.sales = state, sales
+    def __init__(self, state=STATE, sales=SALES, purchased_showings=8):
+        self.state, self.sales, self.purchased_showings = state, sales, purchased_showings
 
     def search(self, table, *, where=None, limit=10, **_):
+        if table == "impressions":
+            return {"hits": [], "total": self.purchased_showings}
         rows = {"product_states": [self.state], "inventory": [{"unit_cost_eur": 6.0}], "monthly_sales": self.sales}[table]
         return {"hits": rows}
 
@@ -47,6 +49,18 @@ def test_the_funnel_runs_from_showings_to_profit():
     now = funnel.now
     assert (now.impressions, now.clicks, now.purchases) == (10.0, 4.0, 1.0)
     assert now.gross_profit_eur == pytest.approx(1.0 * (10.0 - 6.0)) and now.profit_eur == now.gross_profit_eur
+
+
+def test_purchases_are_units_a_product_sells_per_showing_that_ends_in_a_purchase():
+    funnel = get_product_funnel(FakeAito(purchased_showings=4), "SKU-1", "2026-05")      # 8 units from 4 purchased showings
+
+    assert funnel.units_per_purchase == 2.0 and funnel.now.purchases == pytest.approx(2.0)
+    assert funnel.check_ok is True                                                      # now it agrees with 2 units a month
+
+
+def test_units_with_no_purchased_showing_are_refused():
+    with pytest.raises(Exception, match="none from a showing"):
+        get_product_funnel(FakeAito(purchased_showings=0), "SKU-1", "2026-05")
 
 
 def test_advertising_buys_showings_and_costs_money():
@@ -83,7 +97,7 @@ def test_funnel_units_are_checked_against_units_by_price_and_a_gap_is_reported()
     agrees = get_product_funnel(FakeAito(), "SKU-1", "2026-05")      # 1 purchase against 1.0 × 2 mean units: a gap
     assert agrees.check_units == 2.0 and agrees.check_ok is False and agrees.check_gap == pytest.approx(-0.5)
 
-    close = get_product_funnel(FakeAito(sales=[{**s, "units_sold": 1} for s in SALES]), "SKU-1", "2026-05")
+    close = get_product_funnel(FakeAito(sales=[{**s, "units_sold": 1} for s in SALES], purchased_showings=4), "SKU-1", "2026-05")
     assert close.check_ok is True
 
 

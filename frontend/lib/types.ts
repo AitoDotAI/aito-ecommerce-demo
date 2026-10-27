@@ -1042,7 +1042,7 @@ export interface Funnel {
 }
 
 export interface ProductFunnel {
-  sku: string; month: string; mean_showings: number; mean_units: number | null; unit_cost_eur: number;
+  sku: string; month: string; mean_showings: number; mean_units: number | null; units_per_purchase: number; unit_cost_eur: number;
   now: Funnel; asked: Funnel; changed: string[];
   check_units: number | null; check_gap: number | null; check_ok: boolean | null;
   last_month: { showings?: number; units?: number };
