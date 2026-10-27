@@ -1,6 +1,6 @@
 # ADR 0050: Product pricing tab with an editable list price, and the funnel
 
-**Status:** Proposed (2026-10-27; weekly table and the ranker's loop chosen the same day. Antti: "add a pricing view in the product page as a tab and make the list price
+**Status:** Accepted for release 3a (2026-10-27: pricing and funnel built and probed on `release3a`; the weekly table and the ranker's loop, release 3b, are still proposed). Proposed (2026-10-27; weekly table and the ranker's loop chosen the same day. Antti: "add a pricing view in the product page as a tab and make the list price
 editable", and "estimate impressions … have a funnel page, which shows the impressions -> clicks -> purchases ->
 profit funnel, that react whenever you change any of the dynamic properties")
 **Date:** 2026-10-27
@@ -158,3 +158,22 @@ single readout, and the limits of the data are on the page.
 
 **Bad:** it waits for release 3, now larger: a new table, a loop in the generator and `week` on every impression, a reload of `product_states`, `monthly_sales` and `impressions`, and every order-side check re-run. The ad costs are our
 assumption until the shop declares its own.
+
+
+## Amendments, 2026-10-27 (release 3a probed live)
+
+1. **The list price enters `_predict` as a band.** A decimal `product_state.list_price_index` only matches rows whose
+   cents are equal, so a typed price returned the base rate with a 200. `product_states.list_price_band` ("85" …
+   "115", the index in percent to the nearest 5) is the evidence; `list_price_index` stays for `_estimate`.
+2. **A price with no data is not estimated.** Beyond the prices the product has sold at (± 0.05), the Pricing tab
+   says "no data here", and the Funnel and the KPI estimates leave the list price out and say why. A value a property
+   has never held (`ad_level=billboard`) is refused with a 400, not estimated.
+3. **The funnel narrows.** Impressions × `_predict clicked` = clicks; clicks × `_predict purchased` given
+   `clicked: true` = purchases, so a step is never wider than the one before. Aito learns both over the ranked
+   showings only; the product's own history over all its showings sets the level (the click rate by a ratio, the
+   conversion in odds so it stays below 1). A purchase buys 1, 2 or 3 units in the shares of the product's order
+   lines (the page draws them as blocks, tallest first), and units sold without a showing (re-orders from the
+   order history) are added as the product's own constant, `other_units`. Revenue and profit are values.
+4. **Known limit.** Over 40 products the click rate does not fall steadily with the list price (confounded by the
+   listing policies, which move price and listing together); the purchase chance does, on average from 18.5 % at
+   0.85 to 13.1 % at 1.15. The Pricing tab's `_estimate` curve is the cleaner view of price.

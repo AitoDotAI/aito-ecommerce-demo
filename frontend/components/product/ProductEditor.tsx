@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import HelpPopover from "@/components/prediction/HelpPopover";
 import { ApiError, apiFetch, fmtEur } from "@/lib/api";
@@ -15,6 +15,10 @@ const BANDS = ["none", "10-15", "15-20", "20+"];
 const PROPERTY_CHOICES: Array<{ name: string; label: string; options: Array<[string, string]> }> = [
   { name: "rating_band", label: "Stars", options: [["unrated", "No stars yet"], ["1-2", "1–2 stars"], ["3", "3 stars"], ["4", "4 stars"], ["5", "5 stars"]] },
   { name: "label", label: "Shop label", options: [["none", "None"], ["popular", "Popular"], ["recommended", "Recommended"], ["staff_pick", "Staff pick"]] },
+  // How the shop lists the product (ADR 0049): pictures, description, advertising.
+  { name: "image_count", label: "Pictures", options: [["0-1", "0–1 pictures"], ["2-3", "2–3 pictures"], ["4+", "4 or more"]] },
+  { name: "description_quality", label: "Description", options: [["thin", "Thin"], ["ok", "OK"], ["rich", "Rich"]] },
+  { name: "ad_level", label: "Advertising", options: [["none", "None"], ["search", "Search ads"], ["banner", "Banner"]] },
 ];
 
 /** The product's properties, on the left of the Product view (ADR 0041, the "edit the product" form):
@@ -22,7 +26,7 @@ const PROPERTY_CHOICES: Array<{ name: string; label: string; options: Array<[str
  *  (ADR 0043) a change writes next month's state, reads it back, and the page asks its estimates
  *  again (`onPulled`). Outside one, the offer is a preview: the numbers on the right show the chosen
  *  band, nothing is saved. Backend: src/product_levers.py. */
-export default function ProductEditor({ view, sandbox, states, previewBand, onPreview, onPulled, properties, changes, onChange }: {
+export default function ProductEditor({ view, sandbox, states, previewBand, onPreview, onPulled, properties, changes, onChange, listPrice, onListPrice }: {
   view: ProductView;
   sandbox: string | null;
   states: LeverStates | null;
@@ -32,6 +36,8 @@ export default function ProductEditor({ view, sandbox, states, previewBand, onPr
   properties: KpiProperties | null;                           // the state's, as the KPI estimates read them
   changes: Record<string, string | boolean>;                  // what the owner has changed, to preview
   onChange: (name: string, value: string | boolean | null) => void;
+  listPrice: number | null;                                   // a list price the owner typed (ADR 0050); null: today's
+  onListPrice: (eur: number | null) => void;
 }) {
   const { product: p, state: s, decision } = view;
   const live = !!sandbox && !!states;
@@ -73,7 +79,7 @@ export default function ProductEditor({ view, sandbox, states, previewBand, onPr
               : "Outside a sandbox the offer is a preview: the numbers on the right show the band you pick, and nothing is saved. Open a sandbox to write it."}
           </p>
           <p style={{ margin: "0 0 8px" }}>
-            The name, brand, category and list price are read-only here. Changing them is the catalogue manager&apos;s
+            The name, brand and category are read-only here. Changing them is the catalogue manager&apos;s
             job (ADR 0046, not built).
           </p>
           <p style={{ margin: 0, color: "var(--text-muted)" }}>
@@ -98,6 +104,11 @@ export default function ProductEditor({ view, sandbox, states, previewBand, onPr
         Price {fmtEur(priceOf(selected), 2)}: list less the band&apos;s typical discount
         {selected !== decision.current_band && !live && <> · now {BAND_LABEL[decision.current_band].toLowerCase()}, {fmtEur(priceOf(decision.current_band), 2)}</>}.
       </div>
+
+      <div style={{ fontSize: 13, fontWeight: 600, margin: "16px 0 6px" }}>
+        List price <span className="card-sub" style={{ fontWeight: 400 }}> · preview, nothing is saved</span>
+      </div>
+      <ListPriceField now={s.list_price_eur} value={listPrice} onChange={onListPrice} />
 
       {properties && (
         <>
@@ -172,4 +183,26 @@ function describe(s: ProductStateRow): string {
 
 function starsLabel(band: string): string {
   return band === "unrated" ? "no stars yet" : `${band} stars`;
+}
+
+/** The list price, in euros: today's as the placeholder, an own value highlighted, committed on Enter or blur. */
+function ListPriceField({ now, value, onChange }: { now: number; value: number | null; onChange: (eur: number | null) => void }) {
+  const [typed, setTyped] = useState(value === null ? "" : value.toFixed(2));
+  useEffect(() => { setTyped(value === null ? "" : value.toFixed(2)); }, [value]);
+  const commit = () => {
+    const eur = Number(typed);
+    if (typed.trim() === "" || eur === now) onChange(null);
+    else if (Number.isFinite(eur) && eur > 0) onChange(eur);
+    else setTyped(value === null ? "" : value.toFixed(2));
+  };
+  return (
+    <div style={{ display: "flex", gap: 8, alignItems: "center", fontSize: 13 }}>
+      <span className="card-sub">€</span>
+      <input className="search-input" style={{ width: 100, paddingLeft: 8, borderColor: value !== null ? "var(--cta)" : undefined }}
+             inputMode="decimal" aria-label="List price in euros" placeholder={now.toFixed(2)} value={typed}
+             onChange={(e) => setTyped(e.target.value)} onBlur={commit} onKeyDown={(e) => { if (e.key === "Enter") commit(); }} />
+      <span className="card-sub">now {fmtEur(now, 2)}</span>
+      {value !== null && <button type="button" className="btn btn-ghost" onClick={() => onChange(null)}>Reset</button>}
+    </div>
+  );
 }

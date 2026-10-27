@@ -986,6 +986,7 @@ export interface KpiEstimate {
 export interface KpiProperties {
   brand: string; category: string; pet_type: string;
   discount_band: string; rating_band: string; label: string; age: string; stock: string; rival_launched: boolean;
+  list_price_index: number; image_count: string; description_quality: string; ad_level: string;
 }
 
 export interface ProductKpis {
@@ -993,6 +994,7 @@ export interface ProductKpis {
   month: string;
   properties: KpiProperties;
   changed: string[];
+  no_data: string | null;
   estimates: Record<KpiName, KpiEstimate>;
   last_query: { endpoint: string; body: Record<string, unknown> };
 }
@@ -1013,4 +1015,39 @@ export interface ShopperProfile {
   spent_eur: number;
   last_basket: ShopProfileOrder | null;
   history: ShopProfileOrder[];
+}
+
+/* ─── Pricing and the funnel (ADR 0050): /api/product/pricing, /api/product/funnel ─── */
+
+export interface PricePoint {
+  list_price_eur: number; list_price_index: number; price_eur: number; price_index: number;
+  units_index: number; units: number; revenue_eur: number; profit_eur: number;
+  in_range: boolean;      // the product has been sold at about this price
+}
+
+export interface OwnMonth { month: string; price_index: number; units: number; units_index: number | null }
+
+export interface ProductPricing {
+  sku: string; name: string; month: string;
+  reference_list_eur: number; list_price_eur: number; unit_cost_eur: number; offer_pct: number;
+  mean_units: number | null; tried_from: number; tried_to: number;
+  now: PricePoint; asked: PricePoint | null; best: PricePoint | null;
+  curve: PricePoint[]; own_months: OwnMonth[];
+  last_query: { endpoint: string; body: Record<string, unknown> };
+}
+
+export interface Funnel {
+  impressions: number; clicks: number; purchases: number; units: number;
+  sizes: Array<{ units_each: number; purchases: number }>; other_units: number;
+  price_eur: number; revenue_eur: number; gross_profit_eur: number; ad_spend_eur: number; profit_eur: number;
+  ctr: number; purchase_rate: number; showings_index: number;
+}
+
+export interface ProductFunnel {
+  sku: string; month: string; mean_showings: number; mean_units: number | null; units_per_purchase: number; own_ctr: number; own_conversion: number; no_data: string | null; unit_cost_eur: number;
+  now: Funnel; asked: Funnel; changed: string[];
+  check_units: number | null; check_gap: number | null; check_ok: boolean | null;
+  last_month: { showings?: number; units?: number };
+  showings_support: number; ad_spend_assumed: Record<string, number>;
+  last_query: { endpoint: string; body: Record<string, unknown> };
 }

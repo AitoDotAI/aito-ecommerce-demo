@@ -11,6 +11,7 @@ const COPY: Record<KpiName, { title: string; unit: string; done: string }> = {
 const FIELD: Record<string, string> = {
   brand: "Brand", category: "Category", pet_type: "Pet", discount_band: "Offer", rating_band: "Stars",
   label: "Shop label", age: "Age", stock: "Stock", rival_launched: "Rival launched",
+  list_price_index: "List price", image_count: "Pictures", description_quality: "Description", ad_level: "Advertising",
 };
 /** Lifts this close to 1 say nothing; they are folded into one line, as on the Shop's cards. */
 const NEAR_ONE = 0.03;
@@ -65,6 +66,8 @@ export default function KpiPanel({ kpi, current, baseline, loading }: {
         of shoppers shown a product like this {COPY[kpi].unit}
         {changed && <> · {e.p >= before.p ? "+" : "−"}{Math.abs((e.p / before.p - 1) * 100).toFixed(0)} % with your changes</>}
       </div>
+
+      {current.no_data && <div role="status" className="card-sub" style={{ marginBottom: 10, color: "var(--red)" }}>{current.no_data}</div>}
 
       <div className="kpi-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", marginBottom: 14 }}>
         <Fact label="All showings" value={pct(e.base_p, 0)} sub="the average over the shop" />
@@ -124,5 +127,6 @@ function valueLabel(field: string, value: string | boolean): string {
   if (typeof value === "boolean") return value ? "yes" : "no";
   if (field === "discount_band") return BAND_LABEL[value]?.toLowerCase() ?? value;
   if (field === "rating_band") return value === "unrated" ? "no stars yet" : `${value} stars`;
+  if (field === "list_price_index") return `${(Number(value) * 100).toFixed(0)} % of the first list price`;
   return words(value);
 }

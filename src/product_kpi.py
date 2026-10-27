@@ -31,7 +31,32 @@ FIXED = {"brand": "product_sku.brand", "category": "product_sku.category", "pet_
 # What the owner can change: the columns of the product's state that month.
 EDITABLE = {"discount_band": "product_state.discount_band", "rating_band": "product_state.rating_band",
             "label": "product_state.label", "age": "product_state.age", "stock": "product_state.stock",
-            "rival_launched": "product_state.rival_launched"}
+            "rival_launched": "product_state.rival_launched",
+            # ADR 0049, 0050: the list price and how the shop lists the product.
+            "list_price_index": "product_state.list_price_band", "image_count": "product_state.image_count",
+            "description_quality": "product_state.description_quality", "ad_level": "product_state.ad_level"}
+
+
+# The values each property takes in the data. `_predict` answers the base rate, with a 200, for a value it has
+# never seen, so a typo would read as an estimate: refuse it.
+KNOWN_VALUES = {
+    "discount_band": {"none", "10-15", "15-20", "20+"}, "rating_band": {"unrated", "1-2", "3", "4", "5"},
+    "label": {"none", "popular", "recommended", "staff_pick"}, "age": {"new", "established"},
+    "stock": {"in_stock", "low"}, "rival_launched": {True, False},
+    "image_count": {"0-1", "2-3", "4+"}, "description_quality": {"thin", "ok", "rich"},
+    "ad_level": {"none", "search", "banner"},
+}
+LIST_PRICE_BANDS = {str(pct) for pct in range(85, 120, 5)}
+
+
+def check_changes(changes: dict[str, object]) -> None:
+    """Refuse a property that is not editable, or a value the data has never held for it."""
+    unknown = set(changes) - set(EDITABLE)
+    if unknown:
+        raise ValueError(f"Not an editable property: {sorted(unknown)}; the editable ones are {sorted(EDITABLE)}")
+    for name, value in changes.items():
+        if name in KNOWN_VALUES and value not in KNOWN_VALUES[name]:
+            raise ValueError(f"{value!r} is not a value of {name} in the data; it has {sorted(KNOWN_VALUES[name], key=str)}")
 
 
 @dataclass(frozen=True)
@@ -60,6 +85,7 @@ class ProductKpis:
     month: str
     properties: dict[str, object]       # as asked: the state's, with the owner's changes
     changed: list[str]                  # the properties the owner changed
+    no_data: str | None                 # why a list price asked was left out: no price point of the data holds it
     estimates: dict[str, KpiEstimate]   # by KPI
     last_query: dict
 
@@ -69,11 +95,30 @@ class ProductKpis:
 
 def where_for(product: dict, state: dict, changes: dict[str, object]) -> dict:
     """The `where` for a product's properties in a month's state, with `changes` (by short name) applied."""
-    unknown = set(changes) - set(EDITABLE)
-    if unknown:
-        raise ValueError(f"Not an editable property: {sorted(unknown)}; the editable ones are {sorted(EDITABLE)}")
+    check_changes(changes)
     return {**{path: product[name] for name, path in FIXED.items()},
-            **{path: changes.get(name, state[name]) for name, path in EDITABLE.items()}}
+            **{path: _evidence(name, changes.get(name, state[name])) for name, path in EDITABLE.items()}}
+
+
+def _evidence(name: str, value: object) -> object:
+    """The value `_predict` conditions on. The list price goes in as its band: a decimal index only matches
+    impressions whose state has the same cents, so an index between price points would fall back to the base rate."""
+    return list_price_band(float(value)) if name == "list_price_index" else value
+
+
+def list_price_band(list_price_index: float) -> str:
+    """The same rule as the data's (data/catalogue_events.py): percent of the original list, to the nearest 5."""
+    return str(round(list_price_index * 100 / 5) * 5)
+
+
+def with_list_price_index(state: dict, changes: dict[str, object]) -> dict[str, object]:
+    """`changes` with a `list_price_eur` the owner typed turned into the `list_price_index` the data holds:
+    the new list price against the product's reference list price (this month's list price ÷ its index)."""
+    if "list_price_eur" not in changes:
+        return changes
+    reference = float(state["list_price_eur"]) / float(state["list_price_index"])
+    rest = {name: value for name, value in changes.items() if name != "list_price_eur"}
+    return {**rest, "list_price_index": round(float(changes["list_price_eur"]) / reference, 3)}
 
 
 def predict_body(kpi: str, where: dict) -> dict:
@@ -87,6 +132,13 @@ def get_product_kpis(client: AitoClient, sku: str, month: str, changes: dict[str
     states = client.search("product_states", where={"product_sku": sku, "month": month}, limit=1)["hits"]
     if not states:
         raise UnknownProductError(f"{sku} has no state in {month}")
+    changes = with_list_price_index(states[0], changes)
+    check_changes(changes)
+    no_data = None
+    if "list_price_index" in changes and list_price_band(float(changes["list_price_index"])) not in LIST_PRICE_BANDS:
+        no_data = (f"A list price {float(changes['list_price_index']):.2f} times the original list is beyond the price "
+                   "points the shop has held (0.85–1.15), so the estimates keep today's list price.")
+        changes = {name: value for name, value in changes.items() if name != "list_price_index"}
     where = where_for(products[0], states[0], changes)
 
     counts = [{"from": "impressions", "where": {**scope, **hit}, "limit": 0}
@@ -99,8 +151,9 @@ def get_product_kpis(client: AitoClient, sku: str, month: str, changes: dict[str
     estimates = {kpi: kpi_estimate(kpi, answer, similar_shown=similar[0], similar_hits=similar[1 + i],
                                    product_shown=own[0], product_hits=own[1 + i])
                  for i, (kpi, answer) in enumerate(zip(KPIS, predictions))}
-    shown = {name: where[path] for name, path in {**FIXED, **EDITABLE}.items()}
-    return ProductKpis(sku=sku, month=month, properties=shown, changed=sorted(changes), estimates=estimates,
+    shown = {**{name: where[path] for name, path in FIXED.items()},
+             **{name: changes.get(name, states[0][name]) for name in EDITABLE}}
+    return ProductKpis(sku=sku, month=month, properties=shown, changed=sorted(changes), no_data=no_data, estimates=estimates,
                        last_query={"endpoint": "_predict", "body": predict_body("clicked", where)})
 
 
