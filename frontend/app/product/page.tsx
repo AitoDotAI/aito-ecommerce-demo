@@ -23,16 +23,16 @@ import { useSetUrlParams, useUrlState } from "@/lib/use-url-state";
 import type { KpiName, LeverStates, ProductCandidate, ProductFunnel, ProductKpis, ProductView as ProductViewData } from "@/lib/types";
 
 const LATEST_MONTH = "2026-04";
-/** The right side: two KPIs explained by the product's properties, and the offer decision. */
-const KPI_TABS: Array<{ id: KpiName | "decision" | "funnel"; label: string }> = [
+/** The right side: the funnel, the list price, two KPIs explained by the product's properties, and the offer decision. */
+const KPI_TABS: Array<{ id: KpiName | "decision" | "funnel" | "pricing"; label: string }> = [
   { id: "funnel", label: "Funnel" },
+  { id: "pricing", label: "Pricing" },
   { id: "clicked", label: "Clicks" },
   { id: "purchased", label: "Purchases" },
   { id: "decision", label: "Offer & margin" },
 ];
 const TABS = [
   { id: "what-if", label: "What if" },
-  { id: "pricing", label: "Pricing" },
   { id: "history", label: "History" },
   { id: "for-whom", label: "For whom" },
 ];
@@ -198,6 +198,10 @@ function ProductView() {
                 ))}
               </div>
               {kpiTab === "funnel" ? <FunnelPanel funnel={funnel} loading={kpiLoading} /> :
+               kpiTab === "pricing" ? (
+                 <PricingTab view={shown} listPrice={listPrice} onQuery={showQuery}
+                             onListPrice={(eur) => setListPriceParam(eur === null ? "" : String(eur))} />
+               ) :
                (kpiTab === "clicked" || kpiTab === "purchased") && kpis
                 ? <KpiPanel kpi={kpiTab} current={kpis} baseline={baseline} loading={kpiLoading} />
                 : (kpiTab === "clicked" || kpiTab === "purchased")
@@ -222,10 +226,6 @@ function ProductView() {
           {tab === "what-if" && (
             <ProductWhatIf view={shown} price={priceParam ? Number(priceParam) : null}
                            onPrice={pickPrice} onQuery={showQuery} />
-          )}
-          {tab === "pricing" && (
-            <PricingTab view={shown} listPrice={listPrice} onQuery={showQuery}
-                        onListPrice={(eur) => setListPriceParam(eur === null ? "" : String(eur))} />
           )}
           {tab === "history" && <ProductHistory history={shown.history} month={shown.month} />}
           {tab === "for-whom" && <ProductBuyers view={shown} />}
