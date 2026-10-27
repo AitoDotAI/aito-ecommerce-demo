@@ -14,11 +14,12 @@ on the real-data evidence:
 
 Each beat lists what to click, what to say, the number on screen and its
 basis, the one caveat, and a recovery line. Every number was read on
-2026-10-25 through the code paths named below, on env `release2`, which
-holds data release 2 (ADR 0045, amendment 2). The sandbox template is loaded
-from the same release files, so its numbers should match. Numbers that need a
-sandbox are marked **(Sunday)** and carry no figure until Antti's sandbox run
-reads them: release 1's values for them are gone, not carried over. The
+2026-10-27 through the code paths named below, on `master`, which holds data
+release 3a (ADR 0049, 0050), except the sections that say otherwise. The
+sandbox template is loaded from release 2's files until it is reloaded, so a
+sandbox run may differ from these (see "Open before a partner demo" at the end).
+Numbers that need a sandbox are marked **(Sunday)** and carry no figure until
+a sandbox run reads them: release 2's values for them are gone, not carried over. The
 pre-flight is in the run sheet, `docs/notes/2026-10-26-ambientia-run-sheet.md`.
 
 The app runs at **ecommerce.aito.ai**, or locally with `./do dev` at
@@ -41,11 +42,6 @@ the €135 the win-back emails return: that is a small, synthetic sum.
 
 ---
 
-> **The numbers in sections 1–6 are release 2's; 2b is release 3a's.** Release 3a regenerated the data, so the figures in the
-> other tables move (the Hideout decision on April's data reads 20.0 % → 31.5 %, margin €201.02 → €228.10 per 100
-> showings, not 20.6 % → 37.1 % and €206.67 → €269.17). Re-run the walkthrough on the live env, in a sandbox, and
-> correct the tables before a partner demo.
-
 ## 1. Supply's headlines (30 seconds)
 
 **Click:** the sidebar's **Supply** (or its card on the Overview).
@@ -56,11 +52,14 @@ euros follow from that forecast."
 
 | On screen | Number | Basis |
 |---|---|---|
-| Reorder these 83 now | an estimated €11,097 of May's sales can't be served without them; 676 units, €10,659 at cost | `_estimate units_sold` per SKU for May 2026, against stock and the reorder point (`src/supply_rows.py`); served from `data/precomputed/v2-master/supply.json` |
-| €28,298 tied up in 79 overstocked products | say only the €28,298. Don't present the markdown split ("14 won't clear, none worth marking down") as a finding: it is the units model by price alone, which counts neither an offer's lift on purchases when shown (×1.79 at 20 %+) nor the higher place it earns in the shop, so it understates an offer and contradicts Product's "put it on offer" | the same `_estimate` at 5–20 % off, over 13 weeks; price only |
+| Reorder these 83 now | an estimated €11,682 of May's sales can't be served without them; 730 units, €11,026 at cost | `_estimate units_sold` per SKU for May 2026, against stock and the reorder point (`src/supply_rows.py`); served from the precompute snapshot (`./do precompute`), which must be re-taken after a data release |
+| €27,590 tied up in 79 overstocked products | say only the €27,590. Don't present the markdown split ("14 won't clear, none worth marking down") as a finding: it is the units model by price alone, which counts neither an offer's lift on purchases when shown (×1.79 at 20 %+) nor the higher place it earns in the shop, so it understates an offer and contradicts Product's "put it on offer" | the same `_estimate` at 5–20 % off, over 13 weeks; price only |
 
 **Caveat (the page's one line):** the forecasts are Aito's estimates for
 May; the euros follow from them. **How well? →** opens the model checks.
+
+**Check first:** the page shows 730 units. If it shows 676 units and €11,097, it is serving release 2's snapshot:
+`./do precompute` has not been run on master since the data release.
 
 **Recovery:** if Supply is slow on its first visit, the snapshot is
 missing for this env; the Overview leaves its card out rather than wait.
@@ -89,9 +88,9 @@ Trixie Hideout). Until a lever writes May, the view shows April.
 
 | On screen | Number | Basis |
 |---|---|---|
-| The decision | "Put it on offer at 10–15 % off": bought when shown 20.6 % → 37.1 % (×1.80) | `_predict purchased` on `impressions` per discount band (`src/discount_what_if.py`); margin per showing (`src/product_decision.py`) |
-| Margin per 100 showings | €206.67 → €269.17 (+30 %); break-even ×1.38 | list price €22.28, cost €12.25, one unit per purchase |
-| Why | 14.2 % (all impressions) × 1.59 (10–15 % off, shop-wide) × 1.73 (this product's own) × 0.95 (Aito's normalising constant) = 37.1 % | the band's `$why`; at 10–15 % it was shown 6 times, at 20 %+ twice |
+| The decision | "Put it on offer at 10–15 % off": bought when shown 20.0 % → 31.5 % (×1.57) | `_predict purchased` on `impressions` per discount band (`src/discount_what_if.py`); margin per showing (`src/product_decision.py`) |
+| Margin per 100 showings | €201.02 → €228.10 (+13 %); break-even ×1.38 | list price €22.28, cost €12.25, one unit per purchase |
+| Why | 14.3 % (all impressions) × 1.38 (10–15 % off, shop-wide) × 1.63 (this product's own) × 0.98 (Aito's normalising constant) = 31.5 % | the band's `$why`; at 10–15 % it was shown 16 times (3 bought), at 20 %+ 7 times (4 bought) |
 
 ## 2b. Pricing and the funnel (about 1 minute)
 
@@ -127,13 +126,13 @@ reads it back from the database before it shows anything."
 
 | On screen | Number | Basis |
 |---|---|---|
-| Read back | "May 2026, 20 % or more off, €17.27, 3 stars" **(Sunday)** | `src/product_levers.py`: April's list price €22.28 at the band's typical 22.5 %; April's stars are 3 (2 reviews) |
-| The what-if's 20 %+ row | 40.8 % bought when shown, ×1.98 vs. no discount, band's lift 1.79 | the same `_predict`; it was shown twice at 20 %+, so the band's lift is the shop-wide one |
-| The decision, May **(Sunday)** | "Change its offer to 10–15 % off": margin per 100 showings €204.84 (20 %+) → €269.17 (10–15 %) | the same estimates, with May's band as the current one |
+| Read back | "May 2026, 20 % or more off, €17.27, 5 stars" **(Sunday)** | `src/product_levers.py`: April's list price €22.28 at the band's typical 22.5 %; April's stars are 5 (1 review) |
+| The what-if's 20 %+ row | 32.7 % bought when shown, ×1.63 vs. no discount, band's lift 1.44 | the same `_predict`; shown 7 times at 20 %+ (4 bought) |
+| The decision, May | "Change its offer to 10–15 % off": margin per 100 showings €164.23 (20 %+) → €228.10 (10–15 %) | the same band table with May's band as the current one; a sandbox run confirms it **(Sunday)** |
 | Price model, May **(Sunday)** | units and profit at €17.27 and €19.50: read in the sandbox | `_estimate units_sold`, regression (`src/price_what_if.py`) |
 
 **Say:** "The decision pushes back. At 20 % off it sells about as well as
-at 10–15 %, so the extra discount is margin given away. The owner gets the
+at 10–15 % (32.7 % against 31.5 %), so the extra discount is margin given away. The owner gets the
 estimate and the reason, and still decides."
 
 **Click:** press **10–15 % off**: the owner takes the advice. The read-back
@@ -160,7 +159,7 @@ far. A shop sees what a visit is for, so it shows one view per intent."
 
 | On screen | Number | Basis |
 |---|---|---|
-| Next for their kit | Trixie Hideout, small 25 %, Trixie Hideout, medium 16 %, PetNord Hideout 14 %, Trixie Exercise Wheel 13 % | `_predict product_sku` on `order_lines` where `owned_before` holds a small-animal cage and water bottle (`src/shop_suggestions.py`); read on `release2` for April; May's list in the sandbox **(Sunday)** |
+| Next for their kit | Trixie Hideout, small 22.5 %, Trixie Hideout, medium 18.9 %, Trixie Exercise Wheel 16.1 %, PetNord Hideout 10 % | `_predict product_sku` on `order_lines` where `owned_before` holds a small-animal cage and water bottle (`src/shop_suggestions.py`); read on master for April; May's list in the sandbox **(Sunday)** |
 | Buy again | PetNord Guinea Pig Mix Food 15kg, 67 % | `_predict skus.$feature` over her own orders before the month |
 
 **Say, on the kit:** "Shoppers who owned a cage and a bottle bought a
@@ -177,7 +176,7 @@ shows it once, as the SKU Aito ranked highest; scores are never added
 
 | On screen | Number | Basis |
 |---|---|---|
-| Before the lever | Trixie Hideout, small is the 10th card, "36 % buy it when shown" (April; May's rank **(Sunday)**) | the Shop's measured `_recommend`, top 40, read on `release2` |
+| Before the lever | Trixie Hideout, small is already the 3rd card, "57 % buy it when shown" (April; May's rank **(Sunday)**). The rise after the lever is from 3rd, not from 10th: find the rank in the sandbox before telling it as a story | the Shop's measured `_recommend`, top 40, read on master |
 | After **(Sunday)** | Trixie Hideout, small rises, with "Score … ↑ … since the offer" and the chip "On offer ×…, learned across the shop" | `src/shop_rescore.py`: Aito's probability × the offer band's factor; the rank change counts cards, as the page shows them |
 | The card's explanation | "Aito's purchase probability … × offer band lift (shop-wide) × star band lift (shop-wide) = score …" | offer factor = lift(band) / lift(none), each from `$why` of `_predict purchased` (`src/shop_state_lifts.py`) |
 
@@ -217,7 +216,7 @@ If the Shop doesn't move, check that the URL still has `?db=` and
 
 **Without a sandbox:** the public Shop, `/shop/?shopper=paivi`, is April
 2026 and shows the same kit path and Buy again. Its "Picked for you" leads
-with PetNord Fruit Drops Treats 100g, crunchy, "56 % buy it when shown", ★ 4.3, −18 % this month
+with PetNord Fruit Drops Treats 100g, classic, "59 % buy it when shown", ★ 3.8, no offer
 (`_recommend impressions` with her pets read from her orders, the month and the cart,
 `src/shop_ranking.py`). Press the **?** on a card for the `$why` chain behind its
 percentage. Her Buy again rests on a single earlier order, so 67 % comes from
@@ -242,7 +241,7 @@ propose."
 | Expected | Basis |
 |---|---|
 | It finds the Trixie Hideout's May row: 20 % or more off, €17.27 **(Sunday)** | `search product_states where {month: 2026-05}` |
-| It quotes 10.6 % at no discount and 19.7 % at 20 %+, calls the lift shop-wide, and calls 5 showings at 20 %+ thin **(Sunday)** | the same `_predict purchased` per band the Product view sends |
+| It quotes 20.0 % at no discount and 32.7 % at 20 %+, calls the lift shop-wide, and calls the 7 showings at 20 %+ thin (as April reads on master; the sandbox's May may differ) **(Sunday)** | the same `_predict purchased` per band the Product view sends |
 
 **Caveat:** the agent's judgement varies from run to run on the same data.
 It proposes, and a person decides. Its brief tells it to quote only
@@ -302,11 +301,11 @@ held out, 56,005 impressions).
 - **Patterns** stays out of the path; use it only if asked about baskets.
 
 - **Patterns** (`/patterns/?anchor=dog_dryfood`): dog dry food and dental
-  treats are in the same basket 2.66× more often than chance (interval
-  2.34–3.03). 67 % of dog dry-food orders have dental treats, and 97 %
-  the other way round. Source: `/api/shop-analytics/baskets`.
-- **What goes with a purchase** (Patterns): products on offer are 1.60×
-  over-represented in purchases ([1.49, 1.72], 3,998 rows). Say "on
+  treats are in the same basket 3.11× more often than chance (interval
+  2.70–3.57). 64 % of dog dry-food orders have dental treats, and 96 %
+  the other way round (2,168 of 10,894 orders hold both). Source: `/api/shop-analytics/baskets`.
+- **What goes with a purchase** (Patterns): products on offer are 1.42×
+  over-represented in purchases ([1.30, 1.54], 2,602 of 6,276 rows). Say "on
   generated data with a planted offer effect". Don't set it beside the
   planted ×2.5: one is a share ratio, the other an odds ratio.
 - **Shop search:** switch to Janne and search "food": only grain-free
@@ -343,3 +342,18 @@ the code refuses any write to it (ADR 0043).
 
 **"How would my shop's data get in?"** As tables like these, through the
 same loader. The schema is in `src/schema.py`.
+
+## Open before a partner demo
+
+- **Take the precompute snapshots on master** (`./do precompute`): Overview, Supply, Retention and Demand are served
+  from snapshots. After the release 3a promote, prod still served release 2's (Supply showed 676 units and €11,097
+  where master computes 730 and €11,682). A release's switch script should run this before the promote
+  (`AITO_ENV=<release env> ./do precompute --as master`), so the snapshots travel with the data.
+- **The sandbox run (Sunday items):** the lever's read-back, the Shop's rank before and after, the offer factor, the
+  agent's quotes. The sandbox template must be reloaded from release 3a first (`./do sandbox-template-load`); until
+  then a sandbox holds release 2's data and its numbers will not match this script.
+- **The rising hideout:** the Hideout is already the 3rd card before the lever. If it rises from 3rd to 1st, say
+  that; if the sandbox shows no rise, pick another product for the story.
+- Sections 6 (UCI, real data) and the "Optional, synthetic" held-out figure (6 %, Jan–Apr 2026) were not re-read: the
+  UCI numbers do not depend on release 3a, and the held-out figure needs `docs/aito-cheatsheet.md`'s measurement
+  re-run on release 3a.
