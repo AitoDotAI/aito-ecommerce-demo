@@ -1,0 +1,129 @@
+# ADR 0050: Product pricing tab with an editable list price, and the funnel
+
+**Status:** Proposed (2026-10-27, Antti: "add a pricing view in the product page as a tab and make the list price
+editable", and "estimate impressions … have a funnel page, which shows the impressions -> clicks -> purchases ->
+profit funnel, that react whenever you change any of the dynamic properties")
+**Date:** 2026-10-27
+**Deciders:** Antti
+**Builds on:** ADR 0048 (KPIs by properties), ADR 0049 (data release 3: the price and the listing as state)
+
+## Context
+
+The Product view lets an owner change a product's offer, stars and label and see the chance of a click and of a
+purchase move (ADR 0048). Two things the owner asks next cannot be answered honestly from release 2.
+
+**A list price the data can learn.** A product's list price is one value, with a rise in 60 products. Across
+products it follows the category, so as evidence it says "dog food" and not "dearer". The price that *varies*
+inside a product, `price_index` (price ÷ the product's list price), lives in `monthly_sales`, not in
+`product_states`, which is what an impression links to. So a click or a purchase estimate cannot be asked
+at a price, and the units regression is additive (ADR 0049, finding 1). Editing the list price today would
+change a number on screen and nothing the data knows.
+
+**Impressions are not a number anywhere on the page.** `impressions` holds the showings that happened; a
+month's count sits in `monthly_sales.showings`. The funnel starts with how often the product will be shown,
+which the owner moves with price, offer and advertising (placement, ADR 0045) and which the ranker moves with
+click-through. Nothing estimates it.
+
+## Decision
+
+### Data (added to release 3, ADR 0049)
+
+- `product_states.price_index`: the month's price ÷ the product's reference list price, 3 decimals. Impressions
+  link it, so `_predict clicked` and `_predict purchased` can take `product_state.price_index` as evidence. If the
+  probe shows Aito wants bins for a linked decimal, it becomes `price_index_band` (below 0.85, 0.85–0.95,
+  0.95–1.05, above 1.05), as the discount is a band today.
+- `monthly_sales.showings_index`: showings ÷ the product's mean showings in the months before it, the
+  multiplicative target for showings, as `units_index` is for units.
+- The generator plants the price in one place, as today: the odds of each showing (ADR 0045); showings,
+  clicks, purchases and units are all counted from them, so the funnel is one process, not three models.
+
+### The Pricing tab
+
+A tab beside *What if / History / For whom* on the Product view:
+
+- **List price field**, prefilled with the product's list price, editable. It sets the *price index* the
+  estimates are asked at (`new price ÷ reference list price`); an offer band applies on top, as it does today.
+- **Curve**: units and profit by list price, from `_estimate units_index` at eight prices, scaled by the product's
+  recent mean units, with the product's own months as dots. The profit-maximising price among those is marked.
+- **Outside what the product has tried** (price index beyond its months' range, ±5 %) the page says "no data
+  here" and greys the estimate. It does not extrapolate quietly.
+- The editor's list price sets the same preview as the offer does (nothing is saved); in a sandbox (ADR 0043) it
+  writes next month's `product_states` row.
+
+### The funnel
+
+The Product view's right side gains a **Funnel** tab (beside Clicks, Purchases, Offer & margin), so it uses the
+editor on the left and reacts to every property in it: offer, list price, stars, label, and release 3's images,
+description and advertising.
+
+| Step | Estimate | Aito |
+|---|---|---|
+| Impressions | recent mean showings × `showings_index` at the state | `_estimate showings_index` on `monthly_sales` |
+| Clicks | impressions × P(click \| shown) | `_predict clicked` on `impressions` |
+| Purchases | impressions × P(purchase \| shown) | `_predict purchased` on `impressions` |
+| Profit | purchases × (price − unit cost) − the month's ad spend | arithmetic |
+
+Each step shows its change against the state as it is now, the last three months' actual funnel beside the
+estimate, and the `$why` of the click and the purchase (as ADR 0048 does). Purchases come from the showing, not
+from clicks × a conversion, so the three steps cannot disagree with the data's own counting.
+
+**Cross-check, shown on the page:** units from the funnel (impressions × P(purchase \| shown)) against units from
+`_estimate units_index` × recent mean. Two routes to one number; a gap larger than 25 % is shown as a warning,
+not hidden.
+
+**Ad spend** is a declared cost per `ad_level`, constants in the code and named as assumptions on the page: none
+€0, search €60, banner €180 per month. Without it, advertising would always win the profit line.
+
+### Impressions and click-through
+
+Showings move with the state through *placement* (ADR 0045: ×1.2–1.6 by offer band, ×1.0/1.4/1.8 by ad level).
+The ranker also lifts what gets clicked, so a click-through gain becomes more showings *next* month. This ADR
+does not plant that loop: the funnel is the first month after a change, and says so. The loop is a follow-up if
+Antti wants it (it would make a price cut's total effect a two-month sum).
+
+## Aito usage
+
+- `_estimate showings_index` and `_estimate units_index` on `monthly_sales`, `model: regression`
+- `_predict clicked`, `_predict purchased` on `impressions`, with `product_state.price_index` and the listing
+  columns, `select ["$p", "$why"]`
+- No new query shapes beyond ADR 0049's; each is probed on a throwaway release-3 branch and added to
+  `docs/aito-cheatsheet.md` before a view uses it.
+
+## Pre-registered checks (added to release 3's prereg)
+
+| # | Check |
+|---|---|
+| Q8 | `price_index` in `product_states` equals the `price_index` of the same product-month in `monthly_sales`, for every row |
+| Q9 | Funnel consistency on held-out months: the funnel's units and `_estimate units_index` × mean agree within 25 % for the median product |
+| Q10 | A 10 % list-price cut raises purchases more than clicks, and showings by the placement factor only, for the median product |
+| Q11 | The profit-maximising price is inside the product's tried range for at least 90 % of products with 8+ index values |
+
+## Acceptance criteria
+
+- A user can type a new list price for a product and see its units, profit and the profit-maximising price move,
+  with the product's own months as dots and the data it came from named.
+- A user typing a price outside what the product has tried sees "no data here", not a number.
+- A user can change the offer, list price, stars, label, pictures, description or advertising and see all four
+  funnel steps move; advertising moves impressions and clicks but not the purchase chance per showing.
+- The funnel's units and the units curve agree within 25 %, or the page says they do not.
+- Ad spend and its assumed levels are visible next to the profit line.
+
+## Demo impact
+
+`docs/demo-script.md`: a pricing step on the Product view ("what is the best price, and where does the data stop")
+and a funnel step ("pictures and ads, and what each does to profit"). Written after release 3, with its numbers.
+
+## Out of scope
+
+- The loop from click-through to next month's showings.
+- A shop-wide funnel (all products summed); the per-product funnel is the first step.
+- Saving a list price outside the sandbox, competitors' prices, a price optimiser across products.
+- Building any of this before release 3 is loaded: the tab and funnel need its columns.
+
+## Consequences
+
+**Good:** the owner's two decisions, price and listing, are answered from one process, with the funnel as the
+single readout, and the limits of the data are on the page.
+
+**Bad:** it waits for release 3 (a reload of `product_states` and `monthly_sales`), and the ad costs are our
+assumption until the shop declares its own.
