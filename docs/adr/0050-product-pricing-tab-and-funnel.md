@@ -1,6 +1,6 @@
 # ADR 0050: Product pricing tab with an editable list price, and the funnel
 
-**Status:** Proposed (2026-10-27, Antti: "add a pricing view in the product page as a tab and make the list price
+**Status:** Proposed (2026-10-27; weekly table and the ranker's loop chosen the same day. Antti: "add a pricing view in the product page as a tab and make the list price
 editable", and "estimate impressions … have a funnel page, which shows the impressions -> clicks -> purchases ->
 profit funnel, that react whenever you change any of the dynamic properties")
 **Date:** 2026-10-27
@@ -32,8 +32,13 @@ click-through. Nothing estimates it.
   link it, so `_predict clicked` and `_predict purchased` can take `product_state.price_index` as evidence. If the
   probe shows Aito wants bins for a linked decimal, it becomes `price_index_band` (below 0.85, 0.85–0.95,
   0.95–1.05, above 1.05), as the discount is a band today.
-- `monthly_sales.showings_index`: showings ÷ the product's mean showings in the months before it, the
-  multiplicative target for showings, as `units_index` is for units.
+- **`product_weeks`**, a new table: one row per product-week (`SKU-PT-0182-2026-W14`, the week belonging to the
+  month of its Monday) with `showings`, `clicks`, `purchases`, `revenue_eur`, the `product_state` in force (the
+  month's), and two relative columns: `showings_index` (showings ÷ the product's mean weekly showings before
+  that week, the multiplicative target, as `units_index` is for units) and `ctr_prev_week_index` (last week's
+  click-through ÷ the product's mean before it; unset in a product's first weeks). `impressions` gain `week`.
+  About 65 000 rows. A day would be too thin: the median product-month has 4 showings and 8 % have none, and a
+  zero breaks a multiplicative regression (ADR 0049, finding 1). `monthly_sales` still gains `units_index`.
 - The generator plants the price in one place, as today: the odds of each showing (ADR 0045); showings,
   clicks, purchases and units are all counted from them, so the funnel is one process, not three models.
 
@@ -58,7 +63,7 @@ description and advertising.
 
 | Step | Estimate | Aito |
 |---|---|---|
-| Impressions | recent mean showings × `showings_index` at the state | `_estimate showings_index` on `monthly_sales` |
+| Impressions | recent mean weekly showings × `showings_index` at the state and last week's click-through, weeks 1–4 | `_estimate showings_index` on `product_weeks` |
 | Clicks | impressions × P(click \| shown) | `_predict clicked` on `impressions` |
 | Purchases | impressions × P(purchase \| shown) | `_predict purchased` on `impressions` |
 | Profit | purchases × (price − unit cost) − the month's ad spend | arithmetic |
@@ -74,16 +79,23 @@ not hidden.
 **Ad spend** is a declared cost per `ad_level`, constants in the code and named as assumptions on the page: none
 €0, search €60, banner €180 per month. Without it, advertising would always win the profit line.
 
-### Impressions and click-through
+### Impressions and click-through: the ranker's loop
 
 Showings move with the state through *placement* (ADR 0045: ×1.2–1.6 by offer band, ×1.0/1.4/1.8 by ad level).
-The ranker also lifts what gets clicked, so a click-through gain becomes more showings *next* month. This ADR
-does not plant that loop: the funnel is the first month after a change, and says so. The loop is a follow-up if
-Antti wants it (it would make a price cut's total effect a two-month sum).
+The ranker also shows more of what gets clicked, so last week's click-through lifts this week's showings. The
+generator plants that: `showings = base × placement(state) × ctr_prev_week_index^γ`, γ = 0.5, with the index
+clamped to [0.5, 2] so a lucky week cannot run away. Showings are drawn first and clicks from them, so the loop
+does not make clicks and showings the same number.
+
+The question "if CTR rose 50 %, how much more is shown?" is then a query, not an assumption:
+`_estimate showings_index` where `ctr_prev_week_index` = 1.5 against 1.0. The funnel runs it forward: week 1 is
+the state's own effect, and weeks 2–4 add the loop, so a price cut or a picture shows its total effect on
+showings after four weeks, not only its first. The pre-registered γ is a plant; the page shows what Aito
+estimates, and Q12 says how close that must be.
 
 ## Aito usage
 
-- `_estimate showings_index` and `_estimate units_index` on `monthly_sales`, `model: regression`
+- `_estimate showings_index` on `product_weeks` and `_estimate units_index` on `monthly_sales`, `model: regression`
 - `_predict clicked`, `_predict purchased` on `impressions`, with `product_state.price_index` and the listing
   columns, `select ["$p", "$why"]`
 - No new query shapes beyond ADR 0049's; each is probed on a throwaway release-3 branch and added to
@@ -97,12 +109,16 @@ Antti wants it (it would make a price cut's total effect a two-month sum).
 | Q9 | Funnel consistency on held-out months: the funnel's units and `_estimate units_index` × mean agree within 25 % for the median product |
 | Q10 | A 10 % list-price cut raises purchases more than clicks, and showings by the placement factor only, for the median product |
 | Q11 | The profit-maximising price is inside the product's tried range for at least 90 % of products with 8+ index values |
+| Q12 | Loop recovered: the log-log slope of `_estimate showings_index` on `ctr_prev_week_index` between 0.8 and 1.25 is in [0.2, 0.8] on held-out weeks (γ = 0.5 planted; the index is built from a few clicks a week, so it is noisy and the slope is expected to read low) |
+| Q13 | `product_weeks` sums to `monthly_sales` (showings, purchases, revenue) for every product-month, and to `impressions` (ADR 0045's O1 extended to the week) |
+| Q14 | Without the loop, no slope: on a copy of the data generated with γ = 0, the Q12 slope is in [−0.1, 0.1], so the estimate is not the offer's placement counted twice |
 
 ## Acceptance criteria
 
 - A user can type a new list price for a product and see its units, profit and the profit-maximising price move,
   with the product's own months as dots and the data it came from named.
 - A user typing a price outside what the product has tried sees "no data here", not a number.
+- A user can see, for a click-through gain, how many more showings follow after one and after four weeks, and that this is estimated from the data.
 - A user can change the offer, list price, stars, label, pictures, description or advertising and see all four
   funnel steps move; advertising moves impressions and clicks but not the purchase chance per showing.
 - The funnel's units and the units curve agree within 25 %, or the page says they do not.
@@ -115,7 +131,8 @@ and a funnel step ("pictures and ads, and what each does to profit"). Written af
 
 ## Out of scope
 
-- The loop from click-through to next month's showings.
+- A loop from clicks to anything but showings (reviews, stars, price).
+- A daily table.
 - A shop-wide funnel (all products summed); the per-product funnel is the first step.
 - Saving a list price outside the sandbox, competitors' prices, a price optimiser across products.
 - Building any of this before release 3 is loaded: the tab and funnel need its columns.
@@ -125,5 +142,5 @@ and a funnel step ("pictures and ads, and what each does to profit"). Written af
 **Good:** the owner's two decisions, price and listing, are answered from one process, with the funnel as the
 single readout, and the limits of the data are on the page.
 
-**Bad:** it waits for release 3 (a reload of `product_states` and `monthly_sales`), and the ad costs are our
+**Bad:** it waits for release 3, now larger: a new table, a loop in the generator and `week` on every impression, a reload of `product_states`, `monthly_sales` and `impressions`, and every order-side check re-run. The ad costs are our
 assumption until the shop declares its own.
