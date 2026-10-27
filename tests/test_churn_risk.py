@@ -96,3 +96,13 @@ def test_an_active_customer_without_a_row_for_their_last_order_is_an_error():
 
     with pytest.raises(AitoError, match="no customer_months row"):
         score_active_customers(fake)
+
+
+def test_a_customer_who_never_ordered_is_not_asked_for_as_active():
+    fake = ChurnAito()
+
+    score_active_customers(fake)
+
+    customers_where = next(where for table, where in fake.searches if table == "customers")
+    # `churned: false` alone would include a customer with no orders (the label counts from the last order)
+    assert customers_where == {"churned": False, "last_order_month": {"$exists": True}}
