@@ -99,3 +99,17 @@ def test_the_listing_is_the_same_for_the_same_seed():
     args = (7, [f"SKU-{i}" for i in range(50)], ["2025-01", "2025-02"], frozenset())
 
     assert listing.plan_listing(*args) == listing.plan_listing(*args)
+
+
+def test_the_relative_targets_are_the_month_against_the_products_earlier_mean(sales):
+    by_product = defaultdict(list)
+    for ms in sorted(sales, key=lambda r: r["month"]):
+        by_product[ms["product_sku"]].append(ms)
+    for sku, rows in list(by_product.items())[:150]:
+        for i, ms in enumerate(rows):
+            for column, index in (("units_sold", "units_index"), ("showings", "showings_index")):
+                mean = sum(r[column] for r in rows[:i]) / i if i else 0.0
+                if mean > 0:
+                    assert ms[index] == pytest.approx(ms[column] / mean, abs=0.001), (sku, ms["month"], index)
+                else:
+                    assert ms.get(index) is None, f"{sku} {ms['month']}: {index} is set with nothing earlier to compare with"

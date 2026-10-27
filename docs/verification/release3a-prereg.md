@@ -107,6 +107,9 @@ click is near 0.4. What changed, and why:
    the effective price ÷ the product's original list price (it was ÷ that month's list), so a list price change and
    an offer both show in it; Q8a is `price_index` = `list_price_index` × price ÷ list price.
 7. **`units_index`** is unset when the product sold nothing in the months before, as well as in its first month.
+8. **`showings_index`** joins `units_index` on `monthly_sales` in 3a (ADR 0050 had it on `product_weeks`, 3b): the
+   funnel's first step, showings ÷ the product's mean showings in the months before, so the funnel works on 3a
+   alone. Same unset rule. It changes no other table and no draw.
 
 ### Results (2026-10-27)
 

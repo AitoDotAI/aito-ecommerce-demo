@@ -534,6 +534,7 @@ class MonthlySale:
     description_quality: str = "ok"
     ad_level: str = "none"
     units_index: float | None = None
+    showings_index: float | None = None
 
 
 @dataclass
@@ -2789,18 +2790,28 @@ def backfill_monthly_sales_prices(
     _backfill_units_index(monthly_sales)
 
 
-def _backfill_units_index(monthly_sales: list[MonthlySale]) -> None:
-    """`units_index`: units ÷ the product's mean units in the months before it (ADR 0049). A regression on it
-    is multiplicative across products. Unset in a product's first month, and when it sold nothing before."""
-    by_product: dict[str, list[MonthlySale]] = {}
-    for ms in monthly_sales:
-        by_product.setdefault(ms.product_sku, []).append(ms)
+def _relative_to_earlier_months(monthly_sales: list[MonthlySale], column: str) -> list[float | None]:
+    """`column` ÷ the product's mean of it in the months before, per row in `monthly_sales`' order: a target a
+    regression can read as multiplicative across products (ADR 0049). None in a product's first month, and
+    when the earlier months held nothing."""
+    by_product: dict[str, list[tuple[str, int]]] = {}
+    for i, ms in enumerate(monthly_sales):
+        by_product.setdefault(ms.product_sku, []).append((ms.month, i))
+    index: list[float | None] = [None] * len(monthly_sales)
     for rows in by_product.values():
         total = 0
-        for i, ms in enumerate(sorted(rows, key=lambda r: r.month)):
-            mean = total / i if i else 0.0
-            ms.units_index = round(ms.units_sold / mean, 3) if mean > 0 else None
-            total += ms.units_sold
+        for n, (_, i) in enumerate(sorted(rows)):
+            value = getattr(monthly_sales[i], column)
+            mean = total / n if n else 0.0
+            index[i] = round(value / mean, 3) if mean > 0 else None
+            total += value
+    return index
+
+
+def _backfill_units_index(monthly_sales: list[MonthlySale]) -> None:
+    """`units_index`: units ÷ the product's mean units in the months before it (ADR 0049)."""
+    for ms, value in zip(monthly_sales, _relative_to_earlier_months(monthly_sales, "units_sold")):
+        ms.units_index = value
 
 
 def backfill_showings(monthly_sales: list[MonthlySale], contexts: list[observable.Context],
@@ -2811,6 +2822,9 @@ def backfill_showings(monthly_sales: list[MonthlySale], contexts: list[observabl
     showings = Counter((imp.product_sku, month_of[imp.context]) for imp in impressions)
     for ms in monthly_sales:
         ms.showings = showings[(ms.product_sku, ms.month)]
+    # ADR 0050: the funnel's first step, relative to the product's own earlier months.
+    for ms, value in zip(monthly_sales, _relative_to_earlier_months(monthly_sales, "showings")):
+        ms.showings_index = value
 
 
 def gen_winback_campaigns(

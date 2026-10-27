@@ -397,6 +397,8 @@ SCHEMAS: dict[str, dict] = {
             "description_quality": {"type": "String",  "nullable": False},
             "ad_level":            {"type": "String",  "nullable": False},
             "units_index":         {"type": "Decimal", "nullable": True},
+            # ADR 0050: showings ÷ the product's mean before it, the funnel's first step.
+            "showings_index":      {"type": "Decimal", "nullable": True},
         },
     },
     # 8. inventory — per-SKU stock snapshot. Drives the Inventory
