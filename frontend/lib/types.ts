@@ -1036,13 +1036,13 @@ export interface ProductPricing {
 }
 
 export interface Funnel {
-  impressions: number; clicks: number; purchases: number;
+  impressions: number; clicks: number; purchases: number; units: number;
   price_eur: number; revenue_eur: number; gross_profit_eur: number; ad_spend_eur: number; profit_eur: number;
   ctr: number; purchase_rate: number; showings_index: number;
 }
 
 export interface ProductFunnel {
-  sku: string; month: string; mean_showings: number; mean_units: number | null; units_per_showing: number; own_purchase_rate: number; no_data: string | null; unit_cost_eur: number;
+  sku: string; month: string; mean_showings: number; mean_units: number | null; units_per_purchase: number; own_ctr: number; own_conversion: number; no_data: string | null; unit_cost_eur: number;
   now: Funnel; asked: Funnel; changed: string[];
   check_units: number | null; check_gap: number | null; check_ok: boolean | null;
   last_month: { showings?: number; units?: number };

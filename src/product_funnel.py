@@ -6,16 +6,17 @@ changes one (the offer, the list price, the stars, the pictures, the description
 - impressions: the product's mean showings before the month × `_estimate showings_index` (regression, on
   `monthly_sales`: the product, its offer and its advertising). Showings are what the ranker gives it, and
   an offer or an advertisement is what moves them (placement, ADR 0045);
-- clicks, purchases: impressions × the chance a showing ends in one, from `src/product_kpi.py`'s
-  `_predict clicked` / `purchased` on the product's properties;
-- purchases are units: impressions × the product's own units per showing (its history) × how much more or less
-  likely than its average showing the properties make a purchase (`_predict purchased` ÷ the product's own
-  rate). Aito's rate alone counts only ranked showings of one unit each, and a product also sells to
-  re-orders and in multiples, so its level comes from the product's own months;
-- profit: purchases × (price − unit cost) − the month's ad spend.
+- clicks: impressions × `_predict clicked` on the product's properties (src/product_kpi.py);
+- purchases: clicks × `_predict purchased` on the same properties given `clicked: true`, so a purchase is a
+  click that went on (the data is monotone: purchased ⇒ clicked) and never exceeds the clicks;
+- Aito learns both over the ranked showings only. The product's own history carries them to all its showings:
+  the click rate by the ratio of its own rate over all showings to the ranked one, the conversion likewise in
+  odds, so it stays below 1. Aito says how the properties move the chance, the product's history its level;
+- a purchase buys `units_per_purchase` units, the product's own units ÷ its purchased showings. In the page
+  the width is purchases and the height is units per purchase;
+- profit: units × (price − unit cost) − the month's ad spend.
 
-Purchases come from the showing, not from clicks × a conversion, so the steps cannot disagree with the way
-the data counts them. `check_units` is the same quantity by another route, `_estimate units_index` at the
+`check_units` is the same quantity by another route, `_estimate units_index` at the
 price × the mean units (src/product_pricing.py); a gap of more than CHECK_GAP is reported, not hidden.
 """
 
@@ -27,7 +28,7 @@ from src.aito_client import AitoClient, AitoError
 from src.demand_forecast import LATEST_MONTH
 from src.lookup_errors import ProductNotOnSaleError, UnknownProductError
 from src.product_decision import BAND_DISCOUNT_PCT
-from src.product_kpi import get_product_kpis
+from src.product_kpi import get_product_kpis, where_for
 from src.product_pricing import RANGE_MARGIN, estimate_units_index
 
 # What an advertisement costs the shop a month, by level. The shop declares its own; these are ours until it
@@ -40,10 +41,11 @@ CHECK_GAP = 0.25
 class Funnel:
     impressions: float
     clicks: float
-    purchases: float
+    purchases: float            # showings that ended in a purchase: at most the clicks
+    units: float                # purchases × the product's units per purchase
     price_eur: float
     revenue_eur: float
-    gross_profit_eur: float     # purchases × (price − unit cost)
+    gross_profit_eur: float     # units × (price − unit cost)
     ad_spend_eur: float
     profit_eur: float           # after the ad spend
     ctr: float                  # P(click | shown) for the properties
@@ -57,8 +59,9 @@ class ProductFunnel:
     month: str
     mean_showings: float        # the product's showings a month before `month`
     mean_units: float | None
-    units_per_showing: float    # the product's units sold ÷ its showings, all months
-    own_purchase_rate: float    # P(purchase | shown) over the product's own ranked showings, all months
+    units_per_purchase: float   # the product's units sold ÷ its showings that ended in a purchase, all months
+    own_ctr: float              # its click rate over all its showings, and purchased ÷ clicked, all months
+    own_conversion: float       # purchased ÷ clicked
     no_data: str | None         # why the list price asked was left out, when it is beyond the prices tried
     unit_cost_eur: float
     now: Funnel                 # the product's properties as they are
@@ -85,6 +88,10 @@ def get_product_funnel(client: AitoClient, sku: str, month: str = LATEST_MONTH,
                        changes: dict[str, object] | None = None, list_price_eur: float | None = None) -> ProductFunnel:
     """`changes`: the properties the owner changed (src/product_kpi.py's EDITABLE); `list_price_eur`: a new list price."""
     changes = dict(changes or {})
+    products = client.search("products", where={"sku": sku}, limit=1)["hits"]
+    if not products:
+        raise UnknownProductError(f"No product {sku} in the catalogue")
+    product = products[0]
     states = client.search("product_states", where={"product_sku": sku, "month": month}, limit=1)["hits"]
     if not states:
         raise ProductNotOnSaleError(f"{sku} has no state in {month}")
@@ -109,22 +116,22 @@ def get_product_funnel(client: AitoClient, sku: str, month: str = LATEST_MONTH,
         changes["list_price_index"] = round(list_price_eur / reference, 3)
 
     no_data = _drop_list_price_beyond_the_data(changes, state, sales, reference)
-    calibration = _calibration(client, sku, sales)
-    now = _funnel(client, sku, month, {}, state, reference, unit_cost, mean_showings, calibration)
-    asked = _funnel(client, sku, month, changes, state, reference, unit_cost, mean_showings, calibration) if changes else now
+    history = _history(client, sku, sales)
+    now = _funnel(client, sku, month, {}, product, state, reference, unit_cost, mean_showings, history)
+    asked = _funnel(client, sku, month, changes, product, state, reference, unit_cost, mean_showings, history) if changes else now
     check_units = check_gap = check_ok = None
     if mean_units is not None:
         index = float(_property(changes, state, "list_price_index"))
         offer = _offer_pct(state, _property(changes, state, "discount_band"))
         check_units = estimate_units_index(client, sku, round(index * (1 - offer / 100), 3)) * mean_units
-        check_gap = (asked.purchases - check_units) / check_units if check_units else None
+        check_gap = (asked.units - check_units) / check_units if check_units else None
         check_ok = None if check_gap is None else abs(check_gap) <= CHECK_GAP
     this_month = next((r for r in sales if r["month"] == month), None)
     band, ad = _property(changes, state, "discount_band"), _property(changes, state, "ad_level")
     return ProductFunnel(
         sku=sku, month=month, mean_showings=round(mean_showings, 2),
-        mean_units=None if mean_units is None else round(mean_units, 2), units_per_showing=round(calibration[0], 3),
-        own_purchase_rate=round(calibration[1], 4), no_data=no_data,
+        mean_units=None if mean_units is None else round(mean_units, 2), units_per_purchase=round(history.units_per_purchase, 2),
+        own_ctr=round(history.ctr, 4), own_conversion=round(history.conversion, 4), no_data=no_data,
         unit_cost_eur=round(unit_cost, 2), now=now, asked=asked, changed=sorted(changes), check_units=None if check_units is None else round(check_units, 2),
         check_gap=None if check_gap is None else round(check_gap, 3), check_ok=check_ok,
         last_month={} if this_month is None else {"showings": this_month["showings"], "units": this_month["units_sold"]},
@@ -153,22 +160,46 @@ def _drop_list_price_beyond_the_data(changes: dict, state: dict, sales: list[dic
             f"(€{min(indexes) * reference:.2f}–€{max(indexes) * reference:.2f} paid), so the funnel keeps today's list price.")
 
 
-def _calibration(client: AitoClient, sku: str, sales: list[dict]) -> tuple[float, float]:
-    """(units per showing, purchase rate per ranked showing) over all the product's months. The funnel's level
-    is the first; Aito's `_predict purchased` says how the properties move the second."""
-    shown = client.search("impressions", where={"product_sku": sku}, limit=0)["total"]
-    purchased = client.search("impressions", where={"product_sku": sku, "purchased": True}, limit=0)["total"]
-    units, showings = sum(r["units_sold"] for r in sales), sum(r["showings"] for r in sales)
+@dataclass(frozen=True)
+class History:
+    """The product's own months: its click and purchase rates over all its showings, the same over the ranked
+    ones Aito learns from, and the units a purchase buys."""
+    ctr: float
+    purchase_rate: float
+    conversion: float           # purchased ÷ clicked
+    ranked_ctr: float
+    ranked_conversion: float
+    units_per_purchase: float
+
+
+def _history(client: AitoClient, sku: str, sales: list[dict]) -> History:
+    counts = [{"from": table, "where": {"product_sku": sku, **outcome}, "limit": 0}
+              for table in ("impressions", "unranked_showings")
+              for outcome in ({}, {"clicked": True}, {"purchased": True})]
+    (r_shown, r_clicked, r_purchased, u_shown, u_clicked, u_purchased) = (a["total"] for a in client.batch(counts))
+    shown, clicked, purchased = r_shown + u_shown, r_clicked + u_clicked, r_purchased + u_purchased
+    units = sum(r["units_sold"] for r in sales)
     if not units:
-        return 0.0, 0.0     # never sold: nothing to scale, the funnel shows 0
-    if not showings or not shown or not purchased:
-        raise AitoError(f"{sku} has {showings} showings, {shown} ranked impressions and {purchased} purchased: "
-                        "no purchase rate of its own to scale the funnel by")
-    return units / showings, purchased / shown
+        return History(0.0, 0.0, 0.0, 1.0, 1.0, 0.0)     # never sold: the funnel shows no purchases
+    if not (r_shown and r_clicked and r_purchased and purchased):
+        raise AitoError(f"{sku} sold {units} units but has {r_shown} ranked showings, {r_clicked} clicked and "
+                        f"{r_purchased} purchased: no rate of its own to scale the funnel by")
+    return History(ctr=clicked / shown, purchase_rate=purchased / shown, conversion=purchased / clicked,
+                   ranked_ctr=r_clicked / r_shown, ranked_conversion=r_purchased / r_clicked,
+                   units_per_purchase=units / purchased)
 
 
-def _funnel(client: AitoClient, sku: str, month: str, changes: dict[str, object], state: dict, reference: float,
-            unit_cost: float, mean_showings: float, calibration: tuple[float, float]) -> Funnel:
+def _carry(aito: float, ranked: float, own: float) -> float:
+    """Aito's conversion for the properties, moved from the ranked showings' level to the product's own, in
+    odds so the result stays inside (0, 1). A conversion of exactly 0 or 1 has no odds and is kept as it is."""
+    if not (0 < aito < 1 and 0 < ranked < 1 and 0 < own < 1):
+        return aito
+    odds = own / (1 - own) * (aito / (1 - aito)) / (ranked / (1 - ranked))
+    return odds / (1 + odds)
+
+
+def _funnel(client: AitoClient, sku: str, month: str, changes: dict[str, object], product: dict, state: dict, reference: float,
+            unit_cost: float, mean_showings: float, history: History) -> Funnel:
     kpis = get_product_kpis(client, sku, month, changes)
     band, ad = _property(changes, state, "discount_band"), _property(changes, state, "ad_level")
     answer = client.estimate("monthly_sales", showings_body(sku, band, ad)["where"], "showings_index",
@@ -177,18 +208,31 @@ def _funnel(client: AitoClient, sku: str, month: str, changes: dict[str, object]
         raise AitoError(f"_estimate showings_index returned no estimate for {sku} ({band}, {ad}): {answer}")
     showings_index = max(float(answer["estimate"]), 0.0)
     impressions = mean_showings * showings_index
-    ctr, rate = (kpis.estimates[k].p for k in ("clicked", "purchased"))
+    # Aito's rates are over ranked showings; the product's own history carries them to all its showings.
+    ctr = kpis.estimates["clicked"].p * history.ctr / history.ranked_ctr
+    conversion = _carry(_conversion(client, product, state, changes), history.ranked_conversion, history.conversion)
+    rate = ctr * conversion
     list_price = reference * float(_property(changes, state, "list_price_index"))
     offer = _offer_pct(state, band)
     price = round(list_price * (1 - offer / 100), 2)
-    units_per_showing, own_rate = calibration
-    purchases = impressions * units_per_showing * rate / own_rate if units_per_showing else 0.0
-    gross = purchases * (price - unit_cost)
+    purchases = impressions * rate
+    units = purchases * history.units_per_purchase
+    gross = units * (price - unit_cost)
     ad_spend = AD_SPEND_EUR[ad]
     return Funnel(impressions=round(impressions, 2), clicks=round(impressions * ctr, 2), purchases=round(purchases, 2),
-                  price_eur=price, revenue_eur=round(purchases * price, 2), gross_profit_eur=round(gross, 2),
+                  units=round(units, 2), price_eur=price, revenue_eur=round(units * price, 2), gross_profit_eur=round(gross, 2),
                   ad_spend_eur=ad_spend, profit_eur=round(gross - ad_spend, 2), ctr=ctr, purchase_rate=rate,
                   showings_index=round(showings_index, 3))
+
+
+def _conversion(client: AitoClient, product: dict, state: dict, changes: dict[str, object]) -> float:
+    """`_predict purchased` for the product's properties among showings that were clicked."""
+    where = {**where_for(product, state, changes), "clicked": True}
+    answer = client.predict("impressions", where, "purchased")
+    hit = next((h for h in answer.get("hits", []) if h.get("feature") is True), None)
+    if hit is None:
+        raise AitoError(f"_predict purchased given clicked had no `true` hit: {str(answer)[:300]}")
+    return float(hit["$p"])
 
 
 def _offer_pct(state: dict, band: str) -> float:
