@@ -1,0 +1,2914 @@
+[
+  {
+    "order_id": "ORD-00001",
+    "customer_id": "CUST-00001",
+    "month": "2025-09",
+    "total_eur": 4.63,
+    "line_categories": "cat_treats cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00002",
+    "customer_id": "CUST-00001",
+    "month": "2025-01",
+    "total_eur": 28.83,
+    "line_categories": "cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00003",
+    "customer_id": "CUST-00001",
+    "month": "2024-10",
+    "total_eur": 49.66,
+    "line_categories": "cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00004",
+    "customer_id": "CUST-00001",
+    "month": "2026-01",
+    "total_eur": 1.66,
+    "line_categories": "cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00005",
+    "customer_id": "CUST-00001",
+    "month": "2025-07",
+    "total_eur": 3.32,
+    "line_categories": "cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00006",
+    "customer_id": "CUST-00001",
+    "month": "2025-12",
+    "total_eur": 64.62,
+    "line_categories": "cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00007",
+    "customer_id": "CUST-00001",
+    "month": "2025-01",
+    "total_eur": 58.67,
+    "line_categories": "cat_litter cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00008",
+    "customer_id": "CUST-00001",
+    "month": "2025-07",
+    "total_eur": 18.26,
+    "line_categories": "cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00009",
+    "customer_id": "CUST-00001",
+    "month": "2025-05",
+    "total_eur": 71.67,
+    "line_categories": "cat_wetfood cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00010",
+    "customer_id": "CUST-00001",
+    "month": "2024-12",
+    "total_eur": 7.08,
+    "line_categories": "cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00011",
+    "customer_id": "CUST-00001",
+    "month": "2025-10",
+    "total_eur": 7.35,
+    "line_categories": "cat_wetfood cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00012",
+    "customer_id": "CUST-00001",
+    "month": "2026-03",
+    "total_eur": 6.25,
+    "line_categories": "cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00013",
+    "customer_id": "CUST-00002",
+    "month": "2025-10",
+    "total_eur": 0.94,
+    "line_categories": "dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00014",
+    "customer_id": "CUST-00002",
+    "month": "2025-09",
+    "total_eur": 4.66,
+    "line_categories": "dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00015",
+    "customer_id": "CUST-00002",
+    "month": "2026-03",
+    "total_eur": 31.41,
+    "line_categories": "dog_dryfood cat_wetfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00016",
+    "customer_id": "CUST-00002",
+    "month": "2025-08",
+    "total_eur": 228.2,
+    "line_categories": "dog_dryfood dog_treats dog_treats dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00017",
+    "customer_id": "CUST-00002",
+    "month": "2025-09",
+    "total_eur": 98.32,
+    "line_categories": "cat_dryfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00018",
+    "customer_id": "CUST-00002",
+    "month": "2025-07",
+    "total_eur": 183.35,
+    "line_categories": "dog_toys dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00019",
+    "customer_id": "CUST-00002",
+    "month": "2025-11",
+    "total_eur": 23.74,
+    "line_categories": "dog_wetfood dog_treats dog_toys dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00020",
+    "customer_id": "CUST-00002",
+    "month": "2026-01",
+    "total_eur": 282.13,
+    "line_categories": "dog_dryfood dog_dryfood dog_accessories dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00021",
+    "customer_id": "CUST-00002",
+    "month": "2026-04",
+    "total_eur": 21.53,
+    "line_categories": "dog_toys dog_treats dog_dryfood"
+  },
+  {
+    "order_id": "ORD-00022",
+    "customer_id": "CUST-00002",
+    "month": "2026-04",
+    "total_eur": 4.53,
+    "line_categories": "dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00023",
+    "customer_id": "CUST-00003",
+    "month": "2025-04",
+    "total_eur": 82.9,
+    "line_categories": "dog_dryfood dog_wetfood dog_dentaltreats dog_wetfood dog_health dog_treats"
+  },
+  {
+    "order_id": "ORD-00024",
+    "customer_id": "CUST-00003",
+    "month": "2024-09",
+    "total_eur": 5.2,
+    "line_categories": "dog_treats dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00025",
+    "customer_id": "CUST-00003",
+    "month": "2025-11",
+    "total_eur": 50.38,
+    "line_categories": "dog_dryfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00026",
+    "customer_id": "CUST-00003",
+    "month": "2025-11",
+    "total_eur": 26.84,
+    "line_categories": "dog_wetfood dog_accessories dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00027",
+    "customer_id": "CUST-00003",
+    "month": "2025-08",
+    "total_eur": 94.36,
+    "line_categories": "dog_dryfood dog_accessories"
+  },
+  {
+    "order_id": "ORD-00028",
+    "customer_id": "CUST-00003",
+    "month": "2024-05",
+    "total_eur": 147.65,
+    "line_categories": "dog_wetfood dog_wetfood dog_dryfood dog_health small_animal_health dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00029",
+    "customer_id": "CUST-00003",
+    "month": "2024-12",
+    "total_eur": 18.41,
+    "line_categories": "dog_wetfood dog_dryfood dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00030",
+    "customer_id": "CUST-00003",
+    "month": "2025-08",
+    "total_eur": 86.29,
+    "line_categories": "dog_dryfood dog_wetfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00031",
+    "customer_id": "CUST-00003",
+    "month": "2024-06",
+    "total_eur": 20.18,
+    "line_categories": "dog_accessories"
+  },
+  {
+    "order_id": "ORD-00032",
+    "customer_id": "CUST-00003",
+    "month": "2025-04",
+    "total_eur": 53.5,
+    "line_categories": "dog_toys dog_dryfood dog_toys dog_wetfood dog_wetfood dog_dryfood"
+  },
+  {
+    "order_id": "ORD-00033",
+    "customer_id": "CUST-00003",
+    "month": "2025-05",
+    "total_eur": 22.51,
+    "line_categories": "dog_wetfood dog_wetfood dog_dryfood dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00034",
+    "customer_id": "CUST-00003",
+    "month": "2024-12",
+    "total_eur": 4.45,
+    "line_categories": "dog_treats dog_wetfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00035",
+    "customer_id": "CUST-00003",
+    "month": "2025-11",
+    "total_eur": 39.45,
+    "line_categories": "dog_dryfood dog_dryfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00036",
+    "customer_id": "CUST-00003",
+    "month": "2024-07",
+    "total_eur": 22.39,
+    "line_categories": "dog_accessories dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00037",
+    "customer_id": "CUST-00004",
+    "month": "2025-12",
+    "total_eur": 31.02,
+    "line_categories": "dog_toys dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00038",
+    "customer_id": "CUST-00004",
+    "month": "2026-01",
+    "total_eur": 22.79,
+    "line_categories": "dog_wetfood dog_toys dog_wetfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00039",
+    "customer_id": "CUST-00005",
+    "month": "2025-08",
+    "total_eur": 50.82,
+    "line_categories": "aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00040",
+    "customer_id": "CUST-00006",
+    "month": "2026-04",
+    "total_eur": 4.75,
+    "line_categories": "cat_wetfood cat_treats"
+  },
+  {
+    "order_id": "ORD-00041",
+    "customer_id": "CUST-00006",
+    "month": "2026-03",
+    "total_eur": 1.6,
+    "line_categories": "cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00042",
+    "customer_id": "CUST-00006",
+    "month": "2026-04",
+    "total_eur": 133.88,
+    "line_categories": "cat_dryfood dog_accessories cat_accessories"
+  },
+  {
+    "order_id": "ORD-00043",
+    "customer_id": "CUST-00006",
+    "month": "2026-04",
+    "total_eur": 96.81,
+    "line_categories": "cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00044",
+    "customer_id": "CUST-00007",
+    "month": "2026-04",
+    "total_eur": 3.6,
+    "line_categories": "dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00045",
+    "customer_id": "CUST-00007",
+    "month": "2025-11",
+    "total_eur": 19.82,
+    "line_categories": "dog_wetfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00046",
+    "customer_id": "CUST-00007",
+    "month": "2026-02",
+    "total_eur": 117.95,
+    "line_categories": "dog_dryfood dog_dryfood dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00047",
+    "customer_id": "CUST-00007",
+    "month": "2026-04",
+    "total_eur": 124.2,
+    "line_categories": "dog_accessories dog_dentaltreats dog_dryfood"
+  },
+  {
+    "order_id": "ORD-00048",
+    "customer_id": "CUST-00008",
+    "month": "2026-02",
+    "total_eur": 187.32,
+    "line_categories": "small_animal_dryfood small_animal_accessories small_animal_accessories small_animal_toys"
+  },
+  {
+    "order_id": "ORD-00049",
+    "customer_id": "CUST-00008",
+    "month": "2026-04",
+    "total_eur": 395.32,
+    "line_categories": "small_animal_dryfood small_animal_dryfood small_animal_dryfood"
+  },
+  {
+    "order_id": "ORD-00050",
+    "customer_id": "CUST-00008",
+    "month": "2025-10",
+    "total_eur": 37.2,
+    "line_categories": "small_animal_dryfood bird_treats"
+  },
+  {
+    "order_id": "ORD-00051",
+    "customer_id": "CUST-00008",
+    "month": "2026-03",
+    "total_eur": 190.9,
+    "line_categories": "bird_toys small_animal_dryfood small_animal_toys"
+  },
+  {
+    "order_id": "ORD-00052",
+    "customer_id": "CUST-00008",
+    "month": "2026-01",
+    "total_eur": 48.77,
+    "line_categories": "small_animal_dryfood small_animal_accessories small_animal_treats"
+  },
+  {
+    "order_id": "ORD-00053",
+    "customer_id": "CUST-00008",
+    "month": "2026-01",
+    "total_eur": 105.14,
+    "line_categories": "small_animal_dryfood bird_dryfood"
+  },
+  {
+    "order_id": "ORD-00054",
+    "customer_id": "CUST-00009",
+    "month": "2026-01",
+    "total_eur": 253.2,
+    "line_categories": "dog_dryfood dog_dryfood dog_dryfood"
+  },
+  {
+    "order_id": "ORD-00055",
+    "customer_id": "CUST-00009",
+    "month": "2026-04",
+    "total_eur": 167.36,
+    "line_categories": "cat_dryfood cat_wetfood cat_treats dog_dryfood"
+  },
+  {
+    "order_id": "ORD-00056",
+    "customer_id": "CUST-00010",
+    "month": "2025-09",
+    "total_eur": 26.08,
+    "line_categories": "cat_wetfood cat_wetfood cat_wetfood cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00057",
+    "customer_id": "CUST-00010",
+    "month": "2025-11",
+    "total_eur": 25.68,
+    "line_categories": "cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00058",
+    "customer_id": "CUST-00010",
+    "month": "2025-11",
+    "total_eur": 27.92,
+    "line_categories": "cat_dryfood dog_dryfood"
+  },
+  {
+    "order_id": "ORD-00059",
+    "customer_id": "CUST-00010",
+    "month": "2025-09",
+    "total_eur": 65.5,
+    "line_categories": "cat_wetfood cat_wetfood cat_dryfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00060",
+    "customer_id": "CUST-00010",
+    "month": "2025-09",
+    "total_eur": 4.15,
+    "line_categories": "cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00061",
+    "customer_id": "CUST-00010",
+    "month": "2025-10",
+    "total_eur": 45.74,
+    "line_categories": "cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00062",
+    "customer_id": "CUST-00010",
+    "month": "2025-10",
+    "total_eur": 359.3,
+    "line_categories": "cat_dryfood cat_dryfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00063",
+    "customer_id": "CUST-00011",
+    "month": "2025-06",
+    "total_eur": 2.87,
+    "line_categories": "dog_treats dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00064",
+    "customer_id": "CUST-00012",
+    "month": "2024-11",
+    "total_eur": 1.7,
+    "line_categories": "cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00065",
+    "customer_id": "CUST-00013",
+    "month": "2025-12",
+    "total_eur": 11.14,
+    "line_categories": "dog_dryfood dog_wetfood dog_treats dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00066",
+    "customer_id": "CUST-00013",
+    "month": "2026-03",
+    "total_eur": 67.86,
+    "line_categories": "dog_wetfood dog_wetfood dog_dryfood dog_toys dog_accessories cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00067",
+    "customer_id": "CUST-00013",
+    "month": "2026-01",
+    "total_eur": 82.32,
+    "line_categories": "dog_wetfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00068",
+    "customer_id": "CUST-00013",
+    "month": "2026-04",
+    "total_eur": 8.13,
+    "line_categories": "dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00069",
+    "customer_id": "CUST-00013",
+    "month": "2026-02",
+    "total_eur": 73.98,
+    "line_categories": "dog_dryfood dog_dryfood dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00070",
+    "customer_id": "CUST-00014",
+    "month": "2024-09",
+    "total_eur": 81.89,
+    "line_categories": "small_animal_accessories small_animal_dryfood small_animal_treats"
+  },
+  {
+    "order_id": "ORD-00071",
+    "customer_id": "CUST-00014",
+    "month": "2025-03",
+    "total_eur": 34.13,
+    "line_categories": "small_animal_treats small_animal_treats small_animal_accessories"
+  },
+  {
+    "order_id": "ORD-00072",
+    "customer_id": "CUST-00014",
+    "month": "2024-10",
+    "total_eur": 14.07,
+    "line_categories": "small_animal_treats small_animal_treats small_animal_treats"
+  },
+  {
+    "order_id": "ORD-00073",
+    "customer_id": "CUST-00014",
+    "month": "2025-07",
+    "total_eur": 111.49,
+    "line_categories": "small_animal_accessories small_animal_treats small_animal_dryfood small_animal_treats"
+  },
+  {
+    "order_id": "ORD-00074",
+    "customer_id": "CUST-00014",
+    "month": "2026-02",
+    "total_eur": 50.71,
+    "line_categories": "small_animal_accessories small_animal_treats small_animal_treats"
+  },
+  {
+    "order_id": "ORD-00075",
+    "customer_id": "CUST-00014",
+    "month": "2024-05",
+    "total_eur": 117.18,
+    "line_categories": "small_animal_toys small_animal_dryfood"
+  },
+  {
+    "order_id": "ORD-00076",
+    "customer_id": "CUST-00014",
+    "month": "2026-03",
+    "total_eur": 275.21,
+    "line_categories": "small_animal_treats bird_dryfood small_animal_treats small_animal_dryfood"
+  },
+  {
+    "order_id": "ORD-00077",
+    "customer_id": "CUST-00014",
+    "month": "2025-11",
+    "total_eur": 77.52,
+    "line_categories": "small_animal_treats bird_accessories bird_dryfood small_animal_treats small_animal_treats"
+  },
+  {
+    "order_id": "ORD-00078",
+    "customer_id": "CUST-00015",
+    "month": "2025-09",
+    "total_eur": 37.43,
+    "line_categories": "dog_dryfood dog_accessories dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00079",
+    "customer_id": "CUST-00015",
+    "month": "2025-07",
+    "total_eur": 19.02,
+    "line_categories": "dog_dryfood dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00080",
+    "customer_id": "CUST-00015",
+    "month": "2026-04",
+    "total_eur": 30.73,
+    "line_categories": "dog_wetfood dog_accessories dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00081",
+    "customer_id": "CUST-00015",
+    "month": "2025-09",
+    "total_eur": 38.79,
+    "line_categories": "dog_dryfood dog_dryfood dog_dryfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00082",
+    "customer_id": "CUST-00015",
+    "month": "2025-10",
+    "total_eur": 55.49,
+    "line_categories": "dog_wetfood dog_toys dog_accessories"
+  },
+  {
+    "order_id": "ORD-00083",
+    "customer_id": "CUST-00015",
+    "month": "2025-08",
+    "total_eur": 59.67,
+    "line_categories": "dog_wetfood dog_treats dog_dryfood dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00084",
+    "customer_id": "CUST-00015",
+    "month": "2025-02",
+    "total_eur": 200.06,
+    "line_categories": "dog_dryfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00085",
+    "customer_id": "CUST-00015",
+    "month": "2025-11",
+    "total_eur": 64.99,
+    "line_categories": "dog_wetfood dog_wetfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00086",
+    "customer_id": "CUST-00015",
+    "month": "2025-01",
+    "total_eur": 54.99,
+    "line_categories": "dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00087",
+    "customer_id": "CUST-00016",
+    "month": "2025-01",
+    "total_eur": 71.03,
+    "line_categories": "aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00088",
+    "customer_id": "CUST-00016",
+    "month": "2025-04",
+    "total_eur": 97.35,
+    "line_categories": "aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00089",
+    "customer_id": "CUST-00016",
+    "month": "2025-04",
+    "total_eur": 100.67,
+    "line_categories": "aquarium_aquarium cat_treats aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00090",
+    "customer_id": "CUST-00016",
+    "month": "2026-04",
+    "total_eur": 48.59,
+    "line_categories": "aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00091",
+    "customer_id": "CUST-00016",
+    "month": "2024-12",
+    "total_eur": 48.32,
+    "line_categories": "aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00092",
+    "customer_id": "CUST-00016",
+    "month": "2024-10",
+    "total_eur": 75.68,
+    "line_categories": "aquarium_aquarium aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00093",
+    "customer_id": "CUST-00016",
+    "month": "2024-10",
+    "total_eur": 77.75,
+    "line_categories": "aquarium_aquarium aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00094",
+    "customer_id": "CUST-00016",
+    "month": "2026-02",
+    "total_eur": 51.66,
+    "line_categories": "aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00095",
+    "customer_id": "CUST-00016",
+    "month": "2026-03",
+    "total_eur": 73.83,
+    "line_categories": "aquarium_aquarium aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00096",
+    "customer_id": "CUST-00016",
+    "month": "2025-08",
+    "total_eur": 102.68,
+    "line_categories": "aquarium_aquarium aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00097",
+    "customer_id": "CUST-00016",
+    "month": "2025-06",
+    "total_eur": 174.82,
+    "line_categories": "aquarium_aquarium aquarium_aquarium aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00098",
+    "customer_id": "CUST-00016",
+    "month": "2024-12",
+    "total_eur": 124.68,
+    "line_categories": "aquarium_aquarium aquarium_aquarium aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00099",
+    "customer_id": "CUST-00017",
+    "month": "2025-09",
+    "total_eur": 32.47,
+    "line_categories": "cat_treats dog_wetfood cat_treats"
+  },
+  {
+    "order_id": "ORD-00100",
+    "customer_id": "CUST-00018",
+    "month": "2026-02",
+    "total_eur": 26.68,
+    "line_categories": "cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00101",
+    "customer_id": "CUST-00018",
+    "month": "2026-01",
+    "total_eur": 66.73,
+    "line_categories": "cat_dryfood cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00102",
+    "customer_id": "CUST-00018",
+    "month": "2026-04",
+    "total_eur": 58.62,
+    "line_categories": "cat_dryfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00103",
+    "customer_id": "CUST-00018",
+    "month": "2026-02",
+    "total_eur": 28.19,
+    "line_categories": "cat_wetfood cat_wetfood cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00104",
+    "customer_id": "CUST-00019",
+    "month": "2026-03",
+    "total_eur": 31.79,
+    "line_categories": "dog_dryfood dog_wetfood dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00105",
+    "customer_id": "CUST-00020",
+    "month": "2026-04",
+    "total_eur": 98.55,
+    "line_categories": "cat_dryfood cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00106",
+    "customer_id": "CUST-00021",
+    "month": "2025-12",
+    "total_eur": 7.13,
+    "line_categories": "cat_wetfood cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00107",
+    "customer_id": "CUST-00021",
+    "month": "2025-10",
+    "total_eur": 7.25,
+    "line_categories": "cat_wetfood cat_treats cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00108",
+    "customer_id": "CUST-00021",
+    "month": "2024-12",
+    "total_eur": 89.6,
+    "line_categories": "cat_wetfood cat_treats cat_wetfood cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00109",
+    "customer_id": "CUST-00021",
+    "month": "2025-05",
+    "total_eur": 247.12,
+    "line_categories": "cat_dryfood cat_dryfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00110",
+    "customer_id": "CUST-00021",
+    "month": "2025-06",
+    "total_eur": 60.36,
+    "line_categories": "cat_dryfood dog_wetfood cat_treats"
+  },
+  {
+    "order_id": "ORD-00111",
+    "customer_id": "CUST-00021",
+    "month": "2026-03",
+    "total_eur": 45.07,
+    "line_categories": "cat_wetfood cat_wetfood cat_treats cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00112",
+    "customer_id": "CUST-00021",
+    "month": "2026-01",
+    "total_eur": 20.85,
+    "line_categories": "cat_wetfood cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00113",
+    "customer_id": "CUST-00021",
+    "month": "2025-09",
+    "total_eur": 34.5,
+    "line_categories": "cat_wetfood dog_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00114",
+    "customer_id": "CUST-00021",
+    "month": "2026-03",
+    "total_eur": 28.9,
+    "line_categories": "cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00115",
+    "customer_id": "CUST-00021",
+    "month": "2025-04",
+    "total_eur": 123.62,
+    "line_categories": "cat_dryfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00116",
+    "customer_id": "CUST-00021",
+    "month": "2025-10",
+    "total_eur": 22.46,
+    "line_categories": "cat_litter"
+  },
+  {
+    "order_id": "ORD-00117",
+    "customer_id": "CUST-00021",
+    "month": "2025-10",
+    "total_eur": 13.42,
+    "line_categories": "cat_wetfood cat_wetfood cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00118",
+    "customer_id": "CUST-00021",
+    "month": "2024-12",
+    "total_eur": 73.02,
+    "line_categories": "cat_dryfood cat_dryfood cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00119",
+    "customer_id": "CUST-00021",
+    "month": "2024-11",
+    "total_eur": 19.45,
+    "line_categories": "cat_wetfood cat_dryfood cat_treats"
+  },
+  {
+    "order_id": "ORD-00120",
+    "customer_id": "CUST-00022",
+    "month": "2025-10",
+    "total_eur": 8.86,
+    "line_categories": "dog_wetfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00121",
+    "customer_id": "CUST-00022",
+    "month": "2025-08",
+    "total_eur": 69.32,
+    "line_categories": "dog_wetfood dog_toys dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00122",
+    "customer_id": "CUST-00022",
+    "month": "2025-06",
+    "total_eur": 5.55,
+    "line_categories": "dog_wetfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00123",
+    "customer_id": "CUST-00022",
+    "month": "2025-06",
+    "total_eur": 23.2,
+    "line_categories": "dog_toys dog_treats dog_treats"
+  },
+  {
+    "order_id": "ORD-00124",
+    "customer_id": "CUST-00022",
+    "month": "2025-02",
+    "total_eur": 31.1,
+    "line_categories": "dog_grooming dog_treats"
+  },
+  {
+    "order_id": "ORD-00125",
+    "customer_id": "CUST-00022",
+    "month": "2025-11",
+    "total_eur": 103.6,
+    "line_categories": "dog_dryfood"
+  },
+  {
+    "order_id": "ORD-00126",
+    "customer_id": "CUST-00023",
+    "month": "2026-04",
+    "total_eur": 23.91,
+    "line_categories": "dog_wetfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00127",
+    "customer_id": "CUST-00024",
+    "month": "2025-09",
+    "total_eur": 5.88,
+    "line_categories": "dog_wetfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00128",
+    "customer_id": "CUST-00024",
+    "month": "2025-07",
+    "total_eur": 55.73,
+    "line_categories": "dog_wetfood dog_dryfood dog_treats"
+  },
+  {
+    "order_id": "ORD-00129",
+    "customer_id": "CUST-00024",
+    "month": "2025-10",
+    "total_eur": 69.14,
+    "line_categories": "dog_wetfood dog_dryfood dog_dryfood dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00130",
+    "customer_id": "CUST-00024",
+    "month": "2025-06",
+    "total_eur": 22.26,
+    "line_categories": "dog_wetfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00131",
+    "customer_id": "CUST-00024",
+    "month": "2026-01",
+    "total_eur": 277.72,
+    "line_categories": "dog_dryfood dog_wetfood dog_treats dog_dryfood dog_dryfood"
+  },
+  {
+    "order_id": "ORD-00132",
+    "customer_id": "CUST-00024",
+    "month": "2025-07",
+    "total_eur": 213.21,
+    "line_categories": "dog_dryfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00133",
+    "customer_id": "CUST-00024",
+    "month": "2026-01",
+    "total_eur": 52.87,
+    "line_categories": "dog_treats dog_dryfood dog_treats dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00134",
+    "customer_id": "CUST-00024",
+    "month": "2025-06",
+    "total_eur": 84.31,
+    "line_categories": "dog_treats dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00135",
+    "customer_id": "CUST-00025",
+    "month": "2025-11",
+    "total_eur": 115.0,
+    "line_categories": "cat_dryfood cat_wetfood cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00136",
+    "customer_id": "CUST-00026",
+    "month": "2025-06",
+    "total_eur": 99.72,
+    "line_categories": "aquarium_aquarium aquarium_aquarium aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00137",
+    "customer_id": "CUST-00027",
+    "month": "2025-01",
+    "total_eur": 50.92,
+    "line_categories": "dog_dryfood dog_dryfood dog_wetfood dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00138",
+    "customer_id": "CUST-00027",
+    "month": "2025-02",
+    "total_eur": 81.57,
+    "line_categories": "dog_wetfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00139",
+    "customer_id": "CUST-00027",
+    "month": "2025-11",
+    "total_eur": 34.73,
+    "line_categories": "dog_dryfood dog_accessories dog_wetfood dog_treats"
+  },
+  {
+    "order_id": "ORD-00140",
+    "customer_id": "CUST-00027",
+    "month": "2025-05",
+    "total_eur": 79.01,
+    "line_categories": "dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00141",
+    "customer_id": "CUST-00027",
+    "month": "2024-12",
+    "total_eur": 19.73,
+    "line_categories": "dog_wetfood dog_dentaltreats dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00142",
+    "customer_id": "CUST-00027",
+    "month": "2025-04",
+    "total_eur": 92.85,
+    "line_categories": "dog_dryfood dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00143",
+    "customer_id": "CUST-00028",
+    "month": "2026-02",
+    "total_eur": 39.36,
+    "line_categories": "cat_wetfood cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00144",
+    "customer_id": "CUST-00029",
+    "month": "2026-04",
+    "total_eur": 90.93,
+    "line_categories": "dog_toys dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00145",
+    "customer_id": "CUST-00029",
+    "month": "2026-02",
+    "total_eur": 0.94,
+    "line_categories": "dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00146",
+    "customer_id": "CUST-00029",
+    "month": "2025-04",
+    "total_eur": 4.94,
+    "line_categories": "dog_wetfood small_animal_treats"
+  },
+  {
+    "order_id": "ORD-00147",
+    "customer_id": "CUST-00029",
+    "month": "2025-08",
+    "total_eur": 33.88,
+    "line_categories": "dog_treats dog_wetfood dog_wetfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00148",
+    "customer_id": "CUST-00029",
+    "month": "2025-06",
+    "total_eur": 32.98,
+    "line_categories": "dog_dentaltreats dog_wetfood dog_wetfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00149",
+    "customer_id": "CUST-00029",
+    "month": "2026-03",
+    "total_eur": 41.75,
+    "line_categories": "dog_accessories dog_treats dog_treats"
+  },
+  {
+    "order_id": "ORD-00150",
+    "customer_id": "CUST-00029",
+    "month": "2026-04",
+    "total_eur": 128.89,
+    "line_categories": "dog_dryfood dog_accessories dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00151",
+    "customer_id": "CUST-00029",
+    "month": "2025-09",
+    "total_eur": 22.28,
+    "line_categories": "dog_wetfood dog_dryfood dog_wetfood dog_treats dog_wetfood small_animal_treats dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00152",
+    "customer_id": "CUST-00030",
+    "month": "2026-02",
+    "total_eur": 6.14,
+    "line_categories": "dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00153",
+    "customer_id": "CUST-00030",
+    "month": "2026-03",
+    "total_eur": 28.32,
+    "line_categories": "dog_dryfood"
+  },
+  {
+    "order_id": "ORD-00154",
+    "customer_id": "CUST-00030",
+    "month": "2025-12",
+    "total_eur": 29.08,
+    "line_categories": "dog_wetfood dog_wetfood dog_dryfood dog_treats"
+  },
+  {
+    "order_id": "ORD-00155",
+    "customer_id": "CUST-00031",
+    "month": "2024-08",
+    "total_eur": 46.91,
+    "line_categories": "bird_dryfood small_animal_accessories"
+  },
+  {
+    "order_id": "ORD-00156",
+    "customer_id": "CUST-00031",
+    "month": "2024-08",
+    "total_eur": 39.18,
+    "line_categories": "small_animal_accessories"
+  },
+  {
+    "order_id": "ORD-00157",
+    "customer_id": "CUST-00031",
+    "month": "2024-11",
+    "total_eur": 1.93,
+    "line_categories": "bird_treats"
+  },
+  {
+    "order_id": "ORD-00158",
+    "customer_id": "CUST-00031",
+    "month": "2024-11",
+    "total_eur": 161.85,
+    "line_categories": "small_animal_treats cat_dryfood bird_dryfood small_animal_accessories cat_toys"
+  },
+  {
+    "order_id": "ORD-00159",
+    "customer_id": "CUST-00031",
+    "month": "2025-04",
+    "total_eur": 548.72,
+    "line_categories": "bird_accessories small_animal_dryfood small_animal_dryfood small_animal_dryfood"
+  },
+  {
+    "order_id": "ORD-00160",
+    "customer_id": "CUST-00031",
+    "month": "2025-05",
+    "total_eur": 75.19,
+    "line_categories": "small_animal_treats small_animal_accessories small_animal_treats cat_dryfood small_animal_treats"
+  },
+  {
+    "order_id": "ORD-00161",
+    "customer_id": "CUST-00031",
+    "month": "2025-06",
+    "total_eur": 192.1,
+    "line_categories": "small_animal_dryfood cat_dryfood small_animal_accessories small_animal_dryfood"
+  },
+  {
+    "order_id": "ORD-00162",
+    "customer_id": "CUST-00032",
+    "month": "2025-06",
+    "total_eur": 126.39,
+    "line_categories": "dog_dryfood dog_accessories dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00163",
+    "customer_id": "CUST-00032",
+    "month": "2025-07",
+    "total_eur": 43.51,
+    "line_categories": "dog_wetfood dog_toys cat_treats cat_wetfood dog_toys"
+  },
+  {
+    "order_id": "ORD-00164",
+    "customer_id": "CUST-00032",
+    "month": "2024-12",
+    "total_eur": 5.0,
+    "line_categories": "dog_dentaltreats cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00165",
+    "customer_id": "CUST-00032",
+    "month": "2025-11",
+    "total_eur": 49.49,
+    "line_categories": "cat_dryfood cat_wetfood cat_dryfood cat_treats dog_dryfood"
+  },
+  {
+    "order_id": "ORD-00166",
+    "customer_id": "CUST-00032",
+    "month": "2026-01",
+    "total_eur": 1.67,
+    "line_categories": "dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00167",
+    "customer_id": "CUST-00032",
+    "month": "2025-02",
+    "total_eur": 4.18,
+    "line_categories": "cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00168",
+    "customer_id": "CUST-00033",
+    "month": "2026-04",
+    "total_eur": 7.02,
+    "line_categories": "cat_wetfood cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00169",
+    "customer_id": "CUST-00033",
+    "month": "2026-04",
+    "total_eur": 10.91,
+    "line_categories": "cat_wetfood cat_wetfood cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00170",
+    "customer_id": "CUST-00033",
+    "month": "2026-02",
+    "total_eur": 63.38,
+    "line_categories": "cat_treats cat_dryfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00171",
+    "customer_id": "CUST-00033",
+    "month": "2026-04",
+    "total_eur": 92.14,
+    "line_categories": "cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00172",
+    "customer_id": "CUST-00034",
+    "month": "2026-03",
+    "total_eur": 82.95,
+    "line_categories": "cat_wetfood dog_accessories cat_dryfood cat_wetfood dog_dryfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00173",
+    "customer_id": "CUST-00034",
+    "month": "2026-04",
+    "total_eur": 63.46,
+    "line_categories": "cat_dryfood cat_wetfood dog_treats"
+  },
+  {
+    "order_id": "ORD-00174",
+    "customer_id": "CUST-00034",
+    "month": "2026-04",
+    "total_eur": 203.45,
+    "line_categories": "dog_dryfood cat_treats dog_wetfood dog_dryfood cat_wetfood dog_treats dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00175",
+    "customer_id": "CUST-00035",
+    "month": "2026-03",
+    "total_eur": 13.44,
+    "line_categories": "cat_wetfood cat_wetfood cat_treats dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00176",
+    "customer_id": "CUST-00035",
+    "month": "2026-03",
+    "total_eur": 1.67,
+    "line_categories": "dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00177",
+    "customer_id": "CUST-00035",
+    "month": "2026-04",
+    "total_eur": 8.65,
+    "line_categories": "cat_wetfood cat_wetfood dog_wetfood small_animal_treats"
+  },
+  {
+    "order_id": "ORD-00178",
+    "customer_id": "CUST-00035",
+    "month": "2026-02",
+    "total_eur": 175.73,
+    "line_categories": "cat_wetfood cat_dryfood cat_treats cat_accessories"
+  },
+  {
+    "order_id": "ORD-00179",
+    "customer_id": "CUST-00036",
+    "month": "2025-11",
+    "total_eur": 14.92,
+    "line_categories": "cat_dryfood cat_treats"
+  },
+  {
+    "order_id": "ORD-00180",
+    "customer_id": "CUST-00036",
+    "month": "2025-08",
+    "total_eur": 7.02,
+    "line_categories": "cat_wetfood cat_wetfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00181",
+    "customer_id": "CUST-00036",
+    "month": "2025-10",
+    "total_eur": 3.83,
+    "line_categories": "small_animal_treats"
+  },
+  {
+    "order_id": "ORD-00182",
+    "customer_id": "CUST-00036",
+    "month": "2025-10",
+    "total_eur": 22.85,
+    "line_categories": "cat_treats dog_accessories"
+  },
+  {
+    "order_id": "ORD-00183",
+    "customer_id": "CUST-00036",
+    "month": "2025-08",
+    "total_eur": 50.71,
+    "line_categories": "cat_dryfood dog_treats cat_treats"
+  },
+  {
+    "order_id": "ORD-00184",
+    "customer_id": "CUST-00036",
+    "month": "2025-08",
+    "total_eur": 141.01,
+    "line_categories": "cat_wetfood cat_wetfood cat_wetfood cat_treats cat_treats dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00185",
+    "customer_id": "CUST-00036",
+    "month": "2025-09",
+    "total_eur": 21.92,
+    "line_categories": "dog_treats dog_wetfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00186",
+    "customer_id": "CUST-00037",
+    "month": "2026-03",
+    "total_eur": 28.23,
+    "line_categories": "cat_wetfood cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00187",
+    "customer_id": "CUST-00037",
+    "month": "2026-01",
+    "total_eur": 278.95,
+    "line_categories": "cat_dryfood cat_wetfood cat_treats cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00188",
+    "customer_id": "CUST-00037",
+    "month": "2026-02",
+    "total_eur": 19.83,
+    "line_categories": "cat_wetfood cat_treats"
+  },
+  {
+    "order_id": "ORD-00189",
+    "customer_id": "CUST-00037",
+    "month": "2026-03",
+    "total_eur": 47.42,
+    "line_categories": "cat_dryfood cat_wetfood cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00190",
+    "customer_id": "CUST-00037",
+    "month": "2025-12",
+    "total_eur": 376.18,
+    "line_categories": "cat_dryfood cat_dryfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00191",
+    "customer_id": "CUST-00037",
+    "month": "2026-04",
+    "total_eur": 109.93,
+    "line_categories": "dog_dryfood cat_treats cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00192",
+    "customer_id": "CUST-00038",
+    "month": "2025-08",
+    "total_eur": 4.22,
+    "line_categories": "cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00193",
+    "customer_id": "CUST-00038",
+    "month": "2025-05",
+    "total_eur": 112.28,
+    "line_categories": "cat_dryfood cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00194",
+    "customer_id": "CUST-00038",
+    "month": "2025-06",
+    "total_eur": 3.43,
+    "line_categories": "cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00195",
+    "customer_id": "CUST-00039",
+    "month": "2025-01",
+    "total_eur": 8.34,
+    "line_categories": "dog_wetfood dog_treats dog_treats"
+  },
+  {
+    "order_id": "ORD-00196",
+    "customer_id": "CUST-00039",
+    "month": "2025-01",
+    "total_eur": 39.52,
+    "line_categories": "dog_wetfood dog_dryfood dog_treats dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00197",
+    "customer_id": "CUST-00039",
+    "month": "2025-03",
+    "total_eur": 146.26,
+    "line_categories": "dog_wetfood dog_dryfood dog_health dog_dentaltreats dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00198",
+    "customer_id": "CUST-00039",
+    "month": "2025-02",
+    "total_eur": 4.57,
+    "line_categories": "dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00199",
+    "customer_id": "CUST-00040",
+    "month": "2025-09",
+    "total_eur": 95.99,
+    "line_categories": "small_animal_dryfood small_animal_toys"
+  },
+  {
+    "order_id": "ORD-00200",
+    "customer_id": "CUST-00040",
+    "month": "2025-11",
+    "total_eur": 147.13,
+    "line_categories": "small_animal_toys small_animal_toys small_animal_dryfood"
+  },
+  {
+    "order_id": "ORD-00201",
+    "customer_id": "CUST-00040",
+    "month": "2025-11",
+    "total_eur": 147.9,
+    "line_categories": "small_animal_treats small_animal_dryfood small_animal_dryfood small_animal_dryfood"
+  },
+  {
+    "order_id": "ORD-00202",
+    "customer_id": "CUST-00040",
+    "month": "2025-09",
+    "total_eur": 123.53,
+    "line_categories": "small_animal_treats small_animal_dryfood small_animal_dryfood"
+  },
+  {
+    "order_id": "ORD-00203",
+    "customer_id": "CUST-00040",
+    "month": "2025-09",
+    "total_eur": 159.31,
+    "line_categories": "small_animal_dryfood small_animal_toys bird_accessories small_animal_accessories small_animal_health"
+  },
+  {
+    "order_id": "ORD-00204",
+    "customer_id": "CUST-00040",
+    "month": "2025-10",
+    "total_eur": 176.74,
+    "line_categories": "small_animal_dryfood small_animal_dryfood small_animal_accessories small_animal_dryfood"
+  },
+  {
+    "order_id": "ORD-00205",
+    "customer_id": "CUST-00041",
+    "month": "2025-07",
+    "total_eur": 80.94,
+    "line_categories": "dog_wetfood dog_accessories dog_dryfood dog_wetfood dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00206",
+    "customer_id": "CUST-00042",
+    "month": "2025-11",
+    "total_eur": 61.38,
+    "line_categories": "dog_dryfood cat_treats dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00207",
+    "customer_id": "CUST-00042",
+    "month": "2026-03",
+    "total_eur": 61.78,
+    "line_categories": "dog_toys dog_dryfood dog_dryfood"
+  },
+  {
+    "order_id": "ORD-00208",
+    "customer_id": "CUST-00042",
+    "month": "2026-03",
+    "total_eur": 26.91,
+    "line_categories": "cat_accessories cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00209",
+    "customer_id": "CUST-00042",
+    "month": "2025-09",
+    "total_eur": 24.98,
+    "line_categories": "cat_litter"
+  },
+  {
+    "order_id": "ORD-00210",
+    "customer_id": "CUST-00042",
+    "month": "2026-04",
+    "total_eur": 158.41,
+    "line_categories": "cat_treats cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00211",
+    "customer_id": "CUST-00042",
+    "month": "2026-01",
+    "total_eur": 5.58,
+    "line_categories": "small_animal_treats cat_treats"
+  },
+  {
+    "order_id": "ORD-00212",
+    "customer_id": "CUST-00042",
+    "month": "2025-08",
+    "total_eur": 28.57,
+    "line_categories": "cat_dryfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00213",
+    "customer_id": "CUST-00043",
+    "month": "2025-09",
+    "total_eur": 12.88,
+    "line_categories": "dog_wetfood dog_wetfood dog_treats dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00214",
+    "customer_id": "CUST-00043",
+    "month": "2025-12",
+    "total_eur": 102.58,
+    "line_categories": "dog_treats dog_dryfood dog_health"
+  },
+  {
+    "order_id": "ORD-00215",
+    "customer_id": "CUST-00043",
+    "month": "2025-11",
+    "total_eur": 257.14,
+    "line_categories": "dog_wetfood dog_dryfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00216",
+    "customer_id": "CUST-00043",
+    "month": "2026-03",
+    "total_eur": 117.77,
+    "line_categories": "dog_dryfood dog_dryfood dog_wetfood dog_accessories dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00217",
+    "customer_id": "CUST-00043",
+    "month": "2025-10",
+    "total_eur": 16.85,
+    "line_categories": "dog_wetfood dog_wetfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00218",
+    "customer_id": "CUST-00043",
+    "month": "2025-10",
+    "total_eur": 60.87,
+    "line_categories": "dog_dryfood dog_toys dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00219",
+    "customer_id": "CUST-00044",
+    "month": "2025-12",
+    "total_eur": 142.36,
+    "line_categories": "cat_dryfood cat_dryfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00220",
+    "customer_id": "CUST-00044",
+    "month": "2025-11",
+    "total_eur": 1.05,
+    "line_categories": "cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00221",
+    "customer_id": "CUST-00044",
+    "month": "2026-02",
+    "total_eur": 180.28,
+    "line_categories": "cat_dryfood cat_wetfood cat_dryfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00222",
+    "customer_id": "CUST-00044",
+    "month": "2026-03",
+    "total_eur": 3.1,
+    "line_categories": "cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00223",
+    "customer_id": "CUST-00045",
+    "month": "2026-01",
+    "total_eur": 32.13,
+    "line_categories": "dog_dryfood dog_wetfood dog_treats dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00224",
+    "customer_id": "CUST-00045",
+    "month": "2025-11",
+    "total_eur": 94.39,
+    "line_categories": "dog_wetfood dog_dryfood dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00225",
+    "customer_id": "CUST-00045",
+    "month": "2026-03",
+    "total_eur": 7.03,
+    "line_categories": "dog_treats dog_wetfood dog_wetfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00226",
+    "customer_id": "CUST-00045",
+    "month": "2026-02",
+    "total_eur": 51.73,
+    "line_categories": "dog_toys dog_accessories dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00227",
+    "customer_id": "CUST-00045",
+    "month": "2026-01",
+    "total_eur": 36.12,
+    "line_categories": "dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00228",
+    "customer_id": "CUST-00046",
+    "month": "2025-08",
+    "total_eur": 97.29,
+    "line_categories": "cat_dryfood cat_treats cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00229",
+    "customer_id": "CUST-00047",
+    "month": "2025-11",
+    "total_eur": 148.86,
+    "line_categories": "dog_dryfood dog_dryfood cat_dryfood dog_accessories"
+  },
+  {
+    "order_id": "ORD-00230",
+    "customer_id": "CUST-00047",
+    "month": "2026-04",
+    "total_eur": 23.01,
+    "line_categories": "cat_treats small_animal_treats dog_wetfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00231",
+    "customer_id": "CUST-00047",
+    "month": "2025-04",
+    "total_eur": 43.37,
+    "line_categories": "dog_wetfood dog_dryfood dog_wetfood cat_toys cat_litter"
+  },
+  {
+    "order_id": "ORD-00232",
+    "customer_id": "CUST-00047",
+    "month": "2025-03",
+    "total_eur": 38.31,
+    "line_categories": "cat_wetfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00233",
+    "customer_id": "CUST-00047",
+    "month": "2025-06",
+    "total_eur": 0.98,
+    "line_categories": "cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00234",
+    "customer_id": "CUST-00047",
+    "month": "2025-11",
+    "total_eur": 8.7,
+    "line_categories": "dog_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00235",
+    "customer_id": "CUST-00047",
+    "month": "2025-09",
+    "total_eur": 6.09,
+    "line_categories": "dog_wetfood dog_treats"
+  },
+  {
+    "order_id": "ORD-00236",
+    "customer_id": "CUST-00048",
+    "month": "2025-12",
+    "total_eur": 23.45,
+    "line_categories": "dog_accessories dog_treats"
+  },
+  {
+    "order_id": "ORD-00237",
+    "customer_id": "CUST-00048",
+    "month": "2026-04",
+    "total_eur": 34.9,
+    "line_categories": "dog_accessories dog_treats dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00238",
+    "customer_id": "CUST-00048",
+    "month": "2026-04",
+    "total_eur": 21.56,
+    "line_categories": "dog_dryfood dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00239",
+    "customer_id": "CUST-00048",
+    "month": "2026-03",
+    "total_eur": 103.21,
+    "line_categories": "dog_accessories dog_dryfood small_animal_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00240",
+    "customer_id": "CUST-00048",
+    "month": "2026-03",
+    "total_eur": 245.15,
+    "line_categories": "dog_treats dog_dryfood dog_dryfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00241",
+    "customer_id": "CUST-00048",
+    "month": "2025-10",
+    "total_eur": 95.3,
+    "line_categories": "dog_wetfood dog_dryfood dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00242",
+    "customer_id": "CUST-00049",
+    "month": "2025-09",
+    "total_eur": 93.61,
+    "line_categories": "dog_dryfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00243",
+    "customer_id": "CUST-00050",
+    "month": "2026-02",
+    "total_eur": 132.64,
+    "line_categories": "cat_dryfood cat_dryfood cat_litter cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00244",
+    "customer_id": "CUST-00051",
+    "month": "2026-01",
+    "total_eur": 234.04,
+    "line_categories": "small_animal_dryfood small_animal_dryfood small_animal_dryfood"
+  },
+  {
+    "order_id": "ORD-00245",
+    "customer_id": "CUST-00052",
+    "month": "2024-07",
+    "total_eur": 38.57,
+    "line_categories": "dog_accessories dog_wetfood dog_toys dog_treats"
+  },
+  {
+    "order_id": "ORD-00246",
+    "customer_id": "CUST-00052",
+    "month": "2024-10",
+    "total_eur": 90.71,
+    "line_categories": "dog_wetfood dog_treats dog_accessories dog_dryfood"
+  },
+  {
+    "order_id": "ORD-00247",
+    "customer_id": "CUST-00053",
+    "month": "2025-06",
+    "total_eur": 43.13,
+    "line_categories": "cat_dryfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00248",
+    "customer_id": "CUST-00053",
+    "month": "2025-10",
+    "total_eur": 34.84,
+    "line_categories": "cat_wetfood cat_wetfood cat_accessories cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00249",
+    "customer_id": "CUST-00053",
+    "month": "2024-05",
+    "total_eur": 140.0,
+    "line_categories": "cat_dryfood cat_dryfood cat_treats dog_dryfood cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00250",
+    "customer_id": "CUST-00053",
+    "month": "2026-01",
+    "total_eur": 97.86,
+    "line_categories": "cat_wetfood cat_dryfood cat_dryfood cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00251",
+    "customer_id": "CUST-00053",
+    "month": "2025-12",
+    "total_eur": 1.05,
+    "line_categories": "cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00252",
+    "customer_id": "CUST-00053",
+    "month": "2024-11",
+    "total_eur": 7.71,
+    "line_categories": "cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00253",
+    "customer_id": "CUST-00053",
+    "month": "2024-08",
+    "total_eur": 52.02,
+    "line_categories": "cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00254",
+    "customer_id": "CUST-00053",
+    "month": "2025-08",
+    "total_eur": 88.69,
+    "line_categories": "cat_dryfood cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00255",
+    "customer_id": "CUST-00053",
+    "month": "2025-11",
+    "total_eur": 422.55,
+    "line_categories": "cat_dryfood cat_dryfood cat_dryfood cat_dryfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00256",
+    "customer_id": "CUST-00053",
+    "month": "2025-02",
+    "total_eur": 0.92,
+    "line_categories": "cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00257",
+    "customer_id": "CUST-00053",
+    "month": "2025-06",
+    "total_eur": 137.37,
+    "line_categories": "cat_dryfood dog_dryfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00258",
+    "customer_id": "CUST-00053",
+    "month": "2025-09",
+    "total_eur": 111.23,
+    "line_categories": "cat_dryfood cat_wetfood cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00259",
+    "customer_id": "CUST-00053",
+    "month": "2026-03",
+    "total_eur": 137.71,
+    "line_categories": "cat_dryfood cat_dryfood cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00260",
+    "customer_id": "CUST-00053",
+    "month": "2025-10",
+    "total_eur": 20.19,
+    "line_categories": "cat_wetfood cat_litter"
+  },
+  {
+    "order_id": "ORD-00261",
+    "customer_id": "CUST-00053",
+    "month": "2026-01",
+    "total_eur": 11.22,
+    "line_categories": "cat_wetfood cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00262",
+    "customer_id": "CUST-00053",
+    "month": "2025-03",
+    "total_eur": 85.1,
+    "line_categories": "cat_wetfood cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00263",
+    "customer_id": "CUST-00053",
+    "month": "2025-06",
+    "total_eur": 40.21,
+    "line_categories": "cat_dryfood cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00264",
+    "customer_id": "CUST-00054",
+    "month": "2025-12",
+    "total_eur": 123.85,
+    "line_categories": "cat_treats cat_dryfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00265",
+    "customer_id": "CUST-00054",
+    "month": "2026-02",
+    "total_eur": 12.74,
+    "line_categories": "cat_wetfood cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00266",
+    "customer_id": "CUST-00054",
+    "month": "2026-01",
+    "total_eur": 49.35,
+    "line_categories": "cat_dryfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00267",
+    "customer_id": "CUST-00054",
+    "month": "2025-10",
+    "total_eur": 78.25,
+    "line_categories": "cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00268",
+    "customer_id": "CUST-00054",
+    "month": "2025-10",
+    "total_eur": 31.45,
+    "line_categories": "cat_dryfood cat_treats cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00269",
+    "customer_id": "CUST-00054",
+    "month": "2026-03",
+    "total_eur": 22.23,
+    "line_categories": "cat_treats cat_accessories"
+  },
+  {
+    "order_id": "ORD-00270",
+    "customer_id": "CUST-00055",
+    "month": "2025-11",
+    "total_eur": 45.59,
+    "line_categories": "cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00271",
+    "customer_id": "CUST-00055",
+    "month": "2025-10",
+    "total_eur": 20.04,
+    "line_categories": "cat_wetfood cat_treats cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00272",
+    "customer_id": "CUST-00055",
+    "month": "2025-10",
+    "total_eur": 90.28,
+    "line_categories": "cat_wetfood cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00273",
+    "customer_id": "CUST-00055",
+    "month": "2025-11",
+    "total_eur": 107.11,
+    "line_categories": "cat_treats cat_dryfood cat_dryfood cat_litter"
+  },
+  {
+    "order_id": "ORD-00274",
+    "customer_id": "CUST-00055",
+    "month": "2025-10",
+    "total_eur": 68.92,
+    "line_categories": "cat_wetfood cat_wetfood cat_dryfood cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00275",
+    "customer_id": "CUST-00055",
+    "month": "2026-03",
+    "total_eur": 5.33,
+    "line_categories": "cat_treats cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00276",
+    "customer_id": "CUST-00056",
+    "month": "2025-11",
+    "total_eur": 11.23,
+    "line_categories": "cat_wetfood cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00277",
+    "customer_id": "CUST-00056",
+    "month": "2025-10",
+    "total_eur": 111.97,
+    "line_categories": "cat_dryfood cat_dryfood cat_wetfood cat_wetfood cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00278",
+    "customer_id": "CUST-00056",
+    "month": "2025-09",
+    "total_eur": 19.25,
+    "line_categories": "cat_treats cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00279",
+    "customer_id": "CUST-00056",
+    "month": "2025-09",
+    "total_eur": 42.12,
+    "line_categories": "cat_accessories cat_treats cat_wetfood cat_wetfood cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00280",
+    "customer_id": "CUST-00056",
+    "month": "2025-10",
+    "total_eur": 66.5,
+    "line_categories": "small_animal_toys cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00281",
+    "customer_id": "CUST-00056",
+    "month": "2025-09",
+    "total_eur": 40.14,
+    "line_categories": "cat_wetfood cat_grooming cat_treats cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00282",
+    "customer_id": "CUST-00057",
+    "month": "2026-03",
+    "total_eur": 48.55,
+    "line_categories": "dog_dentaltreats dog_wetfood dog_dryfood"
+  },
+  {
+    "order_id": "ORD-00283",
+    "customer_id": "CUST-00058",
+    "month": "2025-03",
+    "total_eur": 14.67,
+    "line_categories": "dog_wetfood dog_toys"
+  },
+  {
+    "order_id": "ORD-00284",
+    "customer_id": "CUST-00058",
+    "month": "2025-04",
+    "total_eur": 6.0,
+    "line_categories": "dog_wetfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00285",
+    "customer_id": "CUST-00059",
+    "month": "2025-12",
+    "total_eur": 8.4,
+    "line_categories": "cat_wetfood cat_wetfood cat_treats"
+  },
+  {
+    "order_id": "ORD-00286",
+    "customer_id": "CUST-00060",
+    "month": "2026-03",
+    "total_eur": 11.76,
+    "line_categories": "cat_wetfood cat_wetfood cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00287",
+    "customer_id": "CUST-00060",
+    "month": "2026-01",
+    "total_eur": 140.3,
+    "line_categories": "cat_dryfood cat_wetfood cat_wetfood cat_dryfood cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00288",
+    "customer_id": "CUST-00060",
+    "month": "2026-02",
+    "total_eur": 17.23,
+    "line_categories": "cat_wetfood cat_treats cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00289",
+    "customer_id": "CUST-00061",
+    "month": "2025-07",
+    "total_eur": 5.11,
+    "line_categories": "cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00290",
+    "customer_id": "CUST-00061",
+    "month": "2026-04",
+    "total_eur": 29.04,
+    "line_categories": "cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00291",
+    "customer_id": "CUST-00061",
+    "month": "2025-10",
+    "total_eur": 15.35,
+    "line_categories": "cat_wetfood cat_treats cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00292",
+    "customer_id": "CUST-00061",
+    "month": "2026-02",
+    "total_eur": 86.21,
+    "line_categories": "cat_wetfood cat_dryfood cat_accessories"
+  },
+  {
+    "order_id": "ORD-00293",
+    "customer_id": "CUST-00062",
+    "month": "2026-03",
+    "total_eur": 4.17,
+    "line_categories": "dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00294",
+    "customer_id": "CUST-00062",
+    "month": "2026-04",
+    "total_eur": 12.37,
+    "line_categories": "dog_dryfood dog_treats dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00295",
+    "customer_id": "CUST-00062",
+    "month": "2026-01",
+    "total_eur": 7.73,
+    "line_categories": "cat_wetfood cat_treats"
+  },
+  {
+    "order_id": "ORD-00296",
+    "customer_id": "CUST-00062",
+    "month": "2026-04",
+    "total_eur": 11.18,
+    "line_categories": "dog_treats cat_treats"
+  },
+  {
+    "order_id": "ORD-00297",
+    "customer_id": "CUST-00063",
+    "month": "2026-01",
+    "total_eur": 47.03,
+    "line_categories": "cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00298",
+    "customer_id": "CUST-00063",
+    "month": "2025-11",
+    "total_eur": 96.4,
+    "line_categories": "cat_dryfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00299",
+    "customer_id": "CUST-00063",
+    "month": "2025-04",
+    "total_eur": 59.87,
+    "line_categories": "cat_dryfood cat_health cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00300",
+    "customer_id": "CUST-00063",
+    "month": "2025-11",
+    "total_eur": 88.64,
+    "line_categories": "cat_wetfood cat_wetfood cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00301",
+    "customer_id": "CUST-00063",
+    "month": "2025-11",
+    "total_eur": 16.26,
+    "line_categories": "cat_wetfood cat_wetfood cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00302",
+    "customer_id": "CUST-00063",
+    "month": "2026-02",
+    "total_eur": 27.22,
+    "line_categories": "cat_wetfood cat_treats"
+  },
+  {
+    "order_id": "ORD-00303",
+    "customer_id": "CUST-00063",
+    "month": "2025-12",
+    "total_eur": 59.78,
+    "line_categories": "cat_dryfood cat_litter dog_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00304",
+    "customer_id": "CUST-00063",
+    "month": "2026-02",
+    "total_eur": 50.96,
+    "line_categories": "cat_wetfood cat_wetfood cat_dryfood cat_dryfood cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00305",
+    "customer_id": "CUST-00063",
+    "month": "2025-08",
+    "total_eur": 47.7,
+    "line_categories": "cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00306",
+    "customer_id": "CUST-00064",
+    "month": "2026-04",
+    "total_eur": 208.69,
+    "line_categories": "dog_wetfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00307",
+    "customer_id": "CUST-00064",
+    "month": "2025-12",
+    "total_eur": 28.36,
+    "line_categories": "dog_dryfood dog_toys dog_dryfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00308",
+    "customer_id": "CUST-00064",
+    "month": "2026-01",
+    "total_eur": 7.51,
+    "line_categories": "dog_treats dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00309",
+    "customer_id": "CUST-00064",
+    "month": "2026-04",
+    "total_eur": 81.23,
+    "line_categories": "dog_wetfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00310",
+    "customer_id": "CUST-00065",
+    "month": "2025-09",
+    "total_eur": 121.74,
+    "line_categories": "bird_dryfood small_animal_health small_animal_treats cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00311",
+    "customer_id": "CUST-00065",
+    "month": "2025-07",
+    "total_eur": 141.72,
+    "line_categories": "small_animal_health small_animal_dryfood small_animal_dryfood"
+  },
+  {
+    "order_id": "ORD-00312",
+    "customer_id": "CUST-00065",
+    "month": "2025-02",
+    "total_eur": 256.61,
+    "line_categories": "small_animal_dryfood bird_dryfood"
+  },
+  {
+    "order_id": "ORD-00313",
+    "customer_id": "CUST-00065",
+    "month": "2025-08",
+    "total_eur": 46.04,
+    "line_categories": "small_animal_dryfood"
+  },
+  {
+    "order_id": "ORD-00314",
+    "customer_id": "CUST-00065",
+    "month": "2025-02",
+    "total_eur": 195.42,
+    "line_categories": "bird_accessories small_animal_accessories small_animal_dryfood"
+  },
+  {
+    "order_id": "ORD-00315",
+    "customer_id": "CUST-00066",
+    "month": "2026-02",
+    "total_eur": 5.03,
+    "line_categories": "dog_wetfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00316",
+    "customer_id": "CUST-00066",
+    "month": "2025-01",
+    "total_eur": 96.0,
+    "line_categories": "dog_treats dog_dryfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00317",
+    "customer_id": "CUST-00066",
+    "month": "2025-04",
+    "total_eur": 17.46,
+    "line_categories": "dog_toys dog_dentaltreats dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00318",
+    "customer_id": "CUST-00066",
+    "month": "2025-01",
+    "total_eur": 30.92,
+    "line_categories": "dog_dryfood dog_toys dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00319",
+    "customer_id": "CUST-00066",
+    "month": "2025-06",
+    "total_eur": 83.57,
+    "line_categories": "dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00320",
+    "customer_id": "CUST-00066",
+    "month": "2026-01",
+    "total_eur": 49.66,
+    "line_categories": "dog_dryfood dog_wetfood dog_wetfood dog_treats dog_treats dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00321",
+    "customer_id": "CUST-00066",
+    "month": "2025-03",
+    "total_eur": 279.19,
+    "line_categories": "dog_treats dog_dryfood dog_dryfood dog_treats"
+  },
+  {
+    "order_id": "ORD-00322",
+    "customer_id": "CUST-00066",
+    "month": "2025-09",
+    "total_eur": 13.14,
+    "line_categories": "dog_wetfood dog_wetfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00323",
+    "customer_id": "CUST-00066",
+    "month": "2025-05",
+    "total_eur": 231.49,
+    "line_categories": "small_animal_accessories dog_accessories dog_treats dog_dryfood"
+  },
+  {
+    "order_id": "ORD-00324",
+    "customer_id": "CUST-00066",
+    "month": "2025-05",
+    "total_eur": 27.29,
+    "line_categories": "dog_wetfood dog_accessories dog_treats"
+  },
+  {
+    "order_id": "ORD-00325",
+    "customer_id": "CUST-00067",
+    "month": "2026-03",
+    "total_eur": 19.38,
+    "line_categories": "cat_litter cat_treats cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00326",
+    "customer_id": "CUST-00068",
+    "month": "2025-07",
+    "total_eur": 105.4,
+    "line_categories": "cat_dryfood cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00327",
+    "customer_id": "CUST-00068",
+    "month": "2024-11",
+    "total_eur": 6.62,
+    "line_categories": "cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00328",
+    "customer_id": "CUST-00068",
+    "month": "2025-04",
+    "total_eur": 24.83,
+    "line_categories": "cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00329",
+    "customer_id": "CUST-00068",
+    "month": "2025-06",
+    "total_eur": 70.16,
+    "line_categories": "cat_dryfood cat_wetfood cat_dryfood cat_treats cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00330",
+    "customer_id": "CUST-00068",
+    "month": "2026-03",
+    "total_eur": 133.84,
+    "line_categories": "cat_dryfood cat_dryfood cat_dryfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00331",
+    "customer_id": "CUST-00068",
+    "month": "2025-08",
+    "total_eur": 26.68,
+    "line_categories": "cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00332",
+    "customer_id": "CUST-00068",
+    "month": "2025-09",
+    "total_eur": 9.94,
+    "line_categories": "cat_wetfood cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00333",
+    "customer_id": "CUST-00068",
+    "month": "2024-12",
+    "total_eur": 15.43,
+    "line_categories": "cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00334",
+    "customer_id": "CUST-00069",
+    "month": "2025-07",
+    "total_eur": 25.18,
+    "line_categories": "dog_wetfood dog_treats dog_treats"
+  },
+  {
+    "order_id": "ORD-00335",
+    "customer_id": "CUST-00070",
+    "month": "2026-02",
+    "total_eur": 199.62,
+    "line_categories": "cat_dryfood cat_dryfood cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00336",
+    "customer_id": "CUST-00070",
+    "month": "2024-06",
+    "total_eur": 2.61,
+    "line_categories": "cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00337",
+    "customer_id": "CUST-00071",
+    "month": "2025-12",
+    "total_eur": 45.9,
+    "line_categories": "dog_wetfood dog_accessories"
+  },
+  {
+    "order_id": "ORD-00338",
+    "customer_id": "CUST-00071",
+    "month": "2025-11",
+    "total_eur": 211.74,
+    "line_categories": "dog_dryfood dog_wetfood dog_wetfood dog_dryfood dog_accessories dog_dryfood"
+  },
+  {
+    "order_id": "ORD-00339",
+    "customer_id": "CUST-00071",
+    "month": "2026-02",
+    "total_eur": 105.56,
+    "line_categories": "dog_health dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00340",
+    "customer_id": "CUST-00071",
+    "month": "2025-11",
+    "total_eur": 94.87,
+    "line_categories": "dog_dryfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00341",
+    "customer_id": "CUST-00071",
+    "month": "2025-09",
+    "total_eur": 9.53,
+    "line_categories": "dog_wetfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00342",
+    "customer_id": "CUST-00071",
+    "month": "2026-02",
+    "total_eur": 200.39,
+    "line_categories": "dog_dryfood dog_wetfood cat_dryfood dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00343",
+    "customer_id": "CUST-00072",
+    "month": "2026-03",
+    "total_eur": 31.35,
+    "line_categories": "small_animal_treats small_animal_accessories"
+  },
+  {
+    "order_id": "ORD-00344",
+    "customer_id": "CUST-00072",
+    "month": "2026-03",
+    "total_eur": 33.28,
+    "line_categories": "small_animal_accessories cat_dryfood small_animal_treats"
+  },
+  {
+    "order_id": "ORD-00345",
+    "customer_id": "CUST-00072",
+    "month": "2026-03",
+    "total_eur": 313.37,
+    "line_categories": "small_animal_dryfood bird_dryfood small_animal_treats"
+  },
+  {
+    "order_id": "ORD-00346",
+    "customer_id": "CUST-00072",
+    "month": "2026-03",
+    "total_eur": 58.88,
+    "line_categories": "small_animal_dryfood small_animal_treats bird_dryfood"
+  },
+  {
+    "order_id": "ORD-00347",
+    "customer_id": "CUST-00073",
+    "month": "2026-02",
+    "total_eur": 65.96,
+    "line_categories": "dog_dryfood dog_wetfood cat_wetfood small_animal_treats dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00348",
+    "customer_id": "CUST-00074",
+    "month": "2026-04",
+    "total_eur": 15.16,
+    "line_categories": "cat_dryfood cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00349",
+    "customer_id": "CUST-00075",
+    "month": "2025-01",
+    "total_eur": 38.53,
+    "line_categories": "dog_wetfood dog_dryfood dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00350",
+    "customer_id": "CUST-00075",
+    "month": "2025-04",
+    "total_eur": 19.4,
+    "line_categories": "dog_treats dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00351",
+    "customer_id": "CUST-00076",
+    "month": "2026-01",
+    "total_eur": 227.54,
+    "line_categories": "dog_dryfood dog_dryfood"
+  },
+  {
+    "order_id": "ORD-00352",
+    "customer_id": "CUST-00076",
+    "month": "2026-02",
+    "total_eur": 210.98,
+    "line_categories": "dog_dryfood dog_wetfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00353",
+    "customer_id": "CUST-00076",
+    "month": "2026-04",
+    "total_eur": 21.11,
+    "line_categories": "dog_accessories"
+  },
+  {
+    "order_id": "ORD-00354",
+    "customer_id": "CUST-00077",
+    "month": "2026-02",
+    "total_eur": 338.97,
+    "line_categories": "dog_dryfood dog_dryfood"
+  },
+  {
+    "order_id": "ORD-00355",
+    "customer_id": "CUST-00077",
+    "month": "2025-06",
+    "total_eur": 114.31,
+    "line_categories": "dog_accessories dog_dryfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00356",
+    "customer_id": "CUST-00077",
+    "month": "2025-04",
+    "total_eur": 6.09,
+    "line_categories": "dog_wetfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00357",
+    "customer_id": "CUST-00078",
+    "month": "2024-10",
+    "total_eur": 17.22,
+    "line_categories": "dog_wetfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00358",
+    "customer_id": "CUST-00079",
+    "month": "2025-11",
+    "total_eur": 25.85,
+    "line_categories": "cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00359",
+    "customer_id": "CUST-00079",
+    "month": "2025-12",
+    "total_eur": 60.35,
+    "line_categories": "cat_dryfood cat_wetfood cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00360",
+    "customer_id": "CUST-00079",
+    "month": "2025-07",
+    "total_eur": 14.23,
+    "line_categories": "cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00361",
+    "customer_id": "CUST-00079",
+    "month": "2025-06",
+    "total_eur": 131.02,
+    "line_categories": "cat_wetfood cat_wetfood cat_wetfood cat_dryfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00362",
+    "customer_id": "CUST-00079",
+    "month": "2025-09",
+    "total_eur": 18.13,
+    "line_categories": "cat_litter cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00363",
+    "customer_id": "CUST-00079",
+    "month": "2026-02",
+    "total_eur": 104.04,
+    "line_categories": "cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00364",
+    "customer_id": "CUST-00079",
+    "month": "2025-09",
+    "total_eur": 0.96,
+    "line_categories": "cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00365",
+    "customer_id": "CUST-00079",
+    "month": "2025-09",
+    "total_eur": 16.55,
+    "line_categories": "cat_wetfood cat_treats"
+  },
+  {
+    "order_id": "ORD-00366",
+    "customer_id": "CUST-00080",
+    "month": "2026-03",
+    "total_eur": 102.08,
+    "line_categories": "small_animal_treats small_animal_treats bird_dryfood small_animal_dryfood small_animal_health bird_dryfood"
+  },
+  {
+    "order_id": "ORD-00367",
+    "customer_id": "CUST-00081",
+    "month": "2025-02",
+    "total_eur": 96.51,
+    "line_categories": "aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00368",
+    "customer_id": "CUST-00081",
+    "month": "2026-04",
+    "total_eur": 29.81,
+    "line_categories": "aquarium_aquarium cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00369",
+    "customer_id": "CUST-00081",
+    "month": "2026-03",
+    "total_eur": 101.37,
+    "line_categories": "aquarium_aquarium cat_treats aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00370",
+    "customer_id": "CUST-00081",
+    "month": "2025-04",
+    "total_eur": 145.89,
+    "line_categories": "aquarium_aquarium aquarium_aquarium aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00371",
+    "customer_id": "CUST-00081",
+    "month": "2025-07",
+    "total_eur": 70.5,
+    "line_categories": "aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00372",
+    "customer_id": "CUST-00081",
+    "month": "2025-08",
+    "total_eur": 74.4,
+    "line_categories": "aquarium_aquarium aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00373",
+    "customer_id": "CUST-00082",
+    "month": "2024-11",
+    "total_eur": 129.97,
+    "line_categories": "dog_dryfood dog_accessories dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00374",
+    "customer_id": "CUST-00082",
+    "month": "2024-07",
+    "total_eur": 23.91,
+    "line_categories": "dog_accessories dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00375",
+    "customer_id": "CUST-00082",
+    "month": "2026-04",
+    "total_eur": 2.74,
+    "line_categories": "cat_wetfood dog_wetfood"
+  },
+  {
+    "order_id": "ORD-00376",
+    "customer_id": "CUST-00082",
+    "month": "2025-04",
+    "total_eur": 24.68,
+    "line_categories": "cat_wetfood dog_wetfood small_animal_accessories"
+  },
+  {
+    "order_id": "ORD-00377",
+    "customer_id": "CUST-00082",
+    "month": "2026-01",
+    "total_eur": 23.54,
+    "line_categories": "dog_wetfood cat_treats cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00378",
+    "customer_id": "CUST-00082",
+    "month": "2024-07",
+    "total_eur": 3.68,
+    "line_categories": "cat_treats"
+  },
+  {
+    "order_id": "ORD-00379",
+    "customer_id": "CUST-00082",
+    "month": "2024-11",
+    "total_eur": 356.26,
+    "line_categories": "dog_dryfood dog_dryfood cat_wetfood cat_dryfood dog_treats dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00380",
+    "customer_id": "CUST-00082",
+    "month": "2025-06",
+    "total_eur": 150.3,
+    "line_categories": "cat_dryfood dog_dryfood dog_wetfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00381",
+    "customer_id": "CUST-00083",
+    "month": "2026-01",
+    "total_eur": 79.76,
+    "line_categories": "dog_wetfood cat_wetfood dog_accessories"
+  },
+  {
+    "order_id": "ORD-00382",
+    "customer_id": "CUST-00084",
+    "month": "2026-03",
+    "total_eur": 43.69,
+    "line_categories": "cat_accessories cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00383",
+    "customer_id": "CUST-00084",
+    "month": "2024-10",
+    "total_eur": 3.48,
+    "line_categories": "cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00384",
+    "customer_id": "CUST-00084",
+    "month": "2025-01",
+    "total_eur": 44.64,
+    "line_categories": "cat_wetfood cat_accessories"
+  },
+  {
+    "order_id": "ORD-00385",
+    "customer_id": "CUST-00084",
+    "month": "2024-06",
+    "total_eur": 35.57,
+    "line_categories": "cat_litter cat_wetfood cat_litter"
+  },
+  {
+    "order_id": "ORD-00386",
+    "customer_id": "CUST-00084",
+    "month": "2026-03",
+    "total_eur": 56.83,
+    "line_categories": "cat_wetfood cat_wetfood cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00387",
+    "customer_id": "CUST-00084",
+    "month": "2025-08",
+    "total_eur": 7.22,
+    "line_categories": "cat_wetfood cat_wetfood cat_treats cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00388",
+    "customer_id": "CUST-00084",
+    "month": "2025-09",
+    "total_eur": 1.92,
+    "line_categories": "cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00389",
+    "customer_id": "CUST-00084",
+    "month": "2026-01",
+    "total_eur": 9.74,
+    "line_categories": "cat_treats"
+  },
+  {
+    "order_id": "ORD-00390",
+    "customer_id": "CUST-00084",
+    "month": "2026-02",
+    "total_eur": 54.72,
+    "line_categories": "cat_wetfood cat_dryfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00391",
+    "customer_id": "CUST-00084",
+    "month": "2025-04",
+    "total_eur": 83.19,
+    "line_categories": "cat_dryfood cat_accessories cat_wetfood cat_dryfood cat_litter"
+  },
+  {
+    "order_id": "ORD-00392",
+    "customer_id": "CUST-00084",
+    "month": "2025-08",
+    "total_eur": 14.33,
+    "line_categories": "cat_wetfood cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00393",
+    "customer_id": "CUST-00084",
+    "month": "2025-02",
+    "total_eur": 482.74,
+    "line_categories": "cat_wetfood cat_dryfood cat_dryfood cat_dryfood cat_dryfood cat_toys"
+  },
+  {
+    "order_id": "ORD-00394",
+    "customer_id": "CUST-00084",
+    "month": "2026-03",
+    "total_eur": 99.54,
+    "line_categories": "cat_dryfood cat_treats cat_dryfood"
+  },
+  {
+    "order_id": "ORD-00395",
+    "customer_id": "CUST-00084",
+    "month": "2024-07",
+    "total_eur": 33.18,
+    "line_categories": "cat_wetfood cat_dryfood cat_wetfood cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00396",
+    "customer_id": "CUST-00085",
+    "month": "2026-04",
+    "total_eur": 217.14,
+    "line_categories": "dog_dryfood cat_dryfood dog_dryfood dog_dentaltreats"
+  },
+  {
+    "order_id": "ORD-00397",
+    "customer_id": "CUST-00085",
+    "month": "2026-03",
+    "total_eur": 16.18,
+    "line_categories": "dog_wetfood cat_treats cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00398",
+    "customer_id": "CUST-00085",
+    "month": "2026-04",
+    "total_eur": 26.86,
+    "line_categories": "cat_dryfood dog_wetfood dog_grooming"
+  },
+  {
+    "order_id": "ORD-00399",
+    "customer_id": "CUST-00086",
+    "month": "2026-04",
+    "total_eur": 1.55,
+    "line_categories": "cat_wetfood"
+  },
+  {
+    "order_id": "ORD-00400",
+    "customer_id": "CUST-00087",
+    "month": "2026-04",
+    "total_eur": 18.28,
+    "line_categories": "small_animal_treats"
+  },
+  {
+    "order_id": "ORD-00401",
+    "customer_id": "CUST-00088",
+    "month": "2024-11",
+    "total_eur": 174.45,
+    "line_categories": "aquarium_aquarium aquarium_aquarium aquarium_aquarium aquarium_aquarium aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00402",
+    "customer_id": "CUST-00088",
+    "month": "2026-02",
+    "total_eur": 54.25,
+    "line_categories": "aquarium_aquarium cat_wetfood aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00403",
+    "customer_id": "CUST-00088",
+    "month": "2024-11",
+    "total_eur": 51.48,
+    "line_categories": "aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00404",
+    "customer_id": "CUST-00088",
+    "month": "2025-10",
+    "total_eur": 51.23,
+    "line_categories": "aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00405",
+    "customer_id": "CUST-00088",
+    "month": "2024-10",
+    "total_eur": 42.52,
+    "line_categories": "aquarium_health aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00406",
+    "customer_id": "CUST-00088",
+    "month": "2025-10",
+    "total_eur": 69.14,
+    "line_categories": "aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00407",
+    "customer_id": "CUST-00088",
+    "month": "2024-12",
+    "total_eur": 51.66,
+    "line_categories": "aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00408",
+    "customer_id": "CUST-00088",
+    "month": "2026-03",
+    "total_eur": 79.02,
+    "line_categories": "aquarium_aquarium aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00409",
+    "customer_id": "CUST-00088",
+    "month": "2025-05",
+    "total_eur": 73.16,
+    "line_categories": "aquarium_aquarium aquarium_aquarium aquarium_aquarium"
+  },
+  {
+    "order_id": "ORD-00410",
+    "customer_id": "CUST-00089",
+    "month": "2026-03",
+    "total_eur": 36.62,
+    "line_categories": "cat_treats small_animal_toys"
+  },
+  {
+    "order_id": "ORD-00411",
+    "customer_id": "CUST-00089",
+    "month": "2026-02",
+    "total_eur": 210.9,
+    "line_categories": "small_animal_dryfood small_animal_dryfood small_animal_dryfood"
+  },
+  {
+    "order_id": "ORD-00412",
+    "customer_id": "CUST-00089",
+    "month": "2025-12",
+    "total_eur": 80.38,
+    "line_categories": "small_animal_treats small_animal_health small_animal_treats small_animal_accessories small_animal_toys"
+  },
+  {
+    "order_id": "ORD-00413",
+    "customer_id": "CUST-00089",
+    "month": "2026-04",
+    "total_eur": 112.78,
+    "line_categories": "small_animal_toys small_animal_dryfood small_animal_treats"
+  },
+  {
+    "order_id": "ORD-00414",
+    "customer_id": "CUST-00089",
+    "month": "2026-02",
+    "total_eur": 148.38,
+    "line_categories": "small_animal_treats small_animal_dryfood small_animal_dryfood small_animal_accessories small_animal_treats"
+  },
+  {
+    "order_id": "ORD-00415",
+    "customer_id": "CUST-00090",
+    "month": "2026-03",
+    "total_eur": 1.89,
+    "line_categories": "small_animal_treats"
+  },
+  {
+    "order_id": "ORD-00416",
+    "customer_id": "CUST-00090",
+    "month": "2026-03",
+    "total_eur": 38.44,
+    "line_categories": "small_animal_treats small_animal_dryfood small_animal_treats"
+  }
+]
