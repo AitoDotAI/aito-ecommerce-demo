@@ -108,7 +108,7 @@ def get_product_funnel(client: AitoClient, sku: str, month: str = LATEST_MONTH,
     if list_price_eur is not None:
         changes["list_price_index"] = round(list_price_eur / reference, 3)
 
-    no_data = _drop_list_price_beyond_the_data(changes, state, sales)
+    no_data = _drop_list_price_beyond_the_data(changes, state, sales, reference)
     calibration = _calibration(client, sku, sales)
     now = _funnel(client, sku, month, {}, state, reference, unit_cost, mean_showings, calibration)
     asked = _funnel(client, sku, month, changes, state, reference, unit_cost, mean_showings, calibration) if changes else now
@@ -136,20 +136,21 @@ def _property(changes: dict, state: dict, name: str):
     return changes.get(name, state[name])
 
 
-def _drop_list_price_beyond_the_data(changes: dict, state: dict, sales: list[dict]) -> str | None:
+def _drop_list_price_beyond_the_data(changes: dict, state: dict, sales: list[dict], reference: float) -> str | None:
     """A list price whose price paid is beyond what the product has sold at (plus RANGE_MARGIN) has no data
     behind it: `_predict` falls back to the base rate for a band it has never seen. It is left out of `changes`
     and the reason returned, so the other changes still show."""
     if "list_price_index" not in changes:
         return None
+    changes_price = changes["list_price_index"] * reference
     paid = changes["list_price_index"] * (1 - _offer_pct(state, _property(changes, state, "discount_band")) / 100)
     indexes = [float(r["price_index"]) for r in sales]
     low, high = min(indexes) - RANGE_MARGIN, max(indexes) + RANGE_MARGIN
     if low <= paid <= high:
         return None
     del changes["list_price_index"]
-    return (f"A list price paying {paid:.2f} of the original list is outside what this product has sold at "
-            f"({min(indexes):.2f}–{max(indexes):.2f}), so the funnel keeps today's list price.")
+    return (f"A list price of €{changes_price:.2f} is outside what this product has sold at "
+            f"(€{min(indexes) * reference:.2f}–€{max(indexes) * reference:.2f} paid), so the funnel keeps today's list price.")
 
 
 def _calibration(client: AitoClient, sku: str, sales: list[dict]) -> tuple[float, float]:

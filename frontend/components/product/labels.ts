@@ -1,5 +1,7 @@
 /** Words for the Product view's values, shared by its sections. */
 
+import { fmtEur } from "@/lib/api";
+
 export const BAND_LABEL: Record<string, string> = {
   "none": "No discount",
   "10-15": "10–15 % off",
@@ -17,3 +19,6 @@ export const pct = (p: number, digits = 1) => `${(p * 100).toFixed(digits)} %`;
 
 /** "dental-treats" → "dental treats", "small_animal" → "small animal". */
 export const words = (s: string) => s.replace(/[-_]/g, " ");
+
+/** Whole euros for a month of a big product, cents for the small ones the demo also has. */
+export const money = (eur: number) => fmtEur(eur, Math.abs(eur) < 100 ? 2 : 0);

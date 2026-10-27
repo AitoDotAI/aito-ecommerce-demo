@@ -8,7 +8,7 @@ import {
 import HelpPopover from "@/components/prediction/HelpPopover";
 import { ApiError, apiFetch, fmtEur } from "@/lib/api";
 import type { PricePoint, ProductPricing, ProductView } from "@/lib/types";
-import { monthLabel, shortMonth } from "./labels";
+import { money, monthLabel, shortMonth } from "./labels";
 
 type Measure = "units" | "profit";
 
@@ -113,9 +113,9 @@ export default function PricingTab({ view, listPrice, onListPrice, onQuery }: {
         {data.best && (
           <div className="card-sub" style={{ marginTop: 10 }}>
             Most profit among the prices it has data for: <strong>{fmtEur(data.best.list_price_eur, 2)}</strong> list,
-            {" "}{fmtEur(data.best.profit_eur, 0)} a month
+            {" "}{money(data.best.profit_eur)} a month
             {data.best.list_price_index === data.now.list_price_index ? <> (today&apos;s price)</>
-              : <> against {fmtEur(data.now.profit_eur, 0)} at today&apos;s</>}.
+              : <> against {money(data.now.profit_eur)} at today&apos;s</>}.
           </div>
         )}
       </div>
@@ -168,8 +168,8 @@ function Summary({ asked, now, changed }: { asked: PricePoint; now: PricePoint; 
     <div className="kpi-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))" }}>
       {[
         { label: "Units", value: asked.units.toFixed(1), was: now.units, now: asked.units },
-        { label: "Revenue", value: fmtEur(asked.revenue_eur, 0), was: now.revenue_eur, now: asked.revenue_eur },
-        { label: "Profit", value: fmtEur(asked.profit_eur, 0), was: now.profit_eur, now: asked.profit_eur },
+        { label: "Revenue", value: money(asked.revenue_eur), was: now.revenue_eur, now: asked.revenue_eur },
+        { label: "Profit", value: money(asked.profit_eur), was: now.profit_eur, now: asked.profit_eur },
       ].map((k) => (
         <div key={k.label} className="card kpi-card">
           <div className="kpi-label">{k.label} a month</div>

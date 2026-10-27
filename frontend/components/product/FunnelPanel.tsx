@@ -3,7 +3,7 @@
 import HelpPopover from "@/components/prediction/HelpPopover";
 import { fmtEur } from "@/lib/api";
 import type { Funnel, ProductFunnel } from "@/lib/types";
-import { monthLabel, pct } from "./labels";
+import { money, monthLabel, pct } from "./labels";
 
 interface Step { id: string; label: string; unit: string; get: (f: Funnel) => number; show: (v: number) => string }
 
@@ -11,7 +11,7 @@ const STEPS: Step[] = [
   { id: "impressions", label: "Impressions", unit: "showings", get: (f) => f.impressions, show: (v) => v.toFixed(1) },
   { id: "clicks", label: "Clicks", unit: "clicks", get: (f) => f.clicks, show: (v) => v.toFixed(1) },
   { id: "purchases", label: "Purchases", unit: "units", get: (f) => f.purchases, show: (v) => v.toFixed(1) },
-  { id: "profit", label: "Profit", unit: "after ad spend", get: (f) => f.profit_eur, show: (v) => fmtEur(v, 0) },
+  { id: "profit", label: "Profit", unit: "after ad spend", get: (f) => f.profit_eur, show: (v) => money(v) },
 ];
 
 /**
@@ -52,8 +52,8 @@ export default function FunnelPanel({ funnel, loading }: { funnel: ProductFunnel
       </div>
 
       <div className="page-title" style={{ fontSize: 28, margin: "4px 0 2px" }}>
-        {changed && <span style={{ color: "var(--text-muted)", fontSize: 18, fontWeight: 400 }}>{fmtEur(funnel.now.profit_eur, 0)} → </span>}
-        {fmtEur(funnel.asked.profit_eur, 0)}
+        {changed && <span style={{ color: "var(--text-muted)", fontSize: 18, fontWeight: 400 }}>{money(funnel.now.profit_eur)} → </span>}
+        {money(funnel.asked.profit_eur)}
       </div>
       <div style={{ fontSize: 14, color: "var(--text-2)", marginBottom: 14 }}>
         profit a month{changed && <> · {delta(funnel.asked.profit_eur, funnel.now.profit_eur)} with your changes</>}
@@ -75,7 +75,7 @@ export default function FunnelPanel({ funnel, loading }: { funnel: ProductFunnel
             {changed && <Bar value={now} top={top} color="var(--border)" thin />}
             {step.id === "clicks" && <div className="card-sub">click-through {pct(funnel.asked.ctr, 0)} of showings</div>}
             {step.id === "purchases" && <div className="card-sub">{pct(funnel.asked.purchase_rate, 1)} of showings end in a purchase · price {fmtEur(funnel.asked.price_eur, 2)}</div>}
-            {step.id === "profit" && funnel.asked.ad_spend_eur > 0 && <div className="card-sub">after {fmtEur(funnel.asked.ad_spend_eur, 0)} of advertising (assumed)</div>}
+            {step.id === "profit" && funnel.asked.ad_spend_eur > 0 && <div className="card-sub">after {money(funnel.asked.ad_spend_eur)} of advertising (assumed)</div>}
           </div>
         );
       })}
