@@ -145,6 +145,7 @@ Common
 Data
   generate-fixtures (Re)run data/generate_fixtures.py
   load-data         Upload schema + fixtures to Aito
+  env-new          <env> [--apply]: a new env for a data release, a copy-on-write branch of master (dry run without --apply)
   env-load          Drop and reload every table into a named env (needs AITO_ENV=<env>; refuses master)
   reset-data        Drop and reload all Aito tables + warm the cache
   optimize          Merge batch segments on all tables for faster reads
@@ -321,6 +322,13 @@ cmd_load_data() {
   _show_target
   _ensure_impressions
   uv run python -m src.data_loader "$@"
+}
+
+cmd_env_new() {
+  # The env a data release is loaded into (ADR 0035); creating it is a write to the shared instance.
+  cd "$SCRIPT_DIR"
+  _show_target
+  uv run python -m scripts.new_env "$@"
 }
 
 cmd_env_load() {
@@ -895,6 +903,7 @@ case "${1:-help}" in
   demo)              cmd_demo ;;
   generate-fixtures) cmd_generate_fixtures ;;
   load-data)         shift; cmd_load_data "$@" ;;
+  env-new)           shift; cmd_env_new "$@" ;;
   env-load)          shift; cmd_env_load "$@" ;;
   reset-data)        shift; cmd_reset_data "$@" ;;
   clear-cache)       cmd_clear_cache ;;
