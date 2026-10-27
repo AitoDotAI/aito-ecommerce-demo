@@ -47,6 +47,13 @@ def test_q8a_the_effective_price_index_is_the_list_index_less_the_offer(states, 
         assert ms["price_index"] == pytest.approx(expected, abs=0.002), ms["monthly_sale_id"]
 
 
+def test_the_list_price_band_is_the_index_in_percent_to_the_nearest_five(states):
+    bands = Counter(state["list_price_band"] for state in states.values())
+    assert set(bands) <= {str(pct) for pct in range(85, 120, 5)}, bands
+    for state in states.values():
+        assert abs(int(state["list_price_band"]) - state["list_price_index"] * 100) <= 2.5 + 1e-6, state["product_state_id"]
+
+
 def test_q8b_the_list_price_moves_in_at_least_40_percent_of_products(states):
     seen = defaultdict(set)
     for state in states.values():

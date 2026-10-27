@@ -110,6 +110,12 @@ click is near 0.4. What changed, and why:
 8. **`showings_index`** joins `units_index` on `monthly_sales` in 3a (ADR 0050 had it on `product_weeks`, 3b): the
    funnel's first step, showings ÷ the product's mean showings in the months before, so the funnel works on 3a
    alone. Same unset rule. It changes no other table and no draw.
+9. **`list_price_band`** joins `product_states` (percent of the original list to the nearest 5: "85" ... "115").
+   Probed on the loaded `release3a` env (2026-10-27): `_predict clicked/purchased` with the decimal
+   `product_state.list_price_index` matches only rows whose cents are equal, so a typed price gave the base rate
+   (0.5517 at 1.2 and 1.4) or a noisy single price (a higher click rate at 1.12 than at 1.0), and a `$gte/$lte`
+   range was not used consistently. A String band is what `_predict` conditions on, as `discount_band` is. No
+   draw changes: every other table regenerates byte for byte.
 
 ### Results (2026-10-27)
 

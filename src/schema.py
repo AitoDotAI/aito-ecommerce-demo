@@ -136,6 +136,8 @@ SCHEMAS: dict[str, dict] = {
             "review_count_band": {"type": "String", "nullable": False},
             # ADR 0049: the list price apart from the offer, and how the shop lists the product.
             "list_price_index":    {"type": "Decimal", "nullable": False},
+            # The index in percent to the nearest 5 ("85" ... "115"): the form `_predict` can condition on.
+            "list_price_band":     {"type": "String",  "nullable": False},
             "image_count":         {"type": "String",  "nullable": False},
             "description_quality": {"type": "String",  "nullable": False},
             "ad_level":            {"type": "String",  "nullable": False},

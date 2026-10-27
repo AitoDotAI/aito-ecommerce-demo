@@ -187,6 +187,16 @@ def discount_band(discount_pct: float) -> str:
     return "15-20" if discount_pct < 20 else "20+"
 
 
+LIST_PRICE_STEP_PCT = 5
+
+
+def list_price_band(list_price_index: float) -> str:
+    """The list price as a percentage of the original list, to the nearest 5: "85" ... "115".
+    The listing draws prices from these price points, so a band is what `_predict` can condition on:
+    a decimal index only matches a row whose cents are the same."""
+    return str(round(list_price_index * 100 / LIST_PRICE_STEP_PCT) * LIST_PRICE_STEP_PCT)
+
+
 @dataclass
 class ProductState:
     """One product as it was in one month: what a shopper saw (ADR 0032).
@@ -204,6 +214,7 @@ class ProductState:
     rival_launched: bool       # a product of the same pet and category launched in the last 3 months
     price_change: str          # "rise" (list price raised in the last 3 months), "none"
     list_price_index: float    # ADR 0049: the list price ÷ the original list, apart from the offer
+    list_price_band: str       # that index in percent to the nearest 5: "85" ... "115"
     # ADR 0038: what the shop set or lived with this month.
     label: str                 # "none", "recommended", "staff_pick", "popular"
     stock: str                 # "in_stock", "low"
@@ -249,6 +260,7 @@ def states_for_month(seed: int, month: str, products: list, events: CatalogueEve
             stock="low" if p.sku in low_stock else "in_stock",
             review_count_band=review_count_band(n_reviews),
             list_price_index=round(list_price / events.original_list[p.sku], 3),
+            list_price_band=list_price_band(list_price / events.original_list[p.sku]),
             image_count=listing.image_count[(p.sku, month)],
             description_quality=listing.description_quality[(p.sku, month)],
             ad_level=listing.ad_level[(p.sku, month)],
