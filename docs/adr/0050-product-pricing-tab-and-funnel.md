@@ -28,10 +28,13 @@ click-through. Nothing estimates it.
 
 ### Data (added to release 3, ADR 0049)
 
-- `product_states.price_index`: the month's price ÷ the product's reference list price, 3 decimals. Impressions
-  link it, so `_predict clicked` and `_predict purchased` can take `product_state.price_index` as evidence. If the
-  probe shows Aito wants bins for a linked decimal, it becomes `price_index_band` (below 0.85, 0.85–0.95,
-  0.95–1.05, above 1.05), as the discount is a band today.
+- `product_states.list_price_index`: the month's **list** price ÷ the product's reference list price, 3 decimals.
+  It is the list price alone, apart from the offer: `price_index` in `monthly_sales` is the effective price
+  (list less the offer), and if the state held that too it would repeat `discount_band` and the two could not be
+  told apart. The effective index is list_price_index × (1 − discount), so the list price and the offer are two
+  separate levers. Impressions link the state, so `_predict clicked` and `_predict purchased` take
+  `product_state.list_price_index` as evidence. If the probe shows Aito wants bins for a linked decimal, it
+  becomes `list_price_band` (below 0.85, 0.85–0.95, 0.95–1.05, above 1.05), as the discount is a band today.
 - **`product_weeks`**, a new table: one row per product-week (`SKU-PT-0182-2026-W14`, the week belonging to the
   month of its Monday) with `showings`, `clicks`, `purchases`, `revenue_eur`, the `product_state` in force (the
   month's), and two relative columns: `showings_index` (showings ÷ the product's mean weekly showings before
@@ -46,8 +49,8 @@ click-through. Nothing estimates it.
 
 A tab beside *What if / History / For whom* on the Product view:
 
-- **List price field**, prefilled with the product's list price, editable. It sets the *price index* the
-  estimates are asked at (`new price ÷ reference list price`); an offer band applies on top, as it does today.
+- **List price field**, prefilled with the product's list price, editable. It sets the *list price index* the
+  estimates are asked at (`new list price ÷ reference list price`); an offer band applies on top, as it does today.
 - **Curve**: units and profit by list price, from `_estimate units_index` at eight prices, scaled by the product's
   recent mean units, with the product's own months as dots. The profit-maximising price among those is marked.
 - **Outside what the product has tried** (price index beyond its months' range, ±5 %) the page says "no data
@@ -68,7 +71,7 @@ description and advertising.
 | Purchases | impressions × P(purchase \| shown) | `_predict purchased` on `impressions` |
 | Profit | purchases × (price − unit cost) − the month's ad spend | arithmetic |
 
-Each step shows its change against the state as it is now, the last three months' actual funnel beside the
+Each step shows its change against the state as it is now, the number of showings behind it (a thin product says so), the last three months' actual funnel beside the
 estimate, and the `$why` of the click and the purchase (as ADR 0048 does). Purchases come from the showing, not
 from clicks × a conversion, so the three steps cannot disagree with the data's own counting.
 
@@ -93,6 +96,16 @@ the state's own effect, and weeks 2–4 add the loop, so a price cut or a pictur
 showings after four weeks, not only its first. The pre-registered γ is a plant; the page shows what Aito
 estimates, and Q12 says how close that must be.
 
+## Release sequencing
+
+Release 3 is one release for the partners but two loads, so a failure is found in one place:
+
+1. **3a** (ADR 0049 with `list_price_index`): `product_states` and `monthly_sales`, the price and listing effects,
+   Q1–Q8. The Pricing tab ships on it.
+2. **3b** (this ADR's `product_weeks`, `week` on impressions, the loop): Q12–Q14, then the funnel's weeks 1–4.
+
+The funnel's first week works on 3a alone (monthly showings); 3b adds the loop.
+
 ## Aito usage
 
 - `_estimate showings_index` on `product_weeks` and `_estimate units_index` on `monthly_sales`, `model: regression`
@@ -105,7 +118,7 @@ estimates, and Q12 says how close that must be.
 
 | # | Check |
 |---|---|
-| Q8 | `price_index` in `product_states` equals the `price_index` of the same product-month in `monthly_sales`, for every row |
+| Q8 | `monthly_sales.price_index` = `product_states.list_price_index` × (1 − discount) for every product-month, and the list price's index varies in at least 40 % of products (else the tab has nothing to learn from) |
 | Q9 | Funnel consistency on held-out months: the funnel's units and `_estimate units_index` × mean agree within 25 % for the median product |
 | Q10 | A 10 % list-price cut raises purchases more than clicks, and showings by the placement factor only, for the median product |
 | Q11 | The profit-maximising price is inside the product's tried range for at least 90 % of products with 8+ index values |
@@ -135,6 +148,7 @@ and a funnel step ("pictures and ads, and what each does to profit"). Written af
 - A daily table.
 - A shop-wide funnel (all products summed); the per-product funnel is the first step.
 - Saving a list price outside the sandbox, competitors' prices, a price optimiser across products.
+- Stock: the funnel shows the stock state but does not cap units by inventory.
 - Building any of this before release 3 is loaded: the tab and funnel need its columns.
 
 ## Consequences
