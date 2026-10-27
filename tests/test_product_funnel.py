@@ -10,7 +10,7 @@ from src.lookup_errors import ProductNotOnSaleError
 from src.product_funnel import AD_SPEND_EUR, get_product_funnel
 
 PRODUCT = {"sku": "SKU-1", "brand": "PetNord", "category": "treats", "pet_type": "dog"}
-STATE = {"list_price_eur": 10.0, "list_price_index": 1.0, "list_price_band": "100", "discount_pct": 0.0, "on_offer": False,
+STATE = {"product_state_id": "SKU-1-2026-04", "price_eur": 10.0, "list_price_eur": 10.0, "list_price_index": 1.0, "list_price_band": "100", "discount_pct": 0.0, "on_offer": False,
          "discount_band": "none", "ad_level": "none", "rating_band": "4", "label": "none", "age": "established",
          "stock": "in_stock", "rival_launched": False, "image_count": "2-3", "description_quality": "ok"}
 SALES = [{"month": f"2026-0{m}", "showings": 10, "units_sold": 2, "price_index": 1.0, "units_index": 1.0}
@@ -35,6 +35,8 @@ class FakeAito:
         index = {None: 0, "clicked": 1, "purchased": 2}
 
         def total(q):
+            if "product_state" in q["where"]:       # the month's own showings: 8 shown, 4 clicked, 2 purchased
+                return {None: 4, "clicked": 2, "purchased": 1}[next((k for k in ("clicked", "purchased") if k in q["where"]), None)]
             if q["from"] == "order_lines":
                 return self.lines[q["where"]["qty"]] if "qty" in q["where"] else sum(self.lines.values())
             return self.counts[q["from"]][index[next((k for k in ("clicked", "purchased") if k in q["where"]), None)]]
@@ -163,3 +165,16 @@ def test_a_month_without_a_state_is_refused():
 def test_a_value_or_property_the_data_does_not_have_is_refused_not_estimated(changes):
     with pytest.raises(ValueError):
         get_product_funnel(FakeAito(), "SKU-1", "2026-05", changes)
+
+
+def test_the_months_own_funnel_is_counted_beside_the_estimate():
+    funnel = get_product_funnel(FakeAito(), "SKU-1", "2026-04")       # April has a sales row: 2 units
+
+    actual = funnel.actual
+    assert (actual.impressions, actual.clicks, actual.purchases, actual.units) == (8, 4, 2, 2)
+    assert actual.revenue_eur == 20.0 and actual.gross_profit_eur == pytest.approx(2 * (10.0 - 6.0))
+    assert actual.profit_eur == actual.gross_profit_eur                # no advertising that month
+
+
+def test_a_month_with_no_sales_row_has_no_actual_to_set_the_estimate_against():
+    assert get_product_funnel(FakeAito(), "SKU-1", "2026-05").actual is None

@@ -1043,11 +1043,17 @@ export interface Funnel {
   ctr: number; purchase_rate: number; showings_index: number;
 }
 
+export interface ActualMonth {
+  impressions: number; clicks: number; purchases: number; units: number;
+  price_eur: number; revenue_eur: number; gross_profit_eur: number; ad_spend_eur: number; profit_eur: number;
+}
+
 export interface ProductFunnel {
   sku: string; month: string; mean_showings: number; mean_units: number | null; units_per_purchase: number; own_ctr: number; own_conversion: number; no_data: string | null; unit_cost_eur: number;
   now: Funnel; asked: Funnel; changed: string[];
   check_units: number | null; check_gap: number | null; check_ok: boolean | null;
   last_month: { showings?: number; units?: number };
+  actual: ActualMonth | null;
   showings_support: number; ad_spend_assumed: Record<string, number>;
   last_query: { endpoint: string; body: Record<string, unknown> };
 }

@@ -46,6 +46,20 @@ class PurchaseSize:
 
 
 @dataclass(frozen=True)
+class ActualMonth:
+    """What the month's data says happened: the same steps, counted, to set the estimate against."""
+    impressions: int
+    clicks: int
+    purchases: int
+    units: int
+    price_eur: float
+    revenue_eur: float
+    gross_profit_eur: float
+    ad_spend_eur: float         # the assumed spend for the month's advertising level
+    profit_eur: float
+
+
+@dataclass(frozen=True)
 class Funnel:
     impressions: float
     clicks: float
@@ -81,6 +95,7 @@ class ProductFunnel:
     check_gap: float | None     # (funnel units − check units) ÷ check units
     check_ok: bool | None
     last_month: dict            # what happened in `month`: showings, units
+    actual: ActualMonth | None  # the month's own funnel, counted; none when it has no sales row yet
     showings_support: int       # past product-months the showings estimate rests on
     ad_spend_assumed: dict[str, float]
     last_query: dict
@@ -145,9 +160,27 @@ def get_product_funnel(client: AitoClient, sku: str, month: str = LATEST_MONTH,
         own_ctr=round(history.ctr, 4), own_conversion=round(history.conversion, 4), no_data=no_data,
         unit_cost_eur=round(unit_cost, 2), now=now, asked=asked, changed=sorted(changes), check_units=None if check_units is None else round(check_units, 2),
         check_gap=None if check_gap is None else round(check_gap, 3), check_ok=check_ok,
+        actual=None if this_month is None else _actual(client, state, this_month, unit_cost),
         last_month={} if this_month is None else {"showings": this_month["showings"], "units": this_month["units_sold"]},
         showings_support=len(earlier), ad_spend_assumed=AD_SPEND_EUR,
         last_query={"endpoint": "_estimate", "body": showings_body(sku, band, ad)})
+
+
+def _actual(client: AitoClient, state: dict, sales_row: dict, unit_cost: float) -> ActualMonth:
+    """The month's showings, clicks and purchases, counted on the product's state of the month in both
+    showing tables, with the units and money that followed."""
+    where = {"product_state": state["product_state_id"]}
+    counts = [{"from": table, "where": {**where, **outcome}, "limit": 0}
+              for table in ("impressions", "unranked_showings")
+              for outcome in ({}, {"clicked": True}, {"purchased": True})]
+    r_shown, r_clicked, r_purchased, u_shown, u_clicked, u_purchased = (a["total"] for a in client.batch(counts))
+    units, price = sales_row["units_sold"], float(state["price_eur"])
+    gross = units * (price - unit_cost)
+    spend = AD_SPEND_EUR[state["ad_level"]]
+    return ActualMonth(impressions=r_shown + u_shown, clicks=r_clicked + u_clicked,
+                       purchases=r_purchased + u_purchased, units=units, price_eur=price,
+                       revenue_eur=round(units * price, 2), gross_profit_eur=round(gross, 2), ad_spend_eur=spend,
+                       profit_eur=round(gross - spend, 2))
 
 
 def _property(changes: dict, state: dict, name: str):
