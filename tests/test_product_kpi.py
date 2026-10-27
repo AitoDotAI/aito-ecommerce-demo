@@ -26,7 +26,9 @@ SKU = "SKU-PT-0143"
 API = "https://example.aito.app/api/v2"
 PRODUCT = {"sku": SKU, "name": "PetNord Bacon Treats 200g", "brand": "PetNord", "category": "treats", "pet_type": "dog"}
 STATE = {"product_sku": SKU, "month": "2026-04", "discount_band": "none", "rating_band": "4", "label": "none",
-         "age": "established", "stock": "in_stock", "rival_launched": False}
+         "age": "established", "stock": "in_stock", "rival_launched": False,
+         "list_price_eur": 10.0, "list_price_index": 1.0, "image_count": "2-3", "description_quality": "ok",
+         "ad_level": "none"}
 
 
 # A refused or unknown request stops before the batch, which the mock still offers.
@@ -78,7 +80,9 @@ def test_the_query_has_the_products_properties_not_its_sku(client, httpx_mock):
     assert queries[0]["where"] == {
         "product_sku.brand": "PetNord", "product_sku.category": "treats", "product_sku.pet_type": "dog",
         "product_state.discount_band": "none", "product_state.rating_band": "4", "product_state.label": "none",
-        "product_state.age": "established", "product_state.stock": "in_stock", "product_state.rival_launched": False}
+        "product_state.age": "established", "product_state.stock": "in_stock", "product_state.rival_launched": False,
+        "product_state.list_price_index": 1.0, "product_state.image_count": "2-3",
+        "product_state.description_quality": "ok", "product_state.ad_level": "none"}
     assert "product_sku" not in queries[0]["where"] and "$why" in queries[0]["select"]
 
 
@@ -90,6 +94,16 @@ def test_a_change_replaces_that_property_and_is_listed(client, httpx_mock):
     where = json.loads(httpx_mock.get_requests()[-1].read())[0]["where"]
     assert (where["product_state.discount_band"], where["product_state.rival_launched"]) == ("20+", True)
     assert result.changed == ["discount_band", "rival_launched"] and result.properties["discount_band"] == "20+"
+
+
+def test_a_new_list_price_in_euros_becomes_the_list_price_index_the_data_holds(client, httpx_mock):
+    mock_aito(httpx_mock)
+
+    result = get_product_kpis(client, SKU, "2026-04", {"list_price_eur": 9.0})
+
+    where = json.loads(httpx_mock.get_requests()[-1].read())[0]["where"]
+    assert where["product_state.list_price_index"] == 0.9      # against a reference list price of €10.00
+    assert result.changed == ["list_price_index"]
 
 
 def test_a_property_that_is_not_editable_is_refused(client, httpx_mock):

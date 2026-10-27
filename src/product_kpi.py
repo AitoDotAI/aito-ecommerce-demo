@@ -31,7 +31,10 @@ FIXED = {"brand": "product_sku.brand", "category": "product_sku.category", "pet_
 # What the owner can change: the columns of the product's state that month.
 EDITABLE = {"discount_band": "product_state.discount_band", "rating_band": "product_state.rating_band",
             "label": "product_state.label", "age": "product_state.age", "stock": "product_state.stock",
-            "rival_launched": "product_state.rival_launched"}
+            "rival_launched": "product_state.rival_launched",
+            # ADR 0049, 0050: the list price and how the shop lists the product.
+            "list_price_index": "product_state.list_price_index", "image_count": "product_state.image_count",
+            "description_quality": "product_state.description_quality", "ad_level": "product_state.ad_level"}
 
 
 @dataclass(frozen=True)
@@ -76,6 +79,16 @@ def where_for(product: dict, state: dict, changes: dict[str, object]) -> dict:
             **{path: changes.get(name, state[name]) for name, path in EDITABLE.items()}}
 
 
+def with_list_price_index(state: dict, changes: dict[str, object]) -> dict[str, object]:
+    """`changes` with a `list_price_eur` the owner typed turned into the `list_price_index` the data holds:
+    the new list price against the product's reference list price (this month's list price ÷ its index)."""
+    if "list_price_eur" not in changes:
+        return changes
+    reference = float(state["list_price_eur"]) / float(state["list_price_index"])
+    rest = {name: value for name, value in changes.items() if name != "list_price_eur"}
+    return {**rest, "list_price_index": round(float(changes["list_price_eur"]) / reference, 3)}
+
+
 def predict_body(kpi: str, where: dict) -> dict:
     return {"from": "impressions", "where": where, "predict": kpi, "select": ["$p", "feature", "$why"]}
 
@@ -87,6 +100,7 @@ def get_product_kpis(client: AitoClient, sku: str, month: str, changes: dict[str
     states = client.search("product_states", where={"product_sku": sku, "month": month}, limit=1)["hits"]
     if not states:
         raise UnknownProductError(f"{sku} has no state in {month}")
+    changes = with_list_price_index(states[0], changes)
     where = where_for(products[0], states[0], changes)
 
     counts = [{"from": "impressions", "where": {**scope, **hit}, "limit": 0}
