@@ -39,9 +39,9 @@ export default function FunnelPanel({ funnel, loading }: { funnel: ProductFunnel
             <strong> Profit</strong> is purchases times (price − cost), less the month&apos;s ad spend.
           </p>
           <p style={{ margin: "0 0 8px" }}>
-            Purchases are counted from the showing, as the shop&apos;s data counts them, not as clicks times a conversion,
-            and they are units: this product has sold {funnel.units_per_purchase.toFixed(2)} units for each showing that ended
-            in a purchase (shoppers take several, and some re-order without a showing).
+            Purchases are units. The level is this product&apos;s own: it has sold {funnel.units_per_showing.toFixed(2)} units per
+            showing (shoppers take several, and some re-order without a showing). Aito says how much the properties move the
+            chance of a purchase compared with the product&apos;s average showing ({pct(funnel.own_purchase_rate, 1)}).
           </p>
           <p style={{ margin: 0, color: "var(--text-muted)" }}>
             Ad spend is our assumption until the shop declares its own: {Object.entries(funnel.ad_spend_assumed)
@@ -84,6 +84,7 @@ export default function FunnelPanel({ funnel, loading }: { funnel: ProductFunnel
         {funnel.last_month.showings !== undefined && <>{monthLabel(funnel.month)} itself: {funnel.last_month.showings} showings, {funnel.last_month.units} sold. </>}
         Showings estimated from {funnel.showings_support} earlier months.
       </div>
+      {funnel.no_data && <div role="status" className="card-sub" style={{ marginTop: 6, color: "var(--red)" }}>{funnel.no_data}</div>}
       {funnel.check_units !== null && (
         <div role="status" className="card-sub" style={{ marginTop: 6, color: funnel.check_ok ? undefined : "var(--red)" }}>
           {funnel.check_ok

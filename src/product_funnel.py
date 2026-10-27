@@ -8,8 +8,10 @@ changes one (the offer, the list price, the stars, the pictures, the description
   an offer or an advertisement is what moves them (placement, ADR 0045);
 - clicks, purchases: impressions × the chance a showing ends in one, from `src/product_kpi.py`'s
   `_predict clicked` / `purchased` on the product's properties;
-- purchases are units: the showings that end in a purchase × the product's own units per purchased showing
-  (`units_per_purchase`: a customer buys two bags, or re-orders from the order history without a showing);
+- purchases are units: impressions × the product's own units per showing (its history) × how much more or less
+  likely than its average showing the properties make a purchase (`_predict purchased` ÷ the product's own
+  rate). Aito's rate alone counts only ranked showings of one unit each, and a product also sells to
+  re-orders and in multiples, so its level comes from the product's own months;
 - profit: purchases × (price − unit cost) − the month's ad spend.
 
 Purchases come from the showing, not from clicks × a conversion, so the steps cannot disagree with the way
@@ -26,7 +28,7 @@ from src.demand_forecast import LATEST_MONTH
 from src.lookup_errors import ProductNotOnSaleError, UnknownProductError
 from src.product_decision import BAND_DISCOUNT_PCT
 from src.product_kpi import get_product_kpis
-from src.product_pricing import estimate_units_index
+from src.product_pricing import RANGE_MARGIN, estimate_units_index
 
 # What an advertisement costs the shop a month, by level. The shop declares its own; these are ours until it
 # does (ADR 0050), so advertising does not win the profit line for nothing.
@@ -55,7 +57,9 @@ class ProductFunnel:
     month: str
     mean_showings: float        # the product's showings a month before `month`
     mean_units: float | None
-    units_per_purchase: float   # the product's units sold ÷ its showings that ended in a purchase, all months
+    units_per_showing: float    # the product's units sold ÷ its showings, all months
+    own_purchase_rate: float    # P(purchase | shown) over the product's own ranked showings, all months
+    no_data: str | None         # why the list price asked was left out, when it is beyond the prices tried
     unit_cost_eur: float
     now: Funnel                 # the product's properties as they are
     asked: Funnel               # ... with the owner's changes
@@ -104,10 +108,10 @@ def get_product_funnel(client: AitoClient, sku: str, month: str = LATEST_MONTH,
     if list_price_eur is not None:
         changes["list_price_index"] = round(list_price_eur / reference, 3)
 
-    units_per_purchase = _units_per_purchase(client, sku, sales)
-    now = _funnel(client, sku, month, {}, state, reference, unit_cost, mean_showings, units_per_purchase)
-    asked = (_funnel(client, sku, month, changes, state, reference, unit_cost, mean_showings, units_per_purchase)
-             if changes else now)
+    no_data = _drop_list_price_beyond_the_data(changes, state, sales)
+    calibration = _calibration(client, sku, sales)
+    now = _funnel(client, sku, month, {}, state, reference, unit_cost, mean_showings, calibration)
+    asked = _funnel(client, sku, month, changes, state, reference, unit_cost, mean_showings, calibration) if changes else now
     check_units = check_gap = check_ok = None
     if mean_units is not None:
         index = float(_property(changes, state, "list_price_index"))
@@ -119,7 +123,8 @@ def get_product_funnel(client: AitoClient, sku: str, month: str = LATEST_MONTH,
     band, ad = _property(changes, state, "discount_band"), _property(changes, state, "ad_level")
     return ProductFunnel(
         sku=sku, month=month, mean_showings=round(mean_showings, 2),
-        mean_units=None if mean_units is None else round(mean_units, 2), units_per_purchase=round(units_per_purchase, 2),
+        mean_units=None if mean_units is None else round(mean_units, 2), units_per_showing=round(calibration[0], 3),
+        own_purchase_rate=round(calibration[1], 4), no_data=no_data,
         unit_cost_eur=round(unit_cost, 2), now=now, asked=asked, changed=sorted(changes), check_units=None if check_units is None else round(check_units, 2),
         check_gap=None if check_gap is None else round(check_gap, 3), check_ok=check_ok,
         last_month={} if this_month is None else {"showings": this_month["showings"], "units": this_month["units_sold"]},
@@ -131,20 +136,38 @@ def _property(changes: dict, state: dict, name: str):
     return changes.get(name, state[name])
 
 
-def _units_per_purchase(client: AitoClient, sku: str, sales: list[dict]) -> float:
-    """Units sold ÷ showings that ended in a purchase. Above 1 when buyers take several and when the product
-    also sells to re-orders that start from the order history, not from a showing."""
+def _drop_list_price_beyond_the_data(changes: dict, state: dict, sales: list[dict]) -> str | None:
+    """A list price whose price paid is beyond what the product has sold at (plus RANGE_MARGIN) has no data
+    behind it: `_predict` falls back to the base rate for a band it has never seen. It is left out of `changes`
+    and the reason returned, so the other changes still show."""
+    if "list_price_index" not in changes:
+        return None
+    paid = changes["list_price_index"] * (1 - _offer_pct(state, _property(changes, state, "discount_band")) / 100)
+    indexes = [float(r["price_index"]) for r in sales]
+    low, high = min(indexes) - RANGE_MARGIN, max(indexes) + RANGE_MARGIN
+    if low <= paid <= high:
+        return None
+    del changes["list_price_index"]
+    return (f"A list price paying {paid:.2f} of the original list is outside what this product has sold at "
+            f"({min(indexes):.2f}–{max(indexes):.2f}), so the funnel keeps today's list price.")
+
+
+def _calibration(client: AitoClient, sku: str, sales: list[dict]) -> tuple[float, float]:
+    """(units per showing, purchase rate per ranked showing) over all the product's months. The funnel's level
+    is the first; Aito's `_predict purchased` says how the properties move the second."""
+    shown = client.search("impressions", where={"product_sku": sku}, limit=0)["total"]
     purchased = client.search("impressions", where={"product_sku": sku, "purchased": True}, limit=0)["total"]
-    units = sum(r["units_sold"] for r in sales)
-    if not purchased:
-        if units:
-            raise AitoError(f"{sku} sold {units} units but none from a showing, so its units per purchase are undefined")
-        return 1.0
-    return units / purchased
+    units, showings = sum(r["units_sold"] for r in sales), sum(r["showings"] for r in sales)
+    if not units:
+        return 0.0, 0.0     # never sold: nothing to scale, the funnel shows 0
+    if not showings or not shown or not purchased:
+        raise AitoError(f"{sku} has {showings} showings, {shown} ranked impressions and {purchased} purchased: "
+                        "no purchase rate of its own to scale the funnel by")
+    return units / showings, purchased / shown
 
 
 def _funnel(client: AitoClient, sku: str, month: str, changes: dict[str, object], state: dict, reference: float,
-            unit_cost: float, mean_showings: float, units_per_purchase: float) -> Funnel:
+            unit_cost: float, mean_showings: float, calibration: tuple[float, float]) -> Funnel:
     kpis = get_product_kpis(client, sku, month, changes)
     band, ad = _property(changes, state, "discount_band"), _property(changes, state, "ad_level")
     answer = client.estimate("monthly_sales", showings_body(sku, band, ad)["where"], "showings_index",
@@ -157,7 +180,8 @@ def _funnel(client: AitoClient, sku: str, month: str, changes: dict[str, object]
     list_price = reference * float(_property(changes, state, "list_price_index"))
     offer = _offer_pct(state, band)
     price = round(list_price * (1 - offer / 100), 2)
-    purchases = impressions * rate * units_per_purchase
+    units_per_showing, own_rate = calibration
+    purchases = impressions * units_per_showing * rate / own_rate if units_per_showing else 0.0
     gross = purchases * (price - unit_cost)
     ad_spend = AD_SPEND_EUR[ad]
     return Funnel(impressions=round(impressions, 2), clicks=round(impressions * ctr, 2), purchases=round(purchases, 2),
