@@ -5,7 +5,7 @@ discount, to stars, to newness and to labels. No table Aito reads holds them
 (ADR 0033); they are in the answer key, and the shop sees only what they
 cause. The planted effects (docs/verification/actionable-states-prereg.md):
 
-  P6   an offer lifts click, cart and purchase ×(1 + k · discount_pct / 10)
+  P6   an offer lifts cart and purchase ×(1 + k · discount_pct / 10), the click by 0.4 of that (ADR 0049's L3)
   P7   stars, 5 against 1–2 (ADR 0039's R1 and R2)
   P8   a product in its first months on sale
   P9   a label: recommended, staff pick or popular
@@ -44,6 +44,7 @@ NEW_ODDS = {"high": 2.2, "mid": 1.3, "low": 0.9}                                
 LABEL_ODDS = {"high": {"recommended": 1.8, "staff_pick": 1.6, "popular": 1.7},   # P9
               "mid":  {"recommended": 1.25, "staff_pick": 1.25, "popular": 1.25},
               "low":  {"recommended": 1.0, "staff_pick": 1.0, "popular": 1.0}}
+CLICK_SHARE_OF_OFFER = 0.4       # L3 (ADR 0049): an offer's lift on the click, against its lift on the purchase
 LOW_STOCK_PURCHASE_ODDS = 1.25                                                   # P10
 
 
@@ -100,14 +101,16 @@ def stars_odds(rating_band: str, level: str) -> float:
 def state_odds(state, sensitivities: dict[str, str]) -> tuple[float, float, float]:
     """(click odds, cart-and-purchase odds, purchase-only odds) that this month's
     state of a product gives one shopper. `state` is a `ProductState`."""
-    odds = 1.0
+    offer = 0.0
     if ON["P6"] and state.on_offer:
-        odds *= 1.0 + OFFER_K[sensitivities["discount"]] * state.discount_pct / 10.0
-    odds *= stars_odds(state.rating_band, sensitivities["stars"])
+        offer = OFFER_K[sensitivities["discount"]] * state.discount_pct / 10.0
+    # Every other lever is seen before the click, so it scales all three steps.
+    others = stars_odds(state.rating_band, sensitivities["stars"])
     if ON["P8"] and state.age == "new":
-        odds *= NEW_ODDS[sensitivities["newness"]]
+        others *= NEW_ODDS[sensitivities["newness"]]
     if ON["P9"] and state.label != "none":
-        odds *= LABEL_ODDS[sensitivities["labels"]][state.label]
+        others *= LABEL_ODDS[sensitivities["labels"]][state.label]
     purchase_only = LOW_STOCK_PURCHASE_ODDS if ON["P10"] and state.stock == "low" else 1.0
-    # Every lever is seen before the click, so each scales all three steps.
-    return odds, odds, purchase_only
+    # ADR 0049 (L3): a click is cheap, so an offer lifts it less than the purchase.
+    click_offer = CLICK_SHARE_OF_OFFER * offer if ON["L3"] else offer
+    return others * (1.0 + click_offer), others * (1.0 + offer), purchase_only

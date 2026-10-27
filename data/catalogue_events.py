@@ -24,6 +24,7 @@ import random
 import re
 from dataclasses import dataclass
 
+from data import listing as listing_plan
 from data.planted_switches import stream
 from data.shop_levers import review_count_band
 
@@ -67,6 +68,7 @@ class CatalogueEvents:
     slice_of: dict[str, tuple[str, str]]    # sku → (pet_type, category)
     # ((pet_type, category), month) → the products launched in it in the last 3 months.
     recent_launches: dict[tuple[tuple[str, str], str], frozenset[str]]
+    listing: listing_plan.Listing | None = None     # ADR 0049: list price policy, pictures, description, ads
 
     def on_sale(self, sku: str, month: str) -> bool:
         return month >= self.launch_month.get(sku, "")
@@ -77,9 +79,10 @@ class CatalogueEvents:
 
     def list_price(self, sku: str, month: str) -> float:
         rise = self.rise.get(sku)
+        index = self.listing.list_index.get((sku, month), 1.0) if self.listing else 1.0
         if rise is not None and month >= rise[0]:
-            return round(self.original_list[sku] * rise[1], 2)
-        return self.original_list[sku]
+            return round(self.original_list[sku] * rise[1] * index, 2)
+        return round(self.original_list[sku] * index, 2)
 
     def raised_since(self, sku: str, month: str) -> float:
         """The list price this month ÷ the original: 1.0 before any rise."""
@@ -138,8 +141,11 @@ def plan_catalogue_events(rng: random.Random, products: list, months: list[str],
     for sku, launch in launch_month.items():
         for i in range(RECENT_MONTHS):
             recent.setdefault((slice_of[sku], add_months(launch, i)), set()).add(sku)
+    # ADR 0049: the listing, last so it draws nothing the older events drew.
+    held = frozenset(rise) | mispriced | DEMO_ANCHORS
+    planned = listing_plan.plan_listing(rng.randrange(2 ** 32), [p.sku for p in products], months, held)
     events = CatalogueEvents(launch_month, rise, original_list, slice_of,
-                             {key: frozenset(skus) for key, skus in recent.items()})
+                             {key: frozenset(skus) for key, skus in recent.items()}, planned)
     for p in products:
         p.price_eur = events.list_price(p.sku, months[-1])
     return events
@@ -181,6 +187,16 @@ def discount_band(discount_pct: float) -> str:
     return "15-20" if discount_pct < 20 else "20+"
 
 
+LIST_PRICE_STEP_PCT = 5
+
+
+def list_price_band(list_price_index: float) -> str:
+    """The list price as a percentage of the original list, to the nearest 5: "85" ... "115".
+    The listing draws prices from these price points, so a band is what `_predict` can condition on:
+    a decimal index only matches a row whose cents are the same."""
+    return str(round(list_price_index * 100 / LIST_PRICE_STEP_PCT) * LIST_PRICE_STEP_PCT)
+
+
 @dataclass
 class ProductState:
     """One product as it was in one month: what a shopper saw (ADR 0032).
@@ -197,10 +213,16 @@ class ProductState:
     age: str                   # "new" (first NEW_MONTHS on sale), "established"
     rival_launched: bool       # a product of the same pet and category launched in the last 3 months
     price_change: str          # "rise" (list price raised in the last 3 months), "none"
+    list_price_index: float    # ADR 0049: the list price ÷ the original list, apart from the offer
+    list_price_band: str       # that index in percent to the nearest 5: "85" ... "115"
     # ADR 0038: what the shop set or lived with this month.
     label: str                 # "none", "recommended", "staff_pick", "popular"
     stock: str                 # "in_stock", "low"
     review_count_band: str     # "none", "1-4", "5-19", "20+": reviews created before the month
+    # ADR 0049: how the shop lists the product.
+    image_count: str           # "0-1", "2-3", "4+"
+    description_quality: str   # "thin", "ok", "rich"
+    ad_level: str              # "none", "search", "banner"
 
 
 def states_for_month(seed: int, month: str, products: list, events: CatalogueEvents,
@@ -216,7 +238,9 @@ def states_for_month(seed: int, month: str, products: list, events: CatalogueEve
             continue
         list_price = events.list_price(p.sku, month)
         noise = stream(seed, "price-noise", p.sku, month).uniform(-0.02, 0.02)
-        ratio = (1.0 - discount.get((p.sku, month), 0.0)) * (1.0 + noise)
+        listing = events.listing
+        offer = max(discount.get((p.sku, month), 0.0), listing.extra_discount.get((p.sku, month), 0.0))
+        ratio = (1.0 - offer) * (1.0 + noise)
         discount_pct = round((1.0 - ratio) * 100, 1)
         band, n_reviews = stars.get(p.sku, ("unrated", 0))
         out.append(ProductState(
@@ -235,5 +259,10 @@ def states_for_month(seed: int, month: str, products: list, events: CatalogueEve
             label=labels.get(p.sku, "none"),
             stock="low" if p.sku in low_stock else "in_stock",
             review_count_band=review_count_band(n_reviews),
+            list_price_index=round(list_price / events.original_list[p.sku], 3),
+            list_price_band=list_price_band(list_price / events.original_list[p.sku]),
+            image_count=listing.image_count[(p.sku, month)],
+            description_quality=listing.description_quality[(p.sku, month)],
+            ad_level=listing.ad_level[(p.sku, month)],
         ))
     return out

@@ -63,7 +63,9 @@ def test_monthly_sales_carry_the_price_index_and_the_offer_band_of_their_state()
     for r in load("monthly_sales.json")[:3000]:
         st = states[r["product_state"]]
         assert r["discount_band"] == st["discount_band"]
-        assert abs(r["price_index"] - st["price_eur"] / st["list_price_eur"]) < 0.001
+        # ADR 0049: the effective price against the product's original list price, so the list price and the
+        # offer both show in it.
+        assert abs(r["price_index"] - st["list_price_index"] * st["price_eur"] / st["list_price_eur"]) < 0.002
 
 
 def test_about_two_in_five_customers_declare_a_pet_profile():

@@ -87,8 +87,9 @@ SCHEMAS: dict[str, dict] = {
             # with the first order, and what that order held.
             "visitor":                 {"type": "String",  "nullable": False},
             "first_source":            {"type": "String",  "nullable": False},
-            "joined_month":            {"type": "String",  "nullable": False},
-            "first_basket_categories": {"type": "Text",    "nullable": False, "analyzer": "whitespace"},
+            # Absent for a customer whose visits never ended in an order: they have no first basket yet.
+            "joined_month":            {"type": "String",  "nullable": True},
+            "first_basket_categories": {"type": "Text",    "nullable": True, "analyzer": "whitespace"},
             # 3 or more orders in the first 6 months: a label from later data,
             # as `churned_in_3_months` is. Absent for customers who joined
             # less than 6 months before the data ends.
@@ -133,6 +134,13 @@ SCHEMAS: dict[str, dict] = {
             "label":             {"type": "String", "nullable": False},
             "stock":             {"type": "String", "nullable": False},
             "review_count_band": {"type": "String", "nullable": False},
+            # ADR 0049: the list price apart from the offer, and how the shop lists the product.
+            "list_price_index":    {"type": "Decimal", "nullable": False},
+            # The index in percent to the nearest 5 ("85" ... "115"): the form `_predict` can condition on.
+            "list_price_band":     {"type": "String",  "nullable": False},
+            "image_count":         {"type": "String",  "nullable": False},
+            "description_quality": {"type": "String",  "nullable": False},
+            "ad_level":            {"type": "String",  "nullable": False},
         },
     },
     # 3. orders — links to customers.
@@ -384,6 +392,16 @@ SCHEMAS: dict[str, dict] = {
             "price_index":   {"type": "Decimal", "nullable": False},
             "discount_band": {"type": "String",  "nullable": False},
             "showings":      {"type": "Int",     "nullable": False},
+            # ADR 0049: the list price index and the listing (copied from the state), and
+            # units ÷ the product's mean before it, a target that is multiplicative across
+            # products. Unset in a product's first month and when it sold nothing before.
+            "list_price_index":    {"type": "Decimal", "nullable": False},
+            "image_count":         {"type": "String",  "nullable": False},
+            "description_quality": {"type": "String",  "nullable": False},
+            "ad_level":            {"type": "String",  "nullable": False},
+            "units_index":         {"type": "Decimal", "nullable": True},
+            # ADR 0050: showings ÷ the product's mean before it, the funnel's first step.
+            "showings_index":      {"type": "Decimal", "nullable": True},
         },
     },
     # 8. inventory — per-SKU stock snapshot. Drives the Inventory

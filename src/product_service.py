@@ -42,8 +42,8 @@ CATALOG_FILE = Path(__file__).resolve().parent.parent / "data" / "products.json"
 
 # The product the view opens on. Picked from the data for its story: of
 # the products that had an offer, a price rise and a rival's launch in
-# their 24 months, and are at list price in the latest month, it sold the
-# most units. PetNord Grain Free Daily Dental Treats 80g (data release 2): a
+# their 24 months, and are at list price in the latest month, it is among
+# the three that sold the most units (data release 3a moved the order of two close ones). PetNord Grain Free Daily Dental Treats 80g (data release 2): a
 # price rise in May 2025, a rival in June 2025, 20 %+ off in September 2025
 # and March 2026, and dental treats are what dog dry-food buyers add
 # (Patterns › Baskets). `tests/test_product_service.py` checks that story

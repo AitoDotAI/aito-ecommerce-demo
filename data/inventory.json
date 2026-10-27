@@ -12,7 +12,7 @@
   {
     "sku": "SKU-PT-0002",
     "current_stock": 4,
-    "unit_cost_eur": 9.88,
+    "unit_cost_eur": 8.4,
     "lead_time_days": 7,
     "reorder_point": 4,
     "safety_stock": 2,
@@ -32,7 +32,7 @@
   {
     "sku": "SKU-PT-0004",
     "current_stock": 3,
-    "unit_cost_eur": 4.87,
+    "unit_cost_eur": 5.36,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -82,7 +82,7 @@
   {
     "sku": "SKU-PT-0009",
     "current_stock": 3,
-    "unit_cost_eur": 19.48,
+    "unit_cost_eur": 18.51,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -102,7 +102,7 @@
   {
     "sku": "SKU-PT-0011",
     "current_stock": 4,
-    "unit_cost_eur": 35.58,
+    "unit_cost_eur": 33.8,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -122,7 +122,7 @@
   {
     "sku": "SKU-PT-0013",
     "current_stock": 6,
-    "unit_cost_eur": 5.03,
+    "unit_cost_eur": 5.28,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -152,7 +152,7 @@
   {
     "sku": "SKU-PT-0016",
     "current_stock": 4,
-    "unit_cost_eur": 19.85,
+    "unit_cost_eur": 16.87,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -232,7 +232,7 @@
   {
     "sku": "SKU-PT-0024",
     "current_stock": 8,
-    "unit_cost_eur": 66.54,
+    "unit_cost_eur": 69.87,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -241,18 +241,18 @@
   },
   {
     "sku": "SKU-PT-0025",
-    "current_stock": 1,
+    "current_stock": 2,
     "unit_cost_eur": 75.07,
     "lead_time_days": 7,
-    "reorder_point": 4,
-    "safety_stock": 2,
+    "reorder_point": 6,
+    "safety_stock": 3,
     "supplier": "S-02",
     "last_received_month": "2026-04"
   },
   {
     "sku": "SKU-PT-0026",
     "current_stock": 3,
-    "unit_cost_eur": 32.75,
+    "unit_cost_eur": 34.39,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -302,7 +302,7 @@
   {
     "sku": "SKU-PT-0031",
     "current_stock": 9,
-    "unit_cost_eur": 4.41,
+    "unit_cost_eur": 4.64,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -311,10 +311,10 @@
   },
   {
     "sku": "SKU-PT-0032",
-    "current_stock": 4,
-    "unit_cost_eur": 60.3,
+    "current_stock": 3,
+    "unit_cost_eur": 63.32,
     "lead_time_days": 7,
-    "reorder_point": 4,
+    "reorder_point": 3,
     "safety_stock": 2,
     "supplier": "S-09",
     "last_received_month": "2026-01"
@@ -332,7 +332,7 @@
   {
     "sku": "SKU-PT-0034",
     "current_stock": 4,
-    "unit_cost_eur": 5.13,
+    "unit_cost_eur": 4.36,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -382,7 +382,7 @@
   {
     "sku": "SKU-PT-0039",
     "current_stock": 28,
-    "unit_cost_eur": 52.93,
+    "unit_cost_eur": 55.58,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -402,7 +402,7 @@
   {
     "sku": "SKU-PT-0041",
     "current_stock": 8,
-    "unit_cost_eur": 5.07,
+    "unit_cost_eur": 5.32,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -422,7 +422,7 @@
   {
     "sku": "SKU-PT-0043",
     "current_stock": 30,
-    "unit_cost_eur": 31.22,
+    "unit_cost_eur": 28.09,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -502,7 +502,7 @@
   {
     "sku": "SKU-PT-0051",
     "current_stock": 3,
-    "unit_cost_eur": 9.01,
+    "unit_cost_eur": 8.11,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -552,7 +552,7 @@
   {
     "sku": "SKU-PT-0056",
     "current_stock": 10,
-    "unit_cost_eur": 65.97,
+    "unit_cost_eur": 72.56,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -612,7 +612,7 @@
   {
     "sku": "SKU-PT-0062",
     "current_stock": 8,
-    "unit_cost_eur": 9.51,
+    "unit_cost_eur": 9.04,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -642,7 +642,7 @@
   {
     "sku": "SKU-PT-0065",
     "current_stock": 7,
-    "unit_cost_eur": 36.41,
+    "unit_cost_eur": 30.95,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -682,7 +682,7 @@
   {
     "sku": "SKU-PT-0069",
     "current_stock": 31,
-    "unit_cost_eur": 53.44,
+    "unit_cost_eur": 48.1,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -742,7 +742,7 @@
   {
     "sku": "SKU-PT-0075",
     "current_stock": 22,
-    "unit_cost_eur": 18.4,
+    "unit_cost_eur": 15.64,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -752,7 +752,7 @@
   {
     "sku": "SKU-PT-0076",
     "current_stock": 7,
-    "unit_cost_eur": 9.17,
+    "unit_cost_eur": 8.71,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -782,7 +782,7 @@
   {
     "sku": "SKU-PT-0079",
     "current_stock": 35,
-    "unit_cost_eur": 4.55,
+    "unit_cost_eur": 5.0,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -812,7 +812,7 @@
   {
     "sku": "SKU-PT-0082",
     "current_stock": 8,
-    "unit_cost_eur": 60.73,
+    "unit_cost_eur": 51.62,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -842,7 +842,7 @@
   {
     "sku": "SKU-PT-0085",
     "current_stock": 3,
-    "unit_cost_eur": 4.45,
+    "unit_cost_eur": 3.78,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -851,11 +851,11 @@
   },
   {
     "sku": "SKU-PT-0086",
-    "current_stock": 20,
+    "current_stock": 27,
     "unit_cost_eur": 10.81,
     "lead_time_days": 7,
-    "reorder_point": 6,
-    "safety_stock": 3,
+    "reorder_point": 8,
+    "safety_stock": 4,
     "supplier": "S-03",
     "last_received_month": "2026-02"
   },
@@ -872,7 +872,7 @@
   {
     "sku": "SKU-PT-0088",
     "current_stock": 13,
-    "unit_cost_eur": 20.39,
+    "unit_cost_eur": 21.41,
     "lead_time_days": 7,
     "reorder_point": 4,
     "safety_stock": 2,
@@ -882,7 +882,7 @@
   {
     "sku": "SKU-PT-0089",
     "current_stock": 9,
-    "unit_cost_eur": 4.35,
+    "unit_cost_eur": 4.13,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -902,7 +902,7 @@
   {
     "sku": "SKU-PT-0091",
     "current_stock": 5,
-    "unit_cost_eur": 33.81,
+    "unit_cost_eur": 35.5,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -912,7 +912,7 @@
   {
     "sku": "SKU-PT-0092",
     "current_stock": 0,
-    "unit_cost_eur": 5.16,
+    "unit_cost_eur": 5.67,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -922,7 +922,7 @@
   {
     "sku": "SKU-PT-0093",
     "current_stock": 4,
-    "unit_cost_eur": 58.21,
+    "unit_cost_eur": 61.12,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -932,7 +932,7 @@
   {
     "sku": "SKU-PT-0094",
     "current_stock": 2,
-    "unit_cost_eur": 10.3,
+    "unit_cost_eur": 9.78,
     "lead_time_days": 7,
     "reorder_point": 8,
     "safety_stock": 4,
@@ -952,7 +952,7 @@
   {
     "sku": "SKU-PT-0096",
     "current_stock": 1,
-    "unit_cost_eur": 9.27,
+    "unit_cost_eur": 8.34,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -982,7 +982,7 @@
   {
     "sku": "SKU-PT-0099",
     "current_stock": 10,
-    "unit_cost_eur": 8.65,
+    "unit_cost_eur": 7.79,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -991,18 +991,18 @@
   },
   {
     "sku": "SKU-PT-0100",
-    "current_stock": 8,
+    "current_stock": 10,
     "unit_cost_eur": 75.57,
     "lead_time_days": 7,
-    "reorder_point": 8,
-    "safety_stock": 4,
+    "reorder_point": 10,
+    "safety_stock": 5,
     "supplier": "S-05",
     "last_received_month": "2026-04"
   },
   {
     "sku": "SKU-PT-0101",
     "current_stock": 23,
-    "unit_cost_eur": 3.24,
+    "unit_cost_eur": 3.4,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -1031,10 +1031,10 @@
   },
   {
     "sku": "SKU-PT-0104",
-    "current_stock": 10,
-    "unit_cost_eur": 1.08,
+    "current_stock": 13,
+    "unit_cost_eur": 1.03,
     "lead_time_days": 10,
-    "reorder_point": 3,
+    "reorder_point": 4,
     "safety_stock": 2,
     "supplier": "S-09",
     "last_received_month": "2026-01"
@@ -1091,10 +1091,10 @@
   },
   {
     "sku": "SKU-PT-0110",
-    "current_stock": 3,
+    "current_stock": 4,
     "unit_cost_eur": 2.82,
     "lead_time_days": 10,
-    "reorder_point": 3,
+    "reorder_point": 4,
     "safety_stock": 2,
     "supplier": "S-03",
     "last_received_month": "2026-01"
@@ -1102,7 +1102,7 @@
   {
     "sku": "SKU-PT-0111",
     "current_stock": 8,
-    "unit_cost_eur": 3.18,
+    "unit_cost_eur": 3.33,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -1112,7 +1112,7 @@
   {
     "sku": "SKU-PT-0112",
     "current_stock": 24,
-    "unit_cost_eur": 0.67,
+    "unit_cost_eur": 0.74,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -1161,18 +1161,18 @@
   },
   {
     "sku": "SKU-PT-0117",
-    "current_stock": 6,
+    "current_stock": 3,
     "unit_cost_eur": 2.87,
     "lead_time_days": 10,
-    "reorder_point": 14,
-    "safety_stock": 6,
+    "reorder_point": 8,
+    "safety_stock": 3,
     "supplier": "S-10",
     "last_received_month": "2026-04"
   },
   {
     "sku": "SKU-PT-0118",
     "current_stock": 3,
-    "unit_cost_eur": 3.16,
+    "unit_cost_eur": 3.47,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -1182,7 +1182,7 @@
   {
     "sku": "SKU-PT-0119",
     "current_stock": 3,
-    "unit_cost_eur": 3.08,
+    "unit_cost_eur": 2.92,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -1202,7 +1202,7 @@
   {
     "sku": "SKU-PT-0121",
     "current_stock": 4,
-    "unit_cost_eur": 3.03,
+    "unit_cost_eur": 2.88,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -1261,11 +1261,11 @@
   },
   {
     "sku": "SKU-PT-0127",
-    "current_stock": 30,
-    "unit_cost_eur": 1.14,
+    "current_stock": 37,
+    "unit_cost_eur": 1.19,
     "lead_time_days": 10,
-    "reorder_point": 18,
-    "safety_stock": 7,
+    "reorder_point": 22,
+    "safety_stock": 9,
     "supplier": "S-08",
     "last_received_month": "2026-04"
   },
@@ -1302,7 +1302,7 @@
   {
     "sku": "SKU-PT-0131",
     "current_stock": 33,
-    "unit_cost_eur": 3.09,
+    "unit_cost_eur": 3.39,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -1312,7 +1312,7 @@
   {
     "sku": "SKU-PT-0132",
     "current_stock": 0,
-    "unit_cost_eur": 0.67,
+    "unit_cost_eur": 0.57,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -1342,7 +1342,7 @@
   {
     "sku": "SKU-PT-0135",
     "current_stock": 6,
-    "unit_cost_eur": 3.2,
+    "unit_cost_eur": 3.36,
     "lead_time_days": 10,
     "reorder_point": 4,
     "safety_stock": 2,
@@ -1352,7 +1352,7 @@
   {
     "sku": "SKU-PT-0136",
     "current_stock": 3,
-    "unit_cost_eur": 1.22,
+    "unit_cost_eur": 1.35,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -1392,7 +1392,7 @@
   {
     "sku": "SKU-PT-0140",
     "current_stock": 4,
-    "unit_cost_eur": 0.67,
+    "unit_cost_eur": 0.74,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -1412,7 +1412,7 @@
   {
     "sku": "SKU-PT-0142",
     "current_stock": 3,
-    "unit_cost_eur": 2.88,
+    "unit_cost_eur": 2.45,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -1441,11 +1441,11 @@
   },
   {
     "sku": "SKU-PT-0145",
-    "current_stock": 32,
+    "current_stock": 38,
     "unit_cost_eur": 1.22,
     "lead_time_days": 10,
-    "reorder_point": 6,
-    "safety_stock": 2,
+    "reorder_point": 7,
+    "safety_stock": 3,
     "supplier": "S-02",
     "last_received_month": "2026-01"
   },
@@ -1472,7 +1472,7 @@
   {
     "sku": "SKU-PT-0148",
     "current_stock": 6,
-    "unit_cost_eur": 1.2,
+    "unit_cost_eur": 1.07,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -1491,11 +1491,11 @@
   },
   {
     "sku": "SKU-PT-0150",
-    "current_stock": 2,
-    "unit_cost_eur": 3.11,
+    "current_stock": 3,
+    "unit_cost_eur": 2.64,
     "lead_time_days": 10,
-    "reorder_point": 6,
-    "safety_stock": 2,
+    "reorder_point": 8,
+    "safety_stock": 3,
     "supplier": "S-07",
     "last_received_month": "2026-03"
   },
@@ -1542,7 +1542,7 @@
   {
     "sku": "SKU-PT-0155",
     "current_stock": 7,
-    "unit_cost_eur": 2.89,
+    "unit_cost_eur": 3.18,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -1551,10 +1551,10 @@
   },
   {
     "sku": "SKU-PT-0156",
-    "current_stock": 10,
-    "unit_cost_eur": 3.32,
+    "current_stock": 7,
+    "unit_cost_eur": 3.65,
     "lead_time_days": 10,
-    "reorder_point": 4,
+    "reorder_point": 3,
     "safety_stock": 2,
     "supplier": "S-01",
     "last_received_month": "2026-02"
@@ -1582,7 +1582,7 @@
   {
     "sku": "SKU-PT-0159",
     "current_stock": 3,
-    "unit_cost_eur": 2.86,
+    "unit_cost_eur": 2.57,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -1602,7 +1602,7 @@
   {
     "sku": "SKU-PT-0161",
     "current_stock": 6,
-    "unit_cost_eur": 0.6,
+    "unit_cost_eur": 0.63,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -1632,7 +1632,7 @@
   {
     "sku": "SKU-PT-0164",
     "current_stock": 3,
-    "unit_cost_eur": 3.26,
+    "unit_cost_eur": 3.43,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -1642,7 +1642,7 @@
   {
     "sku": "SKU-PT-0165",
     "current_stock": 27,
-    "unit_cost_eur": 1.02,
+    "unit_cost_eur": 1.07,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -1651,11 +1651,11 @@
   },
   {
     "sku": "SKU-PT-0166",
-    "current_stock": 16,
-    "unit_cost_eur": 1.04,
+    "current_stock": 13,
+    "unit_cost_eur": 0.89,
     "lead_time_days": 14,
-    "reorder_point": 12,
-    "safety_stock": 4,
+    "reorder_point": 10,
+    "safety_stock": 3,
     "supplier": "S-11",
     "last_received_month": "2026-02"
   },
@@ -1682,7 +1682,7 @@
   {
     "sku": "SKU-PT-0169",
     "current_stock": 3,
-    "unit_cost_eur": 5.01,
+    "unit_cost_eur": 4.51,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -1692,7 +1692,7 @@
   {
     "sku": "SKU-PT-0170",
     "current_stock": 9,
-    "unit_cost_eur": 1.01,
+    "unit_cost_eur": 0.86,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -1701,10 +1701,10 @@
   },
   {
     "sku": "SKU-PT-0171",
-    "current_stock": 14,
-    "unit_cost_eur": 5.32,
+    "current_stock": 8,
+    "unit_cost_eur": 5.58,
     "lead_time_days": 14,
-    "reorder_point": 5,
+    "reorder_point": 3,
     "safety_stock": 2,
     "supplier": "S-04",
     "last_received_month": "2026-02"
@@ -1804,7 +1804,7 @@
     "current_stock": 0,
     "unit_cost_eur": 5.0,
     "lead_time_days": 14,
-    "reorder_point": 4,
+    "reorder_point": 3,
     "safety_stock": 2,
     "supplier": "S-02",
     "last_received_month": "2026-03"
@@ -1834,17 +1834,17 @@
     "current_stock": 1,
     "unit_cost_eur": 2.33,
     "lead_time_days": 14,
-    "reorder_point": 5,
+    "reorder_point": 4,
     "safety_stock": 2,
     "supplier": "S-05",
     "last_received_month": "2026-04"
   },
   {
     "sku": "SKU-PT-0185",
-    "current_stock": 12,
+    "current_stock": 9,
     "unit_cost_eur": 1.3,
     "lead_time_days": 14,
-    "reorder_point": 5,
+    "reorder_point": 4,
     "safety_stock": 2,
     "supplier": "S-06",
     "last_received_month": "2026-04"
@@ -1882,7 +1882,7 @@
   {
     "sku": "SKU-PT-0189",
     "current_stock": 18,
-    "unit_cost_eur": 2.46,
+    "unit_cost_eur": 2.7,
     "lead_time_days": 14,
     "reorder_point": 9,
     "safety_stock": 3,
@@ -1891,20 +1891,20 @@
   },
   {
     "sku": "SKU-PT-0190",
-    "current_stock": 49,
+    "current_stock": 58,
     "unit_cost_eur": 2.31,
     "lead_time_days": 14,
-    "reorder_point": 5,
+    "reorder_point": 6,
     "safety_stock": 2,
     "supplier": "S-11",
     "last_received_month": "2026-02"
   },
   {
     "sku": "SKU-PT-0191",
-    "current_stock": 1,
+    "current_stock": 2,
     "unit_cost_eur": 1.36,
     "lead_time_days": 14,
-    "reorder_point": 4,
+    "reorder_point": 5,
     "safety_stock": 2,
     "supplier": "S-12",
     "last_received_month": "2026-01"
@@ -1914,7 +1914,7 @@
     "current_stock": 1,
     "unit_cost_eur": 1.39,
     "lead_time_days": 14,
-    "reorder_point": 4,
+    "reorder_point": 5,
     "safety_stock": 2,
     "supplier": "S-01",
     "last_received_month": "2026-03"
@@ -1922,7 +1922,7 @@
   {
     "sku": "SKU-PT-0193",
     "current_stock": 5,
-    "unit_cost_eur": 1.32,
+    "unit_cost_eur": 1.25,
     "lead_time_days": 14,
     "reorder_point": 5,
     "safety_stock": 2,
@@ -1961,10 +1961,10 @@
   },
   {
     "sku": "SKU-PT-0197",
-    "current_stock": 9,
-    "unit_cost_eur": 2.22,
+    "current_stock": 7,
+    "unit_cost_eur": 2.33,
     "lead_time_days": 14,
-    "reorder_point": 5,
+    "reorder_point": 4,
     "safety_stock": 2,
     "supplier": "S-06",
     "last_received_month": "2026-04"
@@ -1972,7 +1972,7 @@
   {
     "sku": "SKU-PT-0198",
     "current_stock": 6,
-    "unit_cost_eur": 1.29,
+    "unit_cost_eur": 1.17,
     "lead_time_days": 14,
     "reorder_point": 5,
     "safety_stock": 2,
@@ -1982,7 +1982,7 @@
   {
     "sku": "SKU-PT-0199",
     "current_stock": 2,
-    "unit_cost_eur": 2.07,
+    "unit_cost_eur": 1.86,
     "lead_time_days": 14,
     "reorder_point": 5,
     "safety_stock": 2,
@@ -1992,7 +1992,7 @@
   {
     "sku": "SKU-PT-0200",
     "current_stock": 8,
-    "unit_cost_eur": 0.93,
+    "unit_cost_eur": 1.02,
     "lead_time_days": 14,
     "reorder_point": 5,
     "safety_stock": 2,
@@ -2002,7 +2002,7 @@
   {
     "sku": "SKU-PT-0201",
     "current_stock": 7,
-    "unit_cost_eur": 0.83,
+    "unit_cost_eur": 0.71,
     "lead_time_days": 14,
     "reorder_point": 4,
     "safety_stock": 2,
@@ -2011,10 +2011,10 @@
   },
   {
     "sku": "SKU-PT-0202",
-    "current_stock": 13,
-    "unit_cost_eur": 1.29,
+    "current_stock": 16,
+    "unit_cost_eur": 1.42,
     "lead_time_days": 14,
-    "reorder_point": 4,
+    "reorder_point": 5,
     "safety_stock": 2,
     "supplier": "S-11",
     "last_received_month": "2026-02"
@@ -2041,30 +2041,30 @@
   },
   {
     "sku": "SKU-PT-0205",
-    "current_stock": 19,
+    "current_stock": 17,
     "unit_cost_eur": 11.0,
     "lead_time_days": 21,
-    "reorder_point": 10,
+    "reorder_point": 9,
     "safety_stock": 2,
     "supplier": "S-02",
     "last_received_month": "2026-01"
   },
   {
     "sku": "SKU-PT-0206",
-    "current_stock": 23,
+    "current_stock": 21,
     "unit_cost_eur": 11.49,
     "lead_time_days": 21,
-    "reorder_point": 10,
+    "reorder_point": 9,
     "safety_stock": 2,
     "supplier": "S-03",
     "last_received_month": "2026-02"
   },
   {
     "sku": "SKU-PT-0207",
-    "current_stock": 36,
+    "current_stock": 38,
     "unit_cost_eur": 10.22,
     "lead_time_days": 21,
-    "reorder_point": 16,
+    "reorder_point": 17,
     "safety_stock": 4,
     "supplier": "S-04",
     "last_received_month": "2026-04"
@@ -2082,7 +2082,7 @@
   {
     "sku": "SKU-PT-0209",
     "current_stock": 135,
-    "unit_cost_eur": 11.03,
+    "unit_cost_eur": 9.38,
     "lead_time_days": 21,
     "reorder_point": 16,
     "safety_stock": 4,
@@ -2141,11 +2141,11 @@
   },
   {
     "sku": "SKU-PT-0215",
-    "current_stock": 32,
+    "current_stock": 39,
     "unit_cost_eur": 12.26,
     "lead_time_days": 21,
-    "reorder_point": 10,
-    "safety_stock": 2,
+    "reorder_point": 12,
+    "safety_stock": 3,
     "supplier": "S-12",
     "last_received_month": "2026-04"
   },
@@ -2171,11 +2171,11 @@
   },
   {
     "sku": "SKU-PT-0218",
-    "current_stock": 43,
+    "current_stock": 49,
     "unit_cost_eur": 13.41,
     "lead_time_days": 21,
-    "reorder_point": 14,
-    "safety_stock": 3,
+    "reorder_point": 16,
+    "safety_stock": 4,
     "supplier": "S-03",
     "last_received_month": "2026-04"
   },
@@ -2202,7 +2202,7 @@
   {
     "sku": "SKU-PT-0221",
     "current_stock": 0,
-    "unit_cost_eur": 6.85,
+    "unit_cost_eur": 5.82,
     "lead_time_days": 21,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2212,7 +2212,7 @@
   {
     "sku": "SKU-PT-0222",
     "current_stock": 4,
-    "unit_cost_eur": 6.52,
+    "unit_cost_eur": 5.87,
     "lead_time_days": 21,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2232,7 +2232,7 @@
   {
     "sku": "SKU-PT-0224",
     "current_stock": 10,
-    "unit_cost_eur": 6.57,
+    "unit_cost_eur": 5.92,
     "lead_time_days": 21,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2252,7 +2252,7 @@
   {
     "sku": "SKU-PT-0226",
     "current_stock": 2,
-    "unit_cost_eur": 7.24,
+    "unit_cost_eur": 6.52,
     "lead_time_days": 21,
     "reorder_point": 4,
     "safety_stock": 2,
@@ -2332,7 +2332,7 @@
   {
     "sku": "SKU-PT-0234",
     "current_stock": 19,
-    "unit_cost_eur": 6.7,
+    "unit_cost_eur": 6.36,
     "lead_time_days": 21,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2341,10 +2341,10 @@
   },
   {
     "sku": "SKU-PT-0235",
-    "current_stock": 11,
+    "current_stock": 9,
     "unit_cost_eur": 6.1,
     "lead_time_days": 21,
-    "reorder_point": 7,
+    "reorder_point": 6,
     "safety_stock": 2,
     "supplier": "S-08",
     "last_received_month": "2026-01"
@@ -2352,7 +2352,7 @@
   {
     "sku": "SKU-PT-0236",
     "current_stock": 3,
-    "unit_cost_eur": 6.58,
+    "unit_cost_eur": 5.59,
     "lead_time_days": 21,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2392,7 +2392,7 @@
   {
     "sku": "SKU-PT-0240",
     "current_stock": 7,
-    "unit_cost_eur": 7.25,
+    "unit_cost_eur": 6.53,
     "lead_time_days": 21,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2402,7 +2402,7 @@
   {
     "sku": "SKU-PT-0241",
     "current_stock": 9,
-    "unit_cost_eur": 9.87,
+    "unit_cost_eur": 10.36,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2452,7 +2452,7 @@
   {
     "sku": "SKU-PT-0246",
     "current_stock": 3,
-    "unit_cost_eur": 10.54,
+    "unit_cost_eur": 11.6,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2472,7 +2472,7 @@
   {
     "sku": "SKU-PT-0248",
     "current_stock": 3,
-    "unit_cost_eur": 10.18,
+    "unit_cost_eur": 9.66,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2492,7 +2492,7 @@
   {
     "sku": "SKU-PT-0250",
     "current_stock": 24,
-    "unit_cost_eur": 8.09,
+    "unit_cost_eur": 8.49,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2502,7 +2502,7 @@
   {
     "sku": "SKU-PT-0251",
     "current_stock": 7,
-    "unit_cost_eur": 7.01,
+    "unit_cost_eur": 6.31,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2542,7 +2542,7 @@
   {
     "sku": "SKU-PT-0255",
     "current_stock": 5,
-    "unit_cost_eur": 4.72,
+    "unit_cost_eur": 4.48,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2551,10 +2551,10 @@
   },
   {
     "sku": "SKU-PT-0256",
-    "current_stock": 8,
+    "current_stock": 6,
     "unit_cost_eur": 51.84,
     "lead_time_days": 7,
-    "reorder_point": 4,
+    "reorder_point": 3,
     "safety_stock": 2,
     "supplier": "S-05",
     "last_received_month": "2026-01"
@@ -2562,7 +2562,7 @@
   {
     "sku": "SKU-PT-0257",
     "current_stock": 3,
-    "unit_cost_eur": 65.64,
+    "unit_cost_eur": 72.2,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2572,7 +2572,7 @@
   {
     "sku": "SKU-PT-0258",
     "current_stock": 3,
-    "unit_cost_eur": 19.66,
+    "unit_cost_eur": 21.62,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2632,7 +2632,7 @@
   {
     "sku": "SKU-PT-0264",
     "current_stock": 4,
-    "unit_cost_eur": 5.15,
+    "unit_cost_eur": 5.41,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2642,7 +2642,7 @@
   {
     "sku": "SKU-PT-0265",
     "current_stock": 34,
-    "unit_cost_eur": 4.58,
+    "unit_cost_eur": 4.81,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2652,7 +2652,7 @@
   {
     "sku": "SKU-PT-0266",
     "current_stock": 6,
-    "unit_cost_eur": 19.21,
+    "unit_cost_eur": 20.17,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2662,7 +2662,7 @@
   {
     "sku": "SKU-PT-0267",
     "current_stock": 33,
-    "unit_cost_eur": 53.69,
+    "unit_cost_eur": 51.0,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2672,7 +2672,7 @@
   {
     "sku": "SKU-PT-0268",
     "current_stock": 6,
-    "unit_cost_eur": 9.77,
+    "unit_cost_eur": 9.28,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2682,7 +2682,7 @@
   {
     "sku": "SKU-PT-0269",
     "current_stock": 2,
-    "unit_cost_eur": 58.83,
+    "unit_cost_eur": 52.95,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2762,7 +2762,7 @@
   {
     "sku": "SKU-PT-0277",
     "current_stock": 30,
-    "unit_cost_eur": 72.53,
+    "unit_cost_eur": 61.65,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2801,11 +2801,11 @@
   },
   {
     "sku": "SKU-PT-0281",
-    "current_stock": 7,
-    "unit_cost_eur": 9.78,
+    "current_stock": 5,
+    "unit_cost_eur": 8.32,
     "lead_time_days": 7,
-    "reorder_point": 6,
-    "safety_stock": 3,
+    "reorder_point": 4,
+    "safety_stock": 2,
     "supplier": "S-06",
     "last_received_month": "2026-02"
   },
@@ -2832,7 +2832,7 @@
   {
     "sku": "SKU-PT-0284",
     "current_stock": 19,
-    "unit_cost_eur": 17.88,
+    "unit_cost_eur": 16.98,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2842,7 +2842,7 @@
   {
     "sku": "SKU-PT-0285",
     "current_stock": 9,
-    "unit_cost_eur": 55.78,
+    "unit_cost_eur": 47.41,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2862,10 +2862,10 @@
   {
     "sku": "SKU-PT-0287",
     "current_stock": 2,
-    "unit_cost_eur": 20.76,
+    "unit_cost_eur": 18.68,
     "lead_time_days": 7,
-    "reorder_point": 30,
-    "safety_stock": 15,
+    "reorder_point": 28,
+    "safety_stock": 14,
     "supplier": "S-12",
     "last_received_month": "2026-01"
   },
@@ -2882,7 +2882,7 @@
   {
     "sku": "SKU-PT-0289",
     "current_stock": 4,
-    "unit_cost_eur": 4.44,
+    "unit_cost_eur": 4.88,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2892,7 +2892,7 @@
   {
     "sku": "SKU-PT-0290",
     "current_stock": 25,
-    "unit_cost_eur": 9.96,
+    "unit_cost_eur": 8.97,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2922,7 +2922,7 @@
   {
     "sku": "SKU-PT-0293",
     "current_stock": 20,
-    "unit_cost_eur": 59.23,
+    "unit_cost_eur": 62.19,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2952,7 +2952,7 @@
   {
     "sku": "SKU-PT-0296",
     "current_stock": 9,
-    "unit_cost_eur": 54.15,
+    "unit_cost_eur": 51.44,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -2992,7 +2992,7 @@
   {
     "sku": "SKU-PT-0300",
     "current_stock": 1,
-    "unit_cost_eur": 8.86,
+    "unit_cost_eur": 7.53,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3002,7 +3002,7 @@
   {
     "sku": "SKU-PT-0301",
     "current_stock": 3,
-    "unit_cost_eur": 32.88,
+    "unit_cost_eur": 29.59,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3012,7 +3012,7 @@
   {
     "sku": "SKU-PT-0302",
     "current_stock": 5,
-    "unit_cost_eur": 9.84,
+    "unit_cost_eur": 9.35,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3022,7 +3022,7 @@
   {
     "sku": "SKU-PT-0303",
     "current_stock": 5,
-    "unit_cost_eur": 30.36,
+    "unit_cost_eur": 25.8,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3032,7 +3032,7 @@
   {
     "sku": "SKU-PT-0304",
     "current_stock": 7,
-    "unit_cost_eur": 20.78,
+    "unit_cost_eur": 18.7,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3042,7 +3042,7 @@
   {
     "sku": "SKU-PT-0305",
     "current_stock": 7,
-    "unit_cost_eur": 19.26,
+    "unit_cost_eur": 21.19,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3102,7 +3102,7 @@
   {
     "sku": "SKU-PT-0311",
     "current_stock": 3,
-    "unit_cost_eur": 9.05,
+    "unit_cost_eur": 8.14,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3112,7 +3112,7 @@
   {
     "sku": "SKU-PT-0312",
     "current_stock": 23,
-    "unit_cost_eur": 9.73,
+    "unit_cost_eur": 9.24,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3122,7 +3122,7 @@
   {
     "sku": "SKU-PT-0313",
     "current_stock": 9,
-    "unit_cost_eur": 9.62,
+    "unit_cost_eur": 8.18,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3131,18 +3131,18 @@
   },
   {
     "sku": "SKU-PT-0314",
-    "current_stock": 7,
+    "current_stock": 10,
     "unit_cost_eur": 8.86,
     "lead_time_days": 7,
-    "reorder_point": 6,
-    "safety_stock": 3,
+    "reorder_point": 8,
+    "safety_stock": 4,
     "supplier": "S-03",
     "last_received_month": "2026-03"
   },
   {
     "sku": "SKU-PT-0315",
     "current_stock": 3,
-    "unit_cost_eur": 18.12,
+    "unit_cost_eur": 19.93,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3262,7 +3262,7 @@
   {
     "sku": "SKU-PT-0327",
     "current_stock": 3,
-    "unit_cost_eur": 72.32,
+    "unit_cost_eur": 68.71,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3281,10 +3281,10 @@
   },
   {
     "sku": "SKU-PT-0329",
-    "current_stock": 9,
+    "current_stock": 12,
     "unit_cost_eur": 32.18,
     "lead_time_days": 7,
-    "reorder_point": 3,
+    "reorder_point": 4,
     "safety_stock": 2,
     "supplier": "S-06",
     "last_received_month": "2026-02"
@@ -3292,7 +3292,7 @@
   {
     "sku": "SKU-PT-0330",
     "current_stock": 8,
-    "unit_cost_eur": 19.79,
+    "unit_cost_eur": 20.78,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3302,7 +3302,7 @@
   {
     "sku": "SKU-PT-0331",
     "current_stock": 5,
-    "unit_cost_eur": 30.75,
+    "unit_cost_eur": 26.14,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3312,7 +3312,7 @@
   {
     "sku": "SKU-PT-0332",
     "current_stock": 1,
-    "unit_cost_eur": 4.65,
+    "unit_cost_eur": 4.18,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3332,7 +3332,7 @@
   {
     "sku": "SKU-PT-0334",
     "current_stock": 21,
-    "unit_cost_eur": 76.85,
+    "unit_cost_eur": 65.33,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3342,7 +3342,7 @@
   {
     "sku": "SKU-PT-0335",
     "current_stock": 10,
-    "unit_cost_eur": 34.86,
+    "unit_cost_eur": 29.64,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3351,10 +3351,10 @@
   },
   {
     "sku": "SKU-PT-0336",
-    "current_stock": 7,
+    "current_stock": 5,
     "unit_cost_eur": 17.61,
     "lead_time_days": 7,
-    "reorder_point": 4,
+    "reorder_point": 3,
     "safety_stock": 2,
     "supplier": "S-01",
     "last_received_month": "2026-04"
@@ -3362,7 +3362,7 @@
   {
     "sku": "SKU-PT-0337",
     "current_stock": 3,
-    "unit_cost_eur": 54.19,
+    "unit_cost_eur": 59.61,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3412,7 +3412,7 @@
   {
     "sku": "SKU-PT-0342",
     "current_stock": 5,
-    "unit_cost_eur": 18.54,
+    "unit_cost_eur": 15.76,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3421,11 +3421,11 @@
   },
   {
     "sku": "SKU-PT-0343",
-    "current_stock": 38,
-    "unit_cost_eur": 9.67,
+    "current_stock": 51,
+    "unit_cost_eur": 10.63,
     "lead_time_days": 7,
-    "reorder_point": 6,
-    "safety_stock": 3,
+    "reorder_point": 8,
+    "safety_stock": 4,
     "supplier": "S-08",
     "last_received_month": "2026-04"
   },
@@ -3472,7 +3472,7 @@
   {
     "sku": "SKU-PT-0348",
     "current_stock": 9,
-    "unit_cost_eur": 54.72,
+    "unit_cost_eur": 57.46,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3552,7 +3552,7 @@
   {
     "sku": "SKU-PT-0356",
     "current_stock": 0,
-    "unit_cost_eur": 33.63,
+    "unit_cost_eur": 31.95,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3582,7 +3582,7 @@
   {
     "sku": "SKU-PT-0359",
     "current_stock": 3,
-    "unit_cost_eur": 4.85,
+    "unit_cost_eur": 5.33,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3621,10 +3621,10 @@
   },
   {
     "sku": "SKU-PT-0363",
-    "current_stock": 24,
-    "unit_cost_eur": 0.65,
+    "current_stock": 21,
+    "unit_cost_eur": 0.62,
     "lead_time_days": 10,
-    "reorder_point": 8,
+    "reorder_point": 7,
     "safety_stock": 3,
     "supplier": "S-04",
     "last_received_month": "2026-01"
@@ -3692,7 +3692,7 @@
   {
     "sku": "SKU-PT-0370",
     "current_stock": 4,
-    "unit_cost_eur": 0.67,
+    "unit_cost_eur": 0.7,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3702,7 +3702,7 @@
   {
     "sku": "SKU-PT-0371",
     "current_stock": 2,
-    "unit_cost_eur": 3.02,
+    "unit_cost_eur": 3.32,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3712,7 +3712,7 @@
   {
     "sku": "SKU-PT-0372",
     "current_stock": 3,
-    "unit_cost_eur": 3.27,
+    "unit_cost_eur": 3.43,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3722,7 +3722,7 @@
   {
     "sku": "SKU-PT-0373",
     "current_stock": 31,
-    "unit_cost_eur": 2.79,
+    "unit_cost_eur": 3.07,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3732,7 +3732,7 @@
   {
     "sku": "SKU-PT-0374",
     "current_stock": 9,
-    "unit_cost_eur": 1.16,
+    "unit_cost_eur": 0.99,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3742,7 +3742,7 @@
   {
     "sku": "SKU-PT-0375",
     "current_stock": 1,
-    "unit_cost_eur": 0.59,
+    "unit_cost_eur": 0.62,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3751,10 +3751,10 @@
   },
   {
     "sku": "SKU-PT-0376",
-    "current_stock": 11,
+    "current_stock": 14,
     "unit_cost_eur": 1.05,
     "lead_time_days": 10,
-    "reorder_point": 4,
+    "reorder_point": 5,
     "safety_stock": 2,
     "supplier": "S-05",
     "last_received_month": "2026-04"
@@ -3832,7 +3832,7 @@
   {
     "sku": "SKU-PT-0384",
     "current_stock": 9,
-    "unit_cost_eur": 1.18,
+    "unit_cost_eur": 1.01,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3862,7 +3862,7 @@
   {
     "sku": "SKU-PT-0387",
     "current_stock": 0,
-    "unit_cost_eur": 3.33,
+    "unit_cost_eur": 3.17,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3882,7 +3882,7 @@
   {
     "sku": "SKU-PT-0389",
     "current_stock": 1,
-    "unit_cost_eur": 0.63,
+    "unit_cost_eur": 0.66,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3892,7 +3892,7 @@
   {
     "sku": "SKU-PT-0390",
     "current_stock": 17,
-    "unit_cost_eur": 2.99,
+    "unit_cost_eur": 2.84,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3942,7 +3942,7 @@
   {
     "sku": "SKU-PT-0395",
     "current_stock": 6,
-    "unit_cost_eur": 0.71,
+    "unit_cost_eur": 0.64,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3952,7 +3952,7 @@
   {
     "sku": "SKU-PT-0396",
     "current_stock": 28,
-    "unit_cost_eur": 1.14,
+    "unit_cost_eur": 1.03,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3972,7 +3972,7 @@
   {
     "sku": "SKU-PT-0398",
     "current_stock": 4,
-    "unit_cost_eur": 0.67,
+    "unit_cost_eur": 0.73,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -3991,10 +3991,10 @@
   },
   {
     "sku": "SKU-PT-0400",
-    "current_stock": 2,
+    "current_stock": 1,
     "unit_cost_eur": 3.24,
     "lead_time_days": 10,
-    "reorder_point": 4,
+    "reorder_point": 3,
     "safety_stock": 2,
     "supplier": "S-05",
     "last_received_month": "2026-04"
@@ -4022,7 +4022,7 @@
   {
     "sku": "SKU-PT-0403",
     "current_stock": 8,
-    "unit_cost_eur": 1.21,
+    "unit_cost_eur": 1.09,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4042,7 +4042,7 @@
   {
     "sku": "SKU-PT-0405",
     "current_stock": 7,
-    "unit_cost_eur": 1.07,
+    "unit_cost_eur": 0.97,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4072,7 +4072,7 @@
   {
     "sku": "SKU-PT-0408",
     "current_stock": 1,
-    "unit_cost_eur": 1.22,
+    "unit_cost_eur": 1.09,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4082,7 +4082,7 @@
   {
     "sku": "SKU-PT-0409",
     "current_stock": 6,
-    "unit_cost_eur": 2.78,
+    "unit_cost_eur": 3.06,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4102,7 +4102,7 @@
   {
     "sku": "SKU-PT-0411",
     "current_stock": 3,
-    "unit_cost_eur": 2.92,
+    "unit_cost_eur": 2.77,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4122,7 +4122,7 @@
   {
     "sku": "SKU-PT-0413",
     "current_stock": 4,
-    "unit_cost_eur": 0.61,
+    "unit_cost_eur": 0.67,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4162,7 +4162,7 @@
   {
     "sku": "SKU-PT-0417",
     "current_stock": 9,
-    "unit_cost_eur": 0.67,
+    "unit_cost_eur": 0.56,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4192,7 +4192,7 @@
   {
     "sku": "SKU-PT-0420",
     "current_stock": 3,
-    "unit_cost_eur": 2.76,
+    "unit_cost_eur": 2.62,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4222,7 +4222,7 @@
   {
     "sku": "SKU-PT-0423",
     "current_stock": 5,
-    "unit_cost_eur": 1.13,
+    "unit_cost_eur": 1.07,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4242,7 +4242,7 @@
   {
     "sku": "SKU-PT-0425",
     "current_stock": 3,
-    "unit_cost_eur": 1.18,
+    "unit_cost_eur": 1.29,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4252,7 +4252,7 @@
   {
     "sku": "SKU-PT-0426",
     "current_stock": 3,
-    "unit_cost_eur": 2.92,
+    "unit_cost_eur": 3.22,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4262,7 +4262,7 @@
   {
     "sku": "SKU-PT-0427",
     "current_stock": 7,
-    "unit_cost_eur": 1.07,
+    "unit_cost_eur": 1.18,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4302,7 +4302,7 @@
   {
     "sku": "SKU-PT-0431",
     "current_stock": 6,
-    "unit_cost_eur": 0.63,
+    "unit_cost_eur": 0.69,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4312,7 +4312,7 @@
   {
     "sku": "SKU-PT-0432",
     "current_stock": 3,
-    "unit_cost_eur": 2.82,
+    "unit_cost_eur": 2.54,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4341,10 +4341,10 @@
   },
   {
     "sku": "SKU-PT-0435",
-    "current_stock": 5,
+    "current_stock": 6,
     "unit_cost_eur": 3.13,
     "lead_time_days": 10,
-    "reorder_point": 4,
+    "reorder_point": 5,
     "safety_stock": 2,
     "supplier": "S-04",
     "last_received_month": "2026-02"
@@ -4372,7 +4372,7 @@
   {
     "sku": "SKU-PT-0438",
     "current_stock": 5,
-    "unit_cost_eur": 1.09,
+    "unit_cost_eur": 1.2,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4382,7 +4382,7 @@
   {
     "sku": "SKU-PT-0439",
     "current_stock": 15,
-    "unit_cost_eur": 3.27,
+    "unit_cost_eur": 2.94,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4402,7 +4402,7 @@
   {
     "sku": "SKU-PT-0441",
     "current_stock": 5,
-    "unit_cost_eur": 1.2,
+    "unit_cost_eur": 1.07,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4412,7 +4412,7 @@
   {
     "sku": "SKU-PT-0442",
     "current_stock": 3,
-    "unit_cost_eur": 1.14,
+    "unit_cost_eur": 1.26,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4451,10 +4451,10 @@
   },
   {
     "sku": "SKU-PT-0446",
-    "current_stock": 10,
+    "current_stock": 12,
     "unit_cost_eur": 1.07,
     "lead_time_days": 10,
-    "reorder_point": 5,
+    "reorder_point": 6,
     "safety_stock": 2,
     "supplier": "S-03",
     "last_received_month": "2026-04"
@@ -4462,7 +4462,7 @@
   {
     "sku": "SKU-PT-0447",
     "current_stock": 0,
-    "unit_cost_eur": 1.17,
+    "unit_cost_eur": 0.99,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4472,7 +4472,7 @@
   {
     "sku": "SKU-PT-0448",
     "current_stock": 8,
-    "unit_cost_eur": 1.05,
+    "unit_cost_eur": 0.95,
     "lead_time_days": 10,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4502,7 +4502,7 @@
   {
     "sku": "SKU-PT-0451",
     "current_stock": 8,
-    "unit_cost_eur": 0.98,
+    "unit_cost_eur": 0.89,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4512,7 +4512,7 @@
   {
     "sku": "SKU-PT-0452",
     "current_stock": 3,
-    "unit_cost_eur": 5.23,
+    "unit_cost_eur": 5.48,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4522,7 +4522,7 @@
   {
     "sku": "SKU-PT-0453",
     "current_stock": 8,
-    "unit_cost_eur": 2.05,
+    "unit_cost_eur": 1.74,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4532,7 +4532,7 @@
   {
     "sku": "SKU-PT-0454",
     "current_stock": 4,
-    "unit_cost_eur": 5.2,
+    "unit_cost_eur": 4.94,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4542,7 +4542,7 @@
   {
     "sku": "SKU-PT-0455",
     "current_stock": 3,
-    "unit_cost_eur": 1.01,
+    "unit_cost_eur": 0.91,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4562,7 +4562,7 @@
   {
     "sku": "SKU-PT-0457",
     "current_stock": 3,
-    "unit_cost_eur": 1.91,
+    "unit_cost_eur": 1.81,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4592,7 +4592,7 @@
   {
     "sku": "SKU-PT-0460",
     "current_stock": 10,
-    "unit_cost_eur": 5.36,
+    "unit_cost_eur": 5.09,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4692,7 +4692,7 @@
   {
     "sku": "SKU-PT-0470",
     "current_stock": 3,
-    "unit_cost_eur": 2.01,
+    "unit_cost_eur": 1.81,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4712,7 +4712,7 @@
   {
     "sku": "SKU-PT-0472",
     "current_stock": 10,
-    "unit_cost_eur": 1.08,
+    "unit_cost_eur": 0.92,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4722,7 +4722,7 @@
   {
     "sku": "SKU-PT-0473",
     "current_stock": 3,
-    "unit_cost_eur": 2.19,
+    "unit_cost_eur": 2.41,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4742,7 +4742,7 @@
   {
     "sku": "SKU-PT-0475",
     "current_stock": 4,
-    "unit_cost_eur": 1.87,
+    "unit_cost_eur": 1.59,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4812,7 +4812,7 @@
   {
     "sku": "SKU-PT-0482",
     "current_stock": 3,
-    "unit_cost_eur": 4.63,
+    "unit_cost_eur": 3.93,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -4831,18 +4831,18 @@
   },
   {
     "sku": "SKU-PT-0484",
-    "current_stock": 3,
+    "current_stock": 2,
     "unit_cost_eur": 7.53,
     "lead_time_days": 10,
-    "reorder_point": 10,
-    "safety_stock": 4,
+    "reorder_point": 8,
+    "safety_stock": 3,
     "supplier": "S-05",
     "last_received_month": "2026-02"
   },
   {
     "sku": "SKU-PT-0485",
     "current_stock": 58,
-    "unit_cost_eur": 12.75,
+    "unit_cost_eur": 10.84,
     "lead_time_days": 10,
     "reorder_point": 8,
     "safety_stock": 3,
@@ -4851,28 +4851,28 @@
   },
   {
     "sku": "SKU-PT-0486",
-    "current_stock": 15,
-    "unit_cost_eur": 8.36,
+    "current_stock": 18,
+    "unit_cost_eur": 7.94,
     "lead_time_days": 10,
-    "reorder_point": 5,
+    "reorder_point": 6,
     "safety_stock": 2,
     "supplier": "S-07",
     "last_received_month": "2026-03"
   },
   {
     "sku": "SKU-PT-0487",
-    "current_stock": 18,
+    "current_stock": 23,
     "unit_cost_eur": 8.74,
     "lead_time_days": 10,
-    "reorder_point": 8,
-    "safety_stock": 3,
+    "reorder_point": 10,
+    "safety_stock": 4,
     "supplier": "S-08",
     "last_received_month": "2026-01"
   },
   {
     "sku": "SKU-PT-0488",
     "current_stock": 13,
-    "unit_cost_eur": 6.01,
+    "unit_cost_eur": 5.71,
     "lead_time_days": 10,
     "reorder_point": 8,
     "safety_stock": 3,
@@ -4881,40 +4881,40 @@
   },
   {
     "sku": "SKU-PT-0489",
-    "current_stock": 10,
-    "unit_cost_eur": 13.87,
+    "current_stock": 13,
+    "unit_cost_eur": 12.49,
     "lead_time_days": 10,
-    "reorder_point": 8,
-    "safety_stock": 3,
+    "reorder_point": 10,
+    "safety_stock": 4,
     "supplier": "S-10",
     "last_received_month": "2026-02"
   },
   {
     "sku": "SKU-PT-0490",
-    "current_stock": 25,
-    "unit_cost_eur": 7.59,
+    "current_stock": 20,
+    "unit_cost_eur": 6.45,
     "lead_time_days": 10,
-    "reorder_point": 10,
-    "safety_stock": 4,
+    "reorder_point": 8,
+    "safety_stock": 3,
     "supplier": "S-11",
     "last_received_month": "2026-01"
   },
   {
     "sku": "SKU-PT-0491",
-    "current_stock": 13,
-    "unit_cost_eur": 7.6,
+    "current_stock": 16,
+    "unit_cost_eur": 7.98,
     "lead_time_days": 10,
-    "reorder_point": 10,
-    "safety_stock": 4,
+    "reorder_point": 12,
+    "safety_stock": 5,
     "supplier": "S-12",
     "last_received_month": "2026-04"
   },
   {
     "sku": "SKU-PT-0492",
-    "current_stock": 15,
+    "current_stock": 13,
     "unit_cost_eur": 5.21,
     "lead_time_days": 10,
-    "reorder_point": 8,
+    "reorder_point": 7,
     "safety_stock": 3,
     "supplier": "S-01",
     "last_received_month": "2026-02"
@@ -4971,10 +4971,10 @@
   },
   {
     "sku": "SKU-PT-0498",
-    "current_stock": 10,
-    "unit_cost_eur": 10.27,
+    "current_stock": 12,
+    "unit_cost_eur": 9.24,
     "lead_time_days": 21,
-    "reorder_point": 4,
+    "reorder_point": 5,
     "safety_stock": 2,
     "supplier": "S-07",
     "last_received_month": "2026-02"
@@ -4991,20 +4991,20 @@
   },
   {
     "sku": "SKU-PT-0500",
-    "current_stock": 46,
+    "current_stock": 49,
     "unit_cost_eur": 10.18,
     "lead_time_days": 21,
-    "reorder_point": 16,
+    "reorder_point": 17,
     "safety_stock": 4,
     "supplier": "S-09",
     "last_received_month": "2026-01"
   },
   {
     "sku": "SKU-PT-0501",
-    "current_stock": 134,
+    "current_stock": 143,
     "unit_cost_eur": 10.7,
     "lead_time_days": 21,
-    "reorder_point": 16,
+    "reorder_point": 17,
     "safety_stock": 4,
     "supplier": "S-10",
     "last_received_month": "2026-02"
@@ -5022,7 +5022,7 @@
   {
     "sku": "SKU-PT-0503",
     "current_stock": 2,
-    "unit_cost_eur": 11.74,
+    "unit_cost_eur": 10.57,
     "lead_time_days": 21,
     "reorder_point": 5,
     "safety_stock": 2,
@@ -5082,7 +5082,7 @@
   {
     "sku": "SKU-PT-0509",
     "current_stock": 3,
-    "unit_cost_eur": 7.01,
+    "unit_cost_eur": 7.36,
     "lead_time_days": 21,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5122,7 +5122,7 @@
   {
     "sku": "SKU-PT-0513",
     "current_stock": 9,
-    "unit_cost_eur": 6.17,
+    "unit_cost_eur": 6.79,
     "lead_time_days": 21,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5142,7 +5142,7 @@
   {
     "sku": "SKU-PT-0515",
     "current_stock": 5,
-    "unit_cost_eur": 6.49,
+    "unit_cost_eur": 5.52,
     "lead_time_days": 21,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5172,7 +5172,7 @@
   {
     "sku": "SKU-PT-0518",
     "current_stock": 0,
-    "unit_cost_eur": 10.05,
+    "unit_cost_eur": 9.55,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5202,7 +5202,7 @@
   {
     "sku": "SKU-PT-0521",
     "current_stock": 18,
-    "unit_cost_eur": 10.29,
+    "unit_cost_eur": 9.26,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5262,7 +5262,7 @@
   {
     "sku": "SKU-PT-0527",
     "current_stock": 5,
-    "unit_cost_eur": 6.95,
+    "unit_cost_eur": 6.25,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5272,7 +5272,7 @@
   {
     "sku": "SKU-PT-0528",
     "current_stock": 3,
-    "unit_cost_eur": 7.12,
+    "unit_cost_eur": 7.84,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5312,7 +5312,7 @@
   {
     "sku": "SKU-PT-0532",
     "current_stock": 8,
-    "unit_cost_eur": 62.88,
+    "unit_cost_eur": 59.73,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5352,7 +5352,7 @@
   {
     "sku": "SKU-PT-0536",
     "current_stock": 1,
-    "unit_cost_eur": 20.81,
+    "unit_cost_eur": 22.89,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5392,7 +5392,7 @@
   {
     "sku": "SKU-PT-0540",
     "current_stock": 6,
-    "unit_cost_eur": 55.93,
+    "unit_cost_eur": 53.14,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5402,7 +5402,7 @@
   {
     "sku": "SKU-PT-0541",
     "current_stock": 10,
-    "unit_cost_eur": 2.2,
+    "unit_cost_eur": 1.87,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5602,7 +5602,7 @@
   {
     "sku": "SKU-PT-0561",
     "current_stock": 12,
-    "unit_cost_eur": 12.07,
+    "unit_cost_eur": 12.67,
     "lead_time_days": 21,
     "reorder_point": 4,
     "safety_stock": 2,
@@ -5632,7 +5632,7 @@
   {
     "sku": "SKU-PT-0564",
     "current_stock": 7,
-    "unit_cost_eur": 11.79,
+    "unit_cost_eur": 10.62,
     "lead_time_days": 21,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5672,7 +5672,7 @@
   {
     "sku": "SKU-PT-0568",
     "current_stock": 9,
-    "unit_cost_eur": 7.13,
+    "unit_cost_eur": 6.06,
     "lead_time_days": 21,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5702,7 +5702,7 @@
   {
     "sku": "SKU-PT-0571",
     "current_stock": 5,
-    "unit_cost_eur": 6.82,
+    "unit_cost_eur": 6.48,
     "lead_time_days": 21,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5762,7 +5762,7 @@
   {
     "sku": "SKU-PT-0577",
     "current_stock": 8,
-    "unit_cost_eur": 9.48,
+    "unit_cost_eur": 10.42,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5772,7 +5772,7 @@
   {
     "sku": "SKU-PT-0578",
     "current_stock": 7,
-    "unit_cost_eur": 10.96,
+    "unit_cost_eur": 10.41,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5782,7 +5782,7 @@
   {
     "sku": "SKU-PT-0579",
     "current_stock": 5,
-    "unit_cost_eur": 31.68,
+    "unit_cost_eur": 33.26,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5802,7 +5802,7 @@
   {
     "sku": "SKU-PT-0581",
     "current_stock": 8,
-    "unit_cost_eur": 19.4,
+    "unit_cost_eur": 18.43,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5862,7 +5862,7 @@
   {
     "sku": "SKU-PT-0587",
     "current_stock": 3,
-    "unit_cost_eur": 66.23,
+    "unit_cost_eur": 59.61,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5872,7 +5872,7 @@
   {
     "sku": "SKU-PT-0588",
     "current_stock": 3,
-    "unit_cost_eur": 18.6,
+    "unit_cost_eur": 16.74,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5882,7 +5882,7 @@
   {
     "sku": "SKU-PT-0589",
     "current_stock": 4,
-    "unit_cost_eur": 9.02,
+    "unit_cost_eur": 9.92,
     "lead_time_days": 7,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5932,7 +5932,7 @@
   {
     "sku": "SKU-PT-0594",
     "current_stock": 3,
-    "unit_cost_eur": 1.06,
+    "unit_cost_eur": 0.9,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5942,7 +5942,7 @@
   {
     "sku": "SKU-PT-0595",
     "current_stock": 6,
-    "unit_cost_eur": 5.3,
+    "unit_cost_eur": 4.77,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5952,7 +5952,7 @@
   {
     "sku": "SKU-PT-0596",
     "current_stock": 9,
-    "unit_cost_eur": 1.02,
+    "unit_cost_eur": 1.07,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5972,7 +5972,7 @@
   {
     "sku": "SKU-PT-0598",
     "current_stock": 4,
-    "unit_cost_eur": 10.2,
+    "unit_cost_eur": 9.69,
     "lead_time_days": 21,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -5982,7 +5982,7 @@
   {
     "sku": "SKU-PT-0599",
     "current_stock": 4,
-    "unit_cost_eur": 11.32,
+    "unit_cost_eur": 12.46,
     "lead_time_days": 21,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6002,7 +6002,7 @@
   {
     "sku": "SKU-PT-0601",
     "current_stock": 6,
-    "unit_cost_eur": 10.32,
+    "unit_cost_eur": 9.29,
     "lead_time_days": 21,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6032,7 +6032,7 @@
   {
     "sku": "SKU-PT-0604",
     "current_stock": 1,
-    "unit_cost_eur": 6.57,
+    "unit_cost_eur": 7.23,
     "lead_time_days": 21,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6062,7 +6062,7 @@
   {
     "sku": "SKU-PT-0607",
     "current_stock": 5,
-    "unit_cost_eur": 10.25,
+    "unit_cost_eur": 9.74,
     "lead_time_days": 14,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6081,20 +6081,20 @@
   },
   {
     "sku": "SKU-PT-0609",
-    "current_stock": 0,
+    "current_stock": 1,
     "unit_cost_eur": 14.61,
     "lead_time_days": 28,
-    "reorder_point": 3,
+    "reorder_point": 4,
     "safety_stock": 2,
     "supplier": "S-10",
     "last_received_month": "2026-01"
   },
   {
     "sku": "SKU-PT-0610",
-    "current_stock": 13,
+    "current_stock": 10,
     "unit_cost_eur": 14.75,
     "lead_time_days": 28,
-    "reorder_point": 4,
+    "reorder_point": 3,
     "safety_stock": 2,
     "supplier": "S-11",
     "last_received_month": "2026-04"
@@ -6152,7 +6152,7 @@
   {
     "sku": "SKU-PT-0616",
     "current_stock": 3,
-    "unit_cost_eur": 12.46,
+    "unit_cost_eur": 11.84,
     "lead_time_days": 28,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6172,7 +6172,7 @@
   {
     "sku": "SKU-PT-0618",
     "current_stock": 3,
-    "unit_cost_eur": 14.35,
+    "unit_cost_eur": 15.06,
     "lead_time_days": 28,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6182,7 +6182,7 @@
   {
     "sku": "SKU-PT-0619",
     "current_stock": 7,
-    "unit_cost_eur": 14.73,
+    "unit_cost_eur": 16.2,
     "lead_time_days": 28,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6192,7 +6192,7 @@
   {
     "sku": "SKU-PT-0620",
     "current_stock": 8,
-    "unit_cost_eur": 13.55,
+    "unit_cost_eur": 12.87,
     "lead_time_days": 28,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6202,7 +6202,7 @@
   {
     "sku": "SKU-PT-0621",
     "current_stock": 33,
-    "unit_cost_eur": 13.36,
+    "unit_cost_eur": 14.03,
     "lead_time_days": 28,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6212,7 +6212,7 @@
   {
     "sku": "SKU-PT-0622",
     "current_stock": 8,
-    "unit_cost_eur": 12.87,
+    "unit_cost_eur": 13.51,
     "lead_time_days": 28,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6222,7 +6222,7 @@
   {
     "sku": "SKU-PT-0623",
     "current_stock": 3,
-    "unit_cost_eur": 12.23,
+    "unit_cost_eur": 11.62,
     "lead_time_days": 28,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6232,7 +6232,7 @@
   {
     "sku": "SKU-PT-0624",
     "current_stock": 9,
-    "unit_cost_eur": 13.77,
+    "unit_cost_eur": 11.7,
     "lead_time_days": 28,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6242,7 +6242,7 @@
   {
     "sku": "SKU-PT-0625",
     "current_stock": 3,
-    "unit_cost_eur": 12.78,
+    "unit_cost_eur": 14.06,
     "lead_time_days": 28,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6322,7 +6322,7 @@
   {
     "sku": "SKU-PT-0633",
     "current_stock": 3,
-    "unit_cost_eur": 12.77,
+    "unit_cost_eur": 12.13,
     "lead_time_days": 28,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6332,7 +6332,7 @@
   {
     "sku": "SKU-PT-0634",
     "current_stock": 8,
-    "unit_cost_eur": 14.75,
+    "unit_cost_eur": 14.01,
     "lead_time_days": 28,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6352,7 +6352,7 @@
   {
     "sku": "SKU-PT-0636",
     "current_stock": 9,
-    "unit_cost_eur": 13.61,
+    "unit_cost_eur": 14.29,
     "lead_time_days": 28,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6382,7 +6382,7 @@
   {
     "sku": "SKU-PT-0639",
     "current_stock": 33,
-    "unit_cost_eur": 14.63,
+    "unit_cost_eur": 13.9,
     "lead_time_days": 28,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6391,20 +6391,20 @@
   },
   {
     "sku": "SKU-PT-0640",
-    "current_stock": 5,
-    "unit_cost_eur": 13.98,
+    "current_stock": 9,
+    "unit_cost_eur": 12.58,
     "lead_time_days": 28,
-    "reorder_point": 3,
+    "reorder_point": 5,
     "safety_stock": 2,
     "supplier": "S-05",
     "last_received_month": "2026-04"
   },
   {
     "sku": "SKU-PT-0641",
-    "current_stock": 10,
+    "current_stock": 8,
     "unit_cost_eur": 12.54,
     "lead_time_days": 28,
-    "reorder_point": 4,
+    "reorder_point": 3,
     "safety_stock": 2,
     "supplier": "S-06",
     "last_received_month": "2026-01"
@@ -6412,7 +6412,7 @@
   {
     "sku": "SKU-PT-0642",
     "current_stock": 8,
-    "unit_cost_eur": 12.78,
+    "unit_cost_eur": 14.06,
     "lead_time_days": 28,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6452,7 +6452,7 @@
   {
     "sku": "SKU-PT-0646",
     "current_stock": 5,
-    "unit_cost_eur": 12.68,
+    "unit_cost_eur": 12.05,
     "lead_time_days": 28,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6462,7 +6462,7 @@
   {
     "sku": "SKU-PT-0647",
     "current_stock": 9,
-    "unit_cost_eur": 14.38,
+    "unit_cost_eur": 15.82,
     "lead_time_days": 28,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6492,7 +6492,7 @@
   {
     "sku": "SKU-PT-0650",
     "current_stock": 4,
-    "unit_cost_eur": 14.45,
+    "unit_cost_eur": 12.28,
     "lead_time_days": 28,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6502,7 +6502,7 @@
   {
     "sku": "SKU-PT-0651",
     "current_stock": 4,
-    "unit_cost_eur": 13.41,
+    "unit_cost_eur": 12.74,
     "lead_time_days": 28,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6512,7 +6512,7 @@
   {
     "sku": "SKU-PT-0652",
     "current_stock": 10,
-    "unit_cost_eur": 12.95,
+    "unit_cost_eur": 14.24,
     "lead_time_days": 28,
     "reorder_point": 3,
     "safety_stock": 2,
@@ -6522,7 +6522,7 @@
   {
     "sku": "SKU-PT-0653",
     "current_stock": 3,
-    "unit_cost_eur": 12.71,
+    "unit_cost_eur": 10.8,
     "lead_time_days": 28,
     "reorder_point": 3,
     "safety_stock": 2,
