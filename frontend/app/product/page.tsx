@@ -16,13 +16,17 @@ import ProductWhatIf from "@/components/product/ProductWhatIf";
 import ProductHero from "@/components/product/ProductHero";
 import ProductEditor from "@/components/product/ProductEditor";
 import KpiPanel from "@/components/product/KpiPanel";
+import FunnelPanel from "@/components/product/FunnelPanel";
+import PricingTab from "@/components/product/PricingTab";
 import { SANDBOX_MONTH, SANDBOX_PARAM } from "@/lib/sandbox";
 import { useSetUrlParams, useUrlState } from "@/lib/use-url-state";
-import type { KpiName, LeverStates, ProductCandidate, ProductKpis, ProductView as ProductViewData } from "@/lib/types";
+import type { KpiName, LeverStates, ProductCandidate, ProductFunnel, ProductKpis, ProductView as ProductViewData } from "@/lib/types";
 
 const LATEST_MONTH = "2026-04";
-/** The right side: two KPIs explained by the product's properties, and the offer decision. */
-const KPI_TABS: Array<{ id: KpiName | "decision"; label: string }> = [
+/** The right side: the funnel, the list price, two KPIs explained by the product's properties, and the offer decision. */
+const KPI_TABS: Array<{ id: KpiName | "decision" | "funnel" | "pricing"; label: string }> = [
+  { id: "funnel", label: "Funnel" },
+  { id: "pricing", label: "Pricing" },
   { id: "clicked", label: "Clicks" },
   { id: "purchased", label: "Purchases" },
   { id: "decision", label: "Offer & margin" },
@@ -52,6 +56,9 @@ function ProductView() {
   const [month, setMonth] = useUrlState("month", LATEST_MONTH);
   const [tab, setTab] = useUrlState("tab", "what-if");
   const [priceParam] = useUrlState("price", "");
+  // The list price asked about (ADR 0050), shared by the editor, the Pricing tab and the estimates.
+  const [listPriceParam, setListPriceParam] = useUrlState("lp", "");
+  const listPrice = listPriceParam ? Number(listPriceParam) : null;
   const setUrl = useSetUrlParams();
   const [view, setView] = useState<ProductViewData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -70,10 +77,11 @@ function ProductView() {
   useEffect(() => { setPreviewBand(null); }, [sku, month]);
   // The KPI tabs (ADR 0048): the properties the owner changed (previews, never saved), and the
   // estimates for them against the estimates without them.
-  const [kpiTab, setKpiTab] = useUrlState("kpi", "decision");
+  const [kpiTab, setKpiTab] = useUrlState("kpi", "funnel");
   const [changes, setChanges] = useState<Record<string, string | boolean>>({});
   const [kpis, setKpis] = useState<ProductKpis | null>(null);
   const [baseline, setBaseline] = useState<ProductKpis | null>(null);
+  const [funnel, setFunnel] = useState<ProductFunnel | null>(null);
   const [kpiLoading, setKpiLoading] = useState(false);
   useEffect(() => { setChanges({}); }, [sku, month]);
   const setChange = useCallback((name: string, value: string | boolean | null) => setChanges((c) => {
@@ -119,21 +127,24 @@ function ProductView() {
   const live = !!sandbox && !!states;
   // The offer preview is one more property to change.
   const asked = { ...changes, ...(previewBand && !live ? { discount_band: previewBand } : {}) };
-  const askedKey = JSON.stringify(asked);
+  const askedKey = JSON.stringify({ ...asked, lp: listPrice });
   useEffect(() => {
     if (!shownSku) return;
     let current = true;
-    const url = (extra: Record<string, string | boolean>) => {
+    const url = (path: string, extra: Record<string, string | boolean>) => {
       const q = new URLSearchParams({ sku: shownSku, month });
       Object.entries(extra).forEach(([k, v]) => q.set(k, String(v)));
-      return `/api/product/kpi?${q}`;
+      if (listPrice !== null) q.set("list_price", String(listPrice));
+      return `${path}?${q}`;
     };
     setKpiLoading(true);
-    const base = apiFetch<ProductKpis>(url({}));
-    const now = Object.keys(asked).length ? apiFetch<ProductKpis>(url(asked)) : base;
-    Promise.all([base, now]).then(([b, n]) => {
+    const base = apiFetch<ProductKpis>(`/api/product/kpi?${new URLSearchParams({ sku: shownSku, month })}`);
+    const now = Object.keys(asked).length || listPrice !== null ? apiFetch<ProductKpis>(url("/api/product/kpi", asked)) : base;
+    // The funnel names the same changes, and returns today's funnel beside the changed one.
+    const funnelAsked = apiFetch<ProductFunnel>(url("/api/product/funnel", asked));
+    Promise.all([base, now, funnelAsked]).then(([b, n, f]) => {
       if (!current) return;
-      setBaseline(b); setKpis(n); setKpiLoading(false);
+      setBaseline(b); setKpis(n); setFunnel(f); setKpiLoading(false);
     }, (e) => { if (current) { setKpiLoading(false); setError(String(e)); } });
     return () => { current = false; };
     // `asked` is read through its key: a new object on every render must not refetch.
@@ -174,6 +185,7 @@ function ProductView() {
             <ProductEditor view={shown} sandbox={sandbox || null} states={states} previewBand={previewBand}
                            onPreview={setPreviewBand}
                            properties={baseline?.properties ?? null} changes={changes} onChange={setChange}
+                           listPrice={listPrice} onListPrice={(eur) => setListPriceParam(eur === null ? "" : String(eur))}
                            onPulled={() => { if (month === SANDBOX_MONTH) setPulled((n) => n + 1); else setMonth(SANDBOX_MONTH); }} />
             <div>
               <div role="tablist" aria-label="Estimates" style={{ display: "flex", gap: 6, marginBottom: 10, flexWrap: "wrap" }}>
@@ -185,7 +197,12 @@ function ProductView() {
                   </button>
                 ))}
               </div>
-              {(kpiTab === "clicked" || kpiTab === "purchased") && kpis
+              {kpiTab === "funnel" ? <FunnelPanel funnel={funnel} loading={kpiLoading} /> :
+               kpiTab === "pricing" ? (
+                 <PricingTab view={shown} listPrice={listPrice} onQuery={showQuery}
+                             onListPrice={(eur) => setListPriceParam(eur === null ? "" : String(eur))} />
+               ) :
+               (kpiTab === "clicked" || kpiTab === "purchased") && kpis
                 ? <KpiPanel kpi={kpiTab} current={kpis} baseline={baseline} loading={kpiLoading} />
                 : (kpiTab === "clicked" || kpiTab === "purchased")
                   ? <div className="card" style={{ height: 240, background: "var(--border-light)" }} />
