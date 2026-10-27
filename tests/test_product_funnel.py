@@ -22,8 +22,9 @@ COUNTS = {"impressions": (20, 8, 4), "unranked_showings": (20, 8, 4)}
 class FakeAito:
     """Showings rise 50 % with an advertisement and 80 % with a 20 %+ offer; units follow the price."""
 
-    def __init__(self, state=STATE, sales=SALES, counts=COUNTS, conversion=0.5):
+    def __init__(self, state=STATE, sales=SALES, counts=COUNTS, conversion=0.5, lines=None):
         self.state, self.sales, self.counts, self.conversion = state, sales, counts, conversion
+        self.lines = lines or {1: 8, 2: 0, 3: 0}        # order lines by the units each buys
 
     def search(self, table, *, where=None, limit=10, **_):
         rows = {"products": [PRODUCT], "product_states": [self.state], "inventory": [{"unit_cost_eur": 6.0}],
@@ -32,8 +33,12 @@ class FakeAito:
 
     def batch(self, queries):
         index = {None: 0, "clicked": 1, "purchased": 2}
-        return [{"total": self.counts[q["from"]][index[next((k for k in ("clicked", "purchased") if k in q["where"]), None)]]}
-                for q in queries]
+
+        def total(q):
+            if q["from"] == "order_lines":
+                return self.lines[q["where"]["qty"]] if "qty" in q["where"] else sum(self.lines.values())
+            return self.counts[q["from"]][index[next((k for k in ("clicked", "purchased") if k in q["where"]), None)]]
+        return [{"total": total(q)} for q in queries]
 
     def predict(self, table, where, field, **_):
         assert where["clicked"] is True and field == "purchased", (where, field)
@@ -60,6 +65,7 @@ def test_the_funnel_narrows_from_showings_to_clicks_to_purchases_and_buys_units(
     assert funnel.changed == [] and funnel.asked == funnel.now
     now = funnel.now
     assert (now.impressions, now.clicks, now.purchases, now.units) == (10.0, 4.0, 2.0, 2.0)
+    assert [(s.units_each, s.purchases) for s in now.sizes] == [(1, 2.0)] and now.other_units == 0.0
     assert now.gross_profit_eur == pytest.approx(2.0 * (10.0 - 6.0)) and now.profit_eur == now.gross_profit_eur
 
 
@@ -70,12 +76,15 @@ def test_a_purchase_is_a_click_that_went_on_so_it_never_exceeds_the_clicks():
             assert funnel.asked.purchases <= funnel.asked.clicks <= funnel.asked.impressions
 
 
-def test_the_products_own_history_sets_the_level_and_aito_moves_it_in_odds():
+def test_purchases_are_split_by_the_units_they_buy_tallest_first_and_re_orders_come_on_top():
+    # 4 purchased showings, 4 order lines (two buy 1 unit, two buy 2): 6 of the 8 units sold came from a showing.
     funnel = get_product_funnel(FakeAito(counts={"impressions": (20, 8, 2), "unranked_showings": (20, 8, 2)},
-                                         conversion=0.25), "SKU-1", "2026-05")
+                                         conversion=0.25, lines={1: 2, 2: 2, 3: 0}), "SKU-1", "2026-05")
 
-    assert funnel.units_per_purchase == 2.0 and funnel.own_conversion == 0.25      # 8 units from 4 purchases
-    assert funnel.now.purchases == pytest.approx(1.0) and funnel.now.units == pytest.approx(2.0)
+    now = funnel.now
+    assert [(s.units_each, s.purchases) for s in now.sizes] == [(2, 0.5), (1, 0.5)]      # 1 purchase, half of each
+    assert funnel.units_per_purchase == 1.5 and now.other_units == 0.5                    # 2 units unexplained ÷ 4 months
+    assert now.units == pytest.approx(1.0 * 1.5 + 0.5)
 
 
 def test_advertising_buys_showings_and_costs_money():
@@ -121,6 +130,11 @@ def test_funnel_units_are_checked_against_units_by_price_and_a_gap_is_reported()
 
     better_pictures = get_product_funnel(FakeAito(), "SKU-1", "2026-05", {"image_count": "4+"})
     assert better_pictures.check_ok is False and better_pictures.check_gap == pytest.approx(0.5)
+
+
+def test_more_purchased_showings_than_units_sold_is_refused():
+    with pytest.raises(Exception, match="are more than the"):
+        get_product_funnel(FakeAito(sales=[{**s, "units_sold": 1} for s in SALES]), "SKU-1", "2026-05")
 
 
 def test_a_product_that_sold_but_never_from_a_ranked_showing_is_refused():

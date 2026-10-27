@@ -1037,6 +1037,7 @@ export interface ProductPricing {
 
 export interface Funnel {
   impressions: number; clicks: number; purchases: number; units: number;
+  sizes: Array<{ units_each: number; purchases: number }>; other_units: number;
   price_eur: number; revenue_eur: number; gross_profit_eur: number; ad_spend_eur: number; profit_eur: number;
   ctr: number; purchase_rate: number; showings_index: number;
 }

@@ -16,12 +16,11 @@ export default function FunnelPanel({ funnel, loading }: { funnel: ProductFunnel
   if (!funnel) return <div className="card" aria-busy="true" style={{ height: 320, background: "var(--border-light)" }} />;
   const changed = funnel.changed.length > 0;
   const top = Math.max(funnel.now.impressions, funnel.asked.impressions, 1e-9);
-  const height = Math.min(48, 10 * Math.max(funnel.units_per_purchase, 1));
 
   const stages = [
     { id: "impressions", label: "Impressions", unit: "showings", get: (f: Funnel) => f.impressions, rows: 1 },
     { id: "clicks", label: "Clicks", unit: "clicks", get: (f: Funnel) => f.clicks, rows: 1 },
-    { id: "purchases", label: "Purchases", unit: "purchases", get: (f: Funnel) => f.purchases, rows: height / 10 },
+    { id: "purchases", label: "Purchases", unit: "purchases", get: (f: Funnel) => f.purchases, rows: Math.max(...funnel.asked.sizes.map((s) => s.units_each), 1) },
   ];
 
   return (
@@ -39,8 +38,8 @@ export default function FunnelPanel({ funnel, loading }: { funnel: ProductFunnel
           <p style={{ margin: "0 0 8px" }}>
             Aito learns those over the ranked showings. The product&apos;s own history sets the level: it clicks {pct(funnel.own_ctr, 0)} of
             its showings and {pct(funnel.own_conversion, 0)} of its clicks go on to a purchase, and a purchase has bought
-            {" "}{funnel.units_per_purchase.toFixed(2)} units (shoppers take several, and some re-order without a showing). The
-            properties you change move those chances up or down from there. The step&apos;s height is the units a purchase buys.
+            {" "}{funnel.units_per_purchase.toFixed(2)} units on average (shoppers take 1, 2 or 3, in the shares its order lines show; some re-order without a showing, which comes on top). The
+            properties you change move those chances up or down from there. A block&apos;s height is the units those purchases buy: tallest first.
           </p>
           <p style={{ margin: 0, color: "var(--text-muted)" }}>
             <strong>Profit</strong> is units times (price − cost), less the month&apos;s ad spend. Ad spend is our assumption until the shop
@@ -60,7 +59,7 @@ export default function FunnelPanel({ funnel, loading }: { funnel: ProductFunnel
 
       {stages.map((stage) => {
         const now = stage.get(funnel.now), asked = stage.get(funnel.asked);
-        const rowHeight = stage.rows * 10;
+        const rowHeight = 10;
         return (
           <div key={stage.id} style={{ marginBottom: 12 }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
@@ -70,13 +69,17 @@ export default function FunnelPanel({ funnel, loading }: { funnel: ProductFunnel
                 {changed && <span style={{ color: asked >= now ? "var(--green)" : "var(--red)" }}> {delta(asked, now)}</span>}
               </span>
             </div>
-            <Bar value={asked} top={top} height={rowHeight} color="var(--cta)" />
+            {stage.id === "purchases"
+              ? <SizedBars sizes={funnel.asked.sizes} top={top} />
+              : <Bar value={asked} top={top} height={rowHeight} color="var(--cta)" />}
             {changed && <Bar value={now} top={top} height={4} color="var(--border)" thin />}
             {stage.id === "clicks" && <div className="card-sub">click-through {pct(funnel.asked.ctr, 0)} of showings</div>}
             {stage.id === "purchases" && (
               <div className="card-sub">
-                {pct(funnel.asked.clicks ? funnel.asked.purchases / funnel.asked.clicks : 0, 0)} of clicks · height: {funnel.units_per_purchase.toFixed(2)} units
-                a purchase = <strong>{funnel.asked.units.toFixed(1)} units</strong>
+                {pct(funnel.asked.clicks ? funnel.asked.purchases / funnel.asked.clicks : 0, 0)} of clicks, buying{" "}
+                {funnel.asked.sizes.filter((s) => s.purchases >= 0.05).map((s) => `${s.purchases.toFixed(1)} × ${s.units_each}`).join(" + ")} units
+                {funnel.asked.other_units > 0 && <> + {funnel.asked.other_units.toFixed(1)} re-ordered without a showing</>}
+                {" "}= <strong>{funnel.asked.units.toFixed(1)} units</strong>
                 {changed && <> (was {funnel.now.units.toFixed(1)})</>}
               </div>
             )}
@@ -107,6 +110,20 @@ export default function FunnelPanel({ funnel, loading }: { funnel: ProductFunnel
                 Treat the units as indicative.</>}
         </div>
       )}
+    </div>
+  );
+}
+
+/** The purchases as blocks: a block's width is how many purchases buy that many units, its height is the units. Tallest first. */
+function SizedBars({ sizes, top }: { sizes: Array<{ units_each: number; purchases: number }>; top: number }) {
+  const tallest = Math.max(...sizes.map((s) => s.units_each), 1);
+  return (
+    <div style={{ height: tallest * 10, background: "var(--border-light)", borderRadius: 4, marginTop: 4, display: "flex", alignItems: "flex-end" }}>
+      {sizes.map((s, i) => (
+        <div key={s.units_each} title={`${s.purchases.toFixed(1)} purchases of ${s.units_each} unit${s.units_each > 1 ? "s" : ""}`}
+             style={{ width: `${(s.purchases / top) * 100}%`, height: `${(s.units_each / tallest) * 100}%`,
+                      background: "var(--cta)", opacity: 1 - i * 0.22, borderRadius: i === 0 ? "4px 0 0 4px" : 0 }} />
+      ))}
     </div>
   );
 }
