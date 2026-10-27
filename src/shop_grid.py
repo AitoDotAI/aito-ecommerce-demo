@@ -17,7 +17,7 @@ from src.shop_ranking import PRODUCT_FIELDS, ShopItem, ranked_items, shop_scope
 from src.shop_rescore import RESCORED, rescore, state_rescore
 
 GRID_SIZE = 12
-CANDIDATES = 24     # ranked before the just-bought re-ask and one card per name, so the grid stays full
+CANDIDATES = 16     # ranked before the just-bought re-ask and one card per name: measured on every persona, the 12th card came from candidate 13 at most (2026-10-27)
 
 
 @dataclass(frozen=True)

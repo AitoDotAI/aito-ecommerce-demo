@@ -13,7 +13,9 @@ grid, search and a product's alternatives.
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field, replace
+from functools import partial
 
 from src.aito_client import AitoClient, AitoError
 from src.lookup_errors import UnknownProductError
@@ -25,6 +27,7 @@ from src.shop_personas import Shopper, shopper
 from src.shop_reasons import CART, LAST_ORDER, PETS, Reason, reasons_for
 from src.shop_rescore import ScoreAdjustment
 from src.shop_why import shop_why
+from src.timing import submit_in_request
 
 PRODUCT_FIELDS = ["sku", "name", "brand", "pet_type", "category", "price_eur", "avg_rating", "tags"]
 
@@ -104,26 +107,37 @@ def shop_scope(client: AitoClient, shopper_key: str, month: str, cart_skus: list
     offers count as "now"; it just isn't a condition. The shop-wide lift of a month ("Sells in April ×2.0")
     is the same for every product, so it can lift a cat product over a dog household's own (2026-10-26)."""
     s = shopper(shopper_key)
-    customer = client.search("customers", where={"customer_id": s.customer_id}, limit=1)["hits"][0]
-    cart = _cart(client, cart_skus)
-    orders = orders_before(client, s.customer_id, month)
+    # The reads below don't depend on each other, so each round is one round trip, not one per read
+    # (a round trip to the shared instance is ~45 ms; a small query is a few).
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        customer_job = submit_in_request(pool, partial(client.search, "customers",
+                                                       where={"customer_id": s.customer_id}, limit=1))
+        orders_job = submit_in_request(pool, orders_before, client, s.customer_id, month)
+        cart_job = submit_in_request(pool, _cart, client, cart_skus)
+        customer, orders, cart = customer_job.result()["hits"][0], orders_job.result(), cart_job.result()
     declared = customer.get("pets")
-    if declared:
-        pets, context = declared, shopper_where(declared, cart, month)
-    else:
-        # Most customers declare no pet profile (ADR 0045). Their pets are those of
-        # their orders. Provisional: P, the form that needs no identity and so also
-        # serves a shopper who declined tracking; the no-profile sweep
-        # (actionable-states-prereg.md) hasn't concluded which form the Shop keeps.
-        pets = _pets_of_orders(client, orders)
-        if not pets:
-            raise UnknownShopperProfileError(
-                f"{s.customer_id} declared no pets and has no order before {month}: the Shop has nothing to read")
-        context = shopper_where_from_orders(pets, cart, month)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        # Pets read from the orders (most customers declare none, ADR 0045) and the last order as cart words
+        # each need product rows.
+        pets_job = None if declared else submit_in_request(pool, _pets_of_orders, client, orders)
+        last_job = (submit_in_request(pool, _cart, client, sorted(set(orders[-1]["skus"].split())))
+                    if recent_basket == "cart" and orders else None)
+        if declared:
+            pets, context = declared, shopper_where(declared, cart, month)
+        else:
+            # Provisional: P, the form that needs no identity and so also serves a shopper who declined
+            # tracking; the no-profile sweep (actionable-states-prereg.md) hasn't concluded which form the
+            # Shop keeps.
+            pets = pets_job.result()
+            if not pets:
+                raise UnknownShopperProfileError(
+                    f"{s.customer_id} declared no pets and has no order before {month}: the Shop has nothing to read")
+            context = shopper_where_from_orders(pets, cart, month)
+        last_products = last_job.result() if last_job else []
     if not season:
         context = {k: v for k, v in context.items() if k != "context.month"}
     if recent_basket and orders:
-        context = {**context, **_last_order_context(client, orders, cart, recent_basket)}
+        context = {**context, **_last_order_context(orders, cart, last_products, recent_basket)}
     if identity:
         # An id condition uses only the rows that carry that id: it brings none of the customer's fields,
         # and an id with no rows is no evidence at all (core, 2026-10-25). The pets stay, as a path.
@@ -136,12 +150,12 @@ class UnknownShopperProfileError(LookupError):
     """A shopper with no declared pets and no earlier order."""
 
 
-def _last_order_context(client: AitoClient, orders: list[dict], cart: list[dict], mode: str) -> dict:
+def _last_order_context(orders: list[dict], cart: list[dict], last_products: list[dict], mode: str) -> dict:
     """The last order as conditions: "cart" puts its words in the cart's field (a different claim from the
     one the cart's words learned); "path" and "path2" condition on the order the session links to,
     and the one before it, by path (ADR 0047), with the words stored on the orders."""
     if mode == "cart":
-        words = basket_words(_cart(client, sorted(set(orders[-1]["skus"].split()))) + cart)
+        words = basket_words(last_products + cart)
         return {"context.basket_categories": {"$and": [{"$match": w} for w in words]}}
     if mode not in ("path", "path2"):
         raise ValueError(f"Unknown way to use the last order: {mode!r}")
@@ -170,12 +184,17 @@ def ranked_items(client: AitoClient, scope: ShopScope, where: dict, limit: int) 
     """The `_recommend` for `where`, with reasons, facts and the just-bought re-ask, by P."""
     hits = client.recommend("impressions", where, "product_sku", {"purchased": True},
                             select=PRODUCT_FIELDS + ["$p", "$why"], limit=limit)["hits"]
-    states = states_this_month(client, [h["sku"] for h in hits], scope.month)
+    # The month's states and the re-ask of the last order's items in the hits are independent: one round trip.
+    just_bought = [h["sku"] for h in hits if h["sku"] in set(scope.last_order_skus)]
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        reask = submit_in_request(pool, _p_if_just_bought, client, scope.context, just_bought) if just_bought else None
+        states = states_this_month(client, [h["sku"] for h in hits], scope.month)
+        p_now = reask.result() if reask else {}
     offers = offers_of(states)
     items = [_item(h, scope.context, states.get(h["sku"]), offers.get(h["sku"]), scope.rule is not None, scope.pets.split(),
                    LAST_ORDER if scope.recent_basket == "cart" and not scope.cart else CART)
              for h in hits]
-    items = _reask_just_bought(client, scope.context, items, set(scope.last_order_skus))
+    items = [replace(i, p=p_now[i.sku], p_if_new=i.p, why_explanation=None) if i.sku in p_now else i for i in items]
     return sorted(items, key=lambda i: -i.p)
 
 
@@ -191,17 +210,13 @@ def _cart(client: AitoClient, skus: list[str]) -> list[dict]:
     return [found[s] for s in skus]
 
 
-def _reask_just_bought(client: AitoClient, context: dict, items: list[ShopItem], last: set[str]) -> list[ShopItem]:
-    just = [i for i in items if i.sku in last]
-    if not just:
-        return items
+def _p_if_just_bought(client: AitoClient, context: dict, skus: list[str]) -> dict[str, float]:
+    """P(purchased) of each of the last order's items if the shopper had just bought it (`just_bought: true`)."""
     answers = client.batch([
-        {"from": "impressions", "where": {**context, "product_sku": i.sku, "just_bought": True},
-         "predict": "purchased"}
-        for i in just
+        {"from": "impressions", "where": {**context, "product_sku": sku, "just_bought": True}, "predict": "purchased"}
+        for sku in skus
     ])
-    p_now = {i.sku: _p_true(a, i.sku) for i, a in zip(just, answers)}
-    return [replace(i, p=p_now[i.sku], p_if_new=i.p, why_explanation=None) if i.sku in p_now else i for i in items]
+    return {sku: _p_true(answer, sku) for sku, answer in zip(skus, answers)}
 
 
 def _p_true(answer: dict, sku: str) -> float:
