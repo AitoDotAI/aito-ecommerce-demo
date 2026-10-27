@@ -11,6 +11,7 @@ const COPY: Record<KpiName, { title: string; unit: string; done: string }> = {
 const FIELD: Record<string, string> = {
   brand: "Brand", category: "Category", pet_type: "Pet", discount_band: "Offer", rating_band: "Stars",
   label: "Shop label", age: "Age", stock: "Stock", rival_launched: "Rival launched",
+  list_price_index: "List price", image_count: "Pictures", description_quality: "Description", ad_level: "Advertising",
 };
 /** Lifts this close to 1 say nothing; they are folded into one line, as on the Shop's cards. */
 const NEAR_ONE = 0.03;
@@ -124,5 +125,6 @@ function valueLabel(field: string, value: string | boolean): string {
   if (typeof value === "boolean") return value ? "yes" : "no";
   if (field === "discount_band") return BAND_LABEL[value]?.toLowerCase() ?? value;
   if (field === "rating_band") return value === "unrated" ? "no stars yet" : `${value} stars`;
+  if (field === "list_price_index") return `${(Number(value) * 100).toFixed(0)} % of the first list price`;
   return words(value);
 }

@@ -59,6 +59,7 @@ class ProductPricing:
     mean_units: float | None    # units a month before `month`: what an index of 1.0 means; None: never sold
     tried_from: float           # the lowest and highest effective price index among its own months
     tried_to: float
+    now: PricePoint             # the month's own list price, estimated like the rest
     asked: PricePoint | None
     best: PricePoint | None     # the most profit among the curve's in-range prices
     curve: list[PricePoint]
@@ -100,7 +101,8 @@ def get_product_pricing(client: AitoClient, sku: str, month: str = LATEST_MONTH,
     tried_from, tried_to = min(indexes), max(indexes)
 
     asked_index = None if list_price_eur is None else list_price_eur / reference
-    grid = sorted({*CURVE_INDEXES, *([round(asked_index, 3)] if asked_index is not None else [])})
+    now_index = round(float(state["list_price_index"]), 3)
+    grid = sorted({*CURVE_INDEXES, now_index, *([round(asked_index, 3)] if asked_index is not None else [])})
     effective = [round(i * (1 - offer / 100), 3) for i in grid]
     if mean_units is None:
         estimates = [None] * len(grid)
@@ -112,13 +114,14 @@ def get_product_pricing(client: AitoClient, sku: str, month: str = LATEST_MONTH,
     points = [point(i, e, est, reference, offer, unit_cost, mean_units, tried_from, tried_to)
               for i, e, est in zip(grid, effective, estimates)]
     asked = next((p for p in points if asked_index is not None and p.list_price_index == round(asked_index, 3)), None)
+    now = next(p for p in points if p.list_price_index == now_index)
     curve = [p for p in points if p.list_price_index in CURVE_INDEXES]
     answered = [p for p in curve if p.in_range and mean_units is not None]
     return ProductPricing(
         sku=sku, name=products[0]["name"], month=month, reference_list_eur=reference,
         list_price_eur=float(state["list_price_eur"]), unit_cost_eur=round(unit_cost, 2), offer_pct=offer,
         mean_units=None if mean_units is None else round(mean_units, 2), tried_from=tried_from, tried_to=tried_to,
-        asked=asked, best=max(answered, key=lambda p: p.profit_eur) if answered else None, curve=curve,
+        now=now, asked=asked, best=max(answered, key=lambda p: p.profit_eur) if answered else None, curve=curve,
         own_months=[OwnMonth(r["month"], float(r["price_index"]), int(r["units_sold"]), r.get("units_index"))
                     for r in sales],
         last_query={"endpoint": "_estimate", "body": estimate_body(sku, effective[len(grid) // 2])},

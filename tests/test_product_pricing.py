@@ -62,6 +62,15 @@ def test_a_price_beyond_what_the_product_has_sold_at_is_not_answered_and_cannot_
     assert pricing.best.profit_eur == max(p.profit_eur for p in pricing.curve if p.in_range)
 
 
+def test_the_months_own_list_price_is_estimated_like_the_rest_even_off_the_grid():
+    state = {**STATE, "list_price_eur": 9.7, "list_price_index": 0.97}
+
+    pricing = get_product_pricing(FakeAito(state=state), "SKU-1", "2026-09")
+
+    assert pricing.now.list_price_index == 0.97 and pricing.now not in pricing.curve
+    assert pricing.reference_list_eur == 10.0
+
+
 def test_a_list_price_the_owner_types_becomes_a_point_beside_the_curve():
     pricing = get_product_pricing(FakeAito(), "SKU-1", "2026-09", list_price_eur=9.3)
 
