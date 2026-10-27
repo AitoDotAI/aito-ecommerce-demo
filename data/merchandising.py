@@ -21,6 +21,7 @@ from __future__ import annotations
 import math
 import random
 
+from data import listing
 from data.planted_switches import ON
 
 DIRECT_P = 0.3                    # a session that only reorders: no list
@@ -36,13 +37,19 @@ OUT_OF_ORDER_ADD_ON_ODDS = 0.2    # the kit's add-ons come in order (S2)
 # of the same pet and category sells at the odds of the old re-pick's escape.
 OTHER_FOOD_ODDS = 0.15            # 1 − lifecycle.STAPLE_LOYALTY
 
+# Cart and purchase are near their ceiling for a product that fits the household, so odds on them show up
+# at about 0.4 of their size in units. The list price's odds are raised to this power so the elasticity
+# the units show is the registered one (release3a-prereg.md, amendment after the first generation).
+LIST_PRICE_REACH = 2.5
+
 # The chance a buy-again item is bought, before its state's and price's odds.
 INTENT_P = {"restock": 0.6, "first": 0.95, "kit": 0.95, "add_on": 0.9, "seasonal": 0.9, "checkout": 0.9}
 
 
 def placement_factor(state) -> float:
     """How much more often the ranker shows a product this month for its offer."""
-    return OFFER_PLACEMENT[state.discount_band] if ON["placement"] else 1.0
+    offer = OFFER_PLACEMENT[state.discount_band] if ON["placement"] else 1.0
+    return offer * listing.placement(state.ad_level)
 
 
 def list_order(rng: random.Random, shown: list, score) -> list:

@@ -133,6 +133,11 @@ SCHEMAS: dict[str, dict] = {
             "label":             {"type": "String", "nullable": False},
             "stock":             {"type": "String", "nullable": False},
             "review_count_band": {"type": "String", "nullable": False},
+            # ADR 0049: the list price apart from the offer, and how the shop lists the product.
+            "list_price_index":    {"type": "Decimal", "nullable": False},
+            "image_count":         {"type": "String",  "nullable": False},
+            "description_quality": {"type": "String",  "nullable": False},
+            "ad_level":            {"type": "String",  "nullable": False},
         },
     },
     # 3. orders — links to customers.
@@ -384,6 +389,14 @@ SCHEMAS: dict[str, dict] = {
             "price_index":   {"type": "Decimal", "nullable": False},
             "discount_band": {"type": "String",  "nullable": False},
             "showings":      {"type": "Int",     "nullable": False},
+            # ADR 0049: the list price index and the listing (copied from the state), and
+            # units ÷ the product's mean before it, a target that is multiplicative across
+            # products. Unset in a product's first month and when it sold nothing before.
+            "list_price_index":    {"type": "Decimal", "nullable": False},
+            "image_count":         {"type": "String",  "nullable": False},
+            "description_quality": {"type": "String",  "nullable": False},
+            "ad_level":            {"type": "String",  "nullable": False},
+            "units_index":         {"type": "Decimal", "nullable": True},
         },
     },
     # 8. inventory — per-SKU stock snapshot. Drives the Inventory

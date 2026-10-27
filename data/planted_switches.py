@@ -39,6 +39,13 @@ ON: dict[str, bool] = {
     "F5": True,        # a staple in the first basket doubles the chance to stay
     # ADR 0045: the shop's ranker places an offered product higher.
     "placement": True,
+    # ADR 0049, 0050: the list price and the listing as state (data release 3a).
+    "L1": True,        # list price moves; promote products run extra offers
+    "L2": True,        # the list price acts on the click at ε/3, on cart and purchase at ε
+    "L3": True,        # an offer lifts the click at 0.4 of its lift on the purchase
+    "L4": True,        # pictures
+    "L5": True,        # description
+    "L6": True,        # advertising
     # ADR 0044: what a person declares.
     "C1": True,        # declared interests follow the hidden traits
 }

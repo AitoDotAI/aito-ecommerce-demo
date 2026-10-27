@@ -24,7 +24,7 @@ from datetime import date
 from pathlib import Path
 from typing import Callable, Iterable, Iterator
 
-from data import (acquisition, catalogue_events, lifecycle, merchandising, observable, person_data, planted_switches,
+from data import (acquisition, catalogue_events, lifecycle, listing, merchandising, observable, person_data, planted_switches,
                   review_chain, sensitivities, shop_levers, shoppers)
 from data.planted_switches import stream
 
@@ -527,6 +527,13 @@ class MonthlySale:
     price_index: float = 1.0
     discount_band: str = "none"
     showings: int = 0
+    # ADR 0049: the list price and the listing that month, copied from the state (`_estimate` cannot
+    # read a linked field), and the units against the product's own mean.
+    list_price_index: float = 1.0
+    image_count: str = "2-3"
+    description_quality: str = "ok"
+    ad_level: str = "none"
+    units_index: float | None = None
 
 
 @dataclass
@@ -2045,7 +2052,14 @@ def _price_and_state_odds(shop, customer: Customer, product: Product, state) -> 
         shop.events.raised_since(product.sku, state.month),
         review_chain.rating_elasticity(state.rating_band, shop.promotions.elasticity[product.sku]))
     quality = review_chain.POOR_QUALITY_ODDS if planted_switches.ON["quality"] and _is_poor(product.sku) else 1.0
-    return click * price, odds * price * quality, purchase_only
+    # ADR 0049 (L2): the list price weighs on the purchase at ε, on the click at ε/3.
+    on = planted_switches.ON["L2"]
+    click *= (price ** (1 / 3) if on else price) * listing.click_odds(state.image_count, state.ad_level)
+    price **= merchandising.LIST_PRICE_REACH if on else 1.0
+    # Seen on the product page, after the click: they scale cart and purchase, as the odds do. On the last step
+    # alone they would barely show, since a relevant product is bought nearly whenever it is carted.
+    listed = listing.purchase_given_click_odds(state.image_count, state.description_quality)
+    return click, odds * price * quality * listed, purchase_only
 
 
 def _merchandising_weight(events: catalogue_events.CatalogueEvents, product: Product, state) -> float:
@@ -2764,8 +2778,29 @@ def backfill_monthly_sales_prices(
         ms.price_eur = state.price_eur
         ms.revenue_eur = _round_eur(state.price_eur * ms.units_sold)
         # ADR 0045: what `_estimate units_sold` can read of the price, in one hop.
-        ms.price_index = round(state.price_eur / state.list_price_eur, 3)
+        # ADR 0049: the effective price against the product's original list price, so a list price
+        # change and an offer both show in it.
+        ms.price_index = round(state.price_eur / state.list_price_eur * state.list_price_index, 3)
         ms.discount_band = state.discount_band
+        ms.list_price_index = state.list_price_index
+        ms.image_count = state.image_count
+        ms.description_quality = state.description_quality
+        ms.ad_level = state.ad_level
+    _backfill_units_index(monthly_sales)
+
+
+def _backfill_units_index(monthly_sales: list[MonthlySale]) -> None:
+    """`units_index`: units ÷ the product's mean units in the months before it (ADR 0049). A regression on it
+    is multiplicative across products. Unset in a product's first month, and when it sold nothing before."""
+    by_product: dict[str, list[MonthlySale]] = {}
+    for ms in monthly_sales:
+        by_product.setdefault(ms.product_sku, []).append(ms)
+    for rows in by_product.values():
+        total = 0
+        for i, ms in enumerate(sorted(rows, key=lambda r: r.month)):
+            mean = total / i if i else 0.0
+            ms.units_index = round(ms.units_sold / mean, 3) if mean > 0 else None
+            total += ms.units_sold
 
 
 def backfill_showings(monthly_sales: list[MonthlySale], contexts: list[observable.Context],
