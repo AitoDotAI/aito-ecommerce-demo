@@ -40,7 +40,7 @@ SHOPPERS = [
     Shopper("olli", "CUST-00002", "Olli Mäkelä", "🐕",
             "Declares a small dog; reorders Eukanuba Puppy Lamb dog food."),
     Shopper("saara", "CUST-00003", "Saara Virtanen", "🐕",
-            "A large dog: 6 of 13 orders hold the same 4 kg bag of Hill's Science Plan Large Breed."),
+            "A large dog: 7 of 12 orders hold the same 7 kg bag of Acana Weight Control Salmon."),
     # ADR 0044: said no to behavioural tracking. The shop has their orders
     # and what they told it, and no visits or impressions.
     Shopper("juhani", "CUST-00330", "Juhani Salminen", "🐈",
