@@ -7,107 +7,107 @@ Design and margins: `actionable-states-prereg.md`.
 
 | check | what | null | form | seed | value | margin | result |
 |:--|:--|:--|:--|--:|--:|:--|:--|
-| P6 | an offer, by discount sensitivity: high ÷ low | P6 | high ÷ low | 42 | 1.672 | ≥ 1.5 | pass |
-| P6 | an offer, by discount sensitivity: high ÷ low | P6 | high ÷ low | 7 | 1.781 | ≥ 1.5 | pass |
-| P6 | an offer, by discount sensitivity: high ÷ low | P6 | high ÷ low | 99 | 2.211 | ≥ 1.5 | pass |
-| P6 high | an offer, by discount sensitivity: high shoppers | P6 | ratio | 42 | 2.185 | ≥ 1.3 | pass |
-| P6 high | an offer, by discount sensitivity: high shoppers | P6 | ratio | 7 | 2.102 | ≥ 1.3 | pass |
-| P6 high | an offer, by discount sensitivity: high shoppers | P6 | ratio | 99 | 2.311 | ≥ 1.3 | pass |
-| P7 | stars, by stars sensitivity: high ÷ low | P7 | high ÷ low | 42 | 3.486 | ≥ 1.5 | pass |
-| P7 | stars, by stars sensitivity: high ÷ low | P7 | high ÷ low | 7 | 2.282 | ≥ 1.5 | pass |
-| P7 | stars, by stars sensitivity: high ÷ low | P7 | high ÷ low | 99 | 2.202 | ≥ 1.5 | pass |
-| P7 high | stars, by stars sensitivity: high shoppers | P7 | ratio | 42 | 4.096 | ≥ 1.3 | pass |
-| P7 high | stars, by stars sensitivity: high shoppers | P7 | ratio | 7 | 3.199 | ≥ 1.3 | pass |
-| P7 high | stars, by stars sensitivity: high shoppers | P7 | ratio | 99 | 2.954 | ≥ 1.3 | pass |
-| P8 | new, by newness sensitivity: high ÷ low | P8 | high ÷ low | 42 | 1.383 | ≥ 1.5 | **fail** |
-| P8 | new, by newness sensitivity: high ÷ low | P8 | high ÷ low | 7 | 1.942 | ≥ 1.5 | pass |
-| P8 | new, by newness sensitivity: high ÷ low | P8 | high ÷ low | 99 | 1.741 | ≥ 1.5 | pass |
-| P8 high | new, by newness sensitivity: high shoppers | P8 | ratio | 42 | 1.572 | ≥ 1.3 | pass |
-| P8 high | new, by newness sensitivity: high shoppers | P8 | ratio | 7 | 1.799 | ≥ 1.3 | pass |
-| P8 high | new, by newness sensitivity: high shoppers | P8 | ratio | 99 | 2.300 | ≥ 1.3 | pass |
-| P9 | a random label, by label sensitivity: high ÷ low | P9 | high ÷ low | 42 | 2.014 | ≥ 1.5 | pass |
-| P9 | a random label, by label sensitivity: high ÷ low | P9 | high ÷ low | 7 | 1.679 | ≥ 1.5 | pass |
-| P9 | a random label, by label sensitivity: high ÷ low | P9 | high ÷ low | 99 | 1.304 | ≥ 1.5 | **fail** |
-| P9 high | a random label, by label sensitivity: high shoppers | P9 | ratio | 42 | 1.875 | ≥ 1.3 | pass |
-| P9 high | a random label, by label sensitivity: high shoppers | P9 | ratio | 7 | 1.651 | ≥ 1.3 | pass |
-| P9 high | a random label, by label sensitivity: high shoppers | P9 | ratio | 99 | 1.310 | ≥ 1.3 | pass |
-| P9p | popular, by label sensitivity: high ÷ low | P9 | high ÷ low | 42 | 1.698 | reported | reported |
-| P9p | popular, by label sensitivity: high ÷ low | P9 | high ÷ low | 7 | 1.519 | reported | reported |
-| P9p | popular, by label sensitivity: high ÷ low | P9 | high ÷ low | 99 | 1.578 | reported | reported |
-| P10 | low stock: purchase given cart | P10 | ratio | 42 | 1.036 | ≥ 1.03 | pass |
-| P10 | low stock: purchase given cart | P10 | ratio | 7 | 1.048 | ≥ 1.03 | pass |
-| P10 | low stock: purchase given cart | P10 | ratio | 99 | 1.033 | ≥ 1.03 | pass |
-| V1 | offer_share follows discount sensitivity | P6 | ratio | 42 | 1.223 | ≥ 1.2 | pass |
-| V1 | offer_share follows discount sensitivity | P6 | ratio | 7 | 1.283 | ≥ 1.2 | pass |
-| V1 | offer_share follows discount sensitivity | P6 | ratio | 99 | 1.142 | ≥ 1.2 | **fail** |
-| P1a | budget shoppers buy on offer | P6 | ratio | 42 | 2.069 | ≥ 1.5 | pass |
-| P1a | budget shoppers buy on offer | P6 | ratio | 7 | 2.042 | ≥ 1.5 | pass |
-| P1a | budget shoppers buy on offer | P6 | ratio | 99 | 1.923 | ≥ 1.5 | pass |
-| P1b | budget's offer lift ÷ premium's | P6 | high ÷ low | 42 | 1.242 | ≥ 1.05 | pass |
-| P1b | budget's offer lift ÷ premium's | P6 | high ÷ low | 7 | 1.326 | ≥ 1.05 | pass |
-| P1b | budget's offer lift ÷ premium's | P6 | high ÷ low | 99 | 1.163 | ≥ 1.05 | pass |
-| P4a | stars sell (5 ÷ 3, not poor) | P7 | ratio | 42 | 1.390 | ≥ 1.15 | pass |
-| P4a | stars sell (5 ÷ 3, not poor) | P7 | ratio | 7 | 1.234 | ≥ 1.15 | pass |
-| P4a | stars sell (5 ÷ 3, not poor) | P7 | ratio | 99 | 1.347 | ≥ 1.15 | pass |
-| R1 | stars move clicks (5 ÷ 1–2) | P7 | ratio | 42 | 1.687 | ≥ 1.4 | pass |
-| R1 | stars move clicks (5 ÷ 1–2) | P7 | ratio | 7 | 1.338 | ≥ 1.4 | **fail** |
-| R1 | stars move clicks (5 ÷ 1–2) | P7 | ratio | 99 | 1.370 | ≥ 1.4 | **fail** |
-| R2a | stars move purchases (5 ÷ 1–2) | P7 | ratio | 42 | 2.153 | ≥ 1.8 | pass |
-| R2a | stars move purchases (5 ÷ 1–2) | P7 | ratio | 7 | 1.754 | ≥ 1.8 | **fail** |
-| R2a | stars move purchases (5 ÷ 1–2) | P7 | ratio | 99 | 1.603 | ≥ 1.8 | **fail** |
-| R2b | a poor product converts less | quality | ratio | 42 | 0.713 | ≤ 0.8 | pass |
-| R2b | a poor product converts less | quality | ratio | 7 | 0.715 | ≤ 0.8 | pass |
-| R2b | a poor product converts less | quality | ratio | 99 | 0.786 | ≤ 0.8 | pass |
-| R3a | NPS after a bad experience, planted − null | R3 | difference | 42 | -3.375 | ≤ -2.5 | pass |
-| R3a | NPS after a bad experience, planted − null | R3 | difference | 7 | -3.400 | ≤ -2.5 | pass |
-| R3a | NPS after a bad experience, planted − null | R3 | difference | 99 | -3.368 | ≤ -2.5 | pass |
-| R3b | NPS after a bad experience, non-reviewers | — | planted | 42 | 4.258 | ≤ 5.5 | pass |
-| R3b | NPS after a bad experience, non-reviewers | — | planted | 7 | 4.522 | ≤ 5.5 | pass |
-| R3b | NPS after a bad experience, non-reviewers | — | planted | 99 | 4.453 | ≤ 5.5 | pass |
-| R3b gap | \|unreplied reviewers − non-reviewers\|, after a bad experience | — | planted | 42 | 0.058 | ≤ 0.5 | pass |
-| R3b gap | \|unreplied reviewers − non-reviewers\|, after a bad experience | — | planted | 7 | 0.342 | ≤ 0.5 | pass |
-| R3b gap | \|unreplied reviewers − non-reviewers\|, after a bad experience | — | planted | 99 | 0.065 | ≤ 0.5 | pass |
-| R3c | NPS: replied − unreplied negative-review writers | — | planted | 42 | 2.127 | ≥ 1.2 | pass |
-| R3c | NPS: replied − unreplied negative-review writers | — | planted | 7 | 2.048 | ≥ 1.2 | pass |
-| R3c | NPS: replied − unreplied negative-review writers | — | planted | 99 | 2.062 | ≥ 1.2 | pass |
-| R4a | churn in 3 months after a bad experience | R4 | ratio | 42 | 1.912 | ≥ 1.4 | pass |
-| R4a | churn in 3 months after a bad experience | R4 | ratio | 7 | 1.872 | ≥ 1.4 | pass |
-| R4a | churn in 3 months after a bad experience | R4 | ratio | 99 | 1.567 | ≥ 1.4 | pass |
-| R4b seed | churn in 3 months after a replied negative review (per seed) | R4_reply | ratio | 42 | 0.778 | reported | reported |
-| R4b seed | churn in 3 months after a replied negative review (per seed) | R4_reply | ratio | 7 | 0.778 | reported | reported |
-| R4b seed | churn in 3 months after a replied negative review (per seed) | R4_reply | ratio | 99 | 0.581 | reported | reported |
-| R4c | never orders again after a bad experience | R4 | ratio | 42 | 1.153 | reported | reported |
-| R4c | never orders again after a bad experience | R4 | ratio | 7 | 1.290 | reported | reported |
-| R4c | never orders again after a bad experience | R4 | ratio | 99 | 1.065 | reported | reported |
-| R5 | stars move demand (5 ÷ 1–2) | R5 | ratio | 42 | 1.495 | ≥ 1.4 | pass |
-| R5 | stars move demand (5 ÷ 1–2) | R5 | ratio | 7 | 2.328 | ≥ 1.4 | pass |
-| R5 | stars move demand (5 ÷ 1–2) | R5 | ratio | 99 | 1.147 | ≥ 1.4 | **fail** |
-| R6 | offer response at 1–2 stars ÷ at 5 | R6 | ratio | 42 | 0.935 | reported | reported |
-| R6 | offer response at 1–2 stars ÷ at 5 | R6 | ratio | 7 | 0.915 | reported | reported |
-| R6 | offer response at 1–2 stars ÷ at 5 | R6 | ratio | 99 | 0.993 | reported | reported |
-| O2 | units at a 20 %+ offer | offers | ratio | 42 | 1.641 | ≥ 1.8 | **fail** |
-| O2 | units at a 20 %+ offer | offers | ratio | 7 | 1.586 | ≥ 1.8 | **fail** |
-| O2 | units at a 20 %+ offer | offers | ratio | 99 | 1.651 | ≥ 1.8 | **fail** |
-| O3a | showings of an offered product | placement | ratio | 42 | 1.208 | ≥ 1.2 | pass |
-| O3a | showings of an offered product | placement | ratio | 7 | 1.200 | ≥ 1.2 | **fail** |
-| O3a | showings of an offered product | placement | ratio | 99 | 1.197 | ≥ 1.2 | **fail** |
+| P6 | an offer, by discount sensitivity: high ÷ low | P6 | high ÷ low | 42 | 1.646 | ≥ 1.5 | pass |
+| P6 | an offer, by discount sensitivity: high ÷ low | P6 | high ÷ low | 7 | 1.699 | ≥ 1.5 | pass |
+| P6 | an offer, by discount sensitivity: high ÷ low | P6 | high ÷ low | 99 | 1.764 | ≥ 1.5 | pass |
+| P6 high | an offer, by discount sensitivity: high shoppers | P6 | ratio | 42 | 1.816 | ≥ 1.3 | pass |
+| P6 high | an offer, by discount sensitivity: high shoppers | P6 | ratio | 7 | 1.924 | ≥ 1.3 | pass |
+| P6 high | an offer, by discount sensitivity: high shoppers | P6 | ratio | 99 | 1.877 | ≥ 1.3 | pass |
+| P7 | stars, by stars sensitivity: high ÷ low | P7 | high ÷ low | 42 | 4.185 | ≥ 1.5 | pass |
+| P7 | stars, by stars sensitivity: high ÷ low | P7 | high ÷ low | 7 | 5.232 | ≥ 1.5 | pass |
+| P7 | stars, by stars sensitivity: high ÷ low | P7 | high ÷ low | 99 | 2.636 | ≥ 1.5 | pass |
+| P7 high | stars, by stars sensitivity: high shoppers | P7 | ratio | 42 | 3.586 | ≥ 1.3 | pass |
+| P7 high | stars, by stars sensitivity: high shoppers | P7 | ratio | 7 | 4.524 | ≥ 1.3 | pass |
+| P7 high | stars, by stars sensitivity: high shoppers | P7 | ratio | 99 | 3.216 | ≥ 1.3 | pass |
+| P8 | new, by newness sensitivity: high ÷ low | P8 | high ÷ low | 42 | 1.670 | ≥ 1.5 | pass |
+| P8 | new, by newness sensitivity: high ÷ low | P8 | high ÷ low | 7 | 1.813 | ≥ 1.5 | pass |
+| P8 | new, by newness sensitivity: high ÷ low | P8 | high ÷ low | 99 | 1.196 | ≥ 1.5 | **fail** |
+| P8 high | new, by newness sensitivity: high shoppers | P8 | ratio | 42 | 1.248 | ≥ 1.3 | **fail** |
+| P8 high | new, by newness sensitivity: high shoppers | P8 | ratio | 7 | 1.922 | ≥ 1.3 | pass |
+| P8 high | new, by newness sensitivity: high shoppers | P8 | ratio | 99 | 1.506 | ≥ 1.3 | pass |
+| P9 | a random label, by label sensitivity: high ÷ low | P9 | high ÷ low | 42 | 1.455 | ≥ 1.5 | **fail** |
+| P9 | a random label, by label sensitivity: high ÷ low | P9 | high ÷ low | 7 | 1.526 | ≥ 1.5 | pass |
+| P9 | a random label, by label sensitivity: high ÷ low | P9 | high ÷ low | 99 | 1.436 | ≥ 1.5 | **fail** |
+| P9 high | a random label, by label sensitivity: high shoppers | P9 | ratio | 42 | 1.439 | ≥ 1.3 | pass |
+| P9 high | a random label, by label sensitivity: high shoppers | P9 | ratio | 7 | 1.579 | ≥ 1.3 | pass |
+| P9 high | a random label, by label sensitivity: high shoppers | P9 | ratio | 99 | 1.608 | ≥ 1.3 | pass |
+| P9p | popular, by label sensitivity: high ÷ low | P9 | high ÷ low | 42 | 1.342 | reported | reported |
+| P9p | popular, by label sensitivity: high ÷ low | P9 | high ÷ low | 7 | 1.480 | reported | reported |
+| P9p | popular, by label sensitivity: high ÷ low | P9 | high ÷ low | 99 | 1.450 | reported | reported |
+| P10 | low stock: purchase given cart | P10 | ratio | 42 | 1.113 | ≥ 1.03 | pass |
+| P10 | low stock: purchase given cart | P10 | ratio | 7 | 1.043 | ≥ 1.03 | pass |
+| P10 | low stock: purchase given cart | P10 | ratio | 99 | 1.060 | ≥ 1.03 | pass |
+| V1 | offer_share follows discount sensitivity | P6 | ratio | 42 | 1.211 | ≥ 1.2 | pass |
+| V1 | offer_share follows discount sensitivity | P6 | ratio | 7 | 1.277 | ≥ 1.2 | pass |
+| V1 | offer_share follows discount sensitivity | P6 | ratio | 99 | 1.254 | ≥ 1.2 | pass |
+| P1a | budget shoppers buy on offer | P6 | ratio | 42 | 1.638 | ≥ 1.5 | pass |
+| P1a | budget shoppers buy on offer | P6 | ratio | 7 | 1.612 | ≥ 1.5 | pass |
+| P1a | budget shoppers buy on offer | P6 | ratio | 99 | 1.511 | ≥ 1.5 | pass |
+| P1b | budget's offer lift ÷ premium's | P6 | high ÷ low | 42 | 1.179 | ≥ 1.05 | pass |
+| P1b | budget's offer lift ÷ premium's | P6 | high ÷ low | 7 | 1.097 | ≥ 1.05 | pass |
+| P1b | budget's offer lift ÷ premium's | P6 | high ÷ low | 99 | 0.953 | ≥ 1.05 | **fail** |
+| P4a | stars sell (5 ÷ 3, not poor) | P7 | ratio | 42 | 1.203 | ≥ 1.15 | pass |
+| P4a | stars sell (5 ÷ 3, not poor) | P7 | ratio | 7 | 1.390 | ≥ 1.15 | pass |
+| P4a | stars sell (5 ÷ 3, not poor) | P7 | ratio | 99 | 1.133 | ≥ 1.15 | **fail** |
+| R1 | stars move clicks (5 ÷ 1–2) | P7 | ratio | 42 | 1.604 | ≥ 1.4 | pass |
+| R1 | stars move clicks (5 ÷ 1–2) | P7 | ratio | 7 | 1.430 | ≥ 1.4 | pass |
+| R1 | stars move clicks (5 ÷ 1–2) | P7 | ratio | 99 | 1.610 | ≥ 1.4 | pass |
+| R2a | stars move purchases (5 ÷ 1–2) | P7 | ratio | 42 | 1.682 | ≥ 1.8 | **fail** |
+| R2a | stars move purchases (5 ÷ 1–2) | P7 | ratio | 7 | 1.806 | ≥ 1.8 | pass |
+| R2a | stars move purchases (5 ÷ 1–2) | P7 | ratio | 99 | 2.013 | ≥ 1.8 | pass |
+| R2b | a poor product converts less | quality | ratio | 42 | 0.772 | ≤ 0.8 | pass |
+| R2b | a poor product converts less | quality | ratio | 7 | 0.899 | ≤ 0.8 | **fail** |
+| R2b | a poor product converts less | quality | ratio | 99 | 0.739 | ≤ 0.8 | pass |
+| R3a | NPS after a bad experience, planted − null | R3 | difference | 42 | -3.457 | ≤ -2.5 | pass |
+| R3a | NPS after a bad experience, planted − null | R3 | difference | 7 | -3.378 | ≤ -2.5 | pass |
+| R3a | NPS after a bad experience, planted − null | R3 | difference | 99 | -3.329 | ≤ -2.5 | pass |
+| R3b | NPS after a bad experience, non-reviewers | — | planted | 42 | 4.353 | ≤ 5.5 | pass |
+| R3b | NPS after a bad experience, non-reviewers | — | planted | 7 | 4.498 | ≤ 5.5 | pass |
+| R3b | NPS after a bad experience, non-reviewers | — | planted | 99 | 4.368 | ≤ 5.5 | pass |
+| R3b gap | \|unreplied reviewers − non-reviewers\|, after a bad experience | — | planted | 42 | 0.208 | ≤ 0.5 | pass |
+| R3b gap | \|unreplied reviewers − non-reviewers\|, after a bad experience | — | planted | 7 | 0.197 | ≤ 0.5 | pass |
+| R3b gap | \|unreplied reviewers − non-reviewers\|, after a bad experience | — | planted | 99 | 0.116 | ≤ 0.5 | pass |
+| R3c | NPS: replied − unreplied negative-review writers | — | planted | 42 | 1.844 | ≥ 1.2 | pass |
+| R3c | NPS: replied − unreplied negative-review writers | — | planted | 7 | 1.774 | ≥ 1.2 | pass |
+| R3c | NPS: replied − unreplied negative-review writers | — | planted | 99 | 1.558 | ≥ 1.2 | pass |
+| R4a | churn in 3 months after a bad experience | R4 | ratio | 42 | 1.994 | ≥ 1.4 | pass |
+| R4a | churn in 3 months after a bad experience | R4 | ratio | 7 | 1.707 | ≥ 1.4 | pass |
+| R4a | churn in 3 months after a bad experience | R4 | ratio | 99 | 1.590 | ≥ 1.4 | pass |
+| R4b seed | churn in 3 months after a replied negative review (per seed) | R4_reply | ratio | 42 | 0.765 | reported | reported |
+| R4b seed | churn in 3 months after a replied negative review (per seed) | R4_reply | ratio | 7 | 0.818 | reported | reported |
+| R4b seed | churn in 3 months after a replied negative review (per seed) | R4_reply | ratio | 99 | 0.794 | reported | reported |
+| R4c | never orders again after a bad experience | R4 | ratio | 42 | 1.159 | reported | reported |
+| R4c | never orders again after a bad experience | R4 | ratio | 7 | 1.165 | reported | reported |
+| R4c | never orders again after a bad experience | R4 | ratio | 99 | 1.150 | reported | reported |
+| R5 | stars move demand (5 ÷ 1–2) | R5 | ratio | 42 | 1.593 | ≥ 1.4 | pass |
+| R5 | stars move demand (5 ÷ 1–2) | R5 | ratio | 7 | 1.445 | ≥ 1.4 | pass |
+| R5 | stars move demand (5 ÷ 1–2) | R5 | ratio | 99 | 1.357 | ≥ 1.4 | **fail** |
+| R6 | offer response at 1–2 stars ÷ at 5 | R6 | ratio | 42 | 1.053 | reported | reported |
+| R6 | offer response at 1–2 stars ÷ at 5 | R6 | ratio | 7 | 1.084 | reported | reported |
+| R6 | offer response at 1–2 stars ÷ at 5 | R6 | ratio | 99 | 0.887 | reported | reported |
+| O2 | units at a 20 %+ offer | offers | ratio | 42 | 1.439 | ≥ 1.8 | **fail** |
+| O2 | units at a 20 %+ offer | offers | ratio | 7 | 1.444 | ≥ 1.8 | **fail** |
+| O2 | units at a 20 %+ offer | offers | ratio | 99 | 1.416 | ≥ 1.8 | **fail** |
+| O3a | showings of an offered product | placement | ratio | 42 | 1.186 | ≥ 1.2 | **fail** |
+| O3a | showings of an offered product | placement | ratio | 7 | 1.195 | ≥ 1.2 | **fail** |
+| O3a | showings of an offered product | placement | ratio | 99 | 1.199 | ≥ 1.2 | **fail** |
 | O3b | list slots 1–9 clicked as often as the slot above | — | planted | 42 | 0.000 | ≤ 0.0 | pass |
 | O3b | list slots 1–9 clicked as often as the slot above | — | planted | 7 | 0.000 | ≤ 0.0 | pass |
 | O3b | list slots 1–9 clicked as often as the slot above | — | planted | 99 | 0.000 | ≤ 0.0 | pass |
-| F1a | organic search lands on product pages | F1 | ratio | 42 | 1.996 | ≥ 1.6 | pass |
-| F1a | organic search lands on product pages | F1 | ratio | 7 | 1.978 | ≥ 1.6 | pass |
-| F1a | organic search lands on product pages | F1 | ratio | 99 | 1.994 | ≥ 1.6 | pass |
-| F1b | social lands on toys and treats | F1 | ratio | 42 | 2.492 | ≥ 1.8 | pass |
-| F1b | social lands on toys and treats | F1 | ratio | 7 | 2.457 | ≥ 1.8 | pass |
-| F1b | social lands on toys and treats | F1 | ratio | 99 | 2.443 | ≥ 1.8 | pass |
-| F1c | email and affiliate land on offers | F1 | ratio | 42 | 3.092 | ≥ 2.0 | pass |
-| F1c | email and affiliate land on offers | F1 | ratio | 7 | 2.983 | ≥ 2.0 | pass |
-| F1c | email and affiliate land on offers | F1 | ratio | 99 | 3.036 | ≥ 2.0 | pass |
-| F2a | conversion, email ÷ social | F2 | high ÷ low | 42 | 5.427 | ≥ 3.0 | pass |
-| F2a | conversion, email ÷ social | F2 | high ÷ low | 7 | 5.015 | ≥ 3.0 | pass |
-| F2a | conversion, email ÷ social | F2 | high ÷ low | 99 | 4.974 | ≥ 3.0 | pass |
-| F2b | the worst source's conversion off its rate (share) | — | planted | 42 | 0.022 | ≤ 0.2 | pass |
-| F2b | the worst source's conversion off its rate (share) | — | planted | 7 | 0.082 | ≤ 0.2 | pass |
+| F1a | organic search lands on product pages | F1 | ratio | 42 | 2.001 | ≥ 1.6 | pass |
+| F1a | organic search lands on product pages | F1 | ratio | 7 | 1.974 | ≥ 1.6 | pass |
+| F1a | organic search lands on product pages | F1 | ratio | 99 | 1.979 | ≥ 1.6 | pass |
+| F1b | social lands on toys and treats | F1 | ratio | 42 | 2.481 | ≥ 1.8 | pass |
+| F1b | social lands on toys and treats | F1 | ratio | 7 | 2.487 | ≥ 1.8 | pass |
+| F1b | social lands on toys and treats | F1 | ratio | 99 | 2.468 | ≥ 1.8 | pass |
+| F1c | email and affiliate land on offers | F1 | ratio | 42 | 3.072 | ≥ 2.0 | pass |
+| F1c | email and affiliate land on offers | F1 | ratio | 7 | 2.993 | ≥ 2.0 | pass |
+| F1c | email and affiliate land on offers | F1 | ratio | 99 | 3.032 | ≥ 2.0 | pass |
+| F2a | conversion, email ÷ social | F2 | high ÷ low | 42 | 5.349 | ≥ 3.0 | pass |
+| F2a | conversion, email ÷ social | F2 | high ÷ low | 7 | 5.006 | ≥ 3.0 | pass |
+| F2a | conversion, email ÷ social | F2 | high ÷ low | 99 | 5.017 | ≥ 3.0 | pass |
+| F2b | the worst source's conversion off its rate (share) | — | planted | 42 | 0.015 | ≤ 0.2 | pass |
+| F2b | the worst source's conversion off its rate (share) | — | planted | 7 | 0.093 | ≤ 0.2 | pass |
 | F2b | the worst source's conversion off its rate (share) | — | planted | 99 | 0.100 | ≤ 0.2 | pass |
 | F3a | affiliates bring discount-high shoppers | F3 | ratio | 42 | 2.275 | ≥ 1.8 | pass |
 | F3a | affiliates bring discount-high shoppers | F3 | ratio | 7 | 2.014 | ≥ 1.8 | pass |
@@ -115,55 +115,55 @@ Design and margins: `actionable-states-prereg.md`.
 | F3b | social brings newness-high shoppers | F3 | ratio | 42 | 2.059 | ≥ 1.5 | pass |
 | F3b | social brings newness-high shoppers | F3 | ratio | 7 | 1.939 | ≥ 1.5 | pass |
 | F3b | social brings newness-high shoppers | F3 | ratio | 99 | 2.250 | ≥ 1.5 | pass |
-| F3c | affiliates' purchases on offer ÷ others' | F3 | ratio | 42 | 1.147 | reported | reported |
-| F3c | affiliates' purchases on offer ÷ others' | F3 | ratio | 7 | 1.104 | reported | reported |
-| F3c | affiliates' purchases on offer ÷ others' | F3 | ratio | 99 | 1.140 | reported | reported |
-| F4a | becomes regular: organic ÷ affiliate | F4 | high ÷ low | 42 | 3.261 | ≥ 1.6 | pass |
-| F4a | becomes regular: organic ÷ affiliate | F4 | high ÷ low | 7 | 2.959 | ≥ 1.6 | pass |
-| F4a | becomes regular: organic ÷ affiliate | F4 | high ÷ low | 99 | 2.897 | ≥ 1.6 | pass |
-| F4b | becomes regular: social ÷ organic | F4 | high ÷ low | 42 | 0.399 | ≤ 0.7 | pass |
-| F4b | becomes regular: social ÷ organic | F4 | high ÷ low | 7 | 0.537 | ≤ 0.7 | pass |
-| F4b | becomes regular: social ÷ organic | F4 | high ÷ low | 99 | 0.434 | ≤ 0.7 | pass |
-| F5a | becomes regular: staple in the first basket ÷ not | F5 | high ÷ low | 42 | 1.973 | ≥ 1.5 | pass |
-| F5a | becomes regular: staple in the first basket ÷ not | F5 | high ÷ low | 7 | 2.077 | ≥ 1.5 | pass |
-| F5a | becomes regular: staple in the first basket ÷ not | F5 | high ÷ low | 99 | 1.991 | ≥ 1.5 | pass |
-| F5b organic | F5a among organic-search customers | F5 | high ÷ low | 42 | 1.863 | reported | reported |
-| F5b organic | F5a among organic-search customers | F5 | high ÷ low | 7 | 1.929 | reported | reported |
-| F5b organic | F5a among organic-search customers | F5 | high ÷ low | 99 | 2.070 | reported | reported |
-| F5b affiliate | F5a among affiliate customers | F5 | high ÷ low | 42 | 2.175 | reported | reported |
-| F5b affiliate | F5a among affiliate customers | F5 | high ÷ low | 7 | 2.227 | reported | reported |
-| F5b affiliate | F5a among affiliate customers | F5 | high ÷ low | 99 | 2.174 | reported | reported |
-| C1 | natural-food declarers buy grain-free (÷ everyone else) | — | planted | 42 | 1.904 | ≥ 1.8 | pass |
+| F3c | affiliates' purchases on offer ÷ others' | F3 | ratio | 42 | 1.100 | reported | reported |
+| F3c | affiliates' purchases on offer ÷ others' | F3 | ratio | 7 | 1.069 | reported | reported |
+| F3c | affiliates' purchases on offer ÷ others' | F3 | ratio | 99 | 1.096 | reported | reported |
+| F4a | becomes regular: organic ÷ affiliate | F4 | high ÷ low | 42 | 3.059 | ≥ 1.6 | pass |
+| F4a | becomes regular: organic ÷ affiliate | F4 | high ÷ low | 7 | 3.040 | ≥ 1.6 | pass |
+| F4a | becomes regular: organic ÷ affiliate | F4 | high ÷ low | 99 | 3.040 | ≥ 1.6 | pass |
+| F4b | becomes regular: social ÷ organic | F4 | high ÷ low | 42 | 0.411 | ≤ 0.7 | pass |
+| F4b | becomes regular: social ÷ organic | F4 | high ÷ low | 7 | 0.483 | ≤ 0.7 | pass |
+| F4b | becomes regular: social ÷ organic | F4 | high ÷ low | 99 | 0.464 | ≤ 0.7 | pass |
+| F5a | becomes regular: staple in the first basket ÷ not | F5 | high ÷ low | 42 | 2.113 | ≥ 1.5 | pass |
+| F5a | becomes regular: staple in the first basket ÷ not | F5 | high ÷ low | 7 | 1.938 | ≥ 1.5 | pass |
+| F5a | becomes regular: staple in the first basket ÷ not | F5 | high ÷ low | 99 | 2.063 | ≥ 1.5 | pass |
+| F5b organic | F5a among organic-search customers | F5 | high ÷ low | 42 | 2.079 | reported | reported |
+| F5b organic | F5a among organic-search customers | F5 | high ÷ low | 7 | 1.729 | reported | reported |
+| F5b organic | F5a among organic-search customers | F5 | high ÷ low | 99 | 2.249 | reported | reported |
+| F5b affiliate | F5a among affiliate customers | F5 | high ÷ low | 42 | 2.662 | reported | reported |
+| F5b affiliate | F5a among affiliate customers | F5 | high ÷ low | 7 | 2.547 | reported | reported |
+| F5b affiliate | F5a among affiliate customers | F5 | high ÷ low | 99 | 2.316 | reported | reported |
+| C1 | natural-food declarers buy grain-free (÷ everyone else) | — | planted | 42 | 1.766 | ≥ 1.8 | **fail** |
 | C1 | natural-food declarers buy grain-free (÷ everyone else) | — | planted | 7 | 1.968 | ≥ 1.8 | pass |
-| C1 | natural-food declarers buy grain-free (÷ everyone else) | — | planted | 99 | 2.126 | ≥ 1.8 | pass |
-| C1 vs null | C1 against interests drawn without the traits | C1 | ratio | 42 | 2.082 | reported | reported |
-| C1 vs null | C1 against interests drawn without the traits | C1 | ratio | 7 | 1.871 | reported | reported |
-| C1 vs null | C1 against interests drawn without the traits | C1 | ratio | 99 | 1.886 | reported | reported |
+| C1 | natural-food declarers buy grain-free (÷ everyone else) | — | planted | 99 | 2.191 | ≥ 1.8 | pass |
+| C1 vs null | C1 against interests drawn without the traits | C1 | ratio | 42 | 1.882 | reported | reported |
+| C1 vs null | C1 against interests drawn without the traits | C1 | ratio | 7 | 1.870 | reported | reported |
+| C1 vs null | C1 against interests drawn without the traits | C1 | ratio | 99 | 1.703 | reported | reported |
 | C2 rate | consent rate's distance from 0.6 | — | planted | 42 | 0.003 | ≤ 0.05 | pass |
 | C2 rate | consent rate's distance from 0.6 | — | planted | 7 | 0.018 | ≤ 0.05 | pass |
 | C2 rate | consent rate's distance from 0.6 | — | planted | 99 | 0.007 | ≤ 0.05 | pass |
 | C2 gap | largest consent gap between a trait level and the rest | — | planted | 42 | 0.046 | ≤ 0.07 | pass |
 | C2 gap | largest consent gap between a trait level and the rest | — | planted | 7 | 0.030 | ≤ 0.07 | pass |
 | C2 gap | largest consent gap between a trait level and the rest | — | planted | 99 | 0.027 | ≤ 0.07 | pass |
-| C3 | largest \|log\| female ÷ male category share (log 1.25 = 0.223) | — | planted | 42 | 0.056 | ≤ 0.223 | pass |
-| C3 | largest \|log\| female ÷ male category share (log 1.25 = 0.223) | — | planted | 7 | 0.073 | ≤ 0.223 | pass |
-| C3 | largest \|log\| female ÷ male category share (log 1.25 = 0.223) | — | planted | 99 | 0.178 | ≤ 0.223 | pass |
-| P2b | a new product's pull | launch pull | ratio | 42 | 2.952 | ≥ 1.3 | pass |
-| P2b | a new product's pull | launch pull | ratio | 7 | 2.222 | ≥ 1.3 | pass |
-| P2b | a new product's pull | launch pull | ratio | 99 | 2.071 | ≥ 1.3 | pass |
-| P2c | incumbents lose to a launch | launch pull | ratio | 42 | 0.958 | ≤ 0.95 | **fail** |
-| P2c | incumbents lose to a launch | launch pull | ratio | 7 | 0.961 | ≤ 0.95 | **fail** |
-| P2c | incumbents lose to a launch | launch pull | ratio | 99 | 0.982 | ≤ 0.95 | **fail** |
-| P3a | a price rise lowers sales | price rise | ratio | 42 | 0.920 | ≤ 0.92 | pass |
-| P3a | a price rise lowers sales | price rise | ratio | 7 | 0.940 | ≤ 0.92 | **fail** |
-| P3a | a price rise lowers sales | price rise | ratio | 99 | 0.943 | ≤ 0.92 | **fail** |
-| P5a | big bags for big dogs | pack size | ratio | 42 | 2.297 | ≥ 1.8 | pass |
-| P5a | big bags for big dogs | pack size | ratio | 7 | 2.128 | ≥ 1.8 | pass |
-| P5a | big bags for big dogs | pack size | ratio | 99 | 2.776 | ≥ 1.8 | pass |
-| K1a | the kit's next item | kit progression | ratio | 42 | 3.536 | ≥ 2.0 | pass |
-| K1a | the kit's next item | kit progression | ratio | 7 | 3.279 | ≥ 2.0 | pass |
-| K1a | the kit's next item | kit progression | ratio | 99 | 2.630 | ≥ 2.0 | pass |
-| K1b | an owned kit item | kit progression | ratio | 42 | 0.024 | ≤ 0.3 | pass |
-| K1b | an owned kit item | kit progression | ratio | 7 | 0.000 | ≤ 0.3 | pass |
-| K1b | an owned kit item | kit progression | ratio | 99 | 0.026 | ≤ 0.3 | pass |
-| R4b | churn in 3 months after a replied negative review, pooled (18/398 planted, 25/400 null) | R4_reply | pooled | 42, 7, 99 | 0.724 | ≤ 0.9 | pass |
+| C3 | largest \|log\| female ÷ male category share (log 1.25 = 0.223) | — | planted | 42 | 0.050 | ≤ 0.223 | pass |
+| C3 | largest \|log\| female ÷ male category share (log 1.25 = 0.223) | — | planted | 7 | 0.176 | ≤ 0.223 | pass |
+| C3 | largest \|log\| female ÷ male category share (log 1.25 = 0.223) | — | planted | 99 | 0.049 | ≤ 0.223 | pass |
+| P2b | a new product's pull | launch pull | ratio | 42 | 2.735 | ≥ 1.3 | pass |
+| P2b | a new product's pull | launch pull | ratio | 7 | 2.101 | ≥ 1.3 | pass |
+| P2b | a new product's pull | launch pull | ratio | 99 | 2.314 | ≥ 1.3 | pass |
+| P2c | incumbents lose to a launch | launch pull | ratio | 42 | 0.947 | ≤ 0.95 | pass |
+| P2c | incumbents lose to a launch | launch pull | ratio | 7 | 0.985 | ≤ 0.95 | **fail** |
+| P2c | incumbents lose to a launch | launch pull | ratio | 99 | 0.973 | ≤ 0.95 | **fail** |
+| P3a | a price rise lowers sales | price rise | ratio | 42 | 0.897 | ≤ 0.92 | pass |
+| P3a | a price rise lowers sales | price rise | ratio | 7 | 0.841 | ≤ 0.92 | pass |
+| P3a | a price rise lowers sales | price rise | ratio | 99 | 0.909 | ≤ 0.92 | pass |
+| P5a | big bags for big dogs | pack size | ratio | 42 | 2.693 | ≥ 1.8 | pass |
+| P5a | big bags for big dogs | pack size | ratio | 7 | 2.428 | ≥ 1.8 | pass |
+| P5a | big bags for big dogs | pack size | ratio | 99 | 2.733 | ≥ 1.8 | pass |
+| K1a | the kit's next item | kit progression | ratio | 42 | 3.118 | ≥ 2.0 | pass |
+| K1a | the kit's next item | kit progression | ratio | 7 | 2.880 | ≥ 2.0 | pass |
+| K1a | the kit's next item | kit progression | ratio | 99 | 2.505 | ≥ 2.0 | pass |
+| K1b | an owned kit item | kit progression | ratio | 42 | 0.028 | ≤ 0.3 | pass |
+| K1b | an owned kit item | kit progression | ratio | 7 | 0.052 | ≤ 0.3 | pass |
+| K1b | an owned kit item | kit progression | ratio | 99 | 0.044 | ≤ 0.3 | pass |
+| R4b | churn in 3 months after a replied negative review, pooled (24/395 planted, 30/392 null) | R4_reply | pooled | 42, 7, 99 | 0.794 | ≤ 0.9 | pass |

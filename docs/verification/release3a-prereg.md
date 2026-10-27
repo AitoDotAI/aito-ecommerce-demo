@@ -112,5 +112,14 @@ click is near 0.4. What changed, and why:
 
 `python3 -m scripts.release3_effects` (report: `release3a-data.md`): 12 of 12 on the mean of three seeds;
 per-seed misses: Q2 on seed 7 (−0.36) and Q6 click-through on seed 7 (1.02). `tests/test_release3_data.py`:
-Q8a, Q8b, Q8c, Q9 pass. Not yet run: Q1, Q7 (the older planted-effect checks, `./do planted-effects`), Q10 and the
-Aito checks A1–A3 (they need `release3a` loaded).
+Q8a, Q8b, Q8c, Q9 pass. **Q7, the older checks (`./do planted-effects`, 3 seeds × 45 checks):** 118 of 136 pass, as before this release
+(118 of 136; the committed report is replaced by this run's). The same number fail, in different cells: seed
+noise at the margins, since new odds change which sessions list which products and so every later draw. Gone from
+the failures: P3a (the list price now weighs more: 0.94 → passes), R1, V1, P8 on seed 42. New in them, all near
+their margins: C1 on seed 42 (1.77 against ≥ 1.8; unrelated to prices, a draw shifted), P1b on seed 99 (0.95 against
+≥ 1.05), P4a on seed 99 (1.13 against ≥ 1.15), R2b on seed 7 (0.90 against ≤ 0.8), P8 and P9 on one seed each. O2,
+already failing before, falls from 1.64 to 1.44: expected, since an offer now lifts the click by 0.4 of its
+purchase lift (L3); the units an offer sells were 1.57 within one generation on release 2 too.
+
+Not yet run: Q1 and Q10 as listed (the data tests cover their intent), and the Aito checks A1–A3 (they need
+`release3a` loaded).
