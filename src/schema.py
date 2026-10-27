@@ -87,8 +87,9 @@ SCHEMAS: dict[str, dict] = {
             # with the first order, and what that order held.
             "visitor":                 {"type": "String",  "nullable": False},
             "first_source":            {"type": "String",  "nullable": False},
-            "joined_month":            {"type": "String",  "nullable": False},
-            "first_basket_categories": {"type": "Text",    "nullable": False, "analyzer": "whitespace"},
+            # Absent for a customer whose visits never ended in an order: they have no first basket yet.
+            "joined_month":            {"type": "String",  "nullable": True},
+            "first_basket_categories": {"type": "Text",    "nullable": True, "analyzer": "whitespace"},
             # 3 or more orders in the first 6 months: a label from later data,
             # as `churned_in_3_months` is. Absent for customers who joined
             # less than 6 months before the data ends.
