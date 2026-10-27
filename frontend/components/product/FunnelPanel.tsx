@@ -15,12 +15,13 @@ import { money, monthLabel, pct } from "./labels";
 export default function FunnelPanel({ funnel, loading }: { funnel: ProductFunnel | null; loading: boolean }) {
   if (!funnel) return <div className="card" aria-busy="true" style={{ height: 320, background: "var(--border-light)" }} />;
   const changed = funnel.changed.length > 0;
-  const top = Math.max(funnel.now.impressions, funnel.asked.impressions, 1e-9);
+  const actual = funnel.actual;
+  const top = Math.max(funnel.now.impressions, funnel.asked.impressions, actual?.impressions ?? 0, 1e-9);
 
   const stages = [
-    { id: "impressions", label: "Impressions", unit: "showings", get: (f: Funnel) => f.impressions, rows: 1 },
-    { id: "clicks", label: "Clicks", unit: "clicks", get: (f: Funnel) => f.clicks, rows: 1 },
-    { id: "purchases", label: "Purchases", unit: "purchases", get: (f: Funnel) => f.purchases, rows: Math.max(...funnel.asked.sizes.map((s) => s.units_each), 1) },
+    { id: "impressions", label: "Impressions", get: (f: Funnel) => f.impressions, real: actual?.impressions },
+    { id: "clicks", label: "Clicks", get: (f: Funnel) => f.clicks, real: actual?.clicks },
+    { id: "purchases", label: "Purchases", get: (f: Funnel) => f.purchases, real: actual?.purchases },
   ];
 
   return (
@@ -59,7 +60,6 @@ export default function FunnelPanel({ funnel, loading }: { funnel: ProductFunnel
 
       {stages.map((stage) => {
         const now = stage.get(funnel.now), asked = stage.get(funnel.asked);
-        const rowHeight = 10;
         return (
           <div key={stage.id} style={{ marginBottom: 12 }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
@@ -67,11 +67,12 @@ export default function FunnelPanel({ funnel, loading }: { funnel: ProductFunnel
               <span style={{ fontFamily: "var(--mono)" }}>
                 {changed && <span style={{ color: "var(--text-muted)" }}>{now.toFixed(1)} → </span>}{asked.toFixed(1)}
                 {changed && <span style={{ color: asked >= now ? "var(--green)" : "var(--red)" }}> {delta(asked, now)}</span>}
+                {stage.real !== undefined && <span style={{ color: "var(--text)" }} title={`${monthLabel(funnel.month)}, counted`}> · actual {stage.real}</span>}
               </span>
             </div>
             {stage.id === "purchases"
-              ? <SizedBars sizes={funnel.asked.sizes} top={top} />
-              : <Bar value={asked} top={top} height={rowHeight} color="var(--cta)" />}
+              ? <SizedBars sizes={funnel.asked.sizes} top={top} marker={stage.real} />
+              : <Bar value={asked} top={top} height={10} color="var(--cta)" marker={stage.real} />}
             {changed && <Bar value={now} top={top} height={4} color="var(--border)" thin />}
             {stage.id === "clicks" && <div className="card-sub">click-through {pct(funnel.asked.ctr, 0)} of showings</div>}
             {stage.id === "purchases" && (
@@ -81,6 +82,7 @@ export default function FunnelPanel({ funnel, loading }: { funnel: ProductFunnel
                 {funnel.asked.other_units > 0 && <> + {funnel.asked.other_units.toFixed(1)} re-ordered without a showing</>}
                 {" "}= <strong>{funnel.asked.units.toFixed(1)} units</strong>
                 {changed && <> (was {funnel.now.units.toFixed(1)})</>}
+                {actual && <> · {monthLabel(funnel.month)} actual: <strong>{actual.units} units</strong></>}
               </div>
             )}
           </div>
@@ -88,17 +90,18 @@ export default function FunnelPanel({ funnel, loading }: { funnel: ProductFunnel
       })}
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: 10, margin: "14px 0 6px" }}>
-        <Value label="Price paid" now={funnel.now.price_eur} asked={funnel.asked.price_eur} changed={changed} />
-        <Value label="Revenue" now={funnel.now.revenue_eur} asked={funnel.asked.revenue_eur} changed={changed} />
-        <Value label="Gross profit" now={funnel.now.gross_profit_eur} asked={funnel.asked.gross_profit_eur} changed={changed} />
+        <Value label="Price paid" now={funnel.now.price_eur} asked={funnel.asked.price_eur} changed={changed} actual={actual?.price_eur} />
+        <Value label="Revenue" now={funnel.now.revenue_eur} asked={funnel.asked.revenue_eur} changed={changed} actual={actual?.revenue_eur} />
+        <Value label="Gross profit" now={funnel.now.gross_profit_eur} asked={funnel.asked.gross_profit_eur} changed={changed} actual={actual?.gross_profit_eur} />
         {(funnel.asked.ad_spend_eur > 0 || funnel.now.ad_spend_eur > 0) && (
           <Value label="Advertising (assumed)" now={funnel.now.ad_spend_eur} asked={funnel.asked.ad_spend_eur} changed={changed} />
         )}
-        <Value label="Profit" now={funnel.now.profit_eur} asked={funnel.asked.profit_eur} changed={changed} strong />
+        <Value label="Profit" now={funnel.now.profit_eur} asked={funnel.asked.profit_eur} changed={changed} actual={actual?.profit_eur} strong />
       </div>
 
       <div className="card-sub" style={{ marginTop: 8 }}>
-        {funnel.last_month.showings !== undefined && <>{monthLabel(funnel.month)} itself: {funnel.last_month.showings} showings, {funnel.last_month.units} sold. </>}
+        {actual && <>The black mark is {monthLabel(funnel.month)} as counted: {actual.impressions} showings, {actual.clicks} clicks, {actual.purchases} purchases,
+          {" "}{actual.units} units. The estimate is a typical month for the product&apos;s properties, so one month lands above or below it. </>}
         Showings estimated from {funnel.showings_support} earlier months.
       </div>
       {funnel.no_data && <div role="status" className="card-sub" style={{ marginTop: 6, color: "var(--red)" }}>{funnel.no_data}</div>}
@@ -115,10 +118,11 @@ export default function FunnelPanel({ funnel, loading }: { funnel: ProductFunnel
 }
 
 /** The purchases as blocks: a block's width is how many purchases buy that many units, its height is the units. Tallest first. */
-function SizedBars({ sizes, top }: { sizes: Array<{ units_each: number; purchases: number }>; top: number }) {
+function SizedBars({ sizes, top, marker }: { sizes: Array<{ units_each: number; purchases: number }>; top: number; marker?: number }) {
   const tallest = Math.max(...sizes.map((s) => s.units_each), 1);
   return (
-    <div style={{ height: tallest * 10, background: "var(--border-light)", borderRadius: 4, marginTop: 4, display: "flex", alignItems: "flex-end" }}>
+    <div style={{ height: tallest * 10, background: "var(--border-light)", borderRadius: 4, marginTop: 4, display: "flex", alignItems: "flex-end", position: "relative" }}>
+      {marker !== undefined && <Tick at={marker / top} />}
       {sizes.map((s, i) => (
         <div key={s.units_each} title={`${s.purchases.toFixed(1)} purchases of ${s.units_each} unit${s.units_each > 1 ? "s" : ""}`}
              style={{ width: `${(s.purchases / top) * 100}%`, height: `${(s.units_each / tallest) * 100}%`,
@@ -129,7 +133,7 @@ function SizedBars({ sizes, top }: { sizes: Array<{ units_each: number; purchase
 }
 
 /** A money value for the month, with today's beside it when something is changed. */
-function Value({ label, now, asked, changed, strong }: { label: string; now: number; asked: number; changed: boolean; strong?: boolean }) {
+function Value({ label, now, asked, changed, strong, actual }: { label: string; now: number; asked: number; changed: boolean; strong?: boolean; actual?: number }) {
   return (
     <div>
       <div className="card-sub">{label}</div>
@@ -138,14 +142,21 @@ function Value({ label, now, asked, changed, strong }: { label: string; now: num
         {money(asked)}
       </div>
       {changed && Math.abs(asked - now) > 0.005 && <div className="card-sub" style={{ whiteSpace: "nowrap" }}>was {money(now)}</div>}
+      {actual !== undefined && <div className="card-sub" style={{ whiteSpace: "nowrap" }}>actual {money(actual)}</div>}
     </div>
   );
 }
 
-function Bar({ value, top, height, color, thin }: { value: number; top: number; height: number; color: string; thin?: boolean }) {
+/** A mark across a bar at what the month's own data counted. */
+function Tick({ at }: { at: number }) {
+  return <div title="the month, counted" style={{ position: "absolute", left: `${Math.min(100, at * 100)}%`, top: -3, bottom: -3, width: 2, background: "var(--text)", zIndex: 1 }} />;
+}
+
+function Bar({ value, top, height, color, thin, marker }: { value: number; top: number; height: number; color: string; thin?: boolean; marker?: number }) {
   const width = Math.min(100, (Math.abs(value) / top) * 100);
   return (
-    <div style={{ height, background: "var(--border-light)", borderRadius: 4, marginTop: thin ? 2 : 4 }}>
+    <div style={{ height, background: "var(--border-light)", borderRadius: 4, marginTop: thin ? 2 : 4, position: "relative" }}>
+      {marker !== undefined && <Tick at={marker / top} />}
       <div style={{ width: `${width}%`, height: "100%", background: color, borderRadius: 4 }} />
     </div>
   );
