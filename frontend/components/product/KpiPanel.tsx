@@ -67,6 +67,8 @@ export default function KpiPanel({ kpi, current, baseline, loading }: {
         {changed && <> · {e.p >= before.p ? "+" : "−"}{Math.abs((e.p / before.p - 1) * 100).toFixed(0)} % with your changes</>}
       </div>
 
+      {current.no_data && <div role="status" className="card-sub" style={{ marginBottom: 10, color: "var(--red)" }}>{current.no_data}</div>}
+
       <div className="kpi-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", marginBottom: 14 }}>
         <Fact label="All showings" value={pct(e.base_p, 0)} sub="the average over the shop" />
         <Fact label="This product, so far"

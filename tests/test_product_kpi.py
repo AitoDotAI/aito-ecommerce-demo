@@ -150,3 +150,20 @@ def test_a_why_that_does_not_multiply_out_to_p_raises(client, httpx_mock):
 
     with pytest.raises(AitoError, match="multiplies to"):
         get_product_kpis(client, SKU, "2026-04", {})
+
+
+def test_a_value_the_data_has_never_held_is_refused(client, httpx_mock):
+    mock_aito(httpx_mock)
+
+    with pytest.raises(ValueError, match="not a value of ad_level in the data"):
+        get_product_kpis(client, SKU, "2026-04", {"ad_level": "billboard"})
+
+
+def test_a_list_price_beyond_the_price_points_is_left_out_and_says_so(client, httpx_mock):
+    mock_aito(httpx_mock)
+
+    result = get_product_kpis(client, SKU, "2026-04", {"list_price_eur": 13.0})      # 1.3 × the €10.00 reference
+
+    where = json.loads(httpx_mock.get_requests()[-1].read())[0]["where"]
+    assert where["product_state.list_price_band"] == "100" and result.changed == []
+    assert "beyond the price points" in result.no_data

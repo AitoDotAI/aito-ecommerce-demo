@@ -30,7 +30,7 @@ from src.aito_client import AitoClient, AitoError
 from src.demand_forecast import LATEST_MONTH
 from src.lookup_errors import ProductNotOnSaleError, UnknownProductError
 from src.product_decision import BAND_DISCOUNT_PCT
-from src.product_kpi import get_product_kpis, where_for
+from src.product_kpi import LIST_PRICE_BANDS, check_changes, get_product_kpis, list_price_band, where_for
 from src.product_pricing import RANGE_MARGIN, estimate_units_index
 
 # What an advertisement costs the shop a month, by level. The shop declares its own; these are ours until it
@@ -98,6 +98,7 @@ def get_product_funnel(client: AitoClient, sku: str, month: str = LATEST_MONTH,
                        changes: dict[str, object] | None = None, list_price_eur: float | None = None) -> ProductFunnel:
     """`changes`: the properties the owner changed (src/product_kpi.py's EDITABLE); `list_price_eur`: a new list price."""
     changes = dict(changes or {})
+    check_changes(changes)
     products = client.search("products", where={"sku": sku}, limit=1)["hits"]
     if not products:
         raise UnknownProductError(f"No product {sku} in the catalogue")
@@ -163,7 +164,7 @@ def _drop_list_price_beyond_the_data(changes: dict, state: dict, sales: list[dic
     paid = changes["list_price_index"] * (1 - _offer_pct(state, _property(changes, state, "discount_band")) / 100)
     indexes = [float(r["price_index"]) for r in sales]
     low, high = min(indexes) - RANGE_MARGIN, max(indexes) + RANGE_MARGIN
-    if low <= paid <= high:
+    if low <= paid <= high and list_price_band(changes["list_price_index"]) in LIST_PRICE_BANDS:
         return None
     del changes["list_price_index"]
     return (f"A list price of €{changes_price:.2f} is outside what this product has sold at "

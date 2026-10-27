@@ -157,3 +157,9 @@ def test_a_month_without_a_state_is_refused():
 
     with pytest.raises(ProductNotOnSaleError):
         get_product_funnel(NoState(), "SKU-1", "2026-05")
+
+
+@pytest.mark.parametrize("changes", [{"ad_level": "billboard"}, {"discount_band": "30+"}, {"image_count": "lots"}, {"colour": "red"}])
+def test_a_value_or_property_the_data_does_not_have_is_refused_not_estimated(changes):
+    with pytest.raises(ValueError):
+        get_product_funnel(FakeAito(), "SKU-1", "2026-05", changes)

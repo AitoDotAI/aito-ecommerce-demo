@@ -567,6 +567,8 @@ def product_kpi_endpoint(request: Request, sku: str, month: str = Query(LATEST_M
     changes = {name: value for name, value in asked.items() if value is not None}
     try:
         return get_product_kpis(_reader(request), sku, month, changes).to_dict()
+    except ValueError as exc:
+        return JSONResponse(status_code=400, content={"error": str(exc)})
     except (UnknownProductError, ProductNotOnSaleError) as exc:
         return JSONResponse(status_code=404, content={"error": str(exc)})
     except AitoError as exc:
@@ -599,6 +601,8 @@ def product_funnel_endpoint(request: Request, sku: str, month: str = Query(LATES
     changes = {name: value for name, value in asked.items() if value is not None}
     try:
         return get_product_funnel(_reader(request), sku, month, changes, list_price).to_dict()
+    except ValueError as exc:
+        return JSONResponse(status_code=400, content={"error": str(exc)})
     except (UnknownProductError, ProductNotOnSaleError) as exc:
         return JSONResponse(status_code=404, content={"error": str(exc)})
     except AitoError as exc:

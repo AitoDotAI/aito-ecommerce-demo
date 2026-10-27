@@ -37,6 +37,28 @@ EDITABLE = {"discount_band": "product_state.discount_band", "rating_band": "prod
             "description_quality": "product_state.description_quality", "ad_level": "product_state.ad_level"}
 
 
+# The values each property takes in the data. `_predict` answers the base rate, with a 200, for a value it has
+# never seen, so a typo would read as an estimate: refuse it.
+KNOWN_VALUES = {
+    "discount_band": {"none", "10-15", "15-20", "20+"}, "rating_band": {"unrated", "1-2", "3", "4", "5"},
+    "label": {"none", "popular", "recommended", "staff_pick"}, "age": {"new", "established"},
+    "stock": {"in_stock", "low"}, "rival_launched": {True, False},
+    "image_count": {"0-1", "2-3", "4+"}, "description_quality": {"thin", "ok", "rich"},
+    "ad_level": {"none", "search", "banner"},
+}
+LIST_PRICE_BANDS = {str(pct) for pct in range(85, 120, 5)}
+
+
+def check_changes(changes: dict[str, object]) -> None:
+    """Refuse a property that is not editable, or a value the data has never held for it."""
+    unknown = set(changes) - set(EDITABLE)
+    if unknown:
+        raise ValueError(f"Not an editable property: {sorted(unknown)}; the editable ones are {sorted(EDITABLE)}")
+    for name, value in changes.items():
+        if name in KNOWN_VALUES and value not in KNOWN_VALUES[name]:
+            raise ValueError(f"{value!r} is not a value of {name} in the data; it has {sorted(KNOWN_VALUES[name], key=str)}")
+
+
 @dataclass(frozen=True)
 class Factor:
     fields: list[str]       # the property's short name; several when Aito gave one lift for a group
@@ -63,6 +85,7 @@ class ProductKpis:
     month: str
     properties: dict[str, object]       # as asked: the state's, with the owner's changes
     changed: list[str]                  # the properties the owner changed
+    no_data: str | None                 # why a list price asked was left out: no price point of the data holds it
     estimates: dict[str, KpiEstimate]   # by KPI
     last_query: dict
 
@@ -72,9 +95,7 @@ class ProductKpis:
 
 def where_for(product: dict, state: dict, changes: dict[str, object]) -> dict:
     """The `where` for a product's properties in a month's state, with `changes` (by short name) applied."""
-    unknown = set(changes) - set(EDITABLE)
-    if unknown:
-        raise ValueError(f"Not an editable property: {sorted(unknown)}; the editable ones are {sorted(EDITABLE)}")
+    check_changes(changes)
     return {**{path: product[name] for name, path in FIXED.items()},
             **{path: _evidence(name, changes.get(name, state[name])) for name, path in EDITABLE.items()}}
 
@@ -112,6 +133,12 @@ def get_product_kpis(client: AitoClient, sku: str, month: str, changes: dict[str
     if not states:
         raise UnknownProductError(f"{sku} has no state in {month}")
     changes = with_list_price_index(states[0], changes)
+    check_changes(changes)
+    no_data = None
+    if "list_price_index" in changes and list_price_band(float(changes["list_price_index"])) not in LIST_PRICE_BANDS:
+        no_data = (f"A list price {float(changes['list_price_index']):.2f} times the original list is beyond the price "
+                   "points the shop has held (0.85–1.15), so the estimates keep today's list price.")
+        changes = {name: value for name, value in changes.items() if name != "list_price_index"}
     where = where_for(products[0], states[0], changes)
 
     counts = [{"from": "impressions", "where": {**scope, **hit}, "limit": 0}
@@ -126,7 +153,7 @@ def get_product_kpis(client: AitoClient, sku: str, month: str, changes: dict[str
                  for i, (kpi, answer) in enumerate(zip(KPIS, predictions))}
     shown = {**{name: where[path] for name, path in FIXED.items()},
              **{name: changes.get(name, states[0][name]) for name in EDITABLE}}
-    return ProductKpis(sku=sku, month=month, properties=shown, changed=sorted(changes), estimates=estimates,
+    return ProductKpis(sku=sku, month=month, properties=shown, changed=sorted(changes), no_data=no_data, estimates=estimates,
                        last_query={"endpoint": "_predict", "body": predict_body("clicked", where)})
 
 

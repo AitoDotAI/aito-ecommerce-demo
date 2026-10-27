@@ -994,6 +994,7 @@ export interface ProductKpis {
   month: string;
   properties: KpiProperties;
   changed: string[];
+  no_data: string | null;
   estimates: Record<KpiName, KpiEstimate>;
   last_query: { endpoint: string; body: Record<string, unknown> };
 }
