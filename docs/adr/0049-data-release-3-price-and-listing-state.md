@@ -1,6 +1,6 @@
 # ADR 0049: Data release 3 — price that the data can learn, and the listing as product state
 
-**Status:** Proposed (2026-10-26, Antti: "we could now have a setup with data, which contains informative product
+**Status:** Accepted for release 3a (2026-10-27: generated, checked 12/12 on the seed mean, loaded as env `release3a`). Proposed (2026-10-26, Antti: "we could now have a setup with data, which contains informative product
 states with different prices, so that the price sensitivity will properly be stored to the data … all the data in
 sync", "more actionable details to product state … number of images, advertising details", and "demand should
 react stronger than CTR as CTR will drive impressions in this kind of system")

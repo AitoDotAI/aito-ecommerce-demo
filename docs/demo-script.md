@@ -41,6 +41,11 @@ the €135 the win-back emails return: that is a small, synthetic sum.
 
 ---
 
+> **The numbers in sections 1–6 are release 2's; 2b is release 3a's.** Release 3a regenerated the data, so the figures in the
+> other tables move (the Hideout decision on April's data reads 20.0 % → 31.5 %, margin €201.02 → €228.10 per 100
+> showings, not 20.6 % → 37.1 % and €206.67 → €269.17). Re-run the walkthrough on the live env, in a sandbox, and
+> correct the tables before a partner demo.
+
 ## 1. Supply's headlines (30 seconds)
 
 **Click:** the sidebar's **Supply** (or its card on the Overview).
@@ -87,6 +92,28 @@ Trixie Hideout). Until a lever writes May, the view shows April.
 | The decision | "Put it on offer at 10–15 % off": bought when shown 20.6 % → 37.1 % (×1.80) | `_predict purchased` on `impressions` per discount band (`src/discount_what_if.py`); margin per showing (`src/product_decision.py`) |
 | Margin per 100 showings | €206.67 → €269.17 (+30 %); break-even ×1.38 | list price €22.28, cost €12.25, one unit per purchase |
 | Why | 14.2 % (all impressions) × 1.59 (10–15 % off, shop-wide) × 1.73 (this product's own) × 0.95 (Aito's normalising constant) = 37.1 % | the band's `$why`; at 10–15 % it was shown 6 times, at 20 %+ twice |
+
+## 2b. Pricing and the funnel (about 1 minute)
+
+**Click:** `/product/?sku=SKU-PT-0194&month=2026-04` (PetNord Grain Free Daily Dental Treats 80g). The right side
+opens on **Funnel**; **Pricing** is the tab beside it. In the editor, type `1.75` in **List price** (today €1.87).
+
+**Say:** "Every property here moves the funnel. Showings narrow to clicks, clicks to purchases, and a purchase buys
+one, two or three units, so the blocks are tallest first. The money is just the value."
+
+| On screen | Number | Basis |
+|---|---|---|
+| Funnel today | 10.6 showings → 6.8 clicks → 5.6 purchases (4.5 × 1 unit, 0.9 × 2, 0.1 × 3) + 2.5 units re-ordered without a showing = 9.2 units; profit €8.58 | showings: `_estimate showings_index`; clicks and purchases: `_predict clicked`, and `purchased` given `clicked` (`src/product_funnel.py`) |
+| At a list price of €1.75 | clicks 6.8 → 7.3, purchases 5.6 → 6.2, units 9.2 → 10.0, profit €8.58 → €8.14 | more shoppers, a thinner margin: the profit falls |
+| Pricing tab | units 8.0 → 10.0 (+25 %); most profit among the prices it has data for: €1.59 list, €8.27 a month | `_estimate units_index` per price (`src/product_pricing.py`) |
+| Cross-check | units by price 10.0, within 25 % of the funnel's 10.0 | the two routes are independent |
+
+**Caveats to say out loud:** typing a price beyond what the product has sold at (€1.41–€1.90 paid) shows "no data
+here", not a number. Advertising spend is our assumption (none, search €60, banner €180 a month), so a banner on a
+€1.87 product loses money, which is the point of showing it. The click response to price is noisy across products;
+the Pricing tab's curve is the cleaner view of price.
+
+**Recovery:** if the funnel is slow on its first visit, the Aito slices are cold; reload once.
 
 ## 3. The lever: 20 % or more off, and the pushback (about 1½ minutes)
 
