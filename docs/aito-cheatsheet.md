@@ -1754,6 +1754,26 @@ lift and is left out of `$why`.
 
 ---
 
+## Pricing and the funnel (ADRs 0049, 0050), probed on env `release3a`, 2026-10-27
+
+- **`_estimate` a relative target.** `{"from": "monthly_sales", "where": {"product_sku": s, "price_index": 1.05},
+  "estimate": "units_index", "model": "regression"}` answers for one product at a price. `units_index` is units ÷ the
+  product's mean in earlier months (unset in its first month), so the answer times that mean is units. The curve is
+  close to linear in price; ask only inside the prices the product has sold at (the Pricing tab refuses beyond ±5 %).
+- **A decimal is not evidence for `_predict`.** `product_state.list_price_index` (Decimal) in a `_predict clicked`
+  `where` only matches rows whose cents are equal: a price between the price points, or beyond them, returns the
+  base rate with a 200 (0.5517 at 1.2 and at 1.4), and the value that does exist gives noise. `$gte/$lte` in the
+  `where` was accepted and used inconsistently. Give `_predict` a String band (`list_price_band`, "85" … "115"),
+  as for `discount_band`, and answer "no data" for a band the data has never held.
+- **A band no row holds is the base rate, silently.** The same holds for any `_predict` evidence value that never
+  occurs: guard it in the service (`src/product_funnel.py`), the engine will not.
+- **`$why` still multiplies.** `_predict clicked|purchased` with the six state properties and the four listing ones
+  returns the same `product` factor chain as before; the new properties appear as `relatedPropositionLift`s.
+- **The ranked-impressions table is not the showings.** `impressions` holds the ranked showings of one unit;
+  `monthly_sales.showings` counts every showing, and units include multiples and re-orders. A purchase rate from
+  `_predict` therefore gives the level of neither: the funnel takes its level from the product's own units per
+  showing and uses Aito's rate only as a ratio to the product's own average.
+
 ## `AitoClient` method ↔ endpoint cheat reference
 
 | Method | Endpoint | First view that uses it |
