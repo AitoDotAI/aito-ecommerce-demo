@@ -25,12 +25,20 @@ her cart, and the **?** on each card opens the `$why` chain behind its percentag
 
 ![The Shop, as Anna](screenshots/shop-paivi.png)
 
-**The owner's decision.** One product: the chance it is bought when shown
-at each discount band, the margin per 100 showings, and the reasons from
-Aito's `$why`. In a sandbox, the owner pulls the lever and watches
-Anna's Shop react.
+**The owner's decision.** One product, and the funnel it sits in: how often it
+will be shown, how many clicks and purchases follow (a purchase can be two or
+three units, drawn as a taller bar), and the profit, with the month as it was
+counted marked beside Aito's estimate. Change the offer, the list price, the
+stars, the pictures or the advertising, and the funnel and the discount table
+below it move. In a sandbox, the owner pulls the lever and watches Anna's Shop
+react.
 
-![Product: the offer decision](screenshots/product-what-if.png)
+![Product: the funnel and the offer decision](screenshots/product-funnel.png)
+
+**Retention.** Who is about to leave, why, and which win-back email brings them
+back, ranked by the spend at stake.
+
+![Retention: who to reach first](screenshots/retention.png)
 
 **Evidence, on real data.** On UCI Online Retail II: "For buyers with 1–2
 earlier orders, Aito's top suggestion was in their next orders 31 % of the
@@ -55,9 +63,9 @@ cp .env.example .env      # 1. your Aito URL and key (a read-only key is enough)
 ./do dev                  # 3. http://localhost:8500
 ```
 
-Until the release data is promoted onto the demo database's master
-(ADR 0035, the cutover of 2026-10-24), read it from its env:
-`AITO_ENV=observable ./do dev`. After the cutover, plain `./do dev`.
+The demo database's master holds data release 3a (ADR 0049). The app
+waits for its data release (ADR 0035): until master matches
+`data/release-env.json` it answers "data release pending".
 
 `./do help` lists every command. To load the data into a database of
 your own: `./do generate-fixtures`, then `./do reset-data` (see "Your own
@@ -90,7 +98,7 @@ Browser → Next.js (8500) → /api/... → FastAPI (8501) → AitoClient → Ai
 | Section | Views | Aito |
 |---|---|---|
 | **360° intelligent ecommerce: Shop** | Shop: Buy again, Next for their kit, Picked for you, search, cart, product drawer | `_recommend`, `_predict`, `_search` with `$similarity`, `_relate`, `_batch` |
-| **Run the shop** | Overview · Patterns · Product · Supply · Retention | `_relate` with intervals; `_predict purchased` per discount band; `_estimate units_sold`; `_predict churned_in_3_months` |
+| **Run the shop** | Overview · Patterns · Product (Funnel, Pricing, Clicks, Purchases, Offer & margin) · Supply · Retention | `_relate` with intervals; `_predict clicked` / `purchased` per property and list price band; `_estimate units_index` and `showings_index`; `_predict churned_in_3_months` |
 | **Operate** | Product filling · Review triage | `_predict` with `$why`, several fields in parallel |
 | **Evidence** | Business reorders (Real) · Personalised search · Model checks | committed results; `_evaluate` |
 | **For developers** | Query patterns: one minimal call per endpoint | — |
@@ -222,6 +230,14 @@ Read them in order for the design's rationale. All are in
 | 0041 | [One view per job](docs/adr/0041-one-view-per-job.md): the site's sections and redirects |
 | 0042 | [Ask the store](docs/adr/0042-ask-the-store.md): the levers as read-only agent tools |
 | 0043 | [Pull a lever in a sandbox](docs/adr/0043-pull-a-lever-in-a-sandbox.md), and watch the Shop react |
+| 0044 | [What a shop can know about a person](docs/adr/0044-what-a-shop-can-know-about-a-person.md) |
+| 0045 | [One source for showings and sales](docs/adr/0045-one-source-for-showings-and-sales.md) |
+| 0046 | [Catalogue manager](docs/adr/0046-catalogue-manager.md): import, fill, edit, and see the estimates |
+| 0047 | [Chained baskets](docs/adr/0047-chained-baskets.md): each order points to the one before it |
+| 0048 | [Product KPIs by properties](docs/adr/0048-product-kpis-by-properties.md): clicks and purchases, explained and editable |
+| 0049 | [Data release 3: the list price and the listing as state](docs/adr/0049-data-release-3-price-and-listing-state.md) |
+| 0050 | [Pricing tab and the funnel](docs/adr/0050-product-pricing-tab-and-funnel.md): impressions → clicks → purchases → profit |
+| 0051 | [Actions and their outcomes](docs/adr/0051-actions-and-their-outcomes.md) (proposed, release 3b): retention, ads, availability, customer messages |
 
 ---
 
