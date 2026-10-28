@@ -7,116 +7,56 @@
         "name": "Hill's Science Plan Turkey Cat Food 4kg",
         "pet_type": "cat",
         "category": "dry-food",
-        "avg_monthly_units": 65,
-        "last_month_units": 59,
-        "forecast_units": 109,
+        "avg_monthly_units": 62,
+        "last_month_units": 67,
+        "forecast_units": 106,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 108.63866909945536,
+          "estimate": 105.66621561210764,
           "field_label": "units_sold",
           "neighbours": 8,
           "form": "add",
-          "base": 3.0586527676980935,
+          "base": 3.1167777264630203,
           "components": [
             {
               "type": "field",
               "label": "This product",
-              "effect": 62.191347232301894
+              "effect": 58.38322227353695
             },
             {
               "type": "field",
-              "label": "Sold 59 last month",
-              "effect": 42.875
+              "label": "Sold 67 last month",
+              "effect": 43.54166666666667
             },
             {
               "type": "field",
               "label": "Season: spring",
-              "effect": 0.4509351081227274
+              "effect": 0.45111633754550307
             },
             {
               "type": "field",
               "label": "Category: dry food",
-              "effect": 0.36075351240961334
+              "effect": 0.3581891965879176
             },
             {
               "type": "field",
               "label": "Pet type: cat",
-              "effect": -0.06951619970443329
+              "effect": -0.07914627181401798
             },
             {
               "type": "field",
               "label": "Brand: Hill's Science Plan",
-              "effect": 0.04467653509067317
+              "effect": 0.018521906148468024
             },
             {
               "type": "neighbours",
-              "effect": -4.669932999434692,
+              "effect": -5.236302190836397,
               "label": "Similar past months (8 neighbours)"
             },
             {
               "type": "unexplained",
-              "effect": 4.396753142971477,
-              "label": "Not in the why: the estimate vs. the neighbours' average"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0434",
-        "name": "Sheba Senior Tuna Cat Food 400g",
-        "pet_type": "cat",
-        "category": "wet-food",
-        "avg_monthly_units": 39,
-        "last_month_units": 30,
-        "forecast_units": 48,
-        "forecast_p": 0.0,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 47.8777625210529,
-          "field_label": "units_sold",
-          "neighbours": 8,
-          "form": "add",
-          "base": 3.0586527676980935,
-          "components": [
-            {
-              "type": "field",
-              "label": "This product",
-              "effect": 35.6556329465876
-            },
-            {
-              "type": "field",
-              "label": "Sold 30 last month",
-              "effect": 15.649006296733575
-            },
-            {
-              "type": "field",
-              "label": "Season: spring",
-              "effect": 0.4509351081227274
-            },
-            {
-              "type": "field",
-              "label": "Brand: Sheba",
-              "effect": -0.21522715600676715
-            },
-            {
-              "type": "field",
-              "label": "Category: wet food",
-              "effect": 0.15282852714097983
-            },
-            {
-              "type": "field",
-              "label": "Pet type: cat",
-              "effect": -0.06951619970443329
-            },
-            {
-              "type": "neighbours",
-              "effect": -12.370797884780147,
-              "label": "Similar past months (8 neighbours)"
-            },
-            {
-              "type": "unexplained",
-              "effect": 5.566248115261274,
+              "effect": 5.112169967809507,
               "label": "Not in the why: the estimate vs. the neighbours' average"
             }
           ]
@@ -127,111 +67,116 @@
         "name": "Hill's Science Plan Grain Free Chicken Dog Food 150g",
         "pet_type": "dog",
         "category": "wet-food",
-        "avg_monthly_units": 34,
-        "last_month_units": 30,
-        "forecast_units": 46,
+        "avg_monthly_units": 41,
+        "last_month_units": 41,
+        "forecast_units": 66,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 45.6597881107074,
+          "estimate": 65.63001204714521,
           "field_label": "units_sold",
           "neighbours": 8,
           "form": "add",
-          "base": 3.0586527676980935,
+          "base": 3.1167777264630203,
           "components": [
             {
               "type": "field",
               "label": "This product",
-              "effect": 30.94134723230189
+              "effect": 37.88322227353695
             },
             {
               "type": "field",
-              "label": "Sold 30 last month",
-              "effect": 15.649006296733575
+              "label": "Sold 41 last month",
+              "effect": 27.541666666666664
             },
             {
               "type": "field",
               "label": "Season: spring",
-              "effect": 0.4509351081227274
+              "effect": 0.45111633754550307
             },
             {
               "type": "field",
               "label": "Pet type: dog",
-              "effect": -0.21049937630547796
+              "effect": -0.22373451474871994
             },
             {
               "type": "field",
               "label": "Category: wet food",
-              "effect": 0.15282852714097983
+              "effect": 0.17679052989126803
             },
             {
               "type": "field",
               "label": "Brand: Hill's Science Plan",
-              "effect": 0.04467653509067317
+              "effect": 0.018521906148468024
             },
             {
               "type": "neighbours",
-              "effect": -4.427158980075057,
+              "effect": -8.035334556653364,
               "label": "Similar past months (8 neighbours)"
+            },
+            {
+              "type": "unexplained",
+              "effect": 4.700985678295439,
+              "label": "Not in the why: the estimate vs. the neighbours' average"
             }
           ]
         }
       },
       {
-        "sku": "SKU-PT-0117",
-        "name": "Royal Canin Senior Turkey Dog Food 400g",
-        "pet_type": "dog",
+        "sku": "SKU-PT-0434",
+        "name": "Sheba Senior Tuna Cat Food 400g",
+        "pet_type": "cat",
         "category": "wet-food",
-        "avg_monthly_units": 26,
-        "last_month_units": 24,
-        "forecast_units": 29,
+        "avg_monthly_units": 40,
+        "last_month_units": 28,
+        "forecast_units": 46,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 28.89356553593928,
+          "estimate": 45.86669726885688,
           "field_label": "units_sold",
           "neighbours": 8,
           "form": "add",
-          "base": 3.0586527676980935,
+          "base": 3.1167777264630203,
           "components": [
             {
               "type": "field",
               "label": "This product",
-              "effect": 22.608013898968558
+              "effect": 36.88322227353695
             },
             {
               "type": "field",
-              "label": "Sold 24 last month",
-              "effect": 10.626748251748255
+              "label": "Sold 28 last month",
+              "effect": 11.867003367003367
             },
             {
               "type": "field",
               "label": "Season: spring",
-              "effect": 0.4509351081227274
-            },
-            {
-              "type": "field",
-              "label": "Pet type: dog",
-              "effect": -0.21049937630547796
+              "effect": 0.45111633754550307
             },
             {
               "type": "field",
               "label": "Category: wet food",
-              "effect": 0.15282852714097983
+              "effect": 0.17679052989126803
             },
             {
               "type": "field",
-              "label": "Brand: Royal Canin",
-              "effect": 0.003465981786539079
+              "label": "Brand: Sheba",
+              "effect": -0.14150302790595698
+            },
+            {
+              "type": "field",
+              "label": "Pet type: cat",
+              "effect": -0.07914627181401798
             },
             {
               "type": "neighbours",
-              "effect": -7.945377033780111,
+              "effect": -10.183023920293175,
               "label": "Similar past months (8 neighbours)"
             },
             {
               "type": "unexplained",
-              "effect": 0.14879741055971607,
+              "effect": 3.775460254429923,
               "label": "Not in the why: the estimate vs. the neighbours' average"
             }
           ]
@@ -242,51 +187,111 @@
         "name": "PetNord Bacon Treats 200g",
         "pet_type": "dog",
         "category": "treats",
-        "avg_monthly_units": 24,
-        "last_month_units": 24,
-        "forecast_units": 31,
+        "avg_monthly_units": 25,
+        "last_month_units": 21,
+        "forecast_units": 34,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 31.12012117641735,
+          "estimate": 33.69159035988385,
           "field_label": "units_sold",
           "neighbours": 8,
           "form": "add",
-          "base": 3.0586527676980935,
+          "base": 3.1167777264630203,
           "components": [
             {
               "type": "field",
               "label": "This product",
-              "effect": 20.441347232301894
+              "effect": 21.883222273536948
             },
             {
               "type": "field",
-              "label": "Sold 24 last month",
-              "effect": 10.626748251748255
+              "label": "Sold 21 last month",
+              "effect": 6.31586831043353
             },
             {
               "type": "field",
               "label": "Season: spring",
-              "effect": 0.4509351081227274
+              "effect": 0.45111633754550307
             },
             {
               "type": "field",
               "label": "Category: treats",
-              "effect": 0.2459175681703673
+              "effect": 0.2819708675541229
             },
             {
               "type": "field",
               "label": "Pet type: dog",
-              "effect": -0.21049937630547796
+              "effect": -0.22373451474871994
             },
             {
               "type": "field",
               "label": "Brand: PetNord",
-              "effect": -0.049316596981715546
+              "effect": -0.05433138503583654
             },
             {
               "type": "neighbours",
-              "effect": -3.443663778336794,
+              "effect": -0.4863129827687196,
+              "label": "Similar past months (8 neighbours)"
+            },
+            {
+              "type": "unexplained",
+              "effect": 2.407013726904001,
+              "label": "Not in the why: the estimate vs. the neighbours' average"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0100",
+        "name": "Orijen Turkey Dog Food 15kg",
+        "pet_type": "dog",
+        "category": "dry-food",
+        "avg_monthly_units": 24,
+        "last_month_units": 29,
+        "forecast_units": 36,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 36.07526564287057,
+          "field_label": "units_sold",
+          "neighbours": 8,
+          "form": "add",
+          "base": 3.1167777264630203,
+          "components": [
+            {
+              "type": "field",
+              "label": "This product",
+              "effect": 20.883222273536948
+            },
+            {
+              "type": "field",
+              "label": "Sold 29 last month",
+              "effect": 12.545454545454547
+            },
+            {
+              "type": "field",
+              "label": "Season: spring",
+              "effect": 0.45111633754550307
+            },
+            {
+              "type": "field",
+              "label": "Category: dry food",
+              "effect": 0.3581891965879176
+            },
+            {
+              "type": "field",
+              "label": "Pet type: dog",
+              "effect": -0.22373451474871994
+            },
+            {
+              "type": "field",
+              "label": "Brand: Orijen",
+              "effect": -0.05870070978922435
+            },
+            {
+              "type": "neighbours",
+              "effect": -0.997059212179422,
               "label": "Similar past months (8 neighbours)"
             }
           ]
@@ -298,55 +303,110 @@
         "pet_type": "dog",
         "category": "accessories",
         "avg_monthly_units": 23,
-        "last_month_units": 33,
-        "forecast_units": 37,
+        "last_month_units": 32,
+        "forecast_units": 35,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 36.50914182384707,
+          "estimate": 35.40892070332516,
           "field_label": "units_sold",
           "neighbours": 8,
           "form": "add",
-          "base": 3.0586527676980935,
+          "base": 3.1167777264630203,
           "components": [
             {
               "type": "field",
-              "label": "This product",
-              "effect": 20.31634723230189
+              "label": "Sold 32 last month",
+              "effect": 20.130208333333332
             },
             {
               "type": "field",
-              "label": "Sold 33 last month",
-              "effect": 19.04761904761905
+              "label": "This product",
+              "effect": 19.799888940203616
             },
             {
               "type": "field",
               "label": "Category: accessories",
-              "effect": -2.1318667848036386
+              "effect": -2.2132822308399476
             },
             {
               "type": "field",
               "label": "Season: spring",
-              "effect": 0.4509351081227274
+              "effect": 0.45111633754550307
             },
             {
               "type": "field",
               "label": "Pet type: dog",
-              "effect": -0.21049937630547796
+              "effect": -0.22373451474871994
             },
             {
               "type": "field",
               "label": "Brand: Trixie",
-              "effect": -0.15551793527340058
+              "effect": -0.13177846175764135
             },
             {
               "type": "neighbours",
-              "effect": -0.23344507395683095,
+              "effect": -5.520275426874003,
+              "label": "Similar past months (8 neighbours)"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0491",
+        "name": "PetNord Recycled Paper Cat Litter 7kg, unscented",
+        "pet_type": "cat",
+        "category": "litter",
+        "avg_monthly_units": 22,
+        "last_month_units": 57,
+        "forecast_units": 31,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 31.48838136579542,
+          "field_label": "units_sold",
+          "neighbours": 8,
+          "form": "add",
+          "base": 3.1167777264630203,
+          "components": [
+            {
+              "type": "field",
+              "label": "This product",
+              "effect": 19.13322227353695
+            },
+            {
+              "type": "field",
+              "label": "Sold 57 last month",
+              "effect": 16.833333333333332
+            },
+            {
+              "type": "field",
+              "label": "Category: litter",
+              "effect": -5.10944301187681
+            },
+            {
+              "type": "field",
+              "label": "Season: spring",
+              "effect": 0.45111633754550307
+            },
+            {
+              "type": "field",
+              "label": "Pet type: cat",
+              "effect": -0.07914627181401798
+            },
+            {
+              "type": "field",
+              "label": "Brand: PetNord",
+              "effect": -0.05433138503583654
+            },
+            {
+              "type": "neighbours",
+              "effect": -6.501222251784355,
               "label": "Similar past months (8 neighbours)"
             },
             {
               "type": "unexplained",
-              "effect": -3.633083161555348,
+              "effect": 3.698074615427629,
               "label": "Not in the why: the estimate vs. the neighbours' average"
             }
           ]
@@ -358,55 +418,55 @@
         "pet_type": "dog",
         "category": "accessories",
         "avg_monthly_units": 22,
-        "last_month_units": 17,
-        "forecast_units": 20,
+        "last_month_units": 18,
+        "forecast_units": 19,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 20.485550902704357,
+          "estimate": 18.91617674467586,
           "field_label": "units_sold",
           "neighbours": 8,
           "form": "add",
-          "base": 3.0586527676980935,
+          "base": 3.1167777264630203,
           "components": [
             {
               "type": "field",
               "label": "This product",
-              "effect": 19.19134723230189
+              "effect": 18.799888940203616
             },
             {
               "type": "field",
-              "label": "Sold 17 last month",
-              "effect": 4.426767676767679
+              "label": "Sold 18 last month",
+              "effect": 3.8318452380952404
             },
             {
               "type": "field",
               "label": "Category: accessories",
-              "effect": -2.1318667848036386
+              "effect": -2.2132822308399476
             },
             {
               "type": "field",
               "label": "Season: spring",
-              "effect": 0.4509351081227274
+              "effect": 0.45111633754550307
             },
             {
               "type": "field",
               "label": "Pet type: dog",
-              "effect": -0.21049937630547796
+              "effect": -0.22373451474871994
             },
             {
               "type": "field",
               "label": "Brand: PetNord",
-              "effect": -0.049316596981715546
+              "effect": -0.05433138503583654
             },
             {
               "type": "neighbours",
-              "effect": -6.202591455683825,
+              "effect": -7.38263569355748,
               "label": "Similar past months (8 neighbours)"
             },
             {
               "type": "unexplained",
-              "effect": 1.9521223315886225,
+              "effect": 2.5905323265504663,
               "label": "Not in the why: the estimate vs. the neighbours' average"
             }
           ]
@@ -418,55 +478,55 @@
         "pet_type": "dog",
         "category": "accessories",
         "avg_monthly_units": 22,
-        "last_month_units": 23,
-        "forecast_units": 19,
+        "last_month_units": 21,
+        "forecast_units": 22,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 18.97539176705319,
+          "estimate": 21.63705245276137,
           "field_label": "units_sold",
           "neighbours": 8,
           "form": "add",
-          "base": 3.0586527676980935,
+          "base": 3.1167777264630203,
           "components": [
             {
               "type": "field",
               "label": "This product",
-              "effect": 18.774680565635222
+              "effect": 18.674888940203616
             },
             {
               "type": "field",
-              "label": "Sold 23 last month",
-              "effect": 4.844524793388433
+              "label": "Sold 21 last month",
+              "effect": 6.31586831043353
             },
             {
               "type": "field",
               "label": "Category: accessories",
-              "effect": -2.1318667848036386
+              "effect": -2.2132822308399476
             },
             {
               "type": "field",
               "label": "Season: spring",
-              "effect": 0.4509351081227274
+              "effect": 0.45111633754550307
             },
             {
               "type": "field",
               "label": "Pet type: dog",
-              "effect": -0.21049937630547796
+              "effect": -0.22373451474871994
             },
             {
               "type": "field",
               "label": "Brand: Trixie",
-              "effect": -0.15551793527340058
+              "effect": -0.13177846175764135
             },
             {
               "type": "neighbours",
-              "effect": -5.19300363240786,
+              "effect": -4.734570022539537,
               "label": "Similar past months (8 neighbours)"
             },
             {
               "type": "unexplained",
-              "effect": -0.46251373900091153,
+              "effect": 0.3817663680015464,
               "label": "Not in the why: the estimate vs. the neighbours' average"
             }
           ]
@@ -478,290 +538,235 @@
         "pet_type": "dog",
         "category": "accessories",
         "avg_monthly_units": 22,
-        "last_month_units": 17,
-        "forecast_units": 20,
-        "forecast_p": 0.0,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 19.591510185524974,
-          "field_label": "units_sold",
-          "neighbours": 8,
-          "form": "add",
-          "base": 3.0586527676980935,
-          "components": [
-            {
-              "type": "field",
-              "label": "This product",
-              "effect": 18.483013898968554
-            },
-            {
-              "type": "field",
-              "label": "Sold 17 last month",
-              "effect": 4.426767676767679
-            },
-            {
-              "type": "field",
-              "label": "Category: accessories",
-              "effect": -2.1318667848036386
-            },
-            {
-              "type": "field",
-              "label": "Season: spring",
-              "effect": 0.4509351081227274
-            },
-            {
-              "type": "field",
-              "label": "Pet type: dog",
-              "effect": -0.21049937630547796
-            },
-            {
-              "type": "field",
-              "label": "Brand: Trixie",
-              "effect": -0.15551793527340058
-            },
-            {
-              "type": "neighbours",
-              "effect": -8.394185354312338,
-              "label": "Similar past months (8 neighbours)"
-            },
-            {
-              "type": "unexplained",
-              "effect": 4.064210184662777,
-              "label": "Not in the why: the estimate vs. the neighbours' average"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0094",
-        "name": "Orijen Puppy Beef Dog Food 2kg",
-        "pet_type": "dog",
-        "category": "dry-food",
-        "avg_monthly_units": 21,
-        "last_month_units": 14,
+        "last_month_units": 18,
         "forecast_units": 21,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 20.627819191125276,
+          "estimate": 20.53373895798803,
           "field_label": "units_sold",
           "neighbours": 8,
           "form": "add",
-          "base": 3.0586527676980935,
+          "base": 3.1167777264630203,
           "components": [
             {
               "type": "field",
               "label": "This product",
-              "effect": 18.274680565635226
+              "effect": 18.591555606870283
             },
             {
               "type": "field",
-              "label": "Sold 14 last month",
-              "effect": 3.395723966610042
+              "label": "Sold 18 last month",
+              "effect": 3.8318452380952404
+            },
+            {
+              "type": "field",
+              "label": "Category: accessories",
+              "effect": -2.2132822308399476
             },
             {
               "type": "field",
               "label": "Season: spring",
-              "effect": 0.4509351081227274
-            },
-            {
-              "type": "field",
-              "label": "Category: dry food",
-              "effect": 0.36075351240961334
+              "effect": 0.45111633754550307
             },
             {
               "type": "field",
               "label": "Pet type: dog",
-              "effect": -0.21049937630547796
+              "effect": -0.22373451474871994
             },
             {
               "type": "field",
-              "label": "Brand: Orijen",
-              "effect": -0.03170641851323118
+              "label": "Brand: Trixie",
+              "effect": -0.13177846175764135
             },
             {
               "type": "neighbours",
-              "effect": -4.680785202307721,
+              "effect": -6.348530970635064,
               "label": "Similar past months (8 neighbours)"
             },
             {
               "type": "unexplained",
-              "effect": 0.010064267776005664,
+              "effect": 3.4597702269953565,
               "label": "Not in the why: the estimate vs. the neighbours' average"
             }
           ]
         }
       },
       {
-        "sku": "SKU-PT-0491",
-        "name": "PetNord Recycled Paper Cat Litter 7kg, unscented",
-        "pet_type": "cat",
-        "category": "litter",
-        "avg_monthly_units": 20,
-        "last_month_units": 56,
-        "forecast_units": 44,
-        "forecast_p": 0.0,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 43.86855046746331,
-          "field_label": "units_sold",
-          "neighbours": 8,
-          "form": "add",
-          "base": 3.0586527676980935,
-          "components": [
-            {
-              "type": "field",
-              "label": "Sold 56 last month",
-              "effect": 26.958333333333336
-            },
-            {
-              "type": "field",
-              "label": "This product",
-              "effect": 17.274680565635222
-            },
-            {
-              "type": "field",
-              "label": "Category: litter",
-              "effect": -4.832001293982405
-            },
-            {
-              "type": "field",
-              "label": "Season: spring",
-              "effect": 0.4509351081227274
-            },
-            {
-              "type": "field",
-              "label": "Pet type: cat",
-              "effect": -0.06951619970443329
-            },
-            {
-              "type": "field",
-              "label": "Brand: PetNord",
-              "effect": -0.049316596981715546
-            },
-            {
-              "type": "neighbours",
-              "effect": 1.0767827833424848,
-              "label": "Similar past months (8 neighbours)"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0484",
-        "name": "PetNord Clumping Clay Cat Litter 7kg, lavender scent",
-        "pet_type": "cat",
-        "category": "litter",
-        "avg_monthly_units": 20,
-        "last_month_units": 47,
-        "forecast_units": 25,
-        "forecast_p": 0.0,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 25.063458251861544,
-          "field_label": "units_sold",
-          "neighbours": 8,
-          "form": "add",
-          "base": 3.0586527676980935,
-          "components": [
-            {
-              "type": "field",
-              "label": "This product",
-              "effect": 16.899680565635222
-            },
-            {
-              "type": "field",
-              "label": "Sold 47 last month",
-              "effect": 10.416666666666671
-            },
-            {
-              "type": "field",
-              "label": "Category: litter",
-              "effect": -4.832001293982405
-            },
-            {
-              "type": "field",
-              "label": "Season: spring",
-              "effect": 0.4509351081227274
-            },
-            {
-              "type": "field",
-              "label": "Pet type: cat",
-              "effect": -0.06951619970443329
-            },
-            {
-              "type": "field",
-              "label": "Brand: PetNord",
-              "effect": -0.049316596981715546
-            },
-            {
-              "type": "neighbours",
-              "effect": -4.139877718028131,
-              "label": "Similar past months (8 neighbours)"
-            },
-            {
-              "type": "unexplained",
-              "effect": 3.3282349524355155,
-              "label": "Not in the why: the estimate vs. the neighbours' average"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0100",
-        "name": "Orijen Turkey Dog Food 15kg",
+        "sku": "SKU-PT-0086",
+        "name": "Orijen Lamb Dog Food 2kg",
         "pet_type": "dog",
         "category": "dry-food",
         "avg_monthly_units": 20,
-        "last_month_units": 20,
-        "forecast_units": 27,
+        "last_month_units": 19,
+        "forecast_units": 26,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 26.540226240551135,
+          "estimate": 25.61828355184855,
           "field_label": "units_sold",
           "neighbours": 8,
           "form": "add",
-          "base": 3.0586527676980935,
+          "base": 3.1167777264630203,
           "components": [
             {
               "type": "field",
               "label": "This product",
-              "effect": 16.441347232301894
+              "effect": 17.383222273536948
             },
             {
               "type": "field",
-              "label": "Sold 20 last month",
-              "effect": 6.7029761904761935
+              "label": "Sold 19 last month",
+              "effect": 3.980227743271223
             },
             {
               "type": "field",
               "label": "Season: spring",
-              "effect": 0.4509351081227274
+              "effect": 0.45111633754550307
             },
             {
               "type": "field",
               "label": "Category: dry food",
-              "effect": 0.36075351240961334
+              "effect": 0.3581891965879176
             },
             {
               "type": "field",
               "label": "Pet type: dog",
-              "effect": -0.21049937630547796
+              "effect": -0.22373451474871994
             },
             {
               "type": "field",
               "label": "Brand: Orijen",
-              "effect": -0.03170641851323118
+              "effect": -0.05870070978922435
             },
             {
               "type": "neighbours",
-              "effect": -2.831435074177866,
+              "effect": -2.0932072471976415,
               "label": "Similar past months (8 neighbours)"
             },
             {
               "type": "unexplained",
-              "effect": 2.59920229853919,
+              "effect": 2.704392746179522,
+              "label": "Not in the why: the estimate vs. the neighbours' average"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0483",
+        "name": "PetNord Clumping Clay Cat Litter 7kg, unscented",
+        "pet_type": "cat",
+        "category": "litter",
+        "avg_monthly_units": 20,
+        "last_month_units": 64,
+        "forecast_units": 14,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 13.662496208136687,
+          "field_label": "units_sold",
+          "neighbours": 8,
+          "form": "add",
+          "base": 3.1167777264630203,
+          "components": [
+            {
+              "type": "field",
+              "label": "This product",
+              "effect": 17.34155560687028
+            },
+            {
+              "type": "field",
+              "label": "Category: litter",
+              "effect": -5.10944301187681
+            },
+            {
+              "type": "field",
+              "label": "Season: spring",
+              "effect": 0.45111633754550307
+            },
+            {
+              "type": "field",
+              "label": "Pet type: cat",
+              "effect": -0.07914627181401798
+            },
+            {
+              "type": "field",
+              "label": "Brand: PetNord",
+              "effect": -0.05433138503583654
+            },
+            {
+              "type": "field",
+              "label": "Sold 64 last month",
+              "effect": 0.0
+            },
+            {
+              "type": "neighbours",
+              "effect": -2.5481674180276266,
+              "label": "Similar past months (8 neighbours)"
+            },
+            {
+              "type": "unexplained",
+              "effect": 0.5441346240121749,
+              "label": "Not in the why: the estimate vs. the neighbours' average"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0314",
+        "name": "Acana Grain Free Whitefish Cat Food 2kg",
+        "pet_type": "cat",
+        "category": "dry-food",
+        "avg_monthly_units": 20,
+        "last_month_units": 18,
+        "forecast_units": 18,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 18.10262313772455,
+          "field_label": "units_sold",
+          "neighbours": 8,
+          "form": "add",
+          "base": 3.1167777264630203,
+          "components": [
+            {
+              "type": "field",
+              "label": "This product",
+              "effect": 16.883222273536944
+            },
+            {
+              "type": "field",
+              "label": "Sold 18 last month",
+              "effect": 3.8318452380952404
+            },
+            {
+              "type": "field",
+              "label": "Season: spring",
+              "effect": 0.45111633754550307
+            },
+            {
+              "type": "field",
+              "label": "Category: dry food",
+              "effect": 0.3581891965879176
+            },
+            {
+              "type": "field",
+              "label": "Pet type: cat",
+              "effect": -0.07914627181401798
+            },
+            {
+              "type": "field",
+              "label": "Brand: Acana",
+              "effect": 0.05734234803775586
+            },
+            {
+              "type": "neighbours",
+              "effect": -5.737415980718318,
+              "label": "Similar past months (8 neighbours)"
+            },
+            {
+              "type": "unexplained",
+              "effect": -0.7793077300094957,
               "label": "Not in the why: the estimate vs. the neighbours' average"
             }
           ]
@@ -773,470 +778,165 @@
         "pet_type": "cat",
         "category": "dry-food",
         "avg_monthly_units": 20,
-        "last_month_units": 16,
-        "forecast_units": 16,
-        "forecast_p": 0.0,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 15.877517127268835,
-          "field_label": "units_sold",
-          "neighbours": 8,
-          "form": "add",
-          "base": 3.0586527676980935,
-          "components": [
-            {
-              "type": "field",
-              "label": "This product",
-              "effect": 16.441347232301894
-            },
-            {
-              "type": "field",
-              "label": "Sold 16 last month",
-              "effect": 0.7132974086099108
-            },
-            {
-              "type": "field",
-              "label": "Season: spring",
-              "effect": 0.4509351081227274
-            },
-            {
-              "type": "field",
-              "label": "Category: dry food",
-              "effect": 0.36075351240961334
-            },
-            {
-              "type": "field",
-              "label": "Brand: Acana",
-              "effect": 0.07733409663575862
-            },
-            {
-              "type": "field",
-              "label": "Pet type: cat",
-              "effect": -0.06951619970443329
-            },
-            {
-              "type": "neighbours",
-              "effect": -5.155286798804729,
-              "label": "Similar past months (8 neighbours)"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0493",
-        "name": "PetNord Recycled Paper Cat Litter 7kg, lavender scent",
-        "pet_type": "cat",
-        "category": "litter",
-        "avg_monthly_units": 19,
-        "last_month_units": 62,
-        "forecast_units": 57,
-        "forecast_p": 0.0,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 56.69901807538926,
-          "field_label": "units_sold",
-          "neighbours": 8,
-          "form": "add",
-          "base": 3.0586527676980935,
-          "components": [
-            {
-              "type": "field",
-              "label": "Sold 62 last month",
-              "effect": 44.54166666666667
-            },
-            {
-              "type": "field",
-              "label": "This product",
-              "effect": 16.06634723230189
-            },
-            {
-              "type": "field",
-              "label": "Category: litter",
-              "effect": -4.832001293982405
-            },
-            {
-              "type": "field",
-              "label": "Season: spring",
-              "effect": 0.4509351081227274
-            },
-            {
-              "type": "field",
-              "label": "Pet type: cat",
-              "effect": -0.06951619970443329
-            },
-            {
-              "type": "field",
-              "label": "Brand: PetNord",
-              "effect": -0.049316596981715546
-            },
-            {
-              "type": "neighbours",
-              "effect": -2.2776792353514055,
-              "label": "Similar past months (8 neighbours)"
-            },
-            {
-              "type": "unexplained",
-              "effect": -0.1900703733801592,
-              "label": "Not in the why: the estimate vs. the neighbours' average"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0166",
-        "name": "PetNord Puppy Bacon Treats 100g, classic",
-        "pet_type": "dog",
-        "category": "treats",
-        "avg_monthly_units": 19,
-        "last_month_units": 19,
-        "forecast_units": 25,
-        "forecast_p": 0.0,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 25.489050142576076,
-          "field_label": "units_sold",
-          "neighbours": 8,
-          "form": "add",
-          "base": 3.0586527676980935,
-          "components": [
-            {
-              "type": "field",
-              "label": "This product",
-              "effect": 15.941347232301894
-            },
-            {
-              "type": "field",
-              "label": "Sold 19 last month",
-              "effect": 1.9739044168392013
-            },
-            {
-              "type": "field",
-              "label": "Season: spring",
-              "effect": 0.4509351081227274
-            },
-            {
-              "type": "field",
-              "label": "Category: treats",
-              "effect": 0.2459175681703673
-            },
-            {
-              "type": "field",
-              "label": "Pet type: dog",
-              "effect": -0.21049937630547796
-            },
-            {
-              "type": "field",
-              "label": "Brand: PetNord",
-              "effect": -0.049316596981715546
-            },
-            {
-              "type": "neighbours",
-              "effect": 2.446593444237993,
-              "label": "Similar past months (8 neighbours)"
-            },
-            {
-              "type": "unexplained",
-              "effect": 1.6315155784929942,
-              "label": "Not in the why: the estimate vs. the neighbours' average"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0483",
-        "name": "PetNord Clumping Clay Cat Litter 7kg, unscented",
-        "pet_type": "cat",
-        "category": "litter",
-        "avg_monthly_units": 19,
-        "last_month_units": 65,
-        "forecast_units": 23,
-        "forecast_p": 0.0,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 23.071697537441445,
-          "field_label": "units_sold",
-          "neighbours": 8,
-          "form": "add",
-          "base": 3.0586527676980935,
-          "components": [
-            {
-              "type": "field",
-              "label": "This product",
-              "effect": 15.858013898968556
-            },
-            {
-              "type": "field",
-              "label": "Sold 65 last month",
-              "effect": 9.625000000000005
-            },
-            {
-              "type": "field",
-              "label": "Category: litter",
-              "effect": -4.832001293982405
-            },
-            {
-              "type": "field",
-              "label": "Season: spring",
-              "effect": 0.4509351081227274
-            },
-            {
-              "type": "field",
-              "label": "Pet type: cat",
-              "effect": -0.06951619970443329
-            },
-            {
-              "type": "field",
-              "label": "Brand: PetNord",
-              "effect": -0.049316596981715546
-            },
-            {
-              "type": "neighbours",
-              "effect": -0.43133954269458635,
-              "label": "Similar past months (8 neighbours)"
-            },
-            {
-              "type": "unexplained",
-              "effect": -0.5387306039847957,
-              "label": "Not in the why: the estimate vs. the neighbours' average"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0496",
-        "name": "PetNord Bowl, natural wood",
-        "pet_type": "cat",
-        "category": "accessories",
-        "avg_monthly_units": 18,
-        "last_month_units": 21,
-        "forecast_units": 16,
-        "forecast_p": 0.0,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 16.367661844656674,
-          "field_label": "units_sold",
-          "neighbours": 8,
-          "form": "add",
-          "base": 3.0586527676980935,
-          "components": [
-            {
-              "type": "field",
-              "label": "This product",
-              "effect": 15.316347232301888
-            },
-            {
-              "type": "field",
-              "label": "Sold 21 last month",
-              "effect": 3.4921679197995013
-            },
-            {
-              "type": "field",
-              "label": "Category: accessories",
-              "effect": -2.1318667848036386
-            },
-            {
-              "type": "field",
-              "label": "Season: spring",
-              "effect": 0.4509351081227274
-            },
-            {
-              "type": "field",
-              "label": "Pet type: cat",
-              "effect": -0.06951619970443329
-            },
-            {
-              "type": "field",
-              "label": "Brand: PetNord",
-              "effect": -0.049316596981715546
-            },
-            {
-              "type": "neighbours",
-              "effect": -4.364142885416702,
-              "label": "Similar past months (8 neighbours)"
-            },
-            {
-              "type": "unexplained",
-              "effect": 0.6644012836409523,
-              "label": "Not in the why: the estimate vs. the neighbours' average"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0501",
-        "name": "Trixie Bowl, large",
-        "pet_type": "cat",
-        "category": "accessories",
-        "avg_monthly_units": 18,
-        "last_month_units": 13,
-        "forecast_units": 14,
-        "forecast_p": 0.0,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 14.35530349964993,
-          "field_label": "units_sold",
-          "neighbours": 8,
-          "form": "add",
-          "base": 3.0586527676980935,
-          "components": [
-            {
-              "type": "field",
-              "label": "This product",
-              "effect": 15.274680565635222
-            },
-            {
-              "type": "field",
-              "label": "Category: accessories",
-              "effect": -2.1318667848036386
-            },
-            {
-              "type": "field",
-              "label": "Sold 13 last month",
-              "effect": 1.2451461478900505
-            },
-            {
-              "type": "field",
-              "label": "Season: spring",
-              "effect": 0.4509351081227274
-            },
-            {
-              "type": "field",
-              "label": "Brand: Trixie",
-              "effect": -0.15551793527340058
-            },
-            {
-              "type": "field",
-              "label": "Pet type: cat",
-              "effect": -0.06951619970443329
-            },
-            {
-              "type": "neighbours",
-              "effect": -5.657561005672933,
-              "label": "Similar past months (8 neighbours)"
-            },
-            {
-              "type": "unexplained",
-              "effect": 2.340350835758242,
-              "label": "Not in the why: the estimate vs. the neighbours' average"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0490",
-        "name": "PetNord Silica Crystals Cat Litter 7kg, value pack",
-        "pet_type": "cat",
-        "category": "litter",
-        "avg_monthly_units": 18,
-        "last_month_units": 44,
-        "forecast_units": 42,
-        "forecast_p": 0.0,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 41.55012366005054,
-          "field_label": "units_sold",
-          "neighbours": 8,
-          "form": "add",
-          "base": 3.0586527676980935,
-          "components": [
-            {
-              "type": "field",
-              "label": "Sold 44 last month",
-              "effect": 24.375
-            },
-            {
-              "type": "field",
-              "label": "This product",
-              "effect": 15.108013898968556
-            },
-            {
-              "type": "field",
-              "label": "Category: litter",
-              "effect": -4.832001293982405
-            },
-            {
-              "type": "field",
-              "label": "Season: spring",
-              "effect": 0.4509351081227274
-            },
-            {
-              "type": "field",
-              "label": "Pet type: cat",
-              "effect": -0.06951619970443329
-            },
-            {
-              "type": "field",
-              "label": "Brand: PetNord",
-              "effect": -0.049316596981715546
-            },
-            {
-              "type": "neighbours",
-              "effect": 3.3844131001027016,
-              "label": "Similar past months (8 neighbours)"
-            },
-            {
-              "type": "unexplained",
-              "effect": 0.12394287582701935,
-              "label": "Not in the why: the estimate vs. the neighbours' average"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0207",
-        "name": "PetNord Bowl, small",
-        "pet_type": "dog",
-        "category": "accessories",
-        "avg_monthly_units": 18,
         "last_month_units": 18,
-        "forecast_units": 15,
+        "forecast_units": 20,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 15.173635972645613,
+          "estimate": 19.597155560142788,
           "field_label": "units_sold",
           "neighbours": 8,
           "form": "add",
-          "base": 3.0586527676980935,
+          "base": 3.1167777264630203,
           "components": [
             {
               "type": "field",
               "label": "This product",
-              "effect": 14.983013898968556
+              "effect": 16.633222273536944
             },
             {
               "type": "field",
               "label": "Sold 18 last month",
-              "effect": 3.26937645687646
-            },
-            {
-              "type": "field",
-              "label": "Category: accessories",
-              "effect": -2.1318667848036386
+              "effect": 3.8318452380952404
             },
             {
               "type": "field",
               "label": "Season: spring",
-              "effect": 0.4509351081227274
+              "effect": 0.45111633754550307
+            },
+            {
+              "type": "field",
+              "label": "Category: dry food",
+              "effect": 0.3581891965879176
+            },
+            {
+              "type": "field",
+              "label": "Pet type: cat",
+              "effect": -0.07914627181401798
+            },
+            {
+              "type": "field",
+              "label": "Brand: Acana",
+              "effect": 0.05734234803775586
+            },
+            {
+              "type": "neighbours",
+              "effect": -4.772191288309576,
+              "label": "Similar past months (8 neighbours)"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0094",
+        "name": "Orijen Puppy Beef Dog Food 2kg",
+        "pet_type": "dog",
+        "category": "dry-food",
+        "avg_monthly_units": 19,
+        "last_month_units": 10,
+        "forecast_units": 17,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 17.31104926986186,
+          "field_label": "units_sold",
+          "neighbours": 8,
+          "form": "add",
+          "base": 3.1167777264630203,
+          "components": [
+            {
+              "type": "field",
+              "label": "This product",
+              "effect": 16.049888940203612
+            },
+            {
+              "type": "field",
+              "label": "Sold 10 last month",
+              "effect": 1.6364245679794458
+            },
+            {
+              "type": "field",
+              "label": "Season: spring",
+              "effect": 0.45111633754550307
+            },
+            {
+              "type": "field",
+              "label": "Category: dry food",
+              "effect": 0.3581891965879176
             },
             {
               "type": "field",
               "label": "Pet type: dog",
-              "effect": -0.21049937630547796
+              "effect": -0.22373451474871994
+            },
+            {
+              "type": "field",
+              "label": "Brand: Orijen",
+              "effect": -0.05870070978922435
+            },
+            {
+              "type": "neighbours",
+              "effect": -4.018912274379695,
+              "label": "Similar past months (8 neighbours)"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0489",
+        "name": "PetNord Silica Crystals Cat Litter 12kg",
+        "pet_type": "cat",
+        "category": "litter",
+        "avg_monthly_units": 19,
+        "last_month_units": 61,
+        "forecast_units": 15,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 14.620003886075684,
+          "field_label": "units_sold",
+          "neighbours": 8,
+          "form": "add",
+          "base": 3.1167777264630203,
+          "components": [
+            {
+              "type": "field",
+              "label": "This product",
+              "effect": 15.841555606870282
+            },
+            {
+              "type": "field",
+              "label": "Category: litter",
+              "effect": -5.10944301187681
+            },
+            {
+              "type": "field",
+              "label": "Season: spring",
+              "effect": 0.45111633754550307
+            },
+            {
+              "type": "field",
+              "label": "Pet type: cat",
+              "effect": -0.07914627181401798
             },
             {
               "type": "field",
               "label": "Brand: PetNord",
-              "effect": -0.049316596981715546
+              "effect": -0.05433138503583654
+            },
+            {
+              "type": "field",
+              "label": "Sold 61 last month",
+              "effect": 0.0
             },
             {
               "type": "neighbours",
-              "effect": -6.541690681694167,
+              "effect": 1.3750932028166565,
               "label": "Similar past months (8 neighbours)"
             },
             {
               "type": "unexplained",
-              "effect": 2.3450311807647743,
+              "effect": -0.9216183188931115,
               "label": "Not in the why: the estimate vs. the neighbours' average"
             }
           ]
@@ -1247,56 +947,346 @@
         "name": "Trixie Scratching Post",
         "pet_type": "cat",
         "category": "accessories",
-        "avg_monthly_units": 18,
-        "last_month_units": 57,
-        "forecast_units": 13,
+        "avg_monthly_units": 19,
+        "last_month_units": 65,
+        "forecast_units": 44,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 12.683225697546039,
+          "estimate": 44.027742563904255,
           "field_label": "units_sold",
           "neighbours": 8,
           "form": "add",
-          "base": 3.0586527676980935,
+          "base": 3.1167777264630203,
           "components": [
             {
               "type": "field",
+              "label": "Sold 65 last month",
+              "effect": 25.5625
+            },
+            {
+              "type": "field",
               "label": "This product",
-              "effect": 14.566347232301892
+              "effect": 15.549888940203614
             },
             {
               "type": "field",
               "label": "Category: accessories",
-              "effect": -2.1318667848036386
+              "effect": -2.2132822308399476
             },
             {
               "type": "field",
               "label": "Season: spring",
-              "effect": 0.4509351081227274
+              "effect": 0.45111633754550307
             },
             {
               "type": "field",
               "label": "Brand: Trixie",
-              "effect": -0.15551793527340058
+              "effect": -0.13177846175764135
             },
             {
               "type": "field",
               "label": "Pet type: cat",
-              "effect": -0.06951619970443329
-            },
-            {
-              "type": "field",
-              "label": "Sold 57 last month",
-              "effect": 0.0
+              "effect": -0.07914627181401798
             },
             {
               "type": "neighbours",
-              "effect": -3.2374981630287722,
+              "effect": 1.771666524103721,
+              "label": "Similar past months (8 neighbours)"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0207",
+        "name": "PetNord Bowl, small",
+        "pet_type": "dog",
+        "category": "accessories",
+        "avg_monthly_units": 19,
+        "last_month_units": 17,
+        "forecast_units": 15,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 14.86553041152897,
+          "field_label": "units_sold",
+          "neighbours": 8,
+          "form": "add",
+          "base": 3.1167777264630203,
+          "components": [
+            {
+              "type": "field",
+              "label": "This product",
+              "effect": 15.508222273536948
+            },
+            {
+              "type": "field",
+              "label": "Category: accessories",
+              "effect": -2.2132822308399476
+            },
+            {
+              "type": "field",
+              "label": "Sold 17 last month",
+              "effect": 2.093765843765845
+            },
+            {
+              "type": "field",
+              "label": "Season: spring",
+              "effect": 0.45111633754550307
+            },
+            {
+              "type": "field",
+              "label": "Pet type: dog",
+              "effect": -0.22373451474871994
+            },
+            {
+              "type": "field",
+              "label": "Brand: PetNord",
+              "effect": -0.05433138503583654
+            },
+            {
+              "type": "neighbours",
+              "effect": -6.400936181177002,
               "label": "Similar past months (8 neighbours)"
             },
             {
               "type": "unexplained",
-              "effect": 0.20168967223357015,
+              "effect": 2.587932542019159,
+              "label": "Not in the why: the estimate vs. the neighbours' average"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0501",
+        "name": "Trixie Bowl, large",
+        "pet_type": "cat",
+        "category": "accessories",
+        "avg_monthly_units": 19,
+        "last_month_units": 13,
+        "forecast_units": 14,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 13.863116819476371,
+          "field_label": "units_sold",
+          "neighbours": 8,
+          "form": "add",
+          "base": 3.1167777264630203,
+          "components": [
+            {
+              "type": "field",
+              "label": "This product",
+              "effect": 15.508222273536948
+            },
+            {
+              "type": "field",
+              "label": "Sold 13 last month",
+              "effect": 2.271111111111111
+            },
+            {
+              "type": "field",
+              "label": "Category: accessories",
+              "effect": -2.2132822308399476
+            },
+            {
+              "type": "field",
+              "label": "Season: spring",
+              "effect": 0.45111633754550307
+            },
+            {
+              "type": "field",
+              "label": "Brand: Trixie",
+              "effect": -0.13177846175764135
+            },
+            {
+              "type": "field",
+              "label": "Pet type: cat",
+              "effect": -0.07914627181401798
+            },
+            {
+              "type": "neighbours",
+              "effect": -5.059903664768604,
+              "label": "Similar past months (8 neighbours)"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0496",
+        "name": "PetNord Bowl, natural wood",
+        "pet_type": "cat",
+        "category": "accessories",
+        "avg_monthly_units": 18,
+        "last_month_units": 20,
+        "forecast_units": 17,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 17.40272852218724,
+          "field_label": "units_sold",
+          "neighbours": 8,
+          "form": "add",
+          "base": 3.1167777264630203,
+          "components": [
+            {
+              "type": "field",
+              "label": "This product",
+              "effect": 15.341555606870282
+            },
+            {
+              "type": "field",
+              "label": "Sold 20 last month",
+              "effect": 3.8341356918943146
+            },
+            {
+              "type": "field",
+              "label": "Category: accessories",
+              "effect": -2.2132822308399476
+            },
+            {
+              "type": "field",
+              "label": "Season: spring",
+              "effect": 0.45111633754550307
+            },
+            {
+              "type": "field",
+              "label": "Pet type: cat",
+              "effect": -0.07914627181401798
+            },
+            {
+              "type": "field",
+              "label": "Brand: PetNord",
+              "effect": -0.05433138503583654
+            },
+            {
+              "type": "neighbours",
+              "effect": -4.421343164973474,
+              "label": "Similar past months (8 neighbours)"
+            },
+            {
+              "type": "unexplained",
+              "effect": 1.4272462120773959,
+              "label": "Not in the why: the estimate vs. the neighbours' average"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0487",
+        "name": "PetNord Silica Crystals Cat Litter 7kg, lavender scent",
+        "pet_type": "cat",
+        "category": "litter",
+        "avg_monthly_units": 18,
+        "last_month_units": 61,
+        "forecast_units": 13,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 13.460109166577329,
+          "field_label": "units_sold",
+          "neighbours": 8,
+          "form": "add",
+          "base": 3.1167777264630203,
+          "components": [
+            {
+              "type": "field",
+              "label": "This product",
+              "effect": 15.216555606870282
+            },
+            {
+              "type": "field",
+              "label": "Category: litter",
+              "effect": -5.10944301187681
+            },
+            {
+              "type": "field",
+              "label": "Season: spring",
+              "effect": 0.45111633754550307
+            },
+            {
+              "type": "field",
+              "label": "Pet type: cat",
+              "effect": -0.07914627181401798
+            },
+            {
+              "type": "field",
+              "label": "Brand: PetNord",
+              "effect": -0.05433138503583654
+            },
+            {
+              "type": "field",
+              "label": "Sold 61 last month",
+              "effect": 0.0
+            },
+            {
+              "type": "neighbours",
+              "effect": 0.50284636707379,
+              "label": "Similar past months (8 neighbours)"
+            },
+            {
+              "type": "unexplained",
+              "effect": -0.5842662026486014,
+              "label": "Not in the why: the estimate vs. the neighbours' average"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0493",
+        "name": "PetNord Recycled Paper Cat Litter 7kg, lavender scent",
+        "pet_type": "cat",
+        "category": "litter",
+        "avg_monthly_units": 18,
+        "last_month_units": 53,
+        "forecast_units": 39,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 38.64681451883022,
+          "field_label": "units_sold",
+          "neighbours": 8,
+          "form": "add",
+          "base": 3.1167777264630203,
+          "components": [
+            {
+              "type": "field",
+              "label": "Sold 53 last month",
+              "effect": 24.11111111111111
+            },
+            {
+              "type": "field",
+              "label": "This product",
+              "effect": 15.216555606870282
+            },
+            {
+              "type": "field",
+              "label": "Category: litter",
+              "effect": -5.10944301187681
+            },
+            {
+              "type": "field",
+              "label": "Season: spring",
+              "effect": 0.45111633754550307
+            },
+            {
+              "type": "field",
+              "label": "Pet type: cat",
+              "effect": -0.07914627181401798
+            },
+            {
+              "type": "field",
+              "label": "Brand: PetNord",
+              "effect": -0.05433138503583654
+            },
+            {
+              "type": "neighbours",
+              "effect": -0.7583071129125913,
+              "label": "Similar past months (8 neighbours)"
+            },
+            {
+              "type": "unexplained",
+              "effect": 1.7524815184795557,
               "label": "Not in the why: the estimate vs. the neighbours' average"
             }
           ]
@@ -1308,175 +1298,170 @@
         "pet_type": "dog",
         "category": "accessories",
         "avg_monthly_units": 18,
-        "last_month_units": 19,
-        "forecast_units": 16,
+        "last_month_units": 24,
+        "forecast_units": 19,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 15.75937455347578,
+          "estimate": 18.645108015650095,
           "field_label": "units_sold",
           "neighbours": 8,
           "form": "add",
-          "base": 3.0586527676980935,
+          "base": 3.1167777264630203,
           "components": [
             {
               "type": "field",
               "label": "This product",
-              "effect": 14.524680565635222
+              "effect": 15.174888940203614
+            },
+            {
+              "type": "field",
+              "label": "Sold 24 last month",
+              "effect": 5.261574074074076
             },
             {
               "type": "field",
               "label": "Category: accessories",
-              "effect": -2.1318667848036386
-            },
-            {
-              "type": "field",
-              "label": "Sold 19 last month",
-              "effect": 1.9739044168392013
+              "effect": -2.2132822308399476
             },
             {
               "type": "field",
               "label": "Season: spring",
-              "effect": 0.4509351081227274
+              "effect": 0.45111633754550307
             },
             {
               "type": "field",
               "label": "Pet type: dog",
-              "effect": -0.21049937630547796
+              "effect": -0.22373451474871994
             },
             {
               "type": "field",
               "label": "Brand: PetNord",
-              "effect": -0.049316596981715546
+              "effect": -0.05433138503583654
             },
             {
               "type": "neighbours",
-              "effect": -4.416921150710905,
+              "effect": -2.867900932011615,
+              "label": "Similar past months (8 neighbours)"
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0343",
+        "name": "Whiskas Tuna Cat Food 2kg",
+        "pet_type": "cat",
+        "category": "dry-food",
+        "avg_monthly_units": 18,
+        "last_month_units": 7,
+        "forecast_units": 15,
+        "forecast_p": 0.0,
+        "why_explanation": {
+          "kind": "estimate",
+          "estimate": 14.97209515818935,
+          "field_label": "units_sold",
+          "neighbours": 8,
+          "form": "add",
+          "base": 3.1167777264630203,
+          "components": [
+            {
+              "type": "field",
+              "label": "This product",
+              "effect": 15.155949546264216
+            },
+            {
+              "type": "field",
+              "label": "Sold 7 last month",
+              "effect": 0.9888372136539774
+            },
+            {
+              "type": "field",
+              "label": "Season: spring",
+              "effect": 0.45111633754550307
+            },
+            {
+              "type": "field",
+              "label": "Category: dry food",
+              "effect": 0.3581891965879176
+            },
+            {
+              "type": "field",
+              "label": "Brand: Whiskas",
+              "effect": 0.08413101819575404
+            },
+            {
+              "type": "field",
+              "label": "Pet type: cat",
+              "effect": -0.07914627181401798
+            },
+            {
+              "type": "neighbours",
+              "effect": -5.540851072039563,
               "label": "Similar past months (8 neighbours)"
             },
             {
               "type": "unexplained",
-              "effect": 2.559805603982273,
+              "effect": 0.4370914633325427,
               "label": "Not in the why: the estimate vs. the neighbours' average"
             }
           ]
         }
       },
       {
-        "sku": "SKU-PT-0492",
-        "name": "PetNord Recycled Paper Cat Litter 5kg",
-        "pet_type": "cat",
-        "category": "litter",
-        "avg_monthly_units": 17,
-        "last_month_units": 62,
-        "forecast_units": 56,
+        "sku": "SKU-PT-0218",
+        "name": "Trixie Bowl, medium",
+        "pet_type": "dog",
+        "category": "accessories",
+        "avg_monthly_units": 18,
+        "last_month_units": 24,
+        "forecast_units": 18,
         "forecast_p": 0.0,
         "why_explanation": {
           "kind": "estimate",
-          "estimate": 56.40847062515949,
+          "estimate": 18.177261277774836,
           "field_label": "units_sold",
           "neighbours": 8,
           "form": "add",
-          "base": 3.0586527676980935,
+          "base": 3.1167777264630203,
           "components": [
             {
               "type": "field",
-              "label": "Sold 62 last month",
-              "effect": 44.54166666666667
-            },
-            {
-              "type": "field",
               "label": "This product",
-              "effect": 14.399680565635224
+              "effect": 14.424888940203614
             },
             {
               "type": "field",
-              "label": "Category: litter",
-              "effect": -4.832001293982405
+              "label": "Sold 24 last month",
+              "effect": 5.261574074074076
+            },
+            {
+              "type": "field",
+              "label": "Category: accessories",
+              "effect": -2.2132822308399476
             },
             {
               "type": "field",
               "label": "Season: spring",
-              "effect": 0.4509351081227274
+              "effect": 0.45111633754550307
             },
             {
               "type": "field",
-              "label": "Pet type: cat",
-              "effect": -0.06951619970443329
+              "label": "Pet type: dog",
+              "effect": -0.22373451474871994
             },
             {
               "type": "field",
-              "label": "Brand: PetNord",
-              "effect": -0.049316596981715546
+              "label": "Brand: Trixie",
+              "effect": -0.13177846175764135
             },
             {
               "type": "neighbours",
-              "effect": -3.470160475782117,
+              "effect": -2.3194045164369625,
               "label": "Similar past months (8 neighbours)"
             },
             {
               "type": "unexplained",
-              "effect": 2.3785300834874405,
-              "label": "Not in the why: the estimate vs. the neighbours' average"
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0487",
-        "name": "PetNord Silica Crystals Cat Litter 7kg, lavender scent",
-        "pet_type": "cat",
-        "category": "litter",
-        "avg_monthly_units": 17,
-        "last_month_units": 61,
-        "forecast_units": 59,
-        "forecast_p": 0.0,
-        "why_explanation": {
-          "kind": "estimate",
-          "estimate": 59.41024950444208,
-          "field_label": "units_sold",
-          "neighbours": 8,
-          "form": "add",
-          "base": 3.0586527676980935,
-          "components": [
-            {
-              "type": "field",
-              "label": "Sold 61 last month",
-              "effect": 46.083333333333336
-            },
-            {
-              "type": "field",
-              "label": "This product",
-              "effect": 14.066347232301888
-            },
-            {
-              "type": "field",
-              "label": "Category: litter",
-              "effect": -4.832001293982405
-            },
-            {
-              "type": "field",
-              "label": "Season: spring",
-              "effect": 0.4509351081227274
-            },
-            {
-              "type": "field",
-              "label": "Pet type: cat",
-              "effect": -0.06951619970443329
-            },
-            {
-              "type": "field",
-              "label": "Brand: PetNord",
-              "effect": -0.049316596981715546
-            },
-            {
-              "type": "neighbours",
-              "effect": 1.7927099875944317,
-              "label": "Similar past months (8 neighbours)"
-            },
-            {
-              "type": "unexplained",
-              "effect": -1.0908948339398492,
+              "effect": -0.18889607672810627,
               "label": "Not in the why: the estimate vs. the neighbours' average"
             }
           ]
@@ -1488,88 +1473,106 @@
         "season": "summer",
         "pet_type": "",
         "category": "health",
-        "lift": 4.96,
-        "f_on_condition": 274,
-        "p_on_condition": 0.0483,
+        "lift": 4.83,
+        "f_on_condition": 268,
+        "p_on_condition": 0.0469,
         "p_overall": 0.0093
       },
       {
         "season": "summer",
         "pet_type": "",
         "category": "grooming",
-        "lift": 4.63,
-        "f_on_condition": 113,
-        "p_on_condition": 0.0199,
-        "p_overall": 0.0035
+        "lift": 4.65,
+        "f_on_condition": 112,
+        "p_on_condition": 0.0196,
+        "p_overall": 0.0034
+      },
+      {
+        "season": "spring",
+        "pet_type": "",
+        "category": "health",
+        "lift": 0.59,
+        "f_on_condition": 33,
+        "p_on_condition": 0.0028,
+        "p_overall": 0.0093
       },
       {
         "season": "winter",
         "pet_type": "",
         "category": "toys",
-        "lift": 1.24,
-        "f_on_condition": 280,
-        "p_on_condition": 0.0236,
-        "p_overall": 0.0168
+        "lift": 1.25,
+        "f_on_condition": 283,
+        "p_on_condition": 0.0234,
+        "p_overall": 0.0166
       },
       {
         "season": "winter",
         "pet_type": "",
         "category": "treats",
         "lift": 1.21,
-        "f_on_condition": 1006,
-        "p_on_condition": 0.0846,
-        "p_overall": 0.0685
+        "f_on_condition": 938,
+        "p_on_condition": 0.0776,
+        "p_overall": 0.0626
       },
       {
         "season": "summer",
         "pet_type": "",
         "category": "treats",
-        "lift": 0.82,
-        "f_on_condition": 294,
-        "p_on_condition": 0.0518,
-        "p_overall": 0.0685
+        "lift": 0.81,
+        "f_on_condition": 264,
+        "p_on_condition": 0.0462,
+        "p_overall": 0.0626
       },
       {
         "season": "summer",
         "pet_type": "",
         "category": "accessories",
         "lift": 1.07,
-        "f_on_condition": 1284,
-        "p_on_condition": 0.2262,
-        "p_overall": 0.2068
-      },
-      {
-        "season": "summer",
-        "pet_type": "",
-        "category": "dry-food",
-        "lift": 0.94,
-        "f_on_condition": 1254,
-        "p_on_condition": 0.2209,
-        "p_overall": 0.2406
+        "f_on_condition": 1268,
+        "p_on_condition": 0.2218,
+        "p_overall": 0.2027
       },
       {
         "season": "spring",
         "pet_type": "",
         "category": "accessories",
-        "lift": 0.95,
-        "f_on_condition": 2241,
-        "p_on_condition": 0.1934,
-        "p_overall": 0.2068
+        "lift": 0.93,
+        "f_on_condition": 2209,
+        "p_on_condition": 0.1856,
+        "p_overall": 0.2027
+      },
+      {
+        "season": "summer",
+        "pet_type": "",
+        "category": "dry-food",
+        "lift": 0.93,
+        "f_on_condition": 1309,
+        "p_on_condition": 0.229,
+        "p_overall": 0.2525
       },
       {
         "season": "spring",
         "pet_type": "",
-        "category": "wet-food",
-        "lift": 1.04,
-        "f_on_condition": 3047,
-        "p_on_condition": 0.2629,
-        "p_overall": 0.251
+        "category": "dry-food",
+        "lift": 1.05,
+        "f_on_condition": 3183,
+        "p_on_condition": 0.2674,
+        "p_overall": 0.2525
+      },
+      {
+        "season": "autumn",
+        "pet_type": "",
+        "category": "accessories",
+        "lift": 1.05,
+        "f_on_condition": 1666,
+        "p_on_condition": 0.2174,
+        "p_overall": 0.2027
       }
     ],
     "evaluation": {
-      "accuracy": 0.4635,
-      "naive_accuracy": 0.4605,
-      "base_accuracy": 0.1657,
+      "accuracy": 0.4225,
+      "naive_accuracy": 0.424,
+      "base_accuracy": 0.1383,
       "n": 658,
       "method": "Scores Aito predicting each month's sales range (0, 1, 2-3, 4-7, 8-15, 16-31, 32+) from last month's range and the product, not the unit forecast in the table. Time split: trained on every month before 2026-04, tested on 2026-04."
     },
@@ -1579,7 +1582,7 @@
         "from": "monthly_sales",
         "where": {
           "product_sku": "SKU-PT-0287",
-          "units_last_month": 59,
+          "units_last_month": 67,
           "pet_type": "cat",
           "category": "dry-food",
           "brand": "Hill's Science Plan",
@@ -1592,36 +1595,36 @@
         ]
       }
     },
-    "last_response_ms": 11026
+    "last_response_ms": 17149
   },
   "timings": [
     [
       "_search",
-      118.11
+      116.51
     ],
     [
       "_search",
-      118.55
+      134.07
     ],
     [
       "_search",
-      90.23
+      141.07
     ],
     [
       "_search",
-      5.49
+      6.5
     ],
     [
       "_search",
-      15.48
+      11.15
     ],
     [
       "_evaluate",
-      8463.73
+      10253.33
     ],
     [
       "_search",
-      3.03
+      1.72
     ]
   ]
 }
