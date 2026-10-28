@@ -1053,6 +1053,7 @@ export interface ProductFunnel {
   now: Funnel; asked: Funnel; changed: string[];
   check_units: number | null; check_gap: number | null; check_ok: boolean | null;
   last_month: { showings?: number; units?: number };
+  notes: string[];
   actual: ActualMonth | null;
   showings_support: number; ad_spend_assumed: Record<string, number>;
   last_query: { endpoint: string; body: Record<string, unknown> };

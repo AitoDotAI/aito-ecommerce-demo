@@ -139,9 +139,17 @@ def test_more_purchased_showings_than_units_sold_is_refused():
         get_product_funnel(FakeAito(sales=[{**s, "units_sold": 1} for s in SALES]), "SKU-1", "2026-05")
 
 
-def test_a_product_that_sold_but_never_from_a_ranked_showing_is_refused():
+def test_a_product_with_no_ranked_purchase_keeps_its_own_conversion_and_says_so():
+    fake = FakeAito(counts={"impressions": (20, 8, 0), "unranked_showings": (20, 8, 8)})
+
+    funnel = get_product_funnel(fake, "SKU-1", "2026-05", {"image_count": "4+"})      # pictures would lift the conversion
+
+    assert funnel.asked.purchases == funnel.now.purchases and "its conversion is its own" in funnel.notes[0]
+
+
+def test_a_product_with_no_click_or_purchase_anywhere_is_refused():
     with pytest.raises(Exception, match="no rate of its own"):
-        get_product_funnel(FakeAito(counts={"impressions": (20, 8, 0), "unranked_showings": (20, 8, 8)}), "SKU-1", "2026-05")
+        get_product_funnel(FakeAito(counts={"impressions": (20, 0, 0), "unranked_showings": (20, 0, 0)}), "SKU-1", "2026-05")
 
 
 def test_a_product_that_never_sold_shows_a_funnel_of_zero_purchases():
@@ -178,3 +186,12 @@ def test_the_months_own_funnel_is_counted_beside_the_estimate():
 
 def test_a_month_with_no_sales_row_has_no_actual_to_set_the_estimate_against():
     assert get_product_funnel(FakeAito(), "SKU-1", "2026-05").actual is None
+
+
+def test_a_rate_scaled_up_from_few_ranked_showings_stays_a_probability():
+    # 2 of 35 ranked showings clicked, 28 of 40 showings overall: a ratio of 6 would turn Aito's 0.40 into 2.4.
+    fake = FakeAito(counts={"impressions": (35, 2, 1), "unranked_showings": (5, 26, 1)})
+
+    funnel = get_product_funnel(fake, "SKU-1", "2026-05")
+
+    assert 0 < funnel.now.ctr < 1 and funnel.now.purchases <= funnel.now.clicks <= funnel.now.impressions

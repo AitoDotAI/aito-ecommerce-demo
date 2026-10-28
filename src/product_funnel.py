@@ -10,8 +10,8 @@ changes one (the offer, the list price, the stars, the pictures, the description
 - purchases: clicks × `_predict purchased` on the same properties given `clicked: true`, so a purchase is a
   click that went on (the data is monotone: purchased ⇒ clicked) and never exceeds the clicks;
 - Aito learns both over the ranked showings only. The product's own history carries them to all its showings:
-  the click rate by the ratio of its own rate over all showings to the ranked one, the conversion likewise in
-  odds, so it stays below 1. Aito says how the properties move the chance, the product's history its level;
+  both rates are moved in odds from the ranked showings' level to its own, so they stay below 1. Aito says
+  how the properties move the chance, the product's history its level;
 - a purchase buys 1, 2 or 3 units, in the shares the product's own order lines have (`sizes`, tallest first:
   in the page the width is purchases, the height the units each buys). Units it also sells without a showing
   (a re-order from the order history) come to `other_units` a month, the product's own and not moved by its
@@ -95,6 +95,7 @@ class ProductFunnel:
     check_gap: float | None     # (funnel units − check units) ÷ check units
     check_ok: bool | None
     last_month: dict            # what happened in `month`: showings, units
+    notes: list[str]            # steps Aito's properties cannot move for this product, and why
     actual: ActualMonth | None  # the month's own funnel, counted; none when it has no sales row yet
     showings_support: int       # past product-months the showings estimate rests on
     ad_spend_assumed: dict[str, float]
@@ -160,7 +161,7 @@ def get_product_funnel(client: AitoClient, sku: str, month: str = LATEST_MONTH,
         own_ctr=round(history.ctr, 4), own_conversion=round(history.conversion, 4), no_data=no_data,
         unit_cost_eur=round(unit_cost, 2), now=now, asked=asked, changed=sorted(changes), check_units=None if check_units is None else round(check_units, 2),
         check_gap=None if check_gap is None else round(check_gap, 3), check_ok=check_ok,
-        actual=None if this_month is None else _actual(client, state, this_month, unit_cost),
+        notes=_notes(history), actual=None if this_month is None else _actual(client, state, this_month, unit_cost),
         last_month={} if this_month is None else {"showings": this_month["showings"], "units": this_month["units_sold"]},
         showings_support=len(earlier), ad_spend_assumed=AD_SPEND_EUR,
         last_query={"endpoint": "_estimate", "body": showings_body(sku, band, ad)})
@@ -211,10 +212,11 @@ class History:
     ctr: float
     purchase_rate: float
     conversion: float           # purchased ÷ clicked
-    ranked_ctr: float
-    ranked_conversion: float
+    ranked_ctr: float | None            # None when no ranked showing of the product was clicked / purchased:
+    ranked_conversion: float | None     # Aito has nothing of the product's own to scale
     size_shares: dict[int, float]       # share of the product's order lines buying 1, 2, 3 units
     other_units: float                  # units a month sold without a showing
+    never_sold: bool = False            # no units in any month: every step is 0
 
 
 QUANTITIES = (1, 2, 3)      # the most a line buys in the data
@@ -231,10 +233,10 @@ def _history(client: AitoClient, sku: str, sales: list[dict]) -> History:
     shown, clicked, purchased = r_shown + u_shown, r_clicked + u_clicked, r_purchased + u_purchased
     units = sum(r["units_sold"] for r in sales)
     if not units:
-        return History(0.0, 0.0, 0.0, 1.0, 1.0, {1: 1.0}, 0.0)     # never sold: the funnel shows no purchases
-    if not (r_shown and r_clicked and r_purchased and purchased):
-        raise AitoError(f"{sku} sold {units} units but has {r_shown} ranked showings, {r_clicked} clicked and "
-                        f"{r_purchased} purchased: no rate of its own to scale the funnel by")
+        return History(0.0, 0.0, 0.0, None, None, {1: 1.0}, 0.0, never_sold=True)     # the funnel shows no purchases
+    if not (shown and clicked and purchased):
+        raise AitoError(f"{sku} sold {units} units but has {shown} showings, {clicked} clicked and "
+                        f"{purchased} purchased: no rate of its own to scale the funnel by")
     if sum(by_qty) != n_lines:
         raise AitoError(f"{sku} has {n_lines} order lines but {sum(by_qty)} of them buy {QUANTITIES} units")
     mean_qty = sum(q * n for q, n in zip(QUANTITIES, by_qty)) / n_lines
@@ -242,14 +244,28 @@ def _history(client: AitoClient, sku: str, sales: list[dict]) -> History:
     if other < -0.5:
         raise AitoError(f"{sku}: {purchased} purchased showings at {mean_qty:.2f} units are more than the {units} units sold")
     return History(ctr=clicked / shown, purchase_rate=purchased / shown, conversion=purchased / clicked,
-                   ranked_ctr=r_clicked / r_shown, ranked_conversion=r_purchased / r_clicked,
+                   ranked_ctr=r_clicked / r_shown if r_clicked else None,
+                   ranked_conversion=r_purchased / r_clicked if r_purchased else None,
                    size_shares={q: n / n_lines for q, n in zip(QUANTITIES, by_qty) if n},
                    other_units=max(other, 0.0) / len(sales))
 
 
+def _notes(history: History) -> list[str]:
+    notes = []
+    if history.never_sold:
+        return notes
+    if history.ranked_ctr is None:
+        notes.append("None of this product's ranked showings was clicked, so Aito has nothing of its own to scale: "
+                     "its click rate is its own, and changing a property does not move it.")
+    if history.ranked_conversion is None:
+        notes.append("None of this product's ranked clicks became a purchase (it sells through checkout and re-orders), "
+                     "so its conversion is its own, and changing a property does not move it.")
+    return notes
+
+
 def _carry(aito: float, ranked: float, own: float) -> float:
-    """Aito's conversion for the properties, moved from the ranked showings' level to the product's own, in
-    odds so the result stays inside (0, 1). A conversion of exactly 0 or 1 has no odds and is kept as it is."""
+    """Aito's rate for the properties (a click rate or a conversion), moved from the ranked showings' level to
+    the product's own, in odds so the result stays inside (0, 1). A conversion of exactly 0 or 1 has no odds and is kept as it is."""
     if not (0 < aito < 1 and 0 < ranked < 1 and 0 < own < 1):
         return aito
     odds = own / (1 - own) * (aito / (1 - aito)) / (ranked / (1 - ranked))
@@ -267,8 +283,11 @@ def _funnel(client: AitoClient, sku: str, month: str, changes: dict[str, object]
     showings_index = max(float(answer["estimate"]), 0.0)
     impressions = mean_showings * showings_index
     # Aito's rates are over ranked showings; the product's own history carries them to all its showings.
-    ctr = kpis.estimates["clicked"].p * history.ctr / history.ranked_ctr
-    conversion = _carry(_conversion(client, product, state, changes), history.ranked_conversion, history.conversion)
+    # With no ranked click (or purchase) of its own, Aito's rate has nothing to be scaled by: the product's own
+    # rate stands, and a property the owner changes does not move that step (ProductFunnel.notes says so).
+    ctr = history.ctr if history.ranked_ctr is None else _carry(kpis.estimates["clicked"].p, history.ranked_ctr, history.ctr)
+    conversion = history.conversion if history.ranked_conversion is None else _carry(
+        _conversion(client, product, state, changes), history.ranked_conversion, history.conversion)
     rate = ctr * conversion
     list_price = reference * float(_property(changes, state, "list_price_index"))
     offer = _offer_pct(state, band)
