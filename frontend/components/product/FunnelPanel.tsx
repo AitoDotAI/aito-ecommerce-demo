@@ -104,6 +104,7 @@ export default function FunnelPanel({ funnel, loading }: { funnel: ProductFunnel
           {" "}{actual.units} units. The estimate is a typical month for the product&apos;s properties, so one month lands above or below it. </>}
         Showings estimated from {funnel.showings_support} earlier months.
       </div>
+      {funnel.notes.map((note) => <div key={note} role="status" className="card-sub" style={{ marginTop: 6 }}>{note}</div>)}
       {funnel.no_data && <div role="status" className="card-sub" style={{ marginTop: 6, color: "var(--red)" }}>{funnel.no_data}</div>}
       {funnel.check_units !== null && (
         <div role="status" className="card-sub" style={{ marginTop: 6, color: funnel.check_ok ? undefined : "var(--red)" }}>
