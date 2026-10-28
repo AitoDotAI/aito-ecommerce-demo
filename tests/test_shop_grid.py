@@ -227,3 +227,14 @@ def test_a_database_without_chained_baskets_says_how_to_add_them():
 
     with pytest.raises(AitoError, match="add_chained_baskets"):
         get_shop_grid(fake, "helena", "2026-04", [], recent="path")
+
+
+def test_the_grid_asks_aito_for_sixteen_candidates_to_fill_twelve_cards():
+    fake = FakeAito([product(f"SKU-{i}", 0.5 - i / 100, name=f"Name {i}") for i in range(30)])
+    seen = []
+    ask = fake.recommend
+    fake.recommend = lambda *args, **kw: (seen.append(kw["limit"]), ask(*args, **kw))[1]
+
+    grid = get_shop_grid(fake, "helena", "2026-04", [])
+
+    assert seen == [16] and len(grid.items) == 12
