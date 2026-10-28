@@ -1765,6 +1765,12 @@ lift and is left out of `$why`.
   base rate with a 200 (0.5517 at 1.2 and at 1.4), and the value that does exist gives noise. `$gte/$lte` in the
   `where` was accepted and used inconsistently. Give `_predict` a String band (`list_price_band`, "85" … "115"),
   as for `discount_band`, and answer "no data" for a band the data has never held.
+- **`{"$numeric": x}` did not help on that field** (probed 2026-10-28, v2, shared master). On `_predict clicked` with
+  `product_state.list_price_index`, a Decimal reached through the `impressions.product_state` link, `$numeric` gave the
+  same $p as the exact value in all eight pairs tried (0.85 → 0.2855, 1.0 → 0.3147, 1.05 → 0.2529), and 1.07, inside the
+  range with no row, still gave the base rate (0.3082). The documented `$numeric` ("Fuzzy numeric matching", api-docs
+  improving-inference-v2) is shown on a direct column; whether a linked path or the `table` type drops it is an open
+  aito-core question (raised with aito-core-2, which will ticket a booktest). Until it is answered, use the String band.
 - **A band no row holds is the base rate, silently.** The same holds for any `_predict` evidence value that never
   occurs: guard it in the service (`src/product_funnel.py`), the engine will not.
 - **`$why` still multiplies.** `_predict clicked|purchased` with the six state properties and the four listing ones
