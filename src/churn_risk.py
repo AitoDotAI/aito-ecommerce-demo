@@ -81,9 +81,11 @@ def predict_body(evidence: dict, *, with_why: bool = True) -> dict:
 
 
 def latest_order_rows(client: AitoClient) -> list[tuple[dict, dict]]:
-    """(customer, their row in the month of their latest order) per active customer."""
-    active = {c["customer_id"]: c for c in client.search("customers", where={"churned": False},
-                                                          limit=10_000)["hits"]}
+    """(customer, their row in the month of their latest order) per active customer.
+    Active means ordered and not churned: a customer who never ordered has no latest order, and is
+    `churned: false` only because the label counts from the last order."""
+    active = {c["customer_id"]: c for c in client.search(
+        "customers", where={"churned": False, "last_order_month": {"$exists": True}}, limit=10_000)["hits"]}
     recent = read_all(client, "customer_months", where={"month": {"$gt": LABEL_KNOWN_UNTIL}})
     rows = {r["customer_id"]: r for r in recent
             if r["customer_id"] in active and r["month"] == active[r["customer_id"]]["last_order_month"]}
