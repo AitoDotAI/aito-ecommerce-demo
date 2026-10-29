@@ -9,12 +9,12 @@ makes best, not whether the actions work in a real shop.
 
 | Policy | Mean regret per customer (generator's expected net, €) |
 |:--|--:|
-| Aito's ranking (top action) | 0.97 |
-| Always email | 9.19 |
-| Never act | 10.33 |
+| Aito's ranking (top action) | 0.45 |
+| Always email | 9.36 |
+| Never act | 10.72 |
 
-Aito's top action is the generator's best in 72 % of customers (seven candidates), and its regret
-is a tenth of the best single action's. Earlier runs on the way: 54 % and €2.93 with the crossed columns
+Aito's top action is the generator's best in 81 % of customers (seven candidates), and its regret
+is a twentieth of the best single action's (on the data with the churn tells, ADR 0039's amendment; 72 % and €0.97 before it). Earlier runs on the way: 54 % and €2.93 with the crossed columns
 and a shop that rarely tried an action where it does nothing; 48 % and €3.03 with a little more variety.
 
 What it takes, found by running it:
