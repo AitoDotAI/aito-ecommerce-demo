@@ -29,7 +29,9 @@ ACTIONS = ("none", "email", "discount", "voucher", "ad", "apology")
 EMAIL_COST_EUR = 0.50
 AD_COST_EUR = 1.20
 DISCOUNT_PCT = 10
-APOLOGY_VOUCHER_EUR = 5
+# The credit an apology carries, paid on an order. Not a voucher: `voucher_eur` stays 0, so the
+# evidence of apologies (given where there was an issue) is not read as evidence of €5 vouchers.
+APOLOGY_CREDIT_EUR = 5
 
 RECENCY_BUCKETS = ("0-90d", "90-180d", "180d+")
 # What the customer does in 30 days with no action at all, by recency (visit, click | visit, order | click).
@@ -64,6 +66,15 @@ class CustomerAction:
     purchased_30d: bool
     spend_30d_eur: float
     net_30d_eur: float              # spend − cost: what the action was worth in that row
+    # The action crossed with each context column ("email|responded"). Aito adds
+    # evidence column by column, so an action that works in one context and not in
+    # another is only visible to it through these.
+    action_x_recency_bucket: str = ""
+    action_x_spend_band: str = ""
+    action_x_offer_buyer: str = ""
+    action_x_open_issue: str = ""
+    action_x_email_history: str = ""
+    action_x_tracking_consent: str = ""
 
 
 def _band(share: float, edges: tuple[float, float], names: tuple[str, str, str]) -> str:
@@ -101,14 +112,15 @@ def _lifts(action: str, voucher_eur: int, ctx: dict) -> tuple[float, float, floa
 
 def _action_weights(ctx: dict) -> list[float]:
     """The shop picks partly by rule and partly at random: every action
-    occurs in every context, so none is only ever seen where it is expected."""
+    occurs in every context, often enough to learn where it does not work. A shop
+    that only ever apologised to unhappy customers could not tell what an apology does to the rest."""
     weights = {"none": 0.30, "email": 0.25, "discount": 0.15, "voucher": 0.12, "ad": 0.10, "apology": 0.08}
     if ctx["open_issue"] != "none":
         weights["apology"] *= 5
     else:
-        weights["apology"] *= 0.15
+        weights["apology"] *= 0.6
     if ctx["tracking_consent"] == "no":
-        weights["ad"] *= 0.15
+        weights["ad"] *= 0.5
     if ctx["email_history"] == "ignored":
         weights["email"] *= 0.6
     if ctx["offer_buyer"] == "mostly":
@@ -219,9 +231,13 @@ def _next_month(month: str) -> str:
     return f"{year + number // 12:04d}-{number % 12 + 1:02d}"
 
 
+def crossed(action: str, context: dict) -> dict[str, str]:
+    return {f"action_x_{field}": f"{action}|{value}" for field, value in context.items()}
+
+
 def _row(rng, customer, month: str, ctx: dict, number: int) -> CustomerAction:
     action = rng.choices(ACTIONS, weights=_action_weights(ctx))[0]
-    voucher_eur = rng.choice((5, 10)) if action == "voucher" else APOLOGY_VOUCHER_EUR if action == "apology" else 0
+    voucher_eur = rng.choice((5, 10)) if action == "voucher" else 0
     discount_pct = DISCOUNT_PCT if action == "discount" else 0
     visit_x, click_x, order_x = _lifts(action, voucher_eur, ctx)
     visit_p, click_p, order_p = BASE_CHAIN[ctx["recency_bucket"]]
@@ -236,9 +252,9 @@ def _row(rng, customer, month: str, ctx: dict, number: int) -> CustomerAction:
     cost = {"none": 0.0, "email": EMAIL_COST_EUR, "ad": AD_COST_EUR,
             "discount": round(spend * DISCOUNT_PCT / 100, 2),
             "voucher": float(voucher_eur) if purchased else 0.0,
-            "apology": EMAIL_COST_EUR + (APOLOGY_VOUCHER_EUR if purchased else 0.0)}[action]
+            "apology": EMAIL_COST_EUR + (APOLOGY_CREDIT_EUR if purchased else 0.0)}[action]
     return CustomerAction(
-        action_id=f"ACT-{number:06d}", customer_id=customer.customer_id, month=month, **ctx,
+        action_id=f"ACT-{number:06d}", customer_id=customer.customer_id, month=month, **ctx, **crossed(action, ctx),
         action=action, discount_pct=str(discount_pct), voucher_eur=str(voucher_eur), cost_eur=round(cost, 2),
         visited_30d=visited, clicked_30d=clicked, purchased_7d=purchased_7d, purchased_30d=purchased,
         spend_30d_eur=spend, net_30d_eur=round(spend - cost, 2))

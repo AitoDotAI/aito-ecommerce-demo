@@ -30,7 +30,7 @@ from src.catalogue_reads import read_all
 EMAIL_COST_EUR = 0.50
 AD_COST_EUR = 1.20
 DISCOUNT_PCT = 10
-APOLOGY_VOUCHER_EUR = 5
+APOLOGY_CREDIT_EUR = 5
 BATCH_SIZE = 50
 
 # The values the table holds. A value it never saw makes Aito answer with the base
@@ -51,10 +51,11 @@ class Candidate:
     label: str
     discount_pct: int = 0
     voucher_eur: int = 0
+    credit_eur: int = 0            # an apology's credit: paid on an order, but not a voucher in the data
     sent_cost_eur: float = 0.0     # paid when it goes out
 
     def cost_on_order(self, order_value_eur: float) -> float:
-        return self.voucher_eur + order_value_eur * self.discount_pct / 100
+        return self.voucher_eur + self.credit_eur + order_value_eur * self.discount_pct / 100
 
 
 CANDIDATES = (
@@ -64,7 +65,7 @@ CANDIDATES = (
     Candidate("voucher", "€5 voucher", voucher_eur=5),
     Candidate("voucher", "€10 voucher", voucher_eur=10),
     Candidate("ad", "Personalised ad", sent_cost_eur=AD_COST_EUR),
-    Candidate("apology", f"Apology and €{APOLOGY_VOUCHER_EUR} voucher", voucher_eur=APOLOGY_VOUCHER_EUR,
+    Candidate("apology", f"Apology and €{APOLOGY_CREDIT_EUR} credit", credit_eur=APOLOGY_CREDIT_EUR,
               sent_cost_eur=EMAIL_COST_EUR),
 )
 
@@ -127,7 +128,9 @@ def _order_values(client: AitoClient, bands: set[str]) -> dict[str, float]:
 
 
 def _predict_body(context: dict, cand: Candidate, outcome: str) -> dict:
-    where = {**context, "action": cand.action, "discount_pct": str(cand.discount_pct), "voucher_eur": str(cand.voucher_eur)}
+    crossed = {f"action_x_{field}": f"{cand.action}|{value}" for field, value in context.items()}
+    where = {**context, **crossed, "action": cand.action,
+             "discount_pct": str(cand.discount_pct), "voucher_eur": str(cand.voucher_eur)}
     return {"from": "customer_actions", "where": where, "predict": outcome, "limit": 2, "select": ["$p", "feature"]}
 
 

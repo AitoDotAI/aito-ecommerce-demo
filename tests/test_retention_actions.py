@@ -47,7 +47,7 @@ class ActionsAito:
 
 
 RATES = {("none", 0): 0.10, ("email", 0): 0.10, ("discount", 0): 0.30, ("voucher", 5): 0.12, ("voucher", 10): 0.14,
-         ("ad", 0): 0.10, ("apology", 5): 0.10}
+         ("ad", 0): 0.10, ("apology", 0): 0.10}
 
 
 def test_a_discount_that_lifts_orders_from_ten_to_thirty_percent_is_the_best_action():
@@ -110,6 +110,6 @@ def test_a_customer_without_a_context_row_fails_loudly():
 
 def test_the_costs_are_the_ones_the_data_was_generated_with():
     assert (retention_actions.EMAIL_COST_EUR, retention_actions.AD_COST_EUR, retention_actions.DISCOUNT_PCT,
-            retention_actions.APOLOGY_VOUCHER_EUR) == (generator.EMAIL_COST_EUR, generator.AD_COST_EUR,
-                                                       generator.DISCOUNT_PCT, generator.APOLOGY_VOUCHER_EUR)
+            retention_actions.APOLOGY_CREDIT_EUR) == (generator.EMAIL_COST_EUR, generator.AD_COST_EUR,
+                                                       generator.DISCOUNT_PCT, generator.APOLOGY_CREDIT_EUR)
     assert {c.action for c in CANDIDATES} == set(generator.ACTIONS)

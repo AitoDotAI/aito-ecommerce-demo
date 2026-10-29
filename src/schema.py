@@ -476,6 +476,11 @@ SCHEMAS: dict[str, dict] = {
             "purchased_30d":    {"type": "Boolean", "nullable": False},
             "spend_30d_eur":    {"type": "Decimal", "nullable": False},
             "net_30d_eur":      {"type": "Decimal", "nullable": False},
+            # The action crossed with each context column ("email|responded"): Aito adds evidence
+            # column by column, so an action that works in one context and not in another is
+            # only visible to it through these.
+            **{f"action_x_{field}": {"type": "String", "nullable": False} for field in (
+                "recency_bucket", "spend_band", "offer_buyer", "open_issue", "email_history", "tracking_consent")},
         },
     },
     # 6d. action_contexts — each customer as the shop reads them when it next chooses an
