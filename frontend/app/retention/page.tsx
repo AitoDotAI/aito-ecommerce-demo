@@ -75,11 +75,12 @@ export default function RetentionPage() {
               <AtRiskTable rows={data.at_risk} />
             </div>
             <div className="card">
-              <div className="card-title">Tells · what customers who left had been through</div>
+              <div className="card-title">Tells · what customers had been through before they stopped</div>
               <ChurnTells tells={data.tells} />
               <div className="card-sub" style={{ marginTop: 10 }}>
-                Observed, not predicted: NPS, reviews, returns and late deliveries of customers who have gone, against
-                customers who ordered as often. A tell that shows no effect is shown as that.
+                Observed, not predicted: among customers who had just ordered, those with an NPS detractor answer, a
+                poor review, a return or a late delivery in the last three months, against those without. A tell that
+                shows no effect is shown as that.
               </div>
             </div>
             <div className="card">

@@ -1,7 +1,7 @@
-"""Churn tells: the share of customers with each tell who churned, and which listed customers have which.
+"""Churn tells: among customers who had just ordered, the churn after a tell against the churn without one.
 
-A fake client holds a handful of customers, orders and flagged rows, so the joins
-(order lines through orders to customers) are checked, not Aito.
+A fake client holds a small churn panel and flagged rows, so the joins (order lines through
+orders to a month, a tell's three-month window, the "had just ordered" restriction) are checked, not Aito.
 """
 
 from __future__ import annotations
@@ -10,56 +10,60 @@ import pytest
 
 from src.churn_tells import TELLS, get_churn_tells
 
-# C1–C4 churned. C1–C5 ordered once (a band that churned 80 %), C6–C10 three times (none churned).
-CUSTOMERS = [{"customer_id": f"C{i}", "churned": i <= 4, "total_orders": 1 if i <= 5 else 3} for i in range(1, 11)]
-ORDERS = [{"order_id": f"O{i}", "customer_id": f"C{i}"} for i in range(1, 11)]
+# Months 2026-01 .. 2026-04 for customers C1–C5; the label is unknown (None) for 2026-04. C5 never ordered.
+PANEL = []
+for cid, bought, label in [("C1", [1, 1, 1, 1], True), ("C2", [1, 1, 1, 1], False), ("C3", [1, 0, 0, 0], False),
+                           ("C4", [1, 1, 1, 1], False), ("C5", [0, 0, 0, 0], True)]:
+    for i, month in enumerate(["2026-01", "2026-02", "2026-03", "2026-04"]):
+        PANEL.append({"customer_id": cid, "month": month, "purchases": bought[i],
+                      "churned_in_3_months": None if month == "2026-04" else label})
+ORDERS = [{"order_id": "O1", "customer_id": "C1", "month": "2026-01"}, {"order_id": "O2", "customer_id": "C2", "month": "2026-02"}]
 
 
 class TellsAito:
     def search(self, table, where=None, limit=10, offset=0, **_):
-        if table == "customers":
-            hits = CUSTOMERS
-        elif table == "orders":
-            hits = ORDERS
-        elif table == "nps_responses":
-            assert where == {"nps_group": "detractor"}
-            hits = [{"customer": "C1"}, {"customer": "C2"}, {"customer": "C9"}]
-        elif table == "reviews":
-            assert where == {"rating": {"$lte": 2}}
-            hits = [{"customer_id": "C5"}]
-        elif table == "order_lines":
-            hits = [{"order_id": "O3"}] if where == {"returned": True} else [{"order_id": "O1"}, {"order_id": "O6"}]
-        else:
-            raise AssertionError(table)
+        hits = {
+            "customer_months": PANEL, "orders": ORDERS,
+            "nps_responses": [{"customer": "C1", "month": "2026-02"}],        # C1: a detractor in February
+            "reviews": [],
+            "order_lines": [{"order_id": "O1"}] if where == {"returned": True} else [{"order_id": "O2"}],
+        }[table]
         return {"hits": hits[offset:offset + limit], "total": len(hits)}
 
 
 def rows():
-    return {r.tell: r for r in get_churn_tells(TellsAito(), ["C1", "C9", "C10"]).rows}
+    return {r.tell: r for r in get_churn_tells(TellsAito(), ["C1", "C2"]).rows}
 
 
-def test_a_tell_is_compared_with_customers_who_ordered_as_often_not_with_everyone():
+def test_a_tell_lasts_three_months_and_is_compared_with_months_that_had_none():
     detractor = rows()["detractor"]
-    assert (detractor.customers, detractor.churners) == (3, 2)           # C1, C2 churned; C9 did not
-    assert detractor.churn_rate == pytest.approx(0.667, abs=0.001)
-    # C1 and C2 are in the once-ordered band (80 % churned), C9 in the three-orders band (0 %): 1.6/3 expected.
-    assert detractor.expected_churn_rate == pytest.approx(0.533, abs=0.001)
-    assert detractor.lift == pytest.approx(1.25)
+    # C1's answer in 2026-02 is in the window of 2026-02, -03 and -04; -04 has no label: 2 months, both churned.
+    assert (detractor.customer_months, detractor.churned) == (2, 2)
+    # Without it: C1 January (churned) and the three labelled months of C2, C3 and C4 (stayed) = 1 of 10.
+    assert detractor.churn_rate == 1.0 and detractor.churn_rate_without == pytest.approx(0.1)
+    assert detractor.lift == 10.0
 
 
-def test_order_lines_reach_their_customer_through_the_order():
-    assert rows()["returned"].customers == 1 and rows()["late_delivery"].customers == 2
+def test_months_of_customers_who_had_not_just_ordered_are_left_out_of_both_sides():
+    # C5 never ordered and "churned" in every labelled month. Counted, the months without a tell would be
+    # 4 of 13 and the lift 3.25; left out, 1 of 10.
+    assert rows()["detractor"].churn_rate_without == pytest.approx(0.1)
 
 
-def test_a_tell_no_customer_has_is_shown_with_zero_customers_not_dropped():
-    assert rows()["poor_review"].customers == 1
-    assert set(rows()) == set(TELLS)
-    assert rows()["any"].customers == 6          # C1, C2, C9, C5, C3, C6
+def test_order_lines_reach_their_month_through_the_order():
+    # O1 (C1, January) is in the window of January, February and March; O2 (C2, February) of February and March.
+    assert rows()["returned"].customer_months == 3 and rows()["late_delivery"].customer_months == 2
 
 
-def test_rows_are_ordered_by_lift_and_count_the_listed_customers_who_have_the_tell():
-    result = get_churn_tells(TellsAito(), ["C1", "C9", "C10"])
+def test_every_tell_is_listed_and_rows_are_ordered_by_lift():
+    result = get_churn_tells(TellsAito(), ["C1", "C2"])
+    assert {r.tell for r in result.rows} == set(TELLS) | {"any"}
     lifts = [r.lift for r in result.rows]
     assert lifts == sorted(lifts, reverse=True)
-    assert {r.tell: r.at_risk_listed for r in result.rows}["detractor"] == 2    # C1, C9
-    assert result.tells_of == {"C1": [TELLS["detractor"], TELLS["late_delivery"]], "C9": [TELLS["detractor"]], "C10": []}
+
+
+def test_the_listed_customers_carry_the_tells_they_have_now():
+    # "Now" is 2026-04, whose window is February to April: C1's February answer and C2's February late delivery,
+    # not C1's January return.
+    assert get_churn_tells(TellsAito(), ["C1", "C2"]).tells_of == {
+        "C1": [TELLS["detractor"]], "C2": [TELLS["late_delivery"]]}
