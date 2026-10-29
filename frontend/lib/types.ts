@@ -386,12 +386,12 @@ export interface AtRiskRow {
 export interface ChurnTellRow {
   tell: string;
   label: string;
-  customers: number;             // customers with this tell
-  churners: number;              // of whom churned
+  customer_months: number;       // months of customers who had just ordered, with this tell in the last 3 months
+  churned: number;               // of which the customer stopped within 3 months
   churn_rate: number;
-  expected_churn_rate: number;   // what customers who ordered as often churned at
-  lift: number;                  // churn_rate / expected_churn_rate
-  at_risk_listed: number;        // of the customers Retention lists, how many have it
+  churn_rate_without: number;    // the same, for months without it
+  lift: number;                  // churn_rate / churn_rate_without
+  at_risk_listed: number;        // of the customers Retention lists, how many have it now
 }
 
 export interface ChurnDriverRow {

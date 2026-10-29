@@ -1,21 +1,21 @@
 {
   "env": "release3b",
   "counts": {
-    "action_contexts": 2999,
-    "contexts": 61353,
-    "customer_actions": 5543,
-    "customer_months": 27003,
+    "action_contexts": 3000,
+    "contexts": 61183,
+    "customer_actions": 5713,
+    "customer_months": 27004,
     "customers": 3000,
-    "impressions": 43781,
+    "impressions": 42223,
     "inventory": 658,
     "monthly_sales": 15157,
-    "nps_responses": 3293,
-    "order_lines": 37362,
-    "orders": 10894,
+    "nps_responses": 3145,
+    "order_lines": 35957,
+    "orders": 10410,
     "product_states": 15157,
     "products": 658,
-    "reviews": 4838,
-    "unranked_showings": 52013,
-    "winback_campaigns": 2451
+    "reviews": 4631,
+    "unranked_showings": 51591,
+    "winback_campaigns": 2434
   }
 }

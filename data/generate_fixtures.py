@@ -1895,6 +1895,15 @@ def _customer_life(customer: Customer, persona: Persona | None, shop: _Shop) -> 
             ln.incident = incident
             experience = review_chain.draw_experience(experience_rng, ln.product_sku)
             experiences.append(experience)
+            if planted_switches.ON["A7"]:
+                # After the household has recorded the order, so no later purchase depends on it: a line
+                # that went badly is also returned, and a share of the rest is not, to keep the returned
+                # share near 2.75 %.
+                u = stream(RNG_SEED, "return_by_experience", ln.line_id).random()
+                if experience == "bad":
+                    ln.returned = ln.returned or u < review_chain.BAD_EXPERIENCE_RETURN_P
+                elif ln.returned and u < review_chain.RETURN_THIN_P:
+                    ln.returned = False
             drawn = review_chain.draw_review(review_rng, reply_rng, experience) \
                 if planted_switches.REVIEWS_WRITTEN else None
             if drawn is None:
@@ -1917,6 +1926,11 @@ def _customer_life(customer: Customer, persona: Persona | None, shop: _Shop) -> 
                 product_state=this_orders_lines[0].product_state, wrote_negative_review=wrote_negative))
         if experience == "bad":
             churn.rise(month, review_chain.churn_rise(replied_negative))
+        if planted_switches.ON["A6"] and incident:
+            churn.rise(month, review_chain.INCIDENT_CHURN_RISE)
+        for ln in this_orders_lines:
+            if ln.returned and planted_switches.ON["A7"]:
+                churn.rise(month, review_chain.RETURN_CHURN_RISE)
         first_order = not shop.orders_of[cid]
         shop.orders_of[cid].append((order, this_orders_lines, experiences))
 

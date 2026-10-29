@@ -46,6 +46,9 @@ ON: dict[str, bool] = {
     "L4": True,        # pictures
     "L5": True,        # description
     "L6": True,        # advertising
+    # ADR 0039 amendment (release 3b): the experience flags a shop reads as churn tells.
+    "A6": True,        # a late or damaged delivery raises the churn hazard
+    "A7": True,        # a bad line is also returned, and a returned line raises the churn hazard
     # ADR 0051: which action works on whom (data release 3b).
     "actions": True,   # an action moves the 30-day outcome at all
     "A1": True,        # an email works on those who answered one, not on those who ignored them

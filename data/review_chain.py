@@ -59,9 +59,13 @@ NPS_INCIDENT = -2.0
 NPS_ALL_GOOD = 0.7
 NPS_REPLY = 2.0                  # a reply to the respondent's negative review of the order
 
-CHURN_RISE = 1.8                 # R4: the hazard after a bad experience …
-CHURN_RISE_REPLIED = 1.4         # … halved when the negative review was replied to
+CHURN_RISE = 3.0                 # R4: the hazard after a bad experience (1.8 before release 3b) …
+CHURN_RISE_REPLIED = 2.0         # … lower when the negative review was replied to
 CHURN_RISE_MONTHS = 3
+INCIDENT_CHURN_RISE = 3.0        # A6: a late or damaged delivery raises the hazard too, for the same 3 months
+RETURN_CHURN_RISE = 2.5          # A7: so does each returned line of the order
+BAD_EXPERIENCE_RETURN_P = 0.12   # A7: a line that went badly is also returned (on top of the base rate) …
+RETURN_THIN_P = 0.25            # … and a share of the other returns is dropped, to keep the share near 2.75 %
 
 RATING_PICK_FACTOR = {"5": 1.3, "1-2": 0.6}       # R5
 RATING_ELASTICITY = {"5": -1.0, "1-2": -2.4}      # R6
