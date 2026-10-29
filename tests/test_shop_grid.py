@@ -156,7 +156,7 @@ def test_the_customer_is_in_the_query_only_when_asked_for_beside_their_pets():
     assert "context.customer" not in plain.recommends[0]
     # An id condition brings none of the customer's fields (and none at all when the id has no rows),
     # so the declared pets stay as a path, and the pets filter stays unless asked to trust.
-    assert personal.recommends[0]["context.customer"] == "CUST-00053" and grid.identity is True
+    assert personal.recommends[0]["context.customer"] == "CUST-00070" and grid.identity is True
     assert "context.customer.pets" in personal.recommends[0] and "product_sku.pet_type" in personal.recommends[0]
 
 

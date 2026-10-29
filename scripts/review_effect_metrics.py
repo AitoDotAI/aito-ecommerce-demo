@@ -119,6 +119,16 @@ def returned_after_bad(fx: Fixtures) -> float:
     return sum(ln["returned"] for ln in bad) / len(bad)
 
 
+def churn_by_last_nps(fx: Fixtures) -> float:
+    """A9: churned share of customers whose last NPS answer was 0–3 ÷ of those whose last answer was 9–10."""
+    last = {}
+    for r in sorted(fx.load("nps_responses"), key=lambda r: r["month"]):
+        last[r["customer"]] = r["score"]
+    churned = {c["customer_id"]: c["churned"] for c in fx.load("customers")}
+    share = lambda ids: sum(churned[c] for c in ids) / len(ids)
+    return share([c for c, s in last.items() if s <= 3]) / share([c for c, s in last.items() if s >= 9])
+
+
 def churn_after_replied_counts(fx: Fixtures) -> tuple[int, int]:
     """R4b: (writers who churned in the 3 months after a replied negative review, writers)."""
     replied = [r for r in fx.load("reviews") if r["replied"] and r["created_at"] <= LAST_CHURN_LABEL_MONTH]

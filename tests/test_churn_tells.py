@@ -24,7 +24,7 @@ class TellsAito:
     def search(self, table, where=None, limit=10, offset=0, **_):
         hits = {
             "customer_months": PANEL, "orders": ORDERS,
-            "nps_responses": [{"customer": "C1", "month": "2026-02"}],        # C1: a detractor in February
+            "nps_responses": [{"customer": "C1", "month": "2026-02", "nps_group": "detractor", "score": 2}],   # C1: a 2 in February
             "reviews": [],
             "order_lines": [{"order_id": "O1"}] if where == {"returned": True} else [{"order_id": "O2"}],
         }[table]
@@ -55,9 +55,15 @@ def test_order_lines_reach_their_month_through_the_order():
     assert rows()["returned"].customer_months == 3 and rows()["late_delivery"].customer_months == 2
 
 
+def test_the_raw_answer_is_a_tell_by_band_and_a_two_is_in_the_zero_to_three_band_only():
+    bands = rows()
+    assert bands["nps_0_3"].customer_months == 2 and bands["nps_9_10"].customer_months == 0
+    assert bands["nps_4_6"].customer_months == 0 and bands["nps_7_8"].customer_months == 0
+
+
 def test_every_tell_is_listed_and_rows_are_ordered_by_lift():
     result = get_churn_tells(TellsAito(), ["C1", "C2"])
-    assert {r.tell for r in result.rows} == set(TELLS) | {"any"}
+    assert {r.tell for r in result.rows} == set(TELLS) | {"any", "nps_0_3", "nps_4_6", "nps_7_8", "nps_9_10"}
     lifts = [r.lift for r in result.rows]
     assert lifts == sorted(lifts, reverse=True)
 

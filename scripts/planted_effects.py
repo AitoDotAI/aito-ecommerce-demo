@@ -41,7 +41,7 @@ REPORT = Path(__file__).resolve().parent.parent / "docs/verification/actionable-
 
 # Each null switches one planted effect off. A name in `planted_switches.ON`
 # turns that switch off; the older effects set their constants to "no effect".
-SWITCHED = {name: (name,) for name in ("P6", "P7", "P8", "P9", "P10", "quality", "R3", "R4", "R4_reply", "A6", "A7",
+SWITCHED = {name: (name,) for name in ("P6", "P7", "P8", "P9", "P10", "quality", "R3", "R4", "R4_reply", "A6", "A7", "A9",
                                         "R5", "R6", "F1", "F2", "F3", "F4", "F5", "C1", "placement")}
 # ADR 0045's O2: both effects of an offer, per showing and by placement.
 SWITCHED["offers"] = ("P6", "placement")
@@ -79,6 +79,7 @@ METRICS = {
     "A6": rev.churn_after_incident,
     "A7": rev.churn_after_return,
     "A7b": rev.returned_after_bad,
+    "A9": rev.churn_by_last_nps,
     "R5": rev.demand_by_stars,
     "R6": rev.offer_response_by_stars,
     "F1a": lambda fx: acq.landing_share(fx, ("organic_search",), "product"),
@@ -171,6 +172,7 @@ CHECKS = [
     # Data release 3b: the experience flags a shop reads as churn tells.
     Check("A6", "churn in 3 months after a late or damaged delivery", "A6", "ratio", ("A6",), GE, 1.8),
     Check("A7a", "churn in 3 months after an order with a returned line", "A7", "ratio", ("A7",), GE, 1.5),
+    Check("A9", "churned: last NPS answer 0–3 ÷ 9–10", None, "planted", ("A9",), GE, 1.4),
     Check("A7b", "a badly-experienced line is returned, planted ÷ null", "A7", "ratio", ("A7b",), GE, 1.8),
     Check("R5", "stars move demand (5 ÷ 1–2)", "R5", "ratio", ("R5",), GE, 1.4),
     # Reported since ADR 0045: offers act through P6, not ε (actionable-states-prereg.md).

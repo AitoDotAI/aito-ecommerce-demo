@@ -18,6 +18,7 @@ an order sees the stars of the reviews written before its month
 from __future__ import annotations
 
 import hashlib
+import math
 import random
 from dataclasses import dataclass, field
 
@@ -67,6 +68,15 @@ RETURN_CHURN_RISE = 2.5          # A7: so does each returned line of the order
 BAD_EXPERIENCE_RETURN_P = 0.12   # A7: a line that went badly is also returned (on top of the base rate) …
 RETURN_THIN_P = 0.25            # … and a share of the other returns is dropped, to keep the share near 2.75 %
 
+# A9: one hidden trait per customer, how satisfied they tend to be (z, standard normal). It is a shared
+# cause: it moves their NPS answers and review ratings and, in the other direction, their churn hazard,
+# so an unhappy answer predicts leaving the way it does in a shop. Churn still reads no observable.
+SATISFACTION_NPS_SD = 1.1        # the trait's part of an answer; with NPS_NOISE_SD about the old NPS_SD in all
+NPS_NOISE_SD = 1.0
+SATISFACTION_CHURN_K = 0.9       # hazard × exp(−K·z), divided by its mean exp(K²/2)
+RATING_SHIFT_Z = 0.8             # beyond ±0.8 a writer rates one star lower or higher than the experience gives
+UNHAPPY_REVIEW_FACTOR = 1.5      # and an unhappy customer writes more of them
+
 RATING_PICK_FACTOR = {"5": 1.3, "1-2": 0.6}       # R5
 RATING_ELASTICITY = {"5": -1.0, "1-2": -2.4}      # R6
 
@@ -100,21 +110,36 @@ class DrawnReview:
     replied: bool
 
 
-def draw_review(review_rng: random.Random, reply_rng: random.Random, experience: str) -> DrawnReview | None:
-    """Whether this line's buyer reviews it, and how. Reads the experience only."""
-    if review_rng.random() >= REVIEW_P[experience]:
+def satisfaction(seed: int, customer_id: str) -> float:
+    """The customer's hidden satisfaction trait (A9); 0 when the effect is off."""
+    return random.Random(f"{seed}:satisfaction:{customer_id}").gauss(0.0, 1.0) if ON["A9"] else 0.0
+
+
+def churn_factor(z: float) -> float:
+    """What the trait does to the monthly churn hazard: below 1 for the satisfied, above for the unhappy."""
+    return math.exp(-SATISFACTION_CHURN_K * z) / math.exp(SATISFACTION_CHURN_K ** 2 / 2) if ON["A9"] else 1.0
+
+
+def draw_review(review_rng: random.Random, reply_rng: random.Random, experience: str,
+                z: float = 0.0) -> DrawnReview | None:
+    """Whether this line's buyer reviews it, and how. Reads the experience and the writer's trait."""
+    chance = REVIEW_P[experience] * (UNHAPPY_REVIEW_FACTOR if ON["A9"] and z <= -RATING_SHIFT_Z else 1.0)
+    if review_rng.random() >= chance:
         return None
     rating = _choose(review_rng, RATING_BY_EXPERIENCE[experience])
+    if ON["A9"]:
+        rating = max(1, rating - 1) if z <= -RATING_SHIFT_Z else min(5, rating + 1) if z >= RATING_SHIFT_Z else rating
     category = _choose(review_rng, CATEGORY_BY_RATING[rating])
     replied = rating <= 2 and reply_rng.random() < REPLY_P
     return DrawnReview(rating, category, replied)
 
 
-def nps_score(rng: random.Random, experience: str, incident: bool, replied_negative: bool) -> int | None:
+def nps_score(rng: random.Random, experience: str, incident: bool, replied_negative: bool,
+              z: float = 0.0) -> int | None:
     """The order's NPS score, or None if it wasn't surveyed. Both draws are
     always made, so a null changes the score, never who was surveyed."""
     surveyed = rng.random() < NPS_SURVEY_P
-    score = rng.gauss(NPS_BASE, NPS_SD)
+    score = rng.gauss(NPS_BASE + SATISFACTION_NPS_SD * z, NPS_NOISE_SD) if ON["A9"] else rng.gauss(NPS_BASE, NPS_SD)
     if ON["R3"]:
         score += NPS_BAD_EXPERIENCE if experience == "bad" else 0.0
         score += NPS_INCIDENT if incident else 0.0

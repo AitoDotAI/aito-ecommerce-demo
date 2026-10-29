@@ -36,6 +36,13 @@ TELLS: dict[str, str] = {
     "late_delivery": "Had a late or damaged delivery",
 }
 ANY = "Any of the four"
+# The raw answer, by band: a score of 0–3 is a customer who is done, 9–10 one who is not.
+SCORE_BANDS: dict[str, tuple[str, int, int]] = {
+    "nps_0_3": ("Answered the NPS survey 0–3", 0, 3),
+    "nps_4_6": ("Answered the NPS survey 4–6", 4, 6),
+    "nps_7_8": ("Answered the NPS survey 7–8", 7, 8),
+    "nps_9_10": ("Answered the NPS survey 9–10", 9, 10),
+}
 
 
 @dataclass(frozen=True)
@@ -64,13 +71,17 @@ def month_number(month: str) -> int:
 def tell_months(client: AitoClient) -> dict[str, dict[str, set[int]]]:
     """tell → customer id → the months (as numbers) it happened in."""
     order_of = {o["order_id"]: (o["customer_id"], month_number(o["month"])) for o in read_all(client, "orders")}
-    found: dict[str, dict[str, set[int]]] = {tell: {} for tell in TELLS}
+    found: dict[str, dict[str, set[int]]] = {tell: {} for tell in [*TELLS, *SCORE_BANDS]}
 
     def add(tell: str, customer_id: str, month: int) -> None:
         found[tell].setdefault(customer_id, set()).add(month)
 
-    for r in read_all(client, "nps_responses", where={"nps_group": "detractor"}):
-        add("detractor", r["customer"], month_number(r["month"]))
+    for r in read_all(client, "nps_responses"):
+        if r["nps_group"] == "detractor":
+            add("detractor", r["customer"], month_number(r["month"]))
+        for band, (_, low, high) in SCORE_BANDS.items():
+            if low <= r["score"] <= high:
+                add(band, r["customer"], month_number(r["month"]))
     for r in read_all(client, "reviews", where={"rating": {"$lte": 2}}):
         add("poor_review", r["customer_id"], month_number(r["created_at"]))
     for tell, field in (("returned", "returned"), ("late_delivery", "incident")):
@@ -100,7 +111,8 @@ def get_churn_tells(client: AitoClient, listed_ids: list[str]) -> ChurnTells:
         return _within_window(found[tell].get(customer_id, set()), at)
 
     rows = []
-    for tell, label in [*TELLS.items(), ("any", ANY)]:
+    labelled = [*TELLS.items(), ("any", ANY), *[(band, spec[0]) for band, spec in SCORE_BANDS.items()]]
+    for tell, label in labelled:
         flags = [any(has(t, r["customer_id"], at) for t in TELLS) if tell == "any" else has(tell, r["customer_id"], at)
                  for r, at in rows_]
         with_, without = [r for (r, _), f in zip(rows_, flags) if f], [r for (r, _), f in zip(rows_, flags) if not f]

@@ -6,7 +6,7 @@ same queries is checked in test_aito_check.py.
 CUSTOMERS = {
     # Declared and recorded fields only (ADR 0033).
     "CUST-00152": {"customer_id": "CUST-00152", "pets": "dog", "dog_size": "medium", "diet": "grain-free"},
-    "CUST-00053": {"customer_id": "CUST-00053", "pets": "cat"},
+    "CUST-00070": {"customer_id": "CUST-00070", "pets": "cat"},
     # No pet profile (most customers, ADR 0045): the key is absent, as Aito leaves a null out.
     "CUST-01896": {"customer_id": "CUST-01896"},
     "CUST-01825": {"customer_id": "CUST-01825"},
