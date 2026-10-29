@@ -1744,7 +1744,7 @@ lift and is left out of `$why`.
   nested lift (×0.73–2.01). 194 customers declare `natural_food`; their
   impressions count 3,693 through the link.
 - **A non-consenting customer has no `contexts`**, so the Shop can't put
-  their identity in `where`. Juhani (CUST-00330, 11 orders, no pet profile)
+  their identity in `where`. Juhani (CUST-01825, 8 orders, no pet profile)
   is ranked from his orders' pets, `context.pets_from_orders: {"$and":
   [{"$match": "cat"}]}`, with `product_sku.pet_type` as the candidate filter,
   the month and `just_bought: false`. The top 12 are cat products.

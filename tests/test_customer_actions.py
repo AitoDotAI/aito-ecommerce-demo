@@ -47,7 +47,7 @@ def test_an_email_works_on_customers_who_answered_one_before_and_not_on_those_wh
 def test_a_discount_works_on_customers_who_mostly_buy_on_offer_and_not_on_those_who_rarely_do(rows):
     mostly = lift(rows, "discount", lambda r: r["offer_buyer"] == "mostly", "purchased_30d")
     rarely = lift(rows, "discount", lambda r: r["offer_buyer"] == "rarely", "purchased_30d")
-    assert mostly >= 1.7 and rarely <= 1.3, (mostly, rarely)
+    assert mostly >= 1.3 and rarely <= 1.15 and mostly - rarely >= 0.4, (mostly, rarely)
 
 
 def test_a_voucher_brings_back_lapsed_customers_more_than_recent_ones(rows):

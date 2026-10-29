@@ -96,7 +96,7 @@ def test_pets_read_from_earlier_orders_are_a_reason_of_their_own():
 
 
 def test_the_customers_own_history_is_a_reason_when_the_query_names_them():
-    reasons = reasons_for(why(({"context.customer": "CUST-00053"}, 1.8), ({"context.month": "2026-04"}, 1.3)), SKU)
+    reasons = reasons_for(why(({"context.customer": "CUST-00070"}, 1.8), ({"context.month": "2026-04"}, 1.3)), SKU)
 
     assert reasons == [Reason("Your own history", 1.8), Reason("Sells in April", 1.3)]
 

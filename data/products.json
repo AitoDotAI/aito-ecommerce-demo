@@ -10,8 +10,8 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 4.67,
-    "rating_band": "5"
+    "avg_rating": 4.0,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0002",
@@ -24,7 +24,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 4.31,
+    "avg_rating": 3.69,
     "rating_band": "4"
   },
   {
@@ -38,7 +38,7 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium large-breed complete kibble value-bundle",
-    "avg_rating": 4.25,
+    "avg_rating": 3.75,
     "rating_band": "4"
   },
   {
@@ -52,7 +52,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble",
-    "avg_rating": 4.33,
+    "avg_rating": 4.0,
     "rating_band": "4"
   },
   {
@@ -66,8 +66,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble value-bundle",
-    "avg_rating": 4.83,
-    "rating_band": "5"
+    "avg_rating": 4.47,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0006",
@@ -80,8 +80,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete kibble value-bundle",
-    "avg_rating": 4.4,
-    "rating_band": "4"
+    "avg_rating": 4.55,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0007",
@@ -94,8 +94,7 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 4.75,
-    "rating_band": "5"
+    "rating_band": "unrated"
   },
   {
     "sku": "SKU-PT-0008",
@@ -108,7 +107,7 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium puppy-stage complete kibble",
-    "avg_rating": 5.0,
+    "avg_rating": 4.57,
     "rating_band": "5"
   },
   {
@@ -122,7 +121,7 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 3.67,
+    "avg_rating": 4.0,
     "rating_band": "4"
   },
   {
@@ -136,7 +135,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 2.0,
+    "avg_rating": 1.0,
     "rating_band": "1-2"
   },
   {
@@ -164,8 +163,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 3.4,
-    "rating_band": "3"
+    "avg_rating": 4.0,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0013",
@@ -178,7 +177,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium senior-care complete kibble",
-    "avg_rating": 4.2,
+    "avg_rating": 4.38,
     "rating_band": "4"
   },
   {
@@ -192,8 +191,8 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 4.5,
-    "rating_band": "5"
+    "avg_rating": 3.0,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0015",
@@ -206,8 +205,7 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium diet complete kibble value-bundle",
-    "avg_rating": 2.33,
-    "rating_band": "1-2"
+    "rating_band": "unrated"
   },
   {
     "sku": "SKU-PT-0016",
@@ -220,8 +218,8 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium puppy-stage complete kibble",
-    "avg_rating": 4.5,
-    "rating_band": "5"
+    "avg_rating": 3.67,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0017",
@@ -234,7 +232,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble value-bundle",
-    "avg_rating": 3.75,
+    "avg_rating": 3.86,
     "rating_band": "4"
   },
   {
@@ -248,7 +246,7 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 4.0,
+    "avg_rating": 4.33,
     "rating_band": "4"
   },
   {
@@ -262,8 +260,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 4.83,
-    "rating_band": "5"
+    "avg_rating": 3.5,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0020",
@@ -276,8 +274,8 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 4.71,
-    "rating_band": "5"
+    "avg_rating": 3.67,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0021",
@@ -290,7 +288,7 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 4.0,
+    "avg_rating": 3.83,
     "rating_band": "4"
   },
   {
@@ -304,8 +302,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium senior-care complete kibble value-bundle",
-    "avg_rating": 3.91,
-    "rating_band": "4"
+    "avg_rating": 3.38,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0023",
@@ -318,8 +316,7 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium diet complete kibble value-bundle",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "unrated"
   },
   {
     "sku": "SKU-PT-0024",
@@ -332,8 +329,8 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium puppy-stage complete kibble value-bundle",
-    "avg_rating": 4.5,
-    "rating_band": "5",
+    "avg_rating": 4.0,
+    "rating_band": "4",
     "variant": "classic recipe"
   },
   {
@@ -347,8 +344,8 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium puppy-stage complete kibble value-bundle",
-    "avg_rating": 4.5,
-    "rating_band": "5",
+    "avg_rating": 4.27,
+    "rating_band": "4",
     "variant": "light recipe"
   },
   {
@@ -362,7 +359,7 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 3.75,
+    "avg_rating": 3.67,
     "rating_band": "4"
   },
   {
@@ -376,8 +373,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete kibble",
-    "avg_rating": 4.83,
-    "rating_band": "5"
+    "avg_rating": 3.83,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0028",
@@ -390,8 +387,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium senior-care complete kibble",
-    "avg_rating": 4.62,
-    "rating_band": "5"
+    "avg_rating": 3.83,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0029",
@@ -404,8 +401,8 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium large-breed complete kibble value-bundle",
-    "avg_rating": 4.14,
-    "rating_band": "4"
+    "avg_rating": 4.5,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0030",
@@ -418,7 +415,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble value-bundle",
-    "avg_rating": 4.3,
+    "avg_rating": 4.4,
     "rating_band": "4"
   },
   {
@@ -432,8 +429,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 3.67,
-    "rating_band": "4",
+    "avg_rating": 2.78,
+    "rating_band": "3",
     "variant": "classic recipe"
   },
   {
@@ -447,7 +444,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 3.8,
+    "avg_rating": 3.6,
     "rating_band": "4"
   },
   {
@@ -461,8 +458,7 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium large-breed complete kibble",
-    "avg_rating": 4.33,
-    "rating_band": "4"
+    "rating_band": "unrated"
   },
   {
     "sku": "SKU-PT-0034",
@@ -475,8 +471,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 4.8,
-    "rating_band": "5",
+    "avg_rating": 4.0,
+    "rating_band": "4",
     "variant": "light recipe"
   },
   {
@@ -490,7 +486,7 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 4.0,
+    "avg_rating": 3.86,
     "rating_band": "4"
   },
   {
@@ -504,8 +500,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 4.67,
-    "rating_band": "5"
+    "avg_rating": 4.43,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0037",
@@ -518,8 +514,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium senior-care complete kibble value-bundle",
-    "avg_rating": 4.33,
-    "rating_band": "4"
+    "avg_rating": 3.0,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0038",
@@ -530,7 +526,7 @@
     "price_eur": 14.35,
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble",
-    "avg_rating": 4.2,
+    "avg_rating": 4.25,
     "rating_band": "4"
   },
   {
@@ -544,7 +540,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete kibble value-bundle",
-    "avg_rating": 3.62,
+    "avg_rating": 3.5,
     "rating_band": "4"
   },
   {
@@ -558,8 +554,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "mass senior-care complete kibble",
-    "avg_rating": 4.67,
-    "rating_band": "5"
+    "avg_rating": 4.29,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0041",
@@ -572,7 +568,8 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "mass large-breed complete kibble",
-    "rating_band": "unrated"
+    "avg_rating": 1.0,
+    "rating_band": "1-2"
   },
   {
     "sku": "SKU-PT-0042",
@@ -585,8 +582,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass complete kibble value-bundle",
-    "avg_rating": 3.78,
-    "rating_band": "4"
+    "avg_rating": 3.11,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0043",
@@ -597,8 +594,8 @@
     "price_eur": 39.02,
     "weight_kg": 7,
     "tags": "mass complete kibble value-bundle",
-    "avg_rating": 5.0,
-    "rating_band": "5"
+    "avg_rating": 3.25,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0044",
@@ -609,8 +606,8 @@
     "price_eur": 86.25,
     "dietary": "senior",
     "tags": "mass senior-care complete kibble value-bundle",
-    "avg_rating": 4.75,
-    "rating_band": "5"
+    "avg_rating": 4.47,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0045",
@@ -623,7 +620,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "mass complete kibble value-bundle",
-    "avg_rating": 4.0,
+    "avg_rating": 4.25,
     "rating_band": "4"
   },
   {
@@ -637,8 +634,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "mass complete kibble value-bundle",
-    "avg_rating": 4.75,
-    "rating_band": "5",
+    "avg_rating": 4.0,
+    "rating_band": "4",
     "variant": "classic recipe"
   },
   {
@@ -652,7 +649,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "mass complete kibble value-bundle",
-    "avg_rating": 1.5,
+    "avg_rating": 1.75,
     "rating_band": "1-2",
     "variant": "light recipe"
   },
@@ -667,8 +664,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "mass hypoallergenic complete kibble",
-    "avg_rating": 3.5,
-    "rating_band": "4"
+    "avg_rating": 3.0,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0049",
@@ -681,7 +678,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural complete kibble value-bundle",
-    "avg_rating": 3.86,
+    "avg_rating": 4.0,
     "rating_band": "4"
   },
   {
@@ -695,7 +692,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural complete kibble",
-    "avg_rating": 4.57,
+    "avg_rating": 4.67,
     "rating_band": "5"
   },
   {
@@ -709,8 +706,8 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "mass large-breed complete kibble",
-    "avg_rating": 5.0,
-    "rating_band": "5"
+    "avg_rating": 4.17,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0052",
@@ -723,7 +720,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "mass complete kibble",
-    "rating_band": "unrated"
+    "avg_rating": 4.0,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0053",
@@ -736,7 +734,7 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "mass large-breed complete kibble value-bundle",
-    "avg_rating": 4.0,
+    "avg_rating": 4.33,
     "rating_band": "4"
   },
   {
@@ -750,8 +748,8 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "mass complete kibble",
-    "avg_rating": 3.67,
-    "rating_band": "4"
+    "avg_rating": 3.33,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0055",
@@ -764,8 +762,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "mass diet complete kibble value-bundle",
-    "avg_rating": 4.75,
-    "rating_band": "5"
+    "avg_rating": 3.75,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0056",
@@ -778,7 +776,7 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "mass complete kibble value-bundle",
-    "avg_rating": 3.0,
+    "avg_rating": 3.4,
     "rating_band": "3"
   },
   {
@@ -792,7 +790,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 3.71,
+    "avg_rating": 4.38,
     "rating_band": "4"
   },
   {
@@ -806,8 +804,8 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium large-breed complete kibble",
-    "avg_rating": 3.0,
-    "rating_band": "3"
+    "avg_rating": 3.5,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0059",
@@ -820,7 +818,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium senior-care complete kibble",
-    "avg_rating": 3.67,
+    "avg_rating": 4.0,
     "rating_band": "4"
   },
   {
@@ -834,7 +832,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble",
-    "avg_rating": 4.33,
+    "avg_rating": 4.0,
     "rating_band": "4"
   },
   {
@@ -848,7 +846,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 4.0,
+    "avg_rating": 4.25,
     "rating_band": "4"
   },
   {
@@ -862,7 +860,7 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium large-breed complete kibble",
-    "avg_rating": 3.71,
+    "avg_rating": 3.75,
     "rating_band": "4"
   },
   {
@@ -876,7 +874,7 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 4.14,
+    "avg_rating": 4.0,
     "rating_band": "4"
   },
   {
@@ -890,8 +888,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 3.0,
-    "rating_band": "3"
+    "avg_rating": 3.5,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0065",
@@ -904,8 +902,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium diet complete kibble value-bundle",
-    "avg_rating": 4.75,
-    "rating_band": "5"
+    "avg_rating": 4.25,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0066",
@@ -918,8 +916,8 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 2.0,
-    "rating_band": "1-2"
+    "avg_rating": 3.5,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0067",
@@ -932,7 +930,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete kibble",
-    "avg_rating": 3.8,
+    "avg_rating": 4.0,
     "rating_band": "4"
   },
   {
@@ -946,8 +944,8 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium puppy-stage complete kibble value-bundle",
-    "avg_rating": 3.4,
-    "rating_band": "3"
+    "avg_rating": 4.57,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0069",
@@ -960,7 +958,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble value-bundle",
-    "avg_rating": 4.25,
+    "avg_rating": 3.6,
     "rating_band": "4"
   },
   {
@@ -974,7 +972,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 3.43,
+    "avg_rating": 2.5,
     "rating_band": "3",
     "variant": "classic recipe"
   },
@@ -989,8 +987,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 4.0,
-    "rating_band": "4",
+    "avg_rating": 3.33,
+    "rating_band": "3",
     "variant": "light recipe"
   },
   {
@@ -1004,8 +1002,8 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 4.0,
-    "rating_band": "4",
+    "avg_rating": 3.4,
+    "rating_band": "3",
     "variant": "value pack"
   },
   {
@@ -1033,8 +1031,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble value-bundle",
-    "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "unrated"
   },
   {
     "sku": "SKU-PT-0075",
@@ -1047,7 +1044,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium diet complete kibble",
-    "rating_band": "unrated"
+    "avg_rating": 3.5,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0076",
@@ -1060,8 +1058,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "avg_rating": 4.5,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0077",
@@ -1074,8 +1072,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 3.67,
-    "rating_band": "4"
+    "avg_rating": 2.67,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0078",
@@ -1088,8 +1086,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble",
-    "avg_rating": 5.0,
-    "rating_band": "5",
+    "avg_rating": 4.38,
+    "rating_band": "4",
     "variant": "classic recipe"
   },
   {
@@ -1101,8 +1099,8 @@
     "price_eur": 6.95,
     "dietary": "sensitive",
     "tags": "premium hypoallergenic complete kibble",
-    "avg_rating": 3.5,
-    "rating_band": "4",
+    "avg_rating": 3.12,
+    "rating_band": "3",
     "variant": "light recipe"
   },
   {
@@ -1116,7 +1114,7 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 4.2,
+    "avg_rating": 3.5,
     "rating_band": "4",
     "variant": "classic recipe"
   },
@@ -1131,8 +1129,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble",
-    "avg_rating": 3.0,
-    "rating_band": "3"
+    "avg_rating": 4.17,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0082",
@@ -1145,8 +1143,8 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 4.86,
-    "rating_band": "5"
+    "avg_rating": 4.33,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0083",
@@ -1159,7 +1157,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble value-bundle",
-    "avg_rating": 3.57,
+    "avg_rating": 3.86,
     "rating_band": "4"
   },
   {
@@ -1173,7 +1171,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium senior-care complete kibble value-bundle",
-    "avg_rating": 3.8,
+    "avg_rating": 3.6,
     "rating_band": "4"
   },
   {
@@ -1187,8 +1185,8 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 4.0,
-    "rating_band": "4",
+    "avg_rating": 5.0,
+    "rating_band": "5",
     "variant": "light recipe"
   },
   {
@@ -1202,7 +1200,7 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 3.15,
+    "avg_rating": 3.17,
     "rating_band": "3"
   },
   {
@@ -1216,7 +1214,7 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 4.2,
+    "avg_rating": 4.43,
     "rating_band": "4"
   },
   {
@@ -1230,8 +1228,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 3.38,
-    "rating_band": "3"
+    "avg_rating": 4.5,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0089",
@@ -1244,8 +1242,8 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium puppy-stage complete kibble",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "avg_rating": 4.5,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0090",
@@ -1258,8 +1256,8 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium puppy-stage complete kibble",
-    "avg_rating": 4.4,
-    "rating_band": "4"
+    "avg_rating": 3.27,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0091",
@@ -1272,7 +1270,7 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium large-breed complete kibble value-bundle",
-    "avg_rating": 5.0,
+    "avg_rating": 4.5,
     "rating_band": "5"
   },
   {
@@ -1286,7 +1284,7 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium diet complete kibble",
-    "avg_rating": 2.5,
+    "avg_rating": 3.0,
     "rating_band": "3"
   },
   {
@@ -1300,7 +1298,7 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium puppy-stage complete kibble value-bundle",
-    "avg_rating": 4.0,
+    "avg_rating": 3.67,
     "rating_band": "4"
   },
   {
@@ -1314,8 +1312,8 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium puppy-stage complete kibble",
-    "avg_rating": 3.58,
-    "rating_band": "4"
+    "avg_rating": 2.91,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0095",
@@ -1328,8 +1326,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 3.0,
-    "rating_band": "3"
+    "avg_rating": 4.14,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0096",
@@ -1342,8 +1340,8 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 5.0,
-    "rating_band": "5"
+    "avg_rating": 3.33,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0097",
@@ -1356,7 +1354,8 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "rating_band": "unrated"
+    "avg_rating": 3.67,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0098",
@@ -1369,8 +1368,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 3.67,
-    "rating_band": "4",
+    "avg_rating": 2.67,
+    "rating_band": "3",
     "variant": "classic recipe"
   },
   {
@@ -1384,8 +1383,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 3.0,
-    "rating_band": "3",
+    "avg_rating": 3.5,
+    "rating_band": "4",
     "variant": "light recipe"
   },
   {
@@ -1399,8 +1398,8 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 3.5,
-    "rating_band": "4"
+    "avg_rating": 3.25,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0101",
@@ -1413,8 +1412,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 4.67,
-    "rating_band": "5"
+    "avg_rating": 2.0,
+    "rating_band": "1-2"
   },
   {
     "sku": "SKU-PT-0102",
@@ -1427,8 +1426,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete pouch",
-    "avg_rating": 3.75,
-    "rating_band": "4"
+    "avg_rating": 3.13,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0103",
@@ -1441,8 +1440,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 3.29,
-    "rating_band": "3"
+    "avg_rating": 3.78,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0104",
@@ -1469,8 +1468,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete pouch",
-    "avg_rating": 3.57,
-    "rating_band": "4"
+    "avg_rating": 3.4,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0106",
@@ -1483,7 +1482,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete pouch",
-    "avg_rating": 3.6,
+    "avg_rating": 3.69,
     "rating_band": "4"
   },
   {
@@ -1497,8 +1496,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete pouch",
-    "avg_rating": 4.45,
-    "rating_band": "4"
+    "avg_rating": 4.5,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0108",
@@ -1511,8 +1510,8 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium puppy-stage complete pouch",
-    "avg_rating": 4.57,
-    "rating_band": "5"
+    "avg_rating": 3.75,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0109",
@@ -1525,8 +1524,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 3.0,
-    "rating_band": "3"
+    "avg_rating": 2.0,
+    "rating_band": "1-2"
   },
   {
     "sku": "SKU-PT-0110",
@@ -1539,7 +1538,7 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 3.82,
+    "avg_rating": 3.67,
     "rating_band": "4"
   },
   {
@@ -1553,7 +1552,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete pouch",
-    "avg_rating": 3.7,
+    "avg_rating": 4.25,
     "rating_band": "4"
   },
   {
@@ -1567,7 +1566,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete pouch",
-    "avg_rating": 4.33,
+    "avg_rating": 4.17,
     "rating_band": "4"
   },
   {
@@ -1581,7 +1580,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 4.67,
+    "avg_rating": 4.83,
     "rating_band": "5",
     "variant": "classic recipe"
   },
@@ -1596,7 +1595,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 3.88,
+    "avg_rating": 4.2,
     "rating_band": "4"
   },
   {
@@ -1610,7 +1609,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete pouch",
-    "avg_rating": 4.44,
+    "avg_rating": 4.11,
     "rating_band": "4"
   },
   {
@@ -1624,7 +1623,7 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium large-breed complete pouch",
-    "avg_rating": 4.33,
+    "avg_rating": 4.25,
     "rating_band": "4"
   },
   {
@@ -1638,7 +1637,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium senior-care complete pouch",
-    "avg_rating": 4.39,
+    "avg_rating": 3.79,
     "rating_band": "4"
   },
   {
@@ -1652,8 +1651,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 3.57,
-    "rating_band": "4",
+    "avg_rating": 4.5,
+    "rating_band": "5",
     "variant": "light recipe"
   },
   {
@@ -1667,8 +1666,8 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium large-breed complete pouch",
-    "avg_rating": 4.2,
-    "rating_band": "4"
+    "avg_rating": 4.55,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0120",
@@ -1681,7 +1680,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium senior-care complete pouch",
-    "avg_rating": 2.86,
+    "avg_rating": 2.77,
     "rating_band": "3"
   },
   {
@@ -1695,8 +1694,8 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium puppy-stage complete pouch",
-    "avg_rating": 4.64,
-    "rating_band": "5",
+    "avg_rating": 4.13,
+    "rating_band": "4",
     "variant": "classic recipe"
   },
   {
@@ -1710,8 +1709,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 4.38,
-    "rating_band": "4"
+    "avg_rating": 4.62,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0123",
@@ -1724,7 +1723,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete pouch",
-    "avg_rating": 4.08,
+    "avg_rating": 4.29,
     "rating_band": "4"
   },
   {
@@ -1738,7 +1737,7 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium puppy-stage complete pouch",
-    "avg_rating": 4.14,
+    "avg_rating": 4.4,
     "rating_band": "4",
     "variant": "light recipe"
   },
@@ -1753,8 +1752,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 3.43,
-    "rating_band": "3",
+    "avg_rating": 3.5,
+    "rating_band": "4",
     "variant": "classic recipe"
   },
   {
@@ -1768,7 +1767,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete pouch",
-    "avg_rating": 4.0,
+    "avg_rating": 4.09,
     "rating_band": "4",
     "variant": "classic recipe"
   },
@@ -1781,7 +1780,7 @@
     "price_eur": 1.75,
     "dietary": "grain-free",
     "tags": "premium natural complete pouch",
-    "avg_rating": 4.39,
+    "avg_rating": 4.18,
     "rating_band": "4"
   },
   {
@@ -1795,8 +1794,8 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium large-breed complete pouch",
-    "avg_rating": 2.0,
-    "rating_band": "1-2"
+    "avg_rating": 3.27,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0129",
@@ -1809,7 +1808,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete pouch",
-    "avg_rating": 4.07,
+    "avg_rating": 4.29,
     "rating_band": "4",
     "variant": "light recipe"
   },
@@ -1824,7 +1823,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 4.3,
+    "avg_rating": 4.45,
     "rating_band": "4",
     "variant": "light recipe"
   },
@@ -1839,7 +1838,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete pouch",
-    "avg_rating": 3.77,
+    "avg_rating": 3.6,
     "rating_band": "4"
   },
   {
@@ -1853,7 +1852,7 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium large-breed complete pouch",
-    "avg_rating": 3.86,
+    "avg_rating": 3.5,
     "rating_band": "4"
   },
   {
@@ -1867,7 +1866,7 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium large-breed complete pouch",
-    "avg_rating": 4.71,
+    "avg_rating": 4.5,
     "rating_band": "5"
   },
   {
@@ -1881,7 +1880,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 1.67,
+    "avg_rating": 2.0,
     "rating_band": "1-2"
   },
   {
@@ -1895,7 +1894,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium senior-care complete pouch",
-    "avg_rating": 4.26,
+    "avg_rating": 4.24,
     "rating_band": "4"
   },
   {
@@ -1909,7 +1908,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 4.09,
+    "avg_rating": 4.38,
     "rating_band": "4",
     "variant": "classic recipe"
   },
@@ -1924,7 +1923,7 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 4.22,
+    "avg_rating": 4.25,
     "rating_band": "4",
     "variant": "light recipe"
   },
@@ -1937,7 +1936,7 @@
     "price_eur": 4.12,
     "tax_class": "food-reduced",
     "tags": "premium large-breed complete pouch",
-    "avg_rating": 3.62,
+    "avg_rating": 4.2,
     "rating_band": "4"
   },
   {
@@ -1951,7 +1950,7 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "premium puppy-stage complete pouch",
-    "avg_rating": 4.31,
+    "avg_rating": 3.93,
     "rating_band": "4"
   },
   {
@@ -1965,7 +1964,7 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium large-breed complete pouch",
-    "avg_rating": 4.57,
+    "avg_rating": 4.5,
     "rating_band": "5"
   },
   {
@@ -1979,7 +1978,7 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "premium large-breed complete pouch",
-    "avg_rating": 3.75,
+    "avg_rating": 4.0,
     "rating_band": "4"
   },
   {
@@ -1993,7 +1992,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete pouch",
-    "avg_rating": 4.14,
+    "avg_rating": 3.67,
     "rating_band": "4"
   },
   {
@@ -2007,8 +2006,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete pouch",
-    "avg_rating": 4.71,
-    "rating_band": "5"
+    "avg_rating": 4.07,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0144",
@@ -2021,8 +2020,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete pouch",
-    "avg_rating": 3.0,
-    "rating_band": "3"
+    "avg_rating": 4.2,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0145",
@@ -2035,7 +2034,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 4.38,
+    "avg_rating": 3.83,
     "rating_band": "4"
   },
   {
@@ -2049,8 +2048,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete pouch",
-    "avg_rating": 4.14,
-    "rating_band": "4"
+    "avg_rating": 4.5,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0147",
@@ -2063,8 +2062,8 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "mass large-breed complete pouch",
-    "avg_rating": 4.5,
-    "rating_band": "5",
+    "avg_rating": 4.25,
+    "rating_band": "4",
     "variant": "classic recipe"
   },
   {
@@ -2078,8 +2077,8 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "mass large-breed complete pouch",
-    "avg_rating": 1.0,
-    "rating_band": "1-2",
+    "avg_rating": 3.5,
+    "rating_band": "4",
     "variant": "light recipe"
   },
   {
@@ -2093,7 +2092,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "mass complete pouch",
-    "avg_rating": 4.89,
+    "avg_rating": 4.55,
     "rating_band": "5"
   },
   {
@@ -2107,8 +2106,8 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "mass large-breed complete pouch",
-    "avg_rating": 3.4,
-    "rating_band": "3",
+    "avg_rating": 3.88,
+    "rating_band": "4",
     "variant": "classic recipe"
   },
   {
@@ -2122,7 +2121,7 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "mass large-breed complete pouch",
-    "avg_rating": 4.29,
+    "avg_rating": 3.75,
     "rating_band": "4",
     "variant": "light recipe"
   },
@@ -2135,8 +2134,8 @@
     "price_eur": 1.03,
     "dietary": "puppy",
     "tags": "mass puppy-stage complete pouch",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "avg_rating": 4.67,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0153",
@@ -2149,7 +2148,7 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "mass large-breed complete pouch",
-    "avg_rating": 4.0,
+    "avg_rating": 3.94,
     "rating_band": "4"
   },
   {
@@ -2163,7 +2162,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural complete pouch",
-    "avg_rating": 4.43,
+    "avg_rating": 4.0,
     "rating_band": "4"
   },
   {
@@ -2177,8 +2176,8 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "mass puppy-stage complete pouch",
-    "avg_rating": 4.5,
-    "rating_band": "5"
+    "avg_rating": 4.12,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0156",
@@ -2191,7 +2190,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural complete pouch",
-    "avg_rating": 4.65,
+    "avg_rating": 4.67,
     "rating_band": "5"
   },
   {
@@ -2205,7 +2204,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass complete pouch",
-    "avg_rating": 4.0,
+    "avg_rating": 4.25,
     "rating_band": "4"
   },
   {
@@ -2219,7 +2218,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural complete pouch",
-    "avg_rating": 4.27,
+    "avg_rating": 4.14,
     "rating_band": "4"
   },
   {
@@ -2233,7 +2232,7 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "mass puppy-stage complete pouch",
-    "avg_rating": 4.18,
+    "avg_rating": 4.33,
     "rating_band": "4"
   },
   {
@@ -2247,7 +2246,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "mass complete pouch",
-    "avg_rating": 3.6,
+    "avg_rating": 3.57,
     "rating_band": "4"
   },
   {
@@ -2261,7 +2260,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass complete pouch",
-    "avg_rating": 3.86,
+    "avg_rating": 4.29,
     "rating_band": "4"
   },
   {
@@ -2275,7 +2274,7 @@
     "dietary": "large-breed",
     "tax_class": "food-reduced",
     "tags": "mass large-breed complete pouch",
-    "avg_rating": 4.0,
+    "avg_rating": 4.43,
     "rating_band": "4"
   },
   {
@@ -2287,7 +2286,7 @@
     "price_eur": 4.66,
     "dietary": "sensitive",
     "tags": "mass hypoallergenic complete pouch",
-    "avg_rating": 4.43,
+    "avg_rating": 4.08,
     "rating_band": "4"
   },
   {
@@ -2301,7 +2300,7 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "mass puppy-stage complete pouch",
-    "avg_rating": 4.0,
+    "avg_rating": 4.09,
     "rating_band": "4"
   },
   {
@@ -2315,8 +2314,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 3.71,
-    "rating_band": "4"
+    "avg_rating": 3.0,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0166",
@@ -2329,8 +2328,8 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "mass puppy-stage indulgent training",
-    "avg_rating": 4.64,
-    "rating_band": "5",
+    "avg_rating": 4.0,
+    "rating_band": "4",
     "variant": "classic"
   },
   {
@@ -2344,7 +2343,7 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "mass puppy-stage indulgent training",
-    "avg_rating": 4.45,
+    "avg_rating": 4.33,
     "rating_band": "4",
     "variant": "soft"
   },
@@ -2359,7 +2358,7 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 4.0,
+    "avg_rating": 4.1,
     "rating_band": "4"
   },
   {
@@ -2373,7 +2372,7 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 1.0,
+    "avg_rating": 2.4,
     "rating_band": "1-2"
   },
   {
@@ -2387,7 +2386,7 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "mass diet indulgent training",
-    "avg_rating": 2.44,
+    "avg_rating": 2.0,
     "rating_band": "1-2"
   },
   {
@@ -2401,7 +2400,7 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "mass diet indulgent training",
-    "avg_rating": 4.09,
+    "avg_rating": 3.75,
     "rating_band": "4"
   },
   {
@@ -2415,8 +2414,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "mass diet indulgent training",
-    "avg_rating": 4.7,
-    "rating_band": "5"
+    "avg_rating": 4.13,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0173",
@@ -2429,7 +2428,7 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 3.2,
+    "avg_rating": 2.75,
     "rating_band": "3"
   },
   {
@@ -2443,8 +2442,8 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "mass puppy-stage indulgent training",
-    "avg_rating": 3.33,
-    "rating_band": "3"
+    "avg_rating": 3.56,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0175",
@@ -2457,7 +2456,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 4.0,
+    "avg_rating": 4.18,
     "rating_band": "4",
     "variant": "classic"
   },
@@ -2472,8 +2471,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 3.0,
-    "rating_band": "3"
+    "avg_rating": 3.75,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0177",
@@ -2486,8 +2485,8 @@
     "dietary": "puppy",
     "tax_class": "food-reduced",
     "tags": "mass puppy-stage indulgent training",
-    "avg_rating": 4.5,
-    "rating_band": "5"
+    "avg_rating": 4.41,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0178",
@@ -2500,7 +2499,7 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 3.75,
+    "avg_rating": 3.5,
     "rating_band": "4",
     "variant": "soft"
   },
@@ -2515,7 +2514,7 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "mass diet indulgent training",
-    "avg_rating": 3.11,
+    "avg_rating": 3.27,
     "rating_band": "3"
   },
   {
@@ -2529,7 +2528,7 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 4.0,
+    "avg_rating": 4.3,
     "rating_band": "4",
     "variant": "classic"
   },
@@ -2544,7 +2543,7 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 4.35,
+    "avg_rating": 3.83,
     "rating_band": "4",
     "variant": "soft"
   },
@@ -2559,7 +2558,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural dental training preventive",
-    "avg_rating": 4.12,
+    "avg_rating": 3.56,
     "rating_band": "4"
   },
   {
@@ -2573,8 +2572,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural dental training preventive",
-    "avg_rating": 3.75,
-    "rating_band": "4",
+    "avg_rating": 3.06,
+    "rating_band": "3",
     "variant": "small dogs"
   },
   {
@@ -2588,7 +2587,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural dental training preventive",
-    "avg_rating": 4.07,
+    "avg_rating": 3.56,
     "rating_band": "4",
     "variant": "medium dogs"
   },
@@ -2601,8 +2600,8 @@
     "price_eur": 2.6,
     "tax_class": "food-reduced",
     "tags": "natural dental training preventive",
-    "avg_rating": 4.93,
-    "rating_band": "5"
+    "avg_rating": 4.07,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0186",
@@ -2615,7 +2614,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural dental training preventive",
-    "avg_rating": 3.57,
+    "avg_rating": 3.73,
     "rating_band": "4",
     "variant": "small dogs"
   },
@@ -2630,7 +2629,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural dental training preventive",
-    "avg_rating": 4.43,
+    "avg_rating": 4.31,
     "rating_band": "4",
     "variant": "medium dogs"
   },
@@ -2645,7 +2644,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural dental training preventive",
-    "avg_rating": 4.28,
+    "avg_rating": 4.45,
     "rating_band": "4"
   },
   {
@@ -2659,7 +2658,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural dental training preventive",
-    "avg_rating": 4.11,
+    "avg_rating": 3.91,
     "rating_band": "4",
     "variant": "small dogs"
   },
@@ -2674,8 +2673,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural dental training preventive",
-    "avg_rating": 4.72,
-    "rating_band": "5",
+    "avg_rating": 4.32,
+    "rating_band": "4",
     "variant": "medium dogs"
   },
   {
@@ -2689,7 +2688,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural dental training preventive",
-    "avg_rating": 4.45,
+    "avg_rating": 4.18,
     "rating_band": "4"
   },
   {
@@ -2703,7 +2702,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural dental training preventive",
-    "avg_rating": 3.9,
+    "avg_rating": 3.95,
     "rating_band": "4",
     "variant": "small dogs"
   },
@@ -2718,8 +2717,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural dental training preventive",
-    "avg_rating": 4.78,
-    "rating_band": "5",
+    "avg_rating": 4.36,
+    "rating_band": "4",
     "variant": "medium dogs"
   },
   {
@@ -2733,7 +2732,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural dental training preventive",
-    "avg_rating": 4.4,
+    "avg_rating": 4.3,
     "rating_band": "4"
   },
   {
@@ -2745,8 +2744,8 @@
     "price_eur": 4.12,
     "tax_class": "food-reduced",
     "tags": "mass dental training preventive",
-    "avg_rating": 3.79,
-    "rating_band": "4"
+    "avg_rating": 4.71,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0196",
@@ -2759,7 +2758,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass dental training preventive",
-    "avg_rating": 3.65,
+    "avg_rating": 3.93,
     "rating_band": "4"
   },
   {
@@ -2773,7 +2772,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural dental training preventive",
-    "avg_rating": 4.25,
+    "avg_rating": 4.44,
     "rating_band": "4"
   },
   {
@@ -2787,8 +2786,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural dental training preventive",
-    "avg_rating": 3.12,
-    "rating_band": "3"
+    "avg_rating": 3.76,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0199",
@@ -2801,7 +2800,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass dental training preventive",
-    "avg_rating": 3.96,
+    "avg_rating": 3.75,
     "rating_band": "4"
   },
   {
@@ -2813,7 +2812,7 @@
     "price_eur": 2.04,
     "weight_kg": 0.08,
     "tags": "mass natural dental training preventive",
-    "avg_rating": 4.22,
+    "avg_rating": 4.15,
     "rating_band": "4",
     "variant": "small dogs"
   },
@@ -2828,8 +2827,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural dental training preventive",
-    "avg_rating": 1.88,
-    "rating_band": "1-2",
+    "avg_rating": 2.75,
+    "rating_band": "3",
     "variant": "medium dogs"
   },
   {
@@ -2843,8 +2842,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural dental training preventive",
-    "avg_rating": 2.67,
-    "rating_band": "3"
+    "avg_rating": 2.48,
+    "rating_band": "1-2"
   },
   {
     "sku": "SKU-PT-0203",
@@ -2855,7 +2854,7 @@
     "price_eur": 21.11,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.45,
+    "avg_rating": 4.28,
     "rating_band": "4"
   },
   {
@@ -2867,7 +2866,7 @@
     "price_eur": 21.99,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.27,
+    "avg_rating": 3.91,
     "rating_band": "4"
   },
   {
@@ -2879,8 +2878,8 @@
     "price_eur": 20.0,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 3.43,
-    "rating_band": "3",
+    "avg_rating": 3.54,
+    "rating_band": "4",
     "variant": "small"
   },
   {
@@ -2892,7 +2891,7 @@
     "price_eur": 20.89,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.29,
+    "avg_rating": 3.8,
     "rating_band": "4",
     "variant": "medium"
   },
@@ -2905,7 +2904,7 @@
     "price_eur": 18.59,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.17,
+    "avg_rating": 4.06,
     "rating_band": "4",
     "variant": "small"
   },
@@ -2918,7 +2917,7 @@
     "price_eur": 21.46,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.19,
+    "avg_rating": 3.92,
     "rating_band": "4",
     "variant": "medium"
   },
@@ -2931,7 +2930,7 @@
     "price_eur": 17.05,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 3.6,
+    "avg_rating": 3.65,
     "rating_band": "4",
     "variant": "large"
   },
@@ -2944,8 +2943,7 @@
     "price_eur": 23.79,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "unrated"
   },
   {
     "sku": "SKU-PT-0211",
@@ -2956,7 +2954,7 @@
     "price_eur": 20.05,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 3.96,
+    "avg_rating": 3.75,
     "rating_band": "4",
     "variant": "small"
   },
@@ -2969,7 +2967,7 @@
     "price_eur": 24.87,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.44,
+    "avg_rating": 4.28,
     "rating_band": "4",
     "variant": "medium"
   },
@@ -2982,7 +2980,7 @@
     "price_eur": 20.71,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.21,
+    "avg_rating": 3.96,
     "rating_band": "4",
     "variant": "large"
   },
@@ -2995,7 +2993,7 @@
     "price_eur": 22.14,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.54,
+    "avg_rating": 4.5,
     "rating_band": "5"
   },
   {
@@ -3007,7 +3005,7 @@
     "price_eur": 22.29,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.44,
+    "avg_rating": 4.3,
     "rating_band": "4",
     "variant": "small"
   },
@@ -3020,7 +3018,7 @@
     "price_eur": 23.14,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.12,
+    "avg_rating": 4.04,
     "rating_band": "4",
     "variant": "medium"
   },
@@ -3033,7 +3031,7 @@
     "price_eur": 20.18,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 3.83,
+    "avg_rating": 3.88,
     "rating_band": "4",
     "variant": "small"
   },
@@ -3046,8 +3044,8 @@
     "price_eur": 24.38,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 3.55,
-    "rating_band": "4",
+    "avg_rating": 3.43,
+    "rating_band": "3",
     "variant": "medium"
   },
   {
@@ -3059,7 +3057,7 @@
     "price_eur": 20.83,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 1.33,
+    "avg_rating": 2.0,
     "rating_band": "1-2"
   },
   {
@@ -3071,8 +3069,7 @@
     "price_eur": 14.05,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 3.67,
-    "rating_band": "4"
+    "rating_band": "unrated"
   },
   {
     "sku": "SKU-PT-0221",
@@ -3083,8 +3080,8 @@
     "price_eur": 11.2,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 3.0,
-    "rating_band": "3"
+    "avg_rating": 4.0,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0222",
@@ -3095,7 +3092,8 @@
     "price_eur": 11.28,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "rating_band": "unrated",
+    "avg_rating": 3.4,
+    "rating_band": "3",
     "variant": "small"
   },
   {
@@ -3107,8 +3105,8 @@
     "price_eur": 12.22,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 5.0,
-    "rating_band": "5",
+    "avg_rating": 4.0,
+    "rating_band": "4",
     "variant": "medium"
   },
   {
@@ -3120,8 +3118,8 @@
     "price_eur": 11.38,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 3.5,
-    "rating_band": "4",
+    "avg_rating": 2.0,
+    "rating_band": "1-2",
     "variant": "small"
   },
   {
@@ -3146,8 +3144,8 @@
     "price_eur": 12.54,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 4.4,
-    "rating_band": "4",
+    "avg_rating": 4.6,
+    "rating_band": "5",
     "variant": "large"
   },
   {
@@ -3159,8 +3157,8 @@
     "price_eur": 13.14,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 5.0,
-    "rating_band": "5"
+    "avg_rating": 4.0,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0228",
@@ -3184,8 +3182,8 @@
     "price_eur": 13.06,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 3.83,
-    "rating_band": "4",
+    "avg_rating": 3.17,
+    "rating_band": "3",
     "variant": "medium"
   },
   {
@@ -3197,8 +3195,8 @@
     "price_eur": 13.4,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 4.33,
-    "rating_band": "4"
+    "avg_rating": 5.0,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0231",
@@ -3209,8 +3207,8 @@
     "price_eur": 13.82,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "avg_rating": 2.0,
+    "rating_band": "1-2"
   },
   {
     "sku": "SKU-PT-0232",
@@ -3221,7 +3219,7 @@
     "price_eur": 11.8,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 4.0,
+    "avg_rating": 4.2,
     "rating_band": "4"
   },
   {
@@ -3245,7 +3243,7 @@
     "price_eur": 12.24,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 3.5,
+    "avg_rating": 4.0,
     "rating_band": "4",
     "variant": "medium"
   },
@@ -3258,7 +3256,7 @@
     "price_eur": 11.73,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 3.5,
+    "avg_rating": 4.0,
     "rating_band": "4",
     "variant": "large"
   },
@@ -3271,8 +3269,8 @@
     "price_eur": 10.75,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 3.75,
-    "rating_band": "4",
+    "avg_rating": 4.8,
+    "rating_band": "5",
     "variant": "small"
   },
   {
@@ -3284,7 +3282,7 @@
     "price_eur": 13.12,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 3.0,
+    "avg_rating": 2.89,
     "rating_band": "3",
     "variant": "medium"
   },
@@ -3297,7 +3295,8 @@
     "price_eur": 12.75,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "rating_band": "unrated",
+    "avg_rating": 4.0,
+    "rating_band": "4",
     "variant": "large"
   },
   {
@@ -3309,8 +3308,8 @@
     "price_eur": 13.99,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 5.0,
-    "rating_band": "5",
+    "avg_rating": 4.0,
+    "rating_band": "4",
     "variant": "small"
   },
   {
@@ -3322,8 +3321,8 @@
     "price_eur": 12.55,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 5.0,
-    "rating_band": "5",
+    "avg_rating": 4.0,
+    "rating_band": "4",
     "variant": "medium"
   },
   {
@@ -3335,7 +3334,7 @@
     "price_eur": 18.84,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "avg_rating": 4.0,
+    "avg_rating": 4.2,
     "rating_band": "4"
   },
   {
@@ -3347,7 +3346,7 @@
     "price_eur": 19.67,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "avg_rating": 2.5,
+    "avg_rating": 3.0,
     "rating_band": "3",
     "variant": "single"
   },
@@ -3360,7 +3359,7 @@
     "price_eur": 21.09,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "avg_rating": 4.75,
+    "avg_rating": 5.0,
     "rating_band": "5",
     "variant": "twin pack"
   },
@@ -3373,7 +3372,7 @@
     "price_eur": 17.78,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "avg_rating": 5.0,
+    "avg_rating": 4.5,
     "rating_band": "5",
     "variant": "triple pack"
   },
@@ -3386,8 +3385,8 @@
     "price_eur": 19.51,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "avg_rating": 4.75,
-    "rating_band": "5",
+    "avg_rating": 4.0,
+    "rating_band": "4",
     "variant": "single"
   },
   {
@@ -3399,7 +3398,7 @@
     "price_eur": 21.09,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "avg_rating": 4.75,
+    "avg_rating": 4.5,
     "rating_band": "5",
     "variant": "twin pack"
   },
@@ -3412,8 +3411,8 @@
     "price_eur": 19.67,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "avg_rating": 3.0,
-    "rating_band": "3",
+    "avg_rating": 4.0,
+    "rating_band": "4",
     "variant": "single"
   },
   {
@@ -3425,7 +3424,7 @@
     "price_eur": 17.57,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "avg_rating": 4.25,
+    "avg_rating": 4.0,
     "rating_band": "4",
     "variant": "twin pack"
   },
@@ -3438,7 +3437,7 @@
     "price_eur": 14.66,
     "tax_class": "standard",
     "tags": "mass spa everyday",
-    "avg_rating": 1.5,
+    "avg_rating": 1.0,
     "rating_band": "1-2",
     "variant": "single"
   },
@@ -3451,8 +3450,8 @@
     "price_eur": 16.99,
     "tax_class": "standard",
     "tags": "mass spa everyday",
-    "avg_rating": 3.67,
-    "rating_band": "4",
+    "avg_rating": 4.5,
+    "rating_band": "5",
     "variant": "single"
   },
   {
@@ -3464,8 +3463,8 @@
     "price_eur": 12.62,
     "tax_class": "standard",
     "tags": "mass spa everyday",
-    "avg_rating": 2.0,
-    "rating_band": "1-2",
+    "avg_rating": 2.67,
+    "rating_band": "3",
     "variant": "single"
   },
   {
@@ -3479,7 +3478,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble",
-    "avg_rating": 4.29,
+    "avg_rating": 4.0,
     "rating_band": "4"
   },
   {
@@ -3493,7 +3492,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium senior-care complete kibble value-bundle",
-    "avg_rating": 4.0,
+    "avg_rating": 4.17,
     "rating_band": "4"
   },
   {
@@ -3507,7 +3506,7 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium diet complete kibble",
-    "avg_rating": 5.0,
+    "avg_rating": 4.5,
     "rating_band": "5"
   },
   {
@@ -3521,7 +3520,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 4.8,
+    "avg_rating": 5.0,
     "rating_band": "5"
   },
   {
@@ -3535,7 +3534,7 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 4.08,
+    "avg_rating": 3.55,
     "rating_band": "4"
   },
   {
@@ -3549,8 +3548,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 3.5,
-    "rating_band": "4"
+    "avg_rating": 2.0,
+    "rating_band": "1-2"
   },
   {
     "sku": "SKU-PT-0258",
@@ -3563,8 +3562,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble",
-    "avg_rating": 3.33,
-    "rating_band": "3"
+    "avg_rating": 3.75,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0259",
@@ -3577,8 +3576,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "avg_rating": 4.5,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0260",
@@ -3591,8 +3590,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "avg_rating": 4.5,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0261",
@@ -3605,8 +3604,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium senior-care complete kibble",
-    "avg_rating": 4.6,
-    "rating_band": "5"
+    "avg_rating": 4.38,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0262",
@@ -3619,7 +3618,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 4.58,
+    "avg_rating": 4.6,
     "rating_band": "5"
   },
   {
@@ -3633,7 +3632,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "rating_band": "unrated"
+    "avg_rating": 3.67,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0264",
@@ -3646,7 +3646,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium indoor-cat complete kibble",
-    "rating_band": "unrated"
+    "avg_rating": 4.0,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0265",
@@ -3659,8 +3660,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete kibble",
-    "avg_rating": 3.67,
-    "rating_band": "4"
+    "avg_rating": 3.29,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0266",
@@ -3673,7 +3674,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium senior-care complete kibble",
-    "avg_rating": 4.5,
+    "avg_rating": 4.67,
     "rating_band": "5"
   },
   {
@@ -3687,7 +3688,7 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 2.0,
+    "avg_rating": 1.5,
     "rating_band": "1-2"
   },
   {
@@ -3701,8 +3702,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "avg_rating": 3.25,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0269",
@@ -3715,7 +3716,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble value-bundle",
-    "avg_rating": 4.0,
+    "avg_rating": 3.5,
     "rating_band": "4"
   },
   {
@@ -3729,8 +3730,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete kibble value-bundle",
-    "avg_rating": 3.25,
-    "rating_band": "3"
+    "avg_rating": 2.33,
+    "rating_band": "1-2"
   },
   {
     "sku": "SKU-PT-0271",
@@ -3743,8 +3744,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 3.29,
-    "rating_band": "3"
+    "avg_rating": 3.83,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0272",
@@ -3757,8 +3758,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 3.5,
-    "rating_band": "4",
+    "avg_rating": 3.0,
+    "rating_band": "3",
     "variant": "classic recipe"
   },
   {
@@ -3772,7 +3773,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble",
-    "avg_rating": 4.2,
+    "avg_rating": 3.75,
     "rating_band": "4"
   },
   {
@@ -3786,7 +3787,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 4.67,
+    "avg_rating": 4.75,
     "rating_band": "5",
     "variant": "light recipe"
   },
@@ -3801,7 +3802,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble value-bundle",
-    "avg_rating": 1.0,
+    "avg_rating": 1.71,
     "rating_band": "1-2"
   },
   {
@@ -3815,7 +3816,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium indoor-cat complete kibble value-bundle",
-    "avg_rating": 4.33,
+    "avg_rating": 3.6,
     "rating_band": "4"
   },
   {
@@ -3829,7 +3830,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete kibble value-bundle",
-    "avg_rating": 4.29,
+    "avg_rating": 3.75,
     "rating_band": "4"
   },
   {
@@ -3857,8 +3858,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium indoor-cat complete kibble value-bundle",
-    "avg_rating": 5.0,
-    "rating_band": "5",
+    "avg_rating": 4.0,
+    "rating_band": "4",
     "variant": "classic recipe"
   },
   {
@@ -3872,7 +3873,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium indoor-cat complete kibble",
-    "avg_rating": 5.0,
+    "avg_rating": 4.5,
     "rating_band": "5"
   },
   {
@@ -3900,8 +3901,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium indoor-cat complete kibble value-bundle",
-    "avg_rating": 4.0,
-    "rating_band": "4",
+    "avg_rating": 4.5,
+    "rating_band": "5",
     "variant": "light recipe"
   },
   {
@@ -3915,8 +3916,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium senior-care complete kibble",
-    "avg_rating": 4.5,
-    "rating_band": "5"
+    "avg_rating": 4.0,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0284",
@@ -3929,7 +3930,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble",
-    "avg_rating": 3.62,
+    "avg_rating": 3.6,
     "rating_band": "4"
   },
   {
@@ -3958,7 +3959,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "rating_band": "unrated",
+    "avg_rating": 4.5,
+    "rating_band": "5",
     "variant": "light recipe"
   },
   {
@@ -3972,8 +3974,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 3.71,
-    "rating_band": "4"
+    "avg_rating": 3.38,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0288",
@@ -4000,8 +4002,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete kibble",
-    "avg_rating": 3.0,
-    "rating_band": "3"
+    "avg_rating": 4.0,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0290",
@@ -4014,7 +4016,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 2.0,
+    "avg_rating": 1.0,
     "rating_band": "1-2"
   },
   {
@@ -4028,8 +4030,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 5.0,
-    "rating_band": "5"
+    "avg_rating": 4.17,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0292",
@@ -4042,7 +4044,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble",
-    "avg_rating": 4.0,
+    "avg_rating": 3.83,
     "rating_band": "4"
   },
   {
@@ -4056,8 +4058,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium indoor-cat complete kibble value-bundle",
-    "avg_rating": 4.33,
-    "rating_band": "4"
+    "avg_rating": 2.0,
+    "rating_band": "1-2"
   },
   {
     "sku": "SKU-PT-0294",
@@ -4070,8 +4072,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium indoor-cat complete kibble value-bundle",
-    "avg_rating": 4.83,
-    "rating_band": "5"
+    "avg_rating": 4.33,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0295",
@@ -4084,7 +4086,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium diet complete kibble",
-    "rating_band": "unrated"
+    "avg_rating": 4.2,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0296",
@@ -4097,8 +4100,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium diet complete kibble value-bundle",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "avg_rating": 2.0,
+    "rating_band": "1-2"
   },
   {
     "sku": "SKU-PT-0297",
@@ -4111,8 +4114,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble",
-    "avg_rating": 3.6,
-    "rating_band": "4"
+    "avg_rating": 2.4,
+    "rating_band": "1-2"
   },
   {
     "sku": "SKU-PT-0298",
@@ -4125,7 +4128,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete kibble value-bundle",
-    "avg_rating": 3.55,
+    "avg_rating": 4.25,
     "rating_band": "4"
   },
   {
@@ -4139,7 +4142,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "rating_band": "unrated"
+    "avg_rating": 3.5,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0300",
@@ -4152,7 +4156,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 3.75,
+    "avg_rating": 4.25,
     "rating_band": "4"
   },
   {
@@ -4166,8 +4170,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium diet complete kibble value-bundle",
-    "avg_rating": 3.12,
-    "rating_band": "3"
+    "avg_rating": 3.5,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0302",
@@ -4180,8 +4184,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 5.0,
-    "rating_band": "5"
+    "avg_rating": 3.86,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0303",
@@ -4194,8 +4198,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium indoor-cat complete kibble value-bundle",
-    "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "unrated"
   },
   {
     "sku": "SKU-PT-0304",
@@ -4208,7 +4211,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble",
-    "avg_rating": 3.92,
+    "avg_rating": 3.71,
     "rating_band": "4"
   },
   {
@@ -4222,7 +4225,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium indoor-cat complete kibble",
-    "avg_rating": 4.55,
+    "avg_rating": 5.0,
     "rating_band": "5"
   },
   {
@@ -4236,8 +4239,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble value-bundle",
-    "avg_rating": 4.5,
-    "rating_band": "5"
+    "avg_rating": 3.61,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0307",
@@ -4250,7 +4253,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium senior-care complete kibble value-bundle",
-    "avg_rating": 4.33,
+    "avg_rating": 3.5,
     "rating_band": "4"
   },
   {
@@ -4264,7 +4267,7 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 4.33,
+    "avg_rating": 4.0,
     "rating_band": "4"
   },
   {
@@ -4278,7 +4281,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium senior-care complete kibble",
-    "avg_rating": 4.36,
+    "avg_rating": 4.43,
     "rating_band": "4"
   },
   {
@@ -4292,7 +4295,7 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium diet complete kibble",
-    "avg_rating": 4.12,
+    "avg_rating": 3.5,
     "rating_band": "4"
   },
   {
@@ -4306,8 +4309,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 5.0,
-    "rating_band": "5",
+    "avg_rating": 4.2,
+    "rating_band": "4",
     "variant": "classic recipe"
   },
   {
@@ -4321,8 +4324,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 1.0,
-    "rating_band": "1-2",
+    "avg_rating": 3.0,
+    "rating_band": "3",
     "variant": "light recipe"
   },
   {
@@ -4336,7 +4339,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 4.0,
+    "avg_rating": 3.5,
     "rating_band": "4"
   },
   {
@@ -4350,7 +4353,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete kibble",
-    "avg_rating": 4.19,
+    "avg_rating": 3.88,
     "rating_band": "4"
   },
   {
@@ -4364,7 +4367,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 4.75,
+    "avg_rating": 4.73,
     "rating_band": "5"
   },
   {
@@ -4378,8 +4381,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium indoor-cat complete kibble",
-    "avg_rating": 5.0,
-    "rating_band": "5"
+    "avg_rating": 4.0,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0317",
@@ -4392,8 +4395,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete kibble value-bundle",
-    "avg_rating": 4.14,
-    "rating_band": "4"
+    "avg_rating": 3.29,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0318",
@@ -4406,7 +4409,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete kibble",
-    "avg_rating": 4.0,
+    "avg_rating": 4.29,
     "rating_band": "4"
   },
   {
@@ -4420,8 +4423,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 4.4,
-    "rating_band": "4"
+    "avg_rating": 2.33,
+    "rating_band": "1-2"
   },
   {
     "sku": "SKU-PT-0320",
@@ -4434,7 +4437,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble value-bundle",
-    "avg_rating": 3.25,
+    "avg_rating": 3.33,
     "rating_band": "3"
   },
   {
@@ -4448,7 +4451,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble",
-    "avg_rating": 4.72,
+    "avg_rating": 4.5,
     "rating_band": "5"
   },
   {
@@ -4462,8 +4465,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble",
-    "avg_rating": 4.5,
-    "rating_band": "5"
+    "avg_rating": 3.4,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0323",
@@ -4490,8 +4493,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium diet complete kibble",
-    "avg_rating": 3.75,
-    "rating_band": "4",
+    "avg_rating": 5.0,
+    "rating_band": "5",
     "variant": "classic recipe"
   },
   {
@@ -4505,8 +4508,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium diet complete kibble",
-    "avg_rating": 2.0,
-    "rating_band": "1-2",
+    "avg_rating": 3.6,
+    "rating_band": "4",
     "variant": "light recipe"
   },
   {
@@ -4520,8 +4523,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete kibble value-bundle",
-    "avg_rating": 3.25,
-    "rating_band": "3"
+    "avg_rating": 3.67,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0327",
@@ -4534,7 +4537,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 4.57,
+    "avg_rating": 4.5,
     "rating_band": "5"
   },
   {
@@ -4548,7 +4551,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium senior-care complete kibble",
-    "avg_rating": 4.31,
+    "avg_rating": 4.0,
     "rating_band": "4"
   },
   {
@@ -4562,7 +4565,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete kibble value-bundle",
-    "avg_rating": 3.82,
+    "avg_rating": 4.0,
     "rating_band": "4"
   },
   {
@@ -4576,7 +4579,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium senior-care complete kibble",
-    "avg_rating": 3.88,
+    "avg_rating": 4.25,
     "rating_band": "4"
   },
   {
@@ -4590,7 +4593,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete kibble value-bundle",
-    "avg_rating": 3.2,
+    "avg_rating": 3.3,
     "rating_band": "3"
   },
   {
@@ -4604,8 +4607,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble",
-    "avg_rating": 3.5,
-    "rating_band": "4"
+    "avg_rating": 3.0,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0333",
@@ -4618,8 +4621,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "premium diet complete kibble",
-    "avg_rating": 5.0,
-    "rating_band": "5"
+    "avg_rating": 3.75,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0334",
@@ -4632,7 +4635,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium indoor-cat complete kibble value-bundle",
-    "rating_band": "unrated"
+    "avg_rating": 1.33,
+    "rating_band": "1-2"
   },
   {
     "sku": "SKU-PT-0335",
@@ -4645,8 +4649,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium complete kibble value-bundle",
-    "avg_rating": 3.5,
-    "rating_band": "4"
+    "avg_rating": 3.2,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0336",
@@ -4659,8 +4663,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium indoor-cat complete kibble",
-    "avg_rating": 4.6,
-    "rating_band": "5"
+    "avg_rating": 4.29,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0337",
@@ -4673,8 +4677,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete kibble value-bundle",
-    "avg_rating": 4.08,
-    "rating_band": "4"
+    "avg_rating": 3.25,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0338",
@@ -4687,8 +4691,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "mass indoor-cat complete kibble value-bundle",
-    "avg_rating": 4.6,
-    "rating_band": "5"
+    "avg_rating": 4.4,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0339",
@@ -4701,7 +4705,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "mass complete kibble value-bundle",
-    "avg_rating": 2.5,
+    "avg_rating": 3.0,
     "rating_band": "3"
   },
   {
@@ -4715,8 +4719,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "mass diet complete kibble value-bundle",
-    "avg_rating": 3.5,
-    "rating_band": "4"
+    "avg_rating": 1.0,
+    "rating_band": "1-2"
   },
   {
     "sku": "SKU-PT-0341",
@@ -4729,8 +4733,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "mass senior-care complete kibble value-bundle",
-    "avg_rating": 4.62,
-    "rating_band": "5"
+    "avg_rating": 4.2,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0342",
@@ -4743,7 +4747,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "mass complete kibble",
-    "rating_band": "unrated"
+    "avg_rating": 4.2,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0343",
@@ -4756,7 +4761,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "mass complete kibble",
-    "avg_rating": 4.06,
+    "avg_rating": 3.81,
     "rating_band": "4"
   },
   {
@@ -4770,8 +4775,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural complete kibble value-bundle",
-    "avg_rating": 2.5,
-    "rating_band": "3"
+    "avg_rating": 1.0,
+    "rating_band": "1-2"
   },
   {
     "sku": "SKU-PT-0345",
@@ -4784,8 +4789,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "mass hypoallergenic complete kibble value-bundle",
-    "avg_rating": 3.75,
-    "rating_band": "4"
+    "avg_rating": 3.22,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0346",
@@ -4798,7 +4803,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "mass indoor-cat complete kibble",
-    "avg_rating": 4.0,
+    "avg_rating": 4.33,
     "rating_band": "4"
   },
   {
@@ -4812,8 +4817,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "mass complete kibble",
-    "avg_rating": 4.6,
-    "rating_band": "5"
+    "avg_rating": 3.5,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0348",
@@ -4826,7 +4831,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural complete kibble value-bundle",
-    "avg_rating": 3.86,
+    "avg_rating": 3.67,
     "rating_band": "4"
   },
   {
@@ -4838,8 +4843,8 @@
     "price_eur": 98.32,
     "tax_class": "food-reduced",
     "tags": "mass diet complete kibble value-bundle",
-    "avg_rating": 3.33,
-    "rating_band": "3"
+    "avg_rating": 4.17,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0350",
@@ -4852,8 +4857,8 @@
     "dietary": "weight-control",
     "tax_class": "food-reduced",
     "tags": "mass diet complete kibble",
-    "avg_rating": 3.0,
-    "rating_band": "3"
+    "avg_rating": 4.0,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0351",
@@ -4866,7 +4871,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "mass complete kibble",
-    "rating_band": "unrated"
+    "avg_rating": 4.33,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0352",
@@ -4879,8 +4885,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass complete kibble value-bundle",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "unrated"
   },
   {
     "sku": "SKU-PT-0353",
@@ -4893,7 +4898,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass complete kibble value-bundle",
-    "avg_rating": 2.0,
+    "avg_rating": 1.0,
     "rating_band": "1-2"
   },
   {
@@ -4907,7 +4912,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "mass senior-care complete kibble",
-    "avg_rating": 4.14,
+    "avg_rating": 3.57,
     "rating_band": "4"
   },
   {
@@ -4921,7 +4926,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural complete kibble",
-    "avg_rating": 4.0,
+    "avg_rating": 3.75,
     "rating_band": "4"
   },
   {
@@ -4935,8 +4940,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "mass hypoallergenic complete kibble value-bundle",
-    "avg_rating": 4.86,
-    "rating_band": "5"
+    "avg_rating": 4.43,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0357",
@@ -4949,8 +4954,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "mass indoor-cat complete kibble",
-    "avg_rating": 3.5,
-    "rating_band": "4"
+    "avg_rating": 3.0,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0358",
@@ -4963,7 +4968,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural complete kibble value-bundle",
-    "avg_rating": 3.71,
+    "avg_rating": 3.5,
     "rating_band": "4"
   },
   {
@@ -4977,8 +4982,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass complete kibble",
-    "avg_rating": 4.62,
-    "rating_band": "5"
+    "avg_rating": 4.3,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0360",
@@ -4991,7 +4996,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium indoor-cat complete pouch",
-    "avg_rating": 5.0,
+    "avg_rating": 4.67,
     "rating_band": "5",
     "variant": "classic recipe"
   },
@@ -5006,8 +5011,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 4.71,
-    "rating_band": "5"
+    "avg_rating": 3.5,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0362",
@@ -5020,7 +5025,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium indoor-cat complete pouch",
-    "avg_rating": 4.0,
+    "avg_rating": 3.88,
     "rating_band": "4",
     "variant": "light recipe"
   },
@@ -5035,7 +5040,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete pouch",
-    "avg_rating": 4.45,
+    "avg_rating": 4.04,
     "rating_band": "4"
   },
   {
@@ -5049,8 +5054,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 3.0,
-    "rating_band": "3"
+    "avg_rating": 4.0,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0365",
@@ -5063,7 +5068,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete pouch",
-    "avg_rating": 4.17,
+    "avg_rating": 3.56,
     "rating_band": "4"
   },
   {
@@ -5075,8 +5080,8 @@
     "price_eur": 0.93,
     "weight_kg": 0.085,
     "tags": "premium complete pouch",
-    "avg_rating": 4.71,
-    "rating_band": "5"
+    "avg_rating": 3.8,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0367",
@@ -5089,8 +5094,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "avg_rating": 3.0,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0368",
@@ -5103,7 +5108,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium senior-care complete pouch",
-    "avg_rating": 4.17,
+    "avg_rating": 3.62,
     "rating_band": "4"
   },
   {
@@ -5132,7 +5137,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 4.17,
+    "avg_rating": 3.5,
     "rating_band": "4",
     "variant": "light recipe"
   },
@@ -5147,8 +5152,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 3.6,
-    "rating_band": "4"
+    "avg_rating": 2.75,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0372",
@@ -5161,7 +5166,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium indoor-cat complete pouch",
-    "avg_rating": 4.25,
+    "avg_rating": 4.3,
     "rating_band": "4"
   },
   {
@@ -5175,7 +5180,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete pouch",
-    "avg_rating": 4.55,
+    "avg_rating": 4.67,
     "rating_band": "5"
   },
   {
@@ -5187,7 +5192,7 @@
     "price_eur": 1.45,
     "dietary": "indoor",
     "tags": "premium indoor-cat complete pouch",
-    "avg_rating": 4.43,
+    "avg_rating": 4.18,
     "rating_band": "4"
   },
   {
@@ -5201,7 +5206,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete pouch",
-    "avg_rating": 4.54,
+    "avg_rating": 5.0,
     "rating_band": "5",
     "variant": "classic recipe"
   },
@@ -5216,7 +5221,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 4.11,
+    "avg_rating": 3.77,
     "rating_band": "4"
   },
   {
@@ -5230,7 +5235,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete pouch",
-    "avg_rating": 4.3,
+    "avg_rating": 4.2,
     "rating_band": "4",
     "variant": "light recipe"
   },
@@ -5259,8 +5264,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "avg_rating": 3.25,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0380",
@@ -5273,7 +5278,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium natural complete pouch",
-    "avg_rating": 1.8,
+    "avg_rating": 2.0,
     "rating_band": "1-2"
   },
   {
@@ -5287,7 +5292,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 4.55,
+    "avg_rating": 4.5,
     "rating_band": "5"
   },
   {
@@ -5301,7 +5306,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete pouch",
-    "avg_rating": 3.88,
+    "avg_rating": 4.38,
     "rating_band": "4"
   },
   {
@@ -5315,7 +5320,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium senior-care complete pouch",
-    "avg_rating": 5.0,
+    "avg_rating": 4.75,
     "rating_band": "5"
   },
   {
@@ -5329,7 +5334,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium indoor-cat complete pouch",
-    "avg_rating": 4.44,
+    "avg_rating": 4.0,
     "rating_band": "4"
   },
   {
@@ -5343,8 +5348,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 4.5,
-    "rating_band": "5"
+    "avg_rating": 1.0,
+    "rating_band": "1-2"
   },
   {
     "sku": "SKU-PT-0386",
@@ -5357,7 +5362,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete pouch",
-    "avg_rating": 4.64,
+    "avg_rating": 4.53,
     "rating_band": "5"
   },
   {
@@ -5371,7 +5376,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 4.12,
+    "avg_rating": 3.7,
     "rating_band": "4",
     "variant": "classic recipe"
   },
@@ -5384,8 +5389,8 @@
     "price_eur": 4.34,
     "weight_kg": 0.4,
     "tags": "premium complete pouch",
-    "avg_rating": 4.8,
-    "rating_band": "5",
+    "avg_rating": 4.38,
+    "rating_band": "4",
     "variant": "light recipe"
   },
   {
@@ -5399,8 +5404,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 2.0,
-    "rating_band": "1-2"
+    "avg_rating": 3.57,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0390",
@@ -5413,8 +5418,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 4.0,
-    "rating_band": "4",
+    "avg_rating": 2.5,
+    "rating_band": "3",
     "variant": "classic recipe"
   },
   {
@@ -5428,8 +5433,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 4.5,
-    "rating_band": "5",
+    "avg_rating": 3.75,
+    "rating_band": "4",
     "variant": "light recipe"
   },
   {
@@ -5457,7 +5462,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 4.43,
+    "avg_rating": 3.71,
     "rating_band": "4"
   },
   {
@@ -5471,8 +5476,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "premium hypoallergenic complete pouch",
-    "avg_rating": 1.67,
-    "rating_band": "1-2"
+    "avg_rating": 2.8,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0395",
@@ -5485,7 +5490,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "premium senior-care complete pouch",
-    "avg_rating": 4.22,
+    "avg_rating": 3.94,
     "rating_band": "4"
   },
   {
@@ -5499,7 +5504,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "premium complete pouch",
-    "avg_rating": 3.78,
+    "avg_rating": 4.0,
     "rating_band": "4"
   },
   {
@@ -5513,7 +5518,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "mass indoor-cat complete pouch",
-    "avg_rating": 4.33,
+    "avg_rating": 4.36,
     "rating_band": "4"
   },
   {
@@ -5525,8 +5530,8 @@
     "price_eur": 1.08,
     "dietary": "grain-free",
     "tags": "mass natural complete pouch",
-    "avg_rating": 3.75,
-    "rating_band": "4"
+    "avg_rating": 3.22,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0399",
@@ -5539,8 +5544,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "mass hypoallergenic complete pouch",
-    "avg_rating": 3.6,
-    "rating_band": "4"
+    "avg_rating": 2.88,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0400",
@@ -5553,7 +5558,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "mass complete pouch",
-    "avg_rating": 4.29,
+    "avg_rating": 3.88,
     "rating_band": "4"
   },
   {
@@ -5567,7 +5572,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass complete pouch",
-    "avg_rating": 4.33,
+    "avg_rating": 4.38,
     "rating_band": "4"
   },
   {
@@ -5581,8 +5586,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "mass complete pouch",
-    "avg_rating": 4.57,
-    "rating_band": "5"
+    "avg_rating": 4.0,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0403",
@@ -5595,7 +5600,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "mass complete pouch",
-    "avg_rating": 4.12,
+    "avg_rating": 3.9,
     "rating_band": "4",
     "variant": "classic recipe"
   },
@@ -5610,7 +5615,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "mass indoor-cat complete pouch",
-    "avg_rating": 4.4,
+    "avg_rating": 4.33,
     "rating_band": "4"
   },
   {
@@ -5624,7 +5629,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass complete pouch",
-    "avg_rating": 4.38,
+    "avg_rating": 4.0,
     "rating_band": "4",
     "variant": "light recipe"
   },
@@ -5639,7 +5644,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "mass complete pouch",
-    "avg_rating": 4.33,
+    "avg_rating": 4.36,
     "rating_band": "4"
   },
   {
@@ -5653,8 +5658,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "mass complete pouch",
-    "avg_rating": 3.0,
-    "rating_band": "3",
+    "avg_rating": 2.43,
+    "rating_band": "1-2",
     "variant": "classic recipe"
   },
   {
@@ -5683,8 +5688,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "mass indoor-cat complete pouch",
-    "avg_rating": 4.5,
-    "rating_band": "5"
+    "avg_rating": 3.5,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0410",
@@ -5697,8 +5702,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass complete pouch",
-    "avg_rating": 5.0,
-    "rating_band": "5",
+    "avg_rating": 4.0,
+    "rating_band": "4",
     "variant": "multipack"
   },
   {
@@ -5712,7 +5717,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "mass complete pouch",
-    "avg_rating": 4.33,
+    "avg_rating": 3.89,
     "rating_band": "4"
   },
   {
@@ -5726,7 +5731,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "mass senior-care complete pouch",
-    "avg_rating": 4.86,
+    "avg_rating": 4.5,
     "rating_band": "5"
   },
   {
@@ -5740,8 +5745,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "mass complete pouch",
-    "avg_rating": 3.8,
-    "rating_band": "4"
+    "avg_rating": 2.5,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0414",
@@ -5752,8 +5757,8 @@
     "price_eur": 1.65,
     "dietary": "senior",
     "tags": "complete pouch",
-    "avg_rating": 5.0,
-    "rating_band": "5"
+    "avg_rating": 3.0,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0415",
@@ -5764,7 +5769,7 @@
     "price_eur": 1.65,
     "weight_kg": 0.15,
     "tags": "senior-care complete pouch",
-    "avg_rating": 3.92,
+    "avg_rating": 3.73,
     "rating_band": "4"
   },
   {
@@ -5778,8 +5783,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural complete pouch",
-    "avg_rating": 3.57,
-    "rating_band": "4"
+    "avg_rating": 1.83,
+    "rating_band": "1-2"
   },
   {
     "sku": "SKU-PT-0417",
@@ -5792,8 +5797,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "complete pouch",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "avg_rating": 4.6,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0418",
@@ -5806,7 +5811,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "hypoallergenic complete pouch",
-    "avg_rating": 4.17,
+    "avg_rating": 3.7,
     "rating_band": "4"
   },
   {
@@ -5820,7 +5825,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "complete pouch",
-    "avg_rating": 3.75,
+    "avg_rating": 4.0,
     "rating_band": "4",
     "variant": "classic recipe"
   },
@@ -5835,7 +5840,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural complete pouch",
-    "avg_rating": 4.0,
+    "avg_rating": 4.2,
     "rating_band": "4"
   },
   {
@@ -5849,7 +5854,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "complete pouch",
-    "avg_rating": 3.5,
+    "avg_rating": 4.25,
     "rating_band": "4",
     "variant": "light recipe"
   },
@@ -5864,8 +5869,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "hypoallergenic complete pouch",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "avg_rating": 4.86,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0423",
@@ -5878,7 +5883,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "senior-care complete pouch",
-    "avg_rating": 4.4,
+    "avg_rating": 4.0,
     "rating_band": "4"
   },
   {
@@ -5892,7 +5897,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural complete pouch",
-    "avg_rating": 4.0,
+    "avg_rating": 4.3,
     "rating_band": "4"
   },
   {
@@ -5906,7 +5911,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural complete pouch",
-    "avg_rating": 3.85,
+    "avg_rating": 4.33,
     "rating_band": "4"
   },
   {
@@ -5920,8 +5925,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "senior-care complete pouch",
-    "avg_rating": 4.75,
-    "rating_band": "5"
+    "avg_rating": 4.25,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0427",
@@ -5934,8 +5939,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "hypoallergenic complete pouch",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "avg_rating": 3.0,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0428",
@@ -5946,8 +5951,8 @@
     "price_eur": 4.11,
     "weight_kg": 0.4,
     "tags": "indoor-cat complete pouch",
-    "avg_rating": 3.2,
-    "rating_band": "3"
+    "avg_rating": 4.0,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0429",
@@ -5960,7 +5965,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural complete pouch",
-    "avg_rating": 4.57,
+    "avg_rating": 4.75,
     "rating_band": "5"
   },
   {
@@ -5974,8 +5979,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "indoor-cat complete pouch",
-    "avg_rating": 4.75,
-    "rating_band": "5"
+    "rating_band": "unrated"
   },
   {
     "sku": "SKU-PT-0431",
@@ -5988,7 +5992,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural complete pouch",
-    "avg_rating": 4.25,
+    "avg_rating": 3.8,
     "rating_band": "4"
   },
   {
@@ -6017,7 +6021,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "complete pouch",
-    "avg_rating": 4.0,
+    "avg_rating": 4.2,
     "rating_band": "4",
     "variant": "light recipe"
   },
@@ -6032,8 +6036,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "senior-care complete pouch",
-    "avg_rating": 3.58,
-    "rating_band": "4"
+    "avg_rating": 3.48,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0435",
@@ -6046,8 +6050,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "hypoallergenic complete pouch",
-    "avg_rating": 4.55,
-    "rating_band": "5"
+    "avg_rating": 2.0,
+    "rating_band": "1-2"
   },
   {
     "sku": "SKU-PT-0436",
@@ -6060,7 +6064,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "hypoallergenic complete pouch",
-    "avg_rating": 1.0,
+    "avg_rating": 2.33,
     "rating_band": "1-2"
   },
   {
@@ -6074,7 +6078,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "complete pouch",
-    "rating_band": "unrated"
+    "avg_rating": 3.0,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0438",
@@ -6087,8 +6092,8 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "hypoallergenic complete pouch",
-    "avg_rating": 3.0,
-    "rating_band": "3"
+    "avg_rating": 2.43,
+    "rating_band": "1-2"
   },
   {
     "sku": "SKU-PT-0439",
@@ -6101,7 +6106,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "indoor-cat complete pouch",
-    "rating_band": "unrated"
+    "avg_rating": 3.25,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0440",
@@ -6114,7 +6120,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural complete pouch",
-    "avg_rating": 4.17,
+    "avg_rating": 4.14,
     "rating_band": "4"
   },
   {
@@ -6128,7 +6134,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "complete pouch",
-    "avg_rating": 4.17,
+    "avg_rating": 4.0,
     "rating_band": "4"
   },
   {
@@ -6142,8 +6148,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "senior-care complete pouch",
-    "avg_rating": 3.62,
-    "rating_band": "4"
+    "avg_rating": 3.0,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0443",
@@ -6156,8 +6162,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural complete pouch",
-    "avg_rating": 4.71,
-    "rating_band": "5"
+    "avg_rating": 4.4,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0444",
@@ -6170,7 +6176,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "senior-care complete pouch",
-    "avg_rating": 4.0,
+    "avg_rating": 3.5,
     "rating_band": "4"
   },
   {
@@ -6182,7 +6188,7 @@
     "price_eur": 1.74,
     "tax_class": "food-reduced",
     "tags": "indoor-cat complete pouch",
-    "avg_rating": 4.0,
+    "avg_rating": 4.17,
     "rating_band": "4"
   },
   {
@@ -6196,7 +6202,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "hypoallergenic complete pouch",
-    "avg_rating": 4.41,
+    "avg_rating": 4.38,
     "rating_band": "4"
   },
   {
@@ -6210,8 +6216,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "indoor-cat complete pouch",
-    "avg_rating": 4.71,
-    "rating_band": "5"
+    "avg_rating": 3.92,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0448",
@@ -6224,7 +6230,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural complete pouch",
-    "avg_rating": 4.41,
+    "avg_rating": 3.92,
     "rating_band": "4"
   },
   {
@@ -6238,7 +6244,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "senior-care complete pouch",
-    "avg_rating": 4.09,
+    "avg_rating": 3.6,
     "rating_band": "4"
   },
   {
@@ -6252,8 +6258,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "complete pouch",
-    "avg_rating": 4.6,
-    "rating_band": "5"
+    "avg_rating": 4.45,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0451",
@@ -6264,8 +6270,8 @@
     "price_eur": 1.61,
     "weight_kg": 0.1,
     "tags": "mass indoor-cat indulgent training",
-    "avg_rating": 4.5,
-    "rating_band": "5"
+    "avg_rating": 4.3,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0452",
@@ -6278,8 +6284,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural indulgent training",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "avg_rating": 3.0,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0453",
@@ -6292,8 +6298,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural indulgent training",
-    "avg_rating": 4.6,
-    "rating_band": "5"
+    "avg_rating": 3.75,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0454",
@@ -6320,8 +6326,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural indulgent training",
-    "avg_rating": 4.2,
-    "rating_band": "4"
+    "avg_rating": 2.5,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0456",
@@ -6334,8 +6340,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 4.5,
-    "rating_band": "5",
+    "avg_rating": 4.2,
+    "rating_band": "4",
     "variant": "classic"
   },
   {
@@ -6362,8 +6368,8 @@
     "price_eur": 9.16,
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 4.83,
-    "rating_band": "5"
+    "avg_rating": 4.0,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0459",
@@ -6376,7 +6382,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural indulgent training",
-    "rating_band": "unrated"
+    "avg_rating": 5.0,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0460",
@@ -6389,7 +6396,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural indulgent training",
-    "avg_rating": 4.0,
+    "avg_rating": 4.2,
     "rating_band": "4"
   },
   {
@@ -6403,8 +6410,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 4.8,
-    "rating_band": "5"
+    "avg_rating": 3.67,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0462",
@@ -6417,8 +6424,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "indulgent training",
-    "avg_rating": 4.12,
-    "rating_band": "4"
+    "avg_rating": 4.57,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0463",
@@ -6431,7 +6438,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "indulgent training",
-    "rating_band": "unrated"
+    "avg_rating": 3.75,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0464",
@@ -6444,8 +6452,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "indulgent training",
-    "avg_rating": 4.33,
-    "rating_band": "4",
+    "avg_rating": 4.67,
+    "rating_band": "5",
     "variant": "classic"
   },
   {
@@ -6459,7 +6467,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "indulgent training",
-    "avg_rating": 4.0,
+    "avg_rating": 3.5,
     "rating_band": "4",
     "variant": "soft"
   },
@@ -6474,8 +6482,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "indoor-cat indulgent training",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "avg_rating": 3.0,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0467",
@@ -6488,7 +6496,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural indulgent training",
-    "rating_band": "unrated"
+    "avg_rating": 2.5,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0468",
@@ -6501,7 +6510,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "indulgent training",
-    "avg_rating": 3.6,
+    "avg_rating": 4.0,
     "rating_band": "4"
   },
   {
@@ -6515,8 +6524,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "indulgent training",
-    "avg_rating": 4.43,
-    "rating_band": "4"
+    "avg_rating": 5.0,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0470",
@@ -6529,7 +6538,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "indoor-cat indulgent training",
-    "avg_rating": 4.25,
+    "avg_rating": 3.5,
     "rating_band": "4"
   },
   {
@@ -6543,8 +6552,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural indulgent training",
-    "avg_rating": 4.2,
-    "rating_band": "4"
+    "avg_rating": 3.38,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0472",
@@ -6557,7 +6566,7 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "natural indulgent training",
-    "avg_rating": 4.4,
+    "avg_rating": 3.6,
     "rating_band": "4"
   },
   {
@@ -6571,8 +6580,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "mass indoor-cat indulgent training",
-    "avg_rating": 3.0,
-    "rating_band": "3",
+    "avg_rating": 3.86,
+    "rating_band": "4",
     "variant": "classic"
   },
   {
@@ -6600,7 +6609,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "mass indoor-cat indulgent training",
-    "avg_rating": 4.0,
+    "avg_rating": 4.25,
     "rating_band": "4",
     "variant": "soft"
   },
@@ -6615,8 +6624,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural indulgent training",
-    "avg_rating": 2.0,
-    "rating_band": "1-2"
+    "avg_rating": 2.8,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0477",
@@ -6629,7 +6638,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "mass indoor-cat indulgent training",
-    "avg_rating": 4.0,
+    "avg_rating": 3.5,
     "rating_band": "4"
   },
   {
@@ -6643,8 +6652,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural indulgent training",
-    "avg_rating": 5.0,
-    "rating_band": "5"
+    "avg_rating": 4.29,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0479",
@@ -6657,8 +6666,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 4.67,
-    "rating_band": "5"
+    "avg_rating": 4.25,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0480",
@@ -6671,8 +6680,8 @@
     "dietary": "grain-free",
     "tax_class": "food-reduced",
     "tags": "mass natural indulgent training",
-    "avg_rating": 4.5,
-    "rating_band": "5"
+    "avg_rating": 4.2,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0481",
@@ -6685,8 +6694,8 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "mass indoor-cat indulgent training",
-    "avg_rating": 1.0,
-    "rating_band": "1-2",
+    "avg_rating": 4.5,
+    "rating_band": "5",
     "variant": "classic"
   },
   {
@@ -6700,7 +6709,7 @@
     "dietary": "indoor",
     "tax_class": "food-reduced",
     "tags": "mass indoor-cat indulgent training",
-    "avg_rating": 3.5,
+    "avg_rating": 4.25,
     "rating_band": "4",
     "variant": "soft"
   },
@@ -6714,7 +6723,7 @@
     "weight_kg": 7,
     "tax_class": "standard",
     "tags": "mass clumping absorbent",
-    "avg_rating": 4.34,
+    "avg_rating": 3.98,
     "rating_band": "4",
     "variant": "unscented"
   },
@@ -6728,7 +6737,7 @@
     "weight_kg": 7,
     "tax_class": "standard",
     "tags": "mass clumping absorbent",
-    "avg_rating": 4.42,
+    "avg_rating": 4.07,
     "rating_band": "4",
     "variant": "lavender scent"
   },
@@ -6742,8 +6751,8 @@
     "weight_kg": 12,
     "tax_class": "standard",
     "tags": "mass clumping absorbent",
-    "avg_rating": 3.04,
-    "rating_band": "3"
+    "avg_rating": 3.73,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0486",
@@ -6755,7 +6764,7 @@
     "weight_kg": 7,
     "tax_class": "standard",
     "tags": "mass clumping absorbent",
-    "avg_rating": 3.5,
+    "avg_rating": 3.57,
     "rating_band": "4",
     "variant": "unscented"
   },
@@ -6769,7 +6778,7 @@
     "weight_kg": 7,
     "tax_class": "standard",
     "tags": "mass clumping absorbent",
-    "avg_rating": 4.35,
+    "avg_rating": 4.08,
     "rating_band": "4",
     "variant": "lavender scent"
   },
@@ -6783,7 +6792,7 @@
     "weight_kg": 5,
     "tax_class": "standard",
     "tags": "mass clumping absorbent",
-    "avg_rating": 4.46,
+    "avg_rating": 4.43,
     "rating_band": "4"
   },
   {
@@ -6796,7 +6805,7 @@
     "weight_kg": 12,
     "tax_class": "standard",
     "tags": "mass clumping absorbent",
-    "avg_rating": 4.24,
+    "avg_rating": 4.0,
     "rating_band": "4"
   },
   {
@@ -6809,7 +6818,7 @@
     "weight_kg": 7,
     "tax_class": "standard",
     "tags": "mass clumping absorbent",
-    "avg_rating": 4.09,
+    "avg_rating": 3.96,
     "rating_band": "4",
     "variant": "value pack"
   },
@@ -6823,7 +6832,7 @@
     "weight_kg": 7,
     "tax_class": "standard",
     "tags": "mass clumping absorbent",
-    "avg_rating": 4.35,
+    "avg_rating": 4.08,
     "rating_band": "4",
     "variant": "unscented"
   },
@@ -6837,7 +6846,7 @@
     "weight_kg": 5,
     "tax_class": "standard",
     "tags": "mass clumping absorbent",
-    "avg_rating": 4.19,
+    "avg_rating": 4.23,
     "rating_band": "4"
   },
   {
@@ -6850,8 +6859,8 @@
     "weight_kg": 7,
     "tax_class": "standard",
     "tags": "mass clumping absorbent",
-    "avg_rating": 4.51,
-    "rating_band": "5",
+    "avg_rating": 4.3,
+    "rating_band": "4",
     "variant": "lavender scent"
   },
   {
@@ -6863,7 +6872,7 @@
     "price_eur": 21.55,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 3.94,
+    "avg_rating": 3.74,
     "rating_band": "4"
   },
   {
@@ -6875,7 +6884,7 @@
     "price_eur": 19.06,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 3.97,
+    "avg_rating": 3.69,
     "rating_band": "4",
     "variant": "extra large"
   },
@@ -6888,7 +6897,7 @@
     "price_eur": 20.29,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.03,
+    "avg_rating": 3.87,
     "rating_band": "4",
     "variant": "natural wood"
   },
@@ -6901,7 +6910,7 @@
     "price_eur": 20.29,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.36,
+    "avg_rating": 4.19,
     "rating_band": "4",
     "variant": "grey"
   },
@@ -6914,7 +6923,7 @@
     "price_eur": 16.8,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 3.71,
+    "avg_rating": 3.5,
     "rating_band": "4"
   },
   {
@@ -6926,8 +6935,8 @@
     "price_eur": 24.0,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.77,
-    "rating_band": "5"
+    "avg_rating": 4.22,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0500",
@@ -6938,7 +6947,7 @@
     "price_eur": 18.5,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.2,
+    "avg_rating": 4.12,
     "rating_band": "4"
   },
   {
@@ -6950,7 +6959,7 @@
     "price_eur": 19.45,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.43,
+    "avg_rating": 4.2,
     "rating_band": "4",
     "variant": "large"
   },
@@ -6963,8 +6972,8 @@
     "price_eur": 20.02,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 3.91,
-    "rating_band": "4"
+    "avg_rating": 3.3,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0503",
@@ -6975,8 +6984,8 @@
     "price_eur": 19.22,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 3.25,
-    "rating_band": "3",
+    "avg_rating": 3.82,
+    "rating_band": "4",
     "variant": "small"
   },
   {
@@ -6988,7 +6997,7 @@
     "price_eur": 21.09,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.0,
+    "avg_rating": 4.12,
     "rating_band": "4",
     "variant": "medium"
   },
@@ -7012,7 +7021,8 @@
     "price_eur": 12.76,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "rating_band": "unrated"
+    "avg_rating": 5.0,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0507",
@@ -7035,8 +7045,8 @@
     "price_eur": 11.82,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 5.0,
-    "rating_band": "5",
+    "avg_rating": 3.0,
+    "rating_band": "3",
     "variant": "medium"
   },
   {
@@ -7048,7 +7058,8 @@
     "price_eur": 14.16,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "rating_band": "unrated"
+    "avg_rating": 3.0,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0510",
@@ -7059,8 +7070,8 @@
     "price_eur": 13.39,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 4.5,
-    "rating_band": "5"
+    "avg_rating": 4.0,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0511",
@@ -7071,7 +7082,8 @@
     "price_eur": 12.75,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "rating_band": "unrated"
+    "avg_rating": 5.0,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0512",
@@ -7082,7 +7094,8 @@
     "price_eur": 13.28,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "rating_band": "unrated"
+    "avg_rating": 4.0,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0513",
@@ -7093,8 +7106,7 @@
     "price_eur": 13.06,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 4.5,
-    "rating_band": "5",
+    "rating_band": "unrated",
     "variant": "small"
   },
   {
@@ -7106,8 +7118,8 @@
     "price_eur": 12.32,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 4.5,
-    "rating_band": "5",
+    "avg_rating": 4.0,
+    "rating_band": "4",
     "variant": "medium"
   },
   {
@@ -7143,8 +7155,8 @@
     "price_eur": 19.11,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "avg_rating": 2.67,
-    "rating_band": "3",
+    "avg_rating": 3.5,
+    "rating_band": "4",
     "variant": "single"
   },
   {
@@ -7156,7 +7168,8 @@
     "price_eur": 17.36,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "rating_band": "unrated",
+    "avg_rating": 4.0,
+    "rating_band": "4",
     "variant": "twin pack"
   },
   {
@@ -7168,8 +7181,8 @@
     "price_eur": 18.99,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "avg_rating": 3.0,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0520",
@@ -7180,7 +7193,8 @@
     "price_eur": 19.43,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "rating_band": "unrated",
+    "avg_rating": 3.0,
+    "rating_band": "3",
     "variant": "single"
   },
   {
@@ -7192,8 +7206,8 @@
     "price_eur": 16.84,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "avg_rating": 3.0,
-    "rating_band": "3",
+    "avg_rating": 2.25,
+    "rating_band": "1-2",
     "variant": "twin pack"
   },
   {
@@ -7205,8 +7219,7 @@
     "price_eur": 20.04,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "avg_rating": 3.67,
-    "rating_band": "4",
+    "rating_band": "unrated",
     "variant": "triple pack"
   },
   {
@@ -7218,8 +7231,7 @@
     "price_eur": 15.43,
     "tax_class": "standard",
     "tags": "mass spa everyday",
-    "avg_rating": 5.0,
-    "rating_band": "5",
+    "rating_band": "unrated",
     "variant": "twin pack"
   },
   {
@@ -7244,8 +7256,8 @@
     "price_eur": 13.77,
     "tax_class": "standard",
     "tags": "mass spa everyday",
-    "avg_rating": 2.5,
-    "rating_band": "3",
+    "avg_rating": 3.5,
+    "rating_band": "4",
     "variant": "twin pack"
   },
   {
@@ -7270,7 +7282,7 @@
     "price_eur": 12.5,
     "tax_class": "standard",
     "tags": "mass spa everyday",
-    "avg_rating": 4.75,
+    "avg_rating": 4.5,
     "rating_band": "5",
     "variant": "twin pack"
   },
@@ -7283,7 +7295,8 @@
     "price_eur": 15.68,
     "tax_class": "standard",
     "tags": "mass spa everyday",
-    "rating_band": "unrated",
+    "avg_rating": 5.0,
+    "rating_band": "5",
     "variant": "triple pack"
   },
   {
@@ -7295,7 +7308,8 @@
     "price_eur": 16.55,
     "tax_class": "standard",
     "tags": "mass spa everyday",
-    "rating_band": "unrated",
+    "avg_rating": 4.0,
+    "rating_band": "4",
     "variant": "value pack"
   },
   {
@@ -7309,8 +7323,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "mass complete kibble value-bundle",
-    "avg_rating": 3.33,
-    "rating_band": "3"
+    "avg_rating": 3.5,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0531",
@@ -7323,8 +7337,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "mass complete kibble value-bundle",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "avg_rating": 3.44,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0532",
@@ -7337,8 +7351,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "mass senior-care complete kibble value-bundle",
-    "avg_rating": 4.67,
-    "rating_band": "5"
+    "avg_rating": 3.0,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0533",
@@ -7351,7 +7365,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "mass hypoallergenic complete kibble value-bundle",
-    "avg_rating": 4.8,
+    "avg_rating": 4.59,
     "rating_band": "5"
   },
   {
@@ -7365,7 +7379,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "mass senior-care complete kibble value-bundle",
-    "avg_rating": 3.6,
+    "avg_rating": 3.62,
     "rating_band": "4"
   },
   {
@@ -7379,7 +7393,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "mass complete kibble value-bundle",
-    "avg_rating": 4.25,
+    "avg_rating": 4.15,
     "rating_band": "4"
   },
   {
@@ -7407,7 +7421,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "mass senior-care complete kibble",
-    "avg_rating": 4.36,
+    "avg_rating": 4.4,
     "rating_band": "4",
     "variant": "classic recipe"
   },
@@ -7422,8 +7436,8 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "mass senior-care complete kibble value-bundle",
-    "avg_rating": 4.71,
-    "rating_band": "5"
+    "avg_rating": 4.0,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0539",
@@ -7436,7 +7450,7 @@
     "dietary": "senior",
     "tax_class": "food-reduced",
     "tags": "mass senior-care complete kibble",
-    "avg_rating": 3.0,
+    "avg_rating": 3.4,
     "rating_band": "3",
     "variant": "light recipe"
   },
@@ -7451,7 +7465,7 @@
     "dietary": "sensitive",
     "tax_class": "food-reduced",
     "tags": "mass complete kibble value-bundle",
-    "avg_rating": 4.0,
+    "avg_rating": 3.67,
     "rating_band": "4"
   },
   {
@@ -7464,8 +7478,8 @@
     "weight_kg": 0.2,
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 4.6,
-    "rating_band": "5",
+    "avg_rating": 3.67,
+    "rating_band": "4",
     "variant": "classic"
   },
   {
@@ -7478,8 +7492,8 @@
     "weight_kg": 0.1,
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 4.0,
-    "rating_band": "4",
+    "avg_rating": 2.0,
+    "rating_band": "1-2",
     "variant": "classic"
   },
   {
@@ -7492,7 +7506,7 @@
     "weight_kg": 0.2,
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 4.43,
+    "avg_rating": 3.75,
     "rating_band": "4",
     "variant": "soft"
   },
@@ -7506,7 +7520,7 @@
     "weight_kg": 0.1,
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 4.33,
+    "avg_rating": 3.8,
     "rating_band": "4",
     "variant": "soft"
   },
@@ -7520,8 +7534,8 @@
     "weight_kg": 0.2,
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 4.0,
-    "rating_band": "4",
+    "avg_rating": 4.67,
+    "rating_band": "5",
     "variant": "crunchy"
   },
   {
@@ -7534,7 +7548,7 @@
     "weight_kg": 0.5,
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 4.4,
+    "avg_rating": 3.83,
     "rating_band": "4"
   },
   {
@@ -7575,8 +7589,8 @@
     "weight_kg": 0.1,
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 4.5,
-    "rating_band": "5"
+    "avg_rating": 3.33,
+    "rating_band": "3"
   },
   {
     "sku": "SKU-PT-0550",
@@ -7602,7 +7616,8 @@
     "weight_kg": 0.5,
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "rating_band": "unrated"
+    "avg_rating": 1.0,
+    "rating_band": "1-2"
   },
   {
     "sku": "SKU-PT-0552",
@@ -7627,7 +7642,7 @@
     "weight_kg": 0.1,
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 3.5,
+    "avg_rating": 4.0,
     "rating_band": "4",
     "variant": "crunchy"
   },
@@ -7641,8 +7656,8 @@
     "weight_kg": 0.2,
     "tax_class": "food-reduced",
     "tags": "mass indulgent training",
-    "avg_rating": 3.8,
-    "rating_band": "4"
+    "avg_rating": 5.0,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0555",
@@ -7653,7 +7668,7 @@
     "price_eur": 18.33,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.33,
+    "avg_rating": 4.08,
     "rating_band": "4"
   },
   {
@@ -7665,7 +7680,7 @@
     "price_eur": 19.93,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.27,
+    "avg_rating": 4.08,
     "rating_band": "4",
     "variant": "small"
   },
@@ -7678,7 +7693,7 @@
     "price_eur": 20.21,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 3.29,
+    "avg_rating": 3.43,
     "rating_band": "3",
     "variant": "medium"
   },
@@ -7691,7 +7706,7 @@
     "price_eur": 19.59,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 1.83,
+    "avg_rating": 2.09,
     "rating_band": "1-2"
   },
   {
@@ -7703,7 +7718,7 @@
     "price_eur": 20.9,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.29,
+    "avg_rating": 3.88,
     "rating_band": "4",
     "variant": "small"
   },
@@ -7716,8 +7731,8 @@
     "price_eur": 20.44,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.67,
-    "rating_band": "5",
+    "avg_rating": 3.5,
+    "rating_band": "4",
     "variant": "medium"
   },
   {
@@ -7729,8 +7744,8 @@
     "price_eur": 23.04,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.5,
-    "rating_band": "5",
+    "avg_rating": 3.88,
+    "rating_band": "4",
     "variant": "small"
   },
   {
@@ -7742,7 +7757,7 @@
     "price_eur": 19.97,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.71,
+    "avg_rating": 4.62,
     "rating_band": "5",
     "variant": "medium"
   },
@@ -7768,8 +7783,8 @@
     "price_eur": 19.3,
     "tax_class": "standard",
     "tags": "mass everyday outdoor",
-    "avg_rating": 4.25,
-    "rating_band": "4",
+    "avg_rating": 5.0,
+    "rating_band": "5",
     "variant": "medium"
   },
   {
@@ -7781,8 +7796,8 @@
     "price_eur": 13.69,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 5.0,
-    "rating_band": "5"
+    "avg_rating": 4.0,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0566",
@@ -7793,8 +7808,8 @@
     "price_eur": 13.82,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 4.67,
-    "rating_band": "5"
+    "avg_rating": 4.4,
+    "rating_band": "4"
   },
   {
     "sku": "SKU-PT-0567",
@@ -7805,8 +7820,7 @@
     "price_eur": 13.97,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 3.67,
-    "rating_band": "4"
+    "rating_band": "unrated"
   },
   {
     "sku": "SKU-PT-0568",
@@ -7817,7 +7831,8 @@
     "price_eur": 11.66,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "rating_band": "unrated",
+    "avg_rating": 3.5,
+    "rating_band": "4",
     "variant": "small"
   },
   {
@@ -7829,8 +7844,8 @@
     "price_eur": 15.67,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 4.0,
-    "rating_band": "4",
+    "avg_rating": 3.0,
+    "rating_band": "3",
     "variant": "medium"
   },
   {
@@ -7842,7 +7857,7 @@
     "price_eur": 14.78,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 3.75,
+    "avg_rating": 4.17,
     "rating_band": "4"
   },
   {
@@ -7854,7 +7869,7 @@
     "price_eur": 12.46,
     "tax_class": "standard",
     "tags": "mass interactive chew",
-    "avg_rating": 3.0,
+    "avg_rating": 3.33,
     "rating_band": "3"
   },
   {
@@ -7866,7 +7881,8 @@
     "price_eur": 19.21,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "rating_band": "unrated",
+    "avg_rating": 4.5,
+    "rating_band": "5",
     "variant": "single"
   },
   {
@@ -7878,8 +7894,8 @@
     "price_eur": 20.73,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "avg_rating": 3.0,
-    "rating_band": "3",
+    "avg_rating": 4.0,
+    "rating_band": "4",
     "variant": "twin pack"
   },
   {
@@ -8322,8 +8338,8 @@
     "price_eur": 26.57,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 4.33,
-    "rating_band": "4",
+    "avg_rating": 3.38,
+    "rating_band": "3",
     "variant": "single"
   },
   {
@@ -8335,8 +8351,8 @@
     "price_eur": 26.81,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 4.5,
-    "rating_band": "5",
+    "avg_rating": 3.85,
+    "rating_band": "4",
     "variant": "twin pack"
   },
   {
@@ -8371,8 +8387,7 @@
     "price_eur": 24.23,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 4.0,
-    "rating_band": "4",
+    "rating_band": "unrated",
     "variant": "twin pack"
   },
   {
@@ -8384,7 +8399,7 @@
     "price_eur": 23.88,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 3.5,
+    "avg_rating": 4.2,
     "rating_band": "4",
     "variant": "single"
   },
@@ -8410,8 +8425,8 @@
     "price_eur": 21.52,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 4.5,
-    "rating_band": "5",
+    "avg_rating": 3.75,
+    "rating_band": "4",
     "variant": "triple pack"
   },
   {
@@ -8423,8 +8438,8 @@
     "price_eur": 24.62,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 4.0,
-    "rating_band": "4",
+    "avg_rating": 4.5,
+    "rating_band": "5",
     "variant": "single"
   },
   {
@@ -8436,8 +8451,8 @@
     "price_eur": 27.39,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 4.6,
-    "rating_band": "5",
+    "avg_rating": 4.4,
+    "rating_band": "4",
     "variant": "twin pack"
   },
   {
@@ -8449,8 +8464,8 @@
     "price_eur": 29.46,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 5.0,
-    "rating_band": "5",
+    "avg_rating": 3.0,
+    "rating_band": "3",
     "variant": "triple pack"
   },
   {
@@ -8462,7 +8477,7 @@
     "price_eur": 23.4,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 3.75,
+    "avg_rating": 4.33,
     "rating_band": "4"
   },
   {
@@ -8474,7 +8489,7 @@
     "price_eur": 25.5,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 1.67,
+    "avg_rating": 2.3,
     "rating_band": "1-2",
     "variant": "single"
   },
@@ -8487,7 +8502,7 @@
     "price_eur": 24.57,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 4.17,
+    "avg_rating": 4.14,
     "rating_band": "4",
     "variant": "twin pack"
   },
@@ -8500,8 +8515,8 @@
     "price_eur": 21.12,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 4.0,
-    "rating_band": "4",
+    "avg_rating": 3.33,
+    "rating_band": "3",
     "variant": "single"
   },
   {
@@ -8526,8 +8541,8 @@
     "price_eur": 25.56,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 4.5,
-    "rating_band": "5",
+    "avg_rating": 4.0,
+    "rating_band": "4",
     "variant": "triple pack"
   },
   {
@@ -8539,8 +8554,8 @@
     "price_eur": 27.29,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "avg_rating": 4.5,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0627",
@@ -8564,8 +8579,7 @@
     "price_eur": 24.01,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 3.33,
-    "rating_band": "3",
+    "rating_band": "unrated",
     "variant": "twin pack"
   },
   {
@@ -8577,7 +8591,8 @@
     "price_eur": 25.7,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "rating_band": "unrated"
+    "avg_rating": 2.0,
+    "rating_band": "1-2"
   },
   {
     "sku": "SKU-PT-0630",
@@ -8588,7 +8603,7 @@
     "price_eur": 24.5,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 4.78,
+    "avg_rating": 4.57,
     "rating_band": "5",
     "variant": "single"
   },
@@ -8601,7 +8616,7 @@
     "price_eur": 23.2,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 4.33,
+    "avg_rating": 4.25,
     "rating_band": "4",
     "variant": "twin pack"
   },
@@ -8614,8 +8629,8 @@
     "price_eur": 24.85,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 2.67,
-    "rating_band": "3",
+    "avg_rating": 3.5,
+    "rating_band": "4",
     "variant": "single"
   },
   {
@@ -8627,7 +8642,7 @@
     "price_eur": 22.06,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 2.5,
+    "avg_rating": 3.29,
     "rating_band": "3",
     "variant": "twin pack"
   },
@@ -8640,8 +8655,8 @@
     "price_eur": 25.47,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 4.0,
-    "rating_band": "4",
+    "avg_rating": 5.0,
+    "rating_band": "5",
     "variant": "triple pack"
   },
   {
@@ -8653,8 +8668,8 @@
     "price_eur": 23.52,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 1.0,
-    "rating_band": "1-2",
+    "avg_rating": 3.0,
+    "rating_band": "3",
     "variant": "single"
   },
   {
@@ -8666,7 +8681,7 @@
     "price_eur": 25.99,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 3.17,
+    "avg_rating": 2.75,
     "rating_band": "3",
     "variant": "twin pack"
   },
@@ -8679,7 +8694,7 @@
     "price_eur": 25.08,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 4.25,
+    "avg_rating": 4.0,
     "rating_band": "4",
     "variant": "single"
   },
@@ -8717,8 +8732,8 @@
     "price_eur": 22.88,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 5.0,
-    "rating_band": "5",
+    "avg_rating": 4.33,
+    "rating_band": "4",
     "variant": "single"
   },
   {
@@ -8730,8 +8745,8 @@
     "price_eur": 22.8,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 4.29,
-    "rating_band": "4",
+    "avg_rating": 3.0,
+    "rating_band": "3",
     "variant": "twin pack"
   },
   {
@@ -8743,8 +8758,7 @@
     "price_eur": 25.56,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 5.0,
-    "rating_band": "5"
+    "rating_band": "unrated"
   },
   {
     "sku": "SKU-PT-0643",
@@ -8766,8 +8780,8 @@
     "price_eur": 26.73,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 3.5,
-    "rating_band": "4",
+    "avg_rating": 4.67,
+    "rating_band": "5",
     "variant": "single"
   },
   {
@@ -8779,8 +8793,8 @@
     "price_eur": 23.94,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 2.5,
-    "rating_band": "3",
+    "avg_rating": 2.25,
+    "rating_band": "1-2",
     "variant": "twin pack"
   },
   {
@@ -8792,7 +8806,7 @@
     "price_eur": 21.91,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 4.4,
+    "avg_rating": 4.25,
     "rating_band": "4",
     "variant": "triple pack"
   },
@@ -8831,8 +8845,8 @@
     "price_eur": 23.37,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 3.0,
-    "rating_band": "3",
+    "avg_rating": 1.0,
+    "rating_band": "1-2",
     "variant": "single"
   },
   {
@@ -8844,8 +8858,8 @@
     "price_eur": 22.33,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 5.0,
-    "rating_band": "5",
+    "avg_rating": 4.0,
+    "rating_band": "4",
     "variant": "twin pack"
   },
   {
@@ -8857,7 +8871,7 @@
     "price_eur": 23.16,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 4.75,
+    "avg_rating": 5.0,
     "rating_band": "5"
   },
   {
@@ -8869,7 +8883,7 @@
     "price_eur": 25.89,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 4.0,
+    "avg_rating": 3.67,
     "rating_band": "4",
     "variant": "single"
   },
@@ -8882,7 +8896,7 @@
     "price_eur": 19.64,
     "tax_class": "standard",
     "tags": "mass tank filter",
-    "avg_rating": 4.0,
+    "avg_rating": 4.25,
     "rating_band": "4",
     "variant": "twin pack"
   },
@@ -8895,8 +8909,7 @@
     "price_eur": 21.41,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "avg_rating": 4.0,
-    "rating_band": "4"
+    "rating_band": "unrated"
   },
   {
     "sku": "SKU-PT-0655",
@@ -8931,7 +8944,8 @@
     "price_eur": 19.35,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "rating_band": "unrated"
+    "avg_rating": 5.0,
+    "rating_band": "5"
   },
   {
     "sku": "SKU-PT-0658",
@@ -8942,7 +8956,7 @@
     "price_eur": 17.67,
     "tax_class": "pharma",
     "tags": "mass supplement preventive",
-    "avg_rating": 4.67,
-    "rating_band": "5"
+    "avg_rating": 3.67,
+    "rating_band": "4"
   }
 ]

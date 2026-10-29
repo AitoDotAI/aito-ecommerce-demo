@@ -414,6 +414,8 @@ class Customer:
     # ADR 0040: the device and the source of the visit with the first order,
     # and what followed from it (filled after the orders).
     visitor: str | None = None
+    # A9: how satisfied this customer tends to be (a standard normal). Hidden; shared cause of NPS, ratings and churn.
+    satisfaction: float = 0.0
     first_source: str = "direct"
     joined_month: str | None = None
     first_basket_categories: str | None = None
@@ -1664,13 +1666,14 @@ class _ChurnClock:
         self.walked = first_month
         self.month: str | None = None          # the month the customer churned
         self.never = never
+        self.trait_factor = review_chain.churn_factor(customer.satisfaction)
         self.rises: list[tuple[str, float]] = []
 
     def rise(self, month: str, factor: float) -> None:
         self.rises.append((month, factor))
 
     def hazard(self, month: str) -> float:
-        h = self.base
+        h = self.base * self.trait_factor
         for since, factor in self.rises:
             if since < month <= _add_months(since, review_chain.CHURN_RISE_MONTHS):
                 h *= factor
@@ -1860,6 +1863,7 @@ def _customer_life(customer: Customer, persona: Persona | None, shop: _Shop) -> 
         stream(RNG_SEED, "first-staple", cid).random() < acquisition.FIRST_ORDER_STAPLE_P) else 1
     life = _Household(customer, persona, pet_type_weights, cat_bias, pets, staple_cats, first_staple_order,
                       story_rng=random.Random(f"story:{cid}"), visit_rng=stream(RNG_SEED, "visit-source", cid))
+    customer.satisfaction = review_chain.satisfaction(RNG_SEED, cid)
     churn = _ChurnClock(customer, n_orders, plan[0], never=persona is not None)
     shop.orders_of[cid], shop.reviews_of[cid], shop.nps_of[cid], shop.sessions_of[cid] = [], [], [], []
 
@@ -1895,7 +1899,16 @@ def _customer_life(customer: Customer, persona: Persona | None, shop: _Shop) -> 
             ln.incident = incident
             experience = review_chain.draw_experience(experience_rng, ln.product_sku)
             experiences.append(experience)
-            drawn = review_chain.draw_review(review_rng, reply_rng, experience) \
+            if planted_switches.ON["A7"]:
+                # After the household has recorded the order, so no later purchase depends on it: a line
+                # that went badly is also returned, and a share of the rest is not, to keep the returned
+                # share near 2.75 %.
+                u = stream(RNG_SEED, "return_by_experience", ln.line_id).random()
+                if experience == "bad":
+                    ln.returned = ln.returned or u < review_chain.BAD_EXPERIENCE_RETURN_P
+                elif ln.returned and u < review_chain.RETURN_THIN_P:
+                    ln.returned = False
+            drawn = review_chain.draw_review(review_rng, reply_rng, experience, customer.satisfaction) \
                 if planted_switches.REVIEWS_WRITTEN else None
             if drawn is None:
                 continue
@@ -1909,7 +1922,7 @@ def _customer_life(customer: Customer, persona: Persona | None, shop: _Shop) -> 
                 replied=drawn.replied, order_line=ln.line_id))
             shop.stars.add(ln.product_sku, drawn.rating)
         experience = review_chain.order_experience(experiences)
-        score = review_chain.nps_score(nps_rng, experience, incident, replied_negative)
+        score = review_chain.nps_score(nps_rng, experience, incident, replied_negative, customer.satisfaction)
         if score is not None:
             shop.nps_of[cid].append(NpsResponse(
                 nps_response_id="", customer=cid, surveyed_order=order_ref, month=month,
@@ -1917,6 +1930,11 @@ def _customer_life(customer: Customer, persona: Persona | None, shop: _Shop) -> 
                 product_state=this_orders_lines[0].product_state, wrote_negative_review=wrote_negative))
         if experience == "bad":
             churn.rise(month, review_chain.churn_rise(replied_negative))
+        if planted_switches.ON["A6"] and incident:
+            churn.rise(month, review_chain.INCIDENT_CHURN_RISE)
+        for ln in this_orders_lines:
+            if ln.returned and planted_switches.ON["A7"]:
+                churn.rise(month, review_chain.RETURN_CHURN_RISE)
         first_order = not shop.orders_of[cid]
         shop.orders_of[cid].append((order, this_orders_lines, experiences))
 

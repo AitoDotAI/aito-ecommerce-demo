@@ -52,7 +52,7 @@ def test_your_orders_are_the_shoppers_own_history_before_the_month():
     drawer = get_product_drawer(fake, "SKU-A", "helena", "2026-04", [])
 
     # The 2026-05 order hasn't happened yet in April 2026; the 2025-06 one didn't hold it.
-    assert ("orders", {"customer_id": "CUST-00053"}) in fake.searches
+    assert ("orders", {"customer_id": "CUST-00070"}) in fake.searches
     assert drawer.your_orders == ["2025-11", "2026-02"]
 
 
