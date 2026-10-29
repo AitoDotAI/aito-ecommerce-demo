@@ -9,13 +9,13 @@ makes best, not whether the actions work in a real shop.
 
 | Policy | Mean regret per customer (generator's expected net, €) |
 |:--|--:|
-| Aito's ranking (top action) | 3.03 |
-| Always email | 9.29 |
-| Never act | 10.44 |
+| Aito's ranking (top action) | 0.97 |
+| Always email | 9.19 |
+| Never act | 10.33 |
 
-Aito's top action is the generator's best in 48 % of customers (seven candidates; a
-first run, before apologies and ads were given to more contexts, gave 54 %). The
-regret is a third of the best single action's.
+Aito's top action is the generator's best in 72 % of customers (seven candidates), and its regret
+is a tenth of the best single action's. Earlier runs on the way: 54 % and €2.93 with the crossed columns
+and a shop that rarely tried an action where it does nothing; 48 % and €3.03 with a little more variety.
 
 What it takes, found by running it:
 - **Cross the action with each context column.** Without `action_x_<context>` columns
@@ -25,9 +25,13 @@ What it takes, found by running it:
 - **Keep an action's parameter columns its own.** An apology's €5 credit was first stored as
   `voucher_eur = 5`, and the evidence of the apologies (given to unhappy customers) read as
   evidence for €5 vouchers.
-- **The assignment must vary.** An action only ever given where it works cannot show where it does not.
+- **The assignment must vary.** An action only ever given where it works cannot show where it does not. Half of the generated
+  assignments are a randomised test, half follow the shop's rules; with the rules alone, 48 %.
+- **Some of it is a rule, not a model.** Even so, Aito put a personalised ad a few points above no action for customers who
+  declined tracking, where the data shows none (`probe_where`: 0.196 vs 0.144). An ad needs consent, so Retention does not offer
+  one to them (`candidates_for`). The same bias, "any action beats none", shows smaller on the others.
 
 Caveats: the margin between two actions is a difference of two small estimates, so
-runner-up picks are noisy (it over-picks the ad and the apology); the sample is one seed
+runner-up picks are noisy (it over-picks the ad); the sample is one seed
 of one generation; the generator's net uses the customer's spend band's order value from
 `_estimate`, as the app does.

@@ -56,7 +56,7 @@ export default function RetentionPage() {
               and Aito rates each more likely than not to stop ordering: {data.counts.likely_to_leave} of the{" "}
               {data.counts.active.toLocaleString()} active customers are, and these hold the most spend.{" "}
               The best action differs by customer ({Object.entries(data.decision.best_actions)
-                .sort((a, b) => b[1] - a[1]).map(([label, n]) => `${n} ${label.toLowerCase()}`).join(", ")}) and adds an
+                .sort((a, b) => b[1] - a[1]).map(([label, n]) => `${n} × ${label.toLowerCase()}`).join(", ")}) and adds an
               estimated <strong>{fmtEur(data.decision.best_actions_net_eur)}</strong> over doing nothing, after what each
               costs.
             </>}

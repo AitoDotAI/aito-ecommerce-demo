@@ -379,11 +379,11 @@ CONTEXT = {"recency_bucket": "90-180d", "spend_band": "high", "offer_buyer": "ra
 
 
 def _order_p(client: AitoClient, action: str, **context) -> float:
-    where = {**CONTEXT, **context, "action": action,
-             "discount_pct": "10" if action == "discount" else "0",
-             "voucher_eur": "5" if action == "voucher" else "0"}
-    [answer] = client.batch([{"from": "customer_actions", "where": where, "predict": "purchased_30d",
-                              "limit": 2, "select": ["$p", "feature"]}])
+    """The chance of an order after `action`, asked as Retention asks it."""
+    from src.retention_actions import CANDIDATES, predict_body
+
+    candidate = next(c for c in CANDIDATES if c.action == action)
+    [answer] = client.batch([predict_body({**CONTEXT, **context}, candidate, "purchased_30d")])
     p = next(h["$p"] for h in answer["hits"] if h["feature"] is True)
     assert 0.0 <= p <= 1.0, (action, context, p)
     return p

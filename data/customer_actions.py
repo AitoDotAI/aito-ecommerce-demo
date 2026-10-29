@@ -114,17 +114,20 @@ def _action_weights(ctx: dict) -> list[float]:
     """The shop picks partly by rule and partly at random: every action
     occurs in every context, often enough to learn where it does not work. A shop
     that only ever apologised to unhappy customers could not tell what an apology does to the rest."""
-    weights = {"none": 0.30, "email": 0.25, "discount": 0.15, "voucher": 0.12, "ad": 0.10, "apology": 0.08}
+    weights = {"none": 0.25, "email": 0.15, "discount": 0.15, "voucher": 0.15, "ad": 0.15, "apology": 0.15}
+    rule = dict(weights)
     if ctx["open_issue"] != "none":
-        weights["apology"] *= 5
-    else:
-        weights["apology"] *= 0.6
+        rule["apology"] *= 4
     if ctx["tracking_consent"] == "no":
-        weights["ad"] *= 0.5
+        rule["ad"] *= 0.3
     if ctx["email_history"] == "ignored":
-        weights["email"] *= 0.6
+        rule["email"] *= 0.5
     if ctx["offer_buyer"] == "mostly":
-        weights["discount"] *= 2
+        rule["discount"] *= 2
+    # Half of the choices follow the rule above, half are a randomised test: a shop that
+    # only acts where it expects a result cannot learn where an action does nothing.
+    total = sum(rule.values())
+    weights = {a: 0.5 * weights[a] / sum(weights.values()) + 0.5 * rule[a] / total for a in weights}
     return [weights[a] for a in ACTIONS]
 
 

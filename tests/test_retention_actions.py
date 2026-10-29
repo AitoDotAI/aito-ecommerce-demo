@@ -58,7 +58,8 @@ def test_a_discount_that_lifts_orders_from_ten_to_thirty_percent_is_the_best_act
 
 
 def test_an_action_that_lifts_nothing_is_worth_less_than_no_action_by_its_cost():
-    ranked = {o.label: o for o in ranked_actions_for(ActionsAito(RATES), ["C1"])["C1"].options}
+    aito = ActionsAito(RATES, context={**CONTEXT, "tracking_consent": "yes"})
+    ranked = {o.label: o for o in ranked_actions_for(aito, ["C1"])["C1"].options}
     assert ranked["Email"].net_vs_none_eur == pytest.approx(-retention_actions.EMAIL_COST_EUR)
     assert ranked["Personalised ad"].net_vs_none_eur == pytest.approx(-retention_actions.AD_COST_EUR)
     assert ranked["No action"].net_vs_none_eur == 0
@@ -78,13 +79,23 @@ def test_no_action_is_always_among_the_options_and_everything_is_ranked_by_net()
     assert nets == sorted(nets, reverse=True)
 
 
+def test_a_customer_who_declined_tracking_is_not_offered_a_personalised_ad():
+    aito = ActionsAito(RATES)    # CONTEXT has tracking_consent "no"
+    ranked = ranked_actions_for(aito, ["C1"])["C1"]
+    assert "Personalised ad" not in {o.label for o in ranked.options}
+    assert all(q["where"]["action"] != "ad" for q in aito.predicts)
+    consenting = ranked_actions_for(ActionsAito(RATES, context={**CONTEXT, "tracking_consent": "yes"}), ["C1"])["C1"]
+    assert "Personalised ad" in {o.label for o in consenting.options}
+
+
 def test_every_candidate_is_asked_for_orders_and_visits_in_the_customers_context():
-    aito = ActionsAito(RATES)
+    context = {**CONTEXT, "tracking_consent": "yes"}
+    aito = ActionsAito(RATES, context=context)
     ranked_actions_for(aito, ["C1"])
     assert len(aito.predicts) == 2 * len(CANDIDATES)
     for q in aito.predicts:
         assert q["from"] == "customer_actions" and q["predict"] in ("purchased_30d", "visited_30d")
-        assert {k: q["where"][k] for k in CONTEXT} == CONTEXT
+        assert {k: q["where"][k] for k in context} == context
 
 
 def test_the_order_value_is_estimated_once_per_spend_band():

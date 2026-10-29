@@ -92,15 +92,22 @@ class RankedActions:
 def ranked_actions_for(client: AitoClient, customer_ids: list[str]) -> dict[str, RankedActions]:
     contexts = _contexts(client, customer_ids)
     order_values = _order_values(client, {c["spend_band"] for c in contexts.values()})
-    asked = [(cid, cand) for cid in customer_ids for cand in CANDIDATES]
+    asked = [(cid, cand) for cid in customer_ids for cand in candidates_for(contexts[cid])]
     answers: list[dict] = []
     for start in range(0, len(asked), BATCH_SIZE):
         chunk = asked[start:start + BATCH_SIZE]
-        answers += client.batch([_predict_body(contexts[cid], cand, outcome)
+        answers += client.batch([predict_body(contexts[cid], cand, outcome)
                                  for cid, cand in chunk for outcome in ("purchased_30d", "visited_30d")])
     by_pair = {pair: (_true_p(answers[2 * i], pair, "purchased_30d"), _true_p(answers[2 * i + 1], pair, "visited_30d"))
                for i, pair in enumerate((cid, cand.label) for cid, cand in asked)}
     return {cid: _ranked(contexts[cid], order_values[contexts[cid]["spend_band"]], by_pair, cid) for cid in customer_ids}
+
+
+def candidates_for(context: dict) -> list[Candidate]:
+    """Every candidate the shop may use on this customer. A personalised ad needs consent to
+    tracking, so it is a rule here and not something to learn: Aito's estimate for an ad to
+    someone who declined was a few points above no action, where the data shows none."""
+    return [c for c in CANDIDATES if not (c.action == "ad" and context["tracking_consent"] == "no")]
 
 
 def _contexts(client: AitoClient, customer_ids: list[str]) -> dict[str, dict]:
@@ -127,7 +134,7 @@ def _order_values(client: AitoClient, bands: set[str]) -> dict[str, float]:
         return dict(zip(sorted(bands), pool.map(one, sorted(bands))))
 
 
-def _predict_body(context: dict, cand: Candidate, outcome: str) -> dict:
+def predict_body(context: dict, cand: Candidate, outcome: str) -> dict:
     crossed = {f"action_x_{field}": f"{cand.action}|{value}" for field, value in context.items()}
     where = {**context, **crossed, "action": cand.action,
              "discount_pct": str(cand.discount_pct), "voucher_eur": str(cand.voucher_eur)}
@@ -144,7 +151,7 @@ def _true_p(answer: dict, pair: tuple[str, str], outcome: str) -> float:
 def _ranked(context: dict, order_value: float, by_pair: dict, customer_id: str) -> RankedActions:
     none_p = by_pair[(customer_id, "No action")][0]
     options = []
-    for cand in CANDIDATES:
+    for cand in candidates_for(context):
         purchase_p, visit_p = by_pair[(customer_id, cand.label)]
         cost = cand.sent_cost_eur + purchase_p * cand.cost_on_order(order_value)
         options.append(ActionOption(
