@@ -6,7 +6,7 @@
  "run": {
   "command": "./do evidence model-checks",
   "date": "2026-10-29",
-  "code_commit": "c8b0422",
+  "code_commit": "d66ac64",
   "aito_env": "release3b",
   "aito_api": "v2@release3b",
   "aito_version": "2.11.9"
@@ -142,8 +142,8 @@
     "product.category",
     "product.pet_type"
    ],
-   "accuracy": 0.955,
-   "base_accuracy": 0.955,
+   "accuracy": 0.99,
+   "base_accuracy": 0.99,
    "accuracy_gain": 0.0,
    "n": 200,
    "threshold_pp": 10.0,
@@ -177,15 +177,15 @@
     }
    },
    "error": null,
-   "accuracy_low": 0.9262691141800327,
-   "accuracy_high": 0.9837308858199673,
+   "accuracy_low": 0.9762101776661191,
+   "accuracy_high": 1.0037898223338808,
    "comparisons": [
     {
      "baseline": "the most common value",
      "difference": 0.0,
-     "low": -0.040631608385590656,
-     "high": 0.040631608385590656,
-     "sentence": "Return risk (deliberate honest-failure case) and the most common value: a tie, +0.0 pp [-4.1, +4.1]; the interval spans 0."
+     "low": -0.01950175376728976,
+     "high": 0.01950175376728976,
+     "sentence": "Return risk (deliberate honest-failure case) and the most common value: a tie, +0.0 pp [-2.0, +2.0]; the interval spans 0."
     }
    ]
   }
@@ -202,9 +202,9 @@
    "purchases",
    "spent_eur"
   ],
-  "accuracy": 0.9168,
-  "base_accuracy": 0.766,
-  "n": 889,
+  "accuracy": 0.9117,
+  "base_accuracy": 0.7649,
+  "n": 906,
   "method": "Predicts whether a month in which the customer ordered is followed by three months without an order. Trained on such months up to 2025-10, tested on every one of 2026-01.",
   "last_query": {
    "endpoint": "_evaluate",
@@ -254,15 +254,15 @@
     }
    }
   },
-  "accuracy_low": 0.8986446696211455,
-  "accuracy_high": 0.9349553303788544,
+  "accuracy_low": 0.8932244106106254,
+  "accuracy_high": 0.9301755893893745,
   "comparisons": [
    {
     "baseline": "“another order follows”",
-    "difference": 0.15079999999999993,
-    "low": 0.11757085736318258,
-    "high": 0.1840291426368173,
-    "sentence": "Aito is ahead of “another order follows”: +15.1 pp [+11.8, +18.4]; the interval excludes 0."
+    "difference": 0.14679999999999993,
+    "low": 0.11357576428889295,
+    "high": 0.18002423571110693,
+    "sentence": "Aito is ahead of “another order follows”: +14.7 pp [+11.4, +18.0]; the interval excludes 0."
    }
   ]
  },
@@ -270,28 +270,28 @@
   "label": "Next month's sales range",
   "table": "monthly_sales",
   "predict": "units_bucket",
-  "accuracy": 0.4255,
-  "naive_accuracy": 0.4347,
-  "base_accuracy": 0.1535,
+  "accuracy": 0.4195,
+  "naive_accuracy": 0.4103,
+  "base_accuracy": 0.1505,
   "n": 658,
   "method": "Aito predicting each product's sales range (0, 1, 2-3, 4-7, 8-15, 16-31, 32+) in 2026-04 from last month's range and the product, trained on every earlier month. It scores the range, not Supply's unit forecast, which _evaluate can't score yet.",
   "test_month": "2026-04",
-  "accuracy_low": 0.38772209037917593,
-  "accuracy_high": 0.46327790962082405,
+  "accuracy_low": 0.3817940211863175,
+  "accuracy_high": 0.45720597881368247,
   "comparisons": [
    {
     "baseline": "naive (last month's range)",
-    "difference": -0.009199999999999986,
-    "low": -0.06269626057800476,
-    "high": 0.04429626057800478,
-    "sentence": "Aito and naive (last month's range): a tie, -0.9 pp [-6.3, +4.4]; the interval spans 0."
+    "difference": 0.009199999999999986,
+    "low": -0.04403851835142786,
+    "high": 0.06243851835142783,
+    "sentence": "Aito and naive (last month's range): a tie, +0.9 pp [-4.4, +6.2]; the interval spans 0."
    },
    {
     "baseline": "the most common range",
-    "difference": 0.272,
-    "low": 0.22524761241732302,
-    "high": 0.31875238758267704,
-    "sentence": "Aito is ahead of the most common range: +27.2 pp [+22.5, +31.9]; the interval excludes 0."
+    "difference": 0.269,
+    "low": 0.222436433108039,
+    "high": 0.315563566891961,
+    "sentence": "Aito is ahead of the most common range: +26.9 pp [+22.2, +31.6]; the interval excludes 0."
    }
   ]
  }
