@@ -97,6 +97,28 @@ def churn_after_bad(fx: Fixtures) -> float:
     return sum(_churns_within(fx, o["customer_id"], o["month"]) for o in bad) / len(bad)
 
 
+def churn_after_incident(fx: Fixtures) -> float:
+    """A6: P(the customer churns in the 3 months after an order with a late or damaged delivery)."""
+    incident_orders = {ln["order_id"] for ln in fx.load("order_lines") if ln["incident"]}
+    orders = [o for oid, o in _orders(fx).items() if oid in incident_orders and o["month"] <= LAST_CHURN_LABEL_MONTH]
+    return sum(_churns_within(fx, o["customer_id"], o["month"]) for o in orders) / len(orders)
+
+
+def churn_after_return(fx: Fixtures) -> float:
+    """A7: P(the customer churns in the 3 months after an order with a returned line)."""
+    returned_orders = {ln["order_id"] for ln in fx.load("order_lines") if ln["returned"]}
+    orders = [o for oid, o in _orders(fx).items() if oid in returned_orders and o["month"] <= LAST_CHURN_LABEL_MONTH]
+    return sum(_churns_within(fx, o["customer_id"], o["month"]) for o in orders) / len(orders)
+
+
+def returned_after_bad(fx: Fixtures) -> float:
+    """A7: share of lines whose experience was bad that were returned."""
+    experience = {row["line_id"]: row["experience"]
+                  for row in json.loads((fx.dir / "answer_key" / "line_experiences.json").read_text())}
+    bad = [ln for ln in fx.load("order_lines") if experience[ln["line_id"]] == "bad"]
+    return sum(ln["returned"] for ln in bad) / len(bad)
+
+
 def churn_after_replied_counts(fx: Fixtures) -> tuple[int, int]:
     """R4b: (writers who churned in the 3 months after a replied negative review, writers)."""
     replied = [r for r in fx.load("reviews") if r["replied"] and r["created_at"] <= LAST_CHURN_LABEL_MONTH]

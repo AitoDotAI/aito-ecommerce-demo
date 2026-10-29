@@ -38,17 +38,18 @@ SHOPPERS = [
     Shopper("maija", "CUST-00001", "Maija Lehtonen", "🐈",
             "A cats-only home in Helsinki."),
     Shopper("olli", "CUST-00002", "Olli Mäkelä", "🐕",
-            "Declares a small dog; reorders Eukanuba Puppy Lamb dog food."),
+            "Declares a small dog; reorders Royal Canin Senior Turkey dog food."),
     Shopper("saara", "CUST-00003", "Saara Virtanen", "🐕",
-            "A large dog: 7 of 12 orders hold the same 7 kg bag of Acana Weight Control Salmon."),
+            "A large dog: 4 of 12 orders hold the same 7 kg bag of Acana Weight Control Salmon."),
     # ADR 0044: said no to behavioural tracking. The shop has their orders
     # and what they told it, and no visits or impressions.
-    Shopper("juhani", "CUST-00330", "Juhani Salminen", "🐈",
-            "Said no to tracking: 11 orders, and the interests they chose (grooming, budget buys)."),
+    # Re-picked for the churn-tells release: the shopper the old data had no longer survives the new churn.
+    Shopper("juhani", "CUST-01825", "Lauri Tuominen", "🐾",
+            "Said no to tracking: 8 orders, and the interests they chose (grooming, toys and play, budget buys)."),
     # Most customers fill no pet profile (2026-10-24): the shop reads the pet
     # from their orders (`contexts.pets_from_orders`).
     Shopper("eemil", "CUST-01896", "Eemil Ojala", "🐕",
-            "No pet profile: 17 orders, every one for a dog."),
+            "No pet profile: 15 orders, every one for a dog."),
 ]
 # The shopper whose Shop shows "no behavioural data" (ADR 0044).
 NO_CONSENT_SHOPPER = "juhani"

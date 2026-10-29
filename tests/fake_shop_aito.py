@@ -9,7 +9,7 @@ CUSTOMERS = {
     "CUST-00053": {"customer_id": "CUST-00053", "pets": "cat"},
     # No pet profile (most customers, ADR 0045): the key is absent, as Aito leaves a null out.
     "CUST-01896": {"customer_id": "CUST-01896"},
-    "CUST-00330": {"customer_id": "CUST-00330"},
+    "CUST-01825": {"customer_id": "CUST-01825"},
 }
 
 

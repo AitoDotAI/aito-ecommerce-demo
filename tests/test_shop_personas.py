@@ -80,25 +80,25 @@ def test_every_shopper_but_one_consented_to_behavioural_tracking(history):
 def test_juhani_has_orders_and_declared_interests_but_no_visits(history):
     _, customers, orders = history
     juhani = shopper(NO_CONSENT_SHOPPER).customer_id
-    assert len(orders[juhani]) == 11
-    assert customers[juhani]["interests"].split() == ["grooming", "budget_buys"]
+    assert len(orders[juhani]) == 8
+    assert customers[juhani]["interests"].split() == ["grooming", "toys_and_play", "budget_buys"]
     assert not [c for c in _load("contexts.json") if c.get("customer") == juhani]
 
 
-def test_olli_reorders_eukanuba_puppy_lamb(history):
+def test_olli_reorders_royal_canin_senior_turkey(history):
     products, customers, orders = history
     olli = shopper("olli").customer_id
     assert customers[olli]["dog_size"] == "small"
     food = [p["name"] for p in _bought(products, orders[olli]) if p["category"] in ("dry-food", "wet-food")]
-    assert max(set(food), key=food.count).startswith("Eukanuba Puppy Lamb")
+    assert max(set(food), key=food.count).startswith("Royal Canin Senior Turkey")
 
 
-def test_saara_buys_the_same_large_breed_bag_in_7_of_12_orders(history):
+def test_saara_buys_the_same_large_breed_bag_in_4_of_12_orders(history):
     products, _, orders = history
     saara = orders[shopper("saara").customer_id]
     bag = "Acana Weight Control Salmon Dog Food 7kg"
     assert len(saara) == 12
-    assert sum(any(products[s]["name"] == bag for s in o["skus"].split()) for o in saara) == 7
+    assert sum(any(products[s]["name"] == bag for s in o["skus"].split()) for o in saara) == 4
 
 
 def test_paivi_declared_her_pet_profile(history):
@@ -110,7 +110,7 @@ def test_eemil_declared_no_pets_and_the_shop_reads_a_dog_from_his_orders(history
     products, customers, orders = history
     eemil = shopper(NO_PET_PROFILE_SHOPPER).customer_id
     assert "pets" not in customers[eemil]
-    assert len(orders[eemil]) == 16
+    assert len(orders[eemil]) == 15
     assert {p["pet_type"] for p in _bought(products, orders[eemil])} == {"dog"}
     later = [c for c in _load("contexts.json") if c.get("customer") == eemil and c.get("pets_from_orders")]
     assert later and all(c["pets_from_orders"] == "dog" for c in later)

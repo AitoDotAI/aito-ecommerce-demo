@@ -1170,3 +1170,38 @@ other route has the same restricted-population meaning:
   held-out sessions' impressions deleted and plain queries. That would avoid
   population builds altogether, but the K folds are used first because they
   need no write.
+
+## Amendment 2026-10-29 (data release 3b): the churn tells
+
+**Why.** Retention's tells table (`src/churn_tells.py`) reads what a customer went through in the last
+three months (an NPS detractor answer, a 1–2 star review, a returned item, a late or damaged delivery)
+against whether they stopped ordering. On release 3a's data it showed no effect (0.88–1.05×, among
+customers who had just ordered). Three causes in the generator, found by reading it:
+
+- a return was drawn from the buyer's lifestyle alone, so it could not tell anything;
+- a late or damaged delivery lowered NPS (R3) but never touched the churn hazard (R4 acts on a
+  bad *experience*, which a late delivery is not);
+- R4 itself (×1.8 for 3 months) showed as ×1.2 on the churn label of the months after a bad
+  experience, and only about half of the detractor answers follow a bad experience.
+
+**What changes** (all on the hidden experience, none reads an observable: the review-chain tests that
+churn never reads a review stay as they are):
+
+| Effect | Change | Switch off in the null | Expected | Margin |
+|:--|:--|:--|:--|:--|
+| R4a | a bad experience: hazard ×**3.0** for 3 months (was ×1.8); with a reply ×**2.0** (was ×1.4) | R4 | ≈ 2.5 | ≥ 1.4 (unchanged) |
+| A6 | a late or damaged delivery raises the hazard ×3.0 for 3 months | A6 | ≈ 2.5 | ≥ 1.8 |
+| A7a | each returned line raises the hazard ×2.5 for 3 months | A7 | ≈ 2.0 | ≥ 1.5 |
+| A7b | a badly-experienced line is returned with probability 0.12 on top of the base rate, and a quarter of the other returns is dropped, so the returned share stays near 2.75 % | A7 | ≈ 3 | ≥ 1.8 |
+
+A7's change is applied after the household has recorded the order, so no later purchase reads it. R4b
+(a reply lowers the writer's churn) keeps its margin (≤ 0.9, pooled): the reply now takes ×3.0 to ×2.0.
+
+**What it moves.** Customers who churn earlier order less, and stock and star ratings follow from sales, so
+every table changes (orders −4 %). The Shop's shoppers are re-picked where their story no longer holds
+(Juhani is now CUST-01825; Olli, Saara and Eemil keep their customers and the stories read what the data
+shows), and the planted-effects run, the model checks and the release counts are redone.
+
+**Read back on the churn panel** (customer-months of customers who had just ordered, tell in the last 3 months
+against none; fixtures, seed 42): returned 1.35×, late delivery 1.21×, NPS detractor 1.17×, poor review 1.12×.
+NPS and reviews are proxies for the hidden experience, so they move less than the cause does.
