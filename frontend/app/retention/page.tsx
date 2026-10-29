@@ -9,6 +9,7 @@ import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
 import DecisionCard, { monthName } from "@/components/owner/DecisionCard";
 import AtRiskTable from "@/components/retention/AtRiskTable";
+import ChurnTells from "@/components/retention/ChurnTells";
 import ChurnDrivers from "@/components/retention/ChurnDrivers";
 import type { RetentionResponse } from "@/lib/types";
 
@@ -72,6 +73,14 @@ export default function RetentionPage() {
             <div className="card">
               <div className="card-title">At risk · most spend at stake first</div>
               <AtRiskTable rows={data.at_risk} />
+            </div>
+            <div className="card">
+              <div className="card-title">Tells · what customers who left had been through</div>
+              <ChurnTells tells={data.tells} />
+              <div className="card-sub" style={{ marginTop: 10 }}>
+                Observed, not predicted: NPS, reviews, returns and late deliveries of customers who have gone, against
+                customers who ordered as often. A tell that shows no effect is shown as that.
+              </div>
             </div>
             <div className="card">
               <div className="card-title">Why · the profiles that churn more</div>

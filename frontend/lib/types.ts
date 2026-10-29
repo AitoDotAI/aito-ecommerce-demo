@@ -380,6 +380,18 @@ export interface AtRiskRow {
   why_explanation: WhyExplanationPayload | null;
   offer: WinbackOffer | null;    // null: no past email sent a product for their pets
   actions: RankedActions;        // ADR 0051
+  tells: string[];               // what the shop observed: a detractor answer, a poor review, a return, a late delivery
+}
+
+export interface ChurnTellRow {
+  tell: string;
+  label: string;
+  customers: number;             // customers with this tell
+  churners: number;              // of whom churned
+  churn_rate: number;
+  expected_churn_rate: number;   // what customers who ordered as often churned at
+  lift: number;                  // churn_rate / expected_churn_rate
+  at_risk_listed: number;        // of the customers Retention lists, how many have it
 }
 
 export interface ChurnDriverRow {
@@ -408,6 +420,7 @@ export interface RetentionResponse {
   counts: { active: number; likely_to_leave: number; churned: number };
   at_risk: AtRiskRow[];
   drivers: ChurnDriverRow[];
+  tells: ChurnTellRow[];
   /** Profile fields related to churn whose every value stayed near lift 1. */
   driver_fields_without_effect: string[];
   last_query: { endpoint: string; body: Record<string, unknown> };
