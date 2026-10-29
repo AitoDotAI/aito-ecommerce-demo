@@ -11,6 +11,7 @@ import pytest
 from src import retention_service
 from src.churn_drivers import ChurnDrivers
 from src.churn_risk import ScoredCustomer
+from src.retention_actions import ActionOption, RankedActions
 from src.winback_offer import WinbackOffer
 
 
@@ -26,6 +27,17 @@ OFFER = WinbackOffer(sku="FOOD", name="Food", category="cat/dry-food", price_eur
                      response_p=0.2, order_value_eur=50.0, expected_return_eur=9.5)
 
 
+def _ranked(best: str, net: float) -> RankedActions:
+    options = [ActionOption(action="x", label=best, visit_p=0.5, purchase_p=0.3, purchase_lift_p=0.2,
+                            net_vs_none_eur=net, cost_eur=1.0),
+               ActionOption(action="none", label="No action", visit_p=0.4, purchase_p=0.1, purchase_lift_p=0.0,
+                            net_vs_none_eur=0.0, cost_eur=0.0)]
+    return RankedActions(context={}, order_value_eur=50.0, options=options, best=best)
+
+
+ACTIONS = {"RISKY_SMALL": _ranked("Email", 4.0), "RISKY_BIG": _ranked("10 % discount", 11.5)}
+
+
 class CountOnly:
     def search(self, table, where=None, limit=10, **_):
         return {"hits": [], "total": 7}
@@ -37,6 +49,7 @@ def retention(monkeypatch):
     monkeypatch.setattr(retention_service, "spend_last_12_months", lambda client, ids: {i: SPEND[i] for i in ids})
     monkeypatch.setattr(retention_service, "explain", lambda client, cs: {c.customer_id: None for c in cs})
     monkeypatch.setattr(retention_service, "offers_for", lambda client, pets: {cid: OFFER for cid in pets})
+    monkeypatch.setattr(retention_service, "ranked_actions_for", lambda client, ids: {i: ACTIONS[i] for i in ids})
     monkeypatch.setattr(retention_service, "get_churn_drivers", lambda client: ChurnDrivers([], ["diet"]))
     return retention_service.get_retention(CountOnly())
 
@@ -57,3 +70,8 @@ def test_the_decision_sums_observed_spend_and_the_offers_expected_return(retenti
     assert retention.decision["spend_12m_eur"] == 1000.0
     assert retention.decision["offers"] == 2
     assert retention.decision["offers_expected_return_eur"] == 19.0
+
+
+def test_the_decision_counts_which_action_is_best_and_what_the_best_actions_add(retention):
+    assert retention.decision["best_actions"] == {"10 % discount": 1, "Email": 1}
+    assert retention.decision["best_actions_net_eur"] == 15.5

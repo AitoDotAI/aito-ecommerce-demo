@@ -347,6 +347,23 @@ export interface WinbackOffer {
   expected_return_eur: number;   // response_p × order value − email cost
 }
 
+export interface ActionOption {
+  action: string;                // none | email | discount | voucher | ad | apology
+  label: string;                 // "10 % discount", "€5 voucher"
+  visit_p: number;               // `_predict visited_30d` after it
+  purchase_p: number;            // `_predict purchased_30d` after it
+  purchase_lift_p: number;       // purchase_p − the chance after no action
+  net_vs_none_eur: number;       // what it adds over no action, after its cost
+  cost_eur: number;              // expected: sent cost plus the cost paid on an order
+}
+
+export interface RankedActions {
+  context: Record<string, string>;   // the customer as the shop reads them
+  order_value_eur: number;           // `_estimate spend_30d_eur` given an order, for their spend band
+  options: ActionOption[];           // best first; "No action" is always among them
+  best: string;
+}
+
 export interface AtRiskRow {
   customer_id: string;
   name: string;
@@ -362,6 +379,7 @@ export interface AtRiskRow {
   spend_12m_eur: number;
   why_explanation: WhyExplanationPayload | null;
   offer: WinbackOffer | null;    // null: no past email sent a product for their pets
+  actions: RankedActions;        // ADR 0051
 }
 
 export interface ChurnDriverRow {
@@ -384,6 +402,8 @@ export interface RetentionResponse {
     offers: number;
     offers_expected_return_eur: number;
     email_cost_eur: number;
+    best_actions: Record<string, number>;   // best action → customers
+    best_actions_net_eur: number;           // what the best actions add over none, summed
   };
   counts: { active: number; likely_to_leave: number; churned: number };
   at_risk: AtRiskRow[];

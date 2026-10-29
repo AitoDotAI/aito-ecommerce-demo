@@ -46,6 +46,13 @@ ON: dict[str, bool] = {
     "L4": True,        # pictures
     "L5": True,        # description
     "L6": True,        # advertising
+    # ADR 0051: which action works on whom (data release 3b).
+    "actions": True,   # an action moves the 30-day outcome at all
+    "A1": True,        # an email works on those who answered one, not on those who ignored them
+    "A2": True,        # a discount works on those who buy on offer
+    "A3": True,        # a voucher brings back the lapsed
+    "A4": True,        # an ad reaches those who consented to tracking
+    "A5": True,        # an apology works on an open issue
     # ADR 0044: what a person declares.
     "C1": True,        # declared interests follow the hidden traits
 }

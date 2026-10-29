@@ -360,6 +360,58 @@ def test_an_estimate_is_not_a_batch_item(client):
         client.batch([{"from": "winback_campaigns", "where": {"responded": True}, "estimate": "order_value_eur"}])
 
 
+# ── Retention: the ranked actions (ADR 0051) ─────────────────────────
+
+
+@pytest.fixture(scope="module")
+def actions_client(client) -> AitoClient:
+    from src.aito_client import AitoError
+
+    try:
+        client.search("customer_actions", limit=0)
+    except AitoError as error:
+        pytest.skip(f"customer_actions is not loaded (it arrives with data release 3b): {error}")
+    return client
+
+
+CONTEXT = {"recency_bucket": "90-180d", "spend_band": "high", "offer_buyer": "rarely", "open_issue": "none",
+           "email_history": "ignored", "tracking_consent": "no"}
+
+
+def _order_p(client: AitoClient, action: str, **context) -> float:
+    where = {**CONTEXT, **context, "action": action,
+             "discount_pct": "10" if action == "discount" else "0",
+             "voucher_eur": "5" if action in ("voucher", "apology") else "0"}
+    [answer] = client.batch([{"from": "customer_actions", "where": where, "predict": "purchased_30d",
+                              "limit": 2, "select": ["$p", "feature"]}])
+    p = next(h["$p"] for h in answer["hits"] if h["feature"] is True)
+    assert 0.0 <= p <= 1.0, (action, context, p)
+    return p
+
+
+def test_a_discount_lifts_orders_of_a_customer_who_buys_on_offer_more_than_of_one_who_does_not(actions_client):
+    """The planted situation A2, read back: the lift is the ratio to no action in the same context."""
+    mostly = _order_p(actions_client, "discount", offer_buyer="mostly") / _order_p(actions_client, "none", offer_buyer="mostly")
+    rarely = _order_p(actions_client, "discount") / _order_p(actions_client, "none")
+    assert mostly > rarely, (mostly, rarely)
+
+
+def test_an_apology_lifts_orders_when_there_is_an_open_issue_and_not_otherwise(actions_client):
+    with_issue = (_order_p(actions_client, "apology", open_issue="late_delivery")
+                  / _order_p(actions_client, "none", open_issue="late_delivery"))
+    without = _order_p(actions_client, "apology") / _order_p(actions_client, "none")
+    assert with_issue > without, (with_issue, without)
+
+
+def test_every_customer_who_is_listed_has_a_context_the_actions_were_recorded_with(actions_client):
+    from src.retention_actions import CONTEXT_VOCABULARY
+
+    rows = actions_client.search("action_contexts", limit=3000)["hits"]
+    assert rows, "action_contexts is empty"
+    for field, allowed in CONTEXT_VOCABULARY.items():
+        assert {r[field] for r in rows} <= allowed, field
+
+
 # ── Supply: the markdown sweep ───────────────────────────────────────
 
 
