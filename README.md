@@ -35,10 +35,15 @@ react.
 
 ![Product: the funnel and the offer decision](screenshots/product-funnel.png)
 
-**Retention.** Who is about to leave, why, and which win-back email brings them
-back, ranked by the spend at stake.
+**Retention.** Who is about to leave, what they have been through (an NPS
+answer, a review, a return, a late delivery), and which action brings them back:
+an email, a discount, a voucher, an ad or an apology, each against doing nothing,
+after what it costs. The next best action opens as a dialog. The actions and their
+outcomes are simulated (ADR 0051), and the page says so.
 
 ![Retention: who to reach first](screenshots/retention.png)
+
+![Retention: the next best action for one customer](screenshots/retention-actions.png)
 
 **Evidence, on real data.** On UCI Online Retail II: "For buyers with 1–2
 earlier orders, Aito's top suggestion was in their next orders 31 % of the
@@ -63,7 +68,7 @@ cp .env.example .env      # 1. your Aito URL and key (a read-only key is enough)
 ./do dev                  # 3. http://localhost:8500
 ```
 
-The demo database's master holds data release 3a (ADR 0049). The app
+The demo database's master holds data release 3b (ADR 0051, slice 1, and the churn tells of ADR 0039's amendment). The app
 waits for its data release (ADR 0035): until master matches
 `data/release-env.json` it answers "data release pending".
 
@@ -161,9 +166,9 @@ AITO_API_KEY=your-dev-instance-key
 
 The data is deterministic (`data/generate_fixtures.py`, seed 42), so a
 dev instance is an exact copy. The release's row counts are in
-`data/release-env.json`: 658 products, 3,000 customers, 11,909 orders,
-39,098 order lines, 117,026 impressions, 15,157 product states, 6,000
-reviews.
+`data/release-env.json`: 658 products, 3,000 customers, 10,594 orders,
+36,357 order lines, 95,072 impressions (43,390 ranked and 51,682 unranked
+showings), 15,157 product states, 5,202 reviews, 5,626 recorded actions.
 
 `GET /version` says which commit and which Aito env a deployment runs
 (`"api": "v2@observable"`). Set `BUILD_SHA` at build time.
@@ -237,7 +242,7 @@ Read them in order for the design's rationale. All are in
 | 0048 | [Product KPIs by properties](docs/adr/0048-product-kpis-by-properties.md): clicks and purchases, explained and editable |
 | 0049 | [Data release 3: the list price and the listing as state](docs/adr/0049-data-release-3-price-and-listing-state.md) |
 | 0050 | [Pricing tab and the funnel](docs/adr/0050-product-pricing-tab-and-funnel.md): impressions → clicks → purchases → profit |
-| 0051 | [Actions and their outcomes](docs/adr/0051-actions-and-their-outcomes.md) (proposed, release 3b): retention, ads, availability, customer messages |
+| 0051 | [Actions and their outcomes](docs/adr/0051-actions-and-their-outcomes.md) (slice 1 live in release 3b: ranked retention actions; messages and availability proposed) |
 
 ---
 

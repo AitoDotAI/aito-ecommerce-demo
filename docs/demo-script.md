@@ -14,8 +14,12 @@ on the real-data evidence:
 
 Each beat lists what to click, what to say, the number on screen and its
 basis, the one caveat, and a recovery line. Every number was read on
-2026-10-27 through the code paths named below, on `master`, which holds data
-release 3a (ADR 0049, 0050), except the sections that say otherwise. The
+2026-10-27 through the code paths named below, on `master`, which then held data
+release 3a (ADR 0049, 0050). **Release 3b went live on 2026-10-29** (the data was
+regenerated with churn tells and the action table, ADR 0051). Only section 1's
+Supply numbers have been re-read since, from the release 3b snapshot; every other
+number below is release 3a's and must be re-read before a partner demo (Product, the
+Funnel and Pricing tabs, the Shop, the model checks), except the sections that say otherwise. The
 sandbox template is loaded from release 2's files until it is reloaded, so a
 sandbox run may differ from these (see "Open before a partner demo" at the end).
 Numbers that need a sandbox are marked **(Sunday)** and carry no figure until
@@ -37,8 +41,13 @@ plain caveat line. It changes no number: every basis is one click away.
 Keep the sandbox link from the pre-flight in a second tab.
 
 **Not on the path:** Patterns (it stays in "If there's time"), and
-Retention. If Retention comes up, lead with who to reach and why, not with
-the €135 the win-back emails return: that is a small, synthetic sum.
+Retention. If Retention comes up (retention and loyalty are the Cartman storyline), lead with
+who to reach, what they have been through and which action fits them (an email,
+a discount, a voucher, an ad or an apology, each against doing nothing), not with
+the euros: the actions and their outcomes are simulated and the page says so. Open the next
+best action for one customer; say that an ad is only offered to customers who consented to
+tracking, and that the model's top action is the generator's best for 81 % of customers
+(`docs/verification/action-recovery.md`).
 
 ---
 
@@ -52,8 +61,8 @@ euros follow from that forecast."
 
 | On screen | Number | Basis |
 |---|---|---|
-| Reorder these 83 now | an estimated €11,682 of May's sales can't be served without them; 730 units, €11,026 at cost | `_estimate units_sold` per SKU for May 2026, against stock and the reorder point (`src/supply_rows.py`); served from the precompute snapshot (`./do precompute`), which must be re-taken after a data release |
-| €27,590 tied up in 79 overstocked products | say only the €27,590. Don't present the markdown split ("14 won't clear, none worth marking down") as a finding: it is the units model by price alone, which counts neither an offer's lift on purchases when shown (×1.79 at 20 %+) nor the higher place it earns in the shop, so it understates an offer and contradicts Product's "put it on offer" | the same `_estimate` at 5–20 % off, over 13 weeks; price only |
+| Reorder these 83 now | an estimated €10,272 of May's sales can't be served without them; 664 units, €9,924 at cost | `_estimate units_sold` per SKU for May 2026, against stock and the reorder point (`src/supply_rows.py`); served from the precompute snapshot (`./do precompute`), which must be re-taken after a data release |
+| €27,566 tied up in 79 overstocked products | say only the €27,566. Don't present the markdown split ("14 won't clear, none worth marking down") as a finding: it is the units model by price alone, which counts neither an offer's lift on purchases when shown (×1.79 at 20 %+) nor the higher place it earns in the shop, so it understates an offer and contradicts Product's "put it on offer" | the same `_estimate` at 5–20 % off, over 13 weeks; price only |
 
 **Caveat (the page's one line):** the forecasts are Aito's estimates for
 May; the euros follow from them. **How well? →** opens the model checks.

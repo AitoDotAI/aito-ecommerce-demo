@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
+import { apiFetch } from "@/lib/api";
 import { useShell } from "./ShellState";
 
 /**
@@ -16,6 +19,7 @@ import { useShell } from "./ShellState";
  */
 export default function AitoPanel() {
   const { aitoCollapsed, mobileOpen, panel, toggleAito, demoMode } = useShell();
+  const orders = useOrderCount(panel?.stats === undefined);
 
   const classes = [
     "aito-panel",
@@ -26,12 +30,11 @@ export default function AitoPanel() {
   const KNOWN_ENDPOINTS = ["_predict", "_recommend", "_relate", "_evaluate"];
   const activeEndpoints = panel?.endpoints ?? [];
 
-  // Pinned set of demo-wide stats. Pages can override via
-  // `config.stats`; we fall back to a brand-strip default so the
-  // panel header never reads empty.
+  // Pinned set of demo-wide stats. Pages can override via `config.stats`; the default
+  // is the shop's order count, read from the data (it was a typed "11.9k" that no release
+  // matched), and two facts of the setup. No latency here: a typed one would be a made-up number.
   const stats = panel?.stats ?? [
-    { label: "Orders",  value: "11.9k" },
-    { label: "p50 ms",  value: "12" },
+    ...(orders === null ? [] : [{ label: "Orders", value: formatCount(orders) }]),
     { label: "Models",  value: "0" },
     { label: "Hosted",  value: "EU" },
   ];
@@ -151,4 +154,21 @@ export default function AitoPanel() {
     </aside>
     </>
   );
+}
+
+
+/** Orders in the data, from the Overview's totals (a snapshot, so cheap); null until it answers or if it fails. */
+function useOrderCount(wanted: boolean): number | null {
+  const [orders, setOrders] = useState<number | null>(null);
+  useEffect(() => {
+    if (!wanted) return;
+    apiFetch<{ kpis: { orders: number; orders_before: number } }>("/api/overview")
+      .then((o) => setOrders(o.kpis.orders + o.kpis.orders_before))
+      .catch(() => setOrders(null));
+  }, [wanted]);
+  return orders;
+}
+
+function formatCount(n: number): string {
+  return n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n);
 }

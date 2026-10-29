@@ -1,6 +1,6 @@
 # ADR 0051: Actions and their outcomes — retention, advertising, availability and customer messages
 
-**Status:** Proposed (2026-10-28; release 3b). Antti: retention and loyalty should cover a wider range of actions
+**Status:** Slice 1 accepted and live (2026-10-29, data release 3b: `customer_actions`, `action_contexts`, Retention's ranked actions). The messages, employees and availability parts are still proposed. Antti: retention and loyalty should cover a wider range of actions
 (personalized discounts, vouchers or compensation, messages tied to something the customer did, personalized
 advertising); availability is an action for the shop ("something out of stock but orderable with a wait time");
 "an action table with one or more context, action, parameter(s) and KPI … the data should stage a situation where an
