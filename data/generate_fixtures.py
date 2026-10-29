@@ -24,6 +24,7 @@ from datetime import date
 from pathlib import Path
 from typing import Callable, Iterable, Iterator
 
+from data import customer_actions as customer_actions_module
 from data import (acquisition, catalogue_events, lifecycle, listing, merchandising, observable, person_data, planted_switches,
                   review_chain, sensitivities, shop_levers, shoppers)
 from data.planted_switches import stream
@@ -3411,6 +3412,12 @@ def main() -> None:
     # view's `_predict responded` per current-churned customer.
     # See ADR 0020.
     winback_campaigns = gen_winback_campaigns(rng, customers, products, orders, lines, events)
+    # ADR 0051: what the shop did for a customer, and what followed in 30 days.
+    customer_actions = customer_actions_module.gen_customer_actions(
+        RNG_SEED, customers, orders, lines, product_states, history.nps, winback_campaigns,
+        _MONTH_WINDOW, {p.customer_id for p in PERSONAS})
+    action_contexts = customer_actions_module.gen_action_contexts(
+        customers, orders, lines, product_states, history.nps, winback_campaigns, _MONTH_WINDOW)
 
     # Visits, and the products they showed with the funnel outcome: the
     # recommendation surfaces' conversion KPI (`_recommend goal:
@@ -3430,6 +3437,8 @@ def main() -> None:
     write_json(DATA_DIR / "inventory.json", inventory)
     write_json(DATA_DIR / "product_states.json", product_states)
     write_json(DATA_DIR / "winback_campaigns.json", winback_campaigns)
+    write_json(DATA_DIR / "customer_actions.json", customer_actions)
+    write_json(DATA_DIR / "action_contexts.json", action_contexts)
     write_json(DATA_DIR / "contexts.json", contexts)
     # The generator's answer key, for the data checks; Aito never sees it.
     answer_key = DATA_DIR / "answer_key"
@@ -3452,6 +3461,8 @@ def main() -> None:
     print(f"  monthly_sales   {len(monthly_sales):>6}")
     print(f"  inventory       {len(inventory):>6}")
     print(f"  winback         {len(winback_campaigns):>6}")
+    print(f"  customer_actions{len(customer_actions):>6}")
+    print(f"  action_contexts {len(action_contexts):>6}")
     print(f"  product_states  {len(product_states):>6}")
     print(f"  contexts        {len(contexts):>6}  ({sum(c.customer is None for c in contexts)} before a first order)")
     print(f"  impressions     {len(impressions):>6}")

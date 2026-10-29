@@ -7,6 +7,7 @@ advertising); availability is an action for the shop ("something out of stock bu
 action was, or was not, taken, and then measure the activation of the user over a period of time"; and fully connected
 feedback and NPS data, with message classes and routing to employees as in `aito-demo`.
 **Date:** 2026-10-28
+**Build:** in slices. Slice 1 (Retention's ranked actions, `customer_actions`, `action_contexts`) is on its branch; messages, availability and the unified score follow, each with its own PR.
 **Deciders:** Antti
 **Builds on:** ADR 0020 (win-back offer), ADR 0027 (staple category), ADR 0038 (product state), ADR 0049/0050 (release 3a)
 
@@ -92,6 +93,20 @@ inform a retention action, and NPS cannot be an outcome.
 - **Messages** — a small view: a message is classified, shown with its sentiment and category, routed to an
   employee, and joined to the customer's open actions.
 - **Overview** — action outcomes over time as the KPI the actions are optimized for.
+
+### Slice 1, as built
+
+- `customer_actions` has the context as six bands (`recency_bucket`, `spend_band`, `offer_buyer`, `open_issue`,
+  `email_history`, `tracking_consent`), the action with its parameter bands, and `visited_30d`, `clicked_30d`,
+  `purchased_7d`, `purchased_30d`, `spend_30d_eur`, `cost_eur`, `net_30d_eur`. `nps` and `open_message_category` wait for
+  `customer_messages`: `open_issue` (a late delivery, a detractor answer) stands in for the open complaint until then.
+- `action_contexts` holds each customer's context as of the next month, derived by the same code as the training rows, so the
+  app does not re-derive it.
+- The planted situations are written down in `data/customer_actions.py` (A1–A5, each with a switch in
+  `data/planted_switches.py`): an email works on those who answered one; a discount on those who buy on offer; a voucher
+  on the lapsed; an ad on those who consented to tracking; an apology on an open issue.
+- The net is `(P(order | action) − P(order | none)) × order value − cost`; the cost arithmetic is the shop's own
+  (`src/retention_actions.py`), Aito supplies the chances and the order value.
 
 ## Acceptance criteria
 

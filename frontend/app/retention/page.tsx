@@ -9,6 +9,7 @@ import { usePagePanel, useShell } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
 import DecisionCard, { monthName } from "@/components/owner/DecisionCard";
 import AtRiskTable from "@/components/retention/AtRiskTable";
+import ChurnTells from "@/components/retention/ChurnTells";
 import ChurnDrivers from "@/components/retention/ChurnDrivers";
 import type { RetentionResponse } from "@/lib/types";
 
@@ -21,7 +22,7 @@ import type { RetentionResponse } from "@/lib/types";
 export default function RetentionPage() {
   usePagePanel(retentionPanel(), {
     title: "Retention",
-    description: "Who is about to leave, why, and what offer brings them back.",
+    description: "Who is about to leave, why, and which action brings them back.",
     breadcrumb: "Run the shop › Retention",
   });
   const { setPanel } = useShell();
@@ -41,7 +42,7 @@ export default function RetentionPage() {
     <div className="fade-in">
       <div className="page-header">
         <div className="page-title">Retention</div>
-        <div className="page-desc">Who is about to leave, why, and what offer brings them back.</div>
+        <div className="page-desc">Who is about to leave, why, and which action brings them back.</div>
       </div>
 
       {error && <ErrorState title="Couldn't load Retention" message={`Aito returned an error. ${error}`} command="./do load-data" />}
@@ -55,10 +56,10 @@ export default function RetentionPage() {
               They spent <strong>{fmtEur(data.decision.spend_12m_eur)}</strong> with the shop in the last 12 months,
               and Aito rates each more likely than not to stop ordering: {data.counts.likely_to_leave} of the{" "}
               {data.counts.active.toLocaleString()} active customers are, and these hold the most spend.{" "}
-              {data.decision.offers > 0 && <>
-                The win-back emails suggested for {data.decision.offers} of them return an estimated{" "}
-                <strong>{fmtEur(data.decision.offers_expected_return_eur)}</strong> after their cost.
-              </>}
+              The best action differs by customer ({Object.entries(data.decision.best_actions)
+                .sort((a, b) => b[1] - a[1]).map(([label, n]) => `${n} × ${label.toLowerCase()}`).join(", ")}) and adds an
+              estimated <strong>{fmtEur(data.decision.best_actions_net_eur)}</strong> over doing nothing, after what each
+              costs.
             </>}
             note={<>
               As of {monthName(data.as_of_month)}. The risk is Aito&apos;s estimate that a customer&apos;s latest
@@ -72,6 +73,15 @@ export default function RetentionPage() {
             <div className="card">
               <div className="card-title">At risk · most spend at stake first</div>
               <AtRiskTable rows={data.at_risk} />
+            </div>
+            <div className="card">
+              <div className="card-title">Tells · what customers had been through before they stopped</div>
+              <ChurnTells tells={data.tells} />
+              <div className="card-sub" style={{ marginTop: 10 }}>
+                Observed, not predicted: among customers who had just ordered, those with an NPS detractor answer, a
+                poor review, a return or a late delivery in the last three months, against those without. A tell that
+                shows no effect is shown as that.
+              </div>
             </div>
             <div className="card">
               <div className="card-title">Why · the profiles that churn more</div>

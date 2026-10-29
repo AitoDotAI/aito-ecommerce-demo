@@ -446,6 +446,58 @@ SCHEMAS: dict[str, dict] = {
             "order_value_eur":{"type": "Decimal", "nullable": False},
         },
     },
+    # 6c. customer_actions — what the shop did for a customer in a month ("none"
+    # included), the customer's context then, and the next 30 days. Retention's ranked
+    # actions read it (src/retention_actions.py). Simulated; see ADR 0051.
+    "customer_actions": {
+        "type": "table",
+        "columns": {
+            "action_id":        {"type": "String", "nullable": False},
+            "customer_id":      {"type": "String", "nullable": False,
+                                 "link": "customers.customer_id"},
+            "month":            {"type": "String", "nullable": False},
+            # Context, as the shop could read it that month. Bands, since a
+            # number only matches an equal number.
+            "recency_bucket":   {"type": "String", "nullable": False},
+            "spend_band":       {"type": "String", "nullable": False},
+            "offer_buyer":      {"type": "String", "nullable": False},
+            "open_issue":       {"type": "String", "nullable": False},
+            "email_history":    {"type": "String", "nullable": False},
+            "tracking_consent": {"type": "String", "nullable": False},
+            # The action: none | email | discount | voucher | ad | apology, and its parameters.
+            "action":           {"type": "String", "nullable": False},
+            "discount_pct":     {"type": "String", "nullable": False},
+            "voucher_eur":      {"type": "String", "nullable": False},
+            "cost_eur":         {"type": "Decimal", "nullable": False},
+            # Outcomes within 30 days (7 for the first order).
+            "visited_30d":      {"type": "Boolean", "nullable": False},
+            "clicked_30d":      {"type": "Boolean", "nullable": False},
+            "purchased_7d":     {"type": "Boolean", "nullable": False},
+            "purchased_30d":    {"type": "Boolean", "nullable": False},
+            "spend_30d_eur":    {"type": "Decimal", "nullable": False},
+            "net_30d_eur":      {"type": "Decimal", "nullable": False},
+            # The action crossed with each context column ("email|responded"): Aito adds evidence
+            # column by column, so an action that works in one context and not in another is
+            # only visible to it through these.
+            **{f"action_x_{field}": {"type": "String", "nullable": False} for field in (
+                "recency_bucket", "spend_band", "offer_buyer", "open_issue", "email_history", "tracking_consent")},
+        },
+    },
+    # 6d. action_contexts — each customer as the shop reads them when it next chooses an
+    # action: the context columns of customer_actions, one row per customer (ADR 0051).
+    "action_contexts": {
+        "type": "table",
+        "columns": {
+            "customer_id":      {"type": "String", "nullable": False,
+                                 "link": "customers.customer_id"},
+            "recency_bucket":   {"type": "String", "nullable": False},
+            "spend_band":       {"type": "String", "nullable": False},
+            "offer_buyer":      {"type": "String", "nullable": False},
+            "open_issue":       {"type": "String", "nullable": False},
+            "email_history":    {"type": "String", "nullable": False},
+            "tracking_consent": {"type": "String", "nullable": False},
+        },
+    },
     # 7. customer_months — panel data, one row per customer per month.
     # Drives Retention's churn score (`src/churn_risk.py`). Loaded last
     # because it links to customers.
