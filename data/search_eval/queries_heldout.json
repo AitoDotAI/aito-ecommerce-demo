@@ -1,0 +1,630 @@
+{
+ "_about": [
+  "HELD-OUT judged query set for the semantic/hybrid search comparison (docs/verification/semantic-search-prereg.md). Same spec format and grading as queries.json, written before any vector arm was scored. Not used to choose θ or any other parameter; no query text appears in queries.json.",
+  "The 60 queries in queries.json were used to tune θ (ADR 0026), so they cannot be the held-out set."
+ ],
+ "queries": [
+  {
+   "id": "he01",
+   "stratum": "exact",
+   "q": "chicken cat food",
+   "pet": "cat",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ],
+   "refine": {
+    "token_any": [
+     "chicken"
+    ]
+   }
+  },
+  {
+   "id": "he02",
+   "stratum": "exact",
+   "q": "lamb",
+   "refine": {
+    "token_any": [
+     "lamb"
+    ]
+   }
+  },
+  {
+   "id": "he03",
+   "stratum": "exact",
+   "q": "beef cat food",
+   "pet": "cat",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ],
+   "refine": {
+    "token_any": [
+     "beef"
+    ]
+   }
+  },
+  {
+   "id": "he04",
+   "stratum": "exact",
+   "q": "duck",
+   "refine": {
+    "token_any": [
+     "duck"
+    ]
+   }
+  },
+  {
+   "id": "he05",
+   "stratum": "exact",
+   "q": "puppy food",
+   "pet": "dog",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ],
+   "refine": {
+    "dietary": "puppy"
+   }
+  },
+  {
+   "id": "he06",
+   "stratum": "exact",
+   "q": "grain free cat food",
+   "pet": "cat",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ],
+   "refine": {
+    "dietary": "grain-free"
+   }
+  },
+  {
+   "id": "he07",
+   "stratum": "exact",
+   "q": "litter",
+   "categories": [
+    "litter"
+   ]
+  },
+  {
+   "id": "he08",
+   "stratum": "exact",
+   "q": "liver treats",
+   "categories": [
+    "treats",
+    "dental-treats"
+   ],
+   "refine": {
+    "token_any": [
+     "liver"
+    ]
+   }
+  },
+  {
+   "id": "he09",
+   "stratum": "exact",
+   "q": "senior dog food",
+   "pet": "dog",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ],
+   "refine": {
+    "dietary": "senior"
+   }
+  },
+  {
+   "id": "he10",
+   "stratum": "exact",
+   "q": "grooming",
+   "categories": [
+    "grooming"
+   ]
+  },
+  {
+   "id": "hb01",
+   "stratum": "brand",
+   "q": "hills science plan",
+   "refine": {
+    "brand": "Hill's Science Plan"
+   }
+  },
+  {
+   "id": "hb02",
+   "stratum": "brand",
+   "q": "orijen",
+   "refine": {
+    "brand": "Orijen"
+   }
+  },
+  {
+   "id": "hb03",
+   "stratum": "brand",
+   "q": "acana dog food",
+   "pet": "dog",
+   "refine": {
+    "brand": "Acana"
+   }
+  },
+  {
+   "id": "hb04",
+   "stratum": "brand",
+   "q": "felix",
+   "refine": {
+    "brand": "Felix"
+   }
+  },
+  {
+   "id": "hb05",
+   "stratum": "brand",
+   "q": "tetra",
+   "refine": {
+    "brand": "Tetra"
+   }
+  },
+  {
+   "id": "hb06",
+   "stratum": "brand",
+   "q": "trixie",
+   "refine": {
+    "brand": "Trixie"
+   }
+  },
+  {
+   "id": "hb07",
+   "stratum": "brand",
+   "q": "eukanuba",
+   "refine": {
+    "brand": "Eukanuba"
+   }
+  },
+  {
+   "id": "hb08",
+   "stratum": "brand",
+   "q": "sheba cat",
+   "pet": "cat",
+   "refine": {
+    "brand": "Sheba"
+   }
+  },
+  {
+   "id": "hb09",
+   "stratum": "brand",
+   "q": "beaphar",
+   "refine": {
+    "brand": "Beaphar"
+   }
+  },
+  {
+   "id": "hb10",
+   "stratum": "brand",
+   "q": "whimzees",
+   "refine": {
+    "brand": "Whimzees"
+   }
+  },
+  {
+   "id": "hs01",
+   "stratum": "synonym",
+   "q": "puppy kibble",
+   "pet": "dog",
+   "categories": [
+    "dry-food"
+   ],
+   "refine": {
+    "dietary": "puppy"
+   }
+  },
+  {
+   "id": "hs02",
+   "stratum": "synonym",
+   "q": "feline snacks",
+   "pet": "cat",
+   "categories": [
+    "treats"
+   ]
+  },
+  {
+   "id": "hs03",
+   "stratum": "synonym",
+   "q": "canine chews",
+   "pet": "dog",
+   "categories": [
+    "treats",
+    "dental-treats"
+   ]
+  },
+  {
+   "id": "hs04",
+   "stratum": "synonym",
+   "q": "kitty dinner",
+   "pet": "cat",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ]
+  },
+  {
+   "id": "hs05",
+   "stratum": "synonym",
+   "q": "dog biscuits",
+   "pet": "dog",
+   "categories": [
+    "treats",
+    "dental-treats"
+   ]
+  },
+  {
+   "id": "hs06",
+   "stratum": "synonym",
+   "q": "fish tank supplies",
+   "categories": [
+    "aquarium"
+   ]
+  },
+  {
+   "id": "hs07",
+   "stratum": "synonym",
+   "q": "rabbit nibbles",
+   "pet": "small_animal",
+   "categories": [
+    "dry-food",
+    "treats"
+   ]
+  },
+  {
+   "id": "hs08",
+   "stratum": "synonym",
+   "q": "parakeet seed",
+   "pet": "bird",
+   "categories": [
+    "dry-food"
+   ]
+  },
+  {
+   "id": "hs09",
+   "stratum": "synonym",
+   "q": "tomcat meals",
+   "pet": "cat",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ]
+  },
+  {
+   "id": "hs10",
+   "stratum": "synonym",
+   "q": "bowser grub",
+   "pet": "dog",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ]
+  },
+  {
+   "id": "hp01",
+   "stratum": "paraphrase",
+   "q": "what to feed a puppy",
+   "pet": "dog",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ],
+   "refine": {
+    "dietary": "puppy"
+   }
+  },
+  {
+   "id": "hp02",
+   "stratum": "paraphrase",
+   "q": "food for a cat that lives indoors",
+   "pet": "cat",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ],
+   "refine": {
+    "dietary": "indoor"
+   }
+  },
+  {
+   "id": "hp03",
+   "stratum": "paraphrase",
+   "q": "something for a dog with allergies",
+   "pet": "dog",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ],
+   "refine": {
+    "dietary": "grain-free"
+   }
+  },
+  {
+   "id": "hp04",
+   "stratum": "paraphrase",
+   "q": "diet food for a chubby dog",
+   "pet": "dog",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ],
+   "refine": {
+    "dietary": "weight-control"
+   }
+  },
+  {
+   "id": "hp05",
+   "stratum": "paraphrase",
+   "q": "food for an elderly cat",
+   "pet": "cat",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ],
+   "refine": {
+    "dietary": "senior"
+   }
+  },
+  {
+   "id": "hp06",
+   "stratum": "paraphrase",
+   "q": "cat food for a delicate tummy",
+   "pet": "cat",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ],
+   "refine": {
+    "dietary": "sensitive"
+   }
+  },
+  {
+   "id": "hp07",
+   "stratum": "paraphrase",
+   "q": "something for my huge dog to chew",
+   "pet": "dog",
+   "categories": [
+    "treats",
+    "dental-treats"
+   ]
+  },
+  {
+   "id": "hp08",
+   "stratum": "paraphrase",
+   "q": "a snack to clean my dogs teeth",
+   "pet": "dog",
+   "categories": [
+    "dental-treats"
+   ]
+  },
+  {
+   "id": "hp09",
+   "stratum": "paraphrase",
+   "q": "chew toy for a large dog",
+   "pet": "dog",
+   "categories": [
+    "toys"
+   ]
+  },
+  {
+   "id": "hp10",
+   "stratum": "paraphrase",
+   "q": "kibble for a giant breed",
+   "pet": "dog",
+   "categories": [
+    "dry-food"
+   ],
+   "refine": {
+    "dietary": "large-breed"
+   }
+  },
+  {
+   "id": "hm01",
+   "stratum": "misspelling",
+   "q": "chiken cat food",
+   "pet": "cat",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ],
+   "refine": {
+    "token_any": [
+     "chicken"
+    ]
+   }
+  },
+  {
+   "id": "hm02",
+   "stratum": "misspelling",
+   "q": "samon cat food",
+   "pet": "cat",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ],
+   "refine": {
+    "token_any": [
+     "salmon"
+    ]
+   }
+  },
+  {
+   "id": "hm03",
+   "stratum": "misspelling",
+   "q": "kitten fod",
+   "pet": "cat",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ]
+  },
+  {
+   "id": "hm04",
+   "stratum": "misspelling",
+   "q": "turky",
+   "refine": {
+    "token_any": [
+     "turkey"
+    ]
+   }
+  },
+  {
+   "id": "hm05",
+   "stratum": "misspelling",
+   "q": "dogtreats",
+   "pet": "dog",
+   "categories": [
+    "treats",
+    "dental-treats"
+   ]
+  },
+  {
+   "id": "hm06",
+   "stratum": "misspelling",
+   "q": "cat litr",
+   "categories": [
+    "litter"
+   ]
+  },
+  {
+   "id": "hm07",
+   "stratum": "misspelling",
+   "q": "royal canine",
+   "refine": {
+    "brand": "Royal Canin"
+   }
+  },
+  {
+   "id": "hm08",
+   "stratum": "misspelling",
+   "q": "grainfree cat food",
+   "pet": "cat",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ],
+   "refine": {
+    "dietary": "grain-free"
+   }
+  },
+  {
+   "id": "hm09",
+   "stratum": "misspelling",
+   "q": "sensetive stomach dog food",
+   "pet": "dog",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ],
+   "refine": {
+    "dietary": "sensitive"
+   }
+  },
+  {
+   "id": "hm10",
+   "stratum": "misspelling",
+   "q": "aquarim",
+   "categories": [
+    "aquarium"
+   ]
+  },
+  {
+   "id": "hn01",
+   "stratum": "nordic",
+   "q": "koiran ruoka",
+   "pet": "dog",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ]
+  },
+  {
+   "id": "hn02",
+   "stratum": "nordic",
+   "q": "kissan herkut",
+   "pet": "cat",
+   "categories": [
+    "treats"
+   ]
+  },
+  {
+   "id": "hn03",
+   "stratum": "nordic",
+   "q": "kattfoder",
+   "pet": "cat",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ]
+  },
+  {
+   "id": "hn04",
+   "stratum": "nordic",
+   "q": "hundgodis",
+   "pet": "dog",
+   "categories": [
+    "treats",
+    "dental-treats"
+   ]
+  },
+  {
+   "id": "hn05",
+   "stratum": "nordic",
+   "q": "akvaario",
+   "categories": [
+    "aquarium"
+   ]
+  },
+  {
+   "id": "hn06",
+   "stratum": "nordic",
+   "q": "kissan leluja",
+   "pet": "cat",
+   "categories": [
+    "toys"
+   ]
+  },
+  {
+   "id": "hn07",
+   "stratum": "nordic",
+   "q": "koiran lelu",
+   "pet": "dog",
+   "categories": [
+    "toys"
+   ]
+  },
+  {
+   "id": "hn08",
+   "stratum": "nordic",
+   "q": "linnunruoka",
+   "pet": "bird",
+   "categories": [
+    "dry-food"
+   ]
+  },
+  {
+   "id": "hn09",
+   "stratum": "nordic",
+   "q": "kattströ",
+   "categories": [
+    "litter"
+   ]
+  },
+  {
+   "id": "hn10",
+   "stratum": "nordic",
+   "q": "pennun ruoka",
+   "pet": "dog",
+   "categories": [
+    "dry-food",
+    "wet-food"
+   ],
+   "refine": {
+    "dietary": "puppy"
+   }
+  }
+ ]
+}
