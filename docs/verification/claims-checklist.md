@@ -50,19 +50,20 @@ which release that measurement was made on.
 | D14 | The pushback: "sells about as well" (22.3 % against 20.4 %) (:143-144) | the same; the test also fails if the two drift more than 5 points apart | 3b | `test_the_pushback_still_holds_at_20_percent_off_it_sells_about_as_well_as_at_10_15` | ok |
 | D15 | Before the lever: the hideout is the 2nd card, 56 % (:188) | `GET /api/shop/grid?…&recent=cart` (the page's own default) | 3b | `test_the_scripts_before_the_lever_row_is_where_the_hideout_stands_in_picked_for_you` | ok, **story changed** (below) |
 | D16 | Public Shop: Picked for you leads with Trixie Hideout, medium, 58 %, ★ 5 (:228) | the same | 3b | `test_the_scripts_public_shop_line_names_the_card_picked_for_you_leads_with` | ok |
+| D17 | Kit narration names the leader: "the PetNord Hideout leads, then PetNord Exercise Wheel and the Trixie hideouts" (:174-176) | `GET /api/shop/suggestions?shopper=paivi…` `next_for_pet` | 3b | `test_the_scripts_narration_names_the_product_the_kit_path_leads_with` (also fails if the leader stops being a hideout) | ok |
+| D18 | Presenter note: "0 of 8 is the observed count at 10–15 %; 20.4 % is the model's shop-wide lift" | the discount bands | 3b | `test_the_scripts_presenter_note_gives_the_observed_count_beside_the_models_rate` | ok |
+| D19 | Read back: "May 2026, 20 % or more off, €17.27, 4 stars"; list price €22.28 at a typical 22.5 %; 4 stars (1 review) (:140, :213, :254) | `/api/product` margins and state; `reviews` count | 3b | `test_the_scripts_read_back_row_is_the_levers_price_and_the_products_stars` | ok (was "5 stars (1 review)", release 2/3a) |
+| D20 | Offers over-represented in purchases: 1.41× [1.29, 1.53], 2,518 of 6,069 rows (:318) | `GET /api/shop-analytics/funnel?kpi=purchased` | 3b | `test_the_scripts_offers_row_is_the_lift_of_products_on_offer_in_purchases` | ok (was 1.42× [1.30, 1.54], 2,602 of 6,276) |
+| D21 | Advertising assumptions: none, search €60, banner €180 a month (:122) | `src/product_funnel.py` `AD_SPEND_EUR` | any | `test_the_demo_scripts_advertising_assumptions_are_the_funnels` | ok |
+| D22 | "within 6 %" of what shoppers then did, on 56,005 held-out impressions (:296) | `docs/aito-cheatsheet.md` "A discount band as a what-if", measured on release 2 (117,026 impressions) | 2 | `test_the_held_out_calibration_figure_says_which_release_it_was_measured_on` | **not re-measured on 3b**: the line now says so. A re-run needs about 2,600 nested-`from` predicts on the shared instance |
 
-**Where the story changed, not only the numbers (2026-10-30).** On 3a the Trixie Hideout, small led the kit path (22.5 %) and was the 3rd "Picked for you" card; on 3b it is 4th in the kit path (12.7 %, behind PetNord Hideout, PetNord Exercise Wheel and Trixie Hideout, medium) and 2nd in "Picked for you". The kit line, "Shoppers who owned a cage and a bottle bought a hideout next", still holds (a hideout leads), and the lever's discounted product still rises. What a presenter must not say any more: that the Trixie Hideout, small is the first thing the kit path suggests. Also, the Why row's basis now reads "at 10–15 % it was shown 8 times (0 bought)": the 20.4 % is the model's, the observed count is thin and says so, which the caveat about shop-wide lifts already covers.
+**Where the story changed, not only the numbers (2026-10-30).** On 3a the Trixie Hideout, small led the kit path (22.5 %) and was the 3rd "Picked for you" card; on 3b it is 4th in the kit path (12.7 %, behind PetNord Hideout, PetNord Exercise Wheel and Trixie Hideout, medium) and 2nd in "Picked for you". The kit line, "Shoppers who owned a cage and a bottle bought a hideout next", still holds (a hideout leads), and the lever's discounted product still rises. The narration now names the actual leader (the PetNord Hideout) and a test pins it (D17), and the script no longer says the hideout rises "to first" (it is 2nd today; the rank after the lever is read in the sandbox). The Why row's basis reads "at 10–15 % it was shown 8 times (0 bought)", and a presenter note beside it (D18) says the 0 of 8 is the observed count and the 20.4 % is the model's shop-wide lift.
 
-## Not yet covered (stated in the demo script, no lookup written)
+## Not yet covered
 
-These are release 3a figures the script itself says must be re-read before a partner demo. Each needs either a sandbox run
-(marked **(Sunday)** in the script) or a lookup like D4–D16:
-
-- The May decision's margins (:140) were re-read from the same band table but have no test of their own.
-- The Pricing tab's units (:116), the cross-check (:117) and the funnel at €1.75 (:115) were re-read from the endpoints with `list_price=1.75`, but have no test of their own. The price range paid (:119: €1.41–€1.90) was checked by hand against the pricing endpoint's range and is unchanged; the advertising assumptions (:120: €60, €180) are not looked up.
-- The Shop's "Before the lever" card (:188: 57 %), the May row quoted by the agent (:252-253).
-- The patterns row on offers (:316: 1.42×, [1.30, 1.54], 2,602 of 6,276) and the 6 % held-out figure (:295-297).
-- The Evidence model checks the script cites.
+- **Sandbox rows marked (Sunday)** (:141, :149, :153, :189, :190, :212, :253): they carry no figure, or a figure only a sandbox run reads (May's units and profit, the offer factor, the re-scored rank). Making a sandbox is a copy-on-write branch on the shared sandbox database, so a run is Antti's call; until then each says it is read in the sandbox.
+- The model checks the script cites (section 6), beyond the UCI row, and the Evidence figures: the Model checks page reads `data/evidence/model-checks.json`, which `tests/test_aito_check.py` compares with a live run on the `snapshot-drift-check` branch.
+- The 6 % calibration figure (D22) is labelled, not recomputed.
 
 ## How to read a failure
 

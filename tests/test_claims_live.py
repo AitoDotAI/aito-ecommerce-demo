@@ -175,3 +175,43 @@ def test_the_scripts_public_shop_line_names_the_card_picked_for_you_leads_with(p
     top = picked_for_anna[0]
 
     assert says(f"with {top['name']}, \"{round(top['p'] * 100)} % buy it when shown\", ★ {top['avg_rating']:g}")
+
+
+# ── 4. The kit path's leader, the read-back and the offers row ──────────────────────────────
+
+
+def test_the_scripts_narration_names_the_product_the_kit_path_leads_with(shop):
+    lead, second = shop["next_for_pet"][0]["name"], shop["next_for_pet"][1]["name"]
+
+    assert says(f"bought a hideout next: the {lead} leads, then {second} and the Trixie hideouts")
+    assert "hideout" in lead.lower(), "the narration says shoppers 'bought a hideout next'; the kit path no longer leads with one"
+
+
+def test_the_scripts_presenter_note_gives_the_observed_count_beside_the_models_rate(bands):
+    b = bands["10-15"]
+
+    assert says(f"{b['purchased']} of {b['shown']} is the observed count at 10–15 %; "
+                f"{b['p_purchase'] * 100:.1f} % is the model's shop-wide lift.")
+
+
+def test_the_scripts_read_back_row_is_the_levers_price_and_the_products_stars(app_client):
+    product = get(app_client, "/api/product?sku=SKU-PT-0563&month=2026-04")
+    list_price = product["state"]["list_price_eur"]
+    price = next(m["price_eur"] for m in product["decision"]["margins"] if m["band"] == "20+")
+    stars = product["state"]["rating_band"]
+    reviews = AitoClient(load_config()).search("reviews", where={"product_sku": "SKU-PT-0563"}, limit=0)["total"]
+    noun = "review" if reviews == 1 else "reviews"
+
+    assert says(f"May 2026, 20 % or more off, €{price:.2f}, {stars} stars")
+    assert says(f"April's list price €{list_price:.2f} at the band's typical {round((1 - price / list_price) * 100, 1):g} %; "
+                f"April's stars are {stars} ({reviews} {noun})")
+    assert says(f"April: Trixie Hideout, small is in the {stars}-star band with {reviews} {noun};")
+
+
+def test_the_scripts_offers_row_is_the_lift_of_products_on_offer_in_purchases(app_client):
+    rows = get(app_client, "/api/shop-analytics/funnel?kpi=purchased")["rows"]
+    offer = next(r for r in rows if r["field"] == "product_state.on_offer" and r["value"] == "true")
+
+    assert says(f"products on offer are {offer['lift']:.2f}× over-represented in purchases "
+                f"([{offer['interval_low']:.2f}, {offer['interval_high']:.2f}], "
+                f"{offer['rows_with_value']:,} of {offer['condition_rows']:,} rows)")

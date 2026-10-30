@@ -101,6 +101,8 @@ Trixie Hideout). Until a lever writes May, the view shows April.
 | Margin per 100 showings | €129.80 → €147.94 (+14 %); break-even ×1.38 | list price €22.28, cost €12.25, one unit per purchase |
 | Why | 14.0 % (all impressions) × 1.32 (10–15 % off, shop-wide) × 1.11 (this product's own) × 1.00 (Aito's normalising constant) = 20.4 % | the band's `$why`; at 10–15 % it was shown 8 times (0 bought), at 20 %+ 7 times (4 bought) |
 
+**Presenter note, the Why row:** 0 of 8 is the observed count at 10–15 %; 20.4 % is the model's shop-wide lift.
+
 ## 2b. Pricing and the funnel (about 1 minute)
 
 **Click:** `/product/?sku=SKU-PT-0194&month=2026-04` (PetNord Grain Free Daily Dental Treats 80g). The right side
@@ -135,7 +137,7 @@ reads it back from the database before it shows anything."
 
 | On screen | Number | Basis |
 |---|---|---|
-| Read back | "May 2026, 20 % or more off, €17.27, 5 stars" **(Sunday)** | `src/product_levers.py`: April's list price €22.28 at the band's typical 22.5 %; April's stars are 5 (1 review) |
+| Read back | "May 2026, 20 % or more off, €17.27, 4 stars" **(Sunday)** | `src/product_levers.py`: April's list price €22.28 at the band's typical 22.5 %; April's stars are 4 (1 review) |
 | The what-if's 20 %+ row | 22.3 % bought when shown, ×1.72 vs. no discount, band's lift 1.44 | the same `_predict`; shown 7 times at 20 %+ (4 bought) |
 | The decision, May | "Change its offer to 10–15 % off": margin per 100 showings €111.97 (20 %+) → €147.94 (10–15 %) | the same band table with May's band as the current one; a sandbox run confirms it **(Sunday)** |
 | Price model, May **(Sunday)** | units and profit at €17.27 and €19.50: read in the sandbox | `_estimate units_sold`, regression (`src/price_what_if.py`) |
@@ -172,8 +174,8 @@ far. A shop sees what a visit is for, so it shows one view per intent."
 | Buy again | PetNord Guinea Pig Mix Food 15kg, 67 % | `_predict skus.$feature` over her own orders before the month |
 
 **Say, on the kit:** "Shoppers who owned a cage and a bottle bought a
-hideout next. Aito reads that from their order lines. The app has no kit
-rules."
+hideout next: the PetNord Hideout leads, then PetNord Exercise Wheel and the Trixie hideouts. Aito reads that from
+their order lines. The app has no kit rules."
 
 **On variants:** in release 2 a product's variants carry their size in the
 name ("Trixie Hideout, small" and "Trixie Hideout, medium"), so each shows as
@@ -193,7 +195,7 @@ shows it once, as the SKU Aito ranked highest; scores are never added
 "The query holds only what a shop knows: the pets she told us, the month
 and her cart."
 
-**Say:** "The hideout rises to first, and the card says why: the
+**Say:** "The hideout rises, and the card says why: the
 explanation multiplies out to the number shown. The probability is Aito's,
 and so is the offer's lift. Multiplying them is this app's choice, and the panel
 says so."
@@ -208,11 +210,11 @@ re-scored Shop exists only in the sandbox.
 
 | On screen | Number | Basis |
 |---|---|---|
-| Read back **(Sunday)** | the star band before and after, with the review count and average | April: Trixie Hideout, small is in the 3-star band with 2 reviews; `rating_band` uses the generator's rule (`data/shoppers.py`) |
+| Read back **(Sunday)** | the star band before and after, with the review count and average | April: Trixie Hideout, small is in the 4-star band with 1 review; `rating_band` uses the generator's rule (`data/shoppers.py`) |
 | Shop card **(Sunday)** | a chip "… stars ×…, learned across the shop" and the new score | lift(new stars) / lift(April's stars), from `$why` (`src/shop_state_lifts.py`) |
 
-**The honest case, to pick on Sunday:** release 2's products carry few
-reviews (the hideouts have 2), so one review often moves the band. The
+**The honest case, to pick on Sunday:** release 3b's products carry few
+reviews (the Trixie Hideout, small has 1), so one review often moves the band. The
 "no change" example (a 5-star review on a product with many 1–2 star ones,
 read back as "No change in its star band") needs a product with many
 reviews; find one in the sandbox and write it here. **Say:** "One good
@@ -294,7 +296,7 @@ it would lift your shop. The real-data number is the one on this page."
 **Optional, synthetic:** on months it hadn't seen, Aito's purchase
 estimate per discount band came within 6 % of what shoppers then did
 (`docs/aito-cheatsheet.md`, "A discount band as a what-if": Jan–Apr 2026
-held out, 56,005 impressions).
+held out, 56,005 impressions). That was measured on release 2 data and has not been re-run on release 3b.
 
 ## Close (20 seconds)
 
@@ -313,8 +315,8 @@ held out, 56,005 impressions).
   treats are in the same basket 3.17× more often than chance (interval
   2.75–3.66). 64 % of dog dry-food orders have dental treats, and 96 %
   the other way round (2,044 of 10,594 orders hold both). Source: `/api/shop-analytics/baskets`.
-- **What goes with a purchase** (Patterns): products on offer are 1.42×
-  over-represented in purchases ([1.30, 1.54], 2,602 of 6,276 rows). Say "on
+- **What goes with a purchase** (Patterns): products on offer are 1.41×
+  over-represented in purchases ([1.29, 1.53], 2,518 of 6,069 rows). Say "on
   generated data with a planted offer effect". Don't set it beside the
   planted ×2.5: one is a share ratio, the other an odds ratio.
 - **Shop search:** switch to Janne and search "food": only grain-free

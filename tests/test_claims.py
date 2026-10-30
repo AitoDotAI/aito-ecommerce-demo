@@ -16,6 +16,7 @@ import pytest
 
 from src.markdown_proposal import DISCOUNT_LEVELS_PCT, HORIZON_WEEKS
 from src.price_bands import MIN_SWEET_SPOT_SUPPORT
+from src.product_funnel import AD_SPEND_EUR
 from src.sandbox_envs import MAX_AGE
 from src.lift_rows import FAMILY_CONFIDENCE
 from src.shop_rescore import RESCORED
@@ -134,3 +135,16 @@ def test_the_demo_scripts_check_first_line_agrees_with_its_own_table(supply):
 def test_the_demo_script_quotes_the_recovery_rate_the_report_gives():
     assert says("docs/verification/action-recovery.md", "81 % of customers")
     assert says("docs/demo-script.md", "the generator's best for 81 % of customers")
+
+
+def test_the_demo_scripts_advertising_assumptions_are_the_funnels():
+    search, banner = AD_SPEND_EUR["search"], AD_SPEND_EUR["banner"]
+
+    assert AD_SPEND_EUR["none"] == 0
+    assert says("docs/demo-script.md", f"(none, search €{search:.0f}, banner €{banner:.0f} a month)")
+
+
+def test_the_held_out_calibration_figure_says_which_release_it_was_measured_on():
+    """The 6 % came from release 2 (117,026 impressions). Release 3b has fewer, so the figure must say it is not 3b's."""
+    assert says("docs/demo-script.md", "within 6 % of what shoppers then did")
+    assert says("docs/demo-script.md", "measured on release 2 data and has not been re-run on release 3b")
