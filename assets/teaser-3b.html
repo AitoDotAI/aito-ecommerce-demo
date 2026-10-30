@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Predictive E-commerce · Aito.ai — 16 views, one predictive database (release 3b)</title>
+<style>
+  :root { --bg:#0c0f41; --teal:#12B5AD; --cta:#F5A623; --ink:#1A2E1A; --muted:#5a6378; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; background:var(--bg); font-family:"Nunito",system-ui,-apple-system,sans-serif; -webkit-font-smoothing:antialiased; }
+  /* 1500 x 1900 CSS px, rendered at 2x for the 3000 x 3800 poster */
+  .poster { width:1500px; height:1900px; padding:56px 60px; color:#fff; background:linear-gradient(180deg,#0c0f41,#0a0d36); display:flex; flex-direction:column; gap:22px; }
+  .tag { font:500 14px "JetBrains Mono",monospace; letter-spacing:3px; text-transform:uppercase; color:var(--teal); }
+  h1 { font-size:68px; line-height:1.04; margin:8px 0 10px; letter-spacing:-1px; font-weight:800; }
+  h1 em { color:var(--cta); }
+  .lede { font-size:20px; line-height:1.5; color:rgba(255,255,255,.75); max-width:1100px; margin:0; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; flex:1; }
+  .card { background:#fff; color:var(--ink); border-radius:16px; padding:22px 24px 0; display:flex; flex-direction:column; overflow:hidden; }
+  .card h2 { margin:0; font-size:26px; }
+  .card .group { font:600 12px "JetBrains Mono",monospace; letter-spacing:2px; text-transform:uppercase; color:var(--teal); }
+  .card p { margin:6px 0 14px; font-size:16px; line-height:1.45; color:var(--muted); }
+  .card p strong { color:var(--ink); }
+  .shot { flex:1; overflow:hidden; border-radius:10px 10px 0 0; border:1px solid #E3E6EE; border-bottom:0; position:relative; }
+  /* crop the 1440 px wide capture to its main column (no sidebar, no Aito panel) */
+  .shot img { position:absolute; left:-195px; top:-52px; width:1022px; }
+  .foot { font-size:14px; color:rgba(255,255,255,.6); display:flex; justify-content:space-between; }
+  code { font-family:"JetBrains Mono",monospace; }
+</style>
+</head>
+<body>
+<div class="poster">
+  <div>
+    <div class="tag">Aito.ai · Predictive database · EU hosted</div>
+    <h1>16 views. <em>One predictive database.</em></h1>
+    <p class="lede">A pet-food shop, PetNord: 3,000 customers, 10,594 orders. Every suggestion, forecast and risk on these screens is a query to Aito, with the reasons shown. No models to train, no feature pipeline.</p>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <div class="group">Shop</div><h2>What this shopper needs next</h2>
+      <p>Buy again, next for their kit and picked for you: <code>_predict</code>, <code>_recommend</code>, <code>_search</code> on the shopper's own history.</p>
+      <div class="shot"><img src="teaser-3b/shop.png" alt="Shop view"></div>
+    </div>
+    <div class="card">
+      <div class="group">Run the shop · Retention</div><h2>Which action brings them back</h2>
+      <p>Six actions against doing nothing, per at-risk customer: the <strong>personalised ad adds €21.07</strong> here, the €5 voucher loses €4.35.</p>
+      <div class="shot"><img src="teaser-3b/retention-popup.png" alt="Retention next best action"></div>
+    </div>
+    <div class="card">
+      <div class="group">Run the shop · Supply</div><h2>What to reorder, what to mark down</h2>
+      <p><strong>Reorder 83 now. €27,566 tied up in 79 overstocked products.</strong> Forecasts are <code>_estimate</code>; the euros follow from them.</p>
+      <div class="shot"><img src="teaser-3b/supply.png" alt="Supply view"></div>
+    </div>
+    <div class="card">
+      <div class="group">Evidence · Model checks</div><h2>Aito says when it doesn't know</h2>
+      <p>Held-out accuracy against the simplest rule: <strong>pet type 90.0 % vs 40.0 %</strong>. One check fails on purpose, and says so.</p>
+      <div class="shot"><img src="teaser-3b/model-checks.png" alt="Model checks"></div>
+    </div>
+  </div>
+  <div class="foot"><span>Synthetic data with planted effects: it tests that Aito finds them, not how large they are in a real shop.</span><span>ecommerce.aito.ai · aito.ai</span></div>
+</div>
+</body>
+</html>
