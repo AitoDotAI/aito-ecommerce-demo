@@ -19,7 +19,7 @@
   .card .group { font:600 12px "JetBrains Mono",monospace; letter-spacing:2px; text-transform:uppercase; color:var(--teal); }
   .card p { margin:6px 0 14px; font-size:16px; line-height:1.45; color:var(--muted); }
   .card p strong { color:var(--ink); }
-  .shot { flex:1; overflow:hidden; border-radius:10px 10px 0 0; border:1px solid #E3E6EE; border-bottom:0; position:relative; }
+  .shot { flex:1; background:#F5F7F5; overflow:hidden; border-radius:10px 10px 0 0; border:1px solid #E3E6EE; border-bottom:0; position:relative; }
   /* crop the 1440 px wide capture to its main column (no sidebar, no Aito panel) */
   .shot img { position:absolute; left:-195px; top:-52px; width:1022px; }
   .foot { font-size:14px; color:rgba(255,255,255,.6); display:flex; justify-content:space-between; }
@@ -35,9 +35,14 @@
   </div>
   <div class="grid">
     <div class="card">
-      <div class="group">Shop</div><h2>What this shopper needs next</h2>
+      <div class="group">Shop</div><h2>Customer's view: what they need next</h2>
       <p>Buy again, next for their kit and picked for you: <code>_predict</code>, <code>_recommend</code>, <code>_search</code> on the shopper's own history.</p>
       <div class="shot"><img src="teaser-3b/shop.png" alt="Shop view"></div>
+    </div>
+    <div class="card">
+      <div class="group">Run the shop · Product</div><h2>Shopkeeper's view: a price change</h2>
+      <p>The same products, seen from behind the counter. One product, one month: the funnel from showings to purchases and the profit are Aito's estimates, with what <strong>actually happened</strong> marked beside them.</p>
+      <div class="shot"><img src="teaser-3b/product.png" alt="Product view"></div>
     </div>
     <div class="card">
       <div class="group">Run the shop · Retention</div><h2>Which action brings them back</h2>
@@ -48,11 +53,6 @@
       <div class="group">Run the shop · Supply</div><h2>What to reorder, what to mark down</h2>
       <p><strong>Reorder 83 now. €27,566 tied up in 79 overstocked products.</strong> Forecasts are <code>_estimate</code>; the euros follow from them.</p>
       <div class="shot"><img src="teaser-3b/supply.png" alt="Supply view"></div>
-    </div>
-    <div class="card">
-      <div class="group">Run the shop · Product</div><h2>What happens if you change the price</h2>
-      <p>One product, one month: the funnel from showings to purchases and the profit are Aito's estimates, with what <strong>actually happened</strong> marked beside them.</p>
-      <div class="shot"><img src="teaser-3b/product.png" alt="Product view"></div>
     </div>
     </div>
   </div>
