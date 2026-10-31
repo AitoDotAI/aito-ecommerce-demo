@@ -67,7 +67,8 @@ export default function SegmentProfile({ summary, selected }: { summary: Profile
       ))}
       <div className="card-sub" style={{ marginTop: 10 }}>
         Observed in simulated data; a difference does not prove the action caused it.{" "}
-        <Link href="/shopkeeper/?run=winback">The Shopkeeper agent runs the win-back →</Link>
+        In the other views: <Link href="/acquisition/">Acquisition</Link> · <Link href="/retention/">Retention</Link> · <Link href="/product/">Product</Link> ·{" "}
+        <Link href="/shopkeeper/?run=winback">the Shopkeeper&apos;s win-back run</Link>
       </div>
     </div>
   );
