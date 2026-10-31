@@ -2,7 +2,9 @@
 
 Both are counts over the release's rows, with the number of rows beside every figure:
 
-  - `segments`: for each trait value, how many profiled customers, their churn rate and spend.
+  - `segments`: for each trait value, how many profiled customers, their churn rate, spend and revenue (their
+    orders' total, lifetime and the last 12 months, and the share of the profiled customers' revenue; pets and diets overlap,
+    so those shares do not add up to 1).
   - `response`: from the action table, the share who ordered within 30 days after each action,
     per segment, and the difference to doing nothing in the same segment.
 
@@ -27,20 +29,24 @@ ACTIONS = ("email", "ad", "discount", "voucher", "apology")
 
 def segments(traits: list[dict], customers: dict[str, dict]) -> dict:
     profiled = [t for t in traits if t["profiled"]]
-    out = {"customers": len(traits), "profiled": len(profiled), "not_profiled": len(traits) - len(profiled), "by_trait": {}}
+    revenue = sum(customers[t["customer_id"]]["revenue_eur"] for t in profiled) or 1.0
+    out = {"customers": len(traits), "profiled": len(profiled), "not_profiled": len(traits) - len(profiled),
+           "profiled_revenue_eur": round(revenue, 2), "by_trait": {}}
     for trait in TRAITS:
         groups = defaultdict(list)
         for t in profiled:
             for value in (t["pets"] if trait == "pets" else [t[trait]]):
                 groups[value].append(customers[t["customer_id"]])
-        out["by_trait"][trait] = [_segment(value, rows, len(profiled)) for value, rows in sorted(groups.items())
+        out["by_trait"][trait] = [_segment(value, rows, len(profiled), revenue) for value, rows in sorted(groups.items())
                                   if value not in (NOT_PROFILED, TOO_FEW)] + (
-            [{"value": TOO_FEW, **_count(groups[TOO_FEW], len(profiled))}] if TOO_FEW in groups else [])
+            [{"value": TOO_FEW, **_count(groups[TOO_FEW], len(profiled)),
+               "revenue_eur": round(sum(r["revenue_eur"] for r in groups[TOO_FEW]), 2),
+               "revenue_share": round(sum(r["revenue_eur"] for r in groups[TOO_FEW]) / revenue, 3)}] if TOO_FEW in groups else [])
     diets = defaultdict(list)
     for t in profiled:
         for tag in t["diets"]:
             diets[tag].append(customers[t["customer_id"]])
-    out["by_trait"]["diets"] = [_segment(tag, rows, len(profiled)) for tag, rows in sorted(diets.items(), key=lambda kv: -len(kv[1]))]
+    out["by_trait"]["diets"] = [_segment(tag, rows, len(profiled), revenue) for tag, rows in sorted(diets.items(), key=lambda kv: -len(kv[1]))]
     return out
 
 
@@ -48,10 +54,13 @@ def _count(rows: list[dict], profiled: int) -> dict:
     return {"customers": len(rows), "share": round(len(rows) / profiled, 3)}
 
 
-def _segment(value: str, rows: list[dict], profiled: int) -> dict:
+def _segment(value: str, rows: list[dict], profiled: int, profiled_revenue: float) -> dict:
     return {"value": value, **_count(rows, profiled),
             "churn_rate": round(sum(r["churned"] for r in rows) / len(rows), 3),
             "avg_spend_eur": round(sum(r["total_spent_eur"] for r in rows) / len(rows), 2),
+            "revenue_eur": round(sum(r["revenue_eur"] for r in rows), 2),
+            "revenue_12m_eur": round(sum(r["revenue_12m_eur"] for r in rows), 2),
+            "revenue_share": round(sum(r["revenue_eur"] for r in rows) / profiled_revenue, 3),
             "thin": len(rows) < THIN_BELOW}
 
 

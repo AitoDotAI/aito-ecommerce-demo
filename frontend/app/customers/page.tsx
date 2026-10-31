@@ -8,6 +8,8 @@ import { customersPanel } from "@/lib/panel-content";
 import { usePagePanel } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
 import CustomerLookup from "@/components/customers/CustomerLookup";
+import PreferencesCard from "@/components/customers/PreferencesCard";
+import RelationsCard from "@/components/customers/RelationsCard";
 import ResponseMatrix from "@/components/customers/ResponseMatrix";
 import SegmentTables from "@/components/customers/SegmentTables";
 
@@ -49,6 +51,8 @@ function CustomersView() {
       {summary && (
         <div style={{ display: "grid", gap: 12 }}>
           <SegmentTables summary={summary} />
+          <RelationsCard summary={summary} />
+          <PreferencesCard summary={summary} />
           <ResponseMatrix summary={summary} />
           <CustomerLookup />
           <div className="card-sub">

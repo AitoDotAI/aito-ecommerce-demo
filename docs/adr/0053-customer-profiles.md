@@ -1,6 +1,6 @@
 # ADR 0053: Customer profiles — how customers shop, and who responds to what
 
-**Status:** Accepted, slice 1 built (2026-10-31, Antti: "add the customer analytics view"). Built: the traits, the segment tables, the response table and a lookup, from stored data. Not built: live Aito predictions per segment, loyalty use, a customer-facing "your profile" page, withdrawing consent as an action in the demo.
+**Status:** Accepted, slice 1 built (2026-10-31, Antti: "add the customer analytics view"). Built: the traits, the segment tables with revenue, the response table, the relations between variables, what each group buys, and a lookup, from stored data (slice 2 added revenue, relations and preferences, same day). Not built: live Aito predictions per segment, loyalty use, a customer-facing "your profile" page, withdrawing consent as an action in the demo.
 **Date:** 2026-10-31
 **Deciders:** Antti
 
@@ -28,7 +28,15 @@ A new view, **Customers**, with the rules below.
 4. **Who responds to what.** For each segment (offer buyers, last order, earlier emails, tracking consent, order size, open
    issue) and each action, the change in the share who ordered within 30 days against no action in the same segment, with
    its 95 % margin. A lift inside its margin is shown grey, a cell under 30 rows is blank: no result is claimed from noise.
-5. **Use.** Profiles choose which offer or message a customer sees. They are never used to set what price a customer pays.
+5. **Revenue per profile.** Each segment shows the sum of its customers' orders (lifetime and the last 12 months) and its share of all
+   profiled customers' revenue. Pets and diets overlap, so their shares add up to more than 100 %.
+6. **Relations.** Among customers with one trait, how many more points have another trait than those without it, for the three
+   ways of shopping and the pets. Diet tags are left out of relations and preferences: a diet belongs to a kind of pet, so it would
+   only show the catalogue.
+7. **What each group buys.** For each way of shopping, within dog owners and cat owners separately (so pets do not confound),
+   the categories, brands and products more of the group bought than the others, by customers reached. Relations and items use a
+   99.7 % margin because hundreds are compared; at product level most differences are hints, and the view says so.
+8. **Use.** Profiles choose which offer or message a customer sees. They are never used to set what price a customer pays.
 
 ## Aito usage
 
@@ -47,6 +55,9 @@ with `$why`) and adds `_relate` for what separates a segment.
 - [x] A cell with fewer than 30 rows has no lift, and a lift inside its margin is not called a result.
 - [x] The planted discount effect (A2) shows: a discount lifts customers who buy mostly on offer, and not those who rarely do.
 - [x] Stored profiles that no longer match the fixtures or the release fail a test.
+- [x] A user can see revenue per segment, with its share and the last 12 months.
+- [x] A user can see how a trait relates to the others, each with its margin; a group under 30 customers has no relation.
+- [x] A user can see what a way of shopping buys over-proportionally within a pet group, with the margin.
 - [ ] Aito `_predict` per segment cell with `$why` (next slice).
 
 ## Demo impact

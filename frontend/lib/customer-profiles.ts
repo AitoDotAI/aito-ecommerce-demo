@@ -2,6 +2,7 @@
 
 export interface Segment {
   value: string; customers: number; share: number; churn_rate?: number; avg_spend_eur?: number; thin?: boolean;
+  revenue_eur?: number; revenue_12m_eur?: number; revenue_share?: number;
 }
 
 export interface ResponseCell {
@@ -14,6 +15,7 @@ export interface ResponseRow {
 
 export interface ProfilesSummary {
   release: string; simulated: boolean; stale: boolean; customers: number; profiled: number; not_profiled: number;
+  profiled_revenue_eur: number; relations: Relation[]; preferences: Record<string, PreferenceGroup>;
   by_trait: Record<"offer" | "price" | "rating" | "pets" | "diets", Segment[]>;
   response: Record<string, ResponseRow[]>;
 }
@@ -35,3 +37,19 @@ export const FIELD_TITLE: Record<string, string> = {
 export const ACTION_TITLE: Record<string, string> = {
   email: "Email", ad: "Ad", discount: "Discount", voucher: "Voucher", apology: "Apology",
 };
+
+export interface TraitRef { trait: string; value: string }
+
+export interface Relation {
+  if: TraitRef; then: TraitRef; customers_with: number; share_with: number; share_without: number;
+  points: number; margin_points: number; clear: boolean;
+}
+
+export interface PreferenceRow {
+  item: string; name?: string; buyers: number; share: number; share_others: number; points: number; margin_points: number; clear: boolean;
+}
+
+export interface PreferenceGroup {
+  pet: string; customers: number; others: number;
+  categories: PreferenceRow[]; brands: PreferenceRow[]; products: PreferenceRow[];
+}

@@ -93,13 +93,15 @@ def test_exactly_the_customers_who_consented_are_profiled():
 
 
 def test_segments_count_customers_and_say_when_a_segment_is_thin():
-    customers = {"C1": {"churned": True, "total_spent_eur": 100.0}, "C2": {"churned": False, "total_spent_eur": 300.0}}
+    customers = {"C1": {"churned": True, "total_spent_eur": 100.0, "revenue_eur": 100.0, "revenue_12m_eur": 40.0},
+                 "C2": {"churned": False, "total_spent_eur": 300.0, "revenue_eur": 300.0, "revenue_12m_eur": 60.0}}
     profiles = [{"customer_id": cid, "profiled": True, "offer": "mostly", "price": "mixed", "rating": "average ratings",
                  "pets": ["dog"], "diets": []} for cid in customers]
 
     result = segments(profiles, customers)["by_trait"]["offer"][0]
 
     assert (result["customers"], result["churn_rate"], result["avg_spend_eur"], result["thin"]) == (2, 0.5, 200.0, True)
+    assert (result["revenue_eur"], result["revenue_12m_eur"], result["revenue_share"]) == (400.0, 100.0, 1.0)
 
 
 def rows(action: str, ordered: int, total: int, value: str = "yes") -> list[dict]:
@@ -161,3 +163,81 @@ def test_a_lookup_finds_a_customer_and_returns_the_profile_or_the_fact_there_is_
 
 def test_a_lookup_needs_two_letters(api):
     assert api.get("/api/customer-profiles/customers", params={"q": "a"}).json() == {"customers": []}
+
+
+from src.customer_relations import MIN_GROUP, preferences, relations, share_difference
+
+
+def profile(cid: str, offer: str, price: str, pets=("dog",), profiled=True) -> dict:
+    return {"customer_id": cid, "profiled": profiled, "offer": offer, "price": price, "rating": "average ratings",
+            "pets": list(pets), "diets": []}
+
+
+def test_a_share_difference_is_in_points_with_a_margin_that_shrinks_with_more_customers():
+    small = share_difference(30, 100, 10, 100)
+    large = share_difference(300, 1000, 100, 1000)
+
+    assert small[0] == large[0] == 20.0
+    assert large[1] < small[1]
+
+
+def test_a_relation_is_the_difference_in_share_between_those_with_a_trait_and_those_without():
+    profiles = ([profile(f"A{i}", "mostly", "value-leaning" if i < 24 else "mixed") for i in range(30)]
+                + [profile(f"B{i}", "rarely", "value-leaning" if i < 6 else "mixed") for i in range(30)])
+
+    found = next(r for r in relations(profiles) if r["if"]["value"] == "mostly" and r["then"]["value"] == "value-leaning")
+
+    assert (found["share_with"], found["share_without"], found["points"]) == (0.8, 0.2, 60.0)
+    assert found["clear"] is True
+
+
+def test_no_relation_is_made_from_a_group_smaller_than_the_minimum():
+    profiles = [profile(f"A{i}", "mostly", "mixed") for i in range(MIN_GROUP - 1)] + [profile(f"B{i}", "rarely", "mixed") for i in range(60)]
+
+    assert all(r["if"]["value"] != "mostly" for r in relations(profiles))
+
+
+def test_a_customer_who_is_not_profiled_is_in_no_relation_and_no_preference():
+    profiles = [profile(f"A{i}", "mostly", "mixed") for i in range(40)] + [profile(f"B{i}", "rarely", "mixed", profiled=False) for i in range(40)]
+
+    assert relations(profiles) == []
+
+
+def test_relations_never_pair_a_trait_with_itself_and_leave_diets_out():
+    profiles = [profile(f"A{i}", "mostly" if i % 2 else "rarely", "mixed" if i % 3 else "value-leaning") for i in range(120)]
+
+    found = relations(profiles)
+
+    assert found and all(r["if"]["trait"] != r["then"]["trait"] for r in found)
+    assert all(r["if"]["trait"] != "diets" and r["then"]["trait"] != "diets" for r in found)
+
+
+def test_a_preference_compares_a_segment_with_customers_who_buy_for_the_same_pet_only():
+    profiles = ([profile(f"D{i}", "mostly", "mixed", pets=("dog",)) for i in range(40)]
+                + [profile(f"E{i}", "rarely", "mixed", pets=("dog",)) for i in range(40)]
+                + [profile(f"C{i}", "rarely", "mixed", pets=("cat",)) for i in range(40)])
+    nothing = {"categories": set(), "brands": set(), "products": set()}
+    bought = {p["customer_id"]: {"dog": dict(nothing), "cat": dict(nothing)} for p in profiles}
+    for p in profiles[:40]:
+        bought[p["customer_id"]]["dog"] = {"categories": {"treats"}, "brands": set(), "products": set()}
+
+    found = preferences(profiles, bought)["offer:mostly|dog"]["categories"][0]
+
+    assert (found["item"], found["share"], found["share_others"], found["clear"]) == ("treats", 1.0, 0.0, True)
+    assert all(entry["pet"] in ("dog", "cat") for entry in preferences(profiles, bought).values())
+
+
+def test_the_stored_profiles_give_revenue_per_segment_that_adds_up_to_the_profiled_revenue():
+    summary = json.loads((PROFILES / "summary.json").read_text())
+
+    for trait in ("offer", "price", "rating"):
+        total = sum(s["revenue_eur"] for s in summary["by_trait"][trait])
+        assert abs(total - summary["profiled_revenue_eur"]) < 1.0, trait
+
+
+def test_revenue_is_the_sum_of_the_orders_of_the_profiled_customers():
+    orders = json.loads((DATA / "orders.json").read_text())
+    stored = {t["customer_id"] for t in json.loads((PROFILES / "customers.json").read_text()) if t["profiled"]}
+    summary = json.loads((PROFILES / "summary.json").read_text())
+
+    assert round(sum(o["total_eur"] for o in orders if o["customer_id"] in stored), 2) == summary["profiled_revenue_eur"]
