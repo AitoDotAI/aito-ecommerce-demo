@@ -26,7 +26,7 @@ export default function CustomerLookup() {
   return (
     <div className="card">
       <div className="card-title">Look up a customer</div>
-      <input value={query} placeholder="Name or id, e.g. Maija" onChange={(e) => search(e.target.value)}
+      <input value={query} placeholder="Name or id of a profiled customer" onChange={(e) => search(e.target.value)}
         style={{ width: "100%", padding: "6px 10px", border: "1px solid var(--border)", borderRadius: 6, font: "inherit" }} />
       {error && <div className="card-sub">{error}</div>}
       {hits.map((h) => (
@@ -44,7 +44,7 @@ function Profile({ p }: { p: CustomerProfile }) {
   if (!p.profiled) {
     return (
       <div style={{ marginTop: 12 }}>
-        <strong>{p.name}</strong>
+        <strong>{p.customer_id}</strong>
         <div className="card-sub">No profile: this customer did not consent to behavioural profiling.</div>
       </div>
     );
@@ -56,8 +56,8 @@ function Profile({ p }: { p: CustomerProfile }) {
       <div>Buys on offer: <strong>{p.offer}</strong> <span className="card-sub">{p.offer_share !== undefined && `${pct(p.offer_share)} of their lines were on offer`}</span></div>
       <div>Prices: <strong>{p.price}</strong> <span className="card-sub">{p.cheaper_share !== undefined && `${pct(p.cheaper_share)} of their lines were in the cheaper half of their category`}</span></div>
       <div>Ratings: <strong>{p.rating}</strong> <span className="card-sub">{p.rating_gap != null && `${p.rating_gap > 0 ? "+" : ""}${p.rating_gap} stars against their categories' average`}</span></div>
-      <div>Pets they buy for: <strong>{p.pets.length ? p.pets.join(", ") : "none seen"}</strong></div>
-      <div>Diets their pet&apos;s food is made for: <strong>{p.diets.length ? p.diets.join(", ") : "none seen"}</strong></div>
+      <div>Pets they buy for: <strong>{p.pets?.length ? p.pets.join(", ") : "none seen"}</strong></div>
+      <div>Diets their pet&apos;s food is made for: <strong>{p.diets?.length ? p.diets.join(", ") : "none seen"}</strong></div>
     </div>
   );
 }

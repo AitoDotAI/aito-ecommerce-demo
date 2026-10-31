@@ -19,8 +19,8 @@ from dataclasses import dataclass
 MIN_LINES = 3
 # Same cut points as `offer_buyer` in the action table (data/customer_actions.py), so the two agree.
 OFFER_EDGES = (0.20, 0.40)
-VALUE_FROM = 0.70            # at least this share of the lines in the cheaper half of their category
-PREMIUM_UP_TO = 0.50
+VALUE_FROM = 0.65            # at least this share of the lines in the cheaper half of their category (about the top fifth)
+PREMIUM_UP_TO = 0.35         # at most this share (about the bottom quarter)
 RATING_LED_FROM = 0.25       # buys products this many stars above their category's average
 LOW_RATED_BELOW = 0.0
 DIET_MIN_LINES = 2           # a diet tag counts after this many lines of it
@@ -30,16 +30,23 @@ NOT_PROFILED = "not profiled"
 
 @dataclass(frozen=True)
 class Reference:
-    """What a line is compared with: its category's median price and average rating, and the offer flag of its state."""
+    """What a line is compared with: its category's median LIST price and average rating.
+
+    The list price, not the price paid: the price trait asks what a customer chose, and a discount must not make a
+    line look like a cheaper choice (that would build "buys on offer" into "buys the cheaper half")."""
     median_price: dict[tuple[str, str], float]
     mean_rating: dict[tuple[str, str], float]
 
 
-def reference_for(products: list[dict]) -> Reference:
+def reference_for(products: list[dict], states: list[dict]) -> Reference:
+    """`states` are the product states (one per product and month); their list prices set each category's median."""
     prices, ratings = defaultdict(list), defaultdict(list)
+    by_sku = {p["sku"]: p for p in products}
+    for state in states:
+        product = by_sku[state["product_sku"]]
+        prices[(product["category"], product["pet_type"])].append(state["list_price_eur"])
     for p in products:
         key = (p["category"], p["pet_type"])
-        prices[key].append(p["price_eur"])
         if p.get("avg_rating"):
             ratings[key].append(p["avg_rating"])
     return Reference({k: statistics.median(v) for k, v in prices.items()},
@@ -72,7 +79,7 @@ def traits_for(customer: dict, lines: list[dict], products: dict[str, dict], sta
         return {**base, "profiled": True, "offer": TOO_FEW, "price": TOO_FEW, "rating": TOO_FEW,
                 "pets": pets, "diets": diets}
     on_offer = sum(states[ln["product_state"]]["on_offer"] for ln in lines) / len(lines)
-    cheaper = sum(states[ln["product_state"]]["price_eur"] < ref.median_price[_key(products[ln["product_sku"]])] for ln in lines) / len(lines)
+    cheaper = sum(states[ln["product_state"]]["list_price_eur"] < ref.median_price[_key(products[ln["product_sku"]])] for ln in lines) / len(lines)
     gaps = [products[ln["product_sku"]]["avg_rating"] - ref.mean_rating[_key(products[ln["product_sku"]])]
             for ln in lines if products[ln["product_sku"]].get("avg_rating") and _key(products[ln["product_sku"]]) in ref.mean_rating]
     return {**base, "profiled": True,

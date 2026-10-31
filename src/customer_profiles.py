@@ -34,7 +34,7 @@ def build() -> tuple[dict, list[dict]]:
     lines_of = defaultdict(list)
     for line in _load("order_lines"):
         lines_of[orders[line["order_id"]]].append(line)
-    ref = reference_for(list(products.values()))
+    ref = reference_for(list(products.values()), list(states.values()))
     traits = [traits_for(c, lines_of[cid], products, states, ref) for cid, c in customers.items()]
     bought = {cid: {pet: {"categories": set(), "brands": set(), "products": set()} for pet in PET_GROUPS} for cid in customers}
     for cid, lines in lines_of.items():

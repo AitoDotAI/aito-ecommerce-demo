@@ -17,12 +17,12 @@ A new view, **Customers**, with the rules below.
 
 1. **Observed traits, not inferences about the person.** Each trait is a share of the lines a customer bought,
    counted the same way for everyone: on offer (`mostly` / `sometimes` / `rarely`, the cut points of the action table's
-   `offer_buyer`), the cheaper half of their category (value-leaning / mixed / premium-leaning), and the rating of what
+   `offer_buyer`), the cheaper half of their category by list price (value-leaning / mixed / premium-leaning; list price, so a discount cannot make a line look cheaper: a first version compared the price paid and showed a circular offer → value relation, found in review), and the rating of what
    they pick against their category's average. Pets are the pets of the products they buy for. A diet is the diet tag of the
    pet food they bought, after two lines of it. Nothing about health, religion, ethnicity or the like is read or
    guessed, and the test names the allowed fields.
 2. **Only for customers who consented.** `consent_behavioural` (ADR 0044) decides: a customer without it is counted and
-   not profiled. A customer with fewer than three purchased lines has "too few purchases", not a guess.
+   not profiled. Customers who did not consent are not searchable by name and the lookup returns only their id. A customer with fewer than three purchased lines has "too few purchases", not a guess.
 3. **Segments carry their evidence.** Each segment shows customers, share, churn rate and average spend; a segment under
    30 customers is faded.
 4. **Who responds to what.** For each segment (offer buyers, last order, earlier emails, tracking consent, order size, open
@@ -37,6 +37,10 @@ A new view, **Customers**, with the rules below.
    the categories, brands and products more of the group bought than the others, by customers reached. Relations and items use a
    99.7 % margin because hundreds are compared; at product level most differences are hints, and the view says so.
 8. **Use.** Profiles choose which offer or message a customer sees. They are never used to set what price a customer pays.
+
+## Scope and wording
+
+The profiles are the release's stored data; a request that names a sandbox is answered with them and `scope: release-not-sandbox`, and the page says so. The response table is observed rates from a simulated action table, not proof that an action caused an order.
 
 ## Aito usage
 
