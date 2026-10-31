@@ -1,0 +1,6505 @@
+{
+ "release": "release3b",
+ "simulated": true,
+ "customers": 3000,
+ "profiled": 1790,
+ "not_profiled": 1210,
+ "profiled_revenue_eur": 505890.74,
+ "by_trait": {
+  "offer": [
+   {
+    "value": "mostly",
+    "customers": 377,
+    "share": 0.211,
+    "churn_rate": 0.289,
+    "avg_spend_eur": 239.61,
+    "revenue_eur": 90334.02,
+    "revenue_12m_eur": 74725.05,
+    "revenue_share": 0.179,
+    "thin": false
+   },
+   {
+    "value": "rarely",
+    "customers": 471,
+    "share": 0.263,
+    "churn_rate": 0.361,
+    "avg_spend_eur": 256.19,
+    "revenue_eur": 120665.56,
+    "revenue_12m_eur": 98611.4,
+    "revenue_share": 0.239,
+    "thin": false
+   },
+   {
+    "value": "sometimes",
+    "customers": 868,
+    "share": 0.485,
+    "churn_rate": 0.283,
+    "avg_spend_eur": 335.62,
+    "revenue_eur": 291316.63,
+    "revenue_12m_eur": 227048.0,
+    "revenue_share": 0.576,
+    "thin": false
+   },
+   {
+    "value": "too few purchases",
+    "customers": 74,
+    "share": 0.041,
+    "revenue_eur": 3574.53,
+    "revenue_share": 0.007
+   }
+  ],
+  "price": [
+   {
+    "value": "mixed",
+    "customers": 588,
+    "share": 0.328,
+    "churn_rate": 0.286,
+    "avg_spend_eur": 310.21,
+    "revenue_eur": 182405.84,
+    "revenue_12m_eur": 145661.7,
+    "revenue_share": 0.361,
+    "thin": false
+   },
+   {
+    "value": "premium-leaning",
+    "customers": 682,
+    "share": 0.381,
+    "churn_rate": 0.326,
+    "avg_spend_eur": 337.54,
+    "revenue_eur": 230204.31,
+    "revenue_12m_eur": 181955.09,
+    "revenue_share": 0.455,
+    "thin": false
+   },
+   {
+    "value": "value-leaning",
+    "customers": 446,
+    "share": 0.249,
+    "churn_rate": 0.303,
+    "avg_spend_eur": 201.13,
+    "revenue_eur": 89706.06,
+    "revenue_12m_eur": 72767.66,
+    "revenue_share": 0.177,
+    "thin": false
+   },
+   {
+    "value": "too few purchases",
+    "customers": 74,
+    "share": 0.041,
+    "revenue_eur": 3574.53,
+    "revenue_share": 0.007
+   }
+  ],
+  "rating": [
+   {
+    "value": "above-average ratings",
+    "customers": 387,
+    "share": 0.216,
+    "churn_rate": 0.282,
+    "avg_spend_eur": 274.4,
+    "revenue_eur": 106194.31,
+    "revenue_12m_eur": 84347.37,
+    "revenue_share": 0.21,
+    "thin": false
+   },
+   {
+    "value": "average ratings",
+    "customers": 853,
+    "share": 0.477,
+    "churn_rate": 0.291,
+    "avg_spend_eur": 303.39,
+    "revenue_eur": 258793.47,
+    "revenue_12m_eur": 209951.82,
+    "revenue_share": 0.512,
+    "thin": false
+   },
+   {
+    "value": "below-average ratings",
+    "customers": 476,
+    "share": 0.266,
+    "churn_rate": 0.353,
+    "avg_spend_eur": 288.51,
+    "revenue_eur": 137328.43,
+    "revenue_12m_eur": 106085.26,
+    "revenue_share": 0.271,
+    "thin": false
+   },
+   {
+    "value": "too few purchases",
+    "customers": 74,
+    "share": 0.041,
+    "revenue_eur": 3574.53,
+    "revenue_share": 0.007
+   }
+  ],
+  "pets": [
+   {
+    "value": "aquarium",
+    "customers": 105,
+    "share": 0.059,
+    "churn_rate": 0.39,
+    "avg_spend_eur": 238.08,
+    "revenue_eur": 24998.87,
+    "revenue_12m_eur": 19301.35,
+    "revenue_share": 0.049,
+    "thin": false
+   },
+   {
+    "value": "bird",
+    "customers": 4,
+    "share": 0.002,
+    "churn_rate": 0.5,
+    "avg_spend_eur": 361.76,
+    "revenue_eur": 1447.06,
+    "revenue_12m_eur": 1112.51,
+    "revenue_share": 0.003,
+    "thin": true
+   },
+   {
+    "value": "cat",
+    "customers": 805,
+    "share": 0.45,
+    "churn_rate": 0.266,
+    "avg_spend_eur": 325.95,
+    "revenue_eur": 262388.17,
+    "revenue_12m_eur": 209508.78,
+    "revenue_share": 0.519,
+    "thin": false
+   },
+   {
+    "value": "dog",
+    "customers": 1027,
+    "share": 0.574,
+    "churn_rate": 0.327,
+    "avg_spend_eur": 277.5,
+    "revenue_eur": 284987.97,
+    "revenue_12m_eur": 227946.08,
+    "revenue_share": 0.563,
+    "thin": false
+   },
+   {
+    "value": "small_animal",
+    "customers": 145,
+    "share": 0.081,
+    "churn_rate": 0.448,
+    "avg_spend_eur": 315.6,
+    "revenue_eur": 45762.29,
+    "revenue_12m_eur": 36217.92,
+    "revenue_share": 0.09,
+    "thin": false
+   }
+  ],
+  "diets": [
+   {
+    "value": "grain-free",
+    "customers": 793,
+    "share": 0.443,
+    "churn_rate": 0.251,
+    "avg_spend_eur": 373.76,
+    "revenue_eur": 296393.41,
+    "revenue_12m_eur": 228701.07,
+    "revenue_share": 0.586,
+    "thin": false
+   },
+   {
+    "value": "senior",
+    "customers": 509,
+    "share": 0.284,
+    "churn_rate": 0.246,
+    "avg_spend_eur": 391.12,
+    "revenue_eur": 199078.1,
+    "revenue_12m_eur": 157256.63,
+    "revenue_share": 0.394,
+    "thin": false
+   },
+   {
+    "value": "sensitive",
+    "customers": 460,
+    "share": 0.257,
+    "churn_rate": 0.237,
+    "avg_spend_eur": 409.72,
+    "revenue_eur": 188472.6,
+    "revenue_12m_eur": 146895.39,
+    "revenue_share": 0.373,
+    "thin": false
+   },
+   {
+    "value": "indoor",
+    "customers": 258,
+    "share": 0.144,
+    "churn_rate": 0.24,
+    "avg_spend_eur": 398.6,
+    "revenue_eur": 102838.9,
+    "revenue_12m_eur": 79293.34,
+    "revenue_share": 0.203,
+    "thin": false
+   },
+   {
+    "value": "weight-control",
+    "customers": 233,
+    "share": 0.13,
+    "churn_rate": 0.232,
+    "avg_spend_eur": 471.61,
+    "revenue_eur": 109884.21,
+    "revenue_12m_eur": 79826.18,
+    "revenue_share": 0.217,
+    "thin": false
+   },
+   {
+    "value": "puppy",
+    "customers": 233,
+    "share": 0.13,
+    "churn_rate": 0.253,
+    "avg_spend_eur": 399.96,
+    "revenue_eur": 93190.96,
+    "revenue_12m_eur": 71664.76,
+    "revenue_share": 0.184,
+    "thin": false
+   },
+   {
+    "value": "large-breed",
+    "customers": 214,
+    "share": 0.12,
+    "churn_rate": 0.238,
+    "avg_spend_eur": 355.59,
+    "revenue_eur": 76095.33,
+    "revenue_12m_eur": 59705.66,
+    "revenue_share": 0.15,
+    "thin": false
+   }
+  ]
+ },
+ "response": {
+  "offer_buyer": [
+   {
+    "value": "mostly",
+    "none": {
+     "rows": 266,
+     "order_rate": 0.158
+    },
+    "actions": {
+     "email": {
+      "rows": 160,
+      "order_rate": 0.2,
+      "thin": false,
+      "lift_points": 4.2,
+      "margin_points": 7.6,
+      "clear": false
+     },
+     "ad": {
+      "rows": 166,
+      "order_rate": 0.241,
+      "thin": false,
+      "lift_points": 8.3,
+      "margin_points": 7.8,
+      "clear": true
+     },
+     "discount": {
+      "rows": 256,
+      "order_rate": 0.238,
+      "thin": false,
+      "lift_points": 8.0,
+      "margin_points": 6.8,
+      "clear": true
+     },
+     "voucher": {
+      "rows": 196,
+      "order_rate": 0.153,
+      "thin": false,
+      "lift_points": -0.5,
+      "margin_points": 6.7,
+      "clear": false
+     },
+     "apology": {
+      "rows": 187,
+      "order_rate": 0.155,
+      "thin": false,
+      "lift_points": -0.3,
+      "margin_points": 6.8,
+      "clear": false
+     }
+    }
+   },
+   {
+    "value": "rarely",
+    "none": {
+     "rows": 433,
+     "order_rate": 0.132
+    },
+    "actions": {
+     "email": {
+      "rows": 222,
+      "order_rate": 0.099,
+      "thin": false,
+      "lift_points": -3.3,
+      "margin_points": 5.1,
+      "clear": false
+     },
+     "ad": {
+      "rows": 216,
+      "order_rate": 0.167,
+      "thin": false,
+      "lift_points": 3.5,
+      "margin_points": 5.9,
+      "clear": false
+     },
+     "discount": {
+      "rows": 232,
+      "order_rate": 0.112,
+      "thin": false,
+      "lift_points": -2.0,
+      "margin_points": 5.2,
+      "clear": false
+     },
+     "voucher": {
+      "rows": 286,
+      "order_rate": 0.171,
+      "thin": false,
+      "lift_points": 4.0,
+      "margin_points": 5.4,
+      "clear": false
+     },
+     "apology": {
+      "rows": 313,
+      "order_rate": 0.153,
+      "thin": false,
+      "lift_points": 2.2,
+      "margin_points": 5.1,
+      "clear": false
+     }
+    }
+   },
+   {
+    "value": "sometimes",
+    "none": {
+     "rows": 694,
+     "order_rate": 0.127
+    },
+    "actions": {
+     "email": {
+      "rows": 389,
+      "order_rate": 0.206,
+      "thin": false,
+      "lift_points": 7.9,
+      "margin_points": 4.7,
+      "clear": true
+     },
+     "ad": {
+      "rows": 372,
+      "order_rate": 0.218,
+      "thin": false,
+      "lift_points": 9.1,
+      "margin_points": 4.9,
+      "clear": true
+     },
+     "discount": {
+      "rows": 418,
+      "order_rate": 0.146,
+      "thin": false,
+      "lift_points": 1.9,
+      "margin_points": 4.2,
+      "clear": false
+     },
+     "voucher": {
+      "rows": 404,
+      "order_rate": 0.153,
+      "thin": false,
+      "lift_points": 2.7,
+      "margin_points": 4.3,
+      "clear": false
+     },
+     "apology": {
+      "rows": 416,
+      "order_rate": 0.154,
+      "thin": false,
+      "lift_points": 2.7,
+      "margin_points": 4.3,
+      "clear": false
+     }
+    }
+   }
+  ],
+  "recency_bucket": [
+   {
+    "value": "0-90d",
+    "none": {
+     "rows": 641,
+     "order_rate": 0.176
+    },
+    "actions": {
+     "email": {
+      "rows": 346,
+      "order_rate": 0.234,
+      "thin": false,
+      "lift_points": 5.8,
+      "margin_points": 5.3,
+      "clear": true
+     },
+     "ad": {
+      "rows": 339,
+      "order_rate": 0.286,
+      "thin": false,
+      "lift_points": 11.0,
+      "margin_points": 5.6,
+      "clear": true
+     },
+     "discount": {
+      "rows": 362,
+      "order_rate": 0.232,
+      "thin": false,
+      "lift_points": 5.6,
+      "margin_points": 5.3,
+      "clear": true
+     },
+     "voucher": {
+      "rows": 371,
+      "order_rate": 0.224,
+      "thin": false,
+      "lift_points": 4.7,
+      "margin_points": 5.2,
+      "clear": false
+     },
+     "apology": {
+      "rows": 429,
+      "order_rate": 0.224,
+      "thin": false,
+      "lift_points": 4.7,
+      "margin_points": 4.9,
+      "clear": false
+     }
+    }
+   },
+   {
+    "value": "180d+",
+    "none": {
+     "rows": 317,
+     "order_rate": 0.05
+    },
+    "actions": {
+     "email": {
+      "rows": 192,
+      "order_rate": 0.057,
+      "thin": false,
+      "lift_points": 0.7,
+      "margin_points": 4.1,
+      "clear": false
+     },
+     "ad": {
+      "rows": 164,
+      "order_rate": 0.061,
+      "thin": false,
+      "lift_points": 1.1,
+      "margin_points": 4.4,
+      "clear": false
+     },
+     "discount": {
+      "rows": 233,
+      "order_rate": 0.112,
+      "thin": false,
+      "lift_points": 6.1,
+      "margin_points": 4.7,
+      "clear": true
+     },
+     "voucher": {
+      "rows": 217,
+      "order_rate": 0.083,
+      "thin": false,
+      "lift_points": 3.2,
+      "margin_points": 4.4,
+      "clear": false
+     },
+     "apology": {
+      "rows": 213,
+      "order_rate": 0.066,
+      "thin": false,
+      "lift_points": 1.5,
+      "margin_points": 4.1,
+      "clear": false
+     }
+    }
+   },
+   {
+    "value": "90-180d",
+    "none": {
+     "rows": 435,
+     "order_rate": 0.133
+    },
+    "actions": {
+     "email": {
+      "rows": 233,
+      "order_rate": 0.18,
+      "thin": false,
+      "lift_points": 4.7,
+      "margin_points": 5.9,
+      "clear": false
+     },
+     "ad": {
+      "rows": 251,
+      "order_rate": 0.199,
+      "thin": false,
+      "lift_points": 6.6,
+      "margin_points": 5.9,
+      "clear": true
+     },
+     "discount": {
+      "rows": 311,
+      "order_rate": 0.122,
+      "thin": false,
+      "lift_points": -1.1,
+      "margin_points": 4.8,
+      "clear": false
+     },
+     "voucher": {
+      "rows": 298,
+      "order_rate": 0.134,
+      "thin": false,
+      "lift_points": 0.1,
+      "margin_points": 5.0,
+      "clear": false
+     },
+     "apology": {
+      "rows": 274,
+      "order_rate": 0.113,
+      "thin": false,
+      "lift_points": -2.0,
+      "margin_points": 4.9,
+      "clear": false
+     }
+    }
+   }
+  ],
+  "email_history": [
+   {
+    "value": "ignored",
+    "none": {
+     "rows": 389,
+     "order_rate": 0.123
+    },
+    "actions": {
+     "email": {
+      "rows": 189,
+      "order_rate": 0.159,
+      "thin": false,
+      "lift_points": 3.5,
+      "margin_points": 6.2,
+      "clear": false
+     },
+     "ad": {
+      "rows": 222,
+      "order_rate": 0.185,
+      "thin": false,
+      "lift_points": 6.1,
+      "margin_points": 6.1,
+      "clear": false
+     },
+     "discount": {
+      "rows": 256,
+      "order_rate": 0.16,
+      "thin": false,
+      "lift_points": 3.7,
+      "margin_points": 5.6,
+      "clear": false
+     },
+     "voucher": {
+      "rows": 222,
+      "order_rate": 0.162,
+      "thin": false,
+      "lift_points": 3.9,
+      "margin_points": 5.8,
+      "clear": false
+     },
+     "apology": {
+      "rows": 260,
+      "order_rate": 0.2,
+      "thin": false,
+      "lift_points": 7.7,
+      "margin_points": 5.9,
+      "clear": true
+     }
+    }
+   },
+   {
+    "value": "never_sent",
+    "none": {
+     "rows": 865,
+     "order_rate": 0.138
+    },
+    "actions": {
+     "email": {
+      "rows": 495,
+      "order_rate": 0.164,
+      "thin": false,
+      "lift_points": 2.6,
+      "margin_points": 4.0,
+      "clear": false
+     },
+     "ad": {
+      "rows": 457,
+      "order_rate": 0.23,
+      "thin": false,
+      "lift_points": 9.2,
+      "margin_points": 4.5,
+      "clear": true
+     },
+     "discount": {
+      "rows": 551,
+      "order_rate": 0.16,
+      "thin": false,
+      "lift_points": 2.2,
+      "margin_points": 3.8,
+      "clear": false
+     },
+     "voucher": {
+      "rows": 562,
+      "order_rate": 0.158,
+      "thin": false,
+      "lift_points": 2.1,
+      "margin_points": 3.8,
+      "clear": false
+     },
+     "apology": {
+      "rows": 552,
+      "order_rate": 0.132,
+      "thin": false,
+      "lift_points": -0.5,
+      "margin_points": 3.6,
+      "clear": false
+     }
+    }
+   },
+   {
+    "value": "responded",
+    "none": {
+     "rows": 139,
+     "order_rate": 0.144
+    },
+    "actions": {
+     "email": {
+      "rows": 87,
+      "order_rate": 0.264,
+      "thin": false,
+      "lift_points": 12.0,
+      "margin_points": 11.0,
+      "clear": true
+     },
+     "ad": {
+      "rows": 75,
+      "order_rate": 0.147,
+      "thin": false,
+      "lift_points": 0.3,
+      "margin_points": 9.9,
+      "clear": false
+     },
+     "discount": {
+      "rows": 99,
+      "order_rate": 0.192,
+      "thin": false,
+      "lift_points": 4.8,
+      "margin_points": 9.7,
+      "clear": false
+     },
+     "voucher": {
+      "rows": 102,
+      "order_rate": 0.157,
+      "thin": false,
+      "lift_points": 1.3,
+      "margin_points": 9.2,
+      "clear": false
+     },
+     "apology": {
+      "rows": 104,
+      "order_rate": 0.154,
+      "thin": false,
+      "lift_points": 1.0,
+      "margin_points": 9.1,
+      "clear": false
+     }
+    }
+   }
+  ],
+  "tracking_consent": [
+   {
+    "value": "no",
+    "none": {
+     "rows": 563,
+     "order_rate": 0.121
+    },
+    "actions": {
+     "email": {
+      "rows": 320,
+      "order_rate": 0.172,
+      "thin": false,
+      "lift_points": 5.1,
+      "margin_points": 4.9,
+      "clear": true
+     },
+     "ad": {
+      "rows": 232,
+      "order_rate": 0.121,
+      "thin": false,
+      "lift_points": -0.0,
+      "margin_points": 5.0,
+      "clear": false
+     },
+     "discount": {
+      "rows": 347,
+      "order_rate": 0.176,
+      "thin": false,
+      "lift_points": 5.5,
+      "margin_points": 4.8,
+      "clear": true
+     },
+     "voucher": {
+      "rows": 378,
+      "order_rate": 0.188,
+      "thin": false,
+      "lift_points": 6.7,
+      "margin_points": 4.8,
+      "clear": true
+     },
+     "apology": {
+      "rows": 371,
+      "order_rate": 0.175,
+      "thin": false,
+      "lift_points": 5.4,
+      "margin_points": 4.7,
+      "clear": true
+     }
+    }
+   },
+   {
+    "value": "yes",
+    "none": {
+     "rows": 830,
+     "order_rate": 0.143
+    },
+    "actions": {
+     "email": {
+      "rows": 451,
+      "order_rate": 0.175,
+      "thin": false,
+      "lift_points": 3.2,
+      "margin_points": 4.2,
+      "clear": false
+     },
+     "ad": {
+      "rows": 522,
+      "order_rate": 0.247,
+      "thin": false,
+      "lift_points": 10.4,
+      "margin_points": 4.4,
+      "clear": true
+     },
+     "discount": {
+      "rows": 559,
+      "order_rate": 0.156,
+      "thin": false,
+      "lift_points": 1.2,
+      "margin_points": 3.8,
+      "clear": false
+     },
+     "voucher": {
+      "rows": 508,
+      "order_rate": 0.138,
+      "thin": false,
+      "lift_points": -0.6,
+      "margin_points": 3.8,
+      "clear": false
+     },
+     "apology": {
+      "rows": 545,
+      "order_rate": 0.139,
+      "thin": false,
+      "lift_points": -0.4,
+      "margin_points": 3.8,
+      "clear": false
+     }
+    }
+   }
+  ],
+  "spend_band": [
+   {
+    "value": "high",
+    "none": {
+     "rows": 695,
+     "order_rate": 0.135
+    },
+    "actions": {
+     "email": {
+      "rows": 403,
+      "order_rate": 0.199,
+      "thin": false,
+      "lift_points": 6.3,
+      "margin_points": 4.7,
+      "clear": true
+     },
+     "ad": {
+      "rows": 397,
+      "order_rate": 0.214,
+      "thin": false,
+      "lift_points": 7.9,
+      "margin_points": 4.8,
+      "clear": true
+     },
+     "discount": {
+      "rows": 445,
+      "order_rate": 0.162,
+      "thin": false,
+      "lift_points": 2.7,
+      "margin_points": 4.3,
+      "clear": false
+     },
+     "voucher": {
+      "rows": 454,
+      "order_rate": 0.176,
+      "thin": false,
+      "lift_points": 4.1,
+      "margin_points": 4.3,
+      "clear": false
+     },
+     "apology": {
+      "rows": 476,
+      "order_rate": 0.16,
+      "thin": false,
+      "lift_points": 2.4,
+      "margin_points": 4.2,
+      "clear": false
+     }
+    }
+   },
+   {
+    "value": "low",
+    "none": {
+     "rows": 163,
+     "order_rate": 0.147
+    },
+    "actions": {
+     "email": {
+      "rows": 70,
+      "order_rate": 0.157,
+      "thin": false,
+      "lift_points": 1.0,
+      "margin_points": 10.1,
+      "clear": false
+     },
+     "ad": {
+      "rows": 89,
+      "order_rate": 0.247,
+      "thin": false,
+      "lift_points": 10.0,
+      "margin_points": 10.5,
+      "clear": false
+     },
+     "discount": {
+      "rows": 87,
+      "order_rate": 0.184,
+      "thin": false,
+      "lift_points": 3.7,
+      "margin_points": 9.8,
+      "clear": false
+     },
+     "voucher": {
+      "rows": 88,
+      "order_rate": 0.159,
+      "thin": false,
+      "lift_points": 1.2,
+      "margin_points": 9.4,
+      "clear": false
+     },
+     "apology": {
+      "rows": 91,
+      "order_rate": 0.154,
+      "thin": false,
+      "lift_points": 0.7,
+      "margin_points": 9.2,
+      "clear": false
+     }
+    }
+   },
+   {
+    "value": "mid",
+    "none": {
+     "rows": 535,
+     "order_rate": 0.129
+    },
+    "actions": {
+     "email": {
+      "rows": 298,
+      "order_rate": 0.144,
+      "thin": false,
+      "lift_points": 1.5,
+      "margin_points": 4.9,
+      "clear": false
+     },
+     "ad": {
+      "rows": 268,
+      "order_rate": 0.187,
+      "thin": false,
+      "lift_points": 5.8,
+      "margin_points": 5.5,
+      "clear": true
+     },
+     "discount": {
+      "rows": 374,
+      "order_rate": 0.16,
+      "thin": false,
+      "lift_points": 3.1,
+      "margin_points": 4.7,
+      "clear": false
+     },
+     "voucher": {
+      "rows": 344,
+      "order_rate": 0.137,
+      "thin": false,
+      "lift_points": 0.8,
+      "margin_points": 4.6,
+      "clear": false
+     },
+     "apology": {
+      "rows": 349,
+      "order_rate": 0.146,
+      "thin": false,
+      "lift_points": 1.7,
+      "margin_points": 4.7,
+      "clear": false
+     }
+    }
+   }
+  ],
+  "open_issue": [
+   {
+    "value": "late_delivery",
+    "none": {
+     "rows": 38,
+     "order_rate": 0.158
+    },
+    "actions": {
+     "email": {
+      "rows": 12,
+      "order_rate": 0.167,
+      "thin": true,
+      "lift_points": null,
+      "margin_points": null,
+      "clear": null
+     },
+     "ad": {
+      "rows": 20,
+      "order_rate": 0.1,
+      "thin": true,
+      "lift_points": null,
+      "margin_points": null,
+      "clear": null
+     },
+     "discount": {
+      "rows": 21,
+      "order_rate": 0.143,
+      "thin": true,
+      "lift_points": null,
+      "margin_points": null,
+      "clear": null
+     },
+     "voucher": {
+      "rows": 20,
+      "order_rate": 0.05,
+      "thin": true,
+      "lift_points": null,
+      "margin_points": null,
+      "clear": null
+     },
+     "apology": {
+      "rows": 42,
+      "order_rate": 0.333,
+      "thin": false,
+      "lift_points": 17.5,
+      "margin_points": 18.4,
+      "clear": false
+     }
+    }
+   },
+   {
+    "value": "low_rating",
+    "none": {
+     "rows": 47,
+     "order_rate": 0.128
+    },
+    "actions": {
+     "email": {
+      "rows": 37,
+      "order_rate": 0.135,
+      "thin": false,
+      "lift_points": 0.7,
+      "margin_points": 14.6,
+      "clear": false
+     },
+     "ad": {
+      "rows": 30,
+      "order_rate": 0.167,
+      "thin": false,
+      "lift_points": 3.9,
+      "margin_points": 16.4,
+      "clear": false
+     },
+     "discount": {
+      "rows": 36,
+      "order_rate": 0.139,
+      "thin": false,
+      "lift_points": 1.1,
+      "margin_points": 14.8,
+      "clear": false
+     },
+     "voucher": {
+      "rows": 31,
+      "order_rate": 0.129,
+      "thin": false,
+      "lift_points": 0.1,
+      "margin_points": 15.2,
+      "clear": false
+     },
+     "apology": {
+      "rows": 67,
+      "order_rate": 0.418,
+      "thin": false,
+      "lift_points": 29.0,
+      "margin_points": 15.2,
+      "clear": true
+     }
+    }
+   },
+   {
+    "value": "none",
+    "none": {
+     "rows": 1308,
+     "order_rate": 0.134
+    },
+    "actions": {
+     "email": {
+      "rows": 722,
+      "order_rate": 0.176,
+      "thin": false,
+      "lift_points": 4.2,
+      "margin_points": 3.3,
+      "clear": true
+     },
+     "ad": {
+      "rows": 704,
+      "order_rate": 0.213,
+      "thin": false,
+      "lift_points": 7.9,
+      "margin_points": 3.5,
+      "clear": true
+     },
+     "discount": {
+      "rows": 849,
+      "order_rate": 0.165,
+      "thin": false,
+      "lift_points": 3.1,
+      "margin_points": 3.1,
+      "clear": false
+     },
+     "voucher": {
+      "rows": 835,
+      "order_rate": 0.163,
+      "thin": false,
+      "lift_points": 2.9,
+      "margin_points": 3.1,
+      "clear": false
+     },
+     "apology": {
+      "rows": 807,
+      "order_rate": 0.123,
+      "thin": false,
+      "lift_points": -1.1,
+      "margin_points": 2.9,
+      "clear": false
+     }
+    }
+   }
+  ]
+ },
+ "relations": [
+  {
+   "if": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "aquarium"
+   },
+   "customers_with": 377,
+   "share_with": 0.048,
+   "share_without": 0.062,
+   "points": -1.4,
+   "margin_points": 3.8,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "bird"
+   },
+   "customers_with": 377,
+   "share_with": 0.005,
+   "share_without": 0.001,
+   "points": 0.4,
+   "margin_points": 1.2,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "cat"
+   },
+   "customers_with": 377,
+   "share_with": 0.347,
+   "share_without": 0.477,
+   "points": -13.0,
+   "margin_points": 8.4,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "dog"
+   },
+   "customers_with": 377,
+   "share_with": 0.631,
+   "share_without": 0.558,
+   "points": 7.3,
+   "margin_points": 8.4,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "small_animal"
+   },
+   "customers_with": 377,
+   "share_with": 0.093,
+   "share_without": 0.078,
+   "points": 1.5,
+   "margin_points": 5.0,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "then": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "customers_with": 377,
+   "share_with": 0.326,
+   "share_without": 0.329,
+   "points": -0.3,
+   "margin_points": 8.2,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "then": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "customers_with": 377,
+   "share_with": 0.31,
+   "share_without": 0.4,
+   "points": -9.0,
+   "margin_points": 8.1,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "then": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "customers_with": 377,
+   "share_with": 0.363,
+   "share_without": 0.219,
+   "points": 14.5,
+   "margin_points": 8.1,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "customers_with": 377,
+   "share_with": 0.212,
+   "share_without": 0.217,
+   "points": -0.5,
+   "margin_points": 7.1,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "customers_with": 377,
+   "share_with": 0.488,
+   "share_without": 0.473,
+   "points": 1.5,
+   "margin_points": 8.7,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "customers_with": 377,
+   "share_with": 0.3,
+   "share_without": 0.257,
+   "points": 4.3,
+   "margin_points": 7.9,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "aquarium"
+   },
+   "customers_with": 471,
+   "share_with": 0.072,
+   "share_without": 0.054,
+   "points": 1.8,
+   "margin_points": 4.0,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "bird"
+   },
+   "customers_with": 471,
+   "share_with": 0.0,
+   "share_without": 0.003,
+   "points": -0.3,
+   "margin_points": 0.5,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "cat"
+   },
+   "customers_with": 471,
+   "share_with": 0.465,
+   "share_without": 0.444,
+   "points": 2.1,
+   "margin_points": 8.0,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "dog"
+   },
+   "customers_with": 471,
+   "share_with": 0.565,
+   "share_without": 0.577,
+   "points": -1.2,
+   "margin_points": 8.0,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "small_animal"
+   },
+   "customers_with": 471,
+   "share_with": 0.085,
+   "share_without": 0.08,
+   "points": 0.5,
+   "margin_points": 4.5,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "then": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "customers_with": 471,
+   "share_with": 0.323,
+   "share_without": 0.331,
+   "points": -0.8,
+   "margin_points": 7.5,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "then": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "customers_with": 471,
+   "share_with": 0.482,
+   "share_without": 0.345,
+   "points": 13.7,
+   "margin_points": 7.9,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "then": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "customers_with": 471,
+   "share_with": 0.195,
+   "share_without": 0.268,
+   "points": -7.3,
+   "margin_points": 6.6,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "customers_with": 471,
+   "share_with": 0.257,
+   "share_without": 0.202,
+   "points": 5.5,
+   "margin_points": 6.9,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "customers_with": 471,
+   "share_with": 0.471,
+   "share_without": 0.478,
+   "points": -0.7,
+   "margin_points": 8.0,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "customers_with": 471,
+   "share_with": 0.272,
+   "share_without": 0.264,
+   "points": 0.8,
+   "margin_points": 7.1,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "aquarium"
+   },
+   "customers_with": 868,
+   "share_with": 0.053,
+   "share_without": 0.064,
+   "points": -1.1,
+   "margin_points": 3.3,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "bird"
+   },
+   "customers_with": 868,
+   "share_with": 0.002,
+   "share_without": 0.002,
+   "points": 0.0,
+   "margin_points": 0.7,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "cat"
+   },
+   "customers_with": 868,
+   "share_with": 0.503,
+   "share_without": 0.399,
+   "points": 10.4,
+   "margin_points": 7.0,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "dog"
+   },
+   "customers_with": 868,
+   "share_with": 0.566,
+   "share_without": 0.581,
+   "points": -1.6,
+   "margin_points": 7.0,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "small_animal"
+   },
+   "customers_with": 868,
+   "share_with": 0.062,
+   "share_without": 0.099,
+   "points": -3.6,
+   "margin_points": 3.8,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "then": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "customers_with": 868,
+   "share_with": 0.361,
+   "share_without": 0.298,
+   "points": 6.2,
+   "margin_points": 6.7,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "then": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "customers_with": 868,
+   "share_with": 0.389,
+   "share_without": 0.373,
+   "points": 1.6,
+   "margin_points": 6.9,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "then": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "customers_with": 868,
+   "share_with": 0.25,
+   "share_without": 0.248,
+   "points": 0.2,
+   "margin_points": 6.1,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "customers_with": 868,
+   "share_with": 0.214,
+   "share_without": 0.218,
+   "points": -0.4,
+   "margin_points": 5.8,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "customers_with": 868,
+   "share_with": 0.515,
+   "share_without": 0.44,
+   "points": 7.5,
+   "margin_points": 7.1,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "customers_with": 868,
+   "share_with": 0.271,
+   "share_without": 0.261,
+   "points": 0.9,
+   "margin_points": 6.3,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "aquarium"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "customers_with": 105,
+   "share_with": 0.171,
+   "share_without": 0.213,
+   "points": -4.2,
+   "margin_points": 11.4,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "aquarium"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "customers_with": 105,
+   "share_with": 0.324,
+   "share_without": 0.259,
+   "points": 6.4,
+   "margin_points": 14.1,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "aquarium"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "customers_with": 105,
+   "share_with": 0.438,
+   "share_without": 0.488,
+   "points": -5.0,
+   "margin_points": 15.0,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "aquarium"
+   },
+   "then": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "customers_with": 105,
+   "share_with": 0.267,
+   "share_without": 0.332,
+   "points": -6.6,
+   "margin_points": 13.4,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "aquarium"
+   },
+   "then": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "customers_with": 105,
+   "share_with": 0.286,
+   "share_without": 0.387,
+   "points": -10.1,
+   "margin_points": 13.7,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "aquarium"
+   },
+   "then": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "customers_with": 105,
+   "share_with": 0.381,
+   "share_without": 0.241,
+   "points": 14.0,
+   "margin_points": 14.6,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "aquarium"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "customers_with": 105,
+   "share_with": 0.381,
+   "share_without": 0.206,
+   "points": 17.5,
+   "margin_points": 14.5,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "aquarium"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "customers_with": 105,
+   "share_with": 0.238,
+   "share_without": 0.491,
+   "points": -25.3,
+   "margin_points": 13.0,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "aquarium"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "customers_with": 105,
+   "share_with": 0.314,
+   "share_without": 0.263,
+   "points": 5.1,
+   "margin_points": 14.0,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "cat"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "customers_with": 805,
+   "share_with": 0.163,
+   "share_without": 0.25,
+   "points": -8.7,
+   "margin_points": 5.7,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "cat"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "customers_with": 805,
+   "share_with": 0.272,
+   "share_without": 0.256,
+   "points": 1.6,
+   "margin_points": 6.3,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "cat"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "customers_with": 805,
+   "share_with": 0.543,
+   "share_without": 0.438,
+   "points": 10.5,
+   "margin_points": 7.1,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "cat"
+   },
+   "then": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "customers_with": 805,
+   "share_with": 0.369,
+   "share_without": 0.295,
+   "points": 7.4,
+   "margin_points": 6.7,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "cat"
+   },
+   "then": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "customers_with": 805,
+   "share_with": 0.345,
+   "share_without": 0.41,
+   "points": -6.5,
+   "margin_points": 6.9,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "cat"
+   },
+   "then": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "customers_with": 805,
+   "share_with": 0.263,
+   "share_without": 0.238,
+   "points": 2.6,
+   "margin_points": 6.2,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "cat"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "customers_with": 805,
+   "share_with": 0.241,
+   "share_without": 0.196,
+   "points": 4.5,
+   "margin_points": 5.9,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "cat"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "customers_with": 805,
+   "share_with": 0.489,
+   "share_without": 0.466,
+   "points": 2.3,
+   "margin_points": 7.1,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "cat"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "customers_with": 805,
+   "share_with": 0.247,
+   "share_without": 0.281,
+   "points": -3.4,
+   "margin_points": 6.3,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "dog"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "customers_with": 1027,
+   "share_with": 0.232,
+   "share_without": 0.182,
+   "points": 5.0,
+   "margin_points": 5.8,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "dog"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "customers_with": 1027,
+   "share_with": 0.259,
+   "share_without": 0.269,
+   "points": -1.0,
+   "margin_points": 6.3,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "dog"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "customers_with": 1027,
+   "share_with": 0.478,
+   "share_without": 0.494,
+   "points": -1.6,
+   "margin_points": 7.2,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "dog"
+   },
+   "then": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "customers_with": 1027,
+   "share_with": 0.338,
+   "share_without": 0.316,
+   "points": 2.2,
+   "margin_points": 6.7,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "dog"
+   },
+   "then": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "customers_with": 1027,
+   "share_with": 0.409,
+   "share_without": 0.343,
+   "points": 6.6,
+   "margin_points": 6.9,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "dog"
+   },
+   "then": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "customers_with": 1027,
+   "share_with": 0.222,
+   "share_without": 0.286,
+   "points": -6.4,
+   "margin_points": 6.3,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "dog"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "customers_with": 1027,
+   "share_with": 0.161,
+   "share_without": 0.291,
+   "points": -13.0,
+   "margin_points": 6.0,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "dog"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "customers_with": 1027,
+   "share_with": 0.537,
+   "share_without": 0.396,
+   "points": 14.1,
+   "margin_points": 7.1,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "dog"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "customers_with": 1027,
+   "share_with": 0.272,
+   "share_without": 0.258,
+   "points": 1.3,
+   "margin_points": 6.3,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "small_animal"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "customers_with": 145,
+   "share_with": 0.241,
+   "share_without": 0.208,
+   "points": 3.3,
+   "margin_points": 11.1,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "small_animal"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "customers_with": 145,
+   "share_with": 0.276,
+   "share_without": 0.262,
+   "points": 1.4,
+   "margin_points": 11.6,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "small_animal"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "customers_with": 145,
+   "share_with": 0.372,
+   "share_without": 0.495,
+   "points": -12.2,
+   "margin_points": 12.6,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "small_animal"
+   },
+   "then": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "customers_with": 145,
+   "share_with": 0.248,
+   "share_without": 0.336,
+   "points": -8.7,
+   "margin_points": 11.3,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "small_animal"
+   },
+   "then": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "customers_with": 145,
+   "share_with": 0.359,
+   "share_without": 0.383,
+   "points": -2.4,
+   "margin_points": 12.5,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "small_animal"
+   },
+   "then": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "customers_with": 145,
+   "share_with": 0.283,
+   "share_without": 0.246,
+   "points": 3.7,
+   "margin_points": 11.7,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "small_animal"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "customers_with": 145,
+   "share_with": 0.276,
+   "share_without": 0.211,
+   "points": 6.5,
+   "margin_points": 11.5,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "small_animal"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "customers_with": 145,
+   "share_with": 0.338,
+   "share_without": 0.489,
+   "points": -15.1,
+   "margin_points": 12.4,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "pets",
+    "value": "small_animal"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "customers_with": 145,
+   "share_with": 0.276,
+   "share_without": 0.265,
+   "points": 1.1,
+   "margin_points": 11.6,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "customers_with": 588,
+   "share_with": 0.209,
+   "share_without": 0.211,
+   "points": -0.2,
+   "margin_points": 6.1,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "customers_with": 588,
+   "share_with": 0.259,
+   "share_without": 0.265,
+   "points": -0.7,
+   "margin_points": 6.6,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "customers_with": 588,
+   "share_with": 0.532,
+   "share_without": 0.462,
+   "points": 7.1,
+   "margin_points": 7.5,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "aquarium"
+   },
+   "customers_with": 588,
+   "share_with": 0.048,
+   "share_without": 0.064,
+   "points": -1.6,
+   "margin_points": 3.4,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "bird"
+   },
+   "customers_with": 588,
+   "share_with": 0.002,
+   "share_without": 0.002,
+   "points": -0.1,
+   "margin_points": 0.7,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "cat"
+   },
+   "customers_with": 588,
+   "share_with": 0.505,
+   "share_without": 0.423,
+   "points": 8.2,
+   "margin_points": 7.5,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "dog"
+   },
+   "customers_with": 588,
+   "share_with": 0.59,
+   "share_without": 0.566,
+   "points": 2.4,
+   "margin_points": 7.4,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "small_animal"
+   },
+   "customers_with": 588,
+   "share_with": 0.061,
+   "share_without": 0.091,
+   "points": -2.9,
+   "margin_points": 3.9,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "customers_with": 588,
+   "share_with": 0.218,
+   "share_without": 0.215,
+   "points": 0.2,
+   "margin_points": 6.2,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "customers_with": 588,
+   "share_with": 0.505,
+   "share_without": 0.463,
+   "points": 4.3,
+   "margin_points": 7.5,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "customers_with": 588,
+   "share_with": 0.277,
+   "share_without": 0.26,
+   "points": 1.7,
+   "margin_points": 6.7,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "customers_with": 682,
+   "share_with": 0.172,
+   "share_without": 0.235,
+   "points": -6.3,
+   "margin_points": 5.8,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "customers_with": 682,
+   "share_with": 0.333,
+   "share_without": 0.22,
+   "points": 11.3,
+   "margin_points": 6.6,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "customers_with": 682,
+   "share_with": 0.496,
+   "share_without": 0.478,
+   "points": 1.7,
+   "margin_points": 7.3,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "aquarium"
+   },
+   "customers_with": 682,
+   "share_with": 0.044,
+   "share_without": 0.068,
+   "points": -2.4,
+   "margin_points": 3.3,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "bird"
+   },
+   "customers_with": 682,
+   "share_with": 0.0,
+   "share_without": 0.004,
+   "points": -0.4,
+   "margin_points": 0.5,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "cat"
+   },
+   "customers_with": 682,
+   "share_with": 0.408,
+   "share_without": 0.476,
+   "points": -6.8,
+   "margin_points": 7.2,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "dog"
+   },
+   "customers_with": 682,
+   "share_with": 0.616,
+   "share_without": 0.548,
+   "points": 6.8,
+   "margin_points": 7.2,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "small_animal"
+   },
+   "customers_with": 682,
+   "share_with": 0.076,
+   "share_without": 0.084,
+   "points": -0.8,
+   "margin_points": 3.9,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "customers_with": 682,
+   "share_with": 0.22,
+   "share_without": 0.214,
+   "points": 0.6,
+   "margin_points": 6.0,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "customers_with": 682,
+   "share_with": 0.504,
+   "share_without": 0.459,
+   "points": 4.5,
+   "margin_points": 7.3,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "customers_with": 682,
+   "share_with": 0.276,
+   "share_without": 0.26,
+   "points": 1.6,
+   "margin_points": 6.5,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "customers_with": 446,
+   "share_with": 0.307,
+   "share_without": 0.179,
+   "points": 12.9,
+   "margin_points": 7.3,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "customers_with": 446,
+   "share_with": 0.206,
+   "share_without": 0.282,
+   "points": -7.6,
+   "margin_points": 6.8,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "customers_with": 446,
+   "share_with": 0.487,
+   "share_without": 0.484,
+   "points": 0.2,
+   "margin_points": 8.2,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "aquarium"
+   },
+   "customers_with": 446,
+   "share_with": 0.09,
+   "share_without": 0.048,
+   "points": 4.1,
+   "margin_points": 4.4,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "bird"
+   },
+   "customers_with": 446,
+   "share_with": 0.007,
+   "share_without": 0.001,
+   "points": 0.6,
+   "margin_points": 1.2,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "cat"
+   },
+   "customers_with": 446,
+   "share_with": 0.475,
+   "share_without": 0.441,
+   "points": 3.4,
+   "margin_points": 8.2,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "dog"
+   },
+   "customers_with": 446,
+   "share_with": 0.511,
+   "share_without": 0.594,
+   "points": -8.3,
+   "margin_points": 8.2,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "small_animal"
+   },
+   "customers_with": 446,
+   "share_with": 0.092,
+   "share_without": 0.077,
+   "points": 1.5,
+   "margin_points": 4.7,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "customers_with": 446,
+   "share_with": 0.244,
+   "share_without": 0.207,
+   "points": 3.8,
+   "margin_points": 6.9,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "customers_with": 446,
+   "share_with": 0.475,
+   "share_without": 0.477,
+   "points": -0.2,
+   "margin_points": 8.2,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "then": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "customers_with": 446,
+   "share_with": 0.28,
+   "share_without": 0.261,
+   "points": 1.9,
+   "margin_points": 7.3,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "customers_with": 387,
+   "share_with": 0.207,
+   "share_without": 0.212,
+   "points": -0.5,
+   "margin_points": 7.0,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "customers_with": 387,
+   "share_with": 0.313,
+   "share_without": 0.249,
+   "points": 6.3,
+   "margin_points": 7.9,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "customers_with": 387,
+   "share_with": 0.481,
+   "share_without": 0.486,
+   "points": -0.5,
+   "margin_points": 8.6,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "aquarium"
+   },
+   "customers_with": 387,
+   "share_with": 0.103,
+   "share_without": 0.046,
+   "points": 5.7,
+   "margin_points": 4.9,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "bird"
+   },
+   "customers_with": 387,
+   "share_with": 0.003,
+   "share_without": 0.002,
+   "points": 0.0,
+   "margin_points": 0.9,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "cat"
+   },
+   "customers_with": 387,
+   "share_with": 0.501,
+   "share_without": 0.435,
+   "points": 6.6,
+   "margin_points": 8.6,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "dog"
+   },
+   "customers_with": 387,
+   "share_with": 0.426,
+   "share_without": 0.614,
+   "points": -18.8,
+   "margin_points": 8.5,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "small_animal"
+   },
+   "customers_with": 387,
+   "share_with": 0.103,
+   "share_without": 0.075,
+   "points": 2.9,
+   "margin_points": 5.1,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "then": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "customers_with": 387,
+   "share_with": 0.331,
+   "share_without": 0.328,
+   "points": 0.3,
+   "margin_points": 8.1,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "then": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "customers_with": 387,
+   "share_with": 0.388,
+   "share_without": 0.379,
+   "points": 0.8,
+   "margin_points": 8.4,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "above-average ratings"
+   },
+   "then": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "customers_with": 387,
+   "share_with": 0.282,
+   "share_without": 0.24,
+   "points": 4.1,
+   "margin_points": 7.7,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "customers_with": 853,
+   "share_with": 0.216,
+   "share_without": 0.206,
+   "points": 1.0,
+   "margin_points": 5.8,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "customers_with": 853,
+   "share_with": 0.26,
+   "share_without": 0.266,
+   "points": -0.5,
+   "margin_points": 6.2,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "customers_with": 853,
+   "share_with": 0.524,
+   "share_without": 0.449,
+   "points": 7.5,
+   "margin_points": 7.1,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "aquarium"
+   },
+   "customers_with": 853,
+   "share_with": 0.029,
+   "share_without": 0.085,
+   "points": -5.6,
+   "margin_points": 3.2,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "bird"
+   },
+   "customers_with": 853,
+   "share_with": 0.002,
+   "share_without": 0.002,
+   "points": 0.0,
+   "margin_points": 0.7,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "cat"
+   },
+   "customers_with": 853,
+   "share_with": 0.462,
+   "share_without": 0.439,
+   "points": 2.3,
+   "margin_points": 7.1,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "dog"
+   },
+   "customers_with": 853,
+   "share_with": 0.646,
+   "share_without": 0.508,
+   "points": 13.8,
+   "margin_points": 6.9,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "small_animal"
+   },
+   "customers_with": 853,
+   "share_with": 0.057,
+   "share_without": 0.102,
+   "points": -4.5,
+   "margin_points": 3.8,
+   "clear": true
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "then": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "customers_with": 853,
+   "share_with": 0.348,
+   "share_without": 0.311,
+   "points": 3.8,
+   "margin_points": 6.7,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "then": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "customers_with": 853,
+   "share_with": 0.403,
+   "share_without": 0.361,
+   "points": 4.3,
+   "margin_points": 6.9,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "average ratings"
+   },
+   "then": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "customers_with": 853,
+   "share_with": 0.249,
+   "share_without": 0.25,
+   "points": -0.1,
+   "margin_points": 6.1,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "mostly"
+   },
+   "customers_with": 476,
+   "share_with": 0.237,
+   "share_without": 0.201,
+   "points": 3.6,
+   "margin_points": 6.7,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "rarely"
+   },
+   "customers_with": 476,
+   "share_with": 0.269,
+   "share_without": 0.261,
+   "points": 0.8,
+   "margin_points": 7.1,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "then": {
+    "trait": "offer",
+    "value": "sometimes"
+   },
+   "customers_with": 476,
+   "share_with": 0.494,
+   "share_without": 0.482,
+   "points": 1.2,
+   "margin_points": 8.0,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "aquarium"
+   },
+   "customers_with": 476,
+   "share_with": 0.069,
+   "share_without": 0.055,
+   "points": 1.5,
+   "margin_points": 4.0,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "bird"
+   },
+   "customers_with": 476,
+   "share_with": 0.002,
+   "share_without": 0.002,
+   "points": -0.0,
+   "margin_points": 0.7,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "cat"
+   },
+   "customers_with": 476,
+   "share_with": 0.418,
+   "share_without": 0.461,
+   "points": -4.3,
+   "margin_points": 7.9,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "dog"
+   },
+   "customers_with": 476,
+   "share_with": 0.586,
+   "share_without": 0.569,
+   "points": 1.7,
+   "margin_points": 7.9,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "then": {
+    "trait": "pets",
+    "value": "small_animal"
+   },
+   "customers_with": 476,
+   "share_with": 0.084,
+   "share_without": 0.08,
+   "points": 0.4,
+   "margin_points": 4.4,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "then": {
+    "trait": "price",
+    "value": "mixed"
+   },
+   "customers_with": 476,
+   "share_with": 0.342,
+   "share_without": 0.323,
+   "points": 1.9,
+   "margin_points": 7.6,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "then": {
+    "trait": "price",
+    "value": "premium-leaning"
+   },
+   "customers_with": 476,
+   "share_with": 0.395,
+   "share_without": 0.376,
+   "points": 1.9,
+   "margin_points": 7.8,
+   "clear": false
+  },
+  {
+   "if": {
+    "trait": "rating",
+    "value": "below-average ratings"
+   },
+   "then": {
+    "trait": "price",
+    "value": "value-leaning"
+   },
+   "customers_with": 476,
+   "share_with": 0.263,
+   "share_without": 0.244,
+   "points": 1.8,
+   "margin_points": 7.0,
+   "clear": false
+  }
+ ],
+ "preferences": {
+  "offer:mostly|dog": {
+   "pet": "dog",
+   "customers": 238,
+   "others": 789,
+   "categories": [
+    {
+     "item": "treats",
+     "buyers": 93,
+     "share": 0.391,
+     "share_others": 0.27,
+     "points": 12.1,
+     "margin_points": 10.6,
+     "clear": true
+    },
+    {
+     "item": "dry-food",
+     "buyers": 175,
+     "share": 0.735,
+     "share_others": 0.688,
+     "points": 4.7,
+     "margin_points": 9.9,
+     "clear": false
+    },
+    {
+     "item": "dental-treats",
+     "buyers": 145,
+     "share": 0.609,
+     "share_others": 0.57,
+     "points": 3.9,
+     "margin_points": 10.9,
+     "clear": false
+    },
+    {
+     "item": "toys",
+     "buyers": 48,
+     "share": 0.202,
+     "share_others": 0.165,
+     "points": 3.7,
+     "margin_points": 8.8,
+     "clear": false
+    },
+    {
+     "item": "accessories",
+     "buyers": 237,
+     "share": 0.996,
+     "share_others": 0.986,
+     "points": 1.0,
+     "margin_points": 1.8,
+     "clear": false
+    },
+    {
+     "item": "grooming",
+     "buyers": 6,
+     "share": 0.025,
+     "share_others": 0.027,
+     "points": -0.1,
+     "margin_points": 3.5,
+     "clear": false
+    }
+   ],
+   "brands": [
+    {
+     "item": "Eukanuba",
+     "buyers": 111,
+     "share": 0.466,
+     "share_others": 0.412,
+     "points": 5.4,
+     "margin_points": 11.0,
+     "clear": false
+    },
+    {
+     "item": "Hill's Science Plan",
+     "buyers": 119,
+     "share": 0.5,
+     "share_others": 0.483,
+     "points": 1.7,
+     "margin_points": 11.1,
+     "clear": false
+    },
+    {
+     "item": "Kong",
+     "buyers": 21,
+     "share": 0.088,
+     "share_others": 0.074,
+     "points": 1.5,
+     "margin_points": 6.2,
+     "clear": false
+    },
+    {
+     "item": "Whimzees",
+     "buyers": 97,
+     "share": 0.408,
+     "share_others": 0.408,
+     "points": -0.1,
+     "margin_points": 10.9,
+     "clear": false
+    },
+    {
+     "item": "Acana",
+     "buyers": 63,
+     "share": 0.265,
+     "share_others": 0.275,
+     "points": -1.0,
+     "margin_points": 9.8,
+     "clear": false
+    },
+    {
+     "item": "Trixie",
+     "buyers": 203,
+     "share": 0.853,
+     "share_others": 0.866,
+     "points": -1.3,
+     "margin_points": 7.8,
+     "clear": false
+    }
+   ],
+   "products": [
+    {
+     "item": "SKU-PT-0213",
+     "buyers": 70,
+     "share": 0.294,
+     "share_others": 0.226,
+     "points": 6.9,
+     "margin_points": 9.9,
+     "clear": false,
+     "name": "Trixie Collar, large"
+    },
+    {
+     "item": "SKU-PT-0218",
+     "buyers": 59,
+     "share": 0.248,
+     "share_others": 0.185,
+     "points": 6.3,
+     "margin_points": 9.4,
+     "clear": false,
+     "name": "Trixie Bowl, medium"
+    },
+    {
+     "item": "SKU-PT-0173",
+     "buyers": 18,
+     "share": 0.076,
+     "share_others": 0.032,
+     "points": 4.4,
+     "margin_points": 5.5,
+     "clear": false,
+     "name": "PetNord Liver Treats 200g"
+    },
+    {
+     "item": "SKU-PT-0050",
+     "buyers": 14,
+     "share": 0.059,
+     "share_others": 0.019,
+     "points": 4.0,
+     "margin_points": 4.8,
+     "clear": false,
+     "name": "Eukanuba Grain Free Salmon Dog Food 1kg"
+    },
+    {
+     "item": "SKU-PT-0105",
+     "buyers": 14,
+     "share": 0.059,
+     "share_others": 0.027,
+     "points": 3.2,
+     "margin_points": 4.9,
+     "clear": false,
+     "name": "Royal Canin Grain Free Lamb Dog Food 150g"
+    },
+    {
+     "item": "SKU-PT-0175",
+     "buyers": 16,
+     "share": 0.067,
+     "share_others": 0.035,
+     "points": 3.2,
+     "margin_points": 5.3,
+     "clear": false,
+     "name": "PetNord Cheese Treats 500g, classic"
+    }
+   ]
+  },
+  "offer:rarely|dog": {
+   "pet": "dog",
+   "customers": 266,
+   "others": 761,
+   "categories": [
+    {
+     "item": "accessories",
+     "buyers": 262,
+     "share": 0.985,
+     "share_others": 0.989,
+     "points": -0.5,
+     "margin_points": 2.5,
+     "clear": false
+    },
+    {
+     "item": "grooming",
+     "buyers": 6,
+     "share": 0.023,
+     "share_others": 0.028,
+     "points": -0.5,
+     "margin_points": 3.3,
+     "clear": false
+    },
+    {
+     "item": "wet-food",
+     "buyers": 187,
+     "share": 0.703,
+     "share_others": 0.721,
+     "points": -1.8,
+     "margin_points": 9.7,
+     "clear": false
+    },
+    {
+     "item": "health",
+     "buyers": 15,
+     "share": 0.056,
+     "share_others": 0.087,
+     "points": -3.0,
+     "margin_points": 5.2,
+     "clear": false
+    },
+    {
+     "item": "dry-food",
+     "buyers": 177,
+     "share": 0.665,
+     "share_others": 0.711,
+     "points": -4.5,
+     "margin_points": 10.0,
+     "clear": false
+    },
+    {
+     "item": "toys",
+     "buyers": 29,
+     "share": 0.109,
+     "share_others": 0.196,
+     "points": -8.7,
+     "margin_points": 7.2,
+     "clear": false
+    }
+   ],
+   "brands": [
+    {
+     "item": "Trixie",
+     "buyers": 229,
+     "share": 0.861,
+     "share_others": 0.863,
+     "points": -0.2,
+     "margin_points": 7.4,
+     "clear": false
+    },
+    {
+     "item": "Orijen",
+     "buyers": 66,
+     "share": 0.248,
+     "share_others": 0.26,
+     "points": -1.2,
+     "margin_points": 9.3,
+     "clear": false
+    },
+    {
+     "item": "PetNord",
+     "buyers": 235,
+     "share": 0.883,
+     "share_others": 0.899,
+     "points": -1.5,
+     "margin_points": 6.8,
+     "clear": false
+    },
+    {
+     "item": "Royal Canin",
+     "buyers": 132,
+     "share": 0.496,
+     "share_others": 0.527,
+     "points": -3.1,
+     "margin_points": 10.7,
+     "clear": false
+    },
+    {
+     "item": "Kong",
+     "buyers": 14,
+     "share": 0.053,
+     "share_others": 0.085,
+     "points": -3.3,
+     "margin_points": 5.1,
+     "clear": false
+    },
+    {
+     "item": "Hill's Science Plan",
+     "buyers": 122,
+     "share": 0.459,
+     "share_others": 0.497,
+     "points": -3.8,
+     "margin_points": 10.7,
+     "clear": false
+    }
+   ],
+   "products": [
+    {
+     "item": "SKU-PT-0211",
+     "buyers": 77,
+     "share": 0.289,
+     "share_others": 0.225,
+     "points": 6.5,
+     "margin_points": 9.5,
+     "clear": false,
+     "name": "Trixie Collar, small"
+    },
+    {
+     "item": "SKU-PT-0212",
+     "buyers": 66,
+     "share": 0.248,
+     "share_others": 0.208,
+     "points": 4.0,
+     "margin_points": 9.1,
+     "clear": false,
+     "name": "Trixie Collar, medium"
+    },
+    {
+     "item": "SKU-PT-0203",
+     "buyers": 74,
+     "share": 0.278,
+     "share_others": 0.248,
+     "points": 3.0,
+     "margin_points": 9.5,
+     "clear": false,
+     "name": "PetNord Collar"
+    },
+    {
+     "item": "SKU-PT-0039",
+     "buyers": 9,
+     "share": 0.034,
+     "share_others": 0.013,
+     "points": 2.1,
+     "margin_points": 3.5,
+     "clear": false,
+     "name": "Hill's Science Plan Grain Free Turkey Dog Food 12kg"
+    },
+    {
+     "item": "SKU-PT-0025",
+     "buyers": 9,
+     "share": 0.034,
+     "share_others": 0.014,
+     "points": 1.9,
+     "margin_points": 3.6,
+     "clear": false,
+     "name": "Hill's Science Plan Puppy Lamb Dog Food 15kg, light recipe"
+    },
+    {
+     "item": "SKU-PT-0207",
+     "buyers": 56,
+     "share": 0.211,
+     "share_others": 0.193,
+     "points": 1.7,
+     "margin_points": 8.6,
+     "clear": false,
+     "name": "PetNord Bowl, small"
+    }
+   ]
+  },
+  "offer:sometimes|dog": {
+   "pet": "dog",
+   "customers": 491,
+   "others": 536,
+   "categories": [
+    {
+     "item": "wet-food",
+     "buyers": 383,
+     "share": 0.78,
+     "share_others": 0.659,
+     "points": 12.1,
+     "margin_points": 8.3,
+     "clear": true
+    },
+    {
+     "item": "dental-treats",
+     "buyers": 315,
+     "share": 0.642,
+     "share_others": 0.522,
+     "points": 11.9,
+     "margin_points": 9.2,
+     "clear": true
+    },
+    {
+     "item": "dry-food",
+     "buyers": 364,
+     "share": 0.741,
+     "share_others": 0.66,
+     "points": 8.1,
+     "margin_points": 8.5,
+     "clear": false
+    },
+    {
+     "item": "toys",
+     "buyers": 101,
+     "share": 0.206,
+     "share_others": 0.144,
+     "points": 6.2,
+     "margin_points": 7.1,
+     "clear": false
+    },
+    {
+     "item": "treats",
+     "buyers": 162,
+     "share": 0.33,
+     "share_others": 0.269,
+     "points": 6.1,
+     "margin_points": 8.6,
+     "clear": false
+    },
+    {
+     "item": "health",
+     "buyers": 47,
+     "share": 0.096,
+     "share_others": 0.063,
+     "points": 3.2,
+     "margin_points": 5.1,
+     "clear": false
+    }
+   ],
+   "brands": [
+    {
+     "item": "Whimzees",
+     "buyers": 232,
+     "share": 0.473,
+     "share_others": 0.349,
+     "points": 12.4,
+     "margin_points": 9.2,
+     "clear": true
+    },
+    {
+     "item": "Royal Canin",
+     "buyers": 283,
+     "share": 0.576,
+     "share_others": 0.466,
+     "points": 11.0,
+     "margin_points": 9.3,
+     "clear": true
+    },
+    {
+     "item": "Orijen",
+     "buyers": 148,
+     "share": 0.301,
+     "share_others": 0.216,
+     "points": 8.5,
+     "margin_points": 8.2,
+     "clear": true
+    },
+    {
+     "item": "Eukanuba",
+     "buyers": 229,
+     "share": 0.466,
+     "share_others": 0.386,
+     "points": 8.0,
+     "margin_points": 9.2,
+     "clear": false
+    },
+    {
+     "item": "Hill's Science Plan",
+     "buyers": 259,
+     "share": 0.527,
+     "share_others": 0.45,
+     "points": 7.8,
+     "margin_points": 9.3,
+     "clear": false
+    },
+    {
+     "item": "Acana",
+     "buyers": 153,
+     "share": 0.312,
+     "share_others": 0.237,
+     "points": 7.5,
+     "margin_points": 8.3,
+     "clear": false
+    }
+   ],
+   "products": [
+    {
+     "item": "SKU-PT-0188",
+     "buyers": 56,
+     "share": 0.114,
+     "share_others": 0.049,
+     "points": 6.6,
+     "margin_points": 5.1,
+     "clear": true,
+     "name": "Whimzees Grain Free Puppy Dental Treats 80g"
+    },
+    {
+     "item": "SKU-PT-0184",
+     "buyers": 52,
+     "share": 0.106,
+     "share_others": 0.041,
+     "points": 6.5,
+     "margin_points": 4.9,
+     "clear": true,
+     "name": "Whimzees Grain Free Daily Dental Treats 200g, medium dogs"
+    },
+    {
+     "item": "SKU-PT-0195",
+     "buyers": 50,
+     "share": 0.102,
+     "share_others": 0.041,
+     "points": 6.1,
+     "margin_points": 4.8,
+     "clear": true,
+     "name": "PetNord Daily Dental Treats 200g"
+    },
+    {
+     "item": "SKU-PT-0032",
+     "buyers": 18,
+     "share": 0.037,
+     "share_others": 0.004,
+     "points": 3.3,
+     "margin_points": 2.7,
+     "clear": true,
+     "name": "Hill's Science Plan Beef Dog Food 12kg"
+    },
+    {
+     "item": "SKU-PT-0205",
+     "buyers": 67,
+     "share": 0.136,
+     "share_others": 0.084,
+     "points": 5.3,
+     "margin_points": 5.9,
+     "clear": false,
+     "name": "PetNord Harness, small"
+    },
+    {
+     "item": "SKU-PT-0204",
+     "buyers": 73,
+     "share": 0.149,
+     "share_others": 0.097,
+     "points": 5.2,
+     "margin_points": 6.2,
+     "clear": false,
+     "name": "PetNord Leash"
+    }
+   ]
+  },
+  "price:mixed|dog": {
+   "pet": "dog",
+   "customers": 347,
+   "others": 680,
+   "categories": [
+    {
+     "item": "dental-treats",
+     "buyers": 231,
+     "share": 0.666,
+     "share_others": 0.535,
+     "points": 13.0,
+     "margin_points": 9.5,
+     "clear": true
+    },
+    {
+     "item": "dry-food",
+     "buyers": 263,
+     "share": 0.758,
+     "share_others": 0.669,
+     "points": 8.9,
+     "margin_points": 8.8,
+     "clear": true
+    },
+    {
+     "item": "treats",
+     "buyers": 119,
+     "share": 0.343,
+     "share_others": 0.275,
+     "points": 6.8,
+     "margin_points": 9.2,
+     "clear": false
+    },
+    {
+     "item": "health",
+     "buyers": 39,
+     "share": 0.112,
+     "share_others": 0.062,
+     "points": 5.1,
+     "margin_points": 5.8,
+     "clear": false
+    },
+    {
+     "item": "toys",
+     "buyers": 63,
+     "share": 0.182,
+     "share_others": 0.169,
+     "points": 1.2,
+     "margin_points": 7.6,
+     "clear": false
+    },
+    {
+     "item": "wet-food",
+     "buyers": 251,
+     "share": 0.723,
+     "share_others": 0.713,
+     "points": 1.0,
+     "margin_points": 8.9,
+     "clear": false
+    }
+   ],
+   "brands": [
+    {
+     "item": "Whimzees",
+     "buyers": 166,
+     "share": 0.478,
+     "share_others": 0.372,
+     "points": 10.6,
+     "margin_points": 9.8,
+     "clear": true
+    },
+    {
+     "item": "Orijen",
+     "buyers": 113,
+     "share": 0.326,
+     "share_others": 0.222,
+     "points": 10.4,
+     "margin_points": 8.9,
+     "clear": true
+    },
+    {
+     "item": "Hill's Science Plan",
+     "buyers": 185,
+     "share": 0.533,
+     "share_others": 0.463,
+     "points": 7.0,
+     "margin_points": 9.9,
+     "clear": false
+    },
+    {
+     "item": "Royal Canin",
+     "buyers": 193,
+     "share": 0.556,
+     "share_others": 0.5,
+     "points": 5.6,
+     "margin_points": 9.9,
+     "clear": false
+    },
+    {
+     "item": "Acana",
+     "buyers": 104,
+     "share": 0.3,
+     "share_others": 0.259,
+     "points": 4.1,
+     "margin_points": 8.9,
+     "clear": false
+    },
+    {
+     "item": "Eukanuba",
+     "buyers": 156,
+     "share": 0.45,
+     "share_others": 0.412,
+     "points": 3.8,
+     "margin_points": 9.8,
+     "clear": false
+    }
+   ],
+   "products": [
+    {
+     "item": "SKU-PT-0202",
+     "buyers": 36,
+     "share": 0.104,
+     "share_others": 0.034,
+     "points": 7.0,
+     "margin_points": 5.3,
+     "clear": true,
+     "name": "PetNord Grain Free Fresh Breath Dental Treats 120g"
+    },
+    {
+     "item": "SKU-PT-0198",
+     "buyers": 42,
+     "share": 0.121,
+     "share_others": 0.054,
+     "points": 6.7,
+     "margin_points": 5.9,
+     "clear": true,
+     "name": "PetNord Grain Free Puppy Dental Treats 120g"
+    },
+    {
+     "item": "SKU-PT-0184",
+     "buyers": 39,
+     "share": 0.112,
+     "share_others": 0.051,
+     "points": 6.1,
+     "margin_points": 5.7,
+     "clear": true,
+     "name": "Whimzees Grain Free Daily Dental Treats 200g, medium dogs"
+    },
+    {
+     "item": "SKU-PT-0177",
+     "buyers": 33,
+     "share": 0.095,
+     "share_others": 0.041,
+     "points": 5.4,
+     "margin_points": 5.2,
+     "clear": true,
+     "name": "PetNord Puppy Cheese Treats 100g"
+    },
+    {
+     "item": "SKU-PT-0214",
+     "buyers": 55,
+     "share": 0.159,
+     "share_others": 0.093,
+     "points": 6.6,
+     "margin_points": 6.8,
+     "clear": false,
+     "name": "Trixie Leash"
+    },
+    {
+     "item": "SKU-PT-0197",
+     "buyers": 32,
+     "share": 0.092,
+     "share_others": 0.041,
+     "points": 5.1,
+     "margin_points": 5.2,
+     "clear": false,
+     "name": "PetNord Grain Free Puppy Dental Treats 200g"
+    }
+   ]
+  },
+  "price:premium-leaning|dog": {
+   "pet": "dog",
+   "customers": 420,
+   "others": 607,
+   "categories": [
+    {
+     "item": "wet-food",
+     "buyers": 321,
+     "share": 0.764,
+     "share_others": 0.684,
+     "points": 8.1,
+     "margin_points": 8.4,
+     "clear": false
+    },
+    {
+     "item": "dental-treats",
+     "buyers": 252,
+     "share": 0.6,
+     "share_others": 0.565,
+     "points": 3.5,
+     "margin_points": 9.4,
+     "clear": false
+    },
+    {
+     "item": "dry-food",
+     "buyers": 297,
+     "share": 0.707,
+     "share_others": 0.694,
+     "points": 1.4,
+     "margin_points": 8.7,
+     "clear": false
+    },
+    {
+     "item": "grooming",
+     "buyers": 13,
+     "share": 0.031,
+     "share_others": 0.023,
+     "points": 0.8,
+     "margin_points": 3.1,
+     "clear": false
+    },
+    {
+     "item": "accessories",
+     "buyers": 415,
+     "share": 0.988,
+     "share_others": 0.988,
+     "points": -0.0,
+     "margin_points": 2.1,
+     "clear": false
+    },
+    {
+     "item": "health",
+     "buyers": 30,
+     "share": 0.071,
+     "share_others": 0.084,
+     "points": -1.3,
+     "margin_points": 5.1,
+     "clear": false
+    }
+   ],
+   "brands": [
+    {
+     "item": "Royal Canin",
+     "buyers": 234,
+     "share": 0.557,
+     "share_others": 0.493,
+     "points": 6.5,
+     "margin_points": 9.5,
+     "clear": false
+    },
+    {
+     "item": "Whimzees",
+     "buyers": 182,
+     "share": 0.433,
+     "share_others": 0.39,
+     "points": 4.3,
+     "margin_points": 9.4,
+     "clear": false
+    },
+    {
+     "item": "Hill's Science Plan",
+     "buyers": 209,
+     "share": 0.498,
+     "share_others": 0.479,
+     "points": 1.8,
+     "margin_points": 9.5,
+     "clear": false
+    },
+    {
+     "item": "Eukanuba",
+     "buyers": 182,
+     "share": 0.433,
+     "share_others": 0.418,
+     "points": 1.5,
+     "margin_points": 9.4,
+     "clear": false
+    },
+    {
+     "item": "PetNord",
+     "buyers": 376,
+     "share": 0.895,
+     "share_others": 0.895,
+     "points": 0.1,
+     "margin_points": 5.8,
+     "clear": false
+    },
+    {
+     "item": "Trixie",
+     "buyers": 362,
+     "share": 0.862,
+     "share_others": 0.863,
+     "points": -0.1,
+     "margin_points": 6.6,
+     "clear": false
+    }
+   ],
+   "products": [
+    {
+     "item": "SKU-PT-0065",
+     "buyers": 19,
+     "share": 0.045,
+     "share_others": 0.008,
+     "points": 3.7,
+     "margin_points": 3.2,
+     "clear": true,
+     "name": "Acana Weight Control Salmon Dog Food 7kg"
+    },
+    {
+     "item": "SKU-PT-0118",
+     "buyers": 18,
+     "share": 0.043,
+     "share_others": 0.01,
+     "points": 3.3,
+     "margin_points": 3.2,
+     "clear": true,
+     "name": "Royal Canin Turkey Dog Food 400g, light recipe"
+    },
+    {
+     "item": "SKU-PT-0040",
+     "buyers": 16,
+     "share": 0.038,
+     "share_others": 0.007,
+     "points": 3.2,
+     "margin_points": 3.0,
+     "clear": true,
+     "name": "Eukanuba Senior Chicken Dog Food 4kg"
+    },
+    {
+     "item": "SKU-PT-0037",
+     "buyers": 13,
+     "share": 0.031,
+     "share_others": 0.0,
+     "points": 3.1,
+     "margin_points": 2.5,
+     "clear": true,
+     "name": "Hill's Science Plan Senior Turkey Dog Food 15kg"
+    },
+    {
+     "item": "SKU-PT-0208",
+     "buyers": 90,
+     "share": 0.214,
+     "share_others": 0.147,
+     "points": 6.8,
+     "margin_points": 7.4,
+     "clear": false,
+     "name": "PetNord Bowl, medium"
+    },
+    {
+     "item": "SKU-PT-0218",
+     "buyers": 100,
+     "share": 0.238,
+     "share_others": 0.173,
+     "points": 6.5,
+     "margin_points": 7.8,
+     "clear": false,
+     "name": "Trixie Bowl, medium"
+    }
+   ]
+  },
+  "price:value-leaning|dog": {
+   "pet": "dog",
+   "customers": 228,
+   "others": 799,
+   "categories": [
+    {
+     "item": "toys",
+     "buyers": 48,
+     "share": 0.211,
+     "share_others": 0.163,
+     "points": 4.8,
+     "margin_points": 9.0,
+     "clear": false
+    },
+    {
+     "item": "treats",
+     "buyers": 75,
+     "share": 0.329,
+     "share_others": 0.289,
+     "points": 4.0,
+     "margin_points": 10.5,
+     "clear": false
+    },
+    {
+     "item": "accessories",
+     "buyers": 227,
+     "share": 0.996,
+     "share_others": 0.986,
+     "points": 0.9,
+     "margin_points": 1.8,
+     "clear": false
+    },
+    {
+     "item": "wet-food",
+     "buyers": 163,
+     "share": 0.715,
+     "share_others": 0.717,
+     "points": -0.2,
+     "margin_points": 10.2,
+     "clear": false
+    },
+    {
+     "item": "grooming",
+     "buyers": 5,
+     "share": 0.022,
+     "share_others": 0.028,
+     "points": -0.6,
+     "margin_points": 3.4,
+     "clear": false
+    },
+    {
+     "item": "dry-food",
+     "buyers": 156,
+     "share": 0.684,
+     "share_others": 0.703,
+     "points": -1.9,
+     "margin_points": 10.4,
+     "clear": false
+    }
+   ],
+   "brands": [
+    {
+     "item": "Kong",
+     "buyers": 25,
+     "share": 0.11,
+     "share_others": 0.068,
+     "points": 4.2,
+     "margin_points": 6.8,
+     "clear": false
+    },
+    {
+     "item": "PetNord",
+     "buyers": 208,
+     "share": 0.912,
+     "share_others": 0.89,
+     "points": 2.2,
+     "margin_points": 6.5,
+     "clear": false
+    },
+    {
+     "item": "Eukanuba",
+     "buyers": 97,
+     "share": 0.425,
+     "share_others": 0.424,
+     "points": 0.1,
+     "margin_points": 11.1,
+     "clear": false
+    },
+    {
+     "item": "Acana",
+     "buyers": 61,
+     "share": 0.268,
+     "share_others": 0.274,
+     "points": -0.7,
+     "margin_points": 10.0,
+     "clear": false
+    },
+    {
+     "item": "Trixie",
+     "buyers": 194,
+     "share": 0.851,
+     "share_others": 0.866,
+     "points": -1.5,
+     "margin_points": 7.9,
+     "clear": false
+    },
+    {
+     "item": "Hill's Science Plan",
+     "buyers": 106,
+     "share": 0.465,
+     "share_others": 0.493,
+     "points": -2.8,
+     "margin_points": 11.2,
+     "clear": false
+    }
+   ],
+   "products": [
+    {
+     "item": "SKU-PT-0209",
+     "buyers": 62,
+     "share": 0.272,
+     "share_others": 0.194,
+     "points": 7.8,
+     "margin_points": 9.8,
+     "clear": false,
+     "name": "PetNord Bowl, large"
+    },
+    {
+     "item": "SKU-PT-0207",
+     "buyers": 57,
+     "share": 0.25,
+     "share_others": 0.183,
+     "points": 6.7,
+     "margin_points": 9.5,
+     "clear": false,
+     "name": "PetNord Bowl, small"
+    },
+    {
+     "item": "SKU-PT-0213",
+     "buyers": 62,
+     "share": 0.272,
+     "share_others": 0.233,
+     "points": 3.9,
+     "margin_points": 9.9,
+     "clear": false,
+     "name": "Trixie Collar, large"
+    },
+    {
+     "item": "SKU-PT-0174",
+     "buyers": 16,
+     "share": 0.07,
+     "share_others": 0.035,
+     "points": 3.5,
+     "margin_points": 5.4,
+     "clear": false,
+     "name": "PetNord Puppy Liver Treats 100g"
+    },
+    {
+     "item": "SKU-PT-0114",
+     "buyers": 11,
+     "share": 0.048,
+     "share_others": 0.016,
+     "points": 3.2,
+     "margin_points": 4.5,
+     "clear": false,
+     "name": "Royal Canin Turkey Dog Food 85g"
+    },
+    {
+     "item": "SKU-PT-0167",
+     "buyers": 14,
+     "share": 0.061,
+     "share_others": 0.03,
+     "points": 3.1,
+     "margin_points": 5.1,
+     "clear": false,
+     "name": "PetNord Puppy Bacon Treats 100g, soft"
+    }
+   ]
+  },
+  "rating:above-average ratings|dog": {
+   "pet": "dog",
+   "customers": 165,
+   "others": 862,
+   "categories": [
+    {
+     "item": "dry-food",
+     "buyers": 117,
+     "share": 0.709,
+     "share_others": 0.697,
+     "points": 1.2,
+     "margin_points": 11.6,
+     "clear": false
+    },
+    {
+     "item": "grooming",
+     "buyers": 5,
+     "share": 0.03,
+     "share_others": 0.026,
+     "points": 0.5,
+     "margin_points": 4.3,
+     "clear": false
+    },
+    {
+     "item": "health",
+     "buyers": 12,
+     "share": 0.073,
+     "share_others": 0.08,
+     "points": -0.7,
+     "margin_points": 6.7,
+     "clear": false
+    },
+    {
+     "item": "accessories",
+     "buyers": 162,
+     "share": 0.982,
+     "share_others": 0.99,
+     "points": -0.8,
+     "margin_points": 3.3,
+     "clear": false
+    },
+    {
+     "item": "toys",
+     "buyers": 27,
+     "share": 0.164,
+     "share_others": 0.175,
+     "points": -1.2,
+     "margin_points": 9.5,
+     "clear": false
+    },
+    {
+     "item": "wet-food",
+     "buyers": 114,
+     "share": 0.691,
+     "share_others": 0.722,
+     "points": -3.1,
+     "margin_points": 11.7,
+     "clear": false
+    }
+   ],
+   "brands": [
+    {
+     "item": "PetNord",
+     "buyers": 149,
+     "share": 0.903,
+     "share_others": 0.893,
+     "points": 1.0,
+     "margin_points": 7.6,
+     "clear": false
+    },
+    {
+     "item": "Kong",
+     "buyers": 14,
+     "share": 0.085,
+     "share_others": 0.075,
+     "points": 0.9,
+     "margin_points": 7.0,
+     "clear": false
+    },
+    {
+     "item": "Royal Canin",
+     "buyers": 84,
+     "share": 0.509,
+     "share_others": 0.521,
+     "points": -1.2,
+     "margin_points": 12.7,
+     "clear": false
+    },
+    {
+     "item": "Acana",
+     "buyers": 43,
+     "share": 0.261,
+     "share_others": 0.275,
+     "points": -1.4,
+     "margin_points": 11.2,
+     "clear": false
+    },
+    {
+     "item": "Trixie",
+     "buyers": 139,
+     "share": 0.842,
+     "share_others": 0.867,
+     "points": -2.4,
+     "margin_points": 9.2,
+     "clear": false
+    },
+    {
+     "item": "Eukanuba",
+     "buyers": 65,
+     "share": 0.394,
+     "share_others": 0.43,
+     "points": -3.6,
+     "margin_points": 12.5,
+     "clear": false
+    }
+   ],
+   "products": [
+    {
+     "item": "SKU-PT-0212",
+     "buyers": 48,
+     "share": 0.291,
+     "share_others": 0.204,
+     "points": 8.7,
+     "margin_points": 11.4,
+     "clear": false,
+     "name": "Trixie Collar, medium"
+    },
+    {
+     "item": "SKU-PT-0217",
+     "buyers": 39,
+     "share": 0.236,
+     "share_others": 0.165,
+     "points": 7.2,
+     "margin_points": 10.6,
+     "clear": false,
+     "name": "Trixie Bowl, small"
+    },
+    {
+     "item": "SKU-PT-0215",
+     "buyers": 31,
+     "share": 0.188,
+     "share_others": 0.117,
+     "points": 7.1,
+     "margin_points": 9.7,
+     "clear": false,
+     "name": "Trixie Harness, small"
+    },
+    {
+     "item": "SKU-PT-0207",
+     "buyers": 41,
+     "share": 0.248,
+     "share_others": 0.188,
+     "points": 6.1,
+     "margin_points": 10.9,
+     "clear": false,
+     "name": "PetNord Bowl, small"
+    },
+    {
+     "item": "SKU-PT-0195",
+     "buyers": 19,
+     "share": 0.115,
+     "share_others": 0.061,
+     "points": 5.4,
+     "margin_points": 7.8,
+     "clear": false,
+     "name": "PetNord Daily Dental Treats 200g"
+    },
+    {
+     "item": "SKU-PT-0146",
+     "buyers": 11,
+     "share": 0.067,
+     "share_others": 0.021,
+     "points": 4.6,
+     "margin_points": 6.0,
+     "clear": false,
+     "name": "Hill's Science Plan Sensitive Duck Dog Food 150g"
+    }
+   ]
+  },
+  "rating:average ratings|dog": {
+   "pet": "dog",
+   "customers": 551,
+   "others": 476,
+   "categories": [
+    {
+     "item": "wet-food",
+     "buyers": 427,
+     "share": 0.775,
+     "share_others": 0.649,
+     "points": 12.6,
+     "margin_points": 8.5,
+     "clear": true
+    },
+    {
+     "item": "dental-treats",
+     "buyers": 340,
+     "share": 0.617,
+     "share_others": 0.536,
+     "points": 8.1,
+     "margin_points": 9.3,
+     "clear": false
+    },
+    {
+     "item": "treats",
+     "buyers": 177,
+     "share": 0.321,
+     "share_others": 0.271,
+     "points": 5.0,
+     "margin_points": 8.5,
+     "clear": false
+    },
+    {
+     "item": "dry-food",
+     "buyers": 395,
+     "share": 0.717,
+     "share_others": 0.679,
+     "points": 3.8,
+     "margin_points": 8.6,
+     "clear": false
+    },
+    {
+     "item": "toys",
+     "buyers": 101,
+     "share": 0.183,
+     "share_others": 0.162,
+     "points": 2.2,
+     "margin_points": 7.1,
+     "clear": false
+    },
+    {
+     "item": "grooming",
+     "buyers": 17,
+     "share": 0.031,
+     "share_others": 0.021,
+     "points": 1.0,
+     "margin_points": 3.0,
+     "clear": false
+    }
+   ],
+   "brands": [
+    {
+     "item": "Hill's Science Plan",
+     "buyers": 288,
+     "share": 0.523,
+     "share_others": 0.445,
+     "points": 7.7,
+     "margin_points": 9.4,
+     "clear": false
+    },
+    {
+     "item": "Royal Canin",
+     "buyers": 305,
+     "share": 0.554,
+     "share_others": 0.479,
+     "points": 7.5,
+     "margin_points": 9.4,
+     "clear": false
+    },
+    {
+     "item": "Eukanuba",
+     "buyers": 250,
+     "share": 0.454,
+     "share_others": 0.391,
+     "points": 6.3,
+     "margin_points": 9.2,
+     "clear": false
+    },
+    {
+     "item": "Orijen",
+     "buyers": 156,
+     "share": 0.283,
+     "share_others": 0.227,
+     "points": 5.6,
+     "margin_points": 8.1,
+     "clear": false
+    },
+    {
+     "item": "Whimzees",
+     "buyers": 236,
+     "share": 0.428,
+     "share_others": 0.384,
+     "points": 4.4,
+     "margin_points": 9.2,
+     "clear": false
+    },
+    {
+     "item": "PetNord",
+     "buyers": 502,
+     "share": 0.911,
+     "share_others": 0.876,
+     "points": 3.5,
+     "margin_points": 5.8,
+     "clear": false
+    }
+   ],
+   "products": [
+    {
+     "item": "SKU-PT-0136",
+     "buyers": 21,
+     "share": 0.038,
+     "share_others": 0.008,
+     "points": 3.0,
+     "margin_points": 2.8,
+     "clear": true,
+     "name": "Hill's Science Plan Beef Dog Food 150g, classic recipe"
+    },
+    {
+     "item": "SKU-PT-0215",
+     "buyers": 81,
+     "share": 0.147,
+     "share_others": 0.107,
+     "points": 4.0,
+     "margin_points": 6.2,
+     "clear": false,
+     "name": "Trixie Harness, small"
+    },
+    {
+     "item": "SKU-PT-0196",
+     "buyers": 47,
+     "share": 0.085,
+     "share_others": 0.046,
+     "points": 3.9,
+     "margin_points": 4.6,
+     "clear": false,
+     "name": "PetNord Puppy Dental Treats 200g"
+    },
+    {
+     "item": "SKU-PT-0206",
+     "buyers": 75,
+     "share": 0.136,
+     "share_others": 0.105,
+     "points": 3.1,
+     "margin_points": 6.1,
+     "clear": false,
+     "name": "PetNord Harness, medium"
+    },
+    {
+     "item": "SKU-PT-0211",
+     "buyers": 141,
+     "share": 0.256,
+     "share_others": 0.225,
+     "points": 3.1,
+     "margin_points": 8.0,
+     "clear": false,
+     "name": "Trixie Collar, small"
+    },
+    {
+     "item": "SKU-PT-0204",
+     "buyers": 75,
+     "share": 0.136,
+     "share_others": 0.105,
+     "points": 3.1,
+     "margin_points": 6.1,
+     "clear": false,
+     "name": "PetNord Leash"
+    }
+   ]
+  },
+  "rating:below-average ratings|dog": {
+   "pet": "dog",
+   "customers": 279,
+   "others": 748,
+   "categories": [
+    {
+     "item": "dry-food",
+     "buyers": 204,
+     "share": 0.731,
+     "share_others": 0.687,
+     "points": 4.4,
+     "margin_points": 9.4,
+     "clear": false
+    },
+    {
+     "item": "treats",
+     "buyers": 89,
+     "share": 0.319,
+     "share_others": 0.29,
+     "points": 2.9,
+     "margin_points": 9.7,
+     "clear": false
+    },
+    {
+     "item": "dental-treats",
+     "buyers": 166,
+     "share": 0.595,
+     "share_others": 0.574,
+     "points": 2.1,
+     "margin_points": 10.4,
+     "clear": false
+    },
+    {
+     "item": "toys",
+     "buyers": 50,
+     "share": 0.179,
+     "share_others": 0.171,
+     "points": 0.8,
+     "margin_points": 8.0,
+     "clear": false
+    },
+    {
+     "item": "accessories",
+     "buyers": 277,
+     "share": 0.993,
+     "share_others": 0.987,
+     "points": 0.6,
+     "margin_points": 2.0,
+     "clear": false
+    },
+    {
+     "item": "health",
+     "buyers": 23,
+     "share": 0.082,
+     "share_others": 0.078,
+     "points": 0.5,
+     "margin_points": 5.7,
+     "clear": false
+    }
+   ],
+   "brands": [
+    {
+     "item": "Whimzees",
+     "buyers": 124,
+     "share": 0.444,
+     "share_others": 0.394,
+     "points": 5.0,
+     "margin_points": 10.4,
+     "clear": false
+    },
+    {
+     "item": "Trixie",
+     "buyers": 249,
+     "share": 0.892,
+     "share_others": 0.852,
+     "points": 4.1,
+     "margin_points": 6.8,
+     "clear": false
+    },
+    {
+     "item": "Hill's Science Plan",
+     "buyers": 142,
+     "share": 0.509,
+     "share_others": 0.479,
+     "points": 3.0,
+     "margin_points": 10.5,
+     "clear": false
+    },
+    {
+     "item": "Orijen",
+     "buyers": 77,
+     "share": 0.276,
+     "share_others": 0.25,
+     "points": 2.6,
+     "margin_points": 9.3,
+     "clear": false
+    },
+    {
+     "item": "Acana",
+     "buyers": 78,
+     "share": 0.28,
+     "share_others": 0.27,
+     "points": 1.0,
+     "margin_points": 9.4,
+     "clear": false
+    },
+    {
+     "item": "Eukanuba",
+     "buyers": 120,
+     "share": 0.43,
+     "share_others": 0.422,
+     "points": 0.8,
+     "margin_points": 10.4,
+     "clear": false
+    }
+   ],
+   "products": [
+    {
+     "item": "SKU-PT-0218",
+     "buyers": 74,
+     "share": 0.265,
+     "share_others": 0.175,
+     "points": 9.0,
+     "margin_points": 9.0,
+     "clear": false,
+     "name": "Trixie Bowl, medium"
+    },
+    {
+     "item": "SKU-PT-0202",
+     "buyers": 27,
+     "share": 0.097,
+     "share_others": 0.043,
+     "points": 5.4,
+     "margin_points": 5.8,
+     "clear": false,
+     "name": "PetNord Grain Free Fresh Breath Dental Treats 120g"
+    },
+    {
+     "item": "SKU-PT-0211",
+     "buyers": 77,
+     "share": 0.276,
+     "share_others": 0.229,
+     "points": 4.7,
+     "margin_points": 9.3,
+     "clear": false,
+     "name": "Trixie Collar, small"
+    },
+    {
+     "item": "SKU-PT-0201",
+     "buyers": 24,
+     "share": 0.086,
+     "share_others": 0.039,
+     "points": 4.7,
+     "margin_points": 5.5,
+     "clear": false,
+     "name": "PetNord Grain Free Fresh Breath Dental Treats 80g, medium dogs"
+    },
+    {
+     "item": "SKU-PT-0205",
+     "buyers": 39,
+     "share": 0.14,
+     "share_others": 0.098,
+     "points": 4.2,
+     "margin_points": 7.0,
+     "clear": false,
+     "name": "PetNord Harness, small"
+    },
+    {
+     "item": "SKU-PT-0170",
+     "buyers": 17,
+     "share": 0.061,
+     "share_others": 0.019,
+     "points": 4.2,
+     "margin_points": 4.5,
+     "clear": false,
+     "name": "PetNord Weight Control Liver Treats 100g"
+    }
+   ]
+  },
+  "offer:mostly|cat": {
+   "pet": "cat",
+   "customers": 131,
+   "others": 674,
+   "categories": [
+    {
+     "item": "accessories",
+     "buyers": 127,
+     "share": 0.969,
+     "share_others": 0.966,
+     "points": 0.4,
+     "margin_points": 5.0,
+     "clear": false
+    },
+    {
+     "item": "dry-food",
+     "buyers": 123,
+     "share": 0.939,
+     "share_others": 0.936,
+     "points": 0.3,
+     "margin_points": 6.9,
+     "clear": false
+    },
+    {
+     "item": "wet-food",
+     "buyers": 121,
+     "share": 0.924,
+     "share_others": 0.933,
+     "points": -1.0,
+     "margin_points": 7.5,
+     "clear": false
+    },
+    {
+     "item": "treats",
+     "buyers": 41,
+     "share": 0.313,
+     "share_others": 0.328,
+     "points": -1.5,
+     "margin_points": 13.3,
+     "clear": false
+    },
+    {
+     "item": "grooming",
+     "buyers": 5,
+     "share": 0.038,
+     "share_others": 0.061,
+     "points": -2.3,
+     "margin_points": 5.7,
+     "clear": false
+    },
+    {
+     "item": "litter",
+     "buyers": 116,
+     "share": 0.885,
+     "share_others": 0.917,
+     "points": -3.1,
+     "margin_points": 8.9,
+     "clear": false
+    }
+   ],
+   "brands": [
+    {
+     "item": "Whiskas",
+     "buyers": 72,
+     "share": 0.55,
+     "share_others": 0.501,
+     "points": 4.8,
+     "margin_points": 14.3,
+     "clear": false
+    },
+    {
+     "item": "PetNord",
+     "buyers": 126,
+     "share": 0.962,
+     "share_others": 0.973,
+     "points": -1.1,
+     "margin_points": 5.4,
+     "clear": false
+    },
+    {
+     "item": "Trixie",
+     "buyers": 63,
+     "share": 0.481,
+     "share_others": 0.507,
+     "points": -2.7,
+     "margin_points": 14.3,
+     "clear": false
+    },
+    {
+     "item": "Acana",
+     "buyers": 38,
+     "share": 0.29,
+     "share_others": 0.32,
+     "points": -3.0,
+     "margin_points": 13.1,
+     "clear": false
+    },
+    {
+     "item": "Felix",
+     "buyers": 49,
+     "share": 0.374,
+     "share_others": 0.407,
+     "points": -3.2,
+     "margin_points": 13.9,
+     "clear": false
+    },
+    {
+     "item": "Royal Canin",
+     "buyers": 54,
+     "share": 0.412,
+     "share_others": 0.458,
+     "points": -4.6,
+     "margin_points": 14.1,
+     "clear": false
+    }
+   ],
+   "products": [
+    {
+     "item": "SKU-PT-0404",
+     "buyers": 12,
+     "share": 0.092,
+     "share_others": 0.025,
+     "points": 6.6,
+     "margin_points": 7.8,
+     "clear": false,
+     "name": "Whiskas Indoor Chicken Cat Food 85g"
+    },
+    {
+     "item": "SKU-PT-0449",
+     "buyers": 10,
+     "share": 0.076,
+     "share_others": 0.021,
+     "points": 5.6,
+     "margin_points": 7.2,
+     "clear": false,
+     "name": "Sheba Senior Liver Cat Food 400g"
+    },
+    {
+     "item": "SKU-PT-0490",
+     "buyers": 19,
+     "share": 0.145,
+     "share_others": 0.099,
+     "points": 4.6,
+     "margin_points": 9.9,
+     "clear": false,
+     "name": "PetNord Silica Crystals Cat Litter 7kg, value pack"
+    },
+    {
+     "item": "SKU-PT-0309",
+     "buyers": 8,
+     "share": 0.061,
+     "share_others": 0.022,
+     "points": 3.9,
+     "margin_points": 6.5,
+     "clear": false,
+     "name": "Acana Senior Turkey Cat Food 4kg"
+    },
+    {
+     "item": "SKU-PT-0496",
+     "buyers": 35,
+     "share": 0.267,
+     "share_others": 0.228,
+     "points": 3.9,
+     "margin_points": 12.6,
+     "clear": false,
+     "name": "PetNord Bowl, natural wood"
+    },
+    {
+     "item": "SKU-PT-0368",
+     "buyers": 7,
+     "share": 0.053,
+     "share_others": 0.019,
+     "points": 3.4,
+     "margin_points": 6.1,
+     "clear": false,
+     "name": "Royal Canin Senior Chicken Cat Food 85g"
+    }
+   ]
+  },
+  "offer:rarely|cat": {
+   "pet": "cat",
+   "customers": 219,
+   "others": 586,
+   "categories": [
+    {
+     "item": "wet-food",
+     "buyers": 211,
+     "share": 0.963,
+     "share_others": 0.92,
+     "points": 4.4,
+     "margin_points": 5.1,
+     "clear": false
+    },
+    {
+     "item": "litter",
+     "buyers": 204,
+     "share": 0.932,
+     "share_others": 0.904,
+     "points": 2.7,
+     "margin_points": 6.3,
+     "clear": false
+    },
+    {
+     "item": "dry-food",
+     "buyers": 208,
+     "share": 0.95,
+     "share_others": 0.932,
+     "points": 1.8,
+     "margin_points": 5.4,
+     "clear": false
+    },
+    {
+     "item": "health",
+     "buyers": 16,
+     "share": 0.073,
+     "share_others": 0.08,
+     "points": -0.7,
+     "margin_points": 6.3,
+     "clear": false
+    },
+    {
+     "item": "toys",
+     "buyers": 9,
+     "share": 0.041,
+     "share_others": 0.056,
+     "points": -1.5,
+     "margin_points": 4.9,
+     "clear": false
+    },
+    {
+     "item": "accessories",
+     "buyers": 209,
+     "share": 0.954,
+     "share_others": 0.971,
+     "points": -1.7,
+     "margin_points": 4.7,
+     "clear": false
+    }
+   ],
+   "brands": [
+    {
+     "item": "Royal Canin",
+     "buyers": 107,
+     "share": 0.489,
+     "share_others": 0.437,
+     "points": 5.2,
+     "margin_points": 11.9,
+     "clear": false
+    },
+    {
+     "item": "PetNord",
+     "buyers": 217,
+     "share": 0.991,
+     "share_others": 0.964,
+     "points": 2.7,
+     "margin_points": 3.0,
+     "clear": false
+    },
+    {
+     "item": "Sheba",
+     "buyers": 76,
+     "share": 0.347,
+     "share_others": 0.338,
+     "points": 0.9,
+     "margin_points": 11.3,
+     "clear": false
+    },
+    {
+     "item": "Hill's Science Plan",
+     "buyers": 107,
+     "share": 0.489,
+     "share_others": 0.5,
+     "points": -1.1,
+     "margin_points": 11.9,
+     "clear": false
+    },
+    {
+     "item": "Orijen",
+     "buyers": 63,
+     "share": 0.288,
+     "share_others": 0.3,
+     "points": -1.3,
+     "margin_points": 10.8,
+     "clear": false
+    },
+    {
+     "item": "Acana",
+     "buyers": 61,
+     "share": 0.279,
+     "share_others": 0.329,
+     "points": -5.1,
+     "margin_points": 10.8,
+     "clear": false
+    }
+   ],
+   "products": [
+    {
+     "item": "SKU-PT-0491",
+     "buyers": 34,
+     "share": 0.155,
+     "share_others": 0.089,
+     "points": 6.7,
+     "margin_points": 8.1,
+     "clear": false,
+     "name": "PetNord Recycled Paper Cat Litter 7kg, unscented"
+    },
+    {
+     "item": "SKU-PT-0386",
+     "buyers": 15,
+     "share": 0.068,
+     "share_others": 0.017,
+     "points": 5.1,
+     "margin_points": 5.4,
+     "clear": false,
+     "name": "Hill's Science Plan Sensitive Chicken Cat Food 85g"
+    },
+    {
+     "item": "SKU-PT-0483",
+     "buyers": 34,
+     "share": 0.155,
+     "share_others": 0.119,
+     "points": 3.6,
+     "margin_points": 8.4,
+     "clear": false,
+     "name": "PetNord Clumping Clay Cat Litter 7kg, unscented"
+    },
+    {
+     "item": "SKU-PT-0489",
+     "buyers": 27,
+     "share": 0.123,
+     "share_others": 0.092,
+     "points": 3.1,
+     "margin_points": 7.6,
+     "clear": false,
+     "name": "PetNord Silica Crystals Cat Litter 12kg"
+    },
+    {
+     "item": "SKU-PT-0363",
+     "buyers": 12,
+     "share": 0.055,
+     "share_others": 0.024,
+     "points": 3.1,
+     "margin_points": 5.0,
+     "clear": false,
+     "name": "Royal Canin Sensitive Tuna Cat Food 85g"
+    },
+    {
+     "item": "SKU-PT-0314",
+     "buyers": 13,
+     "share": 0.059,
+     "share_others": 0.031,
+     "points": 2.9,
+     "margin_points": 5.2,
+     "clear": false,
+     "name": "Acana Grain Free Whitefish Cat Food 2kg"
+    }
+   ]
+  },
+  "offer:sometimes|cat": {
+   "pet": "cat",
+   "customers": 437,
+   "others": 368,
+   "categories": [
+    {
+     "item": "treats",
+     "buyers": 176,
+     "share": 0.403,
+     "share_others": 0.234,
+     "points": 16.9,
+     "margin_points": 9.7,
+     "clear": true
+    },
+    {
+     "item": "litter",
+     "buyers": 413,
+     "share": 0.945,
+     "share_others": 0.872,
+     "points": 7.3,
+     "margin_points": 6.2,
+     "clear": true
+    },
+    {
+     "item": "grooming",
+     "buyers": 37,
+     "share": 0.085,
+     "share_others": 0.024,
+     "points": 6.0,
+     "margin_points": 4.7,
+     "clear": true
+    },
+    {
+     "item": "dry-food",
+     "buyers": 421,
+     "share": 0.963,
+     "share_others": 0.905,
+     "points": 5.8,
+     "margin_points": 5.3,
+     "clear": true
+    },
+    {
+     "item": "wet-food",
+     "buyers": 417,
+     "share": 0.954,
+     "share_others": 0.905,
+     "points": 4.9,
+     "margin_points": 5.5,
+     "clear": false
+    },
+    {
+     "item": "toys",
+     "buyers": 30,
+     "share": 0.069,
+     "share_others": 0.033,
+     "points": 3.6,
+     "margin_points": 4.6,
+     "clear": false
+    }
+   ],
+   "brands": [
+    {
+     "item": "Trixie",
+     "buyers": 248,
+     "share": 0.568,
+     "share_others": 0.427,
+     "points": 14.1,
+     "margin_points": 10.5,
+     "clear": true
+    },
+    {
+     "item": "Felix",
+     "buyers": 195,
+     "share": 0.446,
+     "share_others": 0.348,
+     "points": 9.8,
+     "margin_points": 10.3,
+     "clear": false
+    },
+    {
+     "item": "Hill's Science Plan",
+     "buyers": 236,
+     "share": 0.54,
+     "share_others": 0.446,
+     "points": 9.4,
+     "margin_points": 10.6,
+     "clear": false
+    },
+    {
+     "item": "Acana",
+     "buyers": 155,
+     "share": 0.355,
+     "share_others": 0.269,
+     "points": 8.6,
+     "margin_points": 9.8,
+     "clear": false
+    },
+    {
+     "item": "Whiskas",
+     "buyers": 238,
+     "share": 0.545,
+     "share_others": 0.467,
+     "points": 7.7,
+     "margin_points": 10.6,
+     "clear": false
+    },
+    {
+     "item": "Orijen",
+     "buyers": 143,
+     "share": 0.327,
+     "share_others": 0.261,
+     "points": 6.6,
+     "margin_points": 9.6,
+     "clear": false
+    }
+   ],
+   "products": [
+    {
+     "item": "SKU-PT-0500",
+     "buyers": 138,
+     "share": 0.316,
+     "share_others": 0.182,
+     "points": 13.4,
+     "margin_points": 9.0,
+     "clear": true,
+     "name": "Trixie Scratching Post"
+    },
+    {
+     "item": "SKU-PT-0504",
+     "buyers": 53,
+     "share": 0.121,
+     "share_others": 0.046,
+     "points": 7.5,
+     "margin_points": 5.7,
+     "clear": true,
+     "name": "Trixie Carrier, medium"
+    },
+    {
+     "item": "SKU-PT-0502",
+     "buyers": 34,
+     "share": 0.078,
+     "share_others": 0.024,
+     "points": 5.3,
+     "margin_points": 4.5,
+     "clear": true,
+     "name": "Trixie Water Fountain"
+    },
+    {
+     "item": "SKU-PT-0376",
+     "buyers": 24,
+     "share": 0.055,
+     "share_others": 0.011,
+     "points": 4.4,
+     "margin_points": 3.6,
+     "clear": true,
+     "name": "Royal Canin Liver Cat Food 150g"
+    },
+    {
+     "item": "SKU-PT-0457",
+     "buyers": 11,
+     "share": 0.025,
+     "share_others": 0.0,
+     "points": 2.5,
+     "margin_points": 2.2,
+     "clear": true,
+     "name": "Whiskas Crunchy Bites Treats 200g, soft"
+    },
+    {
+     "item": "SKU-PT-0494",
+     "buyers": 104,
+     "share": 0.238,
+     "share_others": 0.19,
+     "points": 4.8,
+     "margin_points": 8.7,
+     "clear": false,
+     "name": "PetNord Scratching Post"
+    }
+   ]
+  },
+  "price:mixed|cat": {
+   "pet": "cat",
+   "customers": 297,
+   "others": 508,
+   "categories": [
+    {
+     "item": "litter",
+     "buyers": 282,
+     "share": 0.949,
+     "share_others": 0.89,
+     "points": 6.0,
+     "margin_points": 5.6,
+     "clear": true
+    },
+    {
+     "item": "toys",
+     "buyers": 26,
+     "share": 0.088,
+     "share_others": 0.031,
+     "points": 5.6,
+     "margin_points": 5.4,
+     "clear": true
+    },
+    {
+     "item": "treats",
+     "buyers": 108,
+     "share": 0.364,
+     "share_others": 0.303,
+     "points": 6.0,
+     "margin_points": 10.4,
+     "clear": false
+    },
+    {
+     "item": "wet-food",
+     "buyers": 286,
+     "share": 0.963,
+     "share_others": 0.913,
+     "points": 5.0,
+     "margin_points": 5.0,
+     "clear": false
+    },
+    {
+     "item": "grooming",
+     "buyers": 26,
+     "share": 0.088,
+     "share_others": 0.039,
+     "points": 4.8,
+     "margin_points": 5.6,
+     "clear": false
+    },
+    {
+     "item": "dry-food",
+     "buyers": 286,
+     "share": 0.963,
+     "share_others": 0.921,
+     "points": 4.2,
+     "margin_points": 4.9,
+     "clear": false
+    }
+   ],
+   "brands": [
+    {
+     "item": "Sheba",
+     "buyers": 117,
+     "share": 0.394,
+     "share_others": 0.309,
+     "points": 8.5,
+     "margin_points": 10.5,
+     "clear": false
+    },
+    {
+     "item": "Felix",
+     "buyers": 132,
+     "share": 0.444,
+     "share_others": 0.376,
+     "points": 6.8,
+     "margin_points": 10.8,
+     "clear": false
+    },
+    {
+     "item": "Whiskas",
+     "buyers": 163,
+     "share": 0.549,
+     "share_others": 0.486,
+     "points": 6.3,
+     "margin_points": 10.9,
+     "clear": false
+    },
+    {
+     "item": "Hill's Science Plan",
+     "buyers": 156,
+     "share": 0.525,
+     "share_others": 0.48,
+     "points": 4.5,
+     "margin_points": 10.9,
+     "clear": false
+    },
+    {
+     "item": "Royal Canin",
+     "buyers": 142,
+     "share": 0.478,
+     "share_others": 0.435,
+     "points": 4.3,
+     "margin_points": 10.9,
+     "clear": false
+    },
+    {
+     "item": "PetNord",
+     "buyers": 294,
+     "share": 0.99,
+     "share_others": 0.961,
+     "points": 2.9,
+     "margin_points": 3.1,
+     "clear": false
+    }
+   ],
+   "products": [
+    {
+     "item": "SKU-PT-0500",
+     "buyers": 89,
+     "share": 0.3,
+     "share_others": 0.228,
+     "points": 7.1,
+     "margin_points": 9.7,
+     "clear": false,
+     "name": "Trixie Scratching Post"
+    },
+    {
+     "item": "SKU-PT-0491",
+     "buyers": 42,
+     "share": 0.141,
+     "share_others": 0.087,
+     "points": 5.5,
+     "margin_points": 7.1,
+     "clear": false,
+     "name": "PetNord Recycled Paper Cat Litter 7kg, unscented"
+    },
+    {
+     "item": "SKU-PT-0497",
+     "buyers": 79,
+     "share": 0.266,
+     "share_others": 0.213,
+     "points": 5.3,
+     "margin_points": 9.4,
+     "clear": false,
+     "name": "PetNord Bowl, grey"
+    },
+    {
+     "item": "SKU-PT-0287",
+     "buyers": 35,
+     "share": 0.118,
+     "share_others": 0.071,
+     "points": 4.7,
+     "margin_points": 6.6,
+     "clear": false,
+     "name": "Hill's Science Plan Turkey Cat Food 4kg"
+    },
+    {
+     "item": "SKU-PT-0492",
+     "buyers": 33,
+     "share": 0.111,
+     "share_others": 0.073,
+     "points": 3.8,
+     "margin_points": 6.5,
+     "clear": false,
+     "name": "PetNord Recycled Paper Cat Litter 5kg"
+    },
+    {
+     "item": "SKU-PT-0446",
+     "buyers": 20,
+     "share": 0.067,
+     "share_others": 0.037,
+     "points": 3.0,
+     "margin_points": 5.0,
+     "clear": false,
+     "name": "Sheba Sensitive Beef Cat Food 150g"
+    }
+   ]
+  },
+  "price:premium-leaning|cat": {
+   "pet": "cat",
+   "customers": 278,
+   "others": 527,
+   "categories": [
+    {
+     "item": "health",
+     "buyers": 32,
+     "share": 0.115,
+     "share_others": 0.059,
+     "points": 5.6,
+     "margin_points": 6.5,
+     "clear": false
+    },
+    {
+     "item": "wet-food",
+     "buyers": 266,
+     "share": 0.957,
+     "share_others": 0.918,
+     "points": 3.8,
+     "margin_points": 5.1,
+     "clear": false
+    },
+    {
+     "item": "dry-food",
+     "buyers": 265,
+     "share": 0.953,
+     "share_others": 0.928,
+     "points": 2.5,
+     "margin_points": 5.1,
+     "clear": false
+    },
+    {
+     "item": "litter",
+     "buyers": 257,
+     "share": 0.924,
+     "share_others": 0.905,
+     "points": 1.9,
+     "margin_points": 6.1,
+     "clear": false
+    },
+    {
+     "item": "accessories",
+     "buyers": 269,
+     "share": 0.968,
+     "share_others": 0.966,
+     "points": 0.2,
+     "margin_points": 4.0,
+     "clear": false
+    },
+    {
+     "item": "toys",
+     "buyers": 10,
+     "share": 0.036,
+     "share_others": 0.061,
+     "points": -2.5,
+     "margin_points": 4.6,
+     "clear": false
+    }
+   ],
+   "brands": [
+    {
+     "item": "Sheba",
+     "buyers": 105,
+     "share": 0.378,
+     "share_others": 0.321,
+     "points": 5.7,
+     "margin_points": 10.6,
+     "clear": false
+    },
+    {
+     "item": "Felix",
+     "buyers": 117,
+     "share": 0.421,
+     "share_others": 0.391,
+     "points": 3.0,
+     "margin_points": 10.9,
+     "clear": false
+    },
+    {
+     "item": "Acana",
+     "buyers": 90,
+     "share": 0.324,
+     "share_others": 0.311,
+     "points": 1.3,
+     "margin_points": 10.4,
+     "clear": false
+    },
+    {
+     "item": "Whiskas",
+     "buyers": 143,
+     "share": 0.514,
+     "share_others": 0.507,
+     "points": 0.8,
+     "margin_points": 11.1,
+     "clear": false
+    },
+    {
+     "item": "Orijen",
+     "buyers": 84,
+     "share": 0.302,
+     "share_others": 0.294,
+     "points": 0.8,
+     "margin_points": 10.2,
+     "clear": false
+    },
+    {
+     "item": "PetNord",
+     "buyers": 270,
+     "share": 0.971,
+     "share_others": 0.972,
+     "points": -0.0,
+     "margin_points": 3.7,
+     "clear": false
+    }
+   ],
+   "products": [
+    {
+     "item": "SKU-PT-0489",
+     "buyers": 45,
+     "share": 0.162,
+     "share_others": 0.068,
+     "points": 9.4,
+     "margin_points": 7.4,
+     "clear": true,
+     "name": "PetNord Silica Crystals Cat Litter 12kg"
+    },
+    {
+     "item": "SKU-PT-0493",
+     "buyers": 42,
+     "share": 0.151,
+     "share_others": 0.059,
+     "points": 9.2,
+     "margin_points": 7.1,
+     "clear": true,
+     "name": "PetNord Recycled Paper Cat Litter 7kg, lavender scent"
+    },
+    {
+     "item": "SKU-PT-0494",
+     "buyers": 76,
+     "share": 0.273,
+     "share_others": 0.186,
+     "points": 8.7,
+     "margin_points": 9.5,
+     "clear": false,
+     "name": "PetNord Scratching Post"
+    },
+    {
+     "item": "SKU-PT-0485",
+     "buyers": 38,
+     "share": 0.137,
+     "share_others": 0.066,
+     "points": 7.0,
+     "margin_points": 7.0,
+     "clear": false,
+     "name": "PetNord Clumping Clay Cat Litter 12kg"
+    },
+    {
+     "item": "SKU-PT-0497",
+     "buyers": 73,
+     "share": 0.263,
+     "share_others": 0.216,
+     "points": 4.6,
+     "margin_points": 9.6,
+     "clear": false,
+     "name": "PetNord Bowl, grey"
+    },
+    {
+     "item": "SKU-PT-0487",
+     "buyers": 36,
+     "share": 0.129,
+     "share_others": 0.083,
+     "points": 4.6,
+     "margin_points": 7.0,
+     "clear": false,
+     "name": "PetNord Silica Crystals Cat Litter 7kg, lavender scent"
+    }
+   ]
+  },
+  "price:value-leaning|cat": {
+   "pet": "cat",
+   "customers": 212,
+   "others": 593,
+   "categories": [
+    {
+     "item": "dry-food",
+     "buyers": 201,
+     "share": 0.948,
+     "share_others": 0.933,
+     "points": 1.6,
+     "margin_points": 5.5,
+     "clear": false
+    },
+    {
+     "item": "litter",
+     "buyers": 194,
+     "share": 0.915,
+     "share_others": 0.911,
+     "points": 0.4,
+     "margin_points": 6.7,
+     "clear": false
+    },
+    {
+     "item": "wet-food",
+     "buyers": 197,
+     "share": 0.929,
+     "share_others": 0.933,
+     "points": -0.3,
+     "margin_points": 6.1,
+     "clear": false
+    },
+    {
+     "item": "grooming",
+     "buyers": 10,
+     "share": 0.047,
+     "share_others": 0.061,
+     "points": -1.4,
+     "margin_points": 5.3,
+     "clear": false
+    },
+    {
+     "item": "treats",
+     "buyers": 66,
+     "share": 0.311,
+     "share_others": 0.331,
+     "points": -1.9,
+     "margin_points": 11.2,
+     "clear": false
+    },
+    {
+     "item": "health",
+     "buyers": 13,
+     "share": 0.061,
+     "share_others": 0.084,
+     "points": -2.3,
+     "margin_points": 6.0,
+     "clear": false
+    }
+   ],
+   "brands": [
+    {
+     "item": "Trixie",
+     "buyers": 114,
+     "share": 0.538,
+     "share_others": 0.491,
+     "points": 4.7,
+     "margin_points": 12.0,
+     "clear": false
+    },
+    {
+     "item": "Royal Canin",
+     "buyers": 100,
+     "share": 0.472,
+     "share_others": 0.444,
+     "points": 2.8,
+     "margin_points": 12.0,
+     "clear": false
+    },
+    {
+     "item": "Hill's Science Plan",
+     "buyers": 106,
+     "share": 0.5,
+     "share_others": 0.496,
+     "points": 0.4,
+     "margin_points": 12.0,
+     "clear": false
+    },
+    {
+     "item": "Acana",
+     "buyers": 67,
+     "share": 0.316,
+     "share_others": 0.315,
+     "points": 0.1,
+     "margin_points": 11.2,
+     "clear": false
+    },
+    {
+     "item": "Orijen",
+     "buyers": 63,
+     "share": 0.297,
+     "share_others": 0.297,
+     "points": 0.0,
+     "margin_points": 11.0,
+     "clear": false
+    },
+    {
+     "item": "PetNord",
+     "buyers": 204,
+     "share": 0.962,
+     "share_others": 0.975,
+     "points": -1.2,
+     "margin_points": 4.4,
+     "clear": false
+    }
+   ],
+   "products": [
+    {
+     "item": "SKU-PT-0495",
+     "buyers": 65,
+     "share": 0.307,
+     "share_others": 0.223,
+     "points": 8.4,
+     "margin_points": 10.8,
+     "clear": false,
+     "name": "PetNord Bowl, extra large"
+    },
+    {
+     "item": "SKU-PT-0483",
+     "buyers": 38,
+     "share": 0.179,
+     "share_others": 0.111,
+     "points": 6.8,
+     "margin_points": 8.8,
+     "clear": false,
+     "name": "PetNord Clumping Clay Cat Litter 7kg, unscented"
+    },
+    {
+     "item": "SKU-PT-0490",
+     "buyers": 33,
+     "share": 0.156,
+     "share_others": 0.089,
+     "points": 6.6,
+     "margin_points": 8.3,
+     "clear": false,
+     "name": "PetNord Silica Crystals Cat Litter 7kg, value pack"
+    },
+    {
+     "item": "SKU-PT-0484",
+     "buyers": 27,
+     "share": 0.127,
+     "share_others": 0.079,
+     "points": 4.8,
+     "margin_points": 7.6,
+     "clear": false,
+     "name": "PetNord Clumping Clay Cat Litter 7kg, lavender scent"
+    },
+    {
+     "item": "SKU-PT-0404",
+     "buyers": 14,
+     "share": 0.066,
+     "share_others": 0.025,
+     "points": 4.1,
+     "margin_points": 5.5,
+     "clear": false,
+     "name": "Whiskas Indoor Chicken Cat Food 85g"
+    },
+    {
+     "item": "SKU-PT-0412",
+     "buyers": 12,
+     "share": 0.057,
+     "share_others": 0.019,
+     "points": 3.8,
+     "margin_points": 5.0,
+     "clear": false,
+     "name": "Whiskas Senior Liver Cat Food 85g"
+    }
+   ]
+  },
+  "rating:above-average ratings|cat": {
+   "pet": "cat",
+   "customers": 194,
+   "others": 611,
+   "categories": [
+    {
+     "item": "wet-food",
+     "buyers": 189,
+     "share": 0.974,
+     "share_others": 0.918,
+     "points": 5.6,
+     "margin_points": 4.8,
+     "clear": true
+    },
+    {
+     "item": "litter",
+     "buyers": 184,
+     "share": 0.948,
+     "share_others": 0.9,
+     "points": 4.8,
+     "margin_points": 6.0,
+     "clear": false
+    },
+    {
+     "item": "dry-food",
+     "buyers": 187,
+     "share": 0.964,
+     "share_others": 0.928,
+     "points": 3.6,
+     "margin_points": 5.1,
+     "clear": false
+    },
+    {
+     "item": "health",
+     "buyers": 17,
+     "share": 0.088,
+     "share_others": 0.075,
+     "points": 1.2,
+     "margin_points": 6.9,
+     "clear": false
+    },
+    {
+     "item": "toys",
+     "buyers": 7,
+     "share": 0.036,
+     "share_others": 0.057,
+     "points": -2.1,
+     "margin_points": 4.9,
+     "clear": false
+    },
+    {
+     "item": "accessories",
+     "buyers": 184,
+     "share": 0.948,
+     "share_others": 0.972,
+     "points": -2.4,
+     "margin_points": 5.2,
+     "clear": false
+    }
+   ],
+   "brands": [
+    {
+     "item": "Royal Canin",
+     "buyers": 100,
+     "share": 0.515,
+     "share_others": 0.43,
+     "points": 8.5,
+     "margin_points": 12.3,
+     "clear": false
+    },
+    {
+     "item": "Felix",
+     "buyers": 90,
+     "share": 0.464,
+     "share_others": 0.381,
+     "points": 8.3,
+     "margin_points": 12.3,
+     "clear": false
+    },
+    {
+     "item": "Acana",
+     "buyers": 68,
+     "share": 0.351,
+     "share_others": 0.304,
+     "points": 4.6,
+     "margin_points": 11.7,
+     "clear": false
+    },
+    {
+     "item": "Trixie",
+     "buyers": 100,
+     "share": 0.515,
+     "share_others": 0.499,
+     "points": 1.6,
+     "margin_points": 12.4,
+     "clear": false
+    },
+    {
+     "item": "PetNord",
+     "buyers": 189,
+     "share": 0.974,
+     "share_others": 0.971,
+     "points": 0.4,
+     "margin_points": 4.0,
+     "clear": false
+    },
+    {
+     "item": "Orijen",
+     "buyers": 56,
+     "share": 0.289,
+     "share_others": 0.3,
+     "points": -1.1,
+     "margin_points": 11.2,
+     "clear": false
+    }
+   ],
+   "products": [
+    {
+     "item": "SKU-PT-0315",
+     "buyers": 17,
+     "share": 0.088,
+     "share_others": 0.011,
+     "points": 7.6,
+     "margin_points": 6.2,
+     "clear": true,
+     "name": "Acana Whitefish Cat Food 4kg"
+    },
+    {
+     "item": "SKU-PT-0501",
+     "buyers": 57,
+     "share": 0.294,
+     "share_others": 0.226,
+     "points": 6.8,
+     "margin_points": 11.0,
+     "clear": false,
+     "name": "Trixie Bowl, large"
+    },
+    {
+     "item": "SKU-PT-0488",
+     "buyers": 29,
+     "share": 0.149,
+     "share_others": 0.092,
+     "points": 5.8,
+     "margin_points": 8.4,
+     "clear": false,
+     "name": "PetNord Silica Crystals Cat Litter 5kg"
+    },
+    {
+     "item": "SKU-PT-0429",
+     "buyers": 13,
+     "share": 0.067,
+     "share_others": 0.016,
+     "points": 5.1,
+     "margin_points": 5.6,
+     "clear": false,
+     "name": "Felix Grain Free Beef Cat Food 400g"
+    },
+    {
+     "item": "SKU-PT-0492",
+     "buyers": 24,
+     "share": 0.124,
+     "share_others": 0.075,
+     "points": 4.8,
+     "margin_points": 7.8,
+     "clear": false,
+     "name": "PetNord Recycled Paper Cat Litter 5kg"
+    },
+    {
+     "item": "SKU-PT-0383",
+     "buyers": 13,
+     "share": 0.067,
+     "share_others": 0.02,
+     "points": 4.7,
+     "margin_points": 5.6,
+     "clear": false,
+     "name": "Hill's Science Plan Senior Salmon Cat Food 400g"
+    }
+   ]
+  },
+  "rating:average ratings|cat": {
+   "pet": "cat",
+   "customers": 394,
+   "others": 411,
+   "categories": [
+    {
+     "item": "treats",
+     "buyers": 148,
+     "share": 0.376,
+     "share_others": 0.277,
+     "points": 9.8,
+     "margin_points": 9.9,
+     "clear": false
+    },
+    {
+     "item": "grooming",
+     "buyers": 30,
+     "share": 0.076,
+     "share_others": 0.039,
+     "points": 3.7,
+     "margin_points": 4.9,
+     "clear": false
+    },
+    {
+     "item": "wet-food",
+     "buyers": 374,
+     "share": 0.949,
+     "share_others": 0.915,
+     "points": 3.4,
+     "margin_points": 5.3,
+     "clear": false
+    },
+    {
+     "item": "litter",
+     "buyers": 364,
+     "share": 0.924,
+     "share_others": 0.9,
+     "points": 2.4,
+     "margin_points": 6.0,
+     "clear": false
+    },
+    {
+     "item": "dry-food",
+     "buyers": 373,
+     "share": 0.947,
+     "share_others": 0.927,
+     "points": 2.0,
+     "margin_points": 5.1,
+     "clear": false
+    },
+    {
+     "item": "toys",
+     "buyers": 22,
+     "share": 0.056,
+     "share_others": 0.049,
+     "points": 0.7,
+     "margin_points": 4.7,
+     "clear": false
+    }
+   ],
+   "brands": [
+    {
+     "item": "Whiskas",
+     "buyers": 217,
+     "share": 0.551,
+     "share_others": 0.47,
+     "points": 8.1,
+     "margin_points": 10.5,
+     "clear": false
+    },
+    {
+     "item": "Trixie",
+     "buyers": 211,
+     "share": 0.536,
+     "share_others": 0.472,
+     "points": 6.4,
+     "margin_points": 10.6,
+     "clear": false
+    },
+    {
+     "item": "Hill's Science Plan",
+     "buyers": 205,
+     "share": 0.52,
+     "share_others": 0.474,
+     "points": 4.6,
+     "margin_points": 10.6,
+     "clear": false
+    },
+    {
+     "item": "Sheba",
+     "buyers": 142,
+     "share": 0.36,
+     "share_others": 0.321,
+     "points": 3.9,
+     "margin_points": 10.0,
+     "clear": false
+    },
+    {
+     "item": "Felix",
+     "buyers": 166,
+     "share": 0.421,
+     "share_others": 0.382,
+     "points": 3.9,
+     "margin_points": 10.4,
+     "clear": false
+    },
+    {
+     "item": "Orijen",
+     "buyers": 123,
+     "share": 0.312,
+     "share_others": 0.282,
+     "points": 3.0,
+     "margin_points": 9.7,
+     "clear": false
+    }
+   ],
+   "products": [
+    {
+     "item": "SKU-PT-0354",
+     "buyers": 17,
+     "share": 0.043,
+     "share_others": 0.007,
+     "points": 3.6,
+     "margin_points": 3.3,
+     "clear": true,
+     "name": "Whiskas Senior Turkey Cat Food 2kg"
+    },
+    {
+     "item": "SKU-PT-0500",
+     "buyers": 118,
+     "share": 0.299,
+     "share_others": 0.212,
+     "points": 8.8,
+     "margin_points": 9.2,
+     "clear": false,
+     "name": "Trixie Scratching Post"
+    },
+    {
+     "item": "SKU-PT-0496",
+     "buyers": 99,
+     "share": 0.251,
+     "share_others": 0.219,
+     "points": 3.2,
+     "margin_points": 9.0,
+     "clear": false,
+     "name": "PetNord Bowl, natural wood"
+    },
+    {
+     "item": "SKU-PT-0448",
+     "buyers": 19,
+     "share": 0.048,
+     "share_others": 0.017,
+     "points": 3.1,
+     "margin_points": 3.8,
+     "clear": false,
+     "name": "Sheba Grain Free Liver Cat Food 150g"
+    },
+    {
+     "item": "SKU-PT-0484",
+     "buyers": 42,
+     "share": 0.107,
+     "share_others": 0.078,
+     "points": 2.9,
+     "margin_points": 6.1,
+     "clear": false,
+     "name": "PetNord Clumping Clay Cat Litter 7kg, lavender scent"
+    },
+    {
+     "item": "SKU-PT-0415",
+     "buyers": 17,
+     "share": 0.043,
+     "share_others": 0.015,
+     "points": 2.9,
+     "margin_points": 3.5,
+     "clear": false,
+     "name": "Felix Senior Tuna Cat Food 150g"
+    }
+   ]
+  },
+  "rating:below-average ratings|cat": {
+   "pet": "cat",
+   "customers": 199,
+   "others": 606,
+   "categories": [
+    {
+     "item": "dry-food",
+     "buyers": 192,
+     "share": 0.965,
+     "share_others": 0.927,
+     "points": 3.7,
+     "margin_points": 5.0,
+     "clear": false
+    },
+    {
+     "item": "litter",
+     "buyers": 185,
+     "share": 0.93,
+     "share_others": 0.906,
+     "points": 2.4,
+     "margin_points": 6.5,
+     "clear": false
+    },
+    {
+     "item": "toys",
+     "buyers": 13,
+     "share": 0.065,
+     "share_others": 0.048,
+     "points": 1.7,
+     "margin_points": 5.9,
+     "clear": false
+    },
+    {
+     "item": "accessories",
+     "buyers": 194,
+     "share": 0.975,
+     "share_others": 0.964,
+     "points": 1.1,
+     "margin_points": 4.0,
+     "clear": false
+    },
+    {
+     "item": "wet-food",
+     "buyers": 186,
+     "share": 0.935,
+     "share_others": 0.931,
+     "points": 0.4,
+     "margin_points": 6.1,
+     "clear": false
+    },
+    {
+     "item": "grooming",
+     "buyers": 10,
+     "share": 0.05,
+     "share_others": 0.059,
+     "points": -0.9,
+     "margin_points": 5.5,
+     "clear": false
+    }
+   ],
+   "brands": [
+    {
+     "item": "Sheba",
+     "buyers": 82,
+     "share": 0.412,
+     "share_others": 0.317,
+     "points": 9.5,
+     "margin_points": 11.9,
+     "clear": false
+    },
+    {
+     "item": "Hill's Science Plan",
+     "buyers": 101,
+     "share": 0.508,
+     "share_others": 0.493,
+     "points": 1.4,
+     "margin_points": 12.3,
+     "clear": false
+    },
+    {
+     "item": "Whiskas",
+     "buyers": 103,
+     "share": 0.518,
+     "share_others": 0.507,
+     "points": 1.1,
+     "margin_points": 12.2,
+     "clear": false
+    },
+    {
+     "item": "Royal Canin",
+     "buyers": 91,
+     "share": 0.457,
+     "share_others": 0.449,
+     "points": 0.8,
+     "margin_points": 12.2,
+     "clear": false
+    },
+    {
+     "item": "PetNord",
+     "buyers": 194,
+     "share": 0.975,
+     "share_others": 0.97,
+     "points": 0.5,
+     "margin_points": 3.9,
+     "clear": false
+    },
+    {
+     "item": "Orijen",
+     "buyers": 58,
+     "share": 0.291,
+     "share_others": 0.299,
+     "points": -0.7,
+     "margin_points": 11.2,
+     "clear": false
+    }
+   ],
+   "products": [
+    {
+     "item": "SKU-PT-0435",
+     "buyers": 15,
+     "share": 0.075,
+     "share_others": 0.01,
+     "points": 6.5,
+     "margin_points": 5.7,
+     "clear": true,
+     "name": "Sheba Sensitive Tuna Cat Food 400g"
+    },
+    {
+     "item": "SKU-PT-0494",
+     "buyers": 58,
+     "share": 0.291,
+     "share_others": 0.191,
+     "points": 10.0,
+     "margin_points": 10.8,
+     "clear": false,
+     "name": "PetNord Scratching Post"
+    },
+    {
+     "item": "SKU-PT-0495",
+     "buyers": 57,
+     "share": 0.286,
+     "share_others": 0.231,
+     "points": 5.5,
+     "margin_points": 10.9,
+     "clear": false,
+     "name": "PetNord Bowl, extra large"
+    },
+    {
+     "item": "SKU-PT-0485",
+     "buyers": 25,
+     "share": 0.126,
+     "share_others": 0.079,
+     "points": 4.6,
+     "margin_points": 7.8,
+     "clear": false,
+     "name": "PetNord Clumping Clay Cat Litter 12kg"
+    },
+    {
+     "item": "SKU-PT-0385",
+     "buyers": 10,
+     "share": 0.05,
+     "share_others": 0.005,
+     "points": 4.5,
+     "margin_points": 4.7,
+     "clear": false,
+     "name": "Hill's Science Plan Salmon Cat Food 85g"
+    },
+    {
+     "item": "SKU-PT-0268",
+     "buyers": 11,
+     "share": 0.055,
+     "share_others": 0.013,
+     "points": 4.2,
+     "margin_points": 5.1,
+     "clear": false,
+     "name": "Royal Canin Sensitive Turkey Cat Food 2kg"
+    }
+   ]
+  }
+ }
+}
