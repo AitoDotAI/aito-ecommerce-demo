@@ -581,6 +581,96 @@
  },
  "gross_margin": 0.303,
  "margin_cut": 0.321,
+ "ranking_variables": [
+  {
+   "id": "brand:Acana",
+   "label": "Brand: Acana"
+  },
+  {
+   "id": "brand:Hill's Science Plan",
+   "label": "Brand: Hill's Science Plan"
+  },
+  {
+   "id": "brand:Orijen",
+   "label": "Brand: Orijen"
+  },
+  {
+   "id": "brand:PetNord",
+   "label": "Brand: PetNord"
+  },
+  {
+   "id": "brand:Royal Canin",
+   "label": "Brand: Royal Canin"
+  },
+  {
+   "id": "brand:Trixie",
+   "label": "Brand: Trixie"
+  },
+  {
+   "id": "category:accessories (cat)",
+   "label": "Category: accessories (cat)"
+  },
+  {
+   "id": "category:accessories (dog)",
+   "label": "Category: accessories (dog)"
+  },
+  {
+   "id": "category:dental-treats (dog)",
+   "label": "Category: dental-treats (dog)"
+  },
+  {
+   "id": "category:dry-food (cat)",
+   "label": "Category: dry-food (cat)"
+  },
+  {
+   "id": "category:dry-food (dog)",
+   "label": "Category: dry-food (dog)"
+  },
+  {
+   "id": "category:litter (cat)",
+   "label": "Category: litter (cat)"
+  },
+  {
+   "id": "category:wet-food (cat)",
+   "label": "Category: wet-food (cat)"
+  },
+  {
+   "id": "category:wet-food (dog)",
+   "label": "Category: wet-food (dog)"
+  },
+  {
+   "id": "cheaper",
+   "label": "Lines in the cheaper half of their category"
+  },
+  {
+   "id": "offer",
+   "label": "Lines bought on offer"
+  },
+  {
+   "id": "pet:aquarium",
+   "label": "Lines bought for: aquarium"
+  },
+  {
+   "id": "pet:bird",
+   "label": "Lines bought for: bird"
+  },
+  {
+   "id": "pet:cat",
+   "label": "Lines bought for: cat"
+  },
+  {
+   "id": "pet:dog",
+   "label": "Lines bought for: dog"
+  },
+  {
+   "id": "pet:small_animal",
+   "label": "Lines bought for: small_animal"
+  },
+  {
+   "id": "rated",
+   "label": "Lines in better-rated products than their category's average"
+  }
+ ],
  "profit_distribution": {
   "customers": 1789,
   "median_eur": 60.2,

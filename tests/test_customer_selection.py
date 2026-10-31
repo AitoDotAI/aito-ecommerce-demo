@@ -191,3 +191,18 @@ def test_the_churn_trend_is_the_share_who_had_ordered_and_have_not_in_the_three_
 
     assert trend["months"] == ["2026-01", "2026-04"]
     assert trend["churn_rate"] == [0.0, round(30 / 31, 3)], "in January all thirty ordered; by April those thirty had not for three months"
+
+
+def test_the_ranking_route_places_the_selection_and_refuses_an_unknown_preference(release):
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+
+    from src.customer_profile_routes import router
+
+    app = FastAPI()
+    app.include_router(router)
+    api = TestClient(app)
+
+    ranked = api.get("/api/customer-profiles/ranking", params=[("var", "pet:dog"), ("c", "price:premium-leaning")]).json()
+    assert ranked["label"] == "Lines bought for: dog" and ranked["key"] == "price:premium-leaning"
+    assert api.get("/api/customer-profiles/ranking", params={"var": "colour"}).status_code == 400

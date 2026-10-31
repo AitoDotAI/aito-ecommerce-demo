@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 
 from src.customer_profile_routes import router
 from src.customer_profiles import DATA, build
-from src.customer_selection import parse, view
+from src.customer_selection import parse, ranking_for, view
 from src.customer_selection_data import actions, answers, facts, reviews, summary
 from src.customer_profit import margin_bands
 from src.customer_segments import THIN_BELOW, response, segment_keys, segments
@@ -484,7 +484,7 @@ def test_a_segments_funnel_counts_each_stage_over_the_showings_of_its_customers_
     assert result["all"]["impressions"] == 3, "the anonymous session S3 is in no segment"
 
 
-from src.customer_preference_ranking import GROUPS, ranking
+from src.customer_preference_ranking import scores, GROUPS, ranking
 
 
 def _ranked(shares: dict[str, float], segments_of=None):
@@ -531,14 +531,37 @@ def test_a_ranking_of_nothing_is_an_error_not_a_flat_line():
 
 
 def test_the_stored_ranking_has_the_offer_preference_and_a_top_fifth_that_prefers_it_more():
-    ranked = chosen(["offer:mostly"])["ranking"]["offer"]
+    ranked = ranking_for(facts(), parse(["offer:mostly"]), "offer")
 
     assert ranked["top_over_average"] > 1.5 and ranked["curve"][0] > ranked["curve"][-1]
 
 
-def test_a_segments_ranking_names_the_variable_it_is_a_slice_of():
-    assert chosen(["price:premium-leaning"])["ranking"]["cheaper"]["label"].startswith("Lines in the cheaper half")
-    assert chosen(["pets:dog"])["ranking"] == {}, "a pet is not a share of what a customer bought"
+def test_any_preference_can_be_ranked_with_the_segment_placed_in_it():
+    ranked = ranking_for(facts(), parse(["price:premium-leaning"]), "cheaper")
+
+    assert ranked["label"].startswith("Lines in the cheaper half")
+    assert len(ranked["quintiles"]) == 5 and all("price:premium-leaning" in q["segment_share"] for q in ranked["quintiles"])
+
+
+def test_a_pet_is_a_preference_too_the_share_of_a_customers_lines_bought_for_it():
+    lines = {f"C{i}": [{"pet": "dog", "features": {"offer": False, "cheaper": False, "rated": False}}] * 2
+                      + [{"pet": "cat" if i % 2 else "dog", "features": {"offer": False, "cheaper": False, "rated": False}}] for i in range(120)}
+
+    shares = scores(lines, set(lines))
+
+    assert shares["pet:dog"]["C0"] == 1.0 and shares["pet:dog"]["C1"] == 2 / 3 and shares["pet:cat"]["C1"] == 1 / 3
+
+
+def test_the_summary_lists_the_preferences_the_view_can_rank():
+    listed = {v["id"] for v in summary()["ranking_variables"]}
+
+    assert {"offer", "cheaper", "rated", "pet:dog"} <= listed
+    assert all(variable in facts()["shares"] for variable in listed)
+
+
+def test_an_unknown_preference_is_refused_and_not_ranked_as_nothing():
+    with pytest.raises(ValueError, match="No preference"):
+        ranking_for(facts(), parse([]), "colour")
 
 
 # ── Acquisition: where a segment's customers came from ──

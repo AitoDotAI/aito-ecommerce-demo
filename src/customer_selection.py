@@ -20,8 +20,6 @@ from src.customer_relations import MIN_GROUP, memberships, selection_preferences
 from src.customer_segments import TRAITS, response, segment_stats
 
 SINGLE_VALUED = ("offer", "price", "rating", "margin", "status")
-# The ranking each shopping condition is a slice of; margin, pets and diets are not a share of what a customer bought.
-RANKED_BY = {"offer": "offer", "price": "cheaper", "rating": "rated"}
 STAGES = ("impressions", "clicks", "carts", "purchases")
 TREND_RECENT_MONTHS = 3
 NPS_WINDOW_MONTHS = 6
@@ -97,8 +95,6 @@ def view(facts: dict, parsed: list[tuple[str, str]], actions: list[dict], review
             "segment": {**segment_stats("selection", key, rows, summary["profiled"], summary["profiled_revenue_eur"], summary["profiled_profit_eur"]),
                         "key": key},
             "funnel": {"selected": _funnel(rows), "all": _funnel(customers.values())},
-            "ranking": {RANKED_BY[t]: {"label": label(RANKED_BY[t]), **ranking(facts["shares"][RANKED_BY[t]], segments_of, [key])}
-                        for t, _ in parsed if t in RANKED_BY},
             "relations": selection_relations({cid: memberships({**c, "profiled": True}) for cid, c in customers.items()}, inside,
                                              {t for t, _ in parsed if t in SINGLE_VALUED}),
             "preferences": _named(selection_preferences(inside, {cid: set(c["pets"]) for cid, c in customers.items()},
@@ -108,6 +104,18 @@ def view(facts: dict, parsed: list[tuple[str, str]], actions: list[dict], review
             "response": response(actions, summary["gross_margin"], lambda row: segments_of.get(row["customer_id"], ())).get(key),
             "feedback": {"selected": feedback[key], "all": feedback["all"]},
             "trend": {"selected": _trend(rows, months), "all": _trend(customers.values(), months)}}
+
+
+def ranking_for(facts: dict, parsed: list[tuple[str, str]], variable: str) -> dict:
+    """Where the selection sits in the ranking of customers by one preference (a share of what they bought): offer, the cheaper half,
+    better rated, a kind of pet, a category or a brand. The view opens it behind the "?" beside the segment."""
+    if variable not in facts["shares"]:
+        raise ValueError(f"No preference {variable!r} to rank by; the choices are {', '.join(sorted(facts['shares']))}")
+    key = key_of(parsed)
+    inside = set(members(facts["customers"], parsed))
+    segments_of = {cid: ["all", key] if cid in inside and key != "all" else ["all"] for cid in facts["customers"]}
+    return {"label": label(variable), "key": key, "segment_customers": len(inside),
+            **ranking(facts["shares"][variable], segments_of, [key])}
 
 
 def _named(preferences: dict[str, dict], names: dict[str, str]) -> dict[str, dict]:

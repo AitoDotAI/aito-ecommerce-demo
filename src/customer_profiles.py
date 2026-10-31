@@ -10,7 +10,7 @@ from src.customer_profit import distribution, gross_margin, margin_bands, profit
 from src.customer_acquisition import first_sessions
 from src.customer_facts import build_facts, monthly_orders
 from src.customer_funnel import funnel_by_segment
-from src.customer_preference_ranking import line_features, scores
+from src.customer_preference_ranking import label, line_features, scores
 from src.customer_relations import PET_GROUPS
 from src.data_loader import split_showings
 from src.customer_segments import definitions, segments
@@ -82,5 +82,6 @@ def build() -> tuple[dict, list[dict], dict]:
                         _load("nps_responses"),
                         {sku: p["name"] for sku, p in products.items()})
     summary = {"release": release, "simulated": True, **segments(traits, customers), "gross_margin": round(margin, 3), "margin_cut": margin_cut,
+               "ranking_variables": [{"id": var, "label": label(var)} for var in facts["shares"]],
                "profit_distribution": distribution(profits, sorted(profiled_ids)), "definitions": definitions()}
     return summary, traits, facts

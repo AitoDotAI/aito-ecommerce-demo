@@ -1,7 +1,7 @@
 """Rank the customers by how much they prefer something, and see how the segments split along it (ADR 0053).
 
 A preference is a share of what a customer bought: the lines on offer, in the cheaper half of the category, in
-better-rated products, in one category or of one brand. A customer's lift is their share over everyone's average share.
+better-rated products, for one kind of pet, in one category or of one brand. A customer's lift is their share over everyone's average share.
 Customers are ranked by it, split into twenty equal steps (the curve) and five (the quintiles), and for each quintile we
 count how many of each segment's customers are in it. The question this answers: how much more do the top fifth prefer
 this than the bottom fifth, and which segments are the top fifth made of.
@@ -56,6 +56,12 @@ def scores(lines_by_customer: dict[str, list[dict]], profiled: set[str]) -> dict
         if len(lines) >= MIN_LINES:
             for var in brands:
                 shares[var][customer] = sum(var in ln["features"] for ln in lines) / len(lines)
+    pets = sorted({ln["pet"] for lines in lines_by_customer.values() for ln in lines})
+    for customer in profiled & set(lines_by_customer):
+        lines = lines_by_customer[customer]
+        if len(lines) >= MIN_LINES:
+            for pet in pets:
+                shares[f"pet:{pet}"][customer] = sum(ln["pet"] == pet for ln in lines) / len(lines)
     return {var: s for var, s in shares.items() if len(s) >= MIN_CUSTOMERS}
 
 
@@ -91,4 +97,4 @@ _LABELS = {"offer": "Lines bought on offer", "cheaper": "Lines in the cheaper ha
 
 
 def label(variable: str) -> str:
-    return _LABELS.get(variable) or variable.replace("category:", "Category: ").replace("brand:", "Brand: ")
+    return _LABELS.get(variable) or variable.replace("category:", "Category: ").replace("brand:", "Brand: ").replace("pet:", "Lines bought for: ")

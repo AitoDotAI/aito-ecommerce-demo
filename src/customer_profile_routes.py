@@ -13,7 +13,7 @@ from pathlib import Path
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import JSONResponse
 
-from src.customer_selection import parse, view
+from src.customer_selection import parse, ranking_for, view
 from src.customer_selection_data import actions, answers, facts, reviews
 from src.demo_mode import requested_sandbox
 
@@ -65,6 +65,15 @@ def customer_segment(request: Request, c: list[str] = Query(default=[])):
         return JSONResponse(status_code=400, content={"error": str(error)})
     return {**_selection(tuple(f"{t}:{v}" for t, v in parsed)), "stale": _stale(),
             "scope": "release-not-sandbox" if requested_sandbox(request) else "release"}
+
+
+@router.get("/api/customer-profiles/ranking")
+def customer_ranking(var: str, c: list[str] = Query(default=[])):
+    """The customers ranked by how much they prefer `var` (see `ranking_for`), with where the selection `c` sits in it."""
+    try:
+        return ranking_for(facts(), parse(c), var)
+    except ValueError as error:
+        return JSONResponse(status_code=400, content={"error": str(error)})
 
 
 @router.get("/api/customer-profiles/customers")
