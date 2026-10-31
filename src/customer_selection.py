@@ -14,7 +14,7 @@ from __future__ import annotations
 from collections import defaultdict
 
 from src.customer_acquisition import acquisition_by_segment
-from src.customer_feedback import feedback_by_segment
+from src.customer_feedback import MIN_RESPONDENTS, feedback_by_segment
 from src.customer_preference_ranking import label, ranking
 from src.customer_relations import MIN_GROUP, memberships, selection_preferences, selection_relations
 from src.customer_segments import TRAITS, response, segment_stats
@@ -24,6 +24,7 @@ SINGLE_VALUED = ("offer", "price", "rating", "margin")
 RANKED_BY = {"offer": "offer", "price": "cheaper", "rating": "rated"}
 STAGES = ("impressions", "clicks", "carts", "purchases")
 TREND_RECENT_MONTHS = 3
+NPS_WINDOW_MONTHS = 6
 
 
 def parse(conditions: list[str]) -> list[tuple[str, str]]:
@@ -54,15 +55,29 @@ def members(customers: dict[str, dict], parsed: list[tuple[str, str]]) -> list[s
     return [cid for cid, c in customers.items() if all(meets(c, t, v) for t, v in parsed)]
 
 
-def options(customers: dict[str, dict], parsed: list[tuple[str, str]]) -> dict[str, int]:
-    """For every condition the tree offers: how many customers there would be if it were ticked (replacing the same trait's value)."""
+def options(customers: dict[str, dict], parsed: list[tuple[str, str]]) -> dict[str, dict]:
+    """For every condition the tree offers: the figures the selection would have if it were ticked (replacing the same trait's value)."""
     values = sorted({(t, v) for c in customers.values() for t in TRAITS + ("diets",)
                      for v in (c[t] if t in ("pets", "diets") else [c[t]]) if v not in ("too few purchases",)})
     out = {}
     for trait, value in values:
         kept = [(t, v) for t, v in parsed if t != trait or t not in SINGLE_VALUED]
-        out[f"{trait}:{value}"] = len(members(customers, sorted({*kept, (trait, value)})))
+        out[f"{trait}:{value}"] = _tree_figures([customers[cid] for cid in members(customers, sorted({*kept, (trait, value)}))])
     return out
+
+
+def _tree_figures(rows: list[dict]) -> dict:
+    """What the tree shows beside a condition, whichever figure is chosen: the size, purchases, revenue, profit per customer and NPS."""
+    return {"customers": len(rows), "orders": sum(n for r in rows for n, _, _ in r["months"].values()),
+            "revenue_eur": round(sum(r["net_revenue_eur"] for r in rows), 2),
+            "profit_per_customer_eur": round(sum(r["profit_eur"] for r in rows) / len(rows), 2) if rows else None,
+            "nps": _nps([group for r in rows for _, group in r["nps"]])}
+
+
+def _nps(groups: list[str]) -> float | None:
+    if len(groups) < MIN_RESPONDENTS:
+        return None
+    return round(100 * (groups.count("promoter") - groups.count("detractor")) / len(groups), 1)
 
 
 def view(facts: dict, parsed: list[tuple[str, str]], actions: list[dict], reviews: list[dict], answers: list[dict], summary: dict) -> dict:
@@ -73,8 +88,10 @@ def view(facts: dict, parsed: list[tuple[str, str]], actions: list[dict], review
     if len(inside) < MIN_GROUP:
         return {**base, "too_small": True, "min_customers": MIN_GROUP}
     months = sorted({m for c in customers.values() for m in c["months"]})
-    segments_of = {cid: ["all", key] if cid in inside else ["all"] for cid in customers}
+    keys = ["all", key] if key != "all" else ["all"]
+    segments_of = {cid: keys if cid in inside else ["all"] for cid in customers}
     rows = [customers[cid] for cid in inside]
+    feedback = feedback_by_segment(reviews, answers, segments_of, [key])
     return {**base, "too_small": False,
             "segment": {**segment_stats("selection", key, rows, summary["profiled"], summary["profiled_revenue_eur"], summary["profiled_profit_eur"]),
                         "key": key},
@@ -88,7 +105,7 @@ def view(facts: dict, parsed: list[tuple[str, str]], actions: list[dict], review
             "acquisition": acquisition_by_segment({cid: c["first"] for cid, c in customers.items() if c["first"]}, segments_of,
                                                   {cid: c["profit_eur"] for cid, c in customers.items()}, [key]).get(key, {}),
             "response": response(actions, summary["gross_margin"], lambda row: segments_of.get(row["customer_id"], ())).get(key),
-            "feedback": feedback_by_segment(reviews, answers, segments_of, [key])[key],
+            "feedback": {"selected": feedback[key], "all": feedback["all"]},
             "trend": {"selected": _trend(rows, months), "all": _trend(customers.values(), months)}}
 
 
@@ -106,16 +123,36 @@ def _funnel(rows) -> dict[str, int]:
 def _trend(rows, months: list[str]) -> dict:
     """Per month of the shop's history, oldest first: customers who ordered, orders, and revenue (the price paid on the lines
     kept). A month the selection did not order in is a zero, not a gap, so the last months compare like with like."""
-    per_month: dict[str, list] = defaultdict(lambda: [0, 0, 0.0])
+    per_month: dict[str, list] = defaultdict(lambda: [0, 0, 0.0, 0.0])
     for r in rows:
-        for month, (orders, revenue) in r["months"].items():
+        for month, (orders, revenue, gross) in r["months"].items():
             per_month[month][0] += 1
             per_month[month][1] += orders
             per_month[month][2] += revenue
+            per_month[month][3] += gross
     out = {"months": months, "customers": [per_month[m][0] for m in months], "orders": [per_month[m][1] for m in months],
-           "revenue_eur": [round(per_month[m][2], 2) for m in months]}
-    out["recent_vs_before"] = {kpi: _change(out[kpi]) for kpi in ("customers", "orders", "revenue_eur")}
+           "revenue_eur": [round(per_month[m][2], 2) for m in months],
+           "profit_per_customer_eur": [round(per_month[m][3] / per_month[m][0], 2) if per_month[m][0] else 0.0 for m in months],
+           "nps": _rolling_nps(rows, months)}
+    out["recent_vs_before"] = {kpi: _change(out[kpi]) for kpi in ("customers", "orders", "revenue_eur", "profit_per_customer_eur")}
+    out["recent_vs_before"]["nps"] = _nps_change(out["nps"])
     return out
+
+
+def _rolling_nps(rows, months: list[str]) -> list[float | None]:
+    """NPS of the answers given in the `NPS_WINDOW_MONTHS` months up to each month; None where there are too few answers to call a score."""
+    answered = [(m, g) for r in rows for m, g in r["nps"]]
+    out = []
+    for i in range(len(months)):
+        window = set(months[max(0, i - NPS_WINDOW_MONTHS + 1):i + 1])
+        out.append(_nps([g for m, g in answered if m in window]))
+    return out
+
+
+def _nps_change(series: list[float | None]) -> float | None:
+    """The score now against the score `TREND_RECENT_MONTHS` months earlier, in NPS points (None where either has too few answers)."""
+    now, before = (series[-1], series[-1 - TREND_RECENT_MONTHS]) if len(series) > TREND_RECENT_MONTHS else (None, None)
+    return round(now - before, 1) if now is not None and before is not None else None
 
 
 def _change(series: list[float]) -> float | None:

@@ -77,7 +77,8 @@ def build() -> tuple[dict, list[dict], dict]:
     context_customer = {c["context_id"]: c.get("customer") for c in _load("contexts")}
     funnel = funnel_by_segment(showings, context_customer, {cid: [cid] for cid in profiled_ids})   # one "segment" per customer
     facts = build_facts(traits, customers, funnel, first_sessions(list(customers.values()), _load("contexts")), bought,
-                        scores(ranked_lines, profiled_ids), monthly_orders(_load("orders"), _load("order_lines"), states),
+                        scores(ranked_lines, profiled_ids), monthly_orders(_load("orders"), _load("order_lines"), states, {i["sku"]: i["unit_cost_eur"] for i in _load("inventory")}),
+                        _load("nps_responses"),
                         {sku: p["name"] for sku, p in products.items()})
     summary = {"release": release, "simulated": True, **segments(traits, customers), "gross_margin": round(margin, 3), "margin_cut": margin_cut,
                "profit_distribution": distribution(profits, sorted(profiled_ids)), "definitions": definitions()}

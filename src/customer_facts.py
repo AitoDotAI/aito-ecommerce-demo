@@ -13,23 +13,29 @@ from collections import defaultdict
 PET_KINDS = ("categories", "brands", "products")
 
 
-def monthly_orders(orders: list[dict], order_lines: list[dict], states: dict[str, dict]) -> dict[str, dict[str, list]]:
-    """customer -> month -> [orders placed, price paid on the lines kept]; the same revenue basis as profit and margin."""
+def monthly_orders(orders: list[dict], order_lines: list[dict], states: dict[str, dict],
+                   unit_cost: dict[str, float]) -> dict[str, dict[str, list]]:
+    """customer -> month -> [orders placed, price paid on the lines kept, gross profit on them]; the same basis as profit and margin."""
     month_of = {o["order_id"]: (o["customer_id"], o["month"]) for o in orders}
     out: dict[str, dict[str, list]] = defaultdict(dict)
     for o in orders:
-        out[o["customer_id"]].setdefault(o["month"], [0, 0.0])[0] += 1
+        out[o["customer_id"]].setdefault(o["month"], [0, 0.0, 0.0])[0] += 1
     for line in order_lines:
         if not line["returned"]:
             customer, month = month_of[line["order_id"]]
-            out[customer][month][1] += states[line["product_state"]]["price_eur"] * line["qty"]
+            paid = states[line["product_state"]]["price_eur"] * line["qty"]
+            out[customer][month][1] += paid
+            out[customer][month][2] += paid - unit_cost[line["product_sku"]] * line["qty"]
     return out
 
 
 def build_facts(traits: list[dict], customers: dict[str, dict], funnel: dict[str, dict], first: dict[str, dict[str, str]],
                 bought: dict[str, dict[str, dict[str, set[str]]]], shares: dict[str, dict[str, float]],
-                months: dict[str, dict[str, list]], product_names: dict[str, str]) -> dict:
+                months: dict[str, dict[str, list]], answers: list[dict], product_names: dict[str, str]) -> dict:
     """Facts for the profiled customers; a customer without consent is not here at all."""
+    nps: dict[str, list] = defaultdict(list)
+    for a in answers:
+        nps[a["customer"]].append([a["month"], a["nps_group"]])
     out = {}
     for t in traits:
         if not t["profiled"]:
@@ -42,7 +48,8 @@ def build_facts(traits: list[dict], customers: dict[str, dict], funnel: dict[str
             "gross_profit_12m_eur": round(c["gross_profit_12m_eur"], 2), "profit_eur": round(c["profit_eur"], 2),
             "funnel": [funnel.get(cid, {}).get(stage, 0) for stage in ("impressions", "clicks", "carts", "purchases")],
             "first": first.get(cid),
-            "months": {m: [n, round(eur, 2)] for m, (n, eur) in sorted(months.get(cid, {}).items())},
+            "months": {m: [n, round(eur, 2), round(gross, 2)] for m, (n, eur, gross) in sorted(months.get(cid, {}).items())},
+            "nps": sorted(nps.get(cid, [])),
             "bought": {pet: {kind: sorted(items[kind]) for kind in PET_KINDS} for pet, items in bought[cid].items()},
         }
     named = {sku for c in out.values() for items in c["bought"].values() for sku in items["products"]}
