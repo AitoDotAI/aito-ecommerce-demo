@@ -297,3 +297,57 @@ def test_only_the_release_env_borrows_masters_snapshots():
     assert release_snapshot_namespace(observable, "observable") == "v2@master"
     assert release_snapshot_namespace(observable, "states") is None    # not the release's data
     assert release_snapshot_namespace(master, "observable") is None    # master reads its own
+
+
+# ── A snapshot of an older shape is not served (a code change must not need a lockstep Aito write) ──
+
+
+def _aito_holding(name: str, wrapper: dict) -> FakeAito:
+    return FakeAito(search_hit={"name": store._scoped(name), "payload": json.dumps(wrapper)})
+
+
+def test_an_aito_snapshot_missing_a_key_the_code_needs_falls_back_to_the_committed_json(tmp_path, monkeypatch):
+    """Supply's rows changed shape (observed sales, a planning month). The deploy ships the new JSON; the shared
+    Aito still holds the old row until `./do precompute` is run, and serving it would break the page and mix old euros
+    into the Overview's wording."""
+    monkeypatch.setattr(store, "_FALLBACK_DIR", tmp_path)
+    (tmp_path / "v1-master").mkdir()
+    (tmp_path / "v1-master" / "supply.json").write_text(json.dumps({"data": {"planning_month": "2026-05", "reorder": {"skus": 83}}, "timings": []}))
+    store._aito = _aito_holding("supply", {"data": {"forecast_month": "2026-05", "reorder": {"skus": 83}}, "timings": []})
+
+    served = store.get("supply")
+
+    assert served["data"]["planning_month"] == "2026-05"
+
+
+def test_an_aito_snapshot_with_the_keys_is_served_as_before(tmp_path, monkeypatch):
+    monkeypatch.setattr(store, "_FALLBACK_DIR", tmp_path)
+    store._aito = _aito_holding("supply", {"data": {"planning_month": "2026-05", "from": "aito"}, "timings": []})
+
+    assert store.get("supply")["data"]["from"] == "aito"
+
+
+def test_a_view_with_no_required_keys_is_served_from_aito_whatever_it_holds(tmp_path, monkeypatch):
+    monkeypatch.setattr(store, "_FALLBACK_DIR", tmp_path)
+    store._aito = _aito_holding("demand", {"data": {"anything": 1}, "timings": []})
+
+    assert store.get("demand")["data"] == {"anything": 1}
+
+
+def test_the_committed_supply_snapshot_has_the_keys_the_guard_asks_for():
+    import pathlib
+    root = pathlib.Path(__file__).resolve().parent.parent
+    data = json.loads((root / "data" / "precomputed" / "v2-master" / "supply.json").read_text())["data"]
+
+    assert set(store.REQUIRED_KEYS["supply"]) <= set(data)
+
+
+def test_skipping_an_old_shape_row_is_logged_with_the_view_and_the_missing_keys(tmp_path, monkeypatch, caplog):
+    """Otherwise a bad future precompute would be hidden behind the committed JSON for good."""
+    monkeypatch.setattr(store, "_FALLBACK_DIR", tmp_path)
+    store._aito = _aito_holding("supply", {"data": {"forecast_month": "2026-05"}, "timings": []})
+
+    with caplog.at_level("WARNING", logger=store.logger.name):
+        store.get("supply")
+
+    assert any("supply" in r.message and "planning_month" in r.message for r in caplog.records), caplog.text
