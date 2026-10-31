@@ -28,7 +28,9 @@ export interface FunnelCounts { impressions: number; clicks: number; carts: numb
 
 export interface RankedQuintile { customers: number; lift: number; mean_share: number; segment_share: Record<string, number> }
 
+/** Where a selection sits in the ranking of customers by one preference (GET /api/customer-profiles/ranking). */
 export interface PreferenceRanking {
+  key?: string; segment_customers?: number;
   label: string; customers: number; mean_share: number; curve: number[]; quintiles: RankedQuintile[];
   top_over_average: number; top_over_bottom: number | null;
 }
@@ -36,6 +38,7 @@ export interface PreferenceRanking {
 export interface ProfilesSummary {
   release: string; simulated: boolean; stale: boolean; scope: "release" | "release-not-sandbox"; customers: number; profiled: number; not_profiled: number;
   profiled_revenue_eur: number; profiled_profit_eur: number; gross_margin: number; margin_cut: number;
+  ranking_variables: { id: string; label: string }[];
   profit_distribution: { customers: number; median_eur: number; top_tenth_share: number; losing_money: number };
   overall: Segment; definitions: Record<string, string>;
   by_trait: Record<"offer" | "price" | "rating" | "margin" | "status" | "pets" | "diets", Segment[]>;
@@ -58,7 +61,6 @@ export interface SegmentView {
   key: string; conditions: string[]; customers: number; options: Record<string, TreeFigures>; stale: boolean; scope: "release" | "release-not-sandbox";
   too_small: boolean; min_customers?: number;
   segment?: Segment; funnel?: { selected: FunnelCounts; all: FunnelCounts };
-  ranking?: Record<string, PreferenceRanking>;
   relations?: SelectionRelation[]; preferences?: Record<string, PreferenceGroup>;
   acquisition?: Record<"source" | "landing" | "landing_category", AcquisitionRow[]>;
   response?: ResponseEntry | null; feedback?: FeedbackPair; trend?: { selected: Trend; all: Trend };
