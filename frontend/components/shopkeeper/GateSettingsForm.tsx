@@ -55,7 +55,7 @@ export default function GateSettingsForm({ view, value, onChange, lifts }: {
       <div style={{ display: "flex", alignItems: "center", gap: 10, margin: "14px 0 12px", flexWrap: "wrap" }}>
         <span style={{ fontSize: 13 }}>Enough evidence</span>
         <Stepper value={value.min_rows} onChange={(n) => onChange({ ...value, min_rows: n })} />
-        <span className="card-sub">past rows of the action in the customer&apos;s exact situation</span>
+        <span className="card-sub">past rows matching the action and the customer&apos;s exact situation (a check: the lift is estimated from all rows)</span>
       </div>
 
       <div style={{ fontSize: 13, marginBottom: 6 }}>Always ask a person before sending a…</div>

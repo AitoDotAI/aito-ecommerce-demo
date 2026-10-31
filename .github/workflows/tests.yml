@@ -1,0 +1,26 @@
+name: Tests
+
+# The offline unit tests: every test that needs no reachable Aito. The live checks (`./do aito-check`,
+# tests/test_live_smoke.py, tests/test_claims_live.py) skip or stay out, so a green run here does not
+# prove the live checks ran; they run where Aito is reachable (the live-smoke workflow, `./do check`).
+
+on:
+  pull_request: {}
+  push:
+    branches: [main]
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # Placeholders: the offline tests send no request to Aito.
+      AITO_API_URL: https://example.invalid
+      AITO_API_KEY: not-a-real-key
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --frozen --group backtest
+      # impressions.json and contexts.json are generated, not committed (byte-stable: tests/test_generation_is_byte_stable.py)
+      - run: uv run python -m data.generate_fixtures
+      - run: uv run pytest tests -q --ignore=tests/test_aito_check.py --ignore=tests/test_live_smoke.py --ignore=tests/test_claims_live.py

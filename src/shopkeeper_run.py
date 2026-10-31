@@ -1,9 +1,10 @@
 """The weekly win-back run, as stored data (ADR 0052).
 
 A run is the agent's pass over Retention's at-risk customers. It reads the retention snapshot the
-Retention page serves, so a run and the page cannot disagree, and keeps for each customer the facts a
-step shows: the best action, its lift, its expected net, and how many rows of the shop's history
-that action has in the customer's exact situation. The gate's outcome is not stored: it is decided
+Retention page serves, and keeps for each customer the facts a step shows: the best action, its lift,
+its expected net, and how many past rows match that action in the customer's exact situation (a check
+on the evidence; the lift itself is Aito's estimate over the whole action table). A run records a digest
+of the snapshot it was built from, and is stale when Retention now serves different numbers. The gate's outcome is not stored: it is decided
 when a run is read, with the store's settings (`shopkeeper_gate.py`).
 
 `build_winback_run` is deterministic over the snapshot; a test rebuilds it and compares it with the file
@@ -12,6 +13,7 @@ in `data/agent_runs/`, so a stored run that has fallen behind the snapshot fails
 
 from __future__ import annotations
 
+import hashlib
 import json
 from collections import Counter
 from pathlib import Path
@@ -32,8 +34,16 @@ def release_env() -> str:
 
 
 def rows_by_situation() -> Counter:
-    """How often the shop did each action in each exact situation: the rows an option's lift rests on."""
+    """How often the shop did each action in each exact situation: the rows that match an option."""
     return Counter((tuple(r[f] for f in CONTEXT_FIELDS), r["action"]) for r in json.loads(CUSTOMER_ACTIONS.read_text()))
+
+
+def snapshot_digest(snapshot: dict) -> str:
+    """A short fingerprint of the numbers a run reads: who is listed and each one's ranked first action."""
+    facts = [snapshot["as_of_month"]] + [
+        [c["customer_id"], c["actions"]["options"][0]["label"], c["actions"]["options"][0]["purchase_lift_p"],
+         c["actions"]["options"][0]["net_vs_none_eur"]] for c in snapshot["at_risk"]]
+    return hashlib.sha256(json.dumps(facts, separators=(",", ":")).encode()).hexdigest()[:16]
 
 
 def build_winback_run(snapshot: dict, rows_by_situation: Counter, release: str) -> dict:
@@ -56,8 +66,8 @@ def build_winback_run(snapshot: dict, rows_by_situation: Counter, release: str) 
         })
     return {
         "id": "winback", "routine": "winback", "title": "Weekly win-back run",
-        "release": release, "as_of_month": snapshot["as_of_month"], "simulated": True,
-        "source": "data/precomputed/v2-master/retention.json (the data Retention serves)",
+        "release": release, "snapshot_digest": snapshot_digest(snapshot), "as_of_month": snapshot["as_of_month"], "simulated": True,
+        "source": "data/precomputed/v2-master/retention.json (the snapshot Retention serves)",
         "steps": steps,
         "root_causes": {"tells": snapshot["tells"][:ROOT_CAUSES_KEPT],
                         "drivers": [d for d in snapshot["drivers"] if d["lift"] > 1][:1]},

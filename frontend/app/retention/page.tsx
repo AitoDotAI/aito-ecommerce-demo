@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { apiFetch, fmtEur } from "@/lib/api";
@@ -42,7 +43,10 @@ export default function RetentionPage() {
     <div className="fade-in">
       <div className="page-header">
         <div className="page-title">Retention</div>
-        <div className="page-desc">Who is about to leave, why, and which action brings them back.</div>
+        <div className="page-desc">
+          Who is about to leave, why, and which action brings them back.{" "}
+          <Link href="/shopkeeper/?run=winback">See the agent's weekly run on them →</Link>
+        </div>
       </div>
 
       {error && <ErrorState title="Couldn't load Retention" message={`Aito returned an error. ${error}`} command="./do load-data" />}
