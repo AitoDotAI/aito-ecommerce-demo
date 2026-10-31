@@ -14,6 +14,9 @@ price paid for the lines kept; the response table uses it to turn the action tab
 from __future__ import annotations
 
 from collections import defaultdict
+from statistics import median
+
+from src.customer_traits import TOO_FEW
 
 
 def profit_by_customer(order_lines: list[dict], orders: dict[str, dict], states: dict[str, dict],
@@ -49,3 +52,12 @@ def distribution(by_customer: dict[str, dict], customer_ids: list[str]) -> dict:
     top = values[len(values) - max(1, len(values) // 10):]
     return {"customers": len(values), "median_eur": round(values[len(values) // 2], 2),
             "top_tenth_share": round(sum(top) / sum(values), 3), "losing_money": sum(v < 0 for v in values)}
+
+
+def margin_bands(by_customer: dict[str, dict], customer_ids: list[str]) -> tuple[dict[str, str], float]:
+    """Each customer's basket margin (gross profit over the price paid for the lines kept) as "high-margin" or "low-margin",
+    cut at the median customer's. A customer with nothing kept has no margin: they are `TOO_FEW`, and do not move the median."""
+    margin = {cid: by_customer[cid]["gross_profit_eur"] / by_customer[cid]["net_revenue_eur"]
+              for cid in customer_ids if cid in by_customer and by_customer[cid]["net_revenue_eur"] > 0}
+    cut = round(median(margin.values()), 3)
+    return {cid: ("high-margin" if margin[cid] >= cut else "low-margin") if cid in margin else TOO_FEW for cid in customer_ids}, cut

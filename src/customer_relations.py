@@ -1,12 +1,12 @@
-"""How the profile variables relate, and what each segment buys over-proportionally (ADR 0053).
+"""How a selection of customers relates to the other variables, and what it buys over-proportionally (ADR 0053).
 
-Both compare a group of customers with the customers outside it, as a difference of shares in points with its
-margin (the units are customers, so the margin is valid; lines would cluster by customer). Many pairs and
+Both compare the selected customers with the customers outside it, as a difference of shares in points with its
+margin (the units are customers, so the margin is valid; lines would cluster by customer). Many values and
 hundreds of items are compared, and about one in twenty would pass a 95 % margin by chance, so the margin here is
 99.7 % (z = 3). A difference inside its margin is not called a result, and a group too small is left without one.
 
-  - `relations`: of the customers with trait A, how many more (or fewer) points have trait B than those without A.
-  - `preferences`: of a segment's customers, how many more points bought a category, brand or product than the rest.
+  - `selection_relations`: of the selected customers, how many more (or fewer) points have each trait value than the rest.
+  - `selection_preferences`: of the selected customers, how many more points bought a category, brand or product than the rest.
 """
 
 from __future__ import annotations
@@ -21,8 +21,8 @@ MIN_BUYERS = 5                 # customers in the segment who bought the item, b
 TOP_LISTED = 6
 # How a customer shops, and which pets they buy for. Diet tags are left out: a diet belongs to a kind of pet, so
 # "buys indoor food" and "has a cat" would show a relation that is only the product catalogue.
-RELATION_TRAITS = ("offer", "price", "rating", "pets")
-BEHAVIOUR_TRAITS = ("offer", "price", "rating")
+RELATION_TRAITS = ("offer", "price", "rating", "margin", "status", "pets")
+BEHAVIOUR_TRAITS = ("offer", "price", "rating", "margin")
 PET_GROUPS = ("dog", "cat")     # the two with enough customers; preferences are compared within one pet group
 
 
@@ -41,50 +41,6 @@ def share_difference(in_hits: int, in_n: int, out_hits: int, out_n: int) -> tupl
     return round((p - q) * 100, 1), round(Z * sqrt(p * (1 - p) / in_n + q * (1 - q) / out_n) * 100, 1)
 
 
-def relations(profiles: list[dict]) -> list[dict]:
-    """For every ordered pair of trait values (A, B) of different traits: B's share among A against among non-A."""
-    members = {p["customer_id"]: memberships(p) for p in profiles if p["profiled"]}
-    values = sorted({m for ms in members.values() for m in ms})
-    out = []
-    for a in values:
-        with_a = [ms for ms in members.values() if a in ms]
-        without_a = [ms for ms in members.values() if a not in ms]
-        if len(with_a) < MIN_GROUP or len(without_a) < MIN_GROUP:
-            continue
-        for b in values:
-            if b[0] == a[0]:
-                continue
-            hits_in, hits_out = sum(b in ms for ms in with_a), sum(b in ms for ms in without_a)
-            points, margin = share_difference(hits_in, len(with_a), hits_out, len(without_a))
-            out.append({"if": {"trait": a[0], "value": a[1]}, "then": {"trait": b[0], "value": b[1]},
-                        "customers_with": len(with_a), "share_with": round(hits_in / len(with_a), 3),
-                        "share_without": round(hits_out / len(without_a), 3),
-                        "points": points, "margin_points": margin, "clear": abs(points) > margin})
-    return out
-
-
-def preferences(profiles: list[dict], bought: dict[str, dict[str, dict[str, set[str]]]]) -> dict[str, dict]:
-    """`bought[customer][pet][kind]` is what the customer bought for that pet, kind in ("categories", "brands",
-    "products"). For each way of shopping and each pet group: the items the segment over-buys, by customers
-    reached, against the other customers who buy for the same pet (so a cat owner is not compared with a dog
-    owner). Clear ones first."""
-    members = {p["customer_id"]: memberships(p) for p in profiles if p["profiled"]}
-    pet_of = {p["customer_id"]: set(p["pets"]) for p in profiles if p["profiled"]}
-    out = {}
-    for pet in PET_GROUPS:
-        group = [cid for cid in members if pet in pet_of[cid]]
-        for seg in sorted({m for cid in group for m in members[cid] if m[0] in BEHAVIOUR_TRAITS}):
-            inside = [cid for cid in group if seg in members[cid]]
-            outside = [cid for cid in group if seg not in members[cid]]
-            if len(inside) < MIN_GROUP or len(outside) < MIN_GROUP:
-                continue
-            entry = {"pet": pet, "customers": len(inside), "others": len(outside)}
-            for kind in ("categories", "brands", "products"):
-                entry[kind] = _over_bought(kind, inside, outside, bought, pet)
-            out[f"{seg[0]}:{seg[1]}|{pet}"] = entry
-    return out
-
-
 def _over_bought(kind: str, inside: list[str], outside: list[str], bought: dict, pet: str) -> list[dict]:
     counts_in: dict[str, int] = {}
     counts_out: dict[str, int] = {}
@@ -101,3 +57,36 @@ def _over_bought(kind: str, inside: list[str], outside: list[str], bought: dict,
                      "share_others": round(counts_out.get(item, 0) / len(outside), 3),
                      "points": points, "margin_points": margin, "clear": points > margin})
     return sorted(rows, key=lambda r: (not r["clear"], -r["points"]))[:TOP_LISTED]
+
+
+def selection_relations(members: dict[str, set[tuple[str, str]]], inside: set[str], skip_traits: set[str]) -> list[dict]:
+    """How a selection of customers relates to every trait value outside the traits it is made of: of those inside,
+    how many more (or fewer) points have it than the profiled customers outside. `members` is `memberships` per profiled customer."""
+    outside = [cid for cid in members if cid not in inside]
+    if len(inside) < MIN_GROUP or len(outside) < MIN_GROUP:
+        return []
+    values = sorted({m for ms in members.values() for m in ms if m[0] not in skip_traits})
+    out = []
+    for trait, value in values:
+        hits_in = sum((trait, value) in members[cid] for cid in inside)
+        hits_out = sum((trait, value) in members[cid] for cid in outside)
+        points, margin = share_difference(hits_in, len(inside), hits_out, len(outside))
+        out.append({"then": {"trait": trait, "value": value}, "customers_with": len(inside), "share_with": round(hits_in / len(inside), 3),
+                    "share_without": round(hits_out / len(outside), 3), "points": points, "margin_points": margin, "clear": abs(points) > margin})
+    return sorted(out, key=lambda r: (not r["clear"], -abs(r["points"])))
+
+
+def selection_preferences(inside: set[str], pets_of: dict[str, set[str]], bought: dict[str, dict[str, dict[str, list[str]]]]) -> dict[str, dict]:
+    """What a selection buys over-proportionally, per pet group, against the other customers who buy for the same pet."""
+    out = {}
+    for pet in PET_GROUPS:
+        group = [cid for cid, pets in pets_of.items() if pet in pets]
+        mine = [cid for cid in group if cid in inside]
+        others = [cid for cid in group if cid not in inside]
+        if len(mine) < MIN_GROUP or len(others) < MIN_GROUP:
+            continue
+        entry = {"pet": pet, "customers": len(mine), "others": len(others)}
+        for kind in ("categories", "brands", "products"):
+            entry[kind] = _over_bought(kind, mine, others, bought, pet)
+        out[pet] = entry
+    return out

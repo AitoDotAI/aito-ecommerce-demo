@@ -16,10 +16,11 @@ OUT = ROOT / "data" / "customer_profiles"
 
 
 def main() -> None:
-    summary, traits = build()
+    summary, traits, facts = build()
     OUT.mkdir(exist_ok=True)
     (OUT / "summary.json").write_text(json.dumps(summary, indent=1, ensure_ascii=False) + "\n")
     (OUT / "customers.json").write_text(json.dumps(traits, separators=(",", ":"), ensure_ascii=False) + "\n")
+    (OUT / "facts.json").write_text(json.dumps(facts, separators=(",", ":"), ensure_ascii=False) + "\n")
     print(f"Wrote data/customer_profiles/: {summary['profiled']} of {summary['customers']} customers profiled, release {summary['release']}")
 
 

@@ -22,7 +22,7 @@ A new view, **Customers**, with the rules below.
    pet food they bought, after two lines of it. Nothing about health, religion, ethnicity or the like is read or
    guessed, and the test names the allowed fields.
 2. **Only for customers who consented.** `consent_behavioural` (ADR 0044) decides: a customer without it is counted and
-   not profiled. Customers who did not consent are not searchable by name and the lookup returns only their id. A customer with fewer than three purchased lines has "too few purchases", not a guess.
+   not profiled. Customers who did not consent are not searchable by name and the lookup returns only their id (the view has no lookup box since 2026-11-01; the API remains). A customer with fewer than three purchased lines has "too few purchases", not a guess.
 3. **Segments carry their evidence.** Each segment shows customers, share, churn rate and average spend; a segment under
    30 customers is faded.
 4. **What the actions did, per segment.** For each segment and each action in the action table, the change in the share who ordered within
@@ -30,14 +30,21 @@ A new view, **Customers**, with the rules below.
    come from their whole history and apply to every action row of theirs, so this describes the segments as they are now. The margins treat
    rows as independent although one customer can have several, so they are approximate; a cell inside its margin is shown grey, one under
    30 rows is blank, and about one cell in twenty would pass by chance.
-5. **A segment picker, as in Product.** A drop-down picks a segment (or everyone) and every pane follows it. Top left: who the segment is, in words, and what to do
-   (only differences larger than their margins). Top right: its key figures against everyone, and its showing funnel (impressions, clicks, carts,
-   purchases) over the identified sessions of its customers. Below: the preference ranking, then: how it compares, how it relates to the other variables, what it buys
-   and what the shop's actions did for it; a list of all segments, profit per customer first, compares them and selects one. Profit is the price paid less the unit cost on the lines kept (a returned line earns nothing),
+5. **A topic tree selects the segment, by any number of conditions at once.** Ticking "premium-leaning", "dog" and "high-margin" describes
+   the customers who meet all three (the shopping traits and margin take one value each; pets and diets can be ticked more than once).
+   Nothing ticked is every profiled customer. Above the tree, a figure to compare by (customers, purchases, revenue, profit per customer,
+   NPS, churn), shown as six tiles: each condition shows what that figure would be for the segment if it were ticked, as a number and a bar, so a dead end or a
+   standout shows before it is picked. A selection is counted when asked for, from `data/customer_profiles/facts.json` (per-customer
+   facts for the profiled customers, no names), by `GET /api/customer-profiles/segment?c=trait:value&c=...`; a selection under 30 customers
+   is given its size and nothing else. Churn is the shop's own rule (no order in the last three months of the data), a status a customer is in (churned or active) and a rate a segment has; its trend applies the same rule to every month. Margin is a customer's basket margin (gross profit over the price paid for what they kept), high
+   or low against the median customer's. On top: the segment's name and size, and a "?" that opens a dialog: the customers ranked by how much they prefer something (discounts, the cheaper half, better rated, a kind of pet, a category, a brand; chosen in the dialog, `GET /api/customer-profiles/ranking?var=...&c=...`) and where the segment sits among them, fifth by fifth.
+   Then the chosen figure's trend over the months, full width, against everyone's shape, and whether the last three months are in decline.
+   Below, tabs as in Product: highlights (what to do, only differences larger than their margins, and who the customers are in words), key figures and the showing funnel (impressions, clicks, carts, purchases over the identified sessions of
+   its customers), preferences (what it buys), other segments (how it relates to each, with the chosen figure for the customers in both and a button to tick it), channels, what the shop's actions did for it, and what it says in reviews and NPS answers. Profit is the price paid less the unit cost on the lines kept (a returned line earns nothing),
    less the shop's action costs; there is no delivery or payment cost in the data, so it is profit after products and actions, not a full P&L.
    The unit cost is the inventory's current cost per product, applied to two years of sales. Profit per customer carries a 95 % bootstrap interval
    (a few customers earn much of it), and no interval is given under 30 customers. Revenue is the price paid on the lines kept, the same basis as profit and
-   margin. The headline shows total profit, profit per customer and median, the share the top tenth earns and how many lose money. The response table is per segment, in orders and in estimated profit (the 30-day spend at the shop's
+   margin. The profit distribution (total, per customer and median, the share the top tenth earns, how many lose money) is in the figures tab for everyone. The response table is per segment, in orders and in estimated profit (the 30-day spend at the shop's
    gross margin less the action's cost): a discount that lifts orders can still lose money.
 5b. **Preference ranking.** All customers ranked by how much they prefer something (their share of lines on offer, in the cheaper half, in better-rated
    products, in a category or of a brand, over the average share), as a curve in twenty steps and five fifths, with the top fifth over the average and over the
