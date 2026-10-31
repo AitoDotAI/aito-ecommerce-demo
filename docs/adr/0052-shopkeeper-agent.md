@@ -28,48 +28,74 @@ The levers already exist as services: ranked retention actions (ADR 0051), the m
 
 ## Decision
 
-A new view, **Shopkeeper**, shows routine runs of one agent. A run is a list of steps; each step
-is a tool call with its result, and ends in one of four outcomes.
+A new view, **Shopkeeper**. Three columns of navigation, one reading pane:
+
+- **Board** (left, first): the shop's list of systematic improvements, each with its evidence, owner (agent or
+  shopkeeper), status and the run or conversation that raised it.
+- **Agents and runs** (left, second): the routines, their schedule (they may roll automatically) and their latest runs.
+- **Past conversations** (left, third): every stored run and every question asked.
+- **Reading pane** (right): the selected run or conversation, as a list of steps; each step is a tool call, its result
+  and one of four outcomes.
 
 ### The gate (the product)
 
-Every proposed action carries its calibrated probability or lift, its `$why`, the rows it rests
-on and the threshold in force, shown on the step:
+Every proposed action carries its calibrated probability or lift, its `$why`, the rows it rests on and the threshold in
+force, shown on the step:
 
 | Outcome | When | Effect |
 |---|---|---|
-| **Act** | confident (`$p` at or above the threshold) and the evidence is not thin | executed, if the routine allows it; otherwise queued with a pre-ticked approval |
+| **Act** | confident (`$p` at or above the store's threshold) and the evidence is not thin | executed, if the routine allows it |
 | **Suggest** | between the thresholds | queued for the shopkeeper's approval |
 | **Stay quiet** | no evidence, or the "thin" rule of ADR 0042 applies | nothing is proposed; the step says why |
-| **Never auto** | sensitive by kind (a discount over a set depth, a purchase order) | always queued, whatever the confidence |
+| **Never auto** | a kind the store marks as always needing a person | always queued, whatever the confidence |
 
-Thresholds are constants in one module, shown in the UI, and tested. Nothing in the demo
-changes real data: "act" writes a row to a simulated action log (`agent_runs`, `agent_steps`),
-labelled as simulated.
+**The thresholds and the "never auto" kinds are the store's settings,** with recommended defaults the app proposes
+(and the evidence for them), not constants the demo imposes. They are shown on every step. Nothing in the demo changes
+real data: "act" writes a row to a simulated log (`agent_runs`, `agent_steps`), labelled as simulated.
 
-### Routines (first three, in build order)
+### One win-back record
 
-1. **Weekly win-back run.** Reads the Retention candidates; for each at-risk customer takes the
-   ranked actions (email, voucher, ad or none) from ADR 0051, with cost and expected euros over no action.
-   Confident ones are "sent", unsure ones queued. The run ends with the action loop: which actions
-   were taken, who was saved.
-2. **Stock-aware morning check.** Reorder and overstock ranked from the Supply service; items out of
-   stock removed from recommendation lists (a measured property, see below); overstocked or
-   low-rated items proposed for a markdown with its margin impact, always for approval.
-3. **New-product entry.** Name typed; the other fields suggested from similar products, accepted
-   when confident, flagged when not.
+There is one win-back dataset and one record of its actions and outcomes (ADR 0051's `customer_actions`, shown by
+`/winback` and Retention). The agent does not keep a copy: its runs read that record and write their actions to it, so a
+run and the page cannot disagree. A run may roll on a schedule.
 
-Each run ends with a line **"euros added vs doing nothing"**, summed from the steps that used
-it, and with the number of steps that were acted on, queued and left quiet.
+### Two learning loops
+
+1. **The statistical loop** is Aito: the next best action per customer, from the actions already taken and what followed.
+2. **The agent's loop** sits above it and works on the configuration. After a run it reads the outcomes of the actions
+   taken and asks whether the configuration, not a single customer, is the problem: which action kinds, parameters
+   (voucher depth, send timing) or segments underperform their baseline, and why (`_relate` on the outcome, scoped to the
+   segment). It proposes a change to the action configuration, never makes one: the proposal goes onto the Board.
+   The same root-cause step runs on the other routines (a product group with returns, a supplier with late deliveries).
+
+The Board lists these findings as a to-do list for the shop. A finding says what it rests on and what was tried.
+We do not claim that the second loop improves results until a configuration change has been measured.
+
+### Routines (build order)
+
+1. **Weekly win-back run.** Reads the win-back record; for each at-risk customer takes the ranked actions (email,
+   voucher, ad or none) with cost and expected euros over no action. Confident ones are acted on, unsure ones queued.
+   The run ends with the action loop: which actions were taken, who was saved. Then the agent's learning loop.
+2. **Stock-aware morning check.** Reorder and overstock ranked from the Supply service; out-of-stock items kept off
+   recommendation lists; overstocked items proposed for a markdown with its margin impact.
+3. **Portfolio management.** The agent reviews the range: products to retire (low sales, low reviews, high
+   returns), with the stock and the margin at stake; products to add; and prices. For pricing it uses what we have
+   (price what-if, price curve, markdown proposal) to propose a price change with the units and profit it implies,
+   always as a decision for the shopkeeper. *New products from suppliers or competitors needs data the demo does not
+   have* (supplier offers, competitor prices): it would be simulated and labelled, a data release of its own (see Notes).
+4. **New-product entry.** Name typed; the other fields suggested from similar products, accepted when confident, flagged
+   when not.
+
+Each run ends with **"euros added vs doing nothing"**, summed from the steps that used it, and the number of steps
+acted on, queued and left quiet.
 
 ### Pre-generated runs and live questions
 
-- Runs and their discussions are generated by a script from the live services, stored as data
-  (`data/agent_runs/`), and shown as history. Every number in a stored run is a field of a tool
-  result and is recomputed by a test (the claims-checklist approach); a stored run records its
-  data release and fails the test when the release changes.
-- A free-form question reuses the ADR 0042 agent and tools, labelled live, with a cost cap and
-  the stored runs as fallback when no model key is configured.
+- Runs and conversations are generated by a script from the live services, stored as data (`data/agent_runs/`), and
+  shown as history. Every number in a stored run is a field of a tool result and is recomputed by a test (the
+  claims-checklist approach); a stored run records its data release and fails the test when the release changes.
+- A free-form question reuses the ADR 0042 agent and tools, labelled live, with a cost cap and the stored runs as
+  fallback when no model key is configured.
 - A **Toolbox** switch turns the Aito tools off, so the agent has to guess and says so.
 
 ## Aito usage
@@ -83,17 +109,24 @@ No new query shapes. Tools wrap existing services:
 | `markdown_proposal(sku)` | `markdown_proposal.propose_markdown` |
 | `offer_what_if(sku)` | `discount_what_if.get_discount_what_if` |
 | `suggest_fields(name)` | the product-filling service (`_predict` per field) |
+| `price_what_if(sku, price)`, `price_curve(sku)` | `price_what_if`, `price_curve` |
+| `root_causes(outcome, segment)` | `_relate` on the outcome, scoped with `$on` |
 
-New tables are only the simulated logs. An availability-conditioned demand read (does demand differ
+New tables: the simulated logs (`agent_runs`, `agent_steps`), the Board's items and the store's gate settings. An availability-conditioned demand read (does demand differ
 when stock is low?) is a separate ticket (td-20261030080248329856); this ADR makes no urgency claim until it is measured.
 
 ## Acceptance criteria
 
+- [ ] A user can open the Board, the routines and the past conversations, and the reading pane shows the selected one.
 - [ ] A user can open a stored win-back run and see, per customer, the ranked actions, the chosen
       outcome (act, suggest, stay quiet, never auto), the threshold, the `$why` and the euros over no action.
 - [ ] The run's "euros added vs doing nothing" equals the sum of the acted-on steps, and a test recomputes it.
 - [ ] A customer with no evidence gets "stay quiet" with the reason, not a guess.
-- [ ] A markdown or an order is never executed without approval, whatever the confidence.
+- [ ] The thresholds and "never auto" kinds are editable in the store's settings; the steps change outcome accordingly and show the values in force.
+- [ ] A kind marked "never auto" is never executed without approval, whatever the confidence.
+- [ ] A run and the win-back page show the same actions: both read one record.
+- [ ] After a win-back run the Board holds at least one finding with its evidence (an action kind, parameter or segment against its baseline).
+- [ ] A portfolio run proposes retiring products with the stock and margin at stake, and a price change with the units and profit it implies, both as decisions awaiting approval.
 - [ ] A user can approve or reject a queued step; the log shows it, labelled simulated.
 - [ ] With the stock filters on, no recommendation list in the stock-aware run shows an out-of-stock product (asserted by `aito-check`).
 - [ ] The Toolbox switch makes the agent say it is guessing and drops the "act" outcome.
@@ -125,6 +158,8 @@ The Retention and Supply views gain a link to the run that uses them.
 
 ## Notes
 
-- Open questions: the two thresholds and the markdown depth for "never auto"; whether the stored runs
-  are regenerated in `./do promote`; whether the win-back run reuses `/winback` or replaces it.
+- Open questions: the recommended defaults for the gate and what evidence we show for them; whether stored runs are
+  regenerated in `./do promote`; the supplier-offer and competitor-price data for portfolio additions (a simulated
+  data release, labelled, with its preregistration), and whether pricing decisions can be tested against the
+  planted price effects before any claim is made.
 - Builds on ADR 0042 (tools, evidence block, thin rule) and ADR 0051 (ranked actions).
