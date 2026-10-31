@@ -348,3 +348,18 @@ export function evaluationPanel(): AitoPanelConfig {
     links: LEARN_MORE_LINKS,
   };
 }
+
+
+export function shopkeeperPanel(): AitoPanelConfig {
+  return {
+    operation: "Shopkeeper",
+    endpoints: ["_predict", "_estimate"],
+    description:
+      `The agent reads the same ranked actions Retention shows: a ` +
+      `<code style="color:var(--aito-teal);">_predict purchased_30d</code> per customer and candidate action. ` +
+      `The gate then judges each on three numbers the step shows: the lift over no action, the past rows the ` +
+      `lift rests on, and the kind of action. The thresholds are the store's.`,
+    query: `${k('"note"')}: ${s('"The agent adds no query of its own: see Retention for the _predict body."')}`,
+    links: LEARN_MORE_LINKS,
+  };
+}

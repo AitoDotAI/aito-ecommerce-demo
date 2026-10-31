@@ -1,0 +1,1320 @@
+{
+ "id": "winback",
+ "routine": "winback",
+ "title": "Weekly win-back run",
+ "release": "release3b",
+ "as_of_month": "2026-04",
+ "simulated": true,
+ "source": "data/precomputed/v2-master/retention.json (the data Retention serves)",
+ "steps": [
+  {
+   "customer_id": "CUST-01899",
+   "name": "Anneli Sinkkonen",
+   "risk": "likely",
+   "spend_12m_eur": 803.6,
+   "tells": [],
+   "context": {
+    "recency_bucket": "0-90d",
+    "spend_band": "high",
+    "offer_buyer": "sometimes",
+    "open_issue": "none",
+    "email_history": "never_sent",
+    "tracking_consent": "yes"
+   },
+   "order_value_eur": 121.58,
+   "best": {
+    "action": "ad",
+    "label": "Personalised ad",
+    "purchase_p": 0.374,
+    "purchase_lift_p": 0.183,
+    "net_vs_none_eur": 21.07,
+    "cost_eur": 1.2
+   },
+   "none_purchase_p": 0.191,
+   "rows": 30,
+   "rows_no_action": 45,
+   "alternatives": [
+    {
+     "label": "Email",
+     "purchase_p": 0.263,
+     "purchase_lift_p": 0.072,
+     "net_vs_none_eur": 8.28
+    },
+    {
+     "label": "€10 voucher",
+     "purchase_p": 0.246,
+     "purchase_lift_p": 0.056,
+     "net_vs_none_eur": 4.32
+    },
+    {
+     "label": "10 % discount",
+     "purchase_p": 0.235,
+     "purchase_lift_p": 0.044,
+     "net_vs_none_eur": 2.52
+    },
+    {
+     "label": "No action",
+     "purchase_p": 0.191,
+     "purchase_lift_p": 0.0,
+     "net_vs_none_eur": 0.0
+    },
+    {
+     "label": "Apology and €5 credit",
+     "purchase_p": 0.195,
+     "purchase_lift_p": 0.005,
+     "net_vs_none_eur": -0.89
+    },
+    {
+     "label": "€5 voucher",
+     "purchase_p": 0.161,
+     "purchase_lift_p": -0.029,
+     "net_vs_none_eur": -4.35
+    }
+   ]
+  },
+  {
+   "customer_id": "CUST-01608",
+   "name": "Suvi Mäkelä",
+   "risk": "likely",
+   "spend_12m_eur": 616.43,
+   "tells": [
+    "Wrote a 1–2 star review",
+    "Returned an item"
+   ],
+   "context": {
+    "recency_bucket": "0-90d",
+    "spend_band": "high",
+    "offer_buyer": "rarely",
+    "open_issue": "none",
+    "email_history": "ignored",
+    "tracking_consent": "no"
+   },
+   "order_value_eur": 121.58,
+   "best": {
+    "action": "voucher",
+    "label": "€10 voucher",
+    "purchase_p": 0.297,
+    "purchase_lift_p": 0.153,
+    "net_vs_none_eur": 15.65,
+    "cost_eur": 2.97
+   },
+   "none_purchase_p": 0.143,
+   "rows": 9,
+   "rows_no_action": 16,
+   "alternatives": [
+    {
+     "label": "Apology and €5 credit",
+     "purchase_p": 0.25,
+     "purchase_lift_p": 0.106,
+     "net_vs_none_eur": 11.18
+    },
+    {
+     "label": "€5 voucher",
+     "purchase_p": 0.199,
+     "purchase_lift_p": 0.056,
+     "net_vs_none_eur": 5.76
+    },
+    {
+     "label": "10 % discount",
+     "purchase_p": 0.19,
+     "purchase_lift_p": 0.046,
+     "net_vs_none_eur": 3.3
+    },
+    {
+     "label": "No action",
+     "purchase_p": 0.143,
+     "purchase_lift_p": 0.0,
+     "net_vs_none_eur": 0.0
+    },
+    {
+     "label": "Email",
+     "purchase_p": 0.127,
+     "purchase_lift_p": -0.016,
+     "net_vs_none_eur": -2.47
+    }
+   ]
+  },
+  {
+   "customer_id": "CUST-02425",
+   "name": "Toivo Mattila",
+   "risk": "likely",
+   "spend_12m_eur": 584.06,
+   "tells": [
+    "Answered the NPS survey as a detractor (0–6)"
+   ],
+   "context": {
+    "recency_bucket": "0-90d",
+    "spend_band": "high",
+    "offer_buyer": "sometimes",
+    "open_issue": "low_rating",
+    "email_history": "ignored",
+    "tracking_consent": "yes"
+   },
+   "order_value_eur": 121.58,
+   "best": {
+    "action": "apology",
+    "label": "Apology and €5 credit",
+    "purchase_p": 0.61,
+    "purchase_lift_p": 0.406,
+    "net_vs_none_eur": 45.79,
+    "cost_eur": 3.55
+   },
+   "none_purchase_p": 0.204,
+   "rows": 5,
+   "rows_no_action": 0,
+   "alternatives": [
+    {
+     "label": "Personalised ad",
+     "purchase_p": 0.334,
+     "purchase_lift_p": 0.129,
+     "net_vs_none_eur": 14.5
+    },
+    {
+     "label": "Email",
+     "purchase_p": 0.276,
+     "purchase_lift_p": 0.072,
+     "net_vs_none_eur": 8.25
+    },
+    {
+     "label": "10 % discount",
+     "purchase_p": 0.26,
+     "purchase_lift_p": 0.056,
+     "net_vs_none_eur": 3.62
+    },
+    {
+     "label": "€10 voucher",
+     "purchase_p": 0.253,
+     "purchase_lift_p": 0.048,
+     "net_vs_none_eur": 3.35
+    },
+    {
+     "label": "No action",
+     "purchase_p": 0.204,
+     "purchase_lift_p": 0.0,
+     "net_vs_none_eur": 0.0
+    },
+    {
+     "label": "€5 voucher",
+     "purchase_p": 0.176,
+     "purchase_lift_p": -0.029,
+     "net_vs_none_eur": -4.39
+    }
+   ]
+  },
+  {
+   "customer_id": "CUST-02880",
+   "name": "Raija Ojala",
+   "risk": "very likely",
+   "spend_12m_eur": 420.27,
+   "tells": [
+    "Answered the NPS survey as a detractor (0–6)",
+    "Wrote a 1–2 star review"
+   ],
+   "context": {
+    "recency_bucket": "0-90d",
+    "spend_band": "high",
+    "offer_buyer": "mostly",
+    "open_issue": "low_rating",
+    "email_history": "ignored",
+    "tracking_consent": "no"
+   },
+   "order_value_eur": 121.58,
+   "best": {
+    "action": "apology",
+    "label": "Apology and €5 credit",
+    "purchase_p": 0.571,
+    "purchase_lift_p": 0.362,
+    "net_vs_none_eur": 40.71,
+    "cost_eur": 3.35
+   },
+   "none_purchase_p": 0.208,
+   "rows": 0,
+   "rows_no_action": 0,
+   "alternatives": [
+    {
+     "label": "10 % discount",
+     "purchase_p": 0.346,
+     "purchase_lift_p": 0.138,
+     "net_vs_none_eur": 12.55
+    },
+    {
+     "label": "Email",
+     "purchase_p": 0.272,
+     "purchase_lift_p": 0.064,
+     "net_vs_none_eur": 7.23
+    },
+    {
+     "label": "€10 voucher",
+     "purchase_p": 0.267,
+     "purchase_lift_p": 0.059,
+     "net_vs_none_eur": 4.51
+    },
+    {
+     "label": "No action",
+     "purchase_p": 0.208,
+     "purchase_lift_p": 0.0,
+     "net_vs_none_eur": 0.0
+    },
+    {
+     "label": "€5 voucher",
+     "purchase_p": 0.198,
+     "purchase_lift_p": -0.011,
+     "net_vs_none_eur": -2.27
+    }
+   ]
+  },
+  {
+   "customer_id": "CUST-02104",
+   "name": "Antero Saarinen",
+   "risk": "likely",
+   "spend_12m_eur": 629.2,
+   "tells": [],
+   "context": {
+    "recency_bucket": "0-90d",
+    "spend_band": "high",
+    "offer_buyer": "sometimes",
+    "open_issue": "none",
+    "email_history": "never_sent",
+    "tracking_consent": "yes"
+   },
+   "order_value_eur": 121.58,
+   "best": {
+    "action": "ad",
+    "label": "Personalised ad",
+    "purchase_p": 0.374,
+    "purchase_lift_p": 0.183,
+    "net_vs_none_eur": 21.07,
+    "cost_eur": 1.2
+   },
+   "none_purchase_p": 0.191,
+   "rows": 30,
+   "rows_no_action": 45,
+   "alternatives": [
+    {
+     "label": "Email",
+     "purchase_p": 0.263,
+     "purchase_lift_p": 0.072,
+     "net_vs_none_eur": 8.28
+    },
+    {
+     "label": "€10 voucher",
+     "purchase_p": 0.246,
+     "purchase_lift_p": 0.056,
+     "net_vs_none_eur": 4.32
+    },
+    {
+     "label": "10 % discount",
+     "purchase_p": 0.235,
+     "purchase_lift_p": 0.044,
+     "net_vs_none_eur": 2.52
+    },
+    {
+     "label": "No action",
+     "purchase_p": 0.191,
+     "purchase_lift_p": 0.0,
+     "net_vs_none_eur": 0.0
+    },
+    {
+     "label": "Apology and €5 credit",
+     "purchase_p": 0.195,
+     "purchase_lift_p": 0.005,
+     "net_vs_none_eur": -0.89
+    },
+    {
+     "label": "€5 voucher",
+     "purchase_p": 0.161,
+     "purchase_lift_p": -0.029,
+     "net_vs_none_eur": -4.35
+    }
+   ]
+  },
+  {
+   "customer_id": "CUST-00293",
+   "name": "Suvi Jokinen",
+   "risk": "likely",
+   "spend_12m_eur": 672.6,
+   "tells": [],
+   "context": {
+    "recency_bucket": "0-90d",
+    "spend_band": "high",
+    "offer_buyer": "sometimes",
+    "open_issue": "none",
+    "email_history": "never_sent",
+    "tracking_consent": "no"
+   },
+   "order_value_eur": 121.58,
+   "best": {
+    "action": "voucher",
+    "label": "€10 voucher",
+    "purchase_p": 0.312,
+    "purchase_lift_p": 0.148,
+    "net_vs_none_eur": 14.83,
+    "cost_eur": 3.12
+   },
+   "none_purchase_p": 0.165,
+   "rows": 16,
+   "rows_no_action": 36,
+   "alternatives": [
+    {
+     "label": "Email",
+     "purchase_p": 0.263,
+     "purchase_lift_p": 0.098,
+     "net_vs_none_eur": 11.42
+    },
+    {
+     "label": "10 % discount",
+     "purchase_p": 0.246,
+     "purchase_lift_p": 0.081,
+     "net_vs_none_eur": 6.89
+    },
+    {
+     "label": "Apology and €5 credit",
+     "purchase_p": 0.229,
+     "purchase_lift_p": 0.064,
+     "net_vs_none_eur": 6.19
+    },
+    {
+     "label": "€5 voucher",
+     "purchase_p": 0.211,
+     "purchase_lift_p": 0.046,
+     "net_vs_none_eur": 4.58
+    },
+    {
+     "label": "No action",
+     "purchase_p": 0.165,
+     "purchase_lift_p": 0.0,
+     "net_vs_none_eur": 0.0
+    }
+   ]
+  },
+  {
+   "customer_id": "CUST-01645",
+   "name": "Kari Savolainen",
+   "risk": "likely",
+   "spend_12m_eur": 404.57,
+   "tells": [],
+   "context": {
+    "recency_bucket": "0-90d",
+    "spend_band": "high",
+    "offer_buyer": "mostly",
+    "open_issue": "none",
+    "email_history": "never_sent",
+    "tracking_consent": "yes"
+   },
+   "order_value_eur": 121.58,
+   "best": {
+    "action": "ad",
+    "label": "Personalised ad",
+    "purchase_p": 0.396,
+    "purchase_lift_p": 0.181,
+    "net_vs_none_eur": 20.78,
+    "cost_eur": 1.2
+   },
+   "none_purchase_p": 0.215,
+   "rows": 18,
+   "rows_no_action": 14,
+   "alternatives": [
+    {
+     "label": "10 % discount",
+     "purchase_p": 0.329,
+     "purchase_lift_p": 0.114,
+     "net_vs_none_eur": 9.8
+    },
+    {
+     "label": "Email",
+     "purchase_p": 0.255,
+     "purchase_lift_p": 0.04,
+     "net_vs_none_eur": 4.33
+    },
+    {
+     "label": "€10 voucher",
+     "purchase_p": 0.246,
+     "purchase_lift_p": 0.031,
+     "net_vs_none_eur": 1.28
+    },
+    {
+     "label": "No action",
+     "purchase_p": 0.215,
+     "purchase_lift_p": 0.0,
+     "net_vs_none_eur": 0.0
+    },
+    {
+     "label": "Apology and €5 credit",
+     "purchase_p": 0.195,
+     "purchase_lift_p": -0.02,
+     "net_vs_none_eur": -3.93
+    },
+    {
+     "label": "€5 voucher",
+     "purchase_p": 0.161,
+     "purchase_lift_p": -0.054,
+     "net_vs_none_eur": -7.39
+    }
+   ]
+  },
+  {
+   "customer_id": "CUST-02857",
+   "name": "Tuula Sinkkonen",
+   "risk": "likely",
+   "spend_12m_eur": 434.69,
+   "tells": [],
+   "context": {
+    "recency_bucket": "0-90d",
+    "spend_band": "high",
+    "offer_buyer": "sometimes",
+    "open_issue": "none",
+    "email_history": "never_sent",
+    "tracking_consent": "yes"
+   },
+   "order_value_eur": 121.58,
+   "best": {
+    "action": "ad",
+    "label": "Personalised ad",
+    "purchase_p": 0.374,
+    "purchase_lift_p": 0.183,
+    "net_vs_none_eur": 21.07,
+    "cost_eur": 1.2
+   },
+   "none_purchase_p": 0.191,
+   "rows": 30,
+   "rows_no_action": 45,
+   "alternatives": [
+    {
+     "label": "Email",
+     "purchase_p": 0.263,
+     "purchase_lift_p": 0.072,
+     "net_vs_none_eur": 8.28
+    },
+    {
+     "label": "€10 voucher",
+     "purchase_p": 0.246,
+     "purchase_lift_p": 0.056,
+     "net_vs_none_eur": 4.32
+    },
+    {
+     "label": "10 % discount",
+     "purchase_p": 0.235,
+     "purchase_lift_p": 0.044,
+     "net_vs_none_eur": 2.52
+    },
+    {
+     "label": "No action",
+     "purchase_p": 0.191,
+     "purchase_lift_p": 0.0,
+     "net_vs_none_eur": 0.0
+    },
+    {
+     "label": "Apology and €5 credit",
+     "purchase_p": 0.195,
+     "purchase_lift_p": 0.005,
+     "net_vs_none_eur": -0.89
+    },
+    {
+     "label": "€5 voucher",
+     "purchase_p": 0.161,
+     "purchase_lift_p": -0.029,
+     "net_vs_none_eur": -4.35
+    }
+   ]
+  },
+  {
+   "customer_id": "CUST-02685",
+   "name": "Laura Laitinen",
+   "risk": "very likely",
+   "spend_12m_eur": 321.58,
+   "tells": [],
+   "context": {
+    "recency_bucket": "0-90d",
+    "spend_band": "mid",
+    "offer_buyer": "sometimes",
+    "open_issue": "none",
+    "email_history": "ignored",
+    "tracking_consent": "yes"
+   },
+   "order_value_eur": 54.32,
+   "best": {
+    "action": "ad",
+    "label": "Personalised ad",
+    "purchase_p": 0.315,
+    "purchase_lift_p": 0.147,
+    "net_vs_none_eur": 6.8,
+    "cost_eur": 1.2
+   },
+   "none_purchase_p": 0.168,
+   "rows": 8,
+   "rows_no_action": 13,
+   "alternatives": [
+    {
+     "label": "Email",
+     "purchase_p": 0.232,
+     "purchase_lift_p": 0.064,
+     "net_vs_none_eur": 2.99
+    },
+    {
+     "label": "10 % discount",
+     "purchase_p": 0.218,
+     "purchase_lift_p": 0.05,
+     "net_vs_none_eur": 1.53
+    },
+    {
+     "label": "Apology and €5 credit",
+     "purchase_p": 0.215,
+     "purchase_lift_p": 0.047,
+     "net_vs_none_eur": 1.0
+    },
+    {
+     "label": "€10 voucher",
+     "purchase_p": 0.206,
+     "purchase_lift_p": 0.038,
+     "net_vs_none_eur": 0.01
+    },
+    {
+     "label": "No action",
+     "purchase_p": 0.168,
+     "purchase_lift_p": 0.0,
+     "net_vs_none_eur": 0.0
+    },
+    {
+     "label": "€5 voucher",
+     "purchase_p": 0.133,
+     "purchase_lift_p": -0.035,
+     "net_vs_none_eur": -2.58
+    }
+   ]
+  },
+  {
+   "customer_id": "CUST-02351",
+   "name": "Niina Saarinen",
+   "risk": "likely",
+   "spend_12m_eur": 444.32,
+   "tells": [],
+   "context": {
+    "recency_bucket": "0-90d",
+    "spend_band": "high",
+    "offer_buyer": "rarely",
+    "open_issue": "none",
+    "email_history": "ignored",
+    "tracking_consent": "yes"
+   },
+   "order_value_eur": 121.58,
+   "best": {
+    "action": "ad",
+    "label": "Personalised ad",
+    "purchase_p": 0.267,
+    "purchase_lift_p": 0.1,
+    "net_vs_none_eur": 10.94,
+    "cost_eur": 1.2
+   },
+   "none_purchase_p": 0.167,
+   "rows": 15,
+   "rows_no_action": 17,
+   "alternatives": [
+    {
+     "label": "€10 voucher",
+     "purchase_p": 0.245,
+     "purchase_lift_p": 0.079,
+     "net_vs_none_eur": 7.13
+    },
+    {
+     "label": "Apology and €5 credit",
+     "purchase_p": 0.214,
+     "purchase_lift_p": 0.047,
+     "net_vs_none_eur": 4.17
+    },
+    {
+     "label": "No action",
+     "purchase_p": 0.167,
+     "purchase_lift_p": 0.0,
+     "net_vs_none_eur": 0.0
+    },
+    {
+     "label": "10 % discount",
+     "purchase_p": 0.18,
+     "purchase_lift_p": 0.014,
+     "net_vs_none_eur": -0.54
+    },
+    {
+     "label": "€5 voucher",
+     "purchase_p": 0.161,
+     "purchase_lift_p": -0.006,
+     "net_vs_none_eur": -1.51
+    },
+    {
+     "label": "Email",
+     "purchase_p": 0.127,
+     "purchase_lift_p": -0.039,
+     "net_vs_none_eur": -5.28
+    }
+   ]
+  },
+  {
+   "customer_id": "CUST-02320",
+   "name": "Raija Leppänen",
+   "risk": "likely",
+   "spend_12m_eur": 317.26,
+   "tells": [],
+   "context": {
+    "recency_bucket": "0-90d",
+    "spend_band": "high",
+    "offer_buyer": "sometimes",
+    "open_issue": "none",
+    "email_history": "never_sent",
+    "tracking_consent": "yes"
+   },
+   "order_value_eur": 121.58,
+   "best": {
+    "action": "ad",
+    "label": "Personalised ad",
+    "purchase_p": 0.374,
+    "purchase_lift_p": 0.183,
+    "net_vs_none_eur": 21.07,
+    "cost_eur": 1.2
+   },
+   "none_purchase_p": 0.191,
+   "rows": 30,
+   "rows_no_action": 45,
+   "alternatives": [
+    {
+     "label": "Email",
+     "purchase_p": 0.263,
+     "purchase_lift_p": 0.072,
+     "net_vs_none_eur": 8.28
+    },
+    {
+     "label": "€10 voucher",
+     "purchase_p": 0.246,
+     "purchase_lift_p": 0.056,
+     "net_vs_none_eur": 4.32
+    },
+    {
+     "label": "10 % discount",
+     "purchase_p": 0.235,
+     "purchase_lift_p": 0.044,
+     "net_vs_none_eur": 2.52
+    },
+    {
+     "label": "No action",
+     "purchase_p": 0.191,
+     "purchase_lift_p": 0.0,
+     "net_vs_none_eur": 0.0
+    },
+    {
+     "label": "Apology and €5 credit",
+     "purchase_p": 0.195,
+     "purchase_lift_p": 0.005,
+     "net_vs_none_eur": -0.89
+    },
+    {
+     "label": "€5 voucher",
+     "purchase_p": 0.161,
+     "purchase_lift_p": -0.029,
+     "net_vs_none_eur": -4.35
+    }
+   ]
+  },
+  {
+   "customer_id": "CUST-00470",
+   "name": "Hannu Niemelä",
+   "risk": "likely",
+   "spend_12m_eur": 380.82,
+   "tells": [
+    "Wrote a 1–2 star review"
+   ],
+   "context": {
+    "recency_bucket": "0-90d",
+    "spend_band": "high",
+    "offer_buyer": "mostly",
+    "open_issue": "none",
+    "email_history": "never_sent",
+    "tracking_consent": "yes"
+   },
+   "order_value_eur": 121.58,
+   "best": {
+    "action": "ad",
+    "label": "Personalised ad",
+    "purchase_p": 0.396,
+    "purchase_lift_p": 0.181,
+    "net_vs_none_eur": 20.78,
+    "cost_eur": 1.2
+   },
+   "none_purchase_p": 0.215,
+   "rows": 18,
+   "rows_no_action": 14,
+   "alternatives": [
+    {
+     "label": "10 % discount",
+     "purchase_p": 0.329,
+     "purchase_lift_p": 0.114,
+     "net_vs_none_eur": 9.8
+    },
+    {
+     "label": "Email",
+     "purchase_p": 0.255,
+     "purchase_lift_p": 0.04,
+     "net_vs_none_eur": 4.33
+    },
+    {
+     "label": "€10 voucher",
+     "purchase_p": 0.246,
+     "purchase_lift_p": 0.031,
+     "net_vs_none_eur": 1.28
+    },
+    {
+     "label": "No action",
+     "purchase_p": 0.215,
+     "purchase_lift_p": 0.0,
+     "net_vs_none_eur": 0.0
+    },
+    {
+     "label": "Apology and €5 credit",
+     "purchase_p": 0.195,
+     "purchase_lift_p": -0.02,
+     "net_vs_none_eur": -3.93
+    },
+    {
+     "label": "€5 voucher",
+     "purchase_p": 0.161,
+     "purchase_lift_p": -0.054,
+     "net_vs_none_eur": -7.39
+    }
+   ]
+  },
+  {
+   "customer_id": "CUST-02615",
+   "name": "Jouko Koivisto",
+   "risk": "likely",
+   "spend_12m_eur": 322.44,
+   "tells": [
+    "Returned an item"
+   ],
+   "context": {
+    "recency_bucket": "0-90d",
+    "spend_band": "mid",
+    "offer_buyer": "mostly",
+    "open_issue": "none",
+    "email_history": "ignored",
+    "tracking_consent": "yes"
+   },
+   "order_value_eur": 54.32,
+   "best": {
+    "action": "ad",
+    "label": "Personalised ad",
+    "purchase_p": 0.35,
+    "purchase_lift_p": 0.168,
+    "net_vs_none_eur": 7.93,
+    "cost_eur": 1.2
+   },
+   "none_purchase_p": 0.181,
+   "rows": 6,
+   "rows_no_action": 6,
+   "alternatives": [
+    {
+     "label": "10 % discount",
+     "purchase_p": 0.308,
+     "purchase_lift_p": 0.127,
+     "net_vs_none_eur": 5.2
+    },
+    {
+     "label": "Email",
+     "purchase_p": 0.225,
+     "purchase_lift_p": 0.044,
+     "net_vs_none_eur": 1.88
+    },
+    {
+     "label": "Apology and €5 credit",
+     "purchase_p": 0.215,
+     "purchase_lift_p": 0.034,
+     "net_vs_none_eur": 0.26
+    },
+    {
+     "label": "No action",
+     "purchase_p": 0.181,
+     "purchase_lift_p": 0.0,
+     "net_vs_none_eur": 0.0
+    },
+    {
+     "label": "€10 voucher",
+     "purchase_p": 0.206,
+     "purchase_lift_p": 0.025,
+     "net_vs_none_eur": -0.73
+    },
+    {
+     "label": "€5 voucher",
+     "purchase_p": 0.133,
+     "purchase_lift_p": -0.049,
+     "net_vs_none_eur": -3.32
+    }
+   ]
+  },
+  {
+   "customer_id": "CUST-02087",
+   "name": "Ulla Savolainen",
+   "risk": "likely",
+   "spend_12m_eur": 302.99,
+   "tells": [],
+   "context": {
+    "recency_bucket": "0-90d",
+    "spend_band": "high",
+    "offer_buyer": "rarely",
+    "open_issue": "none",
+    "email_history": "ignored",
+    "tracking_consent": "yes"
+   },
+   "order_value_eur": 121.58,
+   "best": {
+    "action": "ad",
+    "label": "Personalised ad",
+    "purchase_p": 0.267,
+    "purchase_lift_p": 0.1,
+    "net_vs_none_eur": 10.94,
+    "cost_eur": 1.2
+   },
+   "none_purchase_p": 0.167,
+   "rows": 15,
+   "rows_no_action": 17,
+   "alternatives": [
+    {
+     "label": "€10 voucher",
+     "purchase_p": 0.245,
+     "purchase_lift_p": 0.079,
+     "net_vs_none_eur": 7.13
+    },
+    {
+     "label": "Apology and €5 credit",
+     "purchase_p": 0.214,
+     "purchase_lift_p": 0.047,
+     "net_vs_none_eur": 4.17
+    },
+    {
+     "label": "No action",
+     "purchase_p": 0.167,
+     "purchase_lift_p": 0.0,
+     "net_vs_none_eur": 0.0
+    },
+    {
+     "label": "10 % discount",
+     "purchase_p": 0.18,
+     "purchase_lift_p": 0.014,
+     "net_vs_none_eur": -0.54
+    },
+    {
+     "label": "€5 voucher",
+     "purchase_p": 0.161,
+     "purchase_lift_p": -0.006,
+     "net_vs_none_eur": -1.51
+    },
+    {
+     "label": "Email",
+     "purchase_p": 0.127,
+     "purchase_lift_p": -0.039,
+     "net_vs_none_eur": -5.28
+    }
+   ]
+  },
+  {
+   "customer_id": "CUST-00724",
+   "name": "Elina Manninen",
+   "risk": "very likely",
+   "spend_12m_eur": 236.61,
+   "tells": [],
+   "context": {
+    "recency_bucket": "0-90d",
+    "spend_band": "mid",
+    "offer_buyer": "mostly",
+    "open_issue": "none",
+    "email_history": "never_sent",
+    "tracking_consent": "no"
+   },
+   "order_value_eur": 54.32,
+   "best": {
+    "action": "discount",
+    "label": "10 % discount",
+    "purchase_p": 0.308,
+    "purchase_lift_p": 0.13,
+    "net_vs_none_eur": 5.38,
+    "cost_eur": 1.67
+   },
+   "none_purchase_p": 0.178,
+   "rows": 8,
+   "rows_no_action": 12,
+   "alternatives": [
+    {
+     "label": "Email",
+     "purchase_p": 0.229,
+     "purchase_lift_p": 0.051,
+     "net_vs_none_eur": 2.25
+    },
+    {
+     "label": "€10 voucher",
+     "purchase_p": 0.265,
+     "purchase_lift_p": 0.087,
+     "net_vs_none_eur": 2.07
+    },
+    {
+     "label": "Apology and €5 credit",
+     "purchase_p": 0.213,
+     "purchase_lift_p": 0.034,
+     "net_vs_none_eur": 0.3
+    },
+    {
+     "label": "No action",
+     "purchase_p": 0.178,
+     "purchase_lift_p": 0.0,
+     "net_vs_none_eur": 0.0
+    },
+    {
+     "label": "€5 voucher",
+     "purchase_p": 0.175,
+     "purchase_lift_p": -0.003,
+     "net_vs_none_eur": -1.04
+    }
+   ]
+  },
+  {
+   "customer_id": "CUST-01989",
+   "name": "Pirkko Salminen",
+   "risk": "likely",
+   "spend_12m_eur": 276.19,
+   "tells": [
+    "Returned an item"
+   ],
+   "context": {
+    "recency_bucket": "0-90d",
+    "spend_band": "high",
+    "offer_buyer": "sometimes",
+    "open_issue": "none",
+    "email_history": "never_sent",
+    "tracking_consent": "yes"
+   },
+   "order_value_eur": 121.58,
+   "best": {
+    "action": "ad",
+    "label": "Personalised ad",
+    "purchase_p": 0.374,
+    "purchase_lift_p": 0.183,
+    "net_vs_none_eur": 21.07,
+    "cost_eur": 1.2
+   },
+   "none_purchase_p": 0.191,
+   "rows": 30,
+   "rows_no_action": 45,
+   "alternatives": [
+    {
+     "label": "Email",
+     "purchase_p": 0.263,
+     "purchase_lift_p": 0.072,
+     "net_vs_none_eur": 8.28
+    },
+    {
+     "label": "€10 voucher",
+     "purchase_p": 0.246,
+     "purchase_lift_p": 0.056,
+     "net_vs_none_eur": 4.32
+    },
+    {
+     "label": "10 % discount",
+     "purchase_p": 0.235,
+     "purchase_lift_p": 0.044,
+     "net_vs_none_eur": 2.52
+    },
+    {
+     "label": "No action",
+     "purchase_p": 0.191,
+     "purchase_lift_p": 0.0,
+     "net_vs_none_eur": 0.0
+    },
+    {
+     "label": "Apology and €5 credit",
+     "purchase_p": 0.195,
+     "purchase_lift_p": 0.005,
+     "net_vs_none_eur": -0.89
+    },
+    {
+     "label": "€5 voucher",
+     "purchase_p": 0.161,
+     "purchase_lift_p": -0.029,
+     "net_vs_none_eur": -4.35
+    }
+   ]
+  },
+  {
+   "customer_id": "CUST-00189",
+   "name": "Kalle Rantanen",
+   "risk": "likely",
+   "spend_12m_eur": 294.07,
+   "tells": [
+    "Had a late or damaged delivery"
+   ],
+   "context": {
+    "recency_bucket": "0-90d",
+    "spend_band": "high",
+    "offer_buyer": "sometimes",
+    "open_issue": "none",
+    "email_history": "never_sent",
+    "tracking_consent": "yes"
+   },
+   "order_value_eur": 121.58,
+   "best": {
+    "action": "ad",
+    "label": "Personalised ad",
+    "purchase_p": 0.374,
+    "purchase_lift_p": 0.183,
+    "net_vs_none_eur": 21.07,
+    "cost_eur": 1.2
+   },
+   "none_purchase_p": 0.191,
+   "rows": 30,
+   "rows_no_action": 45,
+   "alternatives": [
+    {
+     "label": "Email",
+     "purchase_p": 0.263,
+     "purchase_lift_p": 0.072,
+     "net_vs_none_eur": 8.28
+    },
+    {
+     "label": "€10 voucher",
+     "purchase_p": 0.246,
+     "purchase_lift_p": 0.056,
+     "net_vs_none_eur": 4.32
+    },
+    {
+     "label": "10 % discount",
+     "purchase_p": 0.235,
+     "purchase_lift_p": 0.044,
+     "net_vs_none_eur": 2.52
+    },
+    {
+     "label": "No action",
+     "purchase_p": 0.191,
+     "purchase_lift_p": 0.0,
+     "net_vs_none_eur": 0.0
+    },
+    {
+     "label": "Apology and €5 credit",
+     "purchase_p": 0.195,
+     "purchase_lift_p": 0.005,
+     "net_vs_none_eur": -0.89
+    },
+    {
+     "label": "€5 voucher",
+     "purchase_p": 0.161,
+     "purchase_lift_p": -0.029,
+     "net_vs_none_eur": -4.35
+    }
+   ]
+  },
+  {
+   "customer_id": "CUST-02030",
+   "name": "Sirpa Anttila",
+   "risk": "likely",
+   "spend_12m_eur": 235.24,
+   "tells": [],
+   "context": {
+    "recency_bucket": "0-90d",
+    "spend_band": "high",
+    "offer_buyer": "rarely",
+    "open_issue": "none",
+    "email_history": "never_sent",
+    "tracking_consent": "no"
+   },
+   "order_value_eur": 121.58,
+   "best": {
+    "action": "voucher",
+    "label": "€10 voucher",
+    "purchase_p": 0.297,
+    "purchase_lift_p": 0.146,
+    "net_vs_none_eur": 14.78,
+    "cost_eur": 2.97
+   },
+   "none_purchase_p": 0.151,
+   "rows": 10,
+   "rows_no_action": 21,
+   "alternatives": [
+    {
+     "label": "Apology and €5 credit",
+     "purchase_p": 0.211,
+     "purchase_lift_p": 0.06,
+     "net_vs_none_eur": 5.79
+    },
+    {
+     "label": "€5 voucher",
+     "purchase_p": 0.199,
+     "purchase_lift_p": 0.048,
+     "net_vs_none_eur": 4.89
+    },
+    {
+     "label": "10 % discount",
+     "purchase_p": 0.19,
+     "purchase_lift_p": 0.039,
+     "net_vs_none_eur": 2.43
+    },
+    {
+     "label": "No action",
+     "purchase_p": 0.151,
+     "purchase_lift_p": 0.0,
+     "net_vs_none_eur": 0.0
+    },
+    {
+     "label": "Email",
+     "purchase_p": 0.143,
+     "purchase_lift_p": -0.008,
+     "net_vs_none_eur": -1.45
+    }
+   ]
+  },
+  {
+   "customer_id": "CUST-02555",
+   "name": "Teemu Laitinen",
+   "risk": "likely",
+   "spend_12m_eur": 260.3,
+   "tells": [],
+   "context": {
+    "recency_bucket": "0-90d",
+    "spend_band": "high",
+    "offer_buyer": "sometimes",
+    "open_issue": "none",
+    "email_history": "responded",
+    "tracking_consent": "no"
+   },
+   "order_value_eur": 121.58,
+   "best": {
+    "action": "email",
+    "label": "Email",
+    "purchase_p": 0.342,
+    "purchase_lift_p": 0.172,
+    "net_vs_none_eur": 20.35,
+    "cost_eur": 0.5
+   },
+   "none_purchase_p": 0.171,
+   "rows": 5,
+   "rows_no_action": 6,
+   "alternatives": [
+    {
+     "label": "€10 voucher",
+     "purchase_p": 0.312,
+     "purchase_lift_p": 0.141,
+     "net_vs_none_eur": 14.07
+    },
+    {
+     "label": "10 % discount",
+     "purchase_p": 0.259,
+     "purchase_lift_p": 0.088,
+     "net_vs_none_eur": 7.53
+    },
+    {
+     "label": "Apology and €5 credit",
+     "purchase_p": 0.243,
+     "purchase_lift_p": 0.072,
+     "net_vs_none_eur": 7.09
+    },
+    {
+     "label": "€5 voucher",
+     "purchase_p": 0.211,
+     "purchase_lift_p": 0.04,
+     "net_vs_none_eur": 3.82
+    },
+    {
+     "label": "No action",
+     "purchase_p": 0.171,
+     "purchase_lift_p": 0.0,
+     "net_vs_none_eur": 0.0
+    }
+   ]
+  },
+  {
+   "customer_id": "CUST-02011",
+   "name": "Sirpa Virtanen",
+   "risk": "likely",
+   "spend_12m_eur": 262.85,
+   "tells": [],
+   "context": {
+    "recency_bucket": "0-90d",
+    "spend_band": "high",
+    "offer_buyer": "mostly",
+    "open_issue": "none",
+    "email_history": "ignored",
+    "tracking_consent": "no"
+   },
+   "order_value_eur": 121.58,
+   "best": {
+    "action": "discount",
+    "label": "10 % discount",
+    "purchase_p": 0.329,
+    "purchase_lift_p": 0.142,
+    "net_vs_none_eur": 13.23,
+    "cost_eur": 4.0
+   },
+   "none_purchase_p": 0.187,
+   "rows": 4,
+   "rows_no_action": 7,
+   "alternatives": [
+    {
+     "label": "€10 voucher",
+     "purchase_p": 0.312,
+     "purchase_lift_p": 0.125,
+     "net_vs_none_eur": 12.08
+    },
+    {
+     "label": "Apology and €5 credit",
+     "purchase_p": 0.27,
+     "purchase_lift_p": 0.083,
+     "net_vs_none_eur": 8.21
+    },
+    {
+     "label": "Email",
+     "purchase_p": 0.251,
+     "purchase_lift_p": 0.064,
+     "net_vs_none_eur": 7.28
+    },
+    {
+     "label": "€5 voucher",
+     "purchase_p": 0.211,
+     "purchase_lift_p": 0.024,
+     "net_vs_none_eur": 1.83
+    },
+    {
+     "label": "No action",
+     "purchase_p": 0.187,
+     "purchase_lift_p": 0.0,
+     "net_vs_none_eur": 0.0
+    }
+   ]
+  }
+ ],
+ "root_causes": {
+  "tells": [
+   {
+    "tell": "nps_0_3",
+    "label": "Answered the NPS survey 0–3",
+    "customer_months": 321,
+    "churned": 91,
+    "churn_rate": 0.283,
+    "churn_rate_without": 0.147,
+    "lift": 1.93,
+    "at_risk_listed": 1
+   },
+   {
+    "tell": "poor_review",
+    "label": "Wrote a 1–2 star review",
+    "customer_months": 1677,
+    "churned": 302,
+    "churn_rate": 0.18,
+    "churn_rate_without": 0.146,
+    "lift": 1.23,
+    "at_risk_listed": 3
+   }
+  ],
+  "drivers": [
+   {
+    "field": "tenure",
+    "value": "18 months or more",
+    "lift": 1.86,
+    "customers": 635,
+    "churners": 375,
+    "churn_rate": 0.5906,
+    "churn_rate_overall": 0.3173
+   }
+  ]
+ }
+}
