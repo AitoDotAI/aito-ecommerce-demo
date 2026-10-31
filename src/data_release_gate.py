@@ -14,9 +14,16 @@ So the app compares the env it reads with its release file
   `/api/health` answer as usual.
 - **ready**: they match. On the change to ready the app warms its caches.
 
-The check runs at startup and every 60 seconds. On a change from ready
-back to pending, the in-memory caches are dropped, so nothing warmed on
-one dataset is served on another.
+The check runs at startup. While the data is pending it runs every 60
+seconds, so a cutover sees the data arrive within a minute. Once ready it
+runs every 15 minutes (`RELEASE_GATE_RECHECK_SECONDS`; 0 stops checking
+once ready, which `./do dev` sets), and whenever `/api/health` is polled and
+the last check is over a minute old, so a deploy script watching a rollback
+sees it at once. Each check reads the schema and one count per data table,
+per app instance, so a gate that polled every minute forever put about 17
+calls a minute on the shared Aito for every instance anyone left running.
+On a change from ready back to pending, the in-memory caches are dropped,
+so nothing warmed on one dataset is served on another.
 
 Which env is compared: the one the app reads, `AITO_ENV` (default
 `master`). In production that is `master`. On staging, or in local dev
@@ -40,6 +47,7 @@ from __future__ import annotations
 import logging
 import threading
 import time
+from collections.abc import Mapping
 from typing import Callable
 
 from fastapi import Request
@@ -50,7 +58,23 @@ from src.release_file import Release, differences
 
 logger = logging.getLogger(__name__)
 
-CHECK_INTERVAL_SECONDS = 60
+CHECK_INTERVAL_SECONDS = 60                  # while pending: a cutover is waiting for the data
+READY_CHECK_INTERVAL_SECONDS = 900           # once ready: a rollback is caught within this, or sooner by a health probe
+RECHECK_ENV = "RELEASE_GATE_RECHECK_SECONDS"
+
+
+def recheck_seconds_from_env(environ: Mapping[str, str]) -> float:
+    """How often a ready gate reads the counts again, from `RELEASE_GATE_RECHECK_SECONDS` (0: never)."""
+    raw = environ.get(RECHECK_ENV)
+    if raw is None:
+        return READY_CHECK_INTERVAL_SECONDS
+    try:
+        seconds = float(raw)
+    except ValueError:
+        seconds = -1.0
+    if seconds < 0:
+        raise ValueError(f"{RECHECK_ENV} must be a number of seconds, 0 or more (0: never re-check once ready); got {raw!r}")
+    return seconds
 
 PENDING = "pending"
 READY = "ready"
@@ -72,11 +96,16 @@ class DataReleaseGate:
         read_counts: Callable[[], dict[str, int]],
         on_ready: Callable[[], None],
         on_mismatch: Callable[[], None],
+        ready_interval: float = READY_CHECK_INTERVAL_SECONDS,
+        clock: Callable[[], float] = time.monotonic,
     ) -> None:
         self.release = release
         self._read_counts = read_counts
         self._on_ready = on_ready
         self._on_mismatch = on_mismatch
+        self.ready_interval = ready_interval
+        self._clock = clock
+        self._last_checked: float | None = None
         self.state = PENDING
         self.differences: list[str] = ["not checked yet"]
         self.last_error: str | None = None
@@ -87,6 +116,7 @@ class DataReleaseGate:
 
     def check(self) -> None:
         """Read the counts once and update the state."""
+        self._last_checked = self._clock()
         try:
             actual = self._read_counts()
         except AitoError as exc:
@@ -105,6 +135,11 @@ class DataReleaseGate:
             logger.error("Data no longer matches release %r: %s", self.release.env, "; ".join(self.differences))
             self._on_mismatch()
 
+    def check_if_older_than(self, seconds: float) -> None:
+        """Check now unless the last check was less than `seconds` ago: what a health probe asks for."""
+        if self._last_checked is None or self._clock() - self._last_checked >= seconds:
+            self.check()
+
     def status(self) -> dict:
         """The gate's state, for the 503 body and `/api/health`."""
         return {
@@ -115,12 +150,15 @@ class DataReleaseGate:
         }
 
     def run_forever(self, *, interval: float = CHECK_INTERVAL_SECONDS, sleep: Callable[[float], None] = time.sleep) -> None:
+        """Check, then wait `interval` while pending and `ready_interval` once ready; with `ready_interval` 0, stop once ready."""
         while True:
             self.check()
-            sleep(interval)
+            if self.is_ready and self.ready_interval == 0:
+                return
+            sleep(self.ready_interval if self.is_ready else interval)
 
     def start(self, *, name: str = "data-release-gate") -> threading.Thread:
-        """Check now, then every `CHECK_INTERVAL_SECONDS`, on a daemon thread."""
+        """Check now, then at the intervals above, on a daemon thread."""
         thread = threading.Thread(target=self.run_forever, name=name, daemon=True)
         thread.start()
         return thread

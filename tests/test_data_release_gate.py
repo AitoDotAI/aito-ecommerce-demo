@@ -14,7 +14,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from src.aito_client import AitoError
-from src.data_release_gate import DataReleaseGate, is_data_route, release_gate_middleware
+from src.data_release_gate import DataReleaseGate, is_data_route, recheck_seconds_from_env, release_gate_middleware
 from src.release_file import Release
 
 RELEASE = Release(env="observable", counts={"orders": 11909, "contexts": 12662})
@@ -126,7 +126,7 @@ def test_run_forever_checks_then_sleeps_the_interval():
     with pytest.raises(Stop):
         gate.run_forever(sleep=sleep)
 
-    assert sleeps == [60, 60]
+    assert sleeps == [900, 900]            # ready: checked again only every 15 minutes
     assert gate.state == "ready"
 
 
@@ -191,3 +191,78 @@ def test_a_request_naming_a_sandbox_waits_for_the_sandbox_template_not_petnords_
 
     assert client.get("/api/shop/grid").status_code == 200
     assert client.get("/api/shop/grid?db=tmp-2026-10-26-15-30-00-3f9c2a1b7d4e6f80").status_code == 503
+
+
+# ── How often the gate reads the counts (a read per table, per instance, forever was the load) ──
+
+
+def test_a_pending_gate_checks_every_minute_so_a_cutover_sees_the_data_arrive():
+    timeline = Timeline(OLD_DATA)
+    gate = timeline.gate()
+    sleeps: list[float] = []
+
+    class Stop(Exception):
+        pass
+
+    def sleep(seconds: float) -> None:
+        sleeps.append(seconds)
+        if len(sleeps) == 3:
+            raise Stop
+        if len(sleeps) == 2:
+            timeline.data = RELEASE_DATA            # the promote lands
+
+    with pytest.raises(Stop):
+        gate.run_forever(sleep=sleep)
+
+    assert sleeps == [60, 60, 900]                  # fast while waiting, slow once ready
+
+
+def test_a_gate_told_not_to_recheck_reads_the_counts_once_when_ready_and_stops():
+    reads: list[int] = []
+    gate = DataReleaseGate(RELEASE, read_counts=lambda: reads.append(1) or dict(RELEASE_DATA), on_ready=lambda: None,
+                           on_mismatch=lambda: None, ready_interval=0)
+
+    gate.run_forever(sleep=lambda seconds: pytest.fail(f"slept {seconds} s: a dev server is to read the counts once"))
+
+    assert reads == [1] and gate.state == "ready"
+
+
+def test_a_gate_told_not_to_recheck_still_waits_for_data_that_has_not_arrived():
+    timeline = Timeline(OLD_DATA)
+    gate = DataReleaseGate(RELEASE, read_counts=timeline.read_counts, on_ready=lambda: None, on_mismatch=lambda: None, ready_interval=0)
+    sleeps: list[float] = []
+
+    def sleep(seconds: float) -> None:
+        sleeps.append(seconds)
+        timeline.data = RELEASE_DATA
+
+    gate.run_forever(sleep=sleep)
+
+    assert sleeps == [60] and gate.state == "ready"
+
+
+def test_a_check_asked_for_by_a_health_probe_is_made_at_most_once_a_minute():
+    now = [1000.0]
+    reads: list[int] = []
+    gate = DataReleaseGate(RELEASE, read_counts=lambda: reads.append(1) or dict(RELEASE_DATA), on_ready=lambda: None,
+                           on_mismatch=lambda: None, clock=lambda: now[0])
+
+    gate.check_if_older_than(60)
+    now[0] += 59
+    gate.check_if_older_than(60)
+    now[0] += 2
+    gate.check_if_older_than(60)
+
+    assert len(reads) == 2
+
+
+def test_the_recheck_interval_comes_from_the_environment_and_defaults_to_fifteen_minutes():
+    assert recheck_seconds_from_env({}) == 900
+    assert recheck_seconds_from_env({"RELEASE_GATE_RECHECK_SECONDS": "0"}) == 0
+    assert recheck_seconds_from_env({"RELEASE_GATE_RECHECK_SECONDS": "120"}) == 120
+
+
+@pytest.mark.parametrize("bad", ["", "soon", "-5"])
+def test_a_recheck_interval_that_is_not_a_non_negative_number_is_refused(bad):
+    with pytest.raises(ValueError, match="RELEASE_GATE_RECHECK_SECONDS"):
+        recheck_seconds_from_env({"RELEASE_GATE_RECHECK_SECONDS": bad})

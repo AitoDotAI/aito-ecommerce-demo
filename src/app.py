@@ -37,7 +37,7 @@ from src.sandbox_envs import SandboxBranches, SandboxEnvError
 from src.sandbox_warmup import warm_resumed
 from src.shop_history import NEXT_MONTH
 from src import cache, timing, precompute_store
-from src.data_release_gate import DataReleaseGate, release_gate_middleware
+from src.data_release_gate import DataReleaseGate, recheck_seconds_from_env, release_gate_middleware
 from src.release_file import load_release, read_counts
 from src.build_info import build_info
 from src.config import load_config
@@ -151,19 +151,25 @@ release_gate = DataReleaseGate(
     read_counts=lambda: read_counts(aito),
     on_ready=_warm_cache,
     on_mismatch=_drop_memory_caches,
+    ready_interval=recheck_seconds_from_env(os.environ),
 )
-release_gate.start()
+# AITO_SKIP_STARTUP_WARMUP=1 (tests): import the app without its polling thread or warmup reading the shared Aito.
+SKIP_STARTUP = os.environ.get("AITO_SKIP_STARTUP_WARMUP", "") not in ("", "0")
+if not SKIP_STARTUP:
+    release_gate.start()
 
 # The sandbox template's gate: ready once `./do sandbox-template-load` has
 # loaded the release. A request that names a sandbox branch is gated by it.
 sandbox_gate = None
 if sandbox_template is not None:
     sandbox_gate = DataReleaseGate(load_release(), read_counts=lambda: read_counts(sandbox_template),
-                                   on_ready=lambda: None, on_mismatch=lambda: None)
-    sandbox_gate.start(name="sandbox-release-gate")
-    # Branches older than three hours are deleted at start-up, then every 10 minutes.
-    import threading
-    threading.Thread(target=sandbox_branches.reap_forever, name="sandbox-reaper", daemon=True).start()
+                                   on_ready=lambda: None, on_mismatch=lambda: None,
+                                   ready_interval=recheck_seconds_from_env(os.environ))
+    if not SKIP_STARTUP:
+        sandbox_gate.start(name="sandbox-release-gate")
+        # Branches older than three hours are deleted at start-up, then every 10 minutes.
+        import threading
+        threading.Thread(target=sandbox_branches.reap_forever, name="sandbox-reaper", daemon=True).start()
 
 
 def _sandbox_gate_for(request: Request) -> DataReleaseGate | None:
@@ -324,6 +330,7 @@ def health():
     pingers. The cache miss path is the only one that actually calls
     Aito — happy path returns from memory.
     """
+    release_gate.check_if_older_than(60)       # a deploy script watching a rollback sees it at once; a pinger costs a check a minute
     cached = cache.get("health")
     if cached:
         return {**cached, "data_release": release_gate.status()}

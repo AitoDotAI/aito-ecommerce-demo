@@ -205,6 +205,8 @@ EOF
 cmd_dev() {
   # A local app reads the shared demo DB: memory-only cache unless PUBLIC_DEMO=0 is set.
   export PUBLIC_DEMO="${PUBLIC_DEMO:-1}"
+  # A dev server reads the release's counts once, not every few minutes for as long as someone forgets it (ADR 0035).
+  export RELEASE_GATE_RECHECK_SECONDS="${RELEASE_GATE_RECHECK_SECONDS:-0}"
   echo "Starting Predictive E-commerce"
   echo "  Backend:  http://localhost:${PORT_BACKEND} (internal)"
   echo "  Frontend: http://localhost:${PORT_FRONTEND} (open this)"
@@ -226,6 +228,7 @@ cmd_dev() {
 }
 
 cmd_backend_dev() {
+  export RELEASE_GATE_RECHECK_SECONDS="${RELEASE_GATE_RECHECK_SECONDS:-0}"
   echo "Starting Predictive E-commerce API on http://localhost:${PORT_BACKEND}"
   cd "$SCRIPT_DIR"
   uv run uvicorn src.app:app --reload --port "$PORT_BACKEND"
