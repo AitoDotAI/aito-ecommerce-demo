@@ -6,9 +6,9 @@
 
 For each sampled customer, predict the products of their LAST order from
 their earlier orders: `_predict product_sku` over `order_lines`, conditioned
-on the customer, from a nested `from` that excludes the last order (so the
-answer is never in the population). A hit is any product of the last order
-in the top 10. Compared, on the same customers, with the household group's 10 most
+on the customer, from a nested `from` that excludes EVERY sampled customer's last
+order (so no answer is in the population, and the model reads exactly the rows the
+popularity baseline reads). A hit is any product of the last order in the top 10. Compared, on the same customers, with the household group's 10 most
 bought products, and with a control that conditions on a different random
 customer. Design: docs/verification/lifecycle-data-prereg.md §2.
 """
@@ -23,6 +23,13 @@ from src.config import load_config
 
 N_CUSTOMERS = 300
 TOP_K = 10
+# `customers.pets` is nullable: a household that declared no pets has no such key.
+NO_DECLARED_PETS = "no declared pets"
+
+
+def household_group(customer: dict) -> str:
+    """The pets a household declared, in a fixed order, or a named group for those who declared none."""
+    return " ".join(sorted(customer["pets"].split())) if customer.get("pets") else NO_DECLARED_PETS
 
 
 def rows(client: AitoClient, table: str) -> list[dict]:
@@ -35,8 +42,8 @@ def rows(client: AitoClient, table: str) -> list[dict]:
         offset += 5000
 
 
-def predicted(client: AitoClient, customer: str, exclude_order: str) -> list[str]:
-    body = {"from": {"from": "order_lines", "where": {"$not": {"order_id": exclude_order}}},
+def predicted(client: AitoClient, customer: str, held_out_orders: set[str]) -> list[str]:
+    body = {"from": {"from": "order_lines", "where": {"$not": {"order_id": {"$or": sorted(held_out_orders)}}}},
             "where": {"order_id.customer_id": customer},
             "predict": "product_sku", "limit": TOP_K}
     hits = client._request("POST", "/_predict", json=body)["hits"]
@@ -57,7 +64,7 @@ def main() -> None:
     orders = rows(client, "orders")
     lines = rows(client, "order_lines")
     # The household group: the pets it declared (ADR 0033), in a fixed order.
-    group_of = {c["customer_id"]: " ".join(sorted(c["pets"].split())) for c in rows(client, "customers")}
+    group_of = {c["customer_id"]: household_group(c) for c in rows(client, "customers")}
     customer_of_order = {o["order_id"]: o["customer_id"] for o in orders}
 
     by_customer: dict[str, list[dict]] = collections.defaultdict(list)
@@ -92,8 +99,8 @@ def main() -> None:
     # One at a time: each query builds a ~36 000-row population, and six in
     # parallel drew a 502 from the shared instance that also serves the demos.
     with ThreadPoolExecutor(max_workers=1) as pool:
-        model = list(pool.map(lambda c: hit(predicted(client, c, last_order[c]), c), sample))
-        control = list(pool.map(lambda c: hit(predicted(client, stranger[c], last_order[c]), c), sample))
+        model = list(pool.map(lambda c: hit(predicted(client, c, held_out), c), sample))
+        control = list(pool.map(lambda c: hit(predicted(client, stranger[c], held_out), c), sample))
     baseline = [hit(popular[group[c]], c) for c in sample]
 
     print(f"next basket, env {config.aito_env}, {len(sample)} customers, hit rate @{TOP_K}")
