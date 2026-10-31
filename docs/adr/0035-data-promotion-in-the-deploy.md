@@ -194,3 +194,12 @@ Cutover:
 Rollback: after promoting the backup back, `/api/health` turns
 `pending` within 60 s on the new image (data routes 503) until the
 previous image replaces it.
+
+
+## Amendment 2026-10-31: how often the gate reads the counts
+
+The gate read the schema and one count per data table (about 17 calls) every 60 seconds, for every app instance, for as long as it
+ran. A forgotten dev server or two added that to the shared Aito day and night. Now: every 60 seconds while the data is pending (a cutover
+sees it arrive within a minute); once ready, every 15 minutes (`RELEASE_GATE_RECHECK_SECONDS`), and also when `/api/health` is polled and the
+last check is over a minute old, so a deploy script watching a rollback sees it at once. `./do dev` and `./do backend-dev` set the
+interval to 0: one check at startup, and none after. The cost of this: a rollback that nobody polls is noticed within 15 minutes, not 60 seconds.
