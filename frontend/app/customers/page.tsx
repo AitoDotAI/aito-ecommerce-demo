@@ -43,6 +43,11 @@ function CustomersView() {
       </div>
       {error && <ErrorState title="Couldn't load Customers" message={error} command="./do customer-profiles" />}
       {!summary && !error && <div className="card" style={{ height: 160, background: "var(--border-light)" }} />}
+      {summary?.scope === "release-not-sandbox" && (
+        <div className="card" style={{ borderLeft: "4px solid var(--cta)", marginBottom: 12 }}>
+          These profiles are the release&apos;s stored data, not this sandbox&apos;s.
+        </div>
+      )}
       {summary?.stale && (
         <div className="card" style={{ borderLeft: "4px solid var(--cta)", marginBottom: 12 }}>
           These profiles were stored for data release {summary.release}; the app now serves another.
@@ -58,7 +63,7 @@ function CustomersView() {
           <div className="card-sub">
             Every trait is a share of the lines a customer bought: no health, religion or similar is inferred, and the diet
             traits are the pet&apos;s, from the product&apos;s diet tag. They choose which offer or message a customer sees,
-            never what price they pay. Customers can be left out by withdrawing consent.
+            never what price they pay. A customer who withdraws consent is no longer profiled, and cannot be looked up by name.
           </div>
         </div>
       )}

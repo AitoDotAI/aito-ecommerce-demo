@@ -22,7 +22,7 @@ REF = Reference(median_price={("food", "dog"): 7.0}, mean_rating={("food", "dog"
 
 
 def line(sku: str, on_offer: bool = False) -> tuple[dict, dict]:
-    state = {"on_offer": on_offer, "price_eur": PRODUCTS[sku]["price_eur"]}
+    state = {"on_offer": on_offer, "price_eur": PRODUCTS[sku]["price_eur"], "list_price_eur": PRODUCTS[sku]["price_eur"]}
     return {"product_sku": sku, "product_state": f"{sku}-{on_offer}"}, state
 
 
@@ -35,7 +35,7 @@ def traits(skus_and_offers: list[tuple[str, bool]], consent: bool = True) -> dic
 
 def test_the_bands_cut_where_the_action_table_cuts():
     assert [offer_band(x) for x in (0.0, 0.19, 0.2, 0.39, 0.4, 1.0)] == ["rarely", "rarely", "sometimes", "sometimes", "mostly", "mostly"]
-    assert (price_band(0.7), price_band(0.5), price_band(0.6)) == ("value-leaning", "premium-leaning", "mixed")
+    assert (price_band(0.65), price_band(0.35), price_band(0.5)) == ("value-leaning", "premium-leaning", "mixed")
     assert (rating_band(0.25), rating_band(0.0), rating_band(-0.01)) == ("above-average ratings", "average ratings", "below-average ratings")
 
 
@@ -157,7 +157,7 @@ def test_a_lookup_finds_a_customer_and_returns_the_profile_or_the_fact_there_is_
 
     assert api.get("/api/customer-profiles/customers", params={"q": profiled["name"][:6]}).json()["customers"]
     assert api.get(f"/api/customer-profiles/customers/{profiled['customer_id']}").json()["offer"] == profiled["offer"]
-    assert api.get(f"/api/customer-profiles/customers/{unprofiled['customer_id']}").json()["offer"] == NOT_PROFILED
+    assert api.get(f"/api/customer-profiles/customers/{unprofiled['customer_id']}").json()["profiled"] is False
     assert api.get("/api/customer-profiles/customers/CUST-NOPE").status_code == 404
 
 
@@ -241,3 +241,72 @@ def test_revenue_is_the_sum_of_the_orders_of_the_profiled_customers():
     summary = json.loads((PROFILES / "summary.json").read_text())
 
     assert round(sum(o["total_eur"] for o in orders if o["customer_id"] in stored), 2) == summary["profiled_revenue_eur"]
+
+
+# ── Review of #139: the price trait is not made by discounts, scope, margins, consent ──
+
+
+def test_a_discounted_line_is_not_a_cheaper_choice_just_because_it_is_discounted():
+    """The trait asks what the customer chose, not what they paid: a state's list price is compared, so an offer cannot make it."""
+    products = {"B": {"sku": "B", "category": "food", "pet_type": "dog", "price_eur": 9.0, "avg_rating": 4.0, "dietary": None}}
+    ref = Reference(median_price={("food", "dog"): 7.0}, mean_rating={("food", "dog"): 4.0})
+    states = {f"B-{i}": {"on_offer": True, "price_eur": 5.0, "list_price_eur": 9.0} for i in range(4)}
+    lines = [{"product_sku": "B", "product_state": f"B-{i}"} for i in range(4)]
+    customer = {"customer_id": "C1", "name": "T", "consent_behavioural": True}
+
+    result = traits_for(customer, lines, products, states, ref)
+
+    assert result["offer"] == "mostly" and result["cheaper_share"] == 0.0 and result["price"] == "premium-leaning"
+
+
+def test_the_reference_median_is_over_list_prices_so_both_sides_of_the_comparison_ignore_offers():
+    from src.customer_traits import reference_for
+
+    products = [{"sku": "A", "category": "food", "pet_type": "dog"}, {"sku": "B", "category": "food", "pet_type": "dog"},
+                {"sku": "C", "category": "food", "pet_type": "dog"}]
+    states = [{"product_sku": "A", "list_price_eur": 4.0, "price_eur": 1.0}, {"product_sku": "B", "list_price_eur": 6.0, "price_eur": 6.0},
+              {"product_sku": "C", "list_price_eur": 10.0, "price_eur": 10.0}]
+
+    assert reference_for(products, states).median_price[("food", "dog")] == 6.0
+
+
+def test_a_difference_inside_its_margin_is_not_clear_in_a_relation():
+    profiles = ([profile(f"A{i}", "mostly", "value-leaning" if i < 16 else "mixed") for i in range(30)]
+                + [profile(f"B{i}", "rarely", "value-leaning" if i < 13 else "mixed") for i in range(30)])
+
+    found = next(r for r in relations(profiles) if r["if"]["value"] == "mostly" and r["then"]["value"] == "value-leaning")
+
+    assert found["points"] == 10.0 and found["clear"] is False
+
+
+def test_a_difference_inside_its_margin_is_not_clear_in_a_preference():
+    profiles = ([profile(f"D{i}", "mostly", "mixed") for i in range(40)] + [profile(f"E{i}", "rarely", "mixed") for i in range(40)])
+    bought = {p["customer_id"]: {"dog": {"categories": set(), "brands": set(), "products": set()}, "cat": {"categories": set(), "brands": set(), "products": set()}} for p in profiles}
+    for p in profiles[:40]:
+        bought[p["customer_id"]]["dog"]["categories"] = {"treats"}
+    for p in profiles[40:]:
+        bought[p["customer_id"]]["dog"]["categories"] = {"treats"} if int(p["customer_id"][1:]) < 36 else set()
+
+    row = preferences(profiles, bought)["offer:mostly|dog"]["categories"][0]
+
+    assert row["points"] == 10.0 and row["clear"] is False
+
+
+def test_the_lookup_gives_no_name_and_no_profile_data_for_a_customer_who_did_not_consent(api):
+    stored = json.loads((PROFILES / "customers.json").read_text())
+    unprofiled = next(t for t in stored if not t["profiled"])
+
+    body = api.get(f"/api/customer-profiles/customers/{unprofiled['customer_id']}").json()
+
+    assert body["profiled"] is False
+    assert not ({"name", "lines", "pets_declared", "pets"} & set(body))
+    found = api.get("/api/customer-profiles/customers", params={"q": unprofiled["name"]}).json()["customers"]
+    assert unprofiled["customer_id"] not in {c["customer_id"] for c in found}
+    assert api.get("/api/customer-profiles/customers", params={"q": unprofiled["customer_id"]}).json()["customers"] == []
+
+
+def test_a_request_that_names_a_sandbox_is_told_the_profiles_are_the_release_data(api):
+    plain = api.get("/api/customer-profiles").json()
+    sandboxed = api.get("/api/customer-profiles", params={"db": "tmp-abc"}).json()
+
+    assert plain["scope"] == "release" and sandboxed["scope"] == "release-not-sandbox"

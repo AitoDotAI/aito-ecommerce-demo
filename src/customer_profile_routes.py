@@ -10,13 +10,16 @@ import json
 from functools import lru_cache
 from pathlib import Path
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
+
+from src.demo_mode import requested_sandbox
 
 ROOT = Path(__file__).resolve().parent.parent
 PROFILES = ROOT / "data" / "customer_profiles"
 RELEASE_ENV = ROOT / "data" / "release-env.json"
 SEARCH_LIMIT = 12
+PROFILE_FIELDS_WITHOUT_CONSENT = ("customer_id", "profiled")
 
 router = APIRouter()
 
@@ -36,25 +39,32 @@ def _stale() -> bool:
 
 
 @router.get("/api/customer-profiles")
-def customer_profiles():
-    """Segment sizes, churn and spend per trait, and the response of each segment to each action."""
-    return {**_summary(), "stale": _stale()}
+def customer_profiles(request: Request):
+    """Segment sizes, churn and spend per trait, and the response of each segment to each action.
+
+    The profiles are the release's stored data. A request that names a sandbox (`?db=`) is answered with the same
+    release data and `scope: release-not-sandbox`, so the page does not pass them off as that sandbox's."""
+    scope = "release-not-sandbox" if requested_sandbox(request) else "release"
+    return {**_summary(), "stale": _stale(), "scope": scope}
 
 
 @router.get("/api/customer-profiles/customers")
 def customer_search(q: str = ""):
-    """Customers whose name or id contains `q` (profiled or not), for the lookup."""
+    """Customers whose name or id contains `q`, for the lookup. Only customers who consented to profiling are found:
+    a customer who did not is not searchable by name."""
     needle = q.strip().lower()
     if len(needle) < 2:
         return {"customers": []}
-    hits = [t for t in _customers().values() if needle in t["name"].lower() or needle in t["customer_id"].lower()]
-    return {"customers": [{"customer_id": t["customer_id"], "name": t["name"], "profiled": t["profiled"]} for t in hits[:SEARCH_LIMIT]]}
+    hits = [t for t in _customers().values() if t["profiled"] and (needle in t["name"].lower() or needle in t["customer_id"].lower())]
+    return {"customers": [{"customer_id": t["customer_id"], "name": t["name"], "profiled": True} for t in hits[:SEARCH_LIMIT]]}
 
 
 @router.get("/api/customer-profiles/customers/{customer_id}")
 def customer_profile(customer_id: str):
-    """One customer's traits. A customer who did not consent to behavioural profiling has none to show."""
+    """One customer's traits. A customer who did not consent to behavioural profiling has none: not even their name."""
     traits = _customers().get(customer_id)
     if traits is None:
         return JSONResponse(status_code=404, content={"error": f"No customer {customer_id!r} in the stored profiles"})
+    if not traits["profiled"]:
+        return {**{k: traits[k] for k in PROFILE_FIELDS_WITHOUT_CONSENT}, "stale": _stale()}
     return {**traits, "stale": _stale()}

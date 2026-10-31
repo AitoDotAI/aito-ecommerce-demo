@@ -18,10 +18,12 @@ export default function ResponseMatrix({ summary }: { summary: ProfilesSummary }
   const rows = summary.response[field];
   return (
     <div className="card">
-      <div className="card-title">Who responds to what</div>
+      <div className="card-title">Observed response by segment</div>
       <div className="card-sub" style={{ marginBottom: 8 }}>
-        Points more (or fewer) of the segment ordered within 30 days after the action than after none, from the shop&apos;s action
-        table. Shaded: larger than its 95 % margin (the ± beside it). Grey: within the margin, so not a result. Blank: fewer than 30 rows.
+        Points more (or fewer) of the segment ordered within 30 days after the action than after none, as recorded in the shop&apos;s
+        action table (simulated). These are observed rates: a difference does not prove the action caused the order. Shaded: larger
+        than its 95 % margin (the ± beside it); about one cell in twenty would pass by chance. Grey: within the margin, so not a result.
+        Blank: fewer than 30 rows.
       </div>
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
         {Object.entries(FIELD_TITLE).map(([key, label]) => (
