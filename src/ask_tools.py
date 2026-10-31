@@ -64,9 +64,9 @@ def build_tools(reader: AitoClient, supply: Callable[[], dict], retention: Calla
 
     def reorder_queue(_: dict) -> dict:
         view = supply()
-        keep = ("sku", "name", "current_stock", "reorder_point", "forecast_units", "order_qty",
+        keep = ("sku", "name", "current_stock", "reorder_point", "recent_units", "order_qty",
                 "order_cost_eur", "revenue_at_risk_eur")
-        return {"month": view["forecast_month"], "summary": view["reorder"],
+        return {"month": view["planning_month"], "summary": view["reorder"],
                 "top": [{k: r[k] for k in keep} for r in view["reorder_queue"][:LISTED]],
                 "listed": min(LISTED, len(view["reorder_queue"])), "of": len(view["reorder_queue"]),
                 "view": "/supply/"}
@@ -96,7 +96,7 @@ def build_tools(reader: AitoClient, supply: Callable[[], dict], retention: Calla
         AskTool("price_what_if", "Next month's units, revenue and profit for a product at a price, from a regression on "
                 "its sales and price.", _schema(sku=SKU, price_eur={"type": "number", "description": "A price in euros"}),
                 price_what_if),
-        AskTool("reorder_queue", "The products to reorder now: stock, forecast, order quantity and cost, and the "
+        AskTool("reorder_queue", "The products to reorder now: stock, recent sales (observed), order quantity and cost, and the "
                 "revenue at risk without the order.", _schema(), reorder_queue),
         AskTool("overstock", "The overstocked products: excess units and tied-up capital, with the total.", _schema(), overstock),
         AskTool("at_risk_customers", "The customers most likely to stop ordering, most valuable first, with their "

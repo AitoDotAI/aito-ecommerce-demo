@@ -305,23 +305,18 @@ export function supplyPanel(): AitoPanelConfig {
     operation: "Supply",
     endpoints: ["_estimate", "_search"],
     description:
-      `Aito's <code style="color:var(--aito-teal);">_estimate units_sold</code> forecasts ` +
-      `next month for every SKU the view lists, once per SKU. The reorder quantity, the ` +
-      `revenue at risk and the tied capital are arithmetic on it. For the largest overstock, ` +
-      `the same <code style="color:var(--aito-teal);">_estimate</code> with ` +
+      `Stock bands, the reorder quantity, the revenue at risk and the tied capital are arithmetic on the ` +
+      `<code style="color:var(--aito-teal);">inventory</code> read below and on what each SKU sold over the last three ` +
+      `months: observed sales, because Aito's per-product forecast only ties the naive rule (Evidence › Model checks). ` +
+      `For the largest overstock, Aito's <code style="color:var(--aito-teal);">_estimate units_sold</code> with ` +
       `<code style="color:var(--aito-teal);">model: "regression"</code> at five prices ` +
       `finds the shallowest markdown that clears the excess. Price bands come from one ` +
       `<code style="color:var(--aito-teal);">_search</code> of realised prices.`,
     query:
-`${k('"estimate"')}: {
-  ${n('"from"')}: ${s('"monthly_sales"')},
-  ${n('"where"')}: {
-    ${n('"product_sku"')}: ${s('"SKU-PT-0206"')},
-    ${n('"units_last_month"')}: 30,
-    ${n('"category"')}: ${s('"accessories"')},
-    ${n('"season"')}: ${s('"spring"')}
-  },
-  ${n('"estimate"')}: ${s('"units_sold"')}
+`{
+  ${n('"from"')}: ${s('"inventory"')},
+  ${n('"limit"')}: 1000,
+  ${n('"offset"')}: 0
 }`,
     links: LEARN_MORE_LINKS,
   };

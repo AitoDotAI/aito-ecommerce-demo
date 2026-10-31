@@ -465,11 +465,10 @@ export interface SupplyReorderRow {
   lead_time_days: number;
   current_stock: number;
   reorder_point: number;
-  forecast_units: number | null;
+  recent_units: number;
   order_qty: number;
   order_cost_eur: number;
   revenue_at_risk_eur: number;
-  why_explanation: AnyWhyPayload | null;
   price: PriceBand | null;
 }
 
@@ -492,9 +491,8 @@ export interface SupplyMoverRow {
   category: string;
   avg_monthly_units: number;
   last_month_units: number;
-  forecast_units: number;
+  recent_units: number;
   current_stock: number;
-  why_explanation: AnyWhyPayload | null;
 }
 
 export interface SupplyPriceOutlier {
@@ -506,7 +504,7 @@ export interface SupplyPriceOutlier {
 }
 
 export interface SupplyResponse {
-  forecast_month: string;
+  planning_month: string;
   band_counts: { critical: number; low: number; ok: number; overstock: number };
   reorder: { skus: number; units: number; order_cost_eur: number; revenue_at_risk_eur: number };
   overstock_decision: {

@@ -4,15 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 
 import { fmtEur } from "@/lib/api";
-import WhyPopover from "@/components/prediction/WhyPopover";
 import { HIGHLIGHT } from "./highlight";
 import PriceBandCell from "./PriceBandCell";
 import type { SupplyReorderRow } from "@/lib/types";
 
 /**
  * The reorder queue: every SKU below its reorder point, the most revenue
- * at risk first. The order covers Aito's next-month forecast plus safety
- * stock; the `?` opens the forecast's `$why`, in units.
+ * at risk first. The order covers what the product sold a month over the
+ * last three months, plus safety stock: observed sales, not a forecast.
  */
 const FIRST_SHOWN = 15;
 
@@ -33,7 +32,7 @@ export default function ReorderTable({ rows, month, highlight }: {
           <tr>
             <th style={{ textAlign: "left" }}>Product · supplier</th>
             <th style={{ textAlign: "right" }}>Stock</th>
-            <th style={{ textAlign: "right" }}>{month}<br /><span style={{ fontWeight: 400 }}>forecast</span></th>
+            <th style={{ textAlign: "right" }} title={`Units a month over the last three months, up to the month before ${month}`}>Sold a month<br /><span style={{ fontWeight: 400 }}>last 3 months</span></th>
             <th style={{ textAlign: "right" }}>Order</th>
             <th style={{ textAlign: "right" }}>Revenue<br /><span style={{ fontWeight: 400 }}>at risk</span></th>
             <th style={{ textAlign: "right" }}>Price</th>
@@ -55,17 +54,10 @@ export default function ReorderTable({ rows, month, highlight }: {
                 <div style={{ fontSize: 11, color: "var(--text-muted)" }}>reorder at {r.reorder_point}</div>
               </td>
               <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
-                {r.forecast_units === null ? (
-                  <span className="card-sub" title="No sales history to forecast from">never sold</span>
+                {r.recent_units === 0 ? (
+                  <span className="card-sub" title="Nothing sold in the last three months">none</span>
                 ) : (
-                  <>
-                    <strong>{r.forecast_units}</strong>
-                    {r.why_explanation && (
-                      <span style={{ marginLeft: 4 }}>
-                        <WhyPopover why={r.why_explanation} title={`${r.name}: ${r.forecast_units} units`} />
-                      </span>
-                    )}
-                  </>
+                  <strong>{r.recent_units}</strong>
                 )}
               </td>
               <td style={{ textAlign: "right" }}>

@@ -1,7 +1,10 @@
-"""Supply: one view's decisions from stock, Aito's forecasts and prices.
+"""Supply: one view's decisions from stock, what the SKUs sold lately, and prices.
+
+The reorder queue rests on observed sales, not on a forecast: Aito's per-product forecast ties the naive rule
+(Evidence › Model checks), so it does not set a quantity or a euro figure.
 
 A fake client answers the four catalogue reads from a three-SKU shop and
-records each `_estimate`:
+records each `_estimate` (only the overstock markdown sweep sends any):
 
   - LOW   is below its reorder point: a reorder row;
   - OVER  holds 40 units against a reorder point of 4: an overstock row;
@@ -14,7 +17,7 @@ from __future__ import annotations
 import pytest
 
 from src import cache, supply_service
-from src.demand_forecast import LATEST_MONTH
+from src.demand_forecast import LATEST_MONTH, recent_units
 from src.supply_service import get_supply
 
 STOCK = [
@@ -31,7 +34,7 @@ PRODUCTS = [{"sku": sku, "name": f"Product {sku}", "price_eur": price, "pet_type
 
 def _sales(sku: str, units: int) -> list[dict]:
     return [{"product_sku": sku, "month": month, "units_sold": units, "price_eur": 1.0,
-             "pet_type": "dog", "category": "treats", "brand": "Acme"} for month in ("2026-03", LATEST_MONTH)]
+             "pet_type": "dog", "category": "treats", "brand": "Acme"} for month in ("2026-02", "2026-03", LATEST_MONTH)]
 
 
 SALES = _sales("LOW", 12) + _sales("OVER", 1) + _sales("MOVER", 40)
@@ -53,7 +56,7 @@ class ShopAito:
         self.estimates.append({"where": where, "model": model})
         if model == "regression":                       # a markdown probe: 1 a month whatever the price
             return {"estimate": 1.0}
-        return {"estimate": {"LOW": 20.0, "MOVER": 45.0}[where["product_sku"]]}
+        raise AssertionError(f"a forecast was asked for {where['product_sku']}: the reorder queue rests on observed sales")
 
 
 @pytest.fixture(autouse=True)
@@ -64,25 +67,42 @@ def _one_top_mover_and_no_cache(monkeypatch):
     cache.clear()
 
 
-def test_the_reorder_decision_covers_the_forecast_plus_safety_stock():
+def test_the_reorder_decision_covers_what_the_sku_sold_lately_plus_safety_stock():
     supply = get_supply(ShopAito())
 
     [row] = supply.reorder_queue
-    assert (row.sku, row.forecast_units) == ("LOW", 20)
-    assert row.order_qty == 20 + 5 - 2              # forecast + safety stock − on hand
-    assert row.revenue_at_risk_eur == (20 - 2) * 4.0  # units the stock can't cover × list price
-    assert supply.reorder == {"skus": 1, "units": 23, "order_cost_eur": 69.0, "revenue_at_risk_eur": 72.0}
+    assert (row.sku, row.recent_units) == ("LOW", 12)
+    assert row.order_qty == 12 + 5 - 2              # recent monthly sales + safety stock − on hand
+    assert row.revenue_at_risk_eur == (12 - 2) * 4.0  # units the stock can't cover × list price
+    assert supply.reorder == {"skus": 1, "units": 15, "order_cost_eur": 45.0, "revenue_at_risk_eur": 40.0}
 
 
-def test_each_sku_is_forecast_once_and_overstock_gets_a_markdown_sweep():
+def test_no_forecast_is_asked_for_and_overstock_still_gets_a_markdown_sweep():
     fake = ShopAito()
 
     get_supply(fake)
 
-    knn = [e["where"]["product_sku"] for e in fake.estimates if e["model"] is None]
-    assert sorted(knn) == ["LOW", "MOVER"]          # the critical SKU and the top movers
-    markdown = [e["where"]["price_eur"] for e in fake.estimates if e["model"] == "regression"]
-    assert markdown == [10.0, 9.5, 9.0, 8.5, 8.0]   # OVER, at 0 … 20 % off
+    assert [e["model"] for e in fake.estimates] == ["regression"] * 5
+    assert [e["where"]["price_eur"] for e in fake.estimates] == [10.0, 9.5, 9.0, 8.5, 8.0]   # OVER, at 0 … 20 % off
+
+
+def test_the_top_movers_show_what_they_sold_not_a_forecast():
+    [mover] = get_supply(ShopAito()).top_movers
+
+    assert (mover.sku, mover.avg_monthly_units, mover.last_month_units, mover.recent_units) == ("MOVER", 40, 40, 40)
+    assert not hasattr(mover, "forecast_units")
+
+
+@pytest.mark.parametrize("sold,expected", [
+    ({"2026-04": 30}, 10),                                        # a month with no row sold nothing
+    ({"2026-02": 1, "2026-03": 1, "2026-04": 2}, 2),              # 4 over 3 months, rounded up
+    ({"2025-12": 90, "2026-02": 3, "2026-03": 3, "2026-04": 3}, 3),  # older months do not count
+    ({}, 0),
+])
+def test_recent_units_is_the_average_of_the_last_three_months_rounded_up(sold, expected):
+    rows = [{"month": m, "units_sold": u} for m, u in sold.items()]
+
+    assert recent_units(rows) == expected
 
 
 def test_overstock_that_no_markdown_clears_is_reported_as_such():
@@ -104,9 +124,8 @@ def test_a_list_price_above_what_the_sku_sold_at_is_flagged_on_its_row_and_liste
     assert not supply.overstock[0].price.outlier
 
 
-def test_the_panel_shows_the_forecast_body_actually_sent():
-    supply = get_supply(ShopAito())
+def test_the_panel_shows_the_read_that_decides_the_queue():
+    body = get_supply(ShopAito()).last_query["body"]
 
-    body = supply.last_query["body"]
-    assert body["from"] == "monthly_sales" and body["estimate"] == "units_sold"
-    assert body["where"]["units_last_month"] in (12, 40)
+    assert get_supply(ShopAito()).last_query["endpoint"] == "_search"
+    assert body["from"] == "inventory"

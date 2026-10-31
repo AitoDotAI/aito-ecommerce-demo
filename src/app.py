@@ -37,6 +37,7 @@ from src.sandbox_envs import SandboxBranches, SandboxEnvError
 from src.sandbox_warmup import warm_resumed
 from src.shop_history import NEXT_MONTH
 from src import cache, timing, precompute_store
+from src import analytics_sections
 from src.data_release_gate import DataReleaseGate, recheck_seconds_from_env, release_gate_middleware
 from src.release_file import load_release, read_counts
 from src.build_info import build_info
@@ -61,8 +62,7 @@ from src.shop_suggestions import get_suggestions
 from src.basket_pairs import get_basket_section
 from src.search_words import get_search_words_section
 from src.acquisition_service import get_acquisition
-from src.design_effect import DesignEffect
-from src.reviews_service import get_reply_effect, get_reviews_section
+from src.reviews_service import get_reviews_section
 from src.shop_analytics_service import get_funnel_section, get_who_section
 from src.review_triage_service import get_review_triage
 from src.lookup_errors import ProductNotOnSaleError, UnknownPersonaError, UnknownProductError, UnknownReviewError
@@ -653,12 +653,12 @@ def product_price_what_if_endpoint(request: Request, sku: str, price: float = Qu
 def _shop_analytics_section(cache_key: str, load):
     """Shop analytics sections share their caching and error mapping.
 
-    Cached for 30 minutes, as Product Insights is: a section takes 1.5–3 s
+    Kept for hours and warmed at start (`analytics_sections.py`): a section takes 1.5–3 s
     alone but 4–8 s when the page asks all four at once (measured on
     `shoppers`, 2026-10-13). A bad `kpi` or `who` in a link is a 400, an
     unexpected Aito answer a 502."""
     try:
-        return cache.get_or_compute(f"shop-analytics:{cache_key}", lambda: load().to_dict(), ttl=1800)
+        return analytics_sections.cached(cache_key, load)
     except ValueError as exc:
         return JSONResponse(status_code=400, content={"error": str(exc)})
     except AitoError as exc:
@@ -696,12 +696,7 @@ def reviews_endpoint(section: str = "purchased"):
 @app.get("/api/reviews/reply-effect")
 def reviews_reply_effect_endpoint():
     """Churn after a negative review, replied ÷ not replied, with its interval."""
-    def load():
-        churn = cache.get_or_compute("shop-analytics:reviews:churn",
-                                     lambda: get_reviews_section(aito, "churn").to_dict(), ttl=1800)
-        clustering = DesignEffect(**churn["clustering"])
-        return get_reply_effect(aito, clustering)
-    return _shop_analytics_section("reviews:reply-effect", load)
+    return _shop_analytics_section("reviews:reply-effect", lambda: analytics_sections.reply_effect(aito))
 
 
 @app.get("/api/shop-analytics/baskets")

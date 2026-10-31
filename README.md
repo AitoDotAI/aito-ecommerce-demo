@@ -142,7 +142,7 @@ product on offer or adds a review, in a throwaway copy of the store:
 |---|---|
 | `_recommend` | Shop "Picked for you" and search; Query patterns |
 | `_predict` | Shop kit and Buy again; Product's discount what-if; Retention; Product filling; Review triage; Business reorders |
-| `_estimate` | Supply's forecast; Product's price what-if (regression) |
+| `_estimate` | Supply's markdown sweep and Product's price what-if (regression); the reorder queue rests on observed sales, not a forecast |
 | `_relate` | Patterns (baskets, what goes with a purchase, who buys what); the Shop drawer; Product's buyers |
 | `_search` | Overview counts; Shop search (`$similarity`); read-backs |
 | `_evaluate` | Evidence › Model checks |

@@ -109,7 +109,8 @@ def test_the_supply_headline_reads_the_decisions_supply_leads_with():
     supply = supply_headline(SUPPLY)
 
     assert supply.headline.startswith("Reorder 59 products now: about €5,667")
-    assert "estimated" in supply.headline   # the € rests on Aito's forecast
+    assert "if it sells like the last three months" in supply.headline   # the € rests on observed sales, not on a forecast
+    assert "forecast" not in supply.headline
     assert supply.detail.startswith("87 overstocked products hold €26,576; of the 15 largest, 11 don't clear by price alone")
 
 

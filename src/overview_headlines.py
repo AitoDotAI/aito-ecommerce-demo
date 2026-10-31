@@ -73,7 +73,7 @@ def supply_headline(supply: dict | None) -> Headline | None:
     return Headline(
         "Supply", href,
         f"Reorder {reorder['skus']} products now: about €{reorder['revenue_at_risk_eur']:,.0f} of next month's "
-        f"sales is at risk without them (estimated from Aito's forecast).",
+        f"sales is at risk without them, if it sells like the last three months.",
         detail + ".",
     )
 

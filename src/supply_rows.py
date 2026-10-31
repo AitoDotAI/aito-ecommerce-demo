@@ -1,15 +1,17 @@
-"""Supply's rows and decision lines: the arithmetic on Aito's forecasts.
+"""Supply's rows and decision lines: arithmetic on stock and on what each SKU sold lately.
 
 Stock bands are the shop's own rule, from the `inventory` table's reorder
-point. Quantities and euros come from Aito's next-month forecast, so the
-view labels them as estimates.
+point. Reorder quantities and euros assume next month sells like the last
+three (`recent_units`): observed sales, because Aito's per-product forecast
+only ties the naive rule (Evidence › Model checks), so it sets no quantity
+and no euro figure here. Aito's estimates remain in the markdown sweep.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 
-from src.demand_forecast import last_month_units
+from src.demand_forecast import last_month_units, recent_units
 from src.markdown_proposal import MarkdownProposal, excess_units
 from src.price_bands import PriceBand
 
@@ -33,29 +35,27 @@ class ReorderRow:
     lead_time_days: int
     current_stock: int
     reorder_point: int
-    forecast_units: int | None     # Aito's next-month estimate; None when the SKU never sold
-    order_qty: int                 # forecast + safety stock − stock on hand
+    recent_units: int              # units a month it sold over the last three months: observed; 0 when it never sold
+    order_qty: int                 # recent units + safety stock − stock on hand
     order_cost_eur: float          # order_qty × unit cost
-    revenue_at_risk_eur: float     # forecast units the stock can't cover × list price
-    why_explanation: dict | None
+    revenue_at_risk_eur: float     # recent units the stock can't cover × list price
     price: PriceBand | None
 
     @classmethod
-    def build(cls, stock: dict, product: dict, forecast: tuple[int, dict | None] | None,
-              price: PriceBand | None) -> "ReorderRow":
-        units, why = forecast if forecast is not None else (None, None)
+    def build(cls, stock: dict, product: dict, sales_rows: list[dict], price: PriceBand | None) -> "ReorderRow":
+        units = recent_units(sales_rows)
         on_hand = int(stock["current_stock"])
-        # Without a forecast (never sold) the order only restores safety stock.
-        qty = max(0, (units or 0) + int(stock["safety_stock"]) - on_hand)
-        shortfall = max(0, (units or 0) - on_hand)
+        # A SKU that never sold gets an order that only restores safety stock.
+        qty = max(0, units + int(stock["safety_stock"]) - on_hand)
+        shortfall = max(0, units - on_hand)
         return cls(
             sku=stock["sku"], name=product["name"], category=product["category"],
             supplier=str(stock["supplier"]), lead_time_days=int(stock["lead_time_days"]),
             current_stock=on_hand, reorder_point=int(stock["reorder_point"]),
-            forecast_units=units, order_qty=qty,
+            recent_units=units, order_qty=qty,
             order_cost_eur=round(qty * float(stock["unit_cost_eur"]), 2),
             revenue_at_risk_eur=round(shortfall * float(product["price_eur"]), 2),
-            why_explanation=why, price=price,
+            price=price,
         )
 
 
@@ -92,19 +92,16 @@ class MoverRow:
     category: str
     avg_monthly_units: int
     last_month_units: int
-    forecast_units: int
+    recent_units: int              # units a month over the last three months
     current_stock: int
-    why_explanation: dict | None
 
     @classmethod
-    def build(cls, sku: str, product: dict, sales_rows: list[dict],
-              forecast: tuple[int, dict | None], stock: dict) -> "MoverRow":
-        units, why = forecast
+    def build(cls, sku: str, product: dict, sales_rows: list[dict], stock: dict) -> "MoverRow":
         return cls(
             sku=sku, name=product["name"], category=product["category"],
             avg_monthly_units=round(sum(int(r["units_sold"]) for r in sales_rows) / len(sales_rows)),
-            last_month_units=last_month_units(sales_rows), forecast_units=units,
-            current_stock=int(stock["current_stock"]), why_explanation=why,
+            last_month_units=last_month_units(sales_rows), recent_units=recent_units(sales_rows),
+            current_stock=int(stock["current_stock"]),
         )
 
 

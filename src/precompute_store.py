@@ -264,6 +264,13 @@ def put(name: str, value: Any) -> None:
         _l1[key] = value
 
 
+def prime(name: str, value: Any) -> None:
+    """Make `value` what a later `get(name)` in this process returns, without writing anywhere.
+    The precompute driver uses it so a view that quotes another reads the other's new snapshot."""
+    with _l1_mutex:
+        _l1[_scoped(name)] = value
+
+
 def write_bootstrap(name: str, value: Any) -> None:
     """Write the git-committed JSON fallback for `name`."""
     path = _fallback_path(name)

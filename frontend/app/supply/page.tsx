@@ -20,7 +20,7 @@ const MODEL_CHECKS = "/evidence/model-checks/";
  * Supply (ADR 0041): what do I reorder, what is overstocked, and what
  * markdown clears it? Merged from Inventory, Demand, Markdown and Price's
  * fair-band table. It leads with the two decisions and their estimated
- * euros; each row carries its price band. The forecast's accuracy is in
+ * euros; each row carries its price band. Reorder quantities rest on observed sales; the markdown estimates' accuracy is in
  * Evidence › Model checks. `?sku=` highlights that product's row.
  */
 function SupplyView() {
@@ -47,7 +47,7 @@ function SupplyView() {
     if (data && sku) document.getElementById(`row-${sku}`)?.scrollIntoView({ block: "center" });
   }, [data, sku]);
 
-  const month = data ? monthName(data.forecast_month) : "";
+  const month = data?.planning_month ? monthName(data.planning_month) : "";
   return (
     <div className="fade-in">
       <div className="page-header">
@@ -61,17 +61,21 @@ function SupplyView() {
       {error && <ErrorState title="Couldn't load Supply" message={`Aito returned an error. ${error}`} command="./do load-data" />}
       {!data && !error && <div className="card" style={{ height: 160, background: "var(--border-light)" }} />}
 
-      {data && (
+      {data && data.planning_month === undefined && (
+        <ErrorState title="Supply's snapshot predates a change" message="The stored Supply answer has the old shape (a forecast). Take the precompute snapshots again." command="./do precompute --as master" />
+      )}
+
+      {data && data.planning_month !== undefined && (
         <>
           <div className="two-col">
             <DecisionCard
               decision={`Reorder these ${data.reorder.skus} now`}
               impact={<>
-                Without them, an estimated <strong>{fmtEur(data.reorder.revenue_at_risk_eur)}</strong> of {month}&apos;s
-                sales can&apos;t be served. The orders total {data.reorder.units} units,{" "}
+                If {month} sells like the last three months, about <strong>{fmtEur(data.reorder.revenue_at_risk_eur)}</strong>{" "}
+                of its sales can&apos;t be served without them. The orders total {data.reorder.units} units,{" "}
                 {fmtEur(data.reorder.order_cost_eur)} at cost.
               </>}
-              note={`Each order covers Aito's ${month} forecast plus safety stock.`}
+              note="Each order covers the last three months' monthly sales plus safety stock: observed sales, not a forecast. Aito's per-product forecast only ties last month's naive rule."
               evidenceHref={MODEL_CHECKS}
             />
             <DecisionCard
@@ -95,8 +99,8 @@ function SupplyView() {
 
           <div className="two-col">
             <div className="card">
-              <div className="card-title">Top movers · {month} forecast</div>
-              <TopMovers rows={data.top_movers} month={month} />
+              <div className="card-title">Top movers · what they sell, beside their stock</div>
+              <TopMovers rows={data.top_movers} />
             </div>
             <div className="card">
               <div className="card-title">Priced outside their band · {data.price_outliers.length} products</div>
