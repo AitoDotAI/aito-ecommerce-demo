@@ -10,6 +10,7 @@ const KINDS = [["categories", "Categories"], ["brands", "Brands"], ["products", 
 export default function SegmentBuys({ summary, selected }: { summary: ProfilesSummary; selected: string }) {
   const [pet, setPet] = useState<"dog" | "cat">("dog");
   const entry = summary.preferences[`${selected}|${pet}`];
+  if (selected === "all") return null;
   if (!summary.preferences[`${selected}|dog`] && !summary.preferences[`${selected}|cat`]) return null;
   return (
     <div className="card">

@@ -3,20 +3,27 @@
 import { Suspense, useEffect, useState } from "react";
 
 import { apiFetch, fmtEur } from "@/lib/api";
-import type { ProfilesSummary } from "@/lib/customer-profiles";
+import { findSegment, type ProfilesSummary } from "@/lib/customer-profiles";
 import { customersPanel } from "@/lib/panel-content";
 import { useUrlState } from "@/lib/use-url-state";
 import { usePagePanel } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
 import CustomerLookup from "@/components/customers/CustomerLookup";
-import SegmentDetail from "@/components/customers/SegmentDetail";
+import PreferenceGraph from "@/components/customers/PreferenceGraph";
+import SegmentBuys from "@/components/customers/SegmentBuys";
+import SegmentKpis from "@/components/customers/SegmentKpis";
 import SegmentList from "@/components/customers/SegmentList";
+import SegmentPicker from "@/components/customers/SegmentPicker";
+import SegmentProfile from "@/components/customers/SegmentProfile";
+import SegmentRelations from "@/components/customers/SegmentRelations";
+import SegmentResponse from "@/components/customers/SegmentResponse";
 
 /**
- * Customers (ADR 0053): the shop's customer variables and their variations in one list, with profit per customer
- * first. Select a segment to see how it compares, relates, buys and responds. Traits are counted from purchase
- * history for customers who consented to behavioural profiling; they describe how a customer chooses and which pets
- * they buy for, nothing about the person. Stored and simulated.
+ * Customers (ADR 0053): pick a segment and every pane follows it, as in Product. The profile and what to do sit
+ * top left, the key figures and the showing funnel top right; below, how customers rank by a preference and where the
+ * segment sits in that ranking, how it relates to other variables, what it buys, and what the shop's actions did for it.
+ * Traits are counted from purchase history for customers who consented to behavioural profiling; they describe how a
+ * customer chooses and which pets they buy for, nothing about the person. Stored and simulated.
  */
 function CustomersView() {
   usePagePanel(customersPanel(), {
@@ -25,22 +32,26 @@ function CustomersView() {
     breadcrumb: "Run the shop › Customers",
   });
   const [summary, setSummary] = useState<ProfilesSummary | null>(null);
-  const [selected, setSelected] = useUrlState("seg", "offer:mostly");
+  const [selected, setSelected] = useUrlState("seg", "all");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     apiFetch<ProfilesSummary>("/api/customer-profiles").then(setSummary).catch((e) => setError(String(e)));
   }, []);
 
+  const key = summary && findSegment(summary, selected) ? selected : "all";
   return (
     <div className="fade-in">
-      <div className="page-header">
-        <div className="page-title">Customers</div>
-        <div className="page-desc">
-          Customer segments by how they shop, ranked by what a customer earns the shop.
-          {summary && <> {summary.profiled.toLocaleString("fi-FI")} of {summary.customers.toLocaleString("fi-FI")} customers
-            are profiled: the others did not consent to behavioural profiling. Simulated data.</>}
+      <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
+        <div>
+          <div className="page-title">Customers</div>
+          <div className="page-desc">
+            Customer segments by how they shop, ranked by what a customer earns the shop.
+            {summary && <> {summary.profiled.toLocaleString("fi-FI")} of {summary.customers.toLocaleString("fi-FI")} customers
+              are profiled: the others did not consent to behavioural profiling. Simulated data.</>}
+          </div>
         </div>
+        {summary && <SegmentPicker summary={summary} selected={key} onSelect={setSelected} />}
       </div>
       {error && <ErrorState title="Couldn't load Customers" message={error} command="./do customer-profiles" />}
       {!summary && !error && <div className="card" style={{ height: 160, background: "var(--border-light)" }} />}
@@ -56,11 +67,20 @@ function CustomersView() {
       )}
       {summary && (
         <div style={{ display: "grid", gap: 12 }}>
-          <Headline summary={summary} />
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 420px), 1fr))", gap: 12, alignItems: "start" }}>
-            <SegmentList summary={summary} selected={selected} onSelect={setSelected} />
-            <SegmentDetail summary={summary} selected={selected} />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: 12, alignItems: "start" }}>
+            <SegmentProfile summary={summary} selected={key} />
+            <SegmentKpis summary={summary} selected={key} />
           </div>
+          <PreferenceGraph summary={summary} selected={key} />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 420px), 1fr))", gap: 12, alignItems: "start" }}>
+            <div style={{ display: "grid", gap: 12 }}>
+              <SegmentRelations summary={summary} selected={key} />
+              <SegmentBuys summary={summary} selected={key} />
+            </div>
+            <SegmentResponse summary={summary} selected={key} />
+          </div>
+          <SegmentList summary={summary} selected={key} onSelect={setSelected} />
+          <Headline summary={summary} />
           <CustomerLookup />
           <div className="card-sub">
             Every trait is a share of the lines a customer bought: no health, religion or similar is inferred, and the diet

@@ -102,7 +102,7 @@ def test_segments_count_customers_and_say_when_a_segment_is_thin():
     result = segments(profiles, customers)["by_trait"]["offer"][0]
 
     assert (result["customers"], result["churn_rate"], result["avg_spend_eur"], result["thin"]) == (2, 0.5, 200.0, True)
-    assert (result["revenue_eur"], result["revenue_12m_eur"], result["revenue_share"]) == (400.0, 100.0, 1.0)
+    assert (result["revenue_eur"], result["revenue_share"]) == (200.0, 1.0)
 
 
 BY_OFFER = lambda row: [row["offer_buyer"]]
@@ -263,12 +263,25 @@ def test_the_stored_profiles_give_revenue_per_segment_that_adds_up_to_the_profil
         assert abs(total - summary["profiled_revenue_eur"]) < 1.0, trait
 
 
-def test_revenue_is_the_sum_of_the_orders_of_the_profiled_customers():
-    orders = json.loads((DATA / "orders.json").read_text())
+def test_revenue_is_the_price_paid_on_the_lines_kept_by_the_profiled_customers_the_basis_profit_uses():
+    from src.customer_profit import profit_by_customer
+
+    orders = {o["order_id"]: o for o in json.loads((DATA / "orders.json").read_text())}
+    states = {st["product_state_id"]: st for st in json.loads((DATA / "product_states.json").read_text())}
+    cost = {i["sku"]: i["unit_cost_eur"] for i in json.loads((DATA / "inventory.json").read_text())}
+    profits = profit_by_customer(json.loads((DATA / "order_lines.json").read_text()), orders, states, cost, [], "2025-05")
     stored = {t["customer_id"] for t in json.loads((PROFILES / "customers.json").read_text()) if t["profiled"]}
     summary = json.loads((PROFILES / "summary.json").read_text())
 
-    assert round(sum(o["total_eur"] for o in orders if o["customer_id"] in stored), 2) == summary["profiled_revenue_eur"]
+    assert round(sum(profits[c]["net_revenue_eur"] for c in stored if c in profits), 2) == summary["profiled_revenue_eur"]
+
+
+def test_the_stored_totals_are_these_numbers():
+    """Literal values: a change in how revenue or profit is counted fails here. Regenerate and read them in when the fixtures change."""
+    summary = json.loads((PROFILES / "summary.json").read_text())
+
+    assert (summary["profiled"], summary["profiled_revenue_eur"], summary["profiled_profit_eur"], summary["gross_margin"]) == (
+        1790, 467332.96, 139913.04, 0.303)
 
 
 # ── Review of #139: the price trait is not made by discounts, scope, margins, consent ──
@@ -404,3 +417,105 @@ def test_a_profit_lift_inside_its_margin_is_not_clear_and_a_thin_cell_has_none()
 
     assert lifted["profit_clear"] is False
     assert thin["profit_lift_eur"] is None and thin["profit_clear"] is None
+
+
+# ── Review of #142 and the segment view ──
+
+from src.customer_segments import bootstrap_mean_interval
+
+
+def test_a_profit_interval_brackets_the_mean_and_is_wider_for_a_skewed_group():
+    even = [50.0] * 40
+    skewed = [10.0] * 36 + [400.0] * 4
+
+    low, high = bootstrap_mean_interval(skewed)
+
+    assert low < sum(skewed) / len(skewed) < high
+    assert bootstrap_mean_interval(even) == [50.0, 50.0]
+    assert high - low > 20
+
+
+def test_a_group_under_thirty_customers_has_no_profit_interval():
+    assert bootstrap_mean_interval([10.0] * (THIN_BELOW - 1)) is None
+
+
+def test_the_interval_is_the_same_every_time():
+    values = [float(v) for v in range(1, 61)]
+
+    assert bootstrap_mean_interval(values) == bootstrap_mean_interval(values)
+
+
+from src.customer_funnel import funnel_by_segment
+
+
+def test_a_segments_funnel_counts_each_stage_over_the_showings_of_its_customers_only():
+    showings = [{"context": "S1", "clicked": True, "added_to_cart": True, "purchased": True},
+                {"context": "S1", "clicked": True, "added_to_cart": False, "purchased": False},
+                {"context": "S2", "clicked": False, "added_to_cart": False, "purchased": False},
+                {"context": "S3", "clicked": True, "added_to_cart": True, "purchased": True}]
+    customer_of = {"S1": "C1", "S2": "C2", "S3": None}
+    segments = {"C1": ["all", "offer:mostly"], "C2": ["all"]}
+
+    result = funnel_by_segment(showings, customer_of, segments)
+
+    assert result["offer:mostly"] == {"impressions": 2, "clicks": 2, "carts": 1, "purchases": 1}
+    assert result["all"]["impressions"] == 3, "the anonymous session S3 is in no segment"
+
+
+from src.customer_preference_ranking import GROUPS, ranking
+
+
+def _ranked(shares: dict[str, float], segments_of=None):
+    return ranking(shares, segments_of or {}, ["a", "b"])
+
+
+def test_the_ranking_puts_the_customers_with_the_biggest_share_in_the_top_fifth():
+    shares = {f"C{i:02d}": float(i) for i in range(1, 101)}
+
+    result = _ranked(shares)
+
+    assert result["quintiles"][0]["mean_share"] > result["quintiles"][-1]["mean_share"]
+    assert [q["customers"] for q in result["quintiles"]] == [20] * GROUPS
+    assert result["curve"][0] > result["curve"][-1] and len(result["curve"]) == 20
+
+
+def test_the_top_fifth_is_given_over_the_average_and_over_the_bottom_fifth():
+    shares = {f"C{i:03d}": (4.0 if i < 20 else 1.0) for i in range(100)}
+
+    result = _ranked(shares)
+
+    assert result["top_over_bottom"] == 4.0 and result["top_over_average"] == round(4.0 / 1.6, 2)
+
+
+def test_when_the_bottom_fifth_has_none_the_ratio_to_it_is_left_out_and_not_infinite():
+    shares = {f"C{i:03d}": (0.0 if i >= 30 else 0.5) for i in range(100)}
+
+    assert _ranked(shares)["top_over_bottom"] is None
+
+
+def test_each_quintile_says_how_many_of_a_segment_it_holds():
+    shares = {f"C{i:02d}": float(100 - i) for i in range(100)}
+    segments_of = {f"C{i:02d}": (["a"] if i < 20 else ["b"]) for i in range(100)}
+
+    quintiles = _ranked(shares, segments_of)["quintiles"]
+
+    assert quintiles[0]["segment_share"] == {"a": 1.0, "b": 0.0}
+    assert quintiles[1]["segment_share"] == {"a": 0.0, "b": 1.0}
+
+
+def test_a_ranking_of_nothing_is_an_error_not_a_flat_line():
+    with pytest.raises(ValueError, match="nothing to rank"):
+        _ranked({f"C{i}": 0.0 for i in range(10)})
+
+
+def test_the_stored_ranking_has_the_offer_preference_and_a_top_fifth_that_prefers_it_more():
+    ranked = json.loads((PROFILES / "summary.json").read_text())["preference_ranking"]["offer"]
+
+    assert ranked["top_over_average"] > 1.5 and ranked["curve"][0] > ranked["curve"][-1]
+
+
+def test_every_stored_funnel_step_is_no_wider_than_the_one_before():
+    funnel = json.loads((PROFILES / "summary.json").read_text())["funnel"]
+
+    for key, f in funnel.items():
+        assert f["impressions"] >= f["clicks"] >= f["carts"] >= f["purchases"], key

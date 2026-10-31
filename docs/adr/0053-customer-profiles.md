@@ -25,17 +25,24 @@ A new view, **Customers**, with the rules below.
    not profiled. Customers who did not consent are not searchable by name and the lookup returns only their id. A customer with fewer than three purchased lines has "too few purchases", not a guess.
 3. **Segments carry their evidence.** Each segment shows customers, share, churn rate and average spend; a segment under
    30 customers is faded.
-4. **Who responds to what.** For each segment (offer buyers, last order, earlier emails, tracking consent, order size, open
-   issue) and each action, the change in the share who ordered within 30 days against no action in the same segment, with
-   its 95 % margin. A lift inside its margin is shown grey, a cell under 30 rows is blank: no result is claimed from noise.
-5. **Profit first, in one list.** The view is one list of every segment (the variables and their variations) with its key figures,
-   profit per customer first, and a detail pane for the selected one: how it compares, how it relates to the other variables, what it buys
-   and what the shop's actions did for it. Profit is the price paid less the unit cost on the lines kept (a returned line earns nothing),
+4. **What the actions did, per segment.** For each segment and each action in the action table, the change in the share who ordered within
+   30 days against no action in the same segment, and the change in estimated profit per row, each with its 95 % margin. A customer's traits
+   come from their whole history and apply to every action row of theirs, so this describes the segments as they are now. The margins treat
+   rows as independent although one customer can have several, so they are approximate; a cell inside its margin is shown grey, one under
+   30 rows is blank, and about one cell in twenty would pass by chance.
+5. **A segment picker, as in Product.** A drop-down picks a segment (or everyone) and every pane follows it. Top left: who the segment is, in words, and what to do
+   (only differences larger than their margins). Top right: its key figures against everyone, and its showing funnel (impressions, clicks, carts,
+   purchases) over the identified sessions of its customers. Below: the preference ranking, then: how it compares, how it relates to the other variables, what it buys
+   and what the shop's actions did for it; a list of all segments, profit per customer first, compares them and selects one. Profit is the price paid less the unit cost on the lines kept (a returned line earns nothing),
    less the shop's action costs; there is no delivery or payment cost in the data, so it is profit after products and actions, not a full P&L.
-   The headline shows total profit, profit per customer and median, the share the top tenth earns and how many lose money. Revenue (orders at
-   list price) stays as a figure beside it. The response table is per segment, in orders and in estimated profit (the 30-day spend at the shop's
+   The unit cost is the inventory's current cost per product, applied to two years of sales. Profit per customer carries a 95 % bootstrap interval
+   (a few customers earn much of it), and no interval is given under 30 customers. Revenue is the price paid on the lines kept, the same basis as profit and
+   margin. The headline shows total profit, profit per customer and median, the share the top tenth earns and how many lose money. The response table is per segment, in orders and in estimated profit (the 30-day spend at the shop's
    gross margin less the action's cost): a discount that lifts orders can still lose money.
-5b. **Revenue per profile.** Each segment shows the sum of its customers' orders (lifetime and the last 12 months) and its share of all
+5b. **Preference ranking.** All customers ranked by how much they prefer something (their share of lines on offer, in the cheaper half, in better-rated
+   products, in a category or of a brand, over the average share), as a curve in twenty steps and five fifths, with the top fifth over the average and over the
+   bottom fifth (undefined when the bottom fifth buys none), and how many of the selected segment each fifth holds.
+5c. **Revenue per profile.** Each segment shows the sum of its customers' orders (lifetime and the last 12 months) and its share of all
    profiled customers' revenue. Pets and diets overlap, so their shares add up to more than 100 %.
 6. **Relations.** Among customers with one trait, how many more points have another trait than those without it, for the three
    ways of shopping and the pets. Diet tags are left out of relations and preferences: a diet belongs to a kind of pet, so it would

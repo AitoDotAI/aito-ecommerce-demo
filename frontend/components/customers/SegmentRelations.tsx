@@ -7,6 +7,7 @@ import { TRAIT_TITLE, type ProfilesSummary, type Relation } from "@/lib/customer
 /** How the selected segment relates to the other variables: how many more points of it have each other trait than the rest. */
 export default function SegmentRelations({ summary, selected }: { summary: ProfilesSummary; selected: string }) {
   const [showAll, setShowAll] = useState(false);
+  if (selected === "all") return null;
   const all = summary.relations.filter((r) => `${r.if.trait}:${r.if.value}` === selected).sort((a, b) => b.points - a.points);
   if (all.length === 0) {
     return (

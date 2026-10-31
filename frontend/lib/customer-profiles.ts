@@ -2,8 +2,9 @@
 
 export interface Segment {
   key?: string; value: string; customers: number; share: number; churn_rate?: number; avg_spend_eur?: number; thin?: boolean;
-  revenue_eur?: number; revenue_12m_eur?: number; revenue_share?: number;
-  profit_eur?: number; profit_12m_eur?: number; profit_per_customer_eur?: number; margin?: number; profit_share?: number;
+  revenue_eur?: number; revenue_share?: number;
+  profit_eur?: number; profit_12m_eur?: number; profit_per_customer_eur?: number; profit_per_customer_ci?: [number, number] | null;
+  margin?: number; profit_share?: number;
 }
 
 export interface ResponseCell {
@@ -15,10 +16,22 @@ export interface ResponseEntry {
   none: { rows: number; order_rate: number | null; profit_eur: number | null }; actions: Record<string, ResponseCell>;
 }
 
+export interface FunnelCounts { impressions: number; clicks: number; carts: number; purchases: number }
+
+export interface RankedQuintile { customers: number; lift: number; mean_share: number; segment_share: Record<string, number> }
+
+export interface PreferenceRanking {
+  label: string; customers: number; mean_share: number; curve: number[]; quintiles: RankedQuintile[];
+  top_over_average: number; top_over_bottom: number | null;
+}
+
 export interface ProfilesSummary {
   release: string; simulated: boolean; stale: boolean; scope: "release" | "release-not-sandbox"; customers: number; profiled: number; not_profiled: number;
   profiled_revenue_eur: number; profiled_profit_eur: number; gross_margin: number;
-  profit_distribution: { customers: number; median_eur: number; top_tenth_share: number; losing_money: number }; relations: Relation[]; preferences: Record<string, PreferenceGroup>;
+  profit_distribution: { customers: number; median_eur: number; top_tenth_share: number; losing_money: number };
+  overall: Segment; definitions: Record<string, string>;
+  funnel: Record<string, FunnelCounts>; preference_ranking: Record<string, PreferenceRanking>;
+  relations: Relation[]; preferences: Record<string, PreferenceGroup>;
   by_trait: Record<"offer" | "price" | "rating" | "pets" | "diets", Segment[]>;
   response: Record<string, ResponseEntry>;
 }
@@ -29,7 +42,8 @@ export interface CustomerProfile {
 }
 
 export const TRAIT_TITLE: Record<string, string> = {
-  offer: "Buys on offer", price: "Prices they pick", rating: "Ratings they pick", pets: "Pets they buy for", diets: "Diets their pet's food is made for",
+  all: "Everyone", offer: "Buys on offer", price: "Prices they pick", rating: "Ratings they pick", pets: "Pets they buy for",
+  diets: "Diets their pet's food is made for",
 };
 
 /** The trait groups in the order the list shows them. */
@@ -53,4 +67,24 @@ export interface PreferenceRow {
 export interface PreferenceGroup {
   pet: string; customers: number; others: number;
   categories: PreferenceRow[]; brands: PreferenceRow[]; products: PreferenceRow[];
+}
+
+/** A segment by its key ("all", or "trait:value"); the list, the picker and the panes look segments up the same way. */
+export function findSegment(summary: ProfilesSummary, key: string): { segment: Segment; trait: string } | null {
+  if (key === "all") return { segment: summary.overall, trait: "all" };
+  for (const trait of TRAITS) {
+    const segment = summary.by_trait[trait].find((s) => (s.key ?? `${trait}:${s.value}`) === key);
+    if (segment) return { segment, trait };
+  }
+  return null;
+}
+
+/** The segment's key, whichever trait group it came from. */
+export function keyOf(trait: string, s: Segment): string {
+  return s.key ?? `${trait}:${s.value}`;
+}
+
+export function definitionOf(summary: ProfilesSummary, key: string): string {
+  const trait = key.split(":")[0];
+  return summary.definitions[key] ?? summary.definitions[`_${trait}`] ?? "";
 }

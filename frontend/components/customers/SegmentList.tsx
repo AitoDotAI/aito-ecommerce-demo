@@ -22,7 +22,7 @@ export default function SegmentList({ summary, selected, onSelect }: {
   return (
     <div className="card">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-        <div className="card-title" style={{ margin: 0 }}>Segments · {rows.length}</div>
+        <div className="card-title" style={{ margin: 0 }}>Compare all segments · {rows.length}</div>
         <span style={{ display: "inline-flex", gap: 4 }}>
           {([[true, "By variable"], [false, "By profit per customer"]] as const).map(([g, label]) => (
             <button key={label} aria-pressed={grouped === g} onClick={() => setGrouped(g)} style={{
@@ -48,8 +48,10 @@ export default function SegmentList({ summary, selected, onSelect }: {
       </table>
       <div className="card-sub" style={{ marginTop: 8, lineHeight: 1.5 }}>
         Profit: price paid less unit cost on the lines kept (returned lines earn nothing), less the shop&apos;s action costs; no delivery
-        or payment cost is in the data. The line marks the average profiled customer, {fmtEur(overall)}. Shares are of all profiled
-        customers; pets and diets overlap. Faded: under 30 customers.
+        or payment cost is in the data. Unit cost is the inventory&apos;s current cost per product (about two-thirds of the base price)
+        applied to two years of sales, and 165 kept lines were sold below it. ± is half the 95 % bootstrap interval of profit per
+        customer: a few customers earn much of it. The line marks the average profiled customer, {fmtEur(overall)}. Pets and diets
+        overlap. Faded: under 30 customers.
       </div>
     </div>
   );
@@ -76,7 +78,10 @@ function Group({ title, rows, selected, onSelect, scale, overall, showTrait }: {
                 <span style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${(per / scale) * 100}%`, background: "var(--aito-teal)", borderRadius: 2 }} />
                 <span style={{ position: "absolute", left: `${(overall / scale) * 100}%`, top: -2, bottom: -2, width: 1, background: "var(--text)" }} />
               </span>
-              <strong>{fmtEur(per)}</strong>
+              <strong title={r.profit_per_customer_ci ? `95 % interval ${fmtEur(r.profit_per_customer_ci[0])} to ${fmtEur(r.profit_per_customer_ci[1])}` : `only ${r.customers} customers: no interval`}>{fmtEur(per)}</strong>
+              {r.profit_per_customer_ci
+                ? <span className="card-sub"> ±{Math.round((r.profit_per_customer_ci[1] - r.profit_per_customer_ci[0]) / 2)}</span>
+                : <span className="card-sub"> n={r.customers}</span>}
             </td>
             <td style={{ whiteSpace: "nowrap", paddingLeft: 8 }}><span title={`${Math.round((r.profit_share ?? 0) * 100)} % of the profiled customers' profit`}>{fmtEur(r.profit_eur ?? 0)}</span></td>
             <td style={{ paddingLeft: 8 }}>{r.churn_rate === undefined ? "–" : `${Math.round(r.churn_rate * 100)} %`}</td>
