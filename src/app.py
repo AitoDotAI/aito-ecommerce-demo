@@ -153,7 +153,10 @@ release_gate = DataReleaseGate(
     on_mismatch=_drop_memory_caches,
     ready_interval=recheck_seconds_from_env(os.environ),
 )
-release_gate.start()
+# AITO_SKIP_STARTUP_WARMUP=1 (tests): import the app without its polling thread or warmup reading the shared Aito.
+SKIP_STARTUP = os.environ.get("AITO_SKIP_STARTUP_WARMUP", "") not in ("", "0")
+if not SKIP_STARTUP:
+    release_gate.start()
 
 # The sandbox template's gate: ready once `./do sandbox-template-load` has
 # loaded the release. A request that names a sandbox branch is gated by it.
@@ -162,10 +165,11 @@ if sandbox_template is not None:
     sandbox_gate = DataReleaseGate(load_release(), read_counts=lambda: read_counts(sandbox_template),
                                    on_ready=lambda: None, on_mismatch=lambda: None,
                                    ready_interval=recheck_seconds_from_env(os.environ))
-    sandbox_gate.start(name="sandbox-release-gate")
-    # Branches older than three hours are deleted at start-up, then every 10 minutes.
-    import threading
-    threading.Thread(target=sandbox_branches.reap_forever, name="sandbox-reaper", daemon=True).start()
+    if not SKIP_STARTUP:
+        sandbox_gate.start(name="sandbox-release-gate")
+        # Branches older than three hours are deleted at start-up, then every 10 minutes.
+        import threading
+        threading.Thread(target=sandbox_branches.reap_forever, name="sandbox-reaper", daemon=True).start()
 
 
 def _sandbox_gate_for(request: Request) -> DataReleaseGate | None:
