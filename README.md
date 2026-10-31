@@ -16,7 +16,7 @@ shows them in a working shop.
 ## See it in action
 
 Live at **[ecommerce.aito.ai](https://ecommerce.aito.ai)**. The partner
-walkthrough (5–7 minutes) is [`docs/demo-script.md`](docs/demo-script.md).
+walkthrough (6–8 minutes) is [`docs/demo-script.md`](docs/demo-script.md).
 
 **The Shop.** Anna got a guinea pig in February. "Next for their kit"
 leads with the hideout, which shoppers who owned a cage and a bottle
@@ -171,7 +171,7 @@ dev instance is an exact copy. The release's row counts are in
 showings), 15,157 product states, 5,202 reviews, 5,626 recorded actions.
 
 `GET /version` says which commit and which Aito env a deployment runs
-(`"api": "v2@observable"`). Set `BUILD_SHA` at build time.
+(`"api": "v2@master"`). Set `BUILD_SHA` at build time.
 
 ---
 
