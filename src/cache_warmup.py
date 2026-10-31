@@ -16,7 +16,8 @@ light endpoints. With it, every light endpoint is warm before the
 dev server even starts.
 
 Scope: this warms the remaining light, parameterised views (For You /
-Smart Search per persona, plus the small ad-hoc ones). The six heavy
+Smart Search per persona, plus the small ad-hoc ones) and the Patterns, Reviews
+and Acquisition sections (`analytics_sections.py`). The six heavy
 endpoints (demand, retention, supply)
 AND the Overview landing page are precompute-and-served via
 `./do precompute` (ADR 0024), not lazily cached here — that is what
@@ -34,6 +35,7 @@ from src.aito_client import AitoClient
 from src.search_service import smart_search
 from src.recommend_service import get_for_you
 from src.filling_service import get_filling
+from src import analytics_sections
 from src.review_triage_service import get_review_triage
 
 
@@ -96,6 +98,9 @@ def warm_all(client: AitoClient, *, verbose: bool = True) -> None:
     ]
     for name, fn in endpoints:
         warm_or_skip(name, fn)
+
+    # The Patterns, Reviews and Acquisition sections (kept for hours; the release gate drops them on a new release).
+    analytics_sections.warm(client, verbose=verbose)
 
     if verbose:
         print("Cache warm.")

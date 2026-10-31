@@ -33,7 +33,7 @@ which release that measurement was made on.
 
 | # | claim | source | release it says | test | status |
 |:--|:--|:--|:--|:--|:--|
-| D1 | Supply: 83 now, €10,272, 664 units, €9,924 at cost; €27,566 in 79; 14 won't clear (:64-65) | `data/precomputed/v2-master/supply.json` | 3b | `test_the_demo_scripts_supply_headline_numbers_are_the_snapshots` | ok |
+| D1 | Supply: 83 now, €13,200 if May sells like the last three months, 839 units, €11,832 at cost; €27,566 in 79; 14 won't clear (:64-65) | `data/precomputed/v2-master/supply.json` | 3b | `test_the_demo_scripts_supply_headline_numbers_are_the_snapshots` | ok |
 | D2 | "the page shows 730 units" (:70) | the same snapshot: 664 units | 3a | `test_the_demo_scripts_check_first_line_agrees_with_its_own_table` | fixed 2026-10-30 (was: release 3a's figure, and the table above it says 664) |
 | D3 | "81 % of customers" (:49) | `docs/verification/action-recovery.md` | 3b | `test_the_demo_script_quotes_the_recovery_rate_the_report_gives` | ok |
 | D4 | Product decision: 20.0 % → 31.5 % (×1.57) (:100) | `GET /api/product?sku=SKU-PT-0563&month=2026-04` → 12.9 % → 20.4 % (×1.58) | 3a | `test_the_scripts_decision_row_is_what_the_product_view_leads_with` | fixed 2026-10-30 |

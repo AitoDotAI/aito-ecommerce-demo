@@ -6,22 +6,9 @@ Importing the app starts the release gate's polling thread and the cache warmup,
 
 from __future__ import annotations
 
-import importlib
-import sys
 
 import pytest
 from fastapi.testclient import TestClient
-
-
-@pytest.fixture
-def app_module(monkeypatch):
-    monkeypatch.setenv("AITO_SKIP_STARTUP_WARMUP", "1")
-    monkeypatch.setenv("AITO_API_URL", "https://example.invalid")
-    monkeypatch.setenv("AITO_API_KEY", "not-a-real-key")
-    sys.modules.pop("src.app", None)
-    module = importlib.import_module("src.app")
-    yield module
-    sys.modules.pop("src.app", None)
 
 
 def test_importing_the_app_with_the_skip_switch_starts_no_gate_thread(app_module):

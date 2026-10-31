@@ -12,10 +12,13 @@ average, far below the current level of a growing SKU.
 
 from __future__ import annotations
 
+import math
+
 from src.aito_client import AitoClient, AitoError
 from src.estimate_why import explain_estimate
 
-FORECAST_MONTH = "2026-05"   # the month we predict for
+FORECAST_MONTH = "2026-05"   # the month we predict for, and the month Supply plans for
+RECENT_MONTHS = 3            # how far back "what it sold lately" looks
 LATEST_MONTH = "2026-04"     # the last month with sales: the held-out test month
 
 SEASON_BY_MONTH = {
@@ -31,6 +34,14 @@ def last_month_units(sales_rows: list[dict]) -> int:
     latest = [r for r in sales_rows if r["month"] == LATEST_MONTH]
     assert len(latest) <= 1, f"{len(latest)} rows for one SKU in {LATEST_MONTH}"
     return int(latest[0]["units_sold"]) if latest else 0
+
+
+def recent_units(sales_rows: list[dict]) -> int:
+    """Units a month the SKU sold over the last RECENT_MONTHS months up to LATEST_MONTH, rounded up. Observed, not estimated.
+    A month with no row sold nothing, so it counts as 0."""
+    year, month = map(int, LATEST_MONTH.split("-"))
+    window = {f"{y}-{m:02d}" for y, m in ((year - (month - k <= 0), (month - k - 1) % 12 + 1) for k in range(RECENT_MONTHS))}
+    return math.ceil(sum(int(r["units_sold"]) for r in sales_rows if r["month"] in window) / RECENT_MONTHS)
 
 
 def forecast_where(sku: str, profile: dict, units_last_month: int) -> dict:

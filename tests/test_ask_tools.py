@@ -45,10 +45,10 @@ def test_a_band_shown_under_the_rule_is_thin_and_the_result_links_its_view(monke
 
 
 def test_a_list_tool_returns_the_top_rows_without_the_views_explanation_trees():
-    rows = [{"sku": f"S{i}", "name": f"P{i}", "current_stock": 1, "reorder_point": 5, "forecast_units": 9,
+    rows = [{"sku": f"S{i}", "name": f"P{i}", "current_stock": 1, "reorder_point": 5, "recent_units": 9,
              "order_qty": 8, "order_cost_eur": 10.0, "revenue_at_risk_eur": 20.0, "why_explanation": {"big": "tree"}}
             for i in range(LISTED + 5)]
-    supply = lambda: {"forecast_month": "2026-05", "reorder": {"skus": len(rows)}, "reorder_queue": rows}
+    supply = lambda: {"planning_month": "2026-05", "reorder": {"skus": len(rows)}, "reorder_queue": rows}
 
     result = _by_name(build_tools(Reader(), supply, dict))["reorder_queue"].run({})
 

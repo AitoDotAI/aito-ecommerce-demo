@@ -192,3 +192,15 @@ from the live views.
 
 The full review, with every view's queries compared and each demo beat a
 move breaks: `docs/notes/2026-10-24-site-review.md`.
+
+
+## Amendment 2026-10-31: Supply's reorder queue rests on observed sales
+
+Supply's reorder quantities and the "revenue at risk" headline came from Aito's per-product next-month forecast. Evidence › Model checks
+shows that forecast ties the naive "last month's range" rule (41.9 % against 41.0 %), and the per-product forecast tied the naive method on
+the units too, so a euro figure built on it was not a result the demo could stand behind. The reorder queue now assumes next month sells like the
+last three (`recent_units`: units a month over February to April, a month with no row counting 0), and the headline says so ("if May sells like the
+last three months, about €13,200 of its sales can't be served"). The forecast column, its `$why` and the forecast panel query are gone from Supply;
+Aito's `_estimate` stays in the markdown sweep and in Product's what-ifs. The Overview card carries the same wording. The snapshots were
+re-taken with `./do precompute --files-only --only supply,overview`; a prod snapshot filed before this change is rejected by the page (it
+asks for a re-take) until `./do precompute` is run on master.

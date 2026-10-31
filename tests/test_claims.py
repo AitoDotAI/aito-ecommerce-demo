@@ -121,7 +121,7 @@ def test_the_demo_scripts_supply_headline_numbers_are_the_snapshots(supply):
     reorder, overstock = supply["reorder"], supply["overstock_decision"]
 
     assert says("docs/demo-script.md", f"Reorder these {reorder['skus']} now")
-    assert says("docs/demo-script.md", f"an estimated €{reorder['revenue_at_risk_eur']:,.0f} of May's sales")
+    assert says("docs/demo-script.md", f"if May sells like the last three months, about €{reorder['revenue_at_risk_eur']:,.0f} of its sales")
     assert says("docs/demo-script.md", f"{reorder['units']:,} units, €{reorder['order_cost_eur']:,.0f} at cost")
     assert says("docs/demo-script.md", f"€{overstock['tied_capital_eur']:,.0f} tied up in {overstock['skus']} overstocked products")
     assert says("docs/demo-script.md", f"{overstock['wont_clear']} won't clear")

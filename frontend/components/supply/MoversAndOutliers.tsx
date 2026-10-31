@@ -1,11 +1,10 @@
 import Link from "next/link";
 
 import { fmtEur } from "@/lib/api";
-import WhyPopover from "@/components/prediction/WhyPopover";
 import type { SupplyMoverRow, SupplyPriceOutlier } from "@/lib/types";
 
-/** The best sellers' forecasts beside their stock: where a stock-out would hurt most. */
-export function TopMovers({ rows, month }: { rows: SupplyMoverRow[]; month: string }) {
+/** The best sellers' recent sales beside their stock: where a stock-out would hurt most. */
+export function TopMovers({ rows }: { rows: SupplyMoverRow[] }) {
   return (
     <table className="recent-table" style={{ width: "100%", fontSize: 12.5 }}>
       <thead>
@@ -13,7 +12,7 @@ export function TopMovers({ rows, month }: { rows: SupplyMoverRow[]; month: stri
           <th style={{ textAlign: "left" }}>Product</th>
           <th style={{ textAlign: "right" }}>Average<br /><span style={{ fontWeight: 400 }}>a month</span></th>
           <th style={{ textAlign: "right" }}>Last<br /><span style={{ fontWeight: 400 }}>month</span></th>
-          <th style={{ textAlign: "right" }}>{month}<br /><span style={{ fontWeight: 400 }}>forecast</span></th>
+          <th style={{ textAlign: "right" }}>Last 3<br /><span style={{ fontWeight: 400 }}>months</span></th>
           <th style={{ textAlign: "right" }}>Stock</th>
         </tr>
       </thead>
@@ -23,15 +22,8 @@ export function TopMovers({ rows, month }: { rows: SupplyMoverRow[]; month: stri
             <td><Link href={`/product/?sku=${encodeURIComponent(m.sku)}`}>{m.name}</Link> <span className="sku-tag">{m.sku}</span></td>
             <td style={{ textAlign: "right" }}>{m.avg_monthly_units}</td>
             <td style={{ textAlign: "right" }}>{m.last_month_units}</td>
-            <td style={{ textAlign: "right", whiteSpace: "nowrap" }}>
-              <strong>{m.forecast_units}</strong>
-              {m.why_explanation && (
-                <span style={{ marginLeft: 4 }}>
-                  <WhyPopover why={m.why_explanation} title={`${m.name}: ${m.forecast_units} units`} />
-                </span>
-              )}
-            </td>
-            <td style={{ textAlign: "right", color: m.current_stock < m.forecast_units ? "var(--red)" : undefined }}>
+            <td style={{ textAlign: "right" }}><strong>{m.recent_units}</strong></td>
+            <td style={{ textAlign: "right", color: m.current_stock < m.recent_units ? "var(--red)" : undefined }}>
               {m.current_stock}
             </td>
           </tr>

@@ -153,6 +153,7 @@ Data
   target            Show which Aito instance commands use, and whose credentials
   warm-cache        Pre-compute every cacheable endpoint once
   precompute        Snapshot the six heavy endpoints to Aito + git JSON (ADR 0024)
+                    --files-only [--only supply,overview]: refresh the git JSON only, no Aito write
                     --as master: compute on AITO_ENV's env, file as master (ADR 0035)
   release-file      <env>: write data/release-env.json from the env's row counts (read-only)
   release-check     [<env>]: does the env (default: the release's) match data/release-env.json? (read-only)
@@ -426,26 +427,32 @@ cmd_precompute() {
   # under <env>'s namespace. A release computes on its env "as master",
   # since after the promote master holds those same rows (ADR 0035):
   #   AITO_ENV=observable ./do precompute --as master
-  local write_as=""
-  if [[ $# -gt 0 ]]; then
-    if [[ "$1" != "--as" || $# -ne 2 || -z "$2" ]]; then
-      echo "Usage: ./do precompute [--as <env>]" >&2
-      exit 1
-    fi
-    write_as="$2"
-  fi
+  #
+  # --files-only [--only supply,overview]: refresh the committed JSON snapshots and write nothing to Aito
+  # (a change to what a view computes; the Aito rows follow with the next full run).
+  local write_as="" files_only="" only="" usage="Usage: ./do precompute [--as <env>] [--files-only] [--only a,b]"
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --as)         [[ $# -ge 2 && -n "$2" ]] || { echo "$usage" >&2; exit 1; }; write_as="$2"; shift 2 ;;
+      --files-only) files_only=1; shift ;;
+      --only)       [[ $# -ge 2 && -n "$2" ]] || { echo "$usage" >&2; exit 1; }; only="$2"; shift 2 ;;
+      *)            echo "$usage" >&2; exit 1 ;;
+    esac
+  done
   echo "Precomputing heavy endpoints (churn, demand, evaluation, inventory, markdown, winback)..."
   cd "$SCRIPT_DIR"
   _show_target
   echo "   computed on env: ${AITO_ENV:-master}; written as env: ${write_as:-${AITO_ENV:-master}}"
-  WRITE_AS="$write_as" uv run python -c "
+  WRITE_AS="$write_as" FILES_ONLY="$files_only" ONLY="$only" uv run python -c "
 import os
 from src.config import load_config
 from src.aito_client import AitoClient
 from src.precompute import precompute_all
 cfg = load_config()
 client = AitoClient(cfg)
-precompute_all(client, verbose=True, write_as_env=os.environ['WRITE_AS'] or None)
+precompute_all(client, verbose=True, write_as_env=os.environ['WRITE_AS'] or None,
+               files_only=bool(os.environ['FILES_ONLY']),
+               only=tuple(os.environ['ONLY'].split(',')) if os.environ['ONLY'] else None)
 "
 }
 

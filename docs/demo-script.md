@@ -65,19 +65,22 @@ Say once, early: all data is synthetic with planted effects; what is tested is w
 **Click:** the sidebar's **Supply** (or its card on the Overview).
 
 **Say:** "Every morning the owner asks two things: what runs out, and what
-is stuck on the shelf. Aito forecasts next month's sales per product; the
-euros follow from that forecast."
+is stuck on the shelf. The reorder list rests on what each product sold
+lately, not on a forecast; Aito's estimates come in where they earn their
+place, in how far a markdown moves the stock."
 
 | On screen | Number | Basis |
 |---|---|---|
-| Reorder these 83 now | an estimated €10,272 of May's sales can't be served without them; 664 units, €9,924 at cost | `_estimate units_sold` per SKU for May 2026, against stock and the reorder point (`src/supply_rows.py`); served from the precompute snapshot (`./do precompute`), which must be re-taken after a data release |
+| Reorder these 83 now | if May sells like the last three months, about €13,200 of its sales can't be served without them; 839 units, €11,832 at cost | each product's units a month over February to April (observed), against stock, the reorder point and safety stock (`src/supply_rows.py`); no forecast. Served from the precompute snapshot (`./do precompute`), which must be re-taken after a data release |
 | €27,566 tied up in 79 overstocked products | say only the €27,566. Don't present the markdown split ("14 won't clear, none worth marking down") as a finding: it is the units model by price alone, which counts neither an offer's lift on purchases when shown (×1.79 at 20 %+) nor the higher place it earns in the shop, so it understates an offer and contradicts Product's "put it on offer" | the same `_estimate` at 5–20 % off, over 13 weeks; price only |
 
-**Caveat (the page's one line):** the forecasts are Aito's estimates for
-May; the euros follow from them. **How well? →** opens the model checks.
+**Caveat (the page's one line):** the quantities assume May sells like the last
+three months: observed sales, not a forecast. Aito's per-product forecast only ties
+last month's naive rule, which is why it sets no quantity here. **How well? →** opens the model checks.
 
-**Check first:** the page shows 664 units. If it shows 730 units and €11,682, it is serving release 3a's snapshot:
-`./do precompute` has not been run on master since the data release.
+**Check first:** the page shows 839 units. If it shows 664 units, or a "forecast" column, it is serving the snapshot
+from before Supply moved to observed sales; if 730 units and €11,682, release 3a's: `./do precompute` has not been run
+on master since the change or the data release.
 
 **Recovery:** if Supply is slow on its first visit, the snapshot is
 missing for this env; the Overview leaves its card out rather than wait.
