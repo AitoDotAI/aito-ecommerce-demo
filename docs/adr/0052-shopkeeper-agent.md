@@ -1,6 +1,6 @@
 # ADR 0052: The shopkeeper agent — routine runs with a confidence gate and an approval step
 
-**Status:** Proposed
+**Status:** Accepted (2026-10-31, Antti: "merge it and implement it"). Slice 1 built: the gate, the stored win-back run, the Board, the view. The stock check, portfolio, product-entry routines, live questions and the Toolbox switch are not built.
 **Date:** 2026-10-31
 **Deciders:** Antti
 
@@ -51,7 +51,8 @@ force, shown on the step:
 
 **The thresholds and the "never auto" kinds are the store's settings,** with recommended defaults the app proposes
 (and the evidence for them), not constants the demo imposes. They are shown on every step. Nothing in the demo changes
-real data: "act" writes a row to a simulated log (`agent_runs`, `agent_steps`), labelled as simulated.
+real data. As built in slice 1, "act" is a label on a stored run, and a shopkeeper's approvals and edited settings live in the
+browser, so no table is written; the simulated log tables of the plan wait for the live routines.
 
 ### One win-back record
 

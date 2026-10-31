@@ -29,6 +29,7 @@ from src.aito_client import AitoClient, AitoError
 from src.aito_client import WRITES_ANY, WRITES_ENVS, WRITES_NONE
 from src.demo_mode import ENV_HEADER, DemoClients, requested_sandbox
 from src.ask_routes import router as ask_router
+from src.shopkeeper_routes import router as shopkeeper_router
 from src.lever_routes import router as lever_router
 from src.sandbox_config import load_sandbox_setting
 from src.sandbox_envs import SandboxBranches, SandboxEnvError
@@ -247,6 +248,7 @@ app.include_router(lever_router)
 app.state.ask_supply = lambda: _view_dict("supply", lambda: get_supply(aito))
 app.state.ask_retention = lambda: _view_dict("retention", lambda: get_retention(aito))
 app.include_router(ask_router)
+app.include_router(shopkeeper_router)
 
 
 @app.middleware("http")
