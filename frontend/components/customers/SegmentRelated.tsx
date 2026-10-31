@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import Confidence from "@/components/customers/Confidence";
-import { TRAIT_TITLE, type ProfilesSummary } from "@/lib/customer-profiles";
+import { TRAIT_TITLE, type SegmentView } from "@/lib/customer-profiles";
 
 interface Related {
   kind: string; label: string; points: number; margin: number; clear: boolean; share: number; shareOthers: number; note?: string;
@@ -12,15 +12,13 @@ interface Related {
 const LIST_LENGTH = 25;
 
 /** What else the selected segment prefers, as one list: the points more (or fewer) of it have each item than the rest. */
-export function relatedItems(summary: ProfilesSummary, selected: string): Related[] {
+export function relatedItems(view: SegmentView): Related[] {
   const rows: Related[] = [];
-  for (const r of summary.relations.filter((x) => `${x.if.trait}:${x.if.value}` === selected)) {
+  for (const r of view.relations ?? []) {
     rows.push({ kind: "Shopping", label: `${TRAIT_TITLE[r.then.trait]}: ${r.then.value}`, points: r.points, margin: r.margin_points,
       clear: r.clear, share: r.share_with, shareOthers: r.share_without });
   }
-  for (const pet of ["dog", "cat"] as const) {
-    const entry = summary.preferences[`${selected}|${pet}`];
-    if (!entry) continue;
+  for (const [pet, entry] of Object.entries(view.preferences ?? {})) {
     const owners = pet === "dog" ? "dog owners" : "cat owners";
     for (const [kind, title] of [["categories", "Category"], ["brands", "Brand"], ["products", "Product"]] as const) {
       for (const r of entry[kind]) {
@@ -32,11 +30,11 @@ export function relatedItems(summary: ProfilesSummary, selected: string): Relate
   return rows.sort((a, b) => Number(b.clear) - Number(a.clear) || Math.abs(b.points) - Math.abs(a.points));
 }
 
-export default function SegmentRelated({ summary, selected }: { summary: ProfilesSummary; selected: string }) {
+export default function SegmentRelated({ view }: { view: SegmentView }) {
   const [kind, setKind] = useState<string | null>(null);
   const [more, setMore] = useState(false);
-  if (selected === "all") return <div className="card card-sub">Pick a segment to see what goes with it.</div>;
-  const all = relatedItems(summary, selected);
+  if (view.conditions.length === 0) return <div className="card card-sub">Pick a segment to see what goes with it.</div>;
+  const all = relatedItems(view);
   const kinds = [...new Set(all.map((r) => r.kind))];
   const visible = all.filter((r) => (kind === null || r.kind === kind));
   const shown = more ? visible : visible.slice(0, LIST_LENGTH);

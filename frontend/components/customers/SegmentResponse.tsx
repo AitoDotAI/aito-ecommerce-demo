@@ -1,7 +1,7 @@
 "use client";
 
 import { fmtEur } from "@/lib/api";
-import { ACTION_TITLE, type ProfilesSummary, type ResponseCell } from "@/lib/customer-profiles";
+import { ACTION_TITLE, type ProfilesSummary, type ResponseCell, type SegmentView } from "@/lib/customer-profiles";
 
 function shade(cell: ResponseCell, clear: boolean | null, lift: number | null) {
   if (cell.thin || lift === null) return { color: "var(--text-muted)" };
@@ -10,8 +10,8 @@ function shade(cell: ResponseCell, clear: boolean | null, lift: number | null) {
 }
 
 /** What the shop's actions did for the selected segment, in orders and in estimated profit, against no action. */
-export default function SegmentResponse({ summary, selected }: { summary: ProfilesSummary; selected: string }) {
-  const entry = summary.response[selected];
+export default function SegmentResponse({ summary, view }: { summary: ProfilesSummary; view: SegmentView }) {
+  const entry = view.response;
   if (!entry) return null;
   return (
     <div className="card">

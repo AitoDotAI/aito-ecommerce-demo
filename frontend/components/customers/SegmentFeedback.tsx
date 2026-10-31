@@ -1,14 +1,13 @@
 "use client";
 
 import Confidence from "@/components/customers/Confidence";
-import type { FeedbackEntry, FeedbackRow, ProfilesSummary } from "@/lib/customer-profiles";
+import type { FeedbackRow, SegmentView } from "@/lib/customer-profiles";
 
 /** What the segment says: how much it writes, what it writes about, and how likely it is to recommend the shop. */
-export default function SegmentFeedback({ summary, selected }: { summary: ProfilesSummary; selected: string }) {
-  const entry = summary.feedback[selected];
-  const all = summary.feedback.all;
-  if (!entry) return null;
-  const everyone = selected === "all";
+export default function SegmentFeedback({ view }: { view: SegmentView }) {
+  if (!view.feedback) return null;
+  const { selected: entry, all } = view.feedback;
+  const everyone = view.conditions.length === 0;
   const scale = Math.max(30, ...entry.rows.map((r) => Math.abs(r.points ?? 0)));
   return (
     <div className="card">

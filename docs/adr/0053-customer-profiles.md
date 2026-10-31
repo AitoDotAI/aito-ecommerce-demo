@@ -30,10 +30,18 @@ A new view, **Customers**, with the rules below.
    come from their whole history and apply to every action row of theirs, so this describes the segments as they are now. The margins treat
    rows as independent although one customer can have several, so they are approximate; a cell inside its margin is shown grey, one under
    30 rows is blank, and about one cell in twenty would pass by chance.
-5. **A segment picker, as in Product.** A drop-down picks a segment (or everyone) and every pane follows it. Top left: who the segment is, in words, and what to do
-   (only differences larger than their margins). Top right, in tabs as in Product: its key figures against everyone (for everyone also the profit distribution: median, what the top tenth earns, how many lose money) and its showing funnel (impressions, clicks, carts,
-   purchases) over the identified sessions of its customers; its other preferences; the channels it came through; what the shop's actions did for it; what it says: the share of its customers who wrote reviews, about what (quality, shipping, fit, a question, praise) and answered as promoters or detractors in the NPS survey, each against the other profiled customers (customer-level shares, 99.7 % margin; reviews and answers of customers who did not consent are not counted), with the average rating and NPS beside everyone's. Below the profile: where the segment sits in the ranking of the variable it is a slice of (offer, price or rating; none for pets and diets), so the
-   only control is the segment drop-down. The preferences tab is one list of what goes with the segment, every row with a confidence column (the difference over its margin; above 1× it is larger than chance would give), clear rows first; nothing is hidden, with its lift in points (other ways of shopping, categories, brands, products). The view examines one segment; there is no list comparing all segments. Profit is the price paid less the unit cost on the lines kept (a returned line earns nothing),
+5. **A topic tree selects the segment, by any number of conditions at once.** Ticking "premium-leaning", "dog" and "high-margin" describes
+   the customers who meet all three (the shopping traits and margin take one value each; pets and diets can be ticked more than once).
+   Nothing ticked is every profiled customer. Above the tree, a figure to compare by (customers, purchases, revenue, profit per customer,
+   NPS): each condition shows what that figure would be for the segment if it were ticked, as a number and a bar, so a dead end or a
+   standout shows before it is picked. A selection is counted when asked for, from `data/customer_profiles/facts.json` (per-customer
+   facts for the profiled customers, no names), by `GET /api/customer-profiles/segment?c=trait:value&c=...`; a selection under 30 customers
+   is given its size and nothing else. Margin is a customer's basket margin (gross profit over the price paid for what they kept), high
+   or low against the median customer's. Top left: who the segment is, in words, what to do (only differences larger than their margins),
+   and a "?" that opens where the segment sits in the preference ranking of the variable it is a slice of (offer, price or rating).
+   Top right: the chosen figure's trend over the months against everyone's shape, and whether the last three months are in decline.
+   Below, tabs as in Product: key figures and the showing funnel (impressions, clicks, carts, purchases over the identified sessions of
+   its customers), other preferences, channels, what the shop's actions did for it, and what it says in reviews and NPS answers. Profit is the price paid less the unit cost on the lines kept (a returned line earns nothing),
    less the shop's action costs; there is no delivery or payment cost in the data, so it is profit after products and actions, not a full P&L.
    The unit cost is the inventory's current cost per product, applied to two years of sales. Profit per customer carries a 95 % bootstrap interval
    (a few customers earn much of it), and no interval is given under 30 customers. Revenue is the price paid on the lines kept, the same basis as profit and

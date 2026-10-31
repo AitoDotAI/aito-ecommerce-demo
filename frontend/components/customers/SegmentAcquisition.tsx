@@ -5,17 +5,17 @@ import Link from "next/link";
 
 import Confidence from "@/components/customers/Confidence";
 import { fmtEur } from "@/lib/api";
-import { ACQUISITION_TITLE, type AcquisitionRow, type ProfilesSummary } from "@/lib/customer-profiles";
+import { ACQUISITION_TITLE, type AcquisitionRow, type SegmentView } from "@/lib/customer-profiles";
 
 const DIMENSIONS = ["source", "landing", "landing_category"] as const;
 
 /** Where the segment's customers came from: channel, landing page, landing category, and what they earned. */
-export default function SegmentAcquisition({ summary, selected }: { summary: ProfilesSummary; selected: string }) {
+export default function SegmentAcquisition({ view }: { view: SegmentView }) {
   const [dimension, setDimension] = useState<(typeof DIMENSIONS)[number]>("source");
-  const entry = summary.acquisition[selected];
-  if (!entry) return null;
+  const entry = view.acquisition;
+  if (!entry || !entry[dimension]) return null;
   const rows = entry[dimension];
-  const everyone = selected === "all";
+  const everyone = view.conditions.length === 0;
   return (
     <div className="card">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: 8 }}>
