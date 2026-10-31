@@ -42,7 +42,12 @@ A new view, **Customers**, with the rules below.
 5b. **Preference ranking.** All customers ranked by how much they prefer something (their share of lines on offer, in the cheaper half, in better-rated
    products, in a category or of a brand, over the average share), as a curve in twenty steps and five fifths, with the top fifth over the average and over the
    bottom fifth (undefined when the bottom fifth buys none), and how many of the selected segment each fifth holds.
-5c. **Revenue per profile.** Each segment shows the sum of its customers' orders (lifetime and the last 12 months) and its share of all
+5c. **Acquisition.** Each profiled customer's first session (found through their visitor id) gives the channel, the landing page type and the
+   landing category they arrived by. For a segment the view shows how many more or fewer of it came each way than of the other customers (points, 99.7 % margin),
+   and the profit per customer of those who came that way (where 30 or more stand behind it), against everyone who came that way. Only what was known on arrival is
+   read: the label for whether a customer became a regular carries the future and stays in the Acquisition view. "Ads" are the paid channels (paid search,
+   social, affiliate) in the channel list; the advertised-product level of the product states is not linked to customers yet.
+5d. **Revenue per profile.** Each segment shows the sum of its customers' orders (lifetime and the last 12 months) and its share of all
    profiled customers' revenue. Pets and diets overlap, so their shares add up to more than 100 %.
 6. **Relations.** Among customers with one trait, how many more points have another trait than those without it, for the three
    ways of shopping and the pets. Diet tags are left out of relations and preferences: a diet belongs to a kind of pet, so it would
@@ -76,6 +81,7 @@ with `$why`) and adds `_relate` for what separates a segment.
 - [x] A user can see every segment in one list with customers, profit per customer, profit and churn, and select one to inspect.
 - [x] A user can see profit per customer per segment, against the average, and how many customers lose money.
 - [x] A user can see, for a segment, what each action did to orders and to estimated profit, with its margin.
+- [x] A user can see where a segment's customers came from (channel, landing page, landing category), against the others, and what they earn per customer.
 - [x] A user can see revenue per segment, with its share and the last 12 months.
 - [x] A user can see how a trait relates to the others, each with its margin; a group under 30 customers has no relation.
 - [x] A user can see what a way of shopping buys over-proportionally within a pet group, with the margin.

@@ -32,6 +32,7 @@ export interface ProfilesSummary {
   overall: Segment; definitions: Record<string, string>;
   funnel: Record<string, FunnelCounts>; preference_ranking: Record<string, PreferenceRanking>;
   relations: Relation[]; preferences: Record<string, PreferenceGroup>;
+  acquisition: Record<string, Record<"source" | "landing" | "landing_category", AcquisitionRow[]>>;
   by_trait: Record<"offer" | "price" | "rating" | "pets" | "diets", Segment[]>;
   response: Record<string, ResponseEntry>;
 }
@@ -88,3 +89,11 @@ export function definitionOf(summary: ProfilesSummary, key: string): string {
   const trait = key.split(":")[0];
   return summary.definitions[key] ?? summary.definitions[`_${trait}`] ?? "";
 }
+
+export interface AcquisitionRow {
+  value: string; customers: number; share: number; share_others?: number; points?: number; margin_points?: number; clear?: boolean;
+  profit_per_customer_eur: number | null; profit_per_customer_ci: [number, number] | null; profit_per_customer_all_eur: number | null;
+}
+
+/** The words the acquisition dimensions go by in the view. */
+export const ACQUISITION_TITLE: Record<string, string> = { source: "Channel", landing: "Landing page", landing_category: "Landing category" };

@@ -24,6 +24,12 @@ export function actionableItems(summary: ProfilesSummary, key: string): Item[] {
     }
   }
   const [trait] = key.split(":");
+  const acquired = key === "all" ? [] : [...(summary.acquisition[key]?.source ?? [])].filter((r) => r.clear)
+    .sort((x, y) => Math.abs(y.points ?? 0) - Math.abs(x.points ?? 0));
+  for (const r of acquired.slice(0, 2)) {
+    const channelProfit = r.profit_per_customer_all_eur === null ? "" : `; customers from it earn ${fmtEur(r.profit_per_customer_all_eur)} each on average`;
+    items.push({ tone: "note", text: `${(r.points ?? 0) > 0 ? "More" : "Fewer"} come through ${r.value.replace("_", " ")} than of the other customers (${(r.points ?? 0) > 0 ? "+" : ""}${r.points} points)${channelProfit}.` });
+  }
   const related = summary.relations.filter((r) => `${r.if.trait}:${r.if.value}` === key && r.clear && r.points > 0).slice(0, 3);
   for (const r of related) {
     items.push({ tone: "note", text: `More often ${TRAIT_TITLE[r.then.trait].toLowerCase()}: ${r.then.value} (+${r.points} points).` });

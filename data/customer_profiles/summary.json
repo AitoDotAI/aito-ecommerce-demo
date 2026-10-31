@@ -7547,6 +7547,6253 @@
    "purchases": 36
   }
  },
+ "acquisition": {
+  "all": {
+   "source": [
+    {
+     "value": "organic_search",
+     "customers": 548,
+     "share": 0.306,
+     "profit_per_customer_eur": 86.4,
+     "profit_per_customer_ci": [
+      81.13,
+      92.22
+     ],
+     "profit_per_customer_all_eur": 86.4
+    },
+    {
+     "value": "paid_search",
+     "customers": 362,
+     "share": 0.202,
+     "profit_per_customer_eur": 76.07,
+     "profit_per_customer_ci": [
+      69.57,
+      83.08
+     ],
+     "profit_per_customer_all_eur": 76.07
+    },
+    {
+     "value": "direct",
+     "customers": 352,
+     "share": 0.197,
+     "profit_per_customer_eur": 77.81,
+     "profit_per_customer_ci": [
+      70.82,
+      85.03
+     ],
+     "profit_per_customer_all_eur": 77.81
+    },
+    {
+     "value": "affiliate",
+     "customers": 214,
+     "share": 0.12,
+     "profit_per_customer_eur": 70.74,
+     "profit_per_customer_ci": [
+      61.48,
+      80.56
+     ],
+     "profit_per_customer_all_eur": 70.74
+    },
+    {
+     "value": "social",
+     "customers": 160,
+     "share": 0.089,
+     "profit_per_customer_eur": 64.31,
+     "profit_per_customer_ci": [
+      55.39,
+      73.29
+     ],
+     "profit_per_customer_all_eur": 64.31
+    },
+    {
+     "value": "email",
+     "customers": 154,
+     "share": 0.086,
+     "profit_per_customer_eur": 79.29,
+     "profit_per_customer_ci": [
+      71.82,
+      86.37
+     ],
+     "profit_per_customer_all_eur": 79.29
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 705,
+     "share": 0.394,
+     "profit_per_customer_eur": 79.34,
+     "profit_per_customer_ci": [
+      74.77,
+      84.24
+     ],
+     "profit_per_customer_all_eur": 79.34
+    },
+    {
+     "value": "home",
+     "customers": 321,
+     "share": 0.179,
+     "profit_per_customer_eur": 75.12,
+     "profit_per_customer_ci": [
+      68.48,
+      81.6
+     ],
+     "profit_per_customer_all_eur": 75.12
+    },
+    {
+     "value": "category",
+     "customers": 277,
+     "share": 0.155,
+     "profit_per_customer_eur": 80.61,
+     "profit_per_customer_ci": [
+      72.47,
+      88.73
+     ],
+     "profit_per_customer_all_eur": 80.61
+    },
+    {
+     "value": "search",
+     "customers": 251,
+     "share": 0.14,
+     "profit_per_customer_eur": 78.21,
+     "profit_per_customer_ci": [
+      70.9,
+      85.68
+     ],
+     "profit_per_customer_all_eur": 78.21
+    },
+    {
+     "value": "offer",
+     "customers": 236,
+     "share": 0.132,
+     "profit_per_customer_eur": 75.87,
+     "profit_per_customer_ci": [
+      68.01,
+      84.5
+     ],
+     "profit_per_customer_all_eur": 75.87
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "treats",
+     "customers": 330,
+     "share": 0.184,
+     "profit_per_customer_eur": 80.11,
+     "profit_per_customer_ci": [
+      73.46,
+      87.45
+     ],
+     "profit_per_customer_all_eur": 80.11
+    },
+    {
+     "value": "home page (no category)",
+     "customers": 321,
+     "share": 0.179,
+     "profit_per_customer_eur": 75.12,
+     "profit_per_customer_ci": [
+      68.48,
+      81.6
+     ],
+     "profit_per_customer_all_eur": 75.12
+    },
+    {
+     "value": "wet-food",
+     "customers": 264,
+     "share": 0.147,
+     "profit_per_customer_eur": 82.85,
+     "profit_per_customer_ci": [
+      75.11,
+      92.09
+     ],
+     "profit_per_customer_all_eur": 82.85
+    },
+    {
+     "value": "dry-food",
+     "customers": 225,
+     "share": 0.126,
+     "profit_per_customer_eur": 80.27,
+     "profit_per_customer_ci": [
+      71.67,
+      88.88
+     ],
+     "profit_per_customer_all_eur": 80.27
+    },
+    {
+     "value": "accessories",
+     "customers": 178,
+     "share": 0.099,
+     "profit_per_customer_eur": 78.44,
+     "profit_per_customer_ci": [
+      69.61,
+      87.1
+     ],
+     "profit_per_customer_all_eur": 78.44
+    },
+    {
+     "value": "toys",
+     "customers": 155,
+     "share": 0.087,
+     "profit_per_customer_eur": 70.65,
+     "profit_per_customer_ci": [
+      62.0,
+      79.61
+     ],
+     "profit_per_customer_all_eur": 70.65
+    },
+    {
+     "value": "health",
+     "customers": 84,
+     "share": 0.047,
+     "profit_per_customer_eur": 69.06,
+     "profit_per_customer_ci": [
+      58.28,
+      82.28
+     ],
+     "profit_per_customer_all_eur": 69.06
+    },
+    {
+     "value": "aquarium",
+     "customers": 70,
+     "share": 0.039,
+     "profit_per_customer_eur": 87.68,
+     "profit_per_customer_ci": [
+      73.02,
+      102.07
+     ],
+     "profit_per_customer_all_eur": 87.68
+    },
+    {
+     "value": "litter",
+     "customers": 69,
+     "share": 0.039,
+     "profit_per_customer_eur": 69.69,
+     "profit_per_customer_ci": [
+      55.41,
+      84.4
+     ],
+     "profit_per_customer_all_eur": 69.69
+    },
+    {
+     "value": "grooming",
+     "customers": 58,
+     "share": 0.032,
+     "profit_per_customer_eur": 75.15,
+     "profit_per_customer_ci": [
+      63.09,
+      91.05
+     ],
+     "profit_per_customer_all_eur": 75.15
+    },
+    {
+     "value": "dental-treats",
+     "customers": 36,
+     "share": 0.02,
+     "profit_per_customer_eur": 94.74,
+     "profit_per_customer_ci": [
+      70.92,
+      124.76
+     ],
+     "profit_per_customer_all_eur": 94.74
+    }
+   ]
+  },
+  "diets:grain-free": {
+   "source": [
+    {
+     "value": "organic_search",
+     "customers": 268,
+     "share": 0.338,
+     "profit_per_customer_eur": 103.9,
+     "profit_per_customer_ci": [
+      95.64,
+      112.43
+     ],
+     "profit_per_customer_all_eur": 86.4,
+     "share_others": 0.281,
+     "points": 5.7,
+     "margin_points": 6.6,
+     "clear": false
+    },
+    {
+     "value": "paid_search",
+     "customers": 155,
+     "share": 0.195,
+     "profit_per_customer_eur": 98.47,
+     "profit_per_customer_ci": [
+      87.54,
+      109.74
+     ],
+     "profit_per_customer_all_eur": 76.07,
+     "share_others": 0.208,
+     "points": -1.2,
+     "margin_points": 5.7,
+     "clear": false
+    },
+    {
+     "value": "direct",
+     "customers": 152,
+     "share": 0.192,
+     "profit_per_customer_eur": 103.35,
+     "profit_per_customer_ci": [
+      93.19,
+      115.77
+     ],
+     "profit_per_customer_all_eur": 77.81,
+     "share_others": 0.201,
+     "points": -0.9,
+     "margin_points": 5.7,
+     "clear": false
+    },
+    {
+     "value": "affiliate",
+     "customers": 86,
+     "share": 0.108,
+     "profit_per_customer_eur": 98.05,
+     "profit_per_customer_ci": [
+      80.39,
+      117.89
+     ],
+     "profit_per_customer_all_eur": 70.74,
+     "share_others": 0.128,
+     "points": -2.0,
+     "margin_points": 4.6,
+     "clear": false
+    },
+    {
+     "value": "email",
+     "customers": 75,
+     "share": 0.095,
+     "profit_per_customer_eur": 93.67,
+     "profit_per_customer_ci": [
+      82.57,
+      105.04
+     ],
+     "profit_per_customer_all_eur": 79.29,
+     "share_others": 0.079,
+     "points": 1.5,
+     "margin_points": 4.0,
+     "clear": false
+    },
+    {
+     "value": "social",
+     "customers": 57,
+     "share": 0.072,
+     "profit_per_customer_eur": 96.6,
+     "profit_per_customer_ci": [
+      78.98,
+      117.34
+     ],
+     "profit_per_customer_all_eur": 64.31,
+     "share_others": 0.103,
+     "points": -3.1,
+     "margin_points": 4.0,
+     "clear": false
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 320,
+     "share": 0.404,
+     "profit_per_customer_eur": 102.71,
+     "profit_per_customer_ci": [
+      94.69,
+      110.93
+     ],
+     "profit_per_customer_all_eur": 79.34,
+     "share_others": 0.386,
+     "points": 1.7,
+     "margin_points": 7.0,
+     "clear": false
+    },
+    {
+     "value": "home",
+     "customers": 140,
+     "share": 0.177,
+     "profit_per_customer_eur": 93.83,
+     "profit_per_customer_ci": [
+      83.16,
+      106.6
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.182,
+     "points": -0.5,
+     "margin_points": 5.5,
+     "clear": false
+    },
+    {
+     "value": "category",
+     "customers": 121,
+     "share": 0.153,
+     "profit_per_customer_eur": 108.13,
+     "profit_per_customer_ci": [
+      94.49,
+      120.86
+     ],
+     "profit_per_customer_all_eur": 80.61,
+     "share_others": 0.156,
+     "points": -0.4,
+     "margin_points": 5.2,
+     "clear": false
+    },
+    {
+     "value": "search",
+     "customers": 113,
+     "share": 0.142,
+     "profit_per_customer_eur": 97.8,
+     "profit_per_customer_ci": [
+      84.9,
+      110.75
+     ],
+     "profit_per_customer_all_eur": 78.21,
+     "share_others": 0.138,
+     "points": 0.4,
+     "margin_points": 5.0,
+     "clear": false
+    },
+    {
+     "value": "offer",
+     "customers": 99,
+     "share": 0.125,
+     "profit_per_customer_eur": 97.41,
+     "profit_per_customer_ci": [
+      82.97,
+      111.77
+     ],
+     "profit_per_customer_all_eur": 75.87,
+     "share_others": 0.137,
+     "points": -1.3,
+     "margin_points": 4.8,
+     "clear": false
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "treats",
+     "customers": 160,
+     "share": 0.202,
+     "profit_per_customer_eur": 101.12,
+     "profit_per_customer_ci": [
+      89.48,
+      113.51
+     ],
+     "profit_per_customer_all_eur": 80.11,
+     "share_others": 0.171,
+     "points": 3.1,
+     "margin_points": 5.6,
+     "clear": false
+    },
+    {
+     "value": "wet-food",
+     "customers": 141,
+     "share": 0.178,
+     "profit_per_customer_eur": 108.16,
+     "profit_per_customer_ci": [
+      96.12,
+      120.52
+     ],
+     "profit_per_customer_all_eur": 82.85,
+     "share_others": 0.123,
+     "points": 5.4,
+     "margin_points": 5.1,
+     "clear": true
+    },
+    {
+     "value": "home page (no category)",
+     "customers": 140,
+     "share": 0.177,
+     "profit_per_customer_eur": 93.83,
+     "profit_per_customer_ci": [
+      83.16,
+      106.6
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.182,
+     "points": -0.5,
+     "margin_points": 5.5,
+     "clear": false
+    },
+    {
+     "value": "dry-food",
+     "customers": 90,
+     "share": 0.113,
+     "profit_per_customer_eur": 109.7,
+     "profit_per_customer_ci": [
+      95.94,
+      129.03
+     ],
+     "profit_per_customer_all_eur": 80.27,
+     "share_others": 0.135,
+     "points": -2.2,
+     "margin_points": 4.7,
+     "clear": false
+    },
+    {
+     "value": "accessories",
+     "customers": 85,
+     "share": 0.107,
+     "profit_per_customer_eur": 99.74,
+     "profit_per_customer_ci": [
+      85.64,
+      115.01
+     ],
+     "profit_per_customer_all_eur": 78.44,
+     "share_others": 0.093,
+     "points": 1.4,
+     "margin_points": 4.3,
+     "clear": false
+    },
+    {
+     "value": "toys",
+     "customers": 66,
+     "share": 0.083,
+     "profit_per_customer_eur": 90.95,
+     "profit_per_customer_ci": [
+      76.38,
+      110.29
+     ],
+     "profit_per_customer_all_eur": 70.65,
+     "share_others": 0.089,
+     "points": -0.6,
+     "margin_points": 4.0,
+     "clear": false
+    },
+    {
+     "value": "litter",
+     "customers": 33,
+     "share": 0.042,
+     "profit_per_customer_eur": 82.34,
+     "profit_per_customer_ci": [
+      62.89,
+      103.98
+     ],
+     "profit_per_customer_all_eur": 69.69,
+     "share_others": 0.036,
+     "points": 0.6,
+     "margin_points": 2.8,
+     "clear": false
+    },
+    {
+     "value": "health",
+     "customers": 29,
+     "share": 0.037,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.06,
+     "share_others": 0.055,
+     "points": -1.9,
+     "margin_points": 3.0,
+     "clear": false
+    },
+    {
+     "value": "grooming",
+     "customers": 28,
+     "share": 0.035,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.15,
+     "share_others": 0.03,
+     "points": 0.5,
+     "margin_points": 2.5,
+     "clear": false
+    },
+    {
+     "value": "dental-treats",
+     "customers": 21,
+     "share": 0.026,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 94.74,
+     "share_others": 0.015,
+     "points": 1.1,
+     "margin_points": 2.1,
+     "clear": false
+    }
+   ]
+  },
+  "diets:indoor": {
+   "source": [
+    {
+     "value": "organic_search",
+     "customers": 92,
+     "share": 0.357,
+     "profit_per_customer_eur": 109.78,
+     "profit_per_customer_ci": [
+      95.63,
+      122.18
+     ],
+     "profit_per_customer_all_eur": 86.4,
+     "share_others": 0.298,
+     "points": 5.9,
+     "margin_points": 9.6,
+     "clear": false
+    },
+    {
+     "value": "paid_search",
+     "customers": 47,
+     "share": 0.182,
+     "profit_per_customer_eur": 96.97,
+     "profit_per_customer_ci": [
+      80.86,
+      113.39
+     ],
+     "profit_per_customer_all_eur": 76.07,
+     "share_others": 0.206,
+     "points": -2.3,
+     "margin_points": 7.8,
+     "clear": false
+    },
+    {
+     "value": "direct",
+     "customers": 37,
+     "share": 0.143,
+     "profit_per_customer_eur": 116.11,
+     "profit_per_customer_ci": [
+      84.87,
+      153.51
+     ],
+     "profit_per_customer_all_eur": 77.81,
+     "share_others": 0.206,
+     "points": -6.2,
+     "margin_points": 7.2,
+     "clear": false
+    },
+    {
+     "value": "affiliate",
+     "customers": 35,
+     "share": 0.136,
+     "profit_per_customer_eur": 88.56,
+     "profit_per_customer_ci": [
+      66.48,
+      113.9
+     ],
+     "profit_per_customer_all_eur": 70.74,
+     "share_others": 0.117,
+     "points": 1.9,
+     "margin_points": 6.9,
+     "clear": false
+    },
+    {
+     "value": "email",
+     "customers": 24,
+     "share": 0.093,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 79.29,
+     "share_others": 0.085,
+     "points": 0.8,
+     "margin_points": 5.8,
+     "clear": false
+    },
+    {
+     "value": "social",
+     "customers": 23,
+     "share": 0.089,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 64.31,
+     "share_others": 0.089,
+     "points": -0.0,
+     "margin_points": 5.8,
+     "clear": false
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 104,
+     "share": 0.403,
+     "profit_per_customer_eur": 105.07,
+     "profit_per_customer_ci": [
+      94.17,
+      117.07
+     ],
+     "profit_per_customer_all_eur": 79.34,
+     "share_others": 0.392,
+     "points": 1.1,
+     "margin_points": 9.9,
+     "clear": false
+    },
+    {
+     "value": "category",
+     "customers": 45,
+     "share": 0.174,
+     "profit_per_customer_eur": 101.24,
+     "profit_per_customer_ci": [
+      81.74,
+      121.78
+     ],
+     "profit_per_customer_all_eur": 80.61,
+     "share_others": 0.151,
+     "points": 2.3,
+     "margin_points": 7.6,
+     "clear": false
+    },
+    {
+     "value": "home",
+     "customers": 39,
+     "share": 0.151,
+     "profit_per_customer_eur": 105.59,
+     "profit_per_customer_ci": [
+      77.04,
+      136.93
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.184,
+     "points": -3.3,
+     "margin_points": 7.3,
+     "clear": false
+    },
+    {
+     "value": "offer",
+     "customers": 39,
+     "share": 0.151,
+     "profit_per_customer_eur": 95.44,
+     "profit_per_customer_ci": [
+      71.09,
+      120.31
+     ],
+     "profit_per_customer_all_eur": 75.87,
+     "share_others": 0.129,
+     "points": 2.3,
+     "margin_points": 7.2,
+     "clear": false
+    },
+    {
+     "value": "search",
+     "customers": 31,
+     "share": 0.12,
+     "profit_per_customer_eur": 109.2,
+     "profit_per_customer_ci": [
+      87.33,
+      129.6
+     ],
+     "profit_per_customer_all_eur": 78.21,
+     "share_others": 0.144,
+     "points": -2.3,
+     "margin_points": 6.6,
+     "clear": false
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "treats",
+     "customers": 54,
+     "share": 0.209,
+     "profit_per_customer_eur": 99.67,
+     "profit_per_customer_ci": [
+      81.25,
+      120.27
+     ],
+     "profit_per_customer_all_eur": 80.11,
+     "share_others": 0.18,
+     "points": 2.9,
+     "margin_points": 8.1,
+     "clear": false
+    },
+    {
+     "value": "wet-food",
+     "customers": 52,
+     "share": 0.202,
+     "profit_per_customer_eur": 113.63,
+     "profit_per_customer_ci": [
+      97.51,
+      131.69
+     ],
+     "profit_per_customer_all_eur": 82.85,
+     "share_others": 0.138,
+     "points": 6.3,
+     "margin_points": 7.9,
+     "clear": false
+    },
+    {
+     "value": "dry-food",
+     "customers": 39,
+     "share": 0.151,
+     "profit_per_customer_eur": 97.62,
+     "profit_per_customer_ci": [
+      77.71,
+      120.71
+     ],
+     "profit_per_customer_all_eur": 80.27,
+     "share_others": 0.121,
+     "points": 3.0,
+     "margin_points": 7.1,
+     "clear": false
+    },
+    {
+     "value": "home page (no category)",
+     "customers": 39,
+     "share": 0.151,
+     "profit_per_customer_eur": 105.59,
+     "profit_per_customer_ci": [
+      77.04,
+      136.93
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.184,
+     "points": -3.3,
+     "margin_points": 7.3,
+     "clear": false
+    },
+    {
+     "value": "litter",
+     "customers": 23,
+     "share": 0.089,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.69,
+     "share_others": 0.03,
+     "points": 5.9,
+     "margin_points": 5.5,
+     "clear": true
+    },
+    {
+     "value": "toys",
+     "customers": 16,
+     "share": 0.062,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 70.65,
+     "share_others": 0.091,
+     "points": -2.9,
+     "margin_points": 5.0,
+     "clear": false
+    },
+    {
+     "value": "accessories",
+     "customers": 15,
+     "share": 0.058,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 78.44,
+     "share_others": 0.106,
+     "points": -4.8,
+     "margin_points": 5.0,
+     "clear": false
+    },
+    {
+     "value": "health",
+     "customers": 11,
+     "share": 0.043,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.06,
+     "share_others": 0.048,
+     "points": -0.5,
+     "margin_points": 4.1,
+     "clear": false
+    },
+    {
+     "value": "grooming",
+     "customers": 8,
+     "share": 0.031,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.15,
+     "share_others": 0.033,
+     "points": -0.2,
+     "margin_points": 3.5,
+     "clear": false
+    }
+   ]
+  },
+  "diets:large-breed": {
+   "source": [
+    {
+     "value": "organic_search",
+     "customers": 71,
+     "share": 0.332,
+     "profit_per_customer_eur": 100.04,
+     "profit_per_customer_ci": [
+      86.01,
+      111.48
+     ],
+     "profit_per_customer_all_eur": 86.4,
+     "share_others": 0.303,
+     "points": 2.9,
+     "margin_points": 10.3,
+     "clear": false
+    },
+    {
+     "value": "direct",
+     "customers": 49,
+     "share": 0.229,
+     "profit_per_customer_eur": 105.43,
+     "profit_per_customer_ci": [
+      88.98,
+      124.84
+     ],
+     "profit_per_customer_all_eur": 77.81,
+     "share_others": 0.192,
+     "points": 3.7,
+     "margin_points": 9.1,
+     "clear": false
+    },
+    {
+     "value": "paid_search",
+     "customers": 35,
+     "share": 0.164,
+     "profit_per_customer_eur": 103.53,
+     "profit_per_customer_ci": [
+      79.6,
+      133.04
+     ],
+     "profit_per_customer_all_eur": 76.07,
+     "share_others": 0.207,
+     "points": -4.4,
+     "margin_points": 8.2,
+     "clear": false
+    },
+    {
+     "value": "email",
+     "customers": 26,
+     "share": 0.121,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 79.29,
+     "share_others": 0.081,
+     "points": 4.0,
+     "margin_points": 7.0,
+     "clear": false
+    },
+    {
+     "value": "affiliate",
+     "customers": 24,
+     "share": 0.112,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 70.74,
+     "share_others": 0.121,
+     "points": -0.8,
+     "margin_points": 6.9,
+     "clear": false
+    },
+    {
+     "value": "social",
+     "customers": 9,
+     "share": 0.042,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 64.31,
+     "share_others": 0.096,
+     "points": -5.4,
+     "margin_points": 4.7,
+     "clear": true
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 89,
+     "share": 0.416,
+     "profit_per_customer_eur": 96.54,
+     "profit_per_customer_ci": [
+      86.58,
+      107.93
+     ],
+     "profit_per_customer_all_eur": 79.34,
+     "share_others": 0.391,
+     "points": 2.5,
+     "margin_points": 10.8,
+     "clear": false
+    },
+    {
+     "value": "home",
+     "customers": 39,
+     "share": 0.182,
+     "profit_per_customer_eur": 86.38,
+     "profit_per_customer_ci": [
+      72.72,
+      100.25
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.179,
+     "points": 0.3,
+     "margin_points": 8.4,
+     "clear": false
+    },
+    {
+     "value": "search",
+     "customers": 32,
+     "share": 0.15,
+     "profit_per_customer_eur": 117.02,
+     "profit_per_customer_ci": [
+      89.51,
+      154.45
+     ],
+     "profit_per_customer_all_eur": 78.21,
+     "share_others": 0.139,
+     "points": 1.1,
+     "margin_points": 7.8,
+     "clear": false
+    },
+    {
+     "value": "offer",
+     "customers": 28,
+     "share": 0.131,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.87,
+     "share_others": 0.132,
+     "points": -0.1,
+     "margin_points": 7.4,
+     "clear": false
+    },
+    {
+     "value": "category",
+     "customers": 26,
+     "share": 0.121,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 80.61,
+     "share_others": 0.159,
+     "points": -3.8,
+     "margin_points": 7.2,
+     "clear": false
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "treats",
+     "customers": 47,
+     "share": 0.22,
+     "profit_per_customer_eur": 100.5,
+     "profit_per_customer_ci": [
+      80.69,
+      123.12
+     ],
+     "profit_per_customer_all_eur": 80.11,
+     "share_others": 0.18,
+     "points": 4.0,
+     "margin_points": 9.0,
+     "clear": false
+    },
+    {
+     "value": "home page (no category)",
+     "customers": 39,
+     "share": 0.182,
+     "profit_per_customer_eur": 86.38,
+     "profit_per_customer_ci": [
+      72.72,
+      100.25
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.179,
+     "points": 0.3,
+     "margin_points": 8.4,
+     "clear": false
+    },
+    {
+     "value": "accessories",
+     "customers": 32,
+     "share": 0.15,
+     "profit_per_customer_eur": 98.41,
+     "profit_per_customer_ci": [
+      76.37,
+      122.62
+     ],
+     "profit_per_customer_all_eur": 78.44,
+     "share_others": 0.093,
+     "points": 5.7,
+     "margin_points": 7.6,
+     "clear": false
+    },
+    {
+     "value": "dry-food",
+     "customers": 28,
+     "share": 0.131,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 80.27,
+     "share_others": 0.125,
+     "points": 0.6,
+     "margin_points": 7.4,
+     "clear": false
+    },
+    {
+     "value": "wet-food",
+     "customers": 20,
+     "share": 0.093,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 82.85,
+     "share_others": 0.155,
+     "points": -6.1,
+     "margin_points": 6.6,
+     "clear": false
+    },
+    {
+     "value": "toys",
+     "customers": 19,
+     "share": 0.089,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 70.65,
+     "share_others": 0.086,
+     "points": 0.2,
+     "margin_points": 6.2,
+     "clear": false
+    },
+    {
+     "value": "grooming",
+     "customers": 15,
+     "share": 0.07,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.15,
+     "share_others": 0.027,
+     "points": 4.3,
+     "margin_points": 5.4,
+     "clear": false
+    },
+    {
+     "value": "health",
+     "customers": 10,
+     "share": 0.047,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.06,
+     "share_others": 0.047,
+     "points": -0.0,
+     "margin_points": 4.6,
+     "clear": false
+    }
+   ]
+  },
+  "diets:puppy": {
+   "source": [
+    {
+     "value": "organic_search",
+     "customers": 76,
+     "share": 0.326,
+     "profit_per_customer_eur": 123.44,
+     "profit_per_customer_ci": [
+      103.09,
+      145.25
+     ],
+     "profit_per_customer_all_eur": 86.4,
+     "share_others": 0.303,
+     "points": 2.3,
+     "margin_points": 9.9,
+     "clear": false
+    },
+    {
+     "value": "direct",
+     "customers": 48,
+     "share": 0.206,
+     "profit_per_customer_eur": 97.92,
+     "profit_per_customer_ci": [
+      79.87,
+      118.44
+     ],
+     "profit_per_customer_all_eur": 77.81,
+     "share_others": 0.195,
+     "points": 1.1,
+     "margin_points": 8.5,
+     "clear": false
+    },
+    {
+     "value": "paid_search",
+     "customers": 47,
+     "share": 0.202,
+     "profit_per_customer_eur": 117.52,
+     "profit_per_customer_ci": [
+      93.01,
+      142.98
+     ],
+     "profit_per_customer_all_eur": 76.07,
+     "share_others": 0.202,
+     "points": -0.1,
+     "margin_points": 8.5,
+     "clear": false
+    },
+    {
+     "value": "affiliate",
+     "customers": 26,
+     "share": 0.112,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 70.74,
+     "share_others": 0.121,
+     "points": -0.9,
+     "margin_points": 6.7,
+     "clear": false
+    },
+    {
+     "value": "email",
+     "customers": 21,
+     "share": 0.09,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 79.29,
+     "share_others": 0.085,
+     "points": 0.5,
+     "margin_points": 6.0,
+     "clear": false
+    },
+    {
+     "value": "social",
+     "customers": 15,
+     "share": 0.064,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 64.31,
+     "share_others": 0.093,
+     "points": -2.9,
+     "margin_points": 5.3,
+     "clear": false
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 103,
+     "share": 0.442,
+     "profit_per_customer_eur": 120.03,
+     "profit_per_customer_ci": [
+      103.41,
+      138.89
+     ],
+     "profit_per_customer_all_eur": 79.34,
+     "share_others": 0.387,
+     "points": 5.5,
+     "margin_points": 10.4,
+     "clear": false
+    },
+    {
+     "value": "home",
+     "customers": 41,
+     "share": 0.176,
+     "profit_per_customer_eur": 90.28,
+     "profit_per_customer_ci": [
+      74.64,
+      106.87
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.18,
+     "points": -0.4,
+     "margin_points": 8.0,
+     "clear": false
+    },
+    {
+     "value": "search",
+     "customers": 33,
+     "share": 0.142,
+     "profit_per_customer_eur": 112.45,
+     "profit_per_customer_ci": [
+      81.07,
+      144.69
+     ],
+     "profit_per_customer_all_eur": 78.21,
+     "share_others": 0.14,
+     "points": 0.2,
+     "margin_points": 7.3,
+     "clear": false
+    },
+    {
+     "value": "offer",
+     "customers": 28,
+     "share": 0.12,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.87,
+     "share_others": 0.134,
+     "points": -1.3,
+     "margin_points": 6.9,
+     "clear": false
+    },
+    {
+     "value": "category",
+     "customers": 28,
+     "share": 0.12,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 80.61,
+     "share_others": 0.16,
+     "points": -4.0,
+     "margin_points": 7.0,
+     "clear": false
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "treats",
+     "customers": 52,
+     "share": 0.223,
+     "profit_per_customer_eur": 108.45,
+     "profit_per_customer_ci": [
+      87.77,
+      131.09
+     ],
+     "profit_per_customer_all_eur": 80.11,
+     "share_others": 0.179,
+     "points": 4.5,
+     "margin_points": 8.7,
+     "clear": false
+    },
+    {
+     "value": "home page (no category)",
+     "customers": 41,
+     "share": 0.176,
+     "profit_per_customer_eur": 90.28,
+     "profit_per_customer_ci": [
+      74.64,
+      106.87
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.18,
+     "points": -0.4,
+     "margin_points": 8.0,
+     "clear": false
+    },
+    {
+     "value": "wet-food",
+     "customers": 31,
+     "share": 0.133,
+     "profit_per_customer_eur": 113.94,
+     "profit_per_customer_ci": [
+      89.69,
+      143.77
+     ],
+     "profit_per_customer_all_eur": 82.85,
+     "share_others": 0.15,
+     "points": -1.7,
+     "margin_points": 7.2,
+     "clear": false
+    },
+    {
+     "value": "accessories",
+     "customers": 29,
+     "share": 0.124,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 78.44,
+     "share_others": 0.096,
+     "points": 2.9,
+     "margin_points": 6.9,
+     "clear": false
+    },
+    {
+     "value": "dry-food",
+     "customers": 27,
+     "share": 0.116,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 80.27,
+     "share_others": 0.127,
+     "points": -1.1,
+     "margin_points": 6.8,
+     "clear": false
+    },
+    {
+     "value": "toys",
+     "customers": 21,
+     "share": 0.09,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 70.65,
+     "share_others": 0.086,
+     "points": 0.4,
+     "margin_points": 6.0,
+     "clear": false
+    },
+    {
+     "value": "grooming",
+     "customers": 13,
+     "share": 0.056,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.15,
+     "share_others": 0.029,
+     "points": 2.7,
+     "margin_points": 4.7,
+     "clear": false
+    },
+    {
+     "value": "health",
+     "customers": 10,
+     "share": 0.043,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.06,
+     "share_others": 0.048,
+     "points": -0.5,
+     "margin_points": 4.3,
+     "clear": false
+    },
+    {
+     "value": "dental-treats",
+     "customers": 9,
+     "share": 0.039,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 94.74,
+     "share_others": 0.017,
+     "points": 2.1,
+     "margin_points": 3.9,
+     "clear": false
+    }
+   ]
+  },
+  "diets:senior": {
+   "source": [
+    {
+     "value": "organic_search",
+     "customers": 181,
+     "share": 0.356,
+     "profit_per_customer_eur": 111.04,
+     "profit_per_customer_ci": [
+      100.64,
+      120.57
+     ],
+     "profit_per_customer_all_eur": 86.4,
+     "share_others": 0.286,
+     "points": 6.9,
+     "margin_points": 7.4,
+     "clear": false
+    },
+    {
+     "value": "direct",
+     "customers": 97,
+     "share": 0.191,
+     "profit_per_customer_eur": 103.83,
+     "profit_per_customer_ci": [
+      89.25,
+      116.9
+     ],
+     "profit_per_customer_all_eur": 77.81,
+     "share_others": 0.199,
+     "points": -0.8,
+     "margin_points": 6.2,
+     "clear": false
+    },
+    {
+     "value": "paid_search",
+     "customers": 84,
+     "share": 0.165,
+     "profit_per_customer_eur": 102.72,
+     "profit_per_customer_ci": [
+      87.15,
+      119.32
+     ],
+     "profit_per_customer_all_eur": 76.07,
+     "share_others": 0.217,
+     "points": -5.2,
+     "margin_points": 6.0,
+     "clear": false
+    },
+    {
+     "value": "affiliate",
+     "customers": 53,
+     "share": 0.104,
+     "profit_per_customer_eur": 102.22,
+     "profit_per_customer_ci": [
+      82.85,
+      123.18
+     ],
+     "profit_per_customer_all_eur": 70.74,
+     "share_others": 0.126,
+     "points": -2.2,
+     "margin_points": 4.9,
+     "clear": false
+    },
+    {
+     "value": "email",
+     "customers": 50,
+     "share": 0.098,
+     "profit_per_customer_eur": 94.0,
+     "profit_per_customer_ci": [
+      80.57,
+      108.49
+     ],
+     "profit_per_customer_all_eur": 79.29,
+     "share_others": 0.081,
+     "points": 1.7,
+     "margin_points": 4.6,
+     "clear": false
+    },
+    {
+     "value": "social",
+     "customers": 44,
+     "share": 0.086,
+     "profit_per_customer_eur": 91.54,
+     "profit_per_customer_ci": [
+      70.28,
+      115.04
+     ],
+     "profit_per_customer_all_eur": 64.31,
+     "share_others": 0.091,
+     "points": -0.4,
+     "margin_points": 4.4,
+     "clear": false
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 196,
+     "share": 0.385,
+     "profit_per_customer_eur": 105.34,
+     "profit_per_customer_ci": [
+      95.96,
+      114.3
+     ],
+     "profit_per_customer_all_eur": 79.34,
+     "share_others": 0.397,
+     "points": -1.2,
+     "margin_points": 7.7,
+     "clear": false
+    },
+    {
+     "value": "home",
+     "customers": 90,
+     "share": 0.177,
+     "profit_per_customer_eur": 92.05,
+     "profit_per_customer_ci": [
+      78.95,
+      105.79
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.18,
+     "points": -0.4,
+     "margin_points": 6.0,
+     "clear": false
+    },
+    {
+     "value": "category",
+     "customers": 86,
+     "share": 0.169,
+     "profit_per_customer_eur": 104.22,
+     "profit_per_customer_ci": [
+      87.37,
+      121.25
+     ],
+     "profit_per_customer_all_eur": 80.61,
+     "share_others": 0.149,
+     "points": 2.0,
+     "margin_points": 5.8,
+     "clear": false
+    },
+    {
+     "value": "offer",
+     "customers": 71,
+     "share": 0.139,
+     "profit_per_customer_eur": 105.16,
+     "profit_per_customer_ci": [
+      87.67,
+      123.63
+     ],
+     "profit_per_customer_all_eur": 75.87,
+     "share_others": 0.129,
+     "points": 1.1,
+     "margin_points": 5.4,
+     "clear": false
+    },
+    {
+     "value": "search",
+     "customers": 66,
+     "share": 0.13,
+     "profit_per_customer_eur": 114.89,
+     "profit_per_customer_ci": [
+      97.83,
+      136.34
+     ],
+     "profit_per_customer_all_eur": 78.21,
+     "share_others": 0.144,
+     "points": -1.5,
+     "margin_points": 5.4,
+     "clear": false
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "treats",
+     "customers": 106,
+     "share": 0.208,
+     "profit_per_customer_eur": 112.22,
+     "profit_per_customer_ci": [
+      98.69,
+      126.98
+     ],
+     "profit_per_customer_all_eur": 80.11,
+     "share_others": 0.175,
+     "points": 3.3,
+     "margin_points": 6.3,
+     "clear": false
+    },
+    {
+     "value": "home page (no category)",
+     "customers": 90,
+     "share": 0.177,
+     "profit_per_customer_eur": 92.05,
+     "profit_per_customer_ci": [
+      78.95,
+      105.79
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.18,
+     "points": -0.4,
+     "margin_points": 6.0,
+     "clear": false
+    },
+    {
+     "value": "wet-food",
+     "customers": 83,
+     "share": 0.163,
+     "profit_per_customer_eur": 114.78,
+     "profit_per_customer_ci": [
+      97.14,
+      131.34
+     ],
+     "profit_per_customer_all_eur": 82.85,
+     "share_others": 0.141,
+     "points": 2.2,
+     "margin_points": 5.7,
+     "clear": false
+    },
+    {
+     "value": "dry-food",
+     "customers": 64,
+     "share": 0.126,
+     "profit_per_customer_eur": 101.97,
+     "profit_per_customer_ci": [
+      85.76,
+      121.88
+     ],
+     "profit_per_customer_all_eur": 80.27,
+     "share_others": 0.126,
+     "points": 0.0,
+     "margin_points": 5.2,
+     "clear": false
+    },
+    {
+     "value": "accessories",
+     "customers": 54,
+     "share": 0.106,
+     "profit_per_customer_eur": 112.79,
+     "profit_per_customer_ci": [
+      93.69,
+      128.96
+     ],
+     "profit_per_customer_all_eur": 78.44,
+     "share_others": 0.097,
+     "points": 0.9,
+     "margin_points": 4.8,
+     "clear": false
+    },
+    {
+     "value": "toys",
+     "customers": 42,
+     "share": 0.083,
+     "profit_per_customer_eur": 95.73,
+     "profit_per_customer_ci": [
+      75.25,
+      122.52
+     ],
+     "profit_per_customer_all_eur": 70.65,
+     "share_others": 0.088,
+     "points": -0.6,
+     "margin_points": 4.4,
+     "clear": false
+    },
+    {
+     "value": "litter",
+     "customers": 25,
+     "share": 0.049,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.69,
+     "share_others": 0.034,
+     "points": 1.5,
+     "margin_points": 3.3,
+     "clear": false
+    },
+    {
+     "value": "health",
+     "customers": 24,
+     "share": 0.047,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.06,
+     "share_others": 0.047,
+     "points": 0.0,
+     "margin_points": 3.3,
+     "clear": false
+    },
+    {
+     "value": "grooming",
+     "customers": 15,
+     "share": 0.029,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.15,
+     "share_others": 0.034,
+     "points": -0.4,
+     "margin_points": 2.7,
+     "clear": false
+    },
+    {
+     "value": "dental-treats",
+     "customers": 6,
+     "share": 0.012,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 94.74,
+     "share_others": 0.023,
+     "points": -1.2,
+     "margin_points": 1.9,
+     "clear": false
+    }
+   ]
+  },
+  "diets:sensitive": {
+   "source": [
+    {
+     "value": "organic_search",
+     "customers": 163,
+     "share": 0.354,
+     "profit_per_customer_eur": 113.4,
+     "profit_per_customer_ci": [
+      101.08,
+      126.5
+     ],
+     "profit_per_customer_all_eur": 86.4,
+     "share_others": 0.289,
+     "points": 6.5,
+     "margin_points": 7.7,
+     "clear": false
+    },
+    {
+     "value": "paid_search",
+     "customers": 89,
+     "share": 0.193,
+     "profit_per_customer_eur": 108.44,
+     "profit_per_customer_ci": [
+      92.68,
+      125.13
+     ],
+     "profit_per_customer_all_eur": 76.07,
+     "share_others": 0.205,
+     "points": -1.2,
+     "margin_points": 6.4,
+     "clear": false
+    },
+    {
+     "value": "direct",
+     "customers": 81,
+     "share": 0.176,
+     "profit_per_customer_eur": 102.87,
+     "profit_per_customer_ci": [
+      87.66,
+      121.67
+     ],
+     "profit_per_customer_all_eur": 77.81,
+     "share_others": 0.204,
+     "points": -2.8,
+     "margin_points": 6.3,
+     "clear": false
+    },
+    {
+     "value": "affiliate",
+     "customers": 51,
+     "share": 0.111,
+     "profit_per_customer_eur": 105.38,
+     "profit_per_customer_ci": [
+      81.94,
+      129.88
+     ],
+     "profit_per_customer_all_eur": 70.74,
+     "share_others": 0.123,
+     "points": -1.2,
+     "margin_points": 5.2,
+     "clear": false
+    },
+    {
+     "value": "email",
+     "customers": 43,
+     "share": 0.093,
+     "profit_per_customer_eur": 92.83,
+     "profit_per_customer_ci": [
+      75.21,
+      112.66
+     ],
+     "profit_per_customer_all_eur": 79.29,
+     "share_others": 0.083,
+     "points": 1.0,
+     "margin_points": 4.7,
+     "clear": false
+    },
+    {
+     "value": "social",
+     "customers": 33,
+     "share": 0.072,
+     "profit_per_customer_eur": 113.65,
+     "profit_per_customer_ci": [
+      90.32,
+      150.32
+     ],
+     "profit_per_customer_all_eur": 64.31,
+     "share_others": 0.095,
+     "points": -2.4,
+     "margin_points": 4.3,
+     "clear": false
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 187,
+     "share": 0.407,
+     "profit_per_customer_eur": 112.13,
+     "profit_per_customer_ci": [
+      100.31,
+      123.93
+     ],
+     "profit_per_customer_all_eur": 79.34,
+     "share_others": 0.389,
+     "points": 1.7,
+     "margin_points": 8.0,
+     "clear": false
+    },
+    {
+     "value": "home",
+     "customers": 73,
+     "share": 0.159,
+     "profit_per_customer_eur": 100.23,
+     "profit_per_customer_ci": [
+      82.25,
+      119.99
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.186,
+     "points": -2.8,
+     "margin_points": 6.0,
+     "clear": false
+    },
+    {
+     "value": "search",
+     "customers": 71,
+     "share": 0.154,
+     "profit_per_customer_eur": 90.48,
+     "profit_per_customer_ci": [
+      78.97,
+      103.59
+     ],
+     "profit_per_customer_all_eur": 78.21,
+     "share_others": 0.135,
+     "points": 1.9,
+     "margin_points": 5.8,
+     "clear": false
+    },
+    {
+     "value": "category",
+     "customers": 65,
+     "share": 0.141,
+     "profit_per_customer_eur": 123.49,
+     "profit_per_customer_ci": [
+      105.02,
+      145.57
+     ],
+     "profit_per_customer_all_eur": 80.61,
+     "share_others": 0.159,
+     "points": -1.8,
+     "margin_points": 5.7,
+     "clear": false
+    },
+    {
+     "value": "offer",
+     "customers": 64,
+     "share": 0.139,
+     "profit_per_customer_eur": 106.99,
+     "profit_per_customer_ci": [
+      87.78,
+      129.85
+     ],
+     "profit_per_customer_all_eur": 75.87,
+     "share_others": 0.129,
+     "points": 1.0,
+     "margin_points": 5.6,
+     "clear": false
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "treats",
+     "customers": 81,
+     "share": 0.176,
+     "profit_per_customer_eur": 115.06,
+     "profit_per_customer_ci": [
+      98.83,
+      130.14
+     ],
+     "profit_per_customer_all_eur": 80.11,
+     "share_others": 0.187,
+     "points": -1.1,
+     "margin_points": 6.2,
+     "clear": false
+    },
+    {
+     "value": "wet-food",
+     "customers": 75,
+     "share": 0.163,
+     "profit_per_customer_eur": 118.59,
+     "profit_per_customer_ci": [
+      100.89,
+      140.01
+     ],
+     "profit_per_customer_all_eur": 82.85,
+     "share_others": 0.142,
+     "points": 2.1,
+     "margin_points": 5.9,
+     "clear": false
+    },
+    {
+     "value": "home page (no category)",
+     "customers": 73,
+     "share": 0.159,
+     "profit_per_customer_eur": 100.23,
+     "profit_per_customer_ci": [
+      82.25,
+      119.99
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.186,
+     "points": -2.8,
+     "margin_points": 6.0,
+     "clear": false
+    },
+    {
+     "value": "dry-food",
+     "customers": 58,
+     "share": 0.126,
+     "profit_per_customer_eur": 105.59,
+     "profit_per_customer_ci": [
+      82.91,
+      132.18
+     ],
+     "profit_per_customer_all_eur": 80.27,
+     "share_others": 0.126,
+     "points": 0.1,
+     "margin_points": 5.4,
+     "clear": false
+    },
+    {
+     "value": "accessories",
+     "customers": 51,
+     "share": 0.111,
+     "profit_per_customer_eur": 104.34,
+     "profit_per_customer_ci": [
+      87.32,
+      123.58
+     ],
+     "profit_per_customer_all_eur": 78.44,
+     "share_others": 0.095,
+     "points": 1.5,
+     "margin_points": 5.0,
+     "clear": false
+    },
+    {
+     "value": "toys",
+     "customers": 38,
+     "share": 0.083,
+     "profit_per_customer_eur": 105.88,
+     "profit_per_customer_ci": [
+      84.86,
+      130.88
+     ],
+     "profit_per_customer_all_eur": 70.65,
+     "share_others": 0.088,
+     "points": -0.5,
+     "margin_points": 4.5,
+     "clear": false
+    },
+    {
+     "value": "litter",
+     "customers": 27,
+     "share": 0.059,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.69,
+     "share_others": 0.032,
+     "points": 2.7,
+     "margin_points": 3.6,
+     "clear": false
+    },
+    {
+     "value": "grooming",
+     "customers": 24,
+     "share": 0.052,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.15,
+     "share_others": 0.026,
+     "points": 2.7,
+     "margin_points": 3.4,
+     "clear": false
+    },
+    {
+     "value": "health",
+     "customers": 23,
+     "share": 0.05,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.06,
+     "share_others": 0.046,
+     "points": 0.4,
+     "margin_points": 3.5,
+     "clear": false
+    },
+    {
+     "value": "dental-treats",
+     "customers": 10,
+     "share": 0.022,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 94.74,
+     "share_others": 0.02,
+     "points": 0.2,
+     "margin_points": 2.3,
+     "clear": false
+    }
+   ]
+  },
+  "diets:weight-control": {
+   "source": [
+    {
+     "value": "organic_search",
+     "customers": 87,
+     "share": 0.373,
+     "profit_per_customer_eur": 122.99,
+     "profit_per_customer_ci": [
+      107.23,
+      142.18
+     ],
+     "profit_per_customer_all_eur": 86.4,
+     "share_others": 0.296,
+     "points": 7.7,
+     "margin_points": 10.1,
+     "clear": false
+    },
+    {
+     "value": "paid_search",
+     "customers": 49,
+     "share": 0.21,
+     "profit_per_customer_eur": 113.18,
+     "profit_per_customer_ci": [
+      90.98,
+      140.85
+     ],
+     "profit_per_customer_all_eur": 76.07,
+     "share_others": 0.201,
+     "points": 0.9,
+     "margin_points": 8.6,
+     "clear": false
+    },
+    {
+     "value": "direct",
+     "customers": 42,
+     "share": 0.18,
+     "profit_per_customer_eur": 138.6,
+     "profit_per_customer_ci": [
+      114.15,
+      176.29
+     ],
+     "profit_per_customer_all_eur": 77.81,
+     "share_others": 0.199,
+     "points": -1.9,
+     "margin_points": 8.1,
+     "clear": false
+    },
+    {
+     "value": "affiliate",
+     "customers": 22,
+     "share": 0.094,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 70.74,
+     "share_others": 0.123,
+     "points": -2.9,
+     "margin_points": 6.3,
+     "clear": false
+    },
+    {
+     "value": "email",
+     "customers": 19,
+     "share": 0.082,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 79.29,
+     "share_others": 0.087,
+     "points": -0.5,
+     "margin_points": 5.8,
+     "clear": false
+    },
+    {
+     "value": "social",
+     "customers": 14,
+     "share": 0.06,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 64.31,
+     "share_others": 0.094,
+     "points": -3.4,
+     "margin_points": 5.2,
+     "clear": false
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 102,
+     "share": 0.438,
+     "profit_per_customer_eur": 125.13,
+     "profit_per_customer_ci": [
+      110.03,
+      140.84
+     ],
+     "profit_per_customer_all_eur": 79.34,
+     "share_others": 0.387,
+     "points": 5.0,
+     "margin_points": 10.4,
+     "clear": false
+    },
+    {
+     "value": "home",
+     "customers": 47,
+     "share": 0.202,
+     "profit_per_customer_eur": 114.58,
+     "profit_per_customer_ci": [
+      91.13,
+      145.77
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.176,
+     "points": 2.6,
+     "margin_points": 8.4,
+     "clear": false
+    },
+    {
+     "value": "search",
+     "customers": 35,
+     "share": 0.15,
+     "profit_per_customer_eur": 115.4,
+     "profit_per_customer_ci": [
+      89.98,
+      144.52
+     ],
+     "profit_per_customer_all_eur": 78.21,
+     "share_others": 0.139,
+     "points": 1.1,
+     "margin_points": 7.5,
+     "clear": false
+    },
+    {
+     "value": "category",
+     "customers": 27,
+     "share": 0.116,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 80.61,
+     "share_others": 0.161,
+     "points": -4.5,
+     "margin_points": 6.9,
+     "clear": false
+    },
+    {
+     "value": "offer",
+     "customers": 22,
+     "share": 0.094,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.87,
+     "share_others": 0.137,
+     "points": -4.3,
+     "margin_points": 6.3,
+     "clear": false
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "home page (no category)",
+     "customers": 47,
+     "share": 0.202,
+     "profit_per_customer_eur": 114.58,
+     "profit_per_customer_ci": [
+      91.13,
+      145.77
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.176,
+     "points": 2.6,
+     "margin_points": 8.4,
+     "clear": false
+    },
+    {
+     "value": "treats",
+     "customers": 45,
+     "share": 0.193,
+     "profit_per_customer_eur": 120.83,
+     "profit_per_customer_ci": [
+      97.25,
+      143.69
+     ],
+     "profit_per_customer_all_eur": 80.11,
+     "share_others": 0.183,
+     "points": 1.0,
+     "margin_points": 8.3,
+     "clear": false
+    },
+    {
+     "value": "wet-food",
+     "customers": 39,
+     "share": 0.167,
+     "profit_per_customer_eur": 134.14,
+     "profit_per_customer_ci": [
+      112.27,
+      159.92
+     ],
+     "profit_per_customer_all_eur": 82.85,
+     "share_others": 0.145,
+     "points": 2.3,
+     "margin_points": 7.8,
+     "clear": false
+    },
+    {
+     "value": "accessories",
+     "customers": 26,
+     "share": 0.112,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 78.44,
+     "share_others": 0.098,
+     "points": 1.4,
+     "margin_points": 6.6,
+     "clear": false
+    },
+    {
+     "value": "dry-food",
+     "customers": 25,
+     "share": 0.107,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 80.27,
+     "share_others": 0.128,
+     "points": -2.1,
+     "margin_points": 6.6,
+     "clear": false
+    },
+    {
+     "value": "toys",
+     "customers": 17,
+     "share": 0.073,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 70.65,
+     "share_others": 0.089,
+     "points": -1.6,
+     "margin_points": 5.5,
+     "clear": false
+    },
+    {
+     "value": "litter",
+     "customers": 11,
+     "share": 0.047,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.69,
+     "share_others": 0.037,
+     "points": 1.0,
+     "margin_points": 4.4,
+     "clear": false
+    },
+    {
+     "value": "grooming",
+     "customers": 10,
+     "share": 0.043,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.15,
+     "share_others": 0.031,
+     "points": 1.2,
+     "margin_points": 4.2,
+     "clear": false
+    },
+    {
+     "value": "dental-treats",
+     "customers": 9,
+     "share": 0.039,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 94.74,
+     "share_others": 0.017,
+     "points": 2.1,
+     "margin_points": 3.9,
+     "clear": false
+    }
+   ]
+  },
+  "offer:mostly": {
+   "source": [
+    {
+     "value": "organic_search",
+     "customers": 115,
+     "share": 0.305,
+     "profit_per_customer_eur": 69.11,
+     "profit_per_customer_ci": [
+      58.84,
+      79.13
+     ],
+     "profit_per_customer_all_eur": 86.4,
+     "share_others": 0.306,
+     "points": -0.1,
+     "margin_points": 8.0,
+     "clear": false
+    },
+    {
+     "value": "direct",
+     "customers": 79,
+     "share": 0.21,
+     "profit_per_customer_eur": 60.23,
+     "profit_per_customer_ci": [
+      49.68,
+      72.02
+     ],
+     "profit_per_customer_all_eur": 77.81,
+     "share_others": 0.193,
+     "points": 1.6,
+     "margin_points": 7.0,
+     "clear": false
+    },
+    {
+     "value": "paid_search",
+     "customers": 64,
+     "share": 0.17,
+     "profit_per_customer_eur": 55.4,
+     "profit_per_customer_ci": [
+      42.76,
+      68.7
+     ],
+     "profit_per_customer_all_eur": 76.07,
+     "share_others": 0.211,
+     "points": -4.1,
+     "margin_points": 6.7,
+     "clear": false
+    },
+    {
+     "value": "affiliate",
+     "customers": 46,
+     "share": 0.122,
+     "profit_per_customer_eur": 46.64,
+     "profit_per_customer_ci": [
+      38.64,
+      56.47
+     ],
+     "profit_per_customer_all_eur": 70.74,
+     "share_others": 0.119,
+     "points": 0.3,
+     "margin_points": 5.7,
+     "clear": false
+    },
+    {
+     "value": "social",
+     "customers": 41,
+     "share": 0.109,
+     "profit_per_customer_eur": 53.15,
+     "profit_per_customer_ci": [
+      37.16,
+      78.03
+     ],
+     "profit_per_customer_all_eur": 64.31,
+     "share_others": 0.084,
+     "points": 2.5,
+     "margin_points": 5.3,
+     "clear": false
+    },
+    {
+     "value": "email",
+     "customers": 32,
+     "share": 0.085,
+     "profit_per_customer_eur": 57.05,
+     "profit_per_customer_ci": [
+      44.35,
+      69.86
+     ],
+     "profit_per_customer_all_eur": 79.29,
+     "share_others": 0.086,
+     "points": -0.1,
+     "margin_points": 4.9,
+     "clear": false
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 146,
+     "share": 0.387,
+     "profit_per_customer_eur": 59.75,
+     "profit_per_customer_ci": [
+      52.51,
+      67.63
+     ],
+     "profit_per_customer_all_eur": 79.34,
+     "share_others": 0.396,
+     "points": -0.8,
+     "margin_points": 8.5,
+     "clear": false
+    },
+    {
+     "value": "home",
+     "customers": 68,
+     "share": 0.18,
+     "profit_per_customer_eur": 50.9,
+     "profit_per_customer_ci": [
+      43.36,
+      59.05
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.179,
+     "points": 0.1,
+     "margin_points": 6.7,
+     "clear": false
+    },
+    {
+     "value": "category",
+     "customers": 66,
+     "share": 0.175,
+     "profit_per_customer_eur": 64.97,
+     "profit_per_customer_ci": [
+      49.48,
+      84.88
+     ],
+     "profit_per_customer_all_eur": 80.61,
+     "share_others": 0.149,
+     "points": 2.6,
+     "margin_points": 6.5,
+     "clear": false
+    },
+    {
+     "value": "search",
+     "customers": 55,
+     "share": 0.146,
+     "profit_per_customer_eur": 67.39,
+     "profit_per_customer_ci": [
+      50.25,
+      85.91
+     ],
+     "profit_per_customer_all_eur": 78.21,
+     "share_others": 0.139,
+     "points": 0.7,
+     "margin_points": 6.1,
+     "clear": false
+    },
+    {
+     "value": "offer",
+     "customers": 42,
+     "share": 0.111,
+     "profit_per_customer_eur": 52.87,
+     "profit_per_customer_ci": [
+      42.95,
+      64.58
+     ],
+     "profit_per_customer_all_eur": 75.87,
+     "share_others": 0.137,
+     "points": -2.6,
+     "margin_points": 5.6,
+     "clear": false
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "treats",
+     "customers": 84,
+     "share": 0.223,
+     "profit_per_customer_eur": 55.25,
+     "profit_per_customer_ci": [
+      46.06,
+      66.59
+     ],
+     "profit_per_customer_all_eur": 80.11,
+     "share_others": 0.174,
+     "points": 4.9,
+     "margin_points": 7.1,
+     "clear": false
+    },
+    {
+     "value": "home page (no category)",
+     "customers": 68,
+     "share": 0.18,
+     "profit_per_customer_eur": 50.9,
+     "profit_per_customer_ci": [
+      43.36,
+      59.05
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.179,
+     "points": 0.1,
+     "margin_points": 6.7,
+     "clear": false
+    },
+    {
+     "value": "wet-food",
+     "customers": 49,
+     "share": 0.13,
+     "profit_per_customer_eur": 67.38,
+     "profit_per_customer_ci": [
+      47.3,
+      90.99
+     ],
+     "profit_per_customer_all_eur": 82.85,
+     "share_others": 0.152,
+     "points": -2.2,
+     "margin_points": 5.9,
+     "clear": false
+    },
+    {
+     "value": "dry-food",
+     "customers": 48,
+     "share": 0.127,
+     "profit_per_customer_eur": 61.14,
+     "profit_per_customer_ci": [
+      50.42,
+      72.72
+     ],
+     "profit_per_customer_all_eur": 80.27,
+     "share_others": 0.125,
+     "points": 0.2,
+     "margin_points": 5.8,
+     "clear": false
+    },
+    {
+     "value": "accessories",
+     "customers": 45,
+     "share": 0.119,
+     "profit_per_customer_eur": 63.49,
+     "profit_per_customer_ci": [
+      49.05,
+      79.85
+     ],
+     "profit_per_customer_all_eur": 78.44,
+     "share_others": 0.094,
+     "points": 2.5,
+     "margin_points": 5.5,
+     "clear": false
+    },
+    {
+     "value": "toys",
+     "customers": 23,
+     "share": 0.061,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 70.65,
+     "share_others": 0.093,
+     "points": -3.2,
+     "margin_points": 4.4,
+     "clear": false
+    },
+    {
+     "value": "litter",
+     "customers": 16,
+     "share": 0.042,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.69,
+     "share_others": 0.038,
+     "points": 0.5,
+     "margin_points": 3.5,
+     "clear": false
+    },
+    {
+     "value": "grooming",
+     "customers": 13,
+     "share": 0.034,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.15,
+     "share_others": 0.032,
+     "points": 0.3,
+     "margin_points": 3.1,
+     "clear": false
+    },
+    {
+     "value": "health",
+     "customers": 12,
+     "share": 0.032,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.06,
+     "share_others": 0.051,
+     "points": -1.9,
+     "margin_points": 3.2,
+     "clear": false
+    },
+    {
+     "value": "aquarium",
+     "customers": 11,
+     "share": 0.029,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 87.68,
+     "share_others": 0.042,
+     "points": -1.3,
+     "margin_points": 3.1,
+     "clear": false
+    },
+    {
+     "value": "dental-treats",
+     "customers": 8,
+     "share": 0.021,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 94.74,
+     "share_others": 0.02,
+     "points": 0.1,
+     "margin_points": 2.5,
+     "clear": false
+    }
+   ]
+  },
+  "offer:rarely": {
+   "source": [
+    {
+     "value": "organic_search",
+     "customers": 151,
+     "share": 0.321,
+     "profit_per_customer_eur": 86.18,
+     "profit_per_customer_ci": [
+      76.6,
+      96.55
+     ],
+     "profit_per_customer_all_eur": 86.4,
+     "share_others": 0.301,
+     "points": 2.0,
+     "margin_points": 7.5,
+     "clear": false
+    },
+    {
+     "value": "paid_search",
+     "customers": 95,
+     "share": 0.202,
+     "profit_per_customer_eur": 69.78,
+     "profit_per_customer_ci": [
+      60.47,
+      79.28
+     ],
+     "profit_per_customer_all_eur": 76.07,
+     "share_others": 0.202,
+     "points": -0.1,
+     "margin_points": 6.5,
+     "clear": false
+    },
+    {
+     "value": "direct",
+     "customers": 83,
+     "share": 0.176,
+     "profit_per_customer_eur": 84.7,
+     "profit_per_customer_ci": [
+      69.48,
+      100.55
+     ],
+     "profit_per_customer_all_eur": 77.81,
+     "share_others": 0.204,
+     "points": -2.8,
+     "margin_points": 6.2,
+     "clear": false
+    },
+    {
+     "value": "affiliate",
+     "customers": 57,
+     "share": 0.121,
+     "profit_per_customer_eur": 79.17,
+     "profit_per_customer_ci": [
+      59.96,
+      102.8
+     ],
+     "profit_per_customer_all_eur": 70.74,
+     "share_others": 0.119,
+     "points": 0.2,
+     "margin_points": 5.2,
+     "clear": false
+    },
+    {
+     "value": "social",
+     "customers": 48,
+     "share": 0.102,
+     "profit_per_customer_eur": 65.28,
+     "profit_per_customer_ci": [
+      53.88,
+      79.69
+     ],
+     "profit_per_customer_all_eur": 64.31,
+     "share_others": 0.085,
+     "points": 1.7,
+     "margin_points": 4.8,
+     "clear": false
+    },
+    {
+     "value": "email",
+     "customers": 37,
+     "share": 0.079,
+     "profit_per_customer_eur": 70.68,
+     "profit_per_customer_ci": [
+      58.24,
+      84.11
+     ],
+     "profit_per_customer_all_eur": 79.29,
+     "share_others": 0.089,
+     "points": -1.0,
+     "margin_points": 4.4,
+     "clear": false
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 193,
+     "share": 0.41,
+     "profit_per_customer_eur": 78.51,
+     "profit_per_customer_ci": [
+      70.22,
+      87.07
+     ],
+     "profit_per_customer_all_eur": 79.34,
+     "share_others": 0.388,
+     "points": 2.2,
+     "margin_points": 7.9,
+     "clear": false
+    },
+    {
+     "value": "home",
+     "customers": 77,
+     "share": 0.163,
+     "profit_per_customer_eur": 87.99,
+     "profit_per_customer_ci": [
+      72.98,
+      105.62
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.185,
+     "points": -2.2,
+     "margin_points": 6.0,
+     "clear": false
+    },
+    {
+     "value": "category",
+     "customers": 72,
+     "share": 0.153,
+     "profit_per_customer_eur": 77.58,
+     "profit_per_customer_ci": [
+      65.69,
+      91.03
+     ],
+     "profit_per_customer_all_eur": 80.61,
+     "share_others": 0.155,
+     "points": -0.3,
+     "margin_points": 5.8,
+     "clear": false
+    },
+    {
+     "value": "offer",
+     "customers": 66,
+     "share": 0.14,
+     "profit_per_customer_eur": 68.37,
+     "profit_per_customer_ci": [
+      55.2,
+      85.17
+     ],
+     "profit_per_customer_all_eur": 75.87,
+     "share_others": 0.129,
+     "points": 1.1,
+     "margin_points": 5.5,
+     "clear": false
+    },
+    {
+     "value": "search",
+     "customers": 63,
+     "share": 0.134,
+     "profit_per_customer_eur": 77.9,
+     "profit_per_customer_ci": [
+      67.72,
+      92.37
+     ],
+     "profit_per_customer_all_eur": 78.21,
+     "share_others": 0.143,
+     "points": -0.9,
+     "margin_points": 5.5,
+     "clear": false
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "treats",
+     "customers": 81,
+     "share": 0.172,
+     "profit_per_customer_eur": 79.93,
+     "profit_per_customer_ci": [
+      68.27,
+      92.74
+     ],
+     "profit_per_customer_all_eur": 80.11,
+     "share_others": 0.189,
+     "points": -1.7,
+     "margin_points": 6.1,
+     "clear": false
+    },
+    {
+     "value": "home page (no category)",
+     "customers": 77,
+     "share": 0.163,
+     "profit_per_customer_eur": 87.99,
+     "profit_per_customer_ci": [
+      72.98,
+      105.62
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.185,
+     "points": -2.2,
+     "margin_points": 6.0,
+     "clear": false
+    },
+    {
+     "value": "wet-food",
+     "customers": 72,
+     "share": 0.153,
+     "profit_per_customer_eur": 76.19,
+     "profit_per_customer_ci": [
+      63.01,
+      92.99
+     ],
+     "profit_per_customer_all_eur": 82.85,
+     "share_others": 0.146,
+     "points": 0.7,
+     "margin_points": 5.8,
+     "clear": false
+    },
+    {
+     "value": "dry-food",
+     "customers": 67,
+     "share": 0.142,
+     "profit_per_customer_eur": 85.32,
+     "profit_per_customer_ci": [
+      67.73,
+      101.69
+     ],
+     "profit_per_customer_all_eur": 80.27,
+     "share_others": 0.12,
+     "points": 2.2,
+     "margin_points": 5.5,
+     "clear": false
+    },
+    {
+     "value": "toys",
+     "customers": 50,
+     "share": 0.106,
+     "profit_per_customer_eur": 66.98,
+     "profit_per_customer_ci": [
+      55.34,
+      78.5
+     ],
+     "profit_per_customer_all_eur": 70.65,
+     "share_others": 0.08,
+     "points": 2.7,
+     "margin_points": 4.8,
+     "clear": false
+    },
+    {
+     "value": "accessories",
+     "customers": 33,
+     "share": 0.07,
+     "profit_per_customer_eur": 81.32,
+     "profit_per_customer_ci": [
+      62.55,
+      102.74
+     ],
+     "profit_per_customer_all_eur": 78.44,
+     "share_others": 0.11,
+     "points": -4.0,
+     "margin_points": 4.4,
+     "clear": false
+    },
+    {
+     "value": "health",
+     "customers": 25,
+     "share": 0.053,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.06,
+     "share_others": 0.045,
+     "points": 0.8,
+     "margin_points": 3.5,
+     "clear": false
+    },
+    {
+     "value": "aquarium",
+     "customers": 24,
+     "share": 0.051,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 87.68,
+     "share_others": 0.035,
+     "points": 1.6,
+     "margin_points": 3.4,
+     "clear": false
+    },
+    {
+     "value": "litter",
+     "customers": 19,
+     "share": 0.04,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.69,
+     "share_others": 0.038,
+     "points": 0.2,
+     "margin_points": 3.1,
+     "clear": false
+    },
+    {
+     "value": "grooming",
+     "customers": 14,
+     "share": 0.03,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.15,
+     "share_others": 0.033,
+     "points": -0.4,
+     "margin_points": 2.8,
+     "clear": false
+    },
+    {
+     "value": "dental-treats",
+     "customers": 9,
+     "share": 0.019,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 94.74,
+     "share_others": 0.02,
+     "points": -0.1,
+     "margin_points": 2.2,
+     "clear": false
+    }
+   ]
+  },
+  "offer:sometimes": {
+   "source": [
+    {
+     "value": "organic_search",
+     "customers": 263,
+     "share": 0.303,
+     "profit_per_customer_eur": 99.24,
+     "profit_per_customer_ci": [
+      90.46,
+      108.24
+     ],
+     "profit_per_customer_all_eur": 86.4,
+     "share_others": 0.309,
+     "points": -0.6,
+     "margin_points": 6.5,
+     "clear": false
+    },
+    {
+     "value": "paid_search",
+     "customers": 191,
+     "share": 0.22,
+     "profit_per_customer_eur": 90.22,
+     "profit_per_customer_ci": [
+      80.39,
+      100.24
+     ],
+     "profit_per_customer_all_eur": 76.07,
+     "share_others": 0.185,
+     "points": 3.5,
+     "margin_points": 5.7,
+     "clear": false
+    },
+    {
+     "value": "direct",
+     "customers": 170,
+     "share": 0.196,
+     "profit_per_customer_eur": 89.66,
+     "profit_per_customer_ci": [
+      80.1,
+      99.32
+     ],
+     "profit_per_customer_all_eur": 77.81,
+     "share_others": 0.197,
+     "points": -0.2,
+     "margin_points": 5.6,
+     "clear": false
+    },
+    {
+     "value": "affiliate",
+     "customers": 101,
+     "share": 0.116,
+     "profit_per_customer_eur": 82.5,
+     "profit_per_customer_ci": [
+      69.51,
+      95.48
+     ],
+     "profit_per_customer_all_eur": 70.74,
+     "share_others": 0.123,
+     "points": -0.6,
+     "margin_points": 4.6,
+     "clear": false
+    },
+    {
+     "value": "email",
+     "customers": 82,
+     "share": 0.094,
+     "profit_per_customer_eur": 94.11,
+     "profit_per_customer_ci": [
+      82.49,
+      106.69
+     ],
+     "profit_per_customer_all_eur": 79.29,
+     "share_others": 0.078,
+     "points": 1.6,
+     "margin_points": 4.0,
+     "clear": false
+    },
+    {
+     "value": "social",
+     "customers": 61,
+     "share": 0.07,
+     "profit_per_customer_eur": 78.65,
+     "profit_per_customer_ci": [
+      65.14,
+      92.41
+     ],
+     "profit_per_customer_all_eur": 64.31,
+     "share_others": 0.107,
+     "points": -3.7,
+     "margin_points": 4.0,
+     "clear": false
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 339,
+     "share": 0.391,
+     "profit_per_customer_eur": 93.29,
+     "profit_per_customer_ci": [
+      86.29,
+      100.79
+     ],
+     "profit_per_customer_all_eur": 79.34,
+     "share_others": 0.397,
+     "points": -0.6,
+     "margin_points": 6.9,
+     "clear": false
+    },
+    {
+     "value": "home",
+     "customers": 164,
+     "share": 0.189,
+     "profit_per_customer_eur": 83.72,
+     "profit_per_customer_ci": [
+      73.72,
+      93.29
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.17,
+     "points": 1.9,
+     "margin_points": 5.4,
+     "clear": false
+    },
+    {
+     "value": "category",
+     "customers": 127,
+     "share": 0.146,
+     "profit_per_customer_eur": 96.73,
+     "profit_per_customer_ci": [
+      86.26,
+      109.48
+     ],
+     "profit_per_customer_all_eur": 80.61,
+     "share_others": 0.163,
+     "points": -1.6,
+     "margin_points": 5.1,
+     "clear": false
+    },
+    {
+     "value": "offer",
+     "customers": 120,
+     "share": 0.138,
+     "profit_per_customer_eur": 91.75,
+     "profit_per_customer_ci": [
+      81.39,
+      104.54
+     ],
+     "profit_per_customer_all_eur": 75.87,
+     "share_others": 0.126,
+     "points": 1.2,
+     "margin_points": 4.8,
+     "clear": false
+    },
+    {
+     "value": "search",
+     "customers": 118,
+     "share": 0.136,
+     "profit_per_customer_eur": 91.29,
+     "profit_per_customer_ci": [
+      79.66,
+      103.09
+     ],
+     "profit_per_customer_all_eur": 78.21,
+     "share_others": 0.144,
+     "points": -0.8,
+     "margin_points": 4.9,
+     "clear": false
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "home page (no category)",
+     "customers": 164,
+     "share": 0.189,
+     "profit_per_customer_eur": 83.72,
+     "profit_per_customer_ci": [
+      73.72,
+      93.29
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.17,
+     "points": 1.9,
+     "margin_points": 5.4,
+     "clear": false
+    },
+    {
+     "value": "treats",
+     "customers": 152,
+     "share": 0.175,
+     "profit_per_customer_eur": 99.21,
+     "profit_per_customer_ci": [
+      87.57,
+      111.06
+     ],
+     "profit_per_customer_all_eur": 80.11,
+     "share_others": 0.193,
+     "points": -1.8,
+     "margin_points": 5.5,
+     "clear": false
+    },
+    {
+     "value": "wet-food",
+     "customers": 138,
+     "share": 0.159,
+     "profit_per_customer_eur": 94.36,
+     "profit_per_customer_ci": [
+      83.97,
+      105.28
+     ],
+     "profit_per_customer_all_eur": 82.85,
+     "share_others": 0.137,
+     "points": 2.2,
+     "margin_points": 5.0,
+     "clear": false
+    },
+    {
+     "value": "dry-food",
+     "customers": 98,
+     "share": 0.113,
+     "profit_per_customer_eur": 94.29,
+     "profit_per_customer_ci": [
+      80.46,
+      110.99
+     ],
+     "profit_per_customer_all_eur": 80.27,
+     "share_others": 0.138,
+     "points": -2.5,
+     "margin_points": 4.7,
+     "clear": false
+    },
+    {
+     "value": "accessories",
+     "customers": 92,
+     "share": 0.106,
+     "profit_per_customer_eur": 89.85,
+     "profit_per_customer_ci": [
+      77.32,
+      102.87
+     ],
+     "profit_per_customer_all_eur": 78.44,
+     "share_others": 0.093,
+     "points": 1.3,
+     "margin_points": 4.3,
+     "clear": false
+    },
+    {
+     "value": "toys",
+     "customers": 73,
+     "share": 0.084,
+     "profit_per_customer_eur": 84.21,
+     "profit_per_customer_ci": [
+      71.23,
+      101.04
+     ],
+     "profit_per_customer_all_eur": 70.65,
+     "share_others": 0.089,
+     "points": -0.5,
+     "margin_points": 4.0,
+     "clear": false
+    },
+    {
+     "value": "health",
+     "customers": 42,
+     "share": 0.048,
+     "profit_per_customer_eur": 80.78,
+     "profit_per_customer_ci": [
+      64.0,
+      97.84
+     ],
+     "profit_per_customer_all_eur": 69.06,
+     "share_others": 0.046,
+     "points": 0.3,
+     "margin_points": 3.0,
+     "clear": false
+    },
+    {
+     "value": "litter",
+     "customers": 34,
+     "share": 0.039,
+     "profit_per_customer_eur": 86.27,
+     "profit_per_customer_ci": [
+      66.65,
+      108.64
+     ],
+     "profit_per_customer_all_eur": 69.69,
+     "share_others": 0.038,
+     "points": 0.1,
+     "margin_points": 2.7,
+     "clear": false
+    },
+    {
+     "value": "aquarium",
+     "customers": 29,
+     "share": 0.033,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 87.68,
+     "share_others": 0.044,
+     "points": -1.1,
+     "margin_points": 2.7,
+     "clear": false
+    },
+    {
+     "value": "grooming",
+     "customers": 28,
+     "share": 0.032,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.15,
+     "share_others": 0.033,
+     "points": -0.0,
+     "margin_points": 2.5,
+     "clear": false
+    },
+    {
+     "value": "dental-treats",
+     "customers": 18,
+     "share": 0.021,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 94.74,
+     "share_others": 0.02,
+     "points": 0.1,
+     "margin_points": 2.0,
+     "clear": false
+    }
+   ]
+  },
+  "pets:aquarium": {
+   "source": [
+    {
+     "value": "organic_search",
+     "customers": 27,
+     "share": 0.257,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 86.4,
+     "share_others": 0.309,
+     "points": -5.2,
+     "margin_points": 13.2,
+     "clear": false
+    },
+    {
+     "value": "paid_search",
+     "customers": 25,
+     "share": 0.238,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 76.07,
+     "share_others": 0.2,
+     "points": 3.8,
+     "margin_points": 12.8,
+     "clear": false
+    },
+    {
+     "value": "direct",
+     "customers": 20,
+     "share": 0.19,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 77.81,
+     "share_others": 0.197,
+     "points": -0.7,
+     "margin_points": 11.9,
+     "clear": false
+    },
+    {
+     "value": "affiliate",
+     "customers": 12,
+     "share": 0.114,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 70.74,
+     "share_others": 0.12,
+     "points": -0.6,
+     "margin_points": 9.6,
+     "clear": false
+    },
+    {
+     "value": "social",
+     "customers": 12,
+     "share": 0.114,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 64.31,
+     "share_others": 0.088,
+     "points": 2.6,
+     "margin_points": 9.5,
+     "clear": false
+    },
+    {
+     "value": "email",
+     "customers": 9,
+     "share": 0.086,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 79.29,
+     "share_others": 0.086,
+     "points": -0.0,
+     "margin_points": 8.4,
+     "clear": false
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 46,
+     "share": 0.438,
+     "profit_per_customer_eur": 76.97,
+     "profit_per_customer_ci": [
+      64.55,
+      90.72
+     ],
+     "profit_per_customer_all_eur": 79.34,
+     "share_others": 0.391,
+     "points": 4.7,
+     "margin_points": 15.0,
+     "clear": false
+    },
+    {
+     "value": "home",
+     "customers": 17,
+     "share": 0.162,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.18,
+     "points": -1.9,
+     "margin_points": 11.1,
+     "clear": false
+    },
+    {
+     "value": "search",
+     "customers": 14,
+     "share": 0.133,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 78.21,
+     "share_others": 0.141,
+     "points": -0.7,
+     "margin_points": 10.3,
+     "clear": false
+    },
+    {
+     "value": "category",
+     "customers": 14,
+     "share": 0.133,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 80.61,
+     "share_others": 0.156,
+     "points": -2.3,
+     "margin_points": 10.3,
+     "clear": false
+    },
+    {
+     "value": "offer",
+     "customers": 14,
+     "share": 0.133,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.87,
+     "share_others": 0.132,
+     "points": 0.2,
+     "margin_points": 10.3,
+     "clear": false
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "aquarium",
+     "customers": 70,
+     "share": 0.667,
+     "profit_per_customer_eur": 87.68,
+     "profit_per_customer_ci": [
+      73.02,
+      102.07
+     ],
+     "profit_per_customer_all_eur": 87.68,
+     "share_others": 0.0,
+     "points": 66.7,
+     "margin_points": 13.8,
+     "clear": true
+    },
+    {
+     "value": "home page (no category)",
+     "customers": 17,
+     "share": 0.162,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.18,
+     "points": -1.9,
+     "margin_points": 11.1,
+     "clear": false
+    },
+    {
+     "value": "health",
+     "customers": 6,
+     "share": 0.057,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.06,
+     "share_others": 0.046,
+     "points": 1.1,
+     "margin_points": 7.0,
+     "clear": false
+    }
+   ]
+  },
+  "pets:cat": {
+   "source": [
+    {
+     "value": "organic_search",
+     "customers": 248,
+     "share": 0.308,
+     "profit_per_customer_eur": 95.35,
+     "profit_per_customer_ci": [
+      86.73,
+      104.8
+     ],
+     "profit_per_customer_all_eur": 86.4,
+     "share_others": 0.305,
+     "points": 0.4,
+     "margin_points": 6.6,
+     "clear": false
+    },
+    {
+     "value": "paid_search",
+     "customers": 166,
+     "share": 0.206,
+     "profit_per_customer_eur": 85.62,
+     "profit_per_customer_ci": [
+      75.94,
+      96.38
+     ],
+     "profit_per_customer_all_eur": 76.07,
+     "share_others": 0.199,
+     "points": 0.7,
+     "margin_points": 5.7,
+     "clear": false
+    },
+    {
+     "value": "direct",
+     "customers": 153,
+     "share": 0.19,
+     "profit_per_customer_eur": 86.4,
+     "profit_per_customer_ci": [
+      75.97,
+      97.27
+     ],
+     "profit_per_customer_all_eur": 77.81,
+     "share_others": 0.202,
+     "points": -1.2,
+     "margin_points": 5.7,
+     "clear": false
+    },
+    {
+     "value": "affiliate",
+     "customers": 106,
+     "share": 0.132,
+     "profit_per_customer_eur": 74.09,
+     "profit_per_customer_ci": [
+      62.28,
+      87.93
+     ],
+     "profit_per_customer_all_eur": 70.74,
+     "share_others": 0.11,
+     "points": 2.2,
+     "margin_points": 4.7,
+     "clear": false
+    },
+    {
+     "value": "social",
+     "customers": 69,
+     "share": 0.086,
+     "profit_per_customer_eur": 75.94,
+     "profit_per_customer_ci": [
+      60.09,
+      96.27
+     ],
+     "profit_per_customer_all_eur": 64.31,
+     "share_others": 0.092,
+     "points": -0.7,
+     "margin_points": 4.1,
+     "clear": false
+    },
+    {
+     "value": "email",
+     "customers": 63,
+     "share": 0.078,
+     "profit_per_customer_eur": 81.96,
+     "profit_per_customer_ci": [
+      69.55,
+      95.14
+     ],
+     "profit_per_customer_all_eur": 79.29,
+     "share_others": 0.092,
+     "points": -1.4,
+     "margin_points": 4.0,
+     "clear": false
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 315,
+     "share": 0.391,
+     "profit_per_customer_eur": 88.15,
+     "profit_per_customer_ci": [
+      81.4,
+      95.35
+     ],
+     "profit_per_customer_all_eur": 79.34,
+     "share_others": 0.396,
+     "points": -0.5,
+     "margin_points": 7.0,
+     "clear": false
+    },
+    {
+     "value": "category",
+     "customers": 134,
+     "share": 0.166,
+     "profit_per_customer_eur": 90.47,
+     "profit_per_customer_ci": [
+      77.67,
+      102.6
+     ],
+     "profit_per_customer_all_eur": 80.61,
+     "share_others": 0.145,
+     "points": 2.1,
+     "margin_points": 5.2,
+     "clear": false
+    },
+    {
+     "value": "home",
+     "customers": 131,
+     "share": 0.163,
+     "profit_per_customer_eur": 84.34,
+     "profit_per_customer_ci": [
+      72.47,
+      96.77
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.193,
+     "points": -3.0,
+     "margin_points": 5.4,
+     "clear": false
+    },
+    {
+     "value": "offer",
+     "customers": 113,
+     "share": 0.14,
+     "profit_per_customer_eur": 77.6,
+     "profit_per_customer_ci": [
+      66.81,
+      89.69
+     ],
+     "profit_per_customer_all_eur": 75.87,
+     "share_others": 0.125,
+     "points": 1.5,
+     "margin_points": 4.8,
+     "clear": false
+    },
+    {
+     "value": "search",
+     "customers": 112,
+     "share": 0.139,
+     "profit_per_customer_eur": 85.95,
+     "profit_per_customer_ci": [
+      72.86,
+      99.19
+     ],
+     "profit_per_customer_all_eur": 78.21,
+     "share_others": 0.141,
+     "points": -0.2,
+     "margin_points": 4.9,
+     "clear": false
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "wet-food",
+     "customers": 168,
+     "share": 0.209,
+     "profit_per_customer_eur": 90.06,
+     "profit_per_customer_ci": [
+      79.37,
+      103.43
+     ],
+     "profit_per_customer_all_eur": 82.85,
+     "share_others": 0.097,
+     "points": 11.1,
+     "margin_points": 5.1,
+     "clear": true
+    },
+    {
+     "value": "treats",
+     "customers": 132,
+     "share": 0.164,
+     "profit_per_customer_eur": 93.51,
+     "profit_per_customer_ci": [
+      81.73,
+      107.47
+     ],
+     "profit_per_customer_all_eur": 80.11,
+     "share_others": 0.201,
+     "points": -3.7,
+     "margin_points": 5.5,
+     "clear": false
+    },
+    {
+     "value": "home page (no category)",
+     "customers": 131,
+     "share": 0.163,
+     "profit_per_customer_eur": 84.34,
+     "profit_per_customer_ci": [
+      72.47,
+      96.77
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.193,
+     "points": -3.0,
+     "margin_points": 5.4,
+     "clear": false
+    },
+    {
+     "value": "dry-food",
+     "customers": 123,
+     "share": 0.153,
+     "profit_per_customer_eur": 83.8,
+     "profit_per_customer_ci": [
+      72.28,
+      97.35
+     ],
+     "profit_per_customer_all_eur": 80.27,
+     "share_others": 0.104,
+     "points": 4.9,
+     "margin_points": 4.8,
+     "clear": true
+    },
+    {
+     "value": "litter",
+     "customers": 69,
+     "share": 0.086,
+     "profit_per_customer_eur": 69.69,
+     "profit_per_customer_ci": [
+      55.41,
+      84.4
+     ],
+     "profit_per_customer_all_eur": 69.69,
+     "share_others": 0.0,
+     "points": 8.6,
+     "margin_points": 3.0,
+     "clear": true
+    },
+    {
+     "value": "accessories",
+     "customers": 61,
+     "share": 0.076,
+     "profit_per_customer_eur": 84.28,
+     "profit_per_customer_ci": [
+      73.1,
+      96.83
+     ],
+     "profit_per_customer_all_eur": 78.44,
+     "share_others": 0.119,
+     "points": -4.3,
+     "margin_points": 4.2,
+     "clear": true
+    },
+    {
+     "value": "toys",
+     "customers": 48,
+     "share": 0.06,
+     "profit_per_customer_eur": 88.8,
+     "profit_per_customer_ci": [
+      74.13,
+      105.58
+     ],
+     "profit_per_customer_all_eur": 70.65,
+     "share_others": 0.109,
+     "points": -4.9,
+     "margin_points": 3.9,
+     "clear": true
+    },
+    {
+     "value": "health",
+     "customers": 41,
+     "share": 0.051,
+     "profit_per_customer_eur": 80.56,
+     "profit_per_customer_ci": [
+      63.0,
+      101.39
+     ],
+     "profit_per_customer_all_eur": 69.06,
+     "share_others": 0.044,
+     "points": 0.7,
+     "margin_points": 3.0,
+     "clear": false
+    },
+    {
+     "value": "grooming",
+     "customers": 22,
+     "share": 0.027,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.15,
+     "share_others": 0.037,
+     "points": -0.9,
+     "margin_points": 2.5,
+     "clear": false
+    },
+    {
+     "value": "dental-treats",
+     "customers": 9,
+     "share": 0.011,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 94.74,
+     "share_others": 0.027,
+     "points": -1.6,
+     "margin_points": 1.9,
+     "clear": false
+    }
+   ]
+  },
+  "pets:dog": {
+   "source": [
+    {
+     "value": "organic_search",
+     "customers": 312,
+     "share": 0.304,
+     "profit_per_customer_eur": 85.72,
+     "profit_per_customer_ci": [
+      78.01,
+      93.32
+     ],
+     "profit_per_customer_all_eur": 86.4,
+     "share_others": 0.309,
+     "points": -0.6,
+     "margin_points": 6.6,
+     "clear": false
+    },
+    {
+     "value": "direct",
+     "customers": 212,
+     "share": 0.206,
+     "profit_per_customer_eur": 82.6,
+     "profit_per_customer_ci": [
+      74.22,
+      91.33
+     ],
+     "profit_per_customer_all_eur": 77.81,
+     "share_others": 0.183,
+     "points": 2.3,
+     "margin_points": 5.7,
+     "clear": false
+    },
+    {
+     "value": "paid_search",
+     "customers": 205,
+     "share": 0.2,
+     "profit_per_customer_eur": 74.48,
+     "profit_per_customer_ci": [
+      65.95,
+      83.61
+     ],
+     "profit_per_customer_all_eur": 76.07,
+     "share_others": 0.206,
+     "points": -0.6,
+     "margin_points": 5.8,
+     "clear": false
+    },
+    {
+     "value": "affiliate",
+     "customers": 118,
+     "share": 0.115,
+     "profit_per_customer_eur": 71.56,
+     "profit_per_customer_ci": [
+      59.54,
+      84.71
+     ],
+     "profit_per_customer_all_eur": 70.74,
+     "share_others": 0.126,
+     "points": -1.1,
+     "margin_points": 4.7,
+     "clear": false
+    },
+    {
+     "value": "social",
+     "customers": 92,
+     "share": 0.09,
+     "profit_per_customer_eur": 62.48,
+     "profit_per_customer_ci": [
+      52.89,
+      73.42
+     ],
+     "profit_per_customer_all_eur": 64.31,
+     "share_others": 0.089,
+     "points": 0.0,
+     "margin_points": 4.1,
+     "clear": false
+    },
+    {
+     "value": "email",
+     "customers": 88,
+     "share": 0.086,
+     "profit_per_customer_eur": 75.08,
+     "profit_per_customer_ci": [
+      65.8,
+      84.32
+     ],
+     "profit_per_customer_all_eur": 79.29,
+     "share_others": 0.087,
+     "points": -0.1,
+     "margin_points": 4.0,
+     "clear": false
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 403,
+     "share": 0.392,
+     "profit_per_customer_eur": 81.0,
+     "profit_per_customer_ci": [
+      74.89,
+      88.18
+     ],
+     "profit_per_customer_all_eur": 79.34,
+     "share_others": 0.396,
+     "points": -0.3,
+     "margin_points": 7.0,
+     "clear": false
+    },
+    {
+     "value": "home",
+     "customers": 186,
+     "share": 0.181,
+     "profit_per_customer_eur": 71.05,
+     "profit_per_customer_ci": [
+      63.1,
+      79.31
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.177,
+     "points": 0.4,
+     "margin_points": 5.5,
+     "clear": false
+    },
+    {
+     "value": "search",
+     "customers": 158,
+     "share": 0.154,
+     "profit_per_customer_eur": 80.39,
+     "profit_per_customer_ci": [
+      70.23,
+      90.8
+     ],
+     "profit_per_customer_all_eur": 78.21,
+     "share_others": 0.122,
+     "points": 3.2,
+     "margin_points": 4.9,
+     "clear": false
+    },
+    {
+     "value": "category",
+     "customers": 146,
+     "share": 0.142,
+     "profit_per_customer_eur": 78.55,
+     "profit_per_customer_ci": [
+      68.86,
+      88.63
+     ],
+     "profit_per_customer_all_eur": 80.61,
+     "share_others": 0.172,
+     "points": -3.0,
+     "margin_points": 5.2,
+     "clear": false
+    },
+    {
+     "value": "offer",
+     "customers": 134,
+     "share": 0.13,
+     "profit_per_customer_eur": 76.85,
+     "profit_per_customer_ci": [
+      65.43,
+      87.71
+     ],
+     "profit_per_customer_all_eur": 75.87,
+     "share_others": 0.134,
+     "points": -0.3,
+     "margin_points": 4.9,
+     "clear": false
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "treats",
+     "customers": 225,
+     "share": 0.219,
+     "profit_per_customer_eur": 79.54,
+     "profit_per_customer_ci": [
+      71.37,
+      88.54
+     ],
+     "profit_per_customer_all_eur": 80.11,
+     "share_others": 0.138,
+     "points": 8.1,
+     "margin_points": 5.4,
+     "clear": true
+    },
+    {
+     "value": "home page (no category)",
+     "customers": 186,
+     "share": 0.181,
+     "profit_per_customer_eur": 71.05,
+     "profit_per_customer_ci": [
+      63.1,
+      79.31
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.177,
+     "points": 0.4,
+     "margin_points": 5.5,
+     "clear": false
+    },
+    {
+     "value": "wet-food",
+     "customers": 146,
+     "share": 0.142,
+     "profit_per_customer_eur": 82.1,
+     "profit_per_customer_ci": [
+      71.62,
+      93.68
+     ],
+     "profit_per_customer_all_eur": 82.85,
+     "share_others": 0.155,
+     "points": -1.2,
+     "margin_points": 5.1,
+     "clear": false
+    },
+    {
+     "value": "accessories",
+     "customers": 135,
+     "share": 0.131,
+     "profit_per_customer_eur": 79.7,
+     "profit_per_customer_ci": [
+      68.73,
+      89.66
+     ],
+     "profit_per_customer_all_eur": 78.44,
+     "share_others": 0.056,
+     "points": 7.5,
+     "margin_points": 4.0,
+     "clear": true
+    },
+    {
+     "value": "toys",
+     "customers": 107,
+     "share": 0.104,
+     "profit_per_customer_eur": 67.98,
+     "profit_per_customer_ci": [
+      57.54,
+      79.64
+     ],
+     "profit_per_customer_all_eur": 70.65,
+     "share_others": 0.063,
+     "points": 4.1,
+     "margin_points": 3.9,
+     "clear": true
+    },
+    {
+     "value": "dry-food",
+     "customers": 102,
+     "share": 0.099,
+     "profit_per_customer_eur": 91.13,
+     "profit_per_customer_ci": [
+      76.01,
+      109.25
+     ],
+     "profit_per_customer_all_eur": 80.27,
+     "share_others": 0.161,
+     "points": -6.2,
+     "margin_points": 4.9,
+     "clear": true
+    },
+    {
+     "value": "health",
+     "customers": 45,
+     "share": 0.044,
+     "profit_per_customer_eur": 72.32,
+     "profit_per_customer_ci": [
+      59.37,
+      87.71
+     ],
+     "profit_per_customer_all_eur": 69.06,
+     "share_others": 0.051,
+     "points": -0.7,
+     "margin_points": 3.1,
+     "clear": false
+    },
+    {
+     "value": "grooming",
+     "customers": 44,
+     "share": 0.043,
+     "profit_per_customer_eur": 73.68,
+     "profit_per_customer_ci": [
+      59.68,
+      88.56
+     ],
+     "profit_per_customer_all_eur": 75.15,
+     "share_others": 0.018,
+     "points": 2.4,
+     "margin_points": 2.4,
+     "clear": false
+    },
+    {
+     "value": "dental-treats",
+     "customers": 35,
+     "share": 0.034,
+     "profit_per_customer_eur": 94.83,
+     "profit_per_customer_ci": [
+      69.52,
+      125.44
+     ],
+     "profit_per_customer_all_eur": 94.74,
+     "share_others": 0.001,
+     "points": 3.3,
+     "margin_points": 1.7,
+     "clear": true
+    }
+   ]
+  },
+  "pets:small_animal": {
+   "source": [
+    {
+     "value": "organic_search",
+     "customers": 46,
+     "share": 0.317,
+     "profit_per_customer_eur": 92.6,
+     "profit_per_customer_ci": [
+      75.03,
+      113.65
+     ],
+     "profit_per_customer_all_eur": 86.4,
+     "share_others": 0.305,
+     "points": 1.2,
+     "margin_points": 12.1,
+     "clear": false
+    },
+    {
+     "value": "paid_search",
+     "customers": 30,
+     "share": 0.207,
+     "profit_per_customer_eur": 82.31,
+     "profit_per_customer_ci": [
+      55.87,
+      112.67
+     ],
+     "profit_per_customer_all_eur": 76.07,
+     "share_others": 0.202,
+     "points": 0.5,
+     "margin_points": 10.5,
+     "clear": false
+    },
+    {
+     "value": "direct",
+     "customers": 27,
+     "share": 0.186,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 77.81,
+     "share_others": 0.198,
+     "points": -1.1,
+     "margin_points": 10.1,
+     "clear": false
+    },
+    {
+     "value": "affiliate",
+     "customers": 17,
+     "share": 0.117,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 70.74,
+     "share_others": 0.12,
+     "points": -0.3,
+     "margin_points": 8.4,
+     "clear": false
+    },
+    {
+     "value": "social",
+     "customers": 13,
+     "share": 0.09,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 64.31,
+     "share_others": 0.089,
+     "points": 0.0,
+     "margin_points": 7.4,
+     "clear": false
+    },
+    {
+     "value": "email",
+     "customers": 12,
+     "share": 0.083,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 79.29,
+     "share_others": 0.086,
+     "points": -0.4,
+     "margin_points": 7.2,
+     "clear": false
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 56,
+     "share": 0.386,
+     "profit_per_customer_eur": 68.28,
+     "profit_per_customer_ci": [
+      57.72,
+      80.14
+     ],
+     "profit_per_customer_all_eur": 79.34,
+     "share_others": 0.395,
+     "points": -0.8,
+     "margin_points": 12.7,
+     "clear": false
+    },
+    {
+     "value": "category",
+     "customers": 26,
+     "share": 0.179,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 80.61,
+     "share_others": 0.153,
+     "points": 2.7,
+     "margin_points": 9.9,
+     "clear": false
+    },
+    {
+     "value": "home",
+     "customers": 25,
+     "share": 0.172,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.18,
+     "points": -0.8,
+     "margin_points": 9.8,
+     "clear": false
+    },
+    {
+     "value": "offer",
+     "customers": 21,
+     "share": 0.145,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.87,
+     "share_others": 0.131,
+     "points": 1.4,
+     "margin_points": 9.1,
+     "clear": false
+    },
+    {
+     "value": "search",
+     "customers": 17,
+     "share": 0.117,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 78.21,
+     "share_others": 0.142,
+     "points": -2.5,
+     "margin_points": 8.4,
+     "clear": false
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "dry-food",
+     "customers": 39,
+     "share": 0.269,
+     "profit_per_customer_eur": 82.45,
+     "profit_per_customer_ci": [
+      61.93,
+      103.4
+     ],
+     "profit_per_customer_all_eur": 80.27,
+     "share_others": 0.113,
+     "points": 15.6,
+     "margin_points": 11.3,
+     "clear": true
+    },
+    {
+     "value": "treats",
+     "customers": 36,
+     "share": 0.248,
+     "profit_per_customer_eur": 101.79,
+     "profit_per_customer_ci": [
+      72.99,
+      134.34
+     ],
+     "profit_per_customer_all_eur": 80.11,
+     "share_others": 0.179,
+     "points": 7.0,
+     "margin_points": 11.1,
+     "clear": false
+    },
+    {
+     "value": "home page (no category)",
+     "customers": 25,
+     "share": 0.172,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.18,
+     "points": -0.8,
+     "margin_points": 9.8,
+     "clear": false
+    },
+    {
+     "value": "toys",
+     "customers": 19,
+     "share": 0.131,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 70.65,
+     "share_others": 0.083,
+     "points": 4.8,
+     "margin_points": 8.7,
+     "clear": false
+    },
+    {
+     "value": "accessories",
+     "customers": 16,
+     "share": 0.11,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 78.44,
+     "share_others": 0.098,
+     "points": 1.2,
+     "margin_points": 8.1,
+     "clear": false
+    },
+    {
+     "value": "health",
+     "customers": 9,
+     "share": 0.062,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.06,
+     "share_others": 0.046,
+     "points": 1.6,
+     "margin_points": 6.2,
+     "clear": false
+    }
+   ]
+  },
+  "price:mixed": {
+   "source": [
+    {
+     "value": "organic_search",
+     "customers": 310,
+     "share": 0.343,
+     "profit_per_customer_eur": 96.09,
+     "profit_per_customer_ci": [
+      89.52,
+      103.92
+     ],
+     "profit_per_customer_all_eur": 86.4,
+     "share_others": 0.268,
+     "points": 7.5,
+     "margin_points": 6.5,
+     "clear": true
+    },
+    {
+     "value": "direct",
+     "customers": 184,
+     "share": 0.204,
+     "profit_per_customer_eur": 85.95,
+     "profit_per_customer_ci": [
+      77.2,
+      95.57
+     ],
+     "profit_per_customer_all_eur": 77.81,
+     "share_others": 0.189,
+     "points": 1.4,
+     "margin_points": 5.6,
+     "clear": false
+    },
+    {
+     "value": "paid_search",
+     "customers": 156,
+     "share": 0.173,
+     "profit_per_customer_eur": 88.66,
+     "profit_per_customer_ci": [
+      78.12,
+      98.47
+     ],
+     "profit_per_customer_all_eur": 76.07,
+     "share_others": 0.232,
+     "points": -5.9,
+     "margin_points": 5.7,
+     "clear": true
+    },
+    {
+     "value": "affiliate",
+     "customers": 89,
+     "share": 0.099,
+     "profit_per_customer_eur": 83.12,
+     "profit_per_customer_ci": [
+      69.02,
+      95.56
+     ],
+     "profit_per_customer_all_eur": 70.74,
+     "share_others": 0.141,
+     "points": -4.2,
+     "margin_points": 4.6,
+     "clear": false
+    },
+    {
+     "value": "email",
+     "customers": 87,
+     "share": 0.096,
+     "profit_per_customer_eur": 88.0,
+     "profit_per_customer_ci": [
+      78.17,
+      99.0
+     ],
+     "profit_per_customer_all_eur": 79.29,
+     "share_others": 0.076,
+     "points": 2.1,
+     "margin_points": 4.0,
+     "clear": false
+    },
+    {
+     "value": "social",
+     "customers": 77,
+     "share": 0.085,
+     "profit_per_customer_eur": 71.94,
+     "profit_per_customer_ci": [
+      60.83,
+      82.94
+     ],
+     "profit_per_customer_all_eur": 64.31,
+     "share_others": 0.094,
+     "points": -0.8,
+     "margin_points": 4.0,
+     "clear": false
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 363,
+     "share": 0.402,
+     "profit_per_customer_eur": 90.68,
+     "profit_per_customer_ci": [
+      84.54,
+      96.99
+     ],
+     "profit_per_customer_all_eur": 79.34,
+     "share_others": 0.386,
+     "points": 1.6,
+     "margin_points": 6.9,
+     "clear": false
+    },
+    {
+     "value": "home",
+     "customers": 169,
+     "share": 0.187,
+     "profit_per_customer_eur": 83.85,
+     "profit_per_customer_ci": [
+      75.33,
+      92.63
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.171,
+     "points": 1.6,
+     "margin_points": 5.4,
+     "clear": false
+    },
+    {
+     "value": "category",
+     "customers": 142,
+     "share": 0.157,
+     "profit_per_customer_eur": 87.02,
+     "profit_per_customer_ci": [
+      75.74,
+      98.23
+     ],
+     "profit_per_customer_all_eur": 80.61,
+     "share_others": 0.152,
+     "points": 0.5,
+     "margin_points": 5.1,
+     "clear": false
+    },
+    {
+     "value": "search",
+     "customers": 121,
+     "share": 0.134,
+     "profit_per_customer_eur": 93.76,
+     "profit_per_customer_ci": [
+      81.45,
+      106.59
+     ],
+     "profit_per_customer_all_eur": 78.21,
+     "share_others": 0.147,
+     "points": -1.3,
+     "margin_points": 4.9,
+     "clear": false
+    },
+    {
+     "value": "offer",
+     "customers": 108,
+     "share": 0.12,
+     "profit_per_customer_eur": 85.54,
+     "profit_per_customer_ci": [
+      73.71,
+      95.99
+     ],
+     "profit_per_customer_all_eur": 75.87,
+     "share_others": 0.144,
+     "points": -2.5,
+     "margin_points": 4.8,
+     "clear": false
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "treats",
+     "customers": 178,
+     "share": 0.197,
+     "profit_per_customer_eur": 87.31,
+     "profit_per_customer_ci": [
+      77.26,
+      96.6
+     ],
+     "profit_per_customer_all_eur": 80.11,
+     "share_others": 0.171,
+     "points": 2.6,
+     "margin_points": 5.5,
+     "clear": false
+    },
+    {
+     "value": "home page (no category)",
+     "customers": 169,
+     "share": 0.187,
+     "profit_per_customer_eur": 83.85,
+     "profit_per_customer_ci": [
+      75.33,
+      92.63
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.171,
+     "points": 1.6,
+     "margin_points": 5.4,
+     "clear": false
+    },
+    {
+     "value": "wet-food",
+     "customers": 144,
+     "share": 0.159,
+     "profit_per_customer_eur": 90.35,
+     "profit_per_customer_ci": [
+      80.61,
+      100.49
+     ],
+     "profit_per_customer_all_eur": 82.85,
+     "share_others": 0.135,
+     "points": 2.4,
+     "margin_points": 5.0,
+     "clear": false
+    },
+    {
+     "value": "dry-food",
+     "customers": 100,
+     "share": 0.111,
+     "profit_per_customer_eur": 88.55,
+     "profit_per_customer_ci": [
+      77.7,
+      102.34
+     ],
+     "profit_per_customer_all_eur": 80.27,
+     "share_others": 0.141,
+     "points": -3.0,
+     "margin_points": 4.7,
+     "clear": false
+    },
+    {
+     "value": "accessories",
+     "customers": 83,
+     "share": 0.092,
+     "profit_per_customer_eur": 94.45,
+     "profit_per_customer_ci": [
+      81.8,
+      106.89
+     ],
+     "profit_per_customer_all_eur": 78.44,
+     "share_others": 0.107,
+     "points": -1.5,
+     "margin_points": 4.2,
+     "clear": false
+    },
+    {
+     "value": "toys",
+     "customers": 75,
+     "share": 0.083,
+     "profit_per_customer_eur": 75.96,
+     "profit_per_customer_ci": [
+      66.45,
+      86.17
+     ],
+     "profit_per_customer_all_eur": 70.65,
+     "share_others": 0.09,
+     "points": -0.7,
+     "margin_points": 4.0,
+     "clear": false
+    },
+    {
+     "value": "health",
+     "customers": 40,
+     "share": 0.044,
+     "profit_per_customer_eur": 86.73,
+     "profit_per_customer_ci": [
+      70.47,
+      105.69
+     ],
+     "profit_per_customer_all_eur": 69.06,
+     "share_others": 0.05,
+     "points": -0.5,
+     "margin_points": 3.0,
+     "clear": false
+    },
+    {
+     "value": "grooming",
+     "customers": 34,
+     "share": 0.038,
+     "profit_per_customer_eur": 86.85,
+     "profit_per_customer_ci": [
+      69.97,
+      105.24
+     ],
+     "profit_per_customer_all_eur": 75.15,
+     "share_others": 0.027,
+     "points": 1.1,
+     "margin_points": 2.5,
+     "clear": false
+    },
+    {
+     "value": "litter",
+     "customers": 32,
+     "share": 0.035,
+     "profit_per_customer_eur": 82.97,
+     "profit_per_customer_ci": [
+      64.51,
+      105.11
+     ],
+     "profit_per_customer_all_eur": 69.69,
+     "share_others": 0.042,
+     "points": -0.6,
+     "margin_points": 2.7,
+     "clear": false
+    },
+    {
+     "value": "aquarium",
+     "customers": 29,
+     "share": 0.032,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 87.68,
+     "share_others": 0.046,
+     "points": -1.4,
+     "margin_points": 2.8,
+     "clear": false
+    },
+    {
+     "value": "dental-treats",
+     "customers": 19,
+     "share": 0.021,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 94.74,
+     "share_others": 0.019,
+     "points": 0.2,
+     "margin_points": 2.0,
+     "clear": false
+    }
+   ]
+  },
+  "price:premium-leaning": {
+   "source": [
+    {
+     "value": "organic_search",
+     "customers": 131,
+     "share": 0.294,
+     "profit_per_customer_eur": 91.41,
+     "profit_per_customer_ci": [
+      79.5,
+      103.92
+     ],
+     "profit_per_customer_all_eur": 86.4,
+     "share_others": 0.31,
+     "points": -1.7,
+     "margin_points": 7.5,
+     "clear": false
+    },
+    {
+     "value": "paid_search",
+     "customers": 104,
+     "share": 0.233,
+     "profit_per_customer_eur": 87.83,
+     "profit_per_customer_ci": [
+      73.03,
+      103.41
+     ],
+     "profit_per_customer_all_eur": 76.07,
+     "share_others": 0.192,
+     "points": 4.1,
+     "margin_points": 6.8,
+     "clear": false
+    },
+    {
+     "value": "direct",
+     "customers": 77,
+     "share": 0.173,
+     "profit_per_customer_eur": 97.23,
+     "profit_per_customer_ci": [
+      77.59,
+      119.08
+     ],
+     "profit_per_customer_all_eur": 77.81,
+     "share_others": 0.205,
+     "points": -3.2,
+     "margin_points": 6.3,
+     "clear": false
+    },
+    {
+     "value": "affiliate",
+     "customers": 63,
+     "share": 0.141,
+     "profit_per_customer_eur": 84.46,
+     "profit_per_customer_ci": [
+      63.71,
+      107.17
+     ],
+     "profit_per_customer_all_eur": 70.74,
+     "share_others": 0.112,
+     "points": 2.9,
+     "margin_points": 5.6,
+     "clear": false
+    },
+    {
+     "value": "social",
+     "customers": 39,
+     "share": 0.087,
+     "profit_per_customer_eur": 70.53,
+     "profit_per_customer_ci": [
+      50.3,
+      96.31
+     ],
+     "profit_per_customer_all_eur": 64.31,
+     "share_others": 0.09,
+     "points": -0.3,
+     "margin_points": 4.6,
+     "clear": false
+    },
+    {
+     "value": "email",
+     "customers": 32,
+     "share": 0.072,
+     "profit_per_customer_eur": 84.19,
+     "profit_per_customer_ci": [
+      66.6,
+      101.98
+     ],
+     "profit_per_customer_all_eur": 79.29,
+     "share_others": 0.091,
+     "points": -1.9,
+     "margin_points": 4.4,
+     "clear": false
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 178,
+     "share": 0.399,
+     "profit_per_customer_eur": 82.29,
+     "profit_per_customer_ci": [
+      73.41,
+      93.26
+     ],
+     "profit_per_customer_all_eur": 79.34,
+     "share_others": 0.392,
+     "points": 0.7,
+     "margin_points": 8.0,
+     "clear": false
+    },
+    {
+     "value": "search",
+     "customers": 73,
+     "share": 0.164,
+     "profit_per_customer_eur": 86.21,
+     "profit_per_customer_ci": [
+      72.23,
+      101.54
+     ],
+     "profit_per_customer_all_eur": 78.21,
+     "share_others": 0.132,
+     "points": 3.1,
+     "margin_points": 5.9,
+     "clear": false
+    },
+    {
+     "value": "home",
+     "customers": 70,
+     "share": 0.157,
+     "profit_per_customer_eur": 91.53,
+     "profit_per_customer_ci": [
+      71.05,
+      115.4
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.187,
+     "points": -3.0,
+     "margin_points": 6.1,
+     "clear": false
+    },
+    {
+     "value": "offer",
+     "customers": 67,
+     "share": 0.15,
+     "profit_per_customer_eur": 89.71,
+     "profit_per_customer_ci": [
+      71.21,
+      109.97
+     ],
+     "profit_per_customer_all_eur": 75.87,
+     "share_others": 0.126,
+     "points": 2.4,
+     "margin_points": 5.8,
+     "clear": false
+    },
+    {
+     "value": "category",
+     "customers": 58,
+     "share": 0.13,
+     "profit_per_customer_eur": 103.5,
+     "profit_per_customer_ci": [
+      86.06,
+      125.58
+     ],
+     "profit_per_customer_all_eur": 80.61,
+     "share_others": 0.163,
+     "points": -3.3,
+     "margin_points": 5.7,
+     "clear": false
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "treats",
+     "customers": 87,
+     "share": 0.195,
+     "profit_per_customer_eur": 92.05,
+     "profit_per_customer_ci": [
+      76.0,
+      107.68
+     ],
+     "profit_per_customer_all_eur": 80.11,
+     "share_others": 0.181,
+     "points": 1.4,
+     "margin_points": 6.5,
+     "clear": false
+    },
+    {
+     "value": "home page (no category)",
+     "customers": 70,
+     "share": 0.157,
+     "profit_per_customer_eur": 91.53,
+     "profit_per_customer_ci": [
+      71.05,
+      115.4
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.187,
+     "points": -3.0,
+     "margin_points": 6.1,
+     "clear": false
+    },
+    {
+     "value": "wet-food",
+     "customers": 63,
+     "share": 0.141,
+     "profit_per_customer_eur": 92.31,
+     "profit_per_customer_ci": [
+      73.28,
+      113.88
+     ],
+     "profit_per_customer_all_eur": 82.85,
+     "share_others": 0.15,
+     "points": -0.8,
+     "margin_points": 5.7,
+     "clear": false
+    },
+    {
+     "value": "dry-food",
+     "customers": 60,
+     "share": 0.135,
+     "profit_per_customer_eur": 98.33,
+     "profit_per_customer_ci": [
+      77.79,
+      122.22
+     ],
+     "profit_per_customer_all_eur": 80.27,
+     "share_others": 0.123,
+     "points": 1.2,
+     "margin_points": 5.5,
+     "clear": false
+    },
+    {
+     "value": "accessories",
+     "customers": 47,
+     "share": 0.105,
+     "profit_per_customer_eur": 87.44,
+     "profit_per_customer_ci": [
+      68.88,
+      109.49
+     ],
+     "profit_per_customer_all_eur": 78.44,
+     "share_others": 0.097,
+     "points": 0.8,
+     "margin_points": 5.0,
+     "clear": false
+    },
+    {
+     "value": "toys",
+     "customers": 42,
+     "share": 0.094,
+     "profit_per_customer_eur": 82.21,
+     "profit_per_customer_ci": [
+      62.5,
+      105.64
+     ],
+     "profit_per_customer_all_eur": 70.65,
+     "share_others": 0.084,
+     "points": 1.0,
+     "margin_points": 4.7,
+     "clear": false
+    },
+    {
+     "value": "aquarium",
+     "customers": 21,
+     "share": 0.047,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 87.68,
+     "share_others": 0.036,
+     "points": 1.1,
+     "margin_points": 3.4,
+     "clear": false
+    },
+    {
+     "value": "health",
+     "customers": 19,
+     "share": 0.043,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.06,
+     "share_others": 0.048,
+     "points": -0.6,
+     "margin_points": 3.4,
+     "clear": false
+    },
+    {
+     "value": "litter",
+     "customers": 17,
+     "share": 0.038,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.69,
+     "share_others": 0.039,
+     "points": -0.1,
+     "margin_points": 3.1,
+     "clear": false
+    },
+    {
+     "value": "grooming",
+     "customers": 12,
+     "share": 0.027,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.15,
+     "share_others": 0.034,
+     "points": -0.7,
+     "margin_points": 2.7,
+     "clear": false
+    },
+    {
+     "value": "dental-treats",
+     "customers": 8,
+     "share": 0.018,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 94.74,
+     "share_others": 0.021,
+     "points": -0.3,
+     "margin_points": 2.2,
+     "clear": false
+    }
+   ]
+  },
+  "price:value-leaning": {
+   "source": [
+    {
+     "value": "paid_search",
+     "customers": 90,
+     "share": 0.245,
+     "profit_per_customer_eur": 49.35,
+     "profit_per_customer_ci": [
+      42.3,
+      56.1
+     ],
+     "profit_per_customer_all_eur": 76.07,
+     "share_others": 0.191,
+     "points": 5.4,
+     "margin_points": 7.4,
+     "clear": false
+    },
+    {
+     "value": "organic_search",
+     "customers": 88,
+     "share": 0.24,
+     "profit_per_customer_eur": 60.22,
+     "profit_per_customer_ci": [
+      50.4,
+      70.46
+     ],
+     "profit_per_customer_all_eur": 86.4,
+     "share_others": 0.323,
+     "points": -8.3,
+     "margin_points": 7.7,
+     "clear": true
+    },
+    {
+     "value": "direct",
+     "customers": 71,
+     "share": 0.193,
+     "profit_per_customer_eur": 52.51,
+     "profit_per_customer_ci": [
+      43.83,
+      62.55
+     ],
+     "profit_per_customer_all_eur": 77.81,
+     "share_others": 0.197,
+     "points": -0.4,
+     "margin_points": 6.9,
+     "clear": false
+    },
+    {
+     "value": "affiliate",
+     "customers": 52,
+     "share": 0.142,
+     "profit_per_customer_eur": 43.69,
+     "profit_per_customer_ci": [
+      37.67,
+      50.26
+     ],
+     "profit_per_customer_all_eur": 70.74,
+     "share_others": 0.114,
+     "points": 2.8,
+     "margin_points": 6.0,
+     "clear": false
+    },
+    {
+     "value": "social",
+     "customers": 34,
+     "share": 0.093,
+     "profit_per_customer_eur": 53.53,
+     "profit_per_customer_ci": [
+      37.94,
+      69.4
+     ],
+     "profit_per_customer_all_eur": 64.31,
+     "share_others": 0.089,
+     "points": 0.4,
+     "margin_points": 5.1,
+     "clear": false
+    },
+    {
+     "value": "email",
+     "customers": 32,
+     "share": 0.087,
+     "profit_per_customer_eur": 56.48,
+     "profit_per_customer_ci": [
+      41.48,
+      71.11
+     ],
+     "profit_per_customer_all_eur": 79.29,
+     "share_others": 0.086,
+     "points": 0.1,
+     "margin_points": 4.9,
+     "clear": false
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 137,
+     "share": 0.373,
+     "profit_per_customer_eur": 57.95,
+     "profit_per_customer_ci": [
+      50.02,
+      65.26
+     ],
+     "profit_per_customer_all_eur": 79.34,
+     "share_others": 0.399,
+     "points": -2.6,
+     "margin_points": 8.5,
+     "clear": false
+    },
+    {
+     "value": "home",
+     "customers": 70,
+     "share": 0.191,
+     "profit_per_customer_eur": 48.39,
+     "profit_per_customer_ci": [
+      41.09,
+      56.06
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.176,
+     "points": 1.4,
+     "margin_points": 6.9,
+     "clear": false
+    },
+    {
+     "value": "category",
+     "customers": 65,
+     "share": 0.177,
+     "profit_per_customer_eur": 58.46,
+     "profit_per_customer_ci": [
+      48.0,
+      69.45
+     ],
+     "profit_per_customer_all_eur": 80.61,
+     "share_others": 0.149,
+     "points": 2.8,
+     "margin_points": 6.6,
+     "clear": false
+    },
+    {
+     "value": "offer",
+     "customers": 53,
+     "share": 0.144,
+     "profit_per_customer_eur": 47.07,
+     "profit_per_customer_ci": [
+      39.27,
+      54.78
+     ],
+     "profit_per_customer_all_eur": 75.87,
+     "share_others": 0.129,
+     "points": 1.6,
+     "margin_points": 6.1,
+     "clear": false
+    },
+    {
+     "value": "search",
+     "customers": 42,
+     "share": 0.114,
+     "profit_per_customer_eur": 41.62,
+     "profit_per_customer_ci": [
+      31.8,
+      52.47
+     ],
+     "profit_per_customer_all_eur": 78.21,
+     "share_others": 0.147,
+     "points": -3.2,
+     "margin_points": 5.7,
+     "clear": false
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "home page (no category)",
+     "customers": 70,
+     "share": 0.191,
+     "profit_per_customer_eur": 48.39,
+     "profit_per_customer_ci": [
+      41.09,
+      56.06
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.176,
+     "points": 1.4,
+     "margin_points": 6.9,
+     "clear": false
+    },
+    {
+     "value": "dry-food",
+     "customers": 53,
+     "share": 0.144,
+     "profit_per_customer_eur": 59.18,
+     "profit_per_customer_ci": [
+      49.24,
+      70.22
+     ],
+     "profit_per_customer_all_eur": 80.27,
+     "share_others": 0.121,
+     "points": 2.4,
+     "margin_points": 6.1,
+     "clear": false
+    },
+    {
+     "value": "wet-food",
+     "customers": 52,
+     "share": 0.142,
+     "profit_per_customer_eur": 57.36,
+     "profit_per_customer_ci": [
+      45.53,
+      72.97
+     ],
+     "profit_per_customer_all_eur": 82.85,
+     "share_others": 0.149,
+     "points": -0.7,
+     "margin_points": 6.2,
+     "clear": false
+    },
+    {
+     "value": "treats",
+     "customers": 52,
+     "share": 0.142,
+     "profit_per_customer_eur": 50.87,
+     "profit_per_customer_ci": [
+      39.94,
+      63.32
+     ],
+     "profit_per_customer_all_eur": 80.11,
+     "share_others": 0.195,
+     "points": -5.4,
+     "margin_points": 6.3,
+     "clear": false
+    },
+    {
+     "value": "accessories",
+     "customers": 40,
+     "share": 0.109,
+     "profit_per_customer_eur": 46.45,
+     "profit_per_customer_ci": [
+      39.13,
+      55.34
+     ],
+     "profit_per_customer_all_eur": 78.44,
+     "share_others": 0.097,
+     "points": 1.2,
+     "margin_points": 5.4,
+     "clear": false
+    },
+    {
+     "value": "toys",
+     "customers": 29,
+     "share": 0.079,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 70.65,
+     "share_others": 0.089,
+     "points": -1.0,
+     "margin_points": 4.8,
+     "clear": false
+    },
+    {
+     "value": "litter",
+     "customers": 20,
+     "share": 0.054,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.69,
+     "share_others": 0.034,
+     "points": 2.0,
+     "margin_points": 3.8,
+     "clear": false
+    },
+    {
+     "value": "health",
+     "customers": 20,
+     "share": 0.054,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.06,
+     "share_others": 0.045,
+     "points": 1.0,
+     "margin_points": 3.9,
+     "clear": false
+    },
+    {
+     "value": "aquarium",
+     "customers": 14,
+     "share": 0.038,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 87.68,
+     "share_others": 0.039,
+     "points": -0.1,
+     "margin_points": 3.4,
+     "clear": false
+    },
+    {
+     "value": "grooming",
+     "customers": 9,
+     "share": 0.025,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.15,
+     "share_others": 0.034,
+     "points": -1.0,
+     "margin_points": 2.8,
+     "clear": false
+    },
+    {
+     "value": "dental-treats",
+     "customers": 8,
+     "share": 0.022,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 94.74,
+     "share_others": 0.02,
+     "points": 0.2,
+     "margin_points": 2.5,
+     "clear": false
+    }
+   ]
+  },
+  "rating:above-average ratings": {
+   "source": [
+    {
+     "value": "organic_search",
+     "customers": 117,
+     "share": 0.302,
+     "profit_per_customer_eur": 85.89,
+     "profit_per_customer_ci": [
+      72.61,
+      98.92
+     ],
+     "profit_per_customer_all_eur": 86.4,
+     "share_others": 0.307,
+     "points": -0.5,
+     "margin_points": 7.9,
+     "clear": false
+    },
+    {
+     "value": "paid_search",
+     "customers": 82,
+     "share": 0.212,
+     "profit_per_customer_eur": 76.49,
+     "profit_per_customer_ci": [
+      63.76,
+      90.77
+     ],
+     "profit_per_customer_all_eur": 76.07,
+     "share_others": 0.2,
+     "points": 1.2,
+     "margin_points": 7.0,
+     "clear": false
+    },
+    {
+     "value": "direct",
+     "customers": 75,
+     "share": 0.194,
+     "profit_per_customer_eur": 79.61,
+     "profit_per_customer_ci": [
+      63.76,
+      94.74
+     ],
+     "profit_per_customer_all_eur": 77.81,
+     "share_others": 0.197,
+     "points": -0.4,
+     "margin_points": 6.8,
+     "clear": false
+    },
+    {
+     "value": "social",
+     "customers": 43,
+     "share": 0.111,
+     "profit_per_customer_eur": 58.33,
+     "profit_per_customer_ci": [
+      44.85,
+      72.98
+     ],
+     "profit_per_customer_all_eur": 64.31,
+     "share_others": 0.083,
+     "points": 2.8,
+     "margin_points": 5.3,
+     "clear": false
+    },
+    {
+     "value": "affiliate",
+     "customers": 40,
+     "share": 0.103,
+     "profit_per_customer_eur": 61.56,
+     "profit_per_customer_ci": [
+      42.2,
+      90.22
+     ],
+     "profit_per_customer_all_eur": 70.74,
+     "share_others": 0.124,
+     "points": -2.1,
+     "margin_points": 5.3,
+     "clear": false
+    },
+    {
+     "value": "email",
+     "customers": 30,
+     "share": 0.078,
+     "profit_per_customer_eur": 86.72,
+     "profit_per_customer_ci": [
+      67.29,
+      107.91
+     ],
+     "profit_per_customer_all_eur": 79.29,
+     "share_others": 0.088,
+     "points": -1.1,
+     "margin_points": 4.7,
+     "clear": false
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 156,
+     "share": 0.403,
+     "profit_per_customer_eur": 76.96,
+     "profit_per_customer_ci": [
+      69.22,
+      86.33
+     ],
+     "profit_per_customer_all_eur": 79.34,
+     "share_others": 0.391,
+     "points": 1.2,
+     "margin_points": 8.4,
+     "clear": false
+    },
+    {
+     "value": "home",
+     "customers": 69,
+     "share": 0.178,
+     "profit_per_customer_eur": 71.13,
+     "profit_per_customer_ci": [
+      56.86,
+      85.82
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.18,
+     "points": -0.1,
+     "margin_points": 6.6,
+     "clear": false
+    },
+    {
+     "value": "category",
+     "customers": 65,
+     "share": 0.168,
+     "profit_per_customer_eur": 78.11,
+     "profit_per_customer_ci": [
+      63.45,
+      92.82
+     ],
+     "profit_per_customer_all_eur": 80.61,
+     "share_others": 0.151,
+     "points": 1.7,
+     "margin_points": 6.4,
+     "clear": false
+    },
+    {
+     "value": "search",
+     "customers": 49,
+     "share": 0.127,
+     "profit_per_customer_eur": 84.35,
+     "profit_per_customer_ci": [
+      67.68,
+      103.27
+     ],
+     "profit_per_customer_all_eur": 78.21,
+     "share_others": 0.144,
+     "points": -1.7,
+     "margin_points": 5.8,
+     "clear": false
+    },
+    {
+     "value": "offer",
+     "customers": 48,
+     "share": 0.124,
+     "profit_per_customer_eur": 77.9,
+     "profit_per_customer_ci": [
+      57.29,
+      102.54
+     ],
+     "profit_per_customer_all_eur": 75.87,
+     "share_others": 0.134,
+     "points": -1.0,
+     "margin_points": 5.7,
+     "clear": false
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "home page (no category)",
+     "customers": 69,
+     "share": 0.178,
+     "profit_per_customer_eur": 71.13,
+     "profit_per_customer_ci": [
+      56.86,
+      85.82
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.18,
+     "points": -0.1,
+     "margin_points": 6.6,
+     "clear": false
+    },
+    {
+     "value": "treats",
+     "customers": 64,
+     "share": 0.165,
+     "profit_per_customer_eur": 80.52,
+     "profit_per_customer_ci": [
+      67.46,
+      96.02
+     ],
+     "profit_per_customer_all_eur": 80.11,
+     "share_others": 0.19,
+     "points": -2.4,
+     "margin_points": 6.5,
+     "clear": false
+    },
+    {
+     "value": "wet-food",
+     "customers": 57,
+     "share": 0.147,
+     "profit_per_customer_eur": 73.2,
+     "profit_per_customer_ci": [
+      56.74,
+      90.23
+     ],
+     "profit_per_customer_all_eur": 82.85,
+     "share_others": 0.148,
+     "points": -0.0,
+     "margin_points": 6.1,
+     "clear": false
+    },
+    {
+     "value": "dry-food",
+     "customers": 45,
+     "share": 0.116,
+     "profit_per_customer_eur": 86.99,
+     "profit_per_customer_ci": [
+      65.9,
+      112.04
+     ],
+     "profit_per_customer_all_eur": 80.27,
+     "share_others": 0.128,
+     "points": -1.2,
+     "margin_points": 5.6,
+     "clear": false
+    },
+    {
+     "value": "toys",
+     "customers": 41,
+     "share": 0.106,
+     "profit_per_customer_eur": 71.4,
+     "profit_per_customer_ci": [
+      58.41,
+      86.18
+     ],
+     "profit_per_customer_all_eur": 70.65,
+     "share_others": 0.081,
+     "points": 2.5,
+     "margin_points": 5.2,
+     "clear": false
+    },
+    {
+     "value": "accessories",
+     "customers": 37,
+     "share": 0.096,
+     "profit_per_customer_eur": 72.79,
+     "profit_per_customer_ci": [
+      59.77,
+      87.93
+     ],
+     "profit_per_customer_all_eur": 78.44,
+     "share_others": 0.1,
+     "points": -0.5,
+     "margin_points": 5.1,
+     "clear": false
+    },
+    {
+     "value": "aquarium",
+     "customers": 26,
+     "share": 0.067,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 87.68,
+     "share_others": 0.031,
+     "points": 3.6,
+     "margin_points": 4.1,
+     "clear": false
+    },
+    {
+     "value": "litter",
+     "customers": 18,
+     "share": 0.047,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.69,
+     "share_others": 0.036,
+     "points": 1.0,
+     "margin_points": 3.5,
+     "clear": false
+    },
+    {
+     "value": "health",
+     "customers": 16,
+     "share": 0.041,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.06,
+     "share_others": 0.048,
+     "points": -0.7,
+     "margin_points": 3.5,
+     "clear": false
+    },
+    {
+     "value": "grooming",
+     "customers": 8,
+     "share": 0.021,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.15,
+     "share_others": 0.036,
+     "points": -1.5,
+     "margin_points": 2.6,
+     "clear": false
+    },
+    {
+     "value": "dental-treats",
+     "customers": 6,
+     "share": 0.016,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 94.74,
+     "share_others": 0.021,
+     "points": -0.6,
+     "margin_points": 2.2,
+     "clear": false
+    }
+   ]
+  },
+  "rating:average ratings": {
+   "source": [
+    {
+     "value": "organic_search",
+     "customers": 264,
+     "share": 0.309,
+     "profit_per_customer_eur": 90.38,
+     "profit_per_customer_ci": [
+      82.76,
+      98.09
+     ],
+     "profit_per_customer_all_eur": 86.4,
+     "share_others": 0.303,
+     "points": 0.6,
+     "margin_points": 6.5,
+     "clear": false
+    },
+    {
+     "value": "direct",
+     "customers": 168,
+     "share": 0.197,
+     "profit_per_customer_eur": 82.49,
+     "profit_per_customer_ci": [
+      73.42,
+      92.39
+     ],
+     "profit_per_customer_all_eur": 77.81,
+     "share_others": 0.196,
+     "points": 0.1,
+     "margin_points": 5.6,
+     "clear": false
+    },
+    {
+     "value": "paid_search",
+     "customers": 162,
+     "share": 0.19,
+     "profit_per_customer_eur": 80.9,
+     "profit_per_customer_ci": [
+      72.06,
+      90.61
+     ],
+     "profit_per_customer_all_eur": 76.07,
+     "share_others": 0.213,
+     "points": -2.4,
+     "margin_points": 5.7,
+     "clear": false
+    },
+    {
+     "value": "affiliate",
+     "customers": 102,
+     "share": 0.12,
+     "profit_per_customer_eur": 76.71,
+     "profit_per_customer_ci": [
+      64.45,
+      90.07
+     ],
+     "profit_per_customer_all_eur": 70.74,
+     "share_others": 0.12,
+     "points": 0.0,
+     "margin_points": 4.6,
+     "clear": false
+    },
+    {
+     "value": "email",
+     "customers": 83,
+     "share": 0.097,
+     "profit_per_customer_eur": 79.44,
+     "profit_per_customer_ci": [
+      69.07,
+      90.59
+     ],
+     "profit_per_customer_all_eur": 79.29,
+     "share_others": 0.076,
+     "points": 2.2,
+     "margin_points": 4.0,
+     "clear": false
+    },
+    {
+     "value": "social",
+     "customers": 74,
+     "share": 0.087,
+     "profit_per_customer_eur": 73.18,
+     "profit_per_customer_ci": [
+      59.43,
+      90.45
+     ],
+     "profit_per_customer_all_eur": 64.31,
+     "share_others": 0.092,
+     "points": -0.5,
+     "margin_points": 4.0,
+     "clear": false
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 321,
+     "share": 0.376,
+     "profit_per_customer_eur": 84.74,
+     "profit_per_customer_ci": [
+      78.32,
+      91.64
+     ],
+     "profit_per_customer_all_eur": 79.34,
+     "share_others": 0.41,
+     "points": -3.3,
+     "margin_points": 6.9,
+     "clear": false
+    },
+    {
+     "value": "home",
+     "customers": 155,
+     "share": 0.182,
+     "profit_per_customer_eur": 81.31,
+     "profit_per_customer_ci": [
+      73.07,
+      90.71
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.177,
+     "points": 0.5,
+     "margin_points": 5.4,
+     "clear": false
+    },
+    {
+     "value": "search",
+     "customers": 131,
+     "share": 0.154,
+     "profit_per_customer_eur": 80.78,
+     "profit_per_customer_ci": [
+      70.23,
+      91.51
+     ],
+     "profit_per_customer_all_eur": 78.21,
+     "share_others": 0.128,
+     "points": 2.6,
+     "margin_points": 4.9,
+     "clear": false
+    },
+    {
+     "value": "category",
+     "customers": 124,
+     "share": 0.145,
+     "profit_per_customer_eur": 87.31,
+     "profit_per_customer_ci": [
+      74.47,
+      100.54
+     ],
+     "profit_per_customer_all_eur": 80.61,
+     "share_others": 0.163,
+     "points": -1.8,
+     "margin_points": 5.1,
+     "clear": false
+    },
+    {
+     "value": "offer",
+     "customers": 122,
+     "share": 0.143,
+     "profit_per_customer_eur": 77.4,
+     "profit_per_customer_ci": [
+      66.75,
+      88.75
+     ],
+     "profit_per_customer_all_eur": 75.87,
+     "share_others": 0.122,
+     "points": 2.1,
+     "margin_points": 4.8,
+     "clear": false
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "home page (no category)",
+     "customers": 155,
+     "share": 0.182,
+     "profit_per_customer_eur": 81.31,
+     "profit_per_customer_ci": [
+      73.07,
+      90.71
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.177,
+     "points": 0.5,
+     "margin_points": 5.4,
+     "clear": false
+    },
+    {
+     "value": "treats",
+     "customers": 154,
+     "share": 0.181,
+     "profit_per_customer_eur": 84.09,
+     "profit_per_customer_ci": [
+      73.13,
+      94.25
+     ],
+     "profit_per_customer_all_eur": 80.11,
+     "share_others": 0.188,
+     "points": -0.7,
+     "margin_points": 5.5,
+     "clear": false
+    },
+    {
+     "value": "wet-food",
+     "customers": 146,
+     "share": 0.171,
+     "profit_per_customer_eur": 87.9,
+     "profit_per_customer_ci": [
+      76.64,
+      98.2
+     ],
+     "profit_per_customer_all_eur": 82.85,
+     "share_others": 0.126,
+     "points": 4.5,
+     "margin_points": 5.1,
+     "clear": false
+    },
+    {
+     "value": "dry-food",
+     "customers": 107,
+     "share": 0.125,
+     "profit_per_customer_eur": 83.66,
+     "profit_per_customer_ci": [
+      73.92,
+      95.4
+     ],
+     "profit_per_customer_all_eur": 80.27,
+     "share_others": 0.126,
+     "points": -0.0,
+     "margin_points": 4.7,
+     "clear": false
+    },
+    {
+     "value": "accessories",
+     "customers": 73,
+     "share": 0.086,
+     "profit_per_customer_eur": 87.42,
+     "profit_per_customer_ci": [
+      71.97,
+      103.29
+     ],
+     "profit_per_customer_all_eur": 78.44,
+     "share_others": 0.112,
+     "points": -2.6,
+     "margin_points": 4.2,
+     "clear": false
+    },
+    {
+     "value": "toys",
+     "customers": 66,
+     "share": 0.077,
+     "profit_per_customer_eur": 77.67,
+     "profit_per_customer_ci": [
+      63.16,
+      97.17
+     ],
+     "profit_per_customer_all_eur": 70.65,
+     "share_others": 0.095,
+     "points": -1.8,
+     "margin_points": 4.0,
+     "clear": false
+    },
+    {
+     "value": "health",
+     "customers": 50,
+     "share": 0.059,
+     "profit_per_customer_eur": 73.4,
+     "profit_per_customer_ci": [
+      57.45,
+      89.72
+     ],
+     "profit_per_customer_all_eur": 69.06,
+     "share_others": 0.036,
+     "points": 2.2,
+     "margin_points": 3.0,
+     "clear": false
+    },
+    {
+     "value": "grooming",
+     "customers": 34,
+     "share": 0.04,
+     "profit_per_customer_eur": 87.27,
+     "profit_per_customer_ci": [
+      70.45,
+      107.72
+     ],
+     "profit_per_customer_all_eur": 75.15,
+     "share_others": 0.026,
+     "points": 1.4,
+     "margin_points": 2.5,
+     "clear": false
+    },
+    {
+     "value": "litter",
+     "customers": 31,
+     "share": 0.036,
+     "profit_per_customer_eur": 62.38,
+     "profit_per_customer_ci": [
+      46.27,
+      76.29
+     ],
+     "profit_per_customer_all_eur": 69.69,
+     "share_others": 0.041,
+     "points": -0.4,
+     "margin_points": 2.7,
+     "clear": false
+    },
+    {
+     "value": "dental-treats",
+     "customers": 22,
+     "share": 0.026,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 94.74,
+     "share_others": 0.015,
+     "points": 1.1,
+     "margin_points": 2.0,
+     "clear": false
+    },
+    {
+     "value": "aquarium",
+     "customers": 15,
+     "share": 0.018,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 87.68,
+     "share_others": 0.059,
+     "points": -4.1,
+     "margin_points": 2.7,
+     "clear": true
+    }
+   ]
+  },
+  "rating:below-average ratings": {
+   "source": [
+    {
+     "value": "organic_search",
+     "customers": 148,
+     "share": 0.311,
+     "profit_per_customer_eur": 88.87,
+     "profit_per_customer_ci": [
+      78.02,
+      99.46
+     ],
+     "profit_per_customer_all_eur": 86.4,
+     "share_others": 0.304,
+     "points": 0.7,
+     "margin_points": 7.4,
+     "clear": false
+    },
+    {
+     "value": "paid_search",
+     "customers": 106,
+     "share": 0.223,
+     "profit_per_customer_eur": 75.75,
+     "profit_per_customer_ci": [
+      63.58,
+      90.11
+     ],
+     "profit_per_customer_all_eur": 76.07,
+     "share_others": 0.195,
+     "points": 2.8,
+     "margin_points": 6.6,
+     "clear": false
+    },
+    {
+     "value": "direct",
+     "customers": 89,
+     "share": 0.187,
+     "profit_per_customer_eur": 80.91,
+     "profit_per_customer_ci": [
+      67.09,
+      97.67
+     ],
+     "profit_per_customer_all_eur": 77.81,
+     "share_others": 0.2,
+     "points": -1.3,
+     "margin_points": 6.3,
+     "clear": false
+    },
+    {
+     "value": "affiliate",
+     "customers": 62,
+     "share": 0.13,
+     "profit_per_customer_eur": 75.87,
+     "profit_per_customer_ci": [
+      58.96,
+      95.09
+     ],
+     "profit_per_customer_all_eur": 70.74,
+     "share_others": 0.116,
+     "points": 1.5,
+     "margin_points": 5.3,
+     "clear": false
+    },
+    {
+     "value": "email",
+     "customers": 38,
+     "share": 0.08,
+     "profit_per_customer_eur": 77.97,
+     "profit_per_customer_ci": [
+      63.22,
+      92.74
+     ],
+     "profit_per_customer_all_eur": 79.29,
+     "share_others": 0.088,
+     "points": -0.8,
+     "margin_points": 4.4,
+     "clear": false
+    },
+    {
+     "value": "social",
+     "customers": 33,
+     "share": 0.069,
+     "profit_per_customer_eur": 66.27,
+     "profit_per_customer_ci": [
+      52.36,
+      82.18
+     ],
+     "profit_per_customer_all_eur": 64.31,
+     "share_others": 0.097,
+     "points": -2.7,
+     "margin_points": 4.3,
+     "clear": false
+    }
+   ],
+   "landing": [
+    {
+     "value": "product",
+     "customers": 201,
+     "share": 0.422,
+     "profit_per_customer_eur": 81.06,
+     "profit_per_customer_ci": [
+      72.03,
+      91.19
+     ],
+     "profit_per_customer_all_eur": 79.34,
+     "share_others": 0.384,
+     "points": 3.9,
+     "margin_points": 7.9,
+     "clear": false
+    },
+    {
+     "value": "home",
+     "customers": 85,
+     "share": 0.179,
+     "profit_per_customer_eur": 75.94,
+     "profit_per_customer_ci": [
+      62.72,
+      90.95
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.18,
+     "points": -0.1,
+     "margin_points": 6.2,
+     "clear": false
+    },
+    {
+     "value": "category",
+     "customers": 76,
+     "share": 0.16,
+     "profit_per_customer_eur": 82.31,
+     "profit_per_customer_ci": [
+      67.47,
+      98.89
+     ],
+     "profit_per_customer_all_eur": 80.61,
+     "share_others": 0.153,
+     "points": 0.7,
+     "margin_points": 5.9,
+     "clear": false
+    },
+    {
+     "value": "offer",
+     "customers": 58,
+     "share": 0.122,
+     "profit_per_customer_eur": 78.64,
+     "profit_per_customer_ci": [
+      64.61,
+      92.95
+     ],
+     "profit_per_customer_all_eur": 75.87,
+     "share_others": 0.135,
+     "points": -1.4,
+     "margin_points": 5.3,
+     "clear": false
+    },
+    {
+     "value": "search",
+     "customers": 56,
+     "share": 0.118,
+     "profit_per_customer_eur": 83.41,
+     "profit_per_customer_ci": [
+      64.92,
+      104.08
+     ],
+     "profit_per_customer_all_eur": 78.21,
+     "share_others": 0.148,
+     "points": -3.1,
+     "margin_points": 5.3,
+     "clear": false
+    }
+   ],
+   "landing_category": [
+    {
+     "value": "treats",
+     "customers": 99,
+     "share": 0.208,
+     "profit_per_customer_eur": 81.74,
+     "profit_per_customer_ci": [
+      68.5,
+      97.97
+     ],
+     "profit_per_customer_all_eur": 80.11,
+     "share_others": 0.176,
+     "points": 3.2,
+     "margin_points": 6.4,
+     "clear": false
+    },
+    {
+     "value": "home page (no category)",
+     "customers": 85,
+     "share": 0.179,
+     "profit_per_customer_eur": 75.94,
+     "profit_per_customer_ci": [
+      62.72,
+      90.95
+     ],
+     "profit_per_customer_all_eur": 75.12,
+     "share_others": 0.18,
+     "points": -0.1,
+     "margin_points": 6.2,
+     "clear": false
+    },
+    {
+     "value": "dry-food",
+     "customers": 61,
+     "share": 0.128,
+     "profit_per_customer_eur": 82.38,
+     "profit_per_customer_ci": [
+      64.92,
+      100.32
+     ],
+     "profit_per_customer_all_eur": 80.27,
+     "share_others": 0.125,
+     "points": 0.3,
+     "margin_points": 5.3,
+     "clear": false
+    },
+    {
+     "value": "accessories",
+     "customers": 60,
+     "share": 0.126,
+     "profit_per_customer_eur": 78.86,
+     "profit_per_customer_ci": [
+      65.24,
+      92.38
+     ],
+     "profit_per_customer_all_eur": 78.44,
+     "share_others": 0.09,
+     "points": 3.6,
+     "margin_points": 5.1,
+     "clear": false
+    },
+    {
+     "value": "wet-food",
+     "customers": 56,
+     "share": 0.118,
+     "profit_per_customer_eur": 85.78,
+     "profit_per_customer_ci": [
+      70.64,
+      104.6
+     ],
+     "profit_per_customer_all_eur": 82.85,
+     "share_others": 0.158,
+     "points": -4.1,
+     "margin_points": 5.4,
+     "clear": false
+    },
+    {
+     "value": "toys",
+     "customers": 39,
+     "share": 0.082,
+     "profit_per_customer_eur": 70.7,
+     "profit_per_customer_ci": [
+      56.52,
+      84.94
+     ],
+     "profit_per_customer_all_eur": 70.65,
+     "share_others": 0.088,
+     "points": -0.6,
+     "margin_points": 4.4,
+     "clear": false
+    },
+    {
+     "value": "aquarium",
+     "customers": 23,
+     "share": 0.048,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 87.68,
+     "share_others": 0.036,
+     "points": 1.3,
+     "margin_points": 3.3,
+     "clear": false
+    },
+    {
+     "value": "litter",
+     "customers": 20,
+     "share": 0.042,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.69,
+     "share_others": 0.037,
+     "points": 0.5,
+     "margin_points": 3.2,
+     "clear": false
+    },
+    {
+     "value": "grooming",
+     "customers": 13,
+     "share": 0.027,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 75.15,
+     "share_others": 0.034,
+     "points": -0.7,
+     "margin_points": 2.7,
+     "clear": false
+    },
+    {
+     "value": "health",
+     "customers": 13,
+     "share": 0.027,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 69.06,
+     "share_others": 0.054,
+     "points": -2.7,
+     "margin_points": 2.9,
+     "clear": false
+    },
+    {
+     "value": "dental-treats",
+     "customers": 7,
+     "share": 0.015,
+     "profit_per_customer_eur": null,
+     "profit_per_customer_ci": null,
+     "profit_per_customer_all_eur": 94.74,
+     "share_others": 0.022,
+     "points": -0.7,
+     "margin_points": 2.1,
+     "clear": false
+    }
+   ]
+  }
+ },
  "preference_ranking": {
   "brand:Acana": {
    "label": "Brand: Acana",

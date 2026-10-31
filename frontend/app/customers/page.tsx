@@ -10,6 +10,7 @@ import { usePagePanel } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
 import CustomerLookup from "@/components/customers/CustomerLookup";
 import PreferenceGraph from "@/components/customers/PreferenceGraph";
+import SegmentAcquisition from "@/components/customers/SegmentAcquisition";
 import SegmentBuys from "@/components/customers/SegmentBuys";
 import SegmentKpis from "@/components/customers/SegmentKpis";
 import SegmentList from "@/components/customers/SegmentList";
@@ -72,6 +73,7 @@ function CustomersView() {
             <SegmentKpis summary={summary} selected={key} />
           </div>
           <PreferenceGraph summary={summary} selected={key} />
+          <SegmentAcquisition summary={summary} selected={key} />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 420px), 1fr))", gap: 12, alignItems: "start" }}>
             <div style={{ display: "grid", gap: 12 }}>
               <SegmentRelations summary={summary} selected={key} />

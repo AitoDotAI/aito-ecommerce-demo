@@ -7,6 +7,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from src.customer_profit import distribution, gross_margin, profit_by_customer
+from src.customer_acquisition import acquisition_by_segment, first_sessions
 from src.customer_funnel import funnel_by_segment
 from src.customer_preference_ranking import line_features, ranking, scores
 from src.customer_relations import PET_GROUPS, preferences, relations
@@ -77,6 +78,9 @@ def build() -> tuple[dict, list[dict]]:
                "response": response(_load("customer_actions"), margin, lambda row: keys_of.get(row["customer_id"], ())),
                "definitions": definitions(), "relations": relations(traits), "preferences": _named(preferences(traits, bought), products),
                "funnel": funnel_by_segment(showings, contexts, keys_of),
+               "acquisition": acquisition_by_segment(
+                   first_sessions(list(customers.values()), _load("contexts")), keys_of,
+                   {cid: c["profit_eur"] for cid, c in customers.items()}, segment_list),
                "preference_ranking": {var: {"label": _label(var), **ranking(share, keys_of, segment_list)}
                                       for var, share in sorted(scores(ranked_lines, profiled_ids).items())}}
     return summary, traits

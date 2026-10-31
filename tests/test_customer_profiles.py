@@ -519,3 +519,81 @@ def test_every_stored_funnel_step_is_no_wider_than_the_one_before():
 
     for key, f in funnel.items():
         assert f["impressions"] >= f["clicks"] >= f["carts"] >= f["purchases"], key
+
+
+# ── Acquisition: where a segment's customers came from ──
+
+from src.customer_acquisition import NO_CATEGORY, acquisition_by_segment, first_sessions
+
+
+def _ctx(cid: str, visitor: str, month: str, source: str, landing: str = "product", category: str | None = "treats") -> dict:
+    return {"context_id": cid, "visitor": visitor, "month": month, "source": source, "landing": landing, "landing_category": category}
+
+
+def test_a_customers_first_session_is_the_earliest_of_their_visitors_sessions():
+    contexts = [_ctx("S2", "V1", "2025-03", "email"), _ctx("S1", "V1", "2025-01", "paid_search", "offer", None), _ctx("S9", "V2", "2024-01", "direct")]
+
+    found = first_sessions([{"customer_id": "C1", "visitor": "V1"}, {"customer_id": "C3", "visitor": "V404"}], contexts)
+
+    assert found == {"C1": {"source": "paid_search", "landing": "offer", "landing_category": NO_CATEGORY}}
+
+
+def _people(n_in: int, n_out: int, in_social: int, out_social: int):
+    first, segments_of, profit = {}, {}, {}
+    for i in range(n_in):
+        first[f"I{i}"] = {"source": "social" if i < in_social else "direct", "landing": "product", "landing_category": "treats"}
+        segments_of[f"I{i}"] = ["all", "offer:mostly"]
+        profit[f"I{i}"] = 40.0
+    for i in range(n_out):
+        first[f"O{i}"] = {"source": "social" if i < out_social else "direct", "landing": "product", "landing_category": "treats"}
+        segments_of[f"O{i}"] = ["all"]
+        profit[f"O{i}"] = 90.0
+    return first, segments_of, profit
+
+
+def test_a_segment_that_comes_mostly_from_one_channel_has_that_channel_over_represented_beyond_its_margin():
+    first, segments_of, profit = _people(60, 300, in_social=30, out_social=30)
+
+    rows = acquisition_by_segment(first, segments_of, profit, ["offer:mostly"])["offer:mostly"]["source"]
+    social = next(r for r in rows if r["value"] == "social")
+
+    assert (social["share"], social["share_others"], social["points"]) == (0.5, 0.1, 40.0)
+    assert social["clear"] is True
+
+
+def test_a_difference_inside_its_margin_is_not_clear_in_acquisition():
+    first, segments_of, profit = _people(60, 300, in_social=12, out_social=54)
+
+    social = next(r for r in acquisition_by_segment(first, segments_of, profit, ["offer:mostly"])["offer:mostly"]["source"] if r["value"] == "social")
+
+    assert social["points"] == 2.0 and social["clear"] is False
+
+
+def test_profit_per_customer_by_channel_is_given_only_where_thirty_customers_stand_behind_it():
+    first, segments_of, profit = _people(60, 300, in_social=10, out_social=0)
+
+    rows = {r["value"]: r for r in acquisition_by_segment(first, segments_of, profit, ["offer:mostly"])["offer:mostly"]["source"]}
+
+    assert rows["social"]["profit_per_customer_eur"] is None, "10 customers"
+    assert rows["direct"]["profit_per_customer_eur"] == 40.0 and rows["direct"]["profit_per_customer_all_eur"] == round((50 * 40 + 300 * 90) / 350, 2)
+
+
+def test_a_segment_under_the_minimum_has_no_acquisition_rows():
+    first, segments_of, profit = _people(20, 300, in_social=5, out_social=30)
+
+    assert "offer:mostly" not in acquisition_by_segment(first, segments_of, profit, ["offer:mostly"])
+
+
+def test_every_profiled_customer_has_a_first_session_whose_source_is_their_first_source():
+    customers = [c for c in json.loads((DATA / "customers.json").read_text()) if c["consent_behavioural"]]
+    found = first_sessions(customers, json.loads((DATA / "contexts.json").read_text()))
+
+    assert len(found) == len(customers)
+    assert all(found[c["customer_id"]]["source"] == c["first_source"] for c in customers)
+
+
+def test_the_stored_acquisition_shares_of_everyone_add_up_to_one_per_dimension():
+    everyone = json.loads((PROFILES / "summary.json").read_text())["acquisition"]["all"]
+
+    for dim, rows in everyone.items():
+        assert abs(sum(r["share"] for r in rows) - 1.0) < 0.02, dim
