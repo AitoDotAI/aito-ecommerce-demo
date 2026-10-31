@@ -68,7 +68,7 @@ def supply_headline(supply: dict | None) -> Headline | None:
     reorder, over = supply["reorder"], supply["overstock_decision"]
     detail = f"{over['skus']} overstocked products hold €{over['tied_capital_eur']:,.0f}"
     if over["wont_clear"]:
-        detail += (f"; of the {over['scored']} largest, {over['wont_clear']} don't clear by price alone "
+        detail += (f"; Aito's markdown sweep finds that of the {over['scored']} largest, {over['wont_clear']} don't clear by price alone "
                    f"(an offer's lift on purchases and placement isn't counted)")
     return Headline(
         "Supply", href,

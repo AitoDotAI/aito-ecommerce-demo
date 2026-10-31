@@ -111,7 +111,7 @@ def test_the_supply_headline_reads_the_decisions_supply_leads_with():
     assert supply.headline.startswith("Reorder 59 products now: about €5,667")
     assert "if it sells like the last three months" in supply.headline   # the € rests on observed sales, not on a forecast
     assert "forecast" not in supply.headline
-    assert supply.detail.startswith("87 overstocked products hold €26,576; of the 15 largest, 11 don't clear by price alone")
+    assert supply.detail.startswith("87 overstocked products hold €26,576; Aito's markdown sweep finds that of the 15 largest, 11 don't clear by price alone")
 
 
 def test_the_retention_headline_gives_the_strongest_driver_as_observed_rates():
