@@ -272,7 +272,7 @@ nothing was sent."
 | Expected | Basis |
 |---|---|
 | "I acted on 8, expecting € 168 more than doing nothing. 4 are waiting for you, holding € 51 expected. I stayed quiet on 8." | the stored run `data/agent_runs/winback.json` at the recommended settings; the euros are expected values from Aito's predictions |
-| A "stayed quiet" step names why: for example "Only 9 past rows of €10 voucher in this customer's exact situation; the rule asks for 10" | rows of that action in that situation in `customer_actions` |
+| A "stayed quiet" step names why: for example "Only 9 past rows match this customer's exact situation and €10 voucher; the rule asks for 10" | rows of that action in that situation in `customer_actions` (a check on the evidence, not what the lift is estimated from) |
 | Moving "Act from a lift of" up turns acted steps into suggested ones; unticking a kind under "Always ask a person before" moves its steps out of "Needs a person", to Acted or Suggested by their lift | the gate's rules, re-judged on every change |
 | The Board lists what to improve: thin evidence, the approval load, and the churn tells (NPS 0–3: 1.9× the churn) | the Retention snapshot's `_relate` rates |
 

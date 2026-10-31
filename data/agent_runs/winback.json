@@ -3,9 +3,10 @@
  "routine": "winback",
  "title": "Weekly win-back run",
  "release": "release3b",
+ "snapshot_digest": "94085c8b8f06ff05",
  "as_of_month": "2026-04",
  "simulated": true,
- "source": "data/precomputed/v2-master/retention.json (the data Retention serves)",
+ "source": "data/precomputed/v2-master/retention.json (the snapshot Retention serves)",
  "steps": [
   {
    "customer_id": "CUST-01899",
