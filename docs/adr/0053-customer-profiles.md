@@ -32,8 +32,8 @@ A new view, **Customers**, with the rules below.
    30 rows is blank, and about one cell in twenty would pass by chance.
 5. **A segment picker, as in Product.** A drop-down picks a segment (or everyone) and every pane follows it. Top left: who the segment is, in words, and what to do
    (only differences larger than their margins). Top right: its key figures against everyone, and its showing funnel (impressions, clicks, carts,
-   purchases) over the identified sessions of its customers. Below: the preference ranking, then: how it compares, how it relates to the other variables, what it buys
-   and what the shop's actions did for it; a list of all segments, profit per customer first, compares them and selects one. Profit is the price paid less the unit cost on the lines kept (a returned line earns nothing),
+   purchases) over the identified sessions of its customers. Below the profile: where the segment sits in the ranking of the variable it is a slice of (offer, price or rating; none for pets and diets), so the
+   only control is the segment drop-down. Then one list of what goes with the segment, with its lift in points (other ways of shopping, categories, brands, products, channels and landing pages), and what the shop's actions did for it; a list of all segments, profit per customer first, compares them and selects one. Profit is the price paid less the unit cost on the lines kept (a returned line earns nothing),
    less the shop's action costs; there is no delivery or payment cost in the data, so it is profit after products and actions, not a full P&L.
    The unit cost is the inventory's current cost per product, applied to two years of sales. Profit per customer carries a 95 % bootstrap interval
    (a few customers earn much of it), and no interval is given under 30 customers. Revenue is the price paid on the lines kept, the same basis as profit and

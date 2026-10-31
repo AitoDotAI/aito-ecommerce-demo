@@ -10,13 +10,11 @@ import { usePagePanel } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
 import CustomerLookup from "@/components/customers/CustomerLookup";
 import PreferenceGraph from "@/components/customers/PreferenceGraph";
-import SegmentAcquisition from "@/components/customers/SegmentAcquisition";
-import SegmentBuys from "@/components/customers/SegmentBuys";
 import SegmentKpis from "@/components/customers/SegmentKpis";
 import SegmentList from "@/components/customers/SegmentList";
 import SegmentPicker from "@/components/customers/SegmentPicker";
+import SegmentRelated from "@/components/customers/SegmentRelated";
 import SegmentProfile from "@/components/customers/SegmentProfile";
-import SegmentRelations from "@/components/customers/SegmentRelations";
 import SegmentResponse from "@/components/customers/SegmentResponse";
 
 /**
@@ -69,16 +67,14 @@ function CustomersView() {
       {summary && (
         <div className="fit-grid" style={{ display: "grid", gap: 12 }}>
           <div className="fit-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: 12, alignItems: "start" }}>
-            <SegmentProfile summary={summary} selected={key} />
+            <div style={{ display: "grid", gap: 12 }}>
+              <SegmentProfile summary={summary} selected={key} />
+              <PreferenceGraph summary={summary} selected={key} />
+            </div>
             <SegmentKpis summary={summary} selected={key} />
           </div>
-          <PreferenceGraph summary={summary} selected={key} />
-          <SegmentAcquisition summary={summary} selected={key} />
           <div className="fit-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 420px), 1fr))", gap: 12, alignItems: "start" }}>
-            <div style={{ display: "grid", gap: 12 }}>
-              <SegmentRelations summary={summary} selected={key} />
-              <SegmentBuys summary={summary} selected={key} />
-            </div>
+            <SegmentRelated summary={summary} selected={key} />
             <SegmentResponse summary={summary} selected={key} />
           </div>
           <SegmentList summary={summary} selected={key} onSelect={setSelected} />
