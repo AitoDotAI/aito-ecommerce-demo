@@ -40,7 +40,7 @@ A new view, **Customers**, with the rules below.
    or low against the median customer's. On top: the segment's name and size, and a "?" that opens where the segment sits in the preference ranking of the variable it is a slice of (offer, price or rating).
    Then the chosen figure's trend over the months, full width, against everyone's shape, and whether the last three months are in decline.
    Below, tabs as in Product: highlights (what to do, only differences larger than their margins, and who the customers are in words), key figures and the showing funnel (impressions, clicks, carts, purchases over the identified sessions of
-   its customers), other preferences, channels, what the shop's actions did for it, and what it says in reviews and NPS answers. Profit is the price paid less the unit cost on the lines kept (a returned line earns nothing),
+   its customers), preferences (what it buys), other segments (how it relates to each, with the chosen figure for the customers in both and a button to tick it), channels, what the shop's actions did for it, and what it says in reviews and NPS answers. Profit is the price paid less the unit cost on the lines kept (a returned line earns nothing),
    less the shop's action costs; there is no delivery or payment cost in the data, so it is profit after products and actions, not a full P&L.
    The unit cost is the inventory's current cost per product, applied to two years of sales. Profit per customer carries a 95 % bootstrap interval
    (a few customers earn much of it), and no interval is given under 30 customers. Revenue is the price paid on the lines kept, the same basis as profit and

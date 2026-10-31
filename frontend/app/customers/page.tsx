@@ -13,13 +13,14 @@ import SegmentFeedback from "@/components/customers/SegmentFeedback";
 import SegmentKpis from "@/components/customers/SegmentKpis";
 import SegmentHeader from "@/components/customers/SegmentHeader";
 import SegmentHighlights from "@/components/customers/SegmentHighlights";
+import SegmentOthers from "@/components/customers/SegmentOthers";
 import SegmentRelated from "@/components/customers/SegmentRelated";
 import SegmentResponse from "@/components/customers/SegmentResponse";
 import SegmentTree from "@/components/customers/SegmentTree";
 import SegmentTrend from "@/components/customers/SegmentTrend";
 
 const TABS = [
-  { id: "highlights", label: "Highlights" }, { id: "figures", label: "Figures" }, { id: "preferences", label: "Other preferences" },
+  { id: "highlights", label: "Highlights" }, { id: "figures", label: "Figures" }, { id: "preferences", label: "Preferences" }, { id: "others", label: "Other segments" },
   { id: "channels", label: "Channels" }, { id: "actions", label: "Actions" }, { id: "feedback", label: "Feedback" },
 ];
 
@@ -27,7 +28,7 @@ const TABS = [
  * Customers (ADR 0053): a topic tree selects the segment, by any number of conditions at once ("premium-leaning" and "dog" and
  * "high-margin"), and the page describes the customers who meet all of them. Above the tree, the figure to compare by: each
  * condition shows it as a number and a bar. The segment's name sits on top, then the figure's trend over the months (is the
- * segment in decline?), and below, tabs: highlights (what to do, who they are), key figures and the showing funnel, other preferences, channels, the shop's actions
+ * segment in decline?), and below, tabs: highlights (what to do, who they are), key figures and the showing funnel, preferences, other segments, channels, the shop's actions
  * and what the segment says. Nothing ticked is every profiled customer. Traits are counted from purchase history for customers who
  * consented to behavioural profiling; they describe how a customer chooses and which pets they buy for, nothing about the person.
  */
@@ -100,6 +101,7 @@ function CustomersView() {
                 ))}
               </div>
               {tab === "preferences" ? <SegmentRelated view={view} /> :
+               tab === "others" ? <SegmentOthers view={view} kpi={kpi as KpiId} onTick={(c) => select(toggle(conditions, c))} /> :
                tab === "channels" ? <SegmentAcquisition view={view} /> :
                tab === "actions" ? <SegmentResponse summary={summary} view={view} /> :
                tab === "feedback" ? <SegmentFeedback view={view} /> :

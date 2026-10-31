@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import Confidence from "@/components/customers/Confidence";
-import { TRAIT_TITLE, type SegmentView } from "@/lib/customer-profiles";
+import type { SegmentView } from "@/lib/customer-profiles";
 
 interface Related {
   kind: string; label: string; points: number; margin: number; clear: boolean; share: number; shareOthers: number; note?: string;
@@ -11,13 +11,9 @@ interface Related {
 
 const LIST_LENGTH = 25;
 
-/** What else the selected segment prefers, as one list: the points more (or fewer) of it have each item than the rest. */
+/** What the selected segment buys over-proportionally, as one list: the points more (or fewer) of it have each item than the rest. */
 export function relatedItems(view: SegmentView): Related[] {
   const rows: Related[] = [];
-  for (const r of view.relations ?? []) {
-    rows.push({ kind: "Shopping", label: `${TRAIT_TITLE[r.then.trait]}: ${r.then.value}`, points: r.points, margin: r.margin_points,
-      clear: r.clear, share: r.share_with, shareOthers: r.share_without });
-  }
   for (const [pet, entry] of Object.entries(view.preferences ?? {})) {
     const owners = pet === "dog" ? "dog owners" : "cat owners";
     for (const [kind, title] of [["categories", "Category"], ["brands", "Brand"], ["products", "Product"]] as const) {
@@ -41,10 +37,10 @@ export default function SegmentRelated({ view }: { view: SegmentView }) {
   const scale = Math.max(30, ...all.map((r) => Math.abs(r.points)));
   return (
     <div className="card">
-      <div className="card-title">Their other preferences</div>
+      <div className="card-title">Preferences</div>
       <div className="card-sub" style={{ marginBottom: 8, lineHeight: 1.5 }}>
-        How many more (or fewer) points of this segment have each item than the customers outside it: other ways of shopping and what they buy
-        (against customers who buy for the same pet). The confidence column is the difference divided
+        How many more (or fewer) points of this segment bought each category, brand or product than the customers outside it who
+        buy for the same pet. The confidence column is the difference divided
         by its 99.7 % margin: above 1× it is larger than chance would give. Many pairs are compared, so the bar is high, and at product level
         most sit below it. Clear ones first.
       </div>
