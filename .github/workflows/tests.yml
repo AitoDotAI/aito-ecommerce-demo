@@ -20,5 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
-      - run: uv sync --frozen
+      - run: uv sync --frozen --group backtest
+      # impressions.json and contexts.json are generated, not committed (byte-stable: tests/test_generation_is_byte_stable.py)
+      - run: uv run python -m data.generate_fixtures
       - run: uv run pytest tests -q --ignore=tests/test_aito_check.py --ignore=tests/test_live_smoke.py --ignore=tests/test_claims_live.py
