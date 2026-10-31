@@ -9,6 +9,7 @@ import { useUrlState } from "@/lib/use-url-state";
 import { usePagePanel } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
 import PreferenceGraph from "@/components/customers/PreferenceGraph";
+import SegmentFeedback from "@/components/customers/SegmentFeedback";
 import SegmentKpis from "@/components/customers/SegmentKpis";
 import SegmentPicker from "@/components/customers/SegmentPicker";
 import SegmentRelated from "@/components/customers/SegmentRelated";
@@ -18,13 +19,13 @@ import SegmentResponse from "@/components/customers/SegmentResponse";
 
 const TABS = [
   { id: "figures", label: "Figures" }, { id: "preferences", label: "Other preferences" },
-  { id: "channels", label: "Channels" }, { id: "actions", label: "Actions" },
+  { id: "channels", label: "Channels" }, { id: "actions", label: "Actions" }, { id: "feedback", label: "Feedback" },
 ];
 
 /**
  * Customers (ADR 0053): pick a segment and every pane follows it, as in Product. The profile, what to do and where
  * the segment sits in the ranking of its variable are on the left; on the right, tabs: the key figures and the showing funnel,
- * its other preferences, the channels it came through, and what the shop's actions did for it.
+ * its other preferences, the channels it came through, what the shop's actions did for it, and what it says in reviews and NPS answers.
  * Traits are counted from purchase history for customers who consented to behavioural profiling; they describe how a
  * customer chooses and which pets they buy for, nothing about the person. Stored and simulated.
  */
@@ -86,6 +87,7 @@ function CustomersView() {
               </div>
               {tab === "preferences" ? <SegmentRelated summary={summary} selected={key} /> :
                tab === "channels" ? <SegmentAcquisition summary={summary} selected={key} /> :
+               tab === "feedback" ? <SegmentFeedback summary={summary} selected={key} /> :
                tab === "actions" ? <SegmentResponse summary={summary} selected={key} /> :
                <SegmentKpis summary={summary} selected={key} />}
             </div>

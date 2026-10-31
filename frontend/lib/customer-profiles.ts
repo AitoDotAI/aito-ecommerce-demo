@@ -16,6 +16,14 @@ export interface ResponseEntry {
   none: { rows: number; order_rate: number | null; profit_eur: number | null }; actions: Record<string, ResponseCell>;
 }
 
+export interface FeedbackRow {
+  label: string; base: number; share: number; share_others: number | null; points: number | null; margin_points: number | null; clear: boolean | null;
+}
+
+export interface FeedbackEntry {
+  customers: number; reviewers: number; reviews: number; mean_rating: number | null; nps_respondents: number; nps: number | null; rows: FeedbackRow[];
+}
+
 export interface FunnelCounts { impressions: number; clicks: number; carts: number; purchases: number }
 
 export interface RankedQuintile { customers: number; lift: number; mean_share: number; segment_share: Record<string, number> }
@@ -34,7 +42,7 @@ export interface ProfilesSummary {
   relations: Relation[]; preferences: Record<string, PreferenceGroup>;
   acquisition: Record<string, Record<"source" | "landing" | "landing_category", AcquisitionRow[]>>;
   by_trait: Record<"offer" | "price" | "rating" | "pets" | "diets", Segment[]>;
-  response: Record<string, ResponseEntry>;
+  response: Record<string, ResponseEntry>; feedback: Record<string, FeedbackEntry>;
 }
 
 export interface CustomerProfile {

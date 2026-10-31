@@ -7413,6 +7413,1928 @@
    ]
   }
  },
+ "feedback": {
+  "all": {
+   "customers": 1790,
+   "reviewers": 1316,
+   "reviews": 3131,
+   "mean_rating": 3.89,
+   "nps_respondents": 1133,
+   "nps": 2.7,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 1790,
+     "share": 0.735,
+     "share_others": null,
+     "points": null,
+     "margin_points": null,
+     "clear": null
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 1790,
+     "share": 0.174,
+     "share_others": null,
+     "points": null,
+     "margin_points": null,
+     "clear": null
+    },
+    {
+     "label": "Wrote praise",
+     "base": 1790,
+     "share": 0.574,
+     "share_others": null,
+     "points": null,
+     "margin_points": null,
+     "clear": null
+    },
+    {
+     "label": "Asked a question",
+     "base": 1790,
+     "share": 0.239,
+     "share_others": null,
+     "points": null,
+     "margin_points": null,
+     "clear": null
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 1790,
+     "share": 0.146,
+     "share_others": null,
+     "points": null,
+     "margin_points": null,
+     "clear": null
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 1790,
+     "share": 0.118,
+     "share_others": null,
+     "points": null,
+     "margin_points": null,
+     "clear": null
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 1790,
+     "share": 0.12,
+     "share_others": null,
+     "points": null,
+     "margin_points": null,
+     "clear": null
+    },
+    {
+     "label": "Is a promoter",
+     "base": 1133,
+     "share": 0.315,
+     "share_others": null,
+     "points": null,
+     "margin_points": null,
+     "clear": null
+    },
+    {
+     "label": "Is a detractor",
+     "base": 1133,
+     "share": 0.288,
+     "share_others": null,
+     "points": null,
+     "margin_points": null,
+     "clear": null
+    }
+   ]
+  },
+  "diets:grain-free": {
+   "customers": 793,
+   "reviewers": 684,
+   "reviews": 1927,
+   "mean_rating": 3.89,
+   "nps_respondents": 611,
+   "nps": 2.9,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 793,
+     "share": 0.863,
+     "share_others": 0.634,
+     "points": 22.9,
+     "margin_points": 5.9,
+     "clear": true
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 793,
+     "share": 0.228,
+     "share_others": 0.131,
+     "points": 9.7,
+     "margin_points": 5.5,
+     "clear": true
+    },
+    {
+     "label": "Wrote praise",
+     "base": 793,
+     "share": 0.706,
+     "share_others": 0.468,
+     "points": 23.8,
+     "margin_points": 6.8,
+     "clear": true
+    },
+    {
+     "label": "Asked a question",
+     "base": 793,
+     "share": 0.34,
+     "share_others": 0.158,
+     "points": 18.2,
+     "margin_points": 6.1,
+     "clear": true
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 793,
+     "share": 0.198,
+     "share_others": 0.105,
+     "points": 9.3,
+     "margin_points": 5.2,
+     "clear": true
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 793,
+     "share": 0.154,
+     "share_others": 0.09,
+     "points": 6.4,
+     "margin_points": 4.7,
+     "clear": true
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 793,
+     "share": 0.161,
+     "share_others": 0.086,
+     "points": 7.5,
+     "margin_points": 4.7,
+     "clear": true
+    },
+    {
+     "label": "Is a promoter",
+     "base": 611,
+     "share": 0.318,
+     "share_others": 0.312,
+     "points": 0.5,
+     "margin_points": 8.3,
+     "clear": false
+    },
+    {
+     "label": "Is a detractor",
+     "base": 611,
+     "share": 0.288,
+     "share_others": 0.287,
+     "points": 0.1,
+     "margin_points": 8.1,
+     "clear": false
+    }
+   ]
+  },
+  "diets:indoor": {
+   "customers": 258,
+   "reviewers": 229,
+   "reviews": 740,
+   "mean_rating": 3.95,
+   "nps_respondents": 192,
+   "nps": 1.6,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 258,
+     "share": 0.888,
+     "share_others": 0.71,
+     "points": 17.8,
+     "margin_points": 6.8,
+     "clear": true
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 258,
+     "share": 0.225,
+     "share_others": 0.166,
+     "points": 5.9,
+     "margin_points": 8.3,
+     "clear": false
+    },
+    {
+     "label": "Wrote praise",
+     "base": 258,
+     "share": 0.76,
+     "share_others": 0.542,
+     "points": 21.7,
+     "margin_points": 8.8,
+     "clear": true
+    },
+    {
+     "label": "Asked a question",
+     "base": 258,
+     "share": 0.376,
+     "share_others": 0.216,
+     "points": 16.0,
+     "margin_points": 9.6,
+     "clear": true
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 258,
+     "share": 0.205,
+     "share_others": 0.136,
+     "points": 6.9,
+     "margin_points": 8.0,
+     "clear": false
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 258,
+     "share": 0.151,
+     "share_others": 0.113,
+     "points": 3.8,
+     "margin_points": 7.1,
+     "clear": false
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 258,
+     "share": 0.163,
+     "share_others": 0.112,
+     "points": 5.1,
+     "margin_points": 7.3,
+     "clear": false
+    },
+    {
+     "label": "Is a promoter",
+     "base": 192,
+     "share": 0.328,
+     "share_others": 0.312,
+     "points": 1.6,
+     "margin_points": 11.1,
+     "clear": false
+    },
+    {
+     "label": "Is a detractor",
+     "base": 192,
+     "share": 0.312,
+     "share_others": 0.283,
+     "points": 3.0,
+     "margin_points": 11.0,
+     "clear": false
+    }
+   ]
+  },
+  "diets:large-breed": {
+   "customers": 214,
+   "reviewers": 191,
+   "reviews": 558,
+   "mean_rating": 3.9,
+   "nps_respondents": 169,
+   "nps": 0.0,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 214,
+     "share": 0.893,
+     "share_others": 0.714,
+     "points": 17.9,
+     "margin_points": 7.2,
+     "clear": true
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 214,
+     "share": 0.262,
+     "share_others": 0.162,
+     "points": 9.9,
+     "margin_points": 9.4,
+     "clear": true
+    },
+    {
+     "label": "Wrote praise",
+     "base": 214,
+     "share": 0.72,
+     "share_others": 0.554,
+     "points": 16.6,
+     "margin_points": 9.9,
+     "clear": true
+    },
+    {
+     "label": "Asked a question",
+     "base": 214,
+     "share": 0.379,
+     "share_others": 0.22,
+     "points": 15.8,
+     "margin_points": 10.4,
+     "clear": true
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 214,
+     "share": 0.22,
+     "share_others": 0.136,
+     "points": 8.3,
+     "margin_points": 8.9,
+     "clear": false
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 214,
+     "share": 0.164,
+     "share_others": 0.112,
+     "points": 5.1,
+     "margin_points": 8.0,
+     "clear": false
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 214,
+     "share": 0.168,
+     "share_others": 0.113,
+     "points": 5.5,
+     "margin_points": 8.0,
+     "clear": false
+    },
+    {
+     "label": "Is a promoter",
+     "base": 169,
+     "share": 0.308,
+     "share_others": 0.316,
+     "points": -0.9,
+     "margin_points": 11.6,
+     "clear": false
+    },
+    {
+     "label": "Is a detractor",
+     "base": 169,
+     "share": 0.308,
+     "share_others": 0.284,
+     "points": 2.3,
+     "margin_points": 11.5,
+     "clear": false
+    }
+   ]
+  },
+  "diets:puppy": {
+   "customers": 233,
+   "reviewers": 205,
+   "reviews": 599,
+   "mean_rating": 3.91,
+   "nps_respondents": 187,
+   "nps": 4.8,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 233,
+     "share": 0.88,
+     "share_others": 0.714,
+     "points": 16.6,
+     "margin_points": 7.3,
+     "clear": true
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 233,
+     "share": 0.215,
+     "share_others": 0.168,
+     "points": 4.6,
+     "margin_points": 8.6,
+     "clear": false
+    },
+    {
+     "label": "Wrote praise",
+     "base": 233,
+     "share": 0.738,
+     "share_others": 0.549,
+     "points": 18.9,
+     "margin_points": 9.4,
+     "clear": true
+    },
+    {
+     "label": "Asked a question",
+     "base": 233,
+     "share": 0.373,
+     "share_others": 0.219,
+     "points": 15.4,
+     "margin_points": 10.0,
+     "clear": true
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 233,
+     "share": 0.21,
+     "share_others": 0.137,
+     "points": 7.3,
+     "margin_points": 8.4,
+     "clear": false
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 233,
+     "share": 0.146,
+     "share_others": 0.114,
+     "points": 3.2,
+     "margin_points": 7.3,
+     "clear": false
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 233,
+     "share": 0.146,
+     "share_others": 0.116,
+     "points": 3.0,
+     "margin_points": 7.4,
+     "clear": false
+    },
+    {
+     "label": "Is a promoter",
+     "base": 187,
+     "share": 0.332,
+     "share_others": 0.312,
+     "points": 2.0,
+     "margin_points": 11.3,
+     "clear": false
+    },
+    {
+     "label": "Is a detractor",
+     "base": 187,
+     "share": 0.283,
+     "share_others": 0.289,
+     "points": -0.5,
+     "margin_points": 10.8,
+     "clear": false
+    }
+   ]
+  },
+  "diets:senior": {
+   "customers": 509,
+   "reviewers": 429,
+   "reviews": 1253,
+   "mean_rating": 3.9,
+   "nps_respondents": 368,
+   "nps": 2.2,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 509,
+     "share": 0.843,
+     "share_others": 0.692,
+     "points": 15.0,
+     "margin_points": 6.2,
+     "clear": true
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 509,
+     "share": 0.222,
+     "share_others": 0.155,
+     "points": 6.7,
+     "margin_points": 6.3,
+     "clear": true
+    },
+    {
+     "label": "Wrote praise",
+     "base": 509,
+     "share": 0.713,
+     "share_others": 0.518,
+     "points": 19.5,
+     "margin_points": 7.3,
+     "clear": true
+    },
+    {
+     "label": "Asked a question",
+     "base": 509,
+     "share": 0.32,
+     "share_others": 0.207,
+     "points": 11.3,
+     "margin_points": 7.1,
+     "clear": true
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 509,
+     "share": 0.202,
+     "share_others": 0.124,
+     "points": 7.8,
+     "margin_points": 6.0,
+     "clear": true
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 509,
+     "share": 0.139,
+     "share_others": 0.11,
+     "points": 2.9,
+     "margin_points": 5.3,
+     "clear": false
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 509,
+     "share": 0.194,
+     "share_others": 0.09,
+     "points": 10.5,
+     "margin_points": 5.8,
+     "clear": true
+    },
+    {
+     "label": "Is a promoter",
+     "base": 368,
+     "share": 0.31,
+     "share_others": 0.318,
+     "points": -0.8,
+     "margin_points": 8.8,
+     "clear": false
+    },
+    {
+     "label": "Is a detractor",
+     "base": 368,
+     "share": 0.288,
+     "share_others": 0.288,
+     "points": 0.0,
+     "margin_points": 8.6,
+     "clear": false
+    }
+   ]
+  },
+  "diets:sensitive": {
+   "customers": 460,
+   "reviewers": 397,
+   "reviews": 1233,
+   "mean_rating": 3.84,
+   "nps_respondents": 352,
+   "nps": -0.6,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 460,
+     "share": 0.863,
+     "share_others": 0.691,
+     "points": 17.2,
+     "margin_points": 6.1,
+     "clear": true
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 460,
+     "share": 0.252,
+     "share_others": 0.147,
+     "points": 10.5,
+     "margin_points": 6.7,
+     "clear": true
+    },
+    {
+     "label": "Wrote praise",
+     "base": 460,
+     "share": 0.73,
+     "share_others": 0.52,
+     "points": 21.1,
+     "margin_points": 7.4,
+     "clear": true
+    },
+    {
+     "label": "Asked a question",
+     "base": 460,
+     "share": 0.339,
+     "share_others": 0.205,
+     "points": 13.5,
+     "margin_points": 7.4,
+     "clear": true
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 460,
+     "share": 0.222,
+     "share_others": 0.12,
+     "points": 10.1,
+     "margin_points": 6.4,
+     "clear": true
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 460,
+     "share": 0.18,
+     "share_others": 0.097,
+     "points": 8.3,
+     "margin_points": 5.9,
+     "clear": true
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 460,
+     "share": 0.176,
+     "share_others": 0.1,
+     "points": 7.6,
+     "margin_points": 5.9,
+     "clear": true
+    },
+    {
+     "label": "Is a promoter",
+     "base": 352,
+     "share": 0.293,
+     "share_others": 0.325,
+     "points": -3.3,
+     "margin_points": 8.8,
+     "clear": false
+    },
+    {
+     "label": "Is a detractor",
+     "base": 352,
+     "share": 0.298,
+     "share_others": 0.283,
+     "points": 1.5,
+     "margin_points": 8.8,
+     "clear": false
+    }
+   ]
+  },
+  "diets:weight-control": {
+   "customers": 233,
+   "reviewers": 204,
+   "reviews": 666,
+   "mean_rating": 3.88,
+   "nps_respondents": 185,
+   "nps": 4.9,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 233,
+     "share": 0.876,
+     "share_others": 0.714,
+     "points": 16.1,
+     "margin_points": 7.3,
+     "clear": true
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 233,
+     "share": 0.24,
+     "share_others": 0.164,
+     "points": 7.6,
+     "margin_points": 8.9,
+     "clear": false
+    },
+    {
+     "label": "Wrote praise",
+     "base": 233,
+     "share": 0.742,
+     "share_others": 0.548,
+     "points": 19.4,
+     "margin_points": 9.4,
+     "clear": true
+    },
+    {
+     "label": "Asked a question",
+     "base": 233,
+     "share": 0.348,
+     "share_others": 0.223,
+     "points": 12.5,
+     "margin_points": 9.9,
+     "clear": true
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 233,
+     "share": 0.24,
+     "share_others": 0.132,
+     "points": 10.8,
+     "margin_points": 8.8,
+     "clear": true
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 233,
+     "share": 0.159,
+     "share_others": 0.112,
+     "points": 4.6,
+     "margin_points": 7.6,
+     "clear": false
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 233,
+     "share": 0.197,
+     "share_others": 0.108,
+     "points": 9.0,
+     "margin_points": 8.2,
+     "clear": true
+    },
+    {
+     "label": "Is a promoter",
+     "base": 185,
+     "share": 0.314,
+     "share_others": 0.315,
+     "points": -0.2,
+     "margin_points": 11.2,
+     "clear": false
+    },
+    {
+     "label": "Is a detractor",
+     "base": 185,
+     "share": 0.265,
+     "share_others": 0.292,
+     "points": -2.7,
+     "margin_points": 10.7,
+     "clear": false
+    }
+   ]
+  },
+  "offer:mostly": {
+   "customers": 377,
+   "reviewers": 274,
+   "reviews": 569,
+   "mean_rating": 3.8,
+   "nps_respondents": 219,
+   "nps": 2.7,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 377,
+     "share": 0.727,
+     "share_others": 0.737,
+     "points": -1.1,
+     "margin_points": 7.7,
+     "clear": false
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 377,
+     "share": 0.167,
+     "share_others": 0.176,
+     "points": -0.9,
+     "margin_points": 6.5,
+     "clear": false
+    },
+    {
+     "label": "Wrote praise",
+     "base": 377,
+     "share": 0.538,
+     "share_others": 0.583,
+     "points": -4.5,
+     "margin_points": 8.6,
+     "clear": false
+    },
+    {
+     "label": "Asked a question",
+     "base": 377,
+     "share": 0.188,
+     "share_others": 0.253,
+     "points": -6.4,
+     "margin_points": 7.0,
+     "clear": false
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 377,
+     "share": 0.141,
+     "share_others": 0.148,
+     "points": -0.7,
+     "margin_points": 6.1,
+     "clear": false
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 377,
+     "share": 0.111,
+     "share_others": 0.12,
+     "points": -0.9,
+     "margin_points": 5.5,
+     "clear": false
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 377,
+     "share": 0.119,
+     "share_others": 0.12,
+     "points": -0.0,
+     "margin_points": 5.6,
+     "clear": false
+    },
+    {
+     "label": "Is a promoter",
+     "base": 219,
+     "share": 0.32,
+     "share_others": 0.314,
+     "points": 0.6,
+     "margin_points": 10.5,
+     "clear": false
+    },
+    {
+     "label": "Is a detractor",
+     "base": 219,
+     "share": 0.292,
+     "share_others": 0.287,
+     "points": 0.6,
+     "margin_points": 10.3,
+     "clear": false
+    }
+   ]
+  },
+  "offer:rarely": {
+   "customers": 471,
+   "reviewers": 325,
+   "reviews": 699,
+   "mean_rating": 3.89,
+   "nps_respondents": 300,
+   "nps": 6.0,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 471,
+     "share": 0.69,
+     "share_others": 0.751,
+     "points": -6.1,
+     "margin_points": 7.3,
+     "clear": false
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 471,
+     "share": 0.138,
+     "share_others": 0.187,
+     "points": -4.9,
+     "margin_points": 5.8,
+     "clear": false
+    },
+    {
+     "label": "Wrote praise",
+     "base": 471,
+     "share": 0.512,
+     "share_others": 0.596,
+     "points": -8.4,
+     "margin_points": 8.0,
+     "clear": true
+    },
+    {
+     "label": "Asked a question",
+     "base": 471,
+     "share": 0.219,
+     "share_others": 0.246,
+     "points": -2.8,
+     "margin_points": 6.7,
+     "clear": false
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 471,
+     "share": 0.144,
+     "share_others": 0.147,
+     "points": -0.3,
+     "margin_points": 5.7,
+     "clear": false
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 471,
+     "share": 0.087,
+     "share_others": 0.13,
+     "points": -4.3,
+     "margin_points": 4.8,
+     "clear": false
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 471,
+     "share": 0.113,
+     "share_others": 0.122,
+     "points": -1.0,
+     "margin_points": 5.1,
+     "clear": false
+    },
+    {
+     "label": "Is a promoter",
+     "base": 300,
+     "share": 0.327,
+     "share_others": 0.311,
+     "points": 1.6,
+     "margin_points": 9.4,
+     "clear": false
+    },
+    {
+     "label": "Is a detractor",
+     "base": 300,
+     "share": 0.267,
+     "share_others": 0.295,
+     "points": -2.9,
+     "margin_points": 9.0,
+     "clear": false
+    }
+   ]
+  },
+  "offer:sometimes": {
+   "customers": 868,
+   "reviewers": 694,
+   "reviews": 1835,
+   "mean_rating": 3.92,
+   "nps_respondents": 593,
+   "nps": 1.7,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 868,
+     "share": 0.8,
+     "share_others": 0.675,
+     "points": 12.5,
+     "margin_points": 6.2,
+     "clear": true
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 868,
+     "share": 0.21,
+     "share_others": 0.141,
+     "points": 6.9,
+     "margin_points": 5.4,
+     "clear": true
+    },
+    {
+     "label": "Wrote praise",
+     "base": 868,
+     "share": 0.653,
+     "share_others": 0.499,
+     "points": 15.4,
+     "margin_points": 6.9,
+     "clear": true
+    },
+    {
+     "label": "Asked a question",
+     "base": 868,
+     "share": 0.29,
+     "share_others": 0.191,
+     "points": 9.9,
+     "margin_points": 6.0,
+     "clear": true
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 868,
+     "share": 0.16,
+     "share_others": 0.133,
+     "points": 2.7,
+     "margin_points": 5.0,
+     "clear": false
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 868,
+     "share": 0.145,
+     "share_others": 0.093,
+     "points": 5.2,
+     "margin_points": 4.6,
+     "clear": true
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 868,
+     "share": 0.132,
+     "share_others": 0.107,
+     "points": 2.5,
+     "margin_points": 4.6,
+     "clear": false
+    },
+    {
+     "label": "Is a promoter",
+     "base": 593,
+     "share": 0.312,
+     "share_others": 0.319,
+     "points": -0.7,
+     "margin_points": 8.3,
+     "clear": false
+    },
+    {
+     "label": "Is a detractor",
+     "base": 593,
+     "share": 0.295,
+     "share_others": 0.28,
+     "points": 1.5,
+     "margin_points": 8.1,
+     "clear": false
+    }
+   ]
+  },
+  "pets:aquarium": {
+   "customers": 105,
+   "reviewers": 58,
+   "reviews": 108,
+   "mean_rating": 3.93,
+   "nps_respondents": 64,
+   "nps": 9.4,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 105,
+     "share": 0.552,
+     "share_others": 0.747,
+     "points": -19.4,
+     "margin_points": 14.9,
+     "clear": true
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 105,
+     "share": 0.124,
+     "share_others": 0.177,
+     "points": -5.4,
+     "margin_points": 10.0,
+     "clear": false
+    },
+    {
+     "label": "Wrote praise",
+     "base": 105,
+     "share": 0.448,
+     "share_others": 0.582,
+     "points": -13.4,
+     "margin_points": 15.0,
+     "clear": false
+    },
+    {
+     "label": "Asked a question",
+     "base": 105,
+     "share": 0.133,
+     "share_others": 0.246,
+     "points": -11.2,
+     "margin_points": 10.4,
+     "clear": true
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 105,
+     "share": 0.105,
+     "share_others": 0.149,
+     "points": -4.4,
+     "margin_points": 9.3,
+     "clear": false
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 105,
+     "share": 0.076,
+     "share_others": 0.121,
+     "points": -4.5,
+     "margin_points": 8.1,
+     "clear": false
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 105,
+     "share": 0.067,
+     "share_others": 0.123,
+     "points": -5.6,
+     "margin_points": 7.7,
+     "clear": false
+    },
+    {
+     "label": "Is a promoter",
+     "base": 64,
+     "share": 0.375,
+     "share_others": 0.312,
+     "points": 6.3,
+     "margin_points": 18.6,
+     "clear": false
+    },
+    {
+     "label": "Is a detractor",
+     "base": 64,
+     "share": 0.281,
+     "share_others": 0.288,
+     "points": -0.7,
+     "margin_points": 17.4,
+     "clear": false
+    }
+   ]
+  },
+  "pets:bird": {
+   "customers": 4,
+   "reviewers": 4,
+   "reviews": 7,
+   "mean_rating": 4.43,
+   "nps_respondents": 3,
+   "nps": null,
+   "rows": []
+  },
+  "pets:cat": {
+   "customers": 805,
+   "reviewers": 643,
+   "reviews": 1743,
+   "mean_rating": 3.93,
+   "nps_respondents": 530,
+   "nps": -1.1,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 805,
+     "share": 0.799,
+     "share_others": 0.683,
+     "points": 11.6,
+     "margin_points": 6.1,
+     "clear": true
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 805,
+     "share": 0.193,
+     "share_others": 0.159,
+     "points": 3.3,
+     "margin_points": 5.4,
+     "clear": false
+    },
+    {
+     "label": "Wrote praise",
+     "base": 805,
+     "share": 0.655,
+     "share_others": 0.508,
+     "points": 14.7,
+     "margin_points": 6.9,
+     "clear": true
+    },
+    {
+     "label": "Asked a question",
+     "base": 805,
+     "share": 0.283,
+     "share_others": 0.203,
+     "points": 8.0,
+     "margin_points": 6.1,
+     "clear": true
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 805,
+     "share": 0.173,
+     "share_others": 0.125,
+     "points": 4.8,
+     "margin_points": 5.1,
+     "clear": false
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 805,
+     "share": 0.139,
+     "share_others": 0.102,
+     "points": 3.8,
+     "margin_points": 4.7,
+     "clear": false
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 805,
+     "share": 0.134,
+     "share_others": 0.108,
+     "points": 2.7,
+     "margin_points": 4.7,
+     "clear": false
+    },
+    {
+     "label": "Is a promoter",
+     "base": 530,
+     "share": 0.308,
+     "share_others": 0.322,
+     "points": -1.4,
+     "margin_points": 8.3,
+     "clear": false
+    },
+    {
+     "label": "Is a detractor",
+     "base": 530,
+     "share": 0.319,
+     "share_others": 0.26,
+     "points": 5.9,
+     "margin_points": 8.1,
+     "clear": false
+    }
+   ]
+  },
+  "pets:dog": {
+   "customers": 1027,
+   "reviewers": 764,
+   "reviews": 1851,
+   "mean_rating": 3.9,
+   "nps_respondents": 648,
+   "nps": 3.4,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 1027,
+     "share": 0.744,
+     "share_others": 0.723,
+     "points": 2.0,
+     "margin_points": 6.3,
+     "clear": false
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 1027,
+     "share": 0.181,
+     "share_others": 0.165,
+     "points": 1.6,
+     "margin_points": 5.4,
+     "clear": false
+    },
+    {
+     "label": "Wrote praise",
+     "base": 1027,
+     "share": 0.58,
+     "share_others": 0.565,
+     "points": 1.5,
+     "margin_points": 7.1,
+     "clear": false
+    },
+    {
+     "label": "Asked a question",
+     "base": 1027,
+     "share": 0.254,
+     "share_others": 0.219,
+     "points": 3.5,
+     "margin_points": 6.1,
+     "clear": false
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 1027,
+     "share": 0.15,
+     "share_others": 0.142,
+     "points": 0.8,
+     "margin_points": 5.1,
+     "clear": false
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 1027,
+     "share": 0.119,
+     "share_others": 0.118,
+     "points": 0.1,
+     "margin_points": 4.6,
+     "clear": false
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 1027,
+     "share": 0.117,
+     "share_others": 0.123,
+     "points": -0.6,
+     "margin_points": 4.7,
+     "clear": false
+    },
+    {
+     "label": "Is a promoter",
+     "base": 648,
+     "share": 0.318,
+     "share_others": 0.311,
+     "points": 0.7,
+     "margin_points": 8.4,
+     "clear": false
+    },
+    {
+     "label": "Is a detractor",
+     "base": 648,
+     "share": 0.284,
+     "share_others": 0.293,
+     "points": -0.9,
+     "margin_points": 8.2,
+     "clear": false
+    }
+   ]
+  },
+  "pets:small_animal": {
+   "customers": 145,
+   "reviewers": 97,
+   "reviews": 177,
+   "mean_rating": 3.9,
+   "nps_respondents": 87,
+   "nps": 5.7,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 145,
+     "share": 0.669,
+     "share_others": 0.741,
+     "points": -7.2,
+     "margin_points": 12.2,
+     "clear": false
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 145,
+     "share": 0.152,
+     "share_others": 0.176,
+     "points": -2.5,
+     "margin_points": 9.4,
+     "clear": false
+    },
+    {
+     "label": "Wrote praise",
+     "base": 145,
+     "share": 0.455,
+     "share_others": 0.584,
+     "points": -12.9,
+     "margin_points": 12.9,
+     "clear": false
+    },
+    {
+     "label": "Asked a question",
+     "base": 145,
+     "share": 0.159,
+     "share_others": 0.246,
+     "points": -8.8,
+     "margin_points": 9.6,
+     "clear": false
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 145,
+     "share": 0.055,
+     "share_others": 0.154,
+     "points": -9.9,
+     "margin_points": 6.3,
+     "clear": true
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 145,
+     "share": 0.124,
+     "share_others": 0.118,
+     "points": 0.6,
+     "margin_points": 8.6,
+     "clear": false
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 145,
+     "share": 0.103,
+     "share_others": 0.121,
+     "points": -1.8,
+     "margin_points": 8.0,
+     "clear": false
+    },
+    {
+     "label": "Is a promoter",
+     "base": 87,
+     "share": 0.322,
+     "share_others": 0.315,
+     "points": 0.7,
+     "margin_points": 15.6,
+     "clear": false
+    },
+    {
+     "label": "Is a detractor",
+     "base": 87,
+     "share": 0.264,
+     "share_others": 0.29,
+     "points": -2.5,
+     "margin_points": 14.8,
+     "clear": false
+    }
+   ]
+  },
+  "price:mixed": {
+   "customers": 903,
+   "reviewers": 716,
+   "reviews": 1872,
+   "mean_rating": 3.88,
+   "nps_respondents": 633,
+   "nps": 2.4,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 903,
+     "share": 0.793,
+     "share_others": 0.676,
+     "points": 11.6,
+     "margin_points": 6.2,
+     "clear": true
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 903,
+     "share": 0.203,
+     "share_others": 0.145,
+     "points": 5.7,
+     "margin_points": 5.4,
+     "clear": true
+    },
+    {
+     "label": "Wrote praise",
+     "base": 903,
+     "share": 0.632,
+     "share_others": 0.514,
+     "points": 11.8,
+     "margin_points": 7.0,
+     "clear": true
+    },
+    {
+     "label": "Asked a question",
+     "base": 903,
+     "share": 0.283,
+     "share_others": 0.194,
+     "points": 9.0,
+     "margin_points": 6.0,
+     "clear": true
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 903,
+     "share": 0.178,
+     "share_others": 0.114,
+     "points": 6.4,
+     "margin_points": 5.0,
+     "clear": true
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 903,
+     "share": 0.142,
+     "share_others": 0.095,
+     "points": 4.7,
+     "margin_points": 4.6,
+     "clear": true
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 903,
+     "share": 0.144,
+     "share_others": 0.095,
+     "points": 4.9,
+     "margin_points": 4.6,
+     "clear": true
+    },
+    {
+     "label": "Is a promoter",
+     "base": 633,
+     "share": 0.306,
+     "share_others": 0.326,
+     "points": -2.0,
+     "margin_points": 8.4,
+     "clear": false
+    },
+    {
+     "label": "Is a detractor",
+     "base": 633,
+     "share": 0.283,
+     "share_others": 0.294,
+     "points": -1.1,
+     "margin_points": 8.1,
+     "clear": false
+    }
+   ]
+  },
+  "price:premium-leaning": {
+   "customers": 446,
+   "reviewers": 320,
+   "reviews": 688,
+   "mean_rating": 3.94,
+   "nps_respondents": 267,
+   "nps": 6.0,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 446,
+     "share": 0.717,
+     "share_others": 0.741,
+     "points": -2.4,
+     "margin_points": 7.3,
+     "clear": false
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 446,
+     "share": 0.146,
+     "share_others": 0.184,
+     "points": -3.8,
+     "margin_points": 5.9,
+     "clear": false
+    },
+    {
+     "label": "Wrote praise",
+     "base": 446,
+     "share": 0.54,
+     "share_others": 0.585,
+     "points": -4.4,
+     "margin_points": 8.1,
+     "clear": false
+    },
+    {
+     "label": "Asked a question",
+     "base": 446,
+     "share": 0.242,
+     "share_others": 0.238,
+     "points": 0.4,
+     "margin_points": 7.0,
+     "clear": false
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 446,
+     "share": 0.117,
+     "share_others": 0.156,
+     "points": -4.0,
+     "margin_points": 5.4,
+     "clear": false
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 446,
+     "share": 0.083,
+     "share_others": 0.13,
+     "points": -4.7,
+     "margin_points": 4.8,
+     "clear": false
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 446,
+     "share": 0.112,
+     "share_others": 0.122,
+     "points": -1.0,
+     "margin_points": 5.2,
+     "clear": false
+    },
+    {
+     "label": "Is a promoter",
+     "base": 267,
+     "share": 0.341,
+     "share_others": 0.307,
+     "points": 3.4,
+     "margin_points": 9.9,
+     "clear": false
+    },
+    {
+     "label": "Is a detractor",
+     "base": 267,
+     "share": 0.281,
+     "share_others": 0.29,
+     "points": -0.9,
+     "margin_points": 9.5,
+     "clear": false
+    }
+   ]
+  },
+  "price:value-leaning": {
+   "customers": 367,
+   "reviewers": 257,
+   "reviews": 543,
+   "mean_rating": 3.87,
+   "nps_respondents": 212,
+   "nps": 1.4,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 367,
+     "share": 0.7,
+     "share_others": 0.744,
+     "points": -4.4,
+     "margin_points": 8.0,
+     "clear": false
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 367,
+     "share": 0.169,
+     "share_others": 0.176,
+     "points": -0.7,
+     "margin_points": 6.6,
+     "clear": false
+    },
+    {
+     "label": "Wrote praise",
+     "base": 367,
+     "share": 0.542,
+     "share_others": 0.582,
+     "points": -4.0,
+     "margin_points": 8.7,
+     "clear": false
+    },
+    {
+     "label": "Asked a question",
+     "base": 367,
+     "share": 0.169,
+     "share_others": 0.257,
+     "points": -8.8,
+     "margin_points": 6.8,
+     "clear": true
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 367,
+     "share": 0.128,
+     "share_others": 0.151,
+     "points": -2.3,
+     "margin_points": 6.0,
+     "clear": false
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 367,
+     "share": 0.12,
+     "share_others": 0.118,
+     "points": 0.2,
+     "margin_points": 5.7,
+     "clear": false
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 367,
+     "share": 0.09,
+     "share_others": 0.127,
+     "points": -3.7,
+     "margin_points": 5.2,
+     "clear": false
+    },
+    {
+     "label": "Is a promoter",
+     "base": 212,
+     "share": 0.321,
+     "share_others": 0.314,
+     "points": 0.7,
+     "margin_points": 10.7,
+     "clear": false
+    },
+    {
+     "label": "Is a detractor",
+     "base": 212,
+     "share": 0.307,
+     "share_others": 0.283,
+     "points": 2.3,
+     "margin_points": 10.5,
+     "clear": false
+    }
+   ]
+  },
+  "rating:above-average ratings": {
+   "customers": 387,
+   "reviewers": 285,
+   "reviews": 636,
+   "mean_rating": 4.28,
+   "nps_respondents": 250,
+   "nps": 17.6,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 387,
+     "share": 0.736,
+     "share_others": 0.735,
+     "points": 0.2,
+     "margin_points": 7.6,
+     "clear": false
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 387,
+     "share": 0.072,
+     "share_others": 0.202,
+     "points": -13.0,
+     "margin_points": 5.1,
+     "clear": true
+    },
+    {
+     "label": "Wrote praise",
+     "base": 387,
+     "share": 0.607,
+     "share_others": 0.565,
+     "points": 4.3,
+     "margin_points": 8.4,
+     "clear": false
+    },
+    {
+     "label": "Asked a question",
+     "base": 387,
+     "share": 0.212,
+     "share_others": 0.247,
+     "points": -3.5,
+     "margin_points": 7.1,
+     "clear": false
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 387,
+     "share": 0.088,
+     "share_others": 0.163,
+     "points": -7.5,
+     "margin_points": 5.2,
+     "clear": true
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 387,
+     "share": 0.054,
+     "share_others": 0.136,
+     "points": -8.2,
+     "margin_points": 4.4,
+     "clear": true
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 387,
+     "share": 0.08,
+     "share_others": 0.13,
+     "points": -5.0,
+     "margin_points": 4.9,
+     "clear": true
+    },
+    {
+     "label": "Is a promoter",
+     "base": 250,
+     "share": 0.396,
+     "share_others": 0.292,
+     "points": 10.4,
+     "margin_points": 10.4,
+     "clear": false
+    },
+    {
+     "label": "Is a detractor",
+     "base": 250,
+     "share": 0.22,
+     "share_others": 0.307,
+     "points": -8.7,
+     "margin_points": 9.1,
+     "clear": false
+    }
+   ]
+  },
+  "rating:average ratings": {
+   "customers": 853,
+   "reviewers": 663,
+   "reviews": 1653,
+   "mean_rating": 3.87,
+   "nps_respondents": 566,
+   "nps": 0.0,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 853,
+     "share": 0.777,
+     "share_others": 0.697,
+     "points": 8.0,
+     "margin_points": 6.2,
+     "clear": true
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 853,
+     "share": 0.19,
+     "share_others": 0.16,
+     "points": 3.0,
+     "margin_points": 5.4,
+     "clear": false
+    },
+    {
+     "label": "Wrote praise",
+     "base": 853,
+     "share": 0.606,
+     "share_others": 0.544,
+     "points": 6.2,
+     "margin_points": 7.0,
+     "clear": false
+    },
+    {
+     "label": "Asked a question",
+     "base": 853,
+     "share": 0.275,
+     "share_others": 0.206,
+     "points": 7.0,
+     "margin_points": 6.1,
+     "clear": true
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 853,
+     "share": 0.175,
+     "share_others": 0.121,
+     "points": 5.4,
+     "margin_points": 5.0,
+     "clear": true
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 853,
+     "share": 0.13,
+     "share_others": 0.108,
+     "points": 2.2,
+     "margin_points": 4.6,
+     "clear": false
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 853,
+     "share": 0.128,
+     "share_others": 0.112,
+     "points": 1.6,
+     "margin_points": 4.6,
+     "clear": false
+    },
+    {
+     "label": "Is a promoter",
+     "base": 566,
+     "share": 0.3,
+     "share_others": 0.33,
+     "points": -2.9,
+     "margin_points": 8.3,
+     "clear": false
+    },
+    {
+     "label": "Is a detractor",
+     "base": 566,
+     "share": 0.3,
+     "share_others": 0.275,
+     "points": 2.5,
+     "margin_points": 8.1,
+     "clear": false
+    }
+   ]
+  },
+  "rating:below-average ratings": {
+   "customers": 476,
+   "reviewers": 345,
+   "reviews": 814,
+   "mean_rating": 3.64,
+   "nps_respondents": 296,
+   "nps": -3.4,
+   "rows": [
+    {
+     "label": "Wrote a review",
+     "base": 476,
+     "share": 0.725,
+     "share_others": 0.739,
+     "points": -1.4,
+     "margin_points": 7.1,
+     "clear": false
+    },
+    {
+     "label": "Wrote a negative review",
+     "base": 476,
+     "share": 0.252,
+     "share_others": 0.146,
+     "points": 10.6,
+     "margin_points": 6.6,
+     "clear": true
+    },
+    {
+     "label": "Wrote praise",
+     "base": 476,
+     "share": 0.544,
+     "share_others": 0.584,
+     "points": -4.0,
+     "margin_points": 8.0,
+     "clear": false
+    },
+    {
+     "label": "Asked a question",
+     "base": 476,
+     "share": 0.229,
+     "share_others": 0.243,
+     "points": -1.4,
+     "margin_points": 6.8,
+     "clear": false
+    },
+    {
+     "label": "Wrote about quality",
+     "base": 476,
+     "share": 0.162,
+     "share_others": 0.141,
+     "points": 2.1,
+     "margin_points": 5.8,
+     "clear": false
+    },
+    {
+     "label": "Wrote about shipping",
+     "base": 476,
+     "share": 0.162,
+     "share_others": 0.103,
+     "points": 5.9,
+     "margin_points": 5.7,
+     "clear": true
+    },
+    {
+     "label": "Wrote about fit",
+     "base": 476,
+     "share": 0.153,
+     "share_others": 0.107,
+     "points": 4.6,
+     "margin_points": 5.6,
+     "clear": false
+    },
+    {
+     "label": "Is a promoter",
+     "base": 296,
+     "share": 0.284,
+     "share_others": 0.326,
+     "points": -4.2,
+     "margin_points": 9.2,
+     "clear": false
+    },
+    {
+     "label": "Is a detractor",
+     "base": 296,
+     "share": 0.318,
+     "share_others": 0.277,
+     "points": 4.0,
+     "margin_points": 9.4,
+     "clear": false
+    }
+   ]
+  }
+ },
  "funnel": {
   "all": {
    "impressions": 43384,

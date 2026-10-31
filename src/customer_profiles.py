@@ -8,6 +8,7 @@ from pathlib import Path
 
 from src.customer_profit import distribution, gross_margin, profit_by_customer
 from src.customer_acquisition import acquisition_by_segment, first_sessions
+from src.customer_feedback import feedback_by_segment
 from src.customer_funnel import funnel_by_segment
 from src.customer_preference_ranking import line_features, ranking, scores
 from src.customer_relations import PET_GROUPS, preferences, relations
@@ -77,6 +78,8 @@ def build() -> tuple[dict, list[dict]]:
                "profit_distribution": distribution(profits, [t["customer_id"] for t in traits if t["profiled"]]),
                "response": response(_load("customer_actions"), margin, lambda row: keys_of.get(row["customer_id"], ())),
                "definitions": definitions(), "relations": relations(traits), "preferences": _named(preferences(traits, bought), products),
+               "feedback": feedback_by_segment(_load("reviews"), _load("nps_responses"),
+                                               {cid: keys for cid, keys in keys_of.items() if keys}, segment_list),
                "funnel": funnel_by_segment(showings, contexts, keys_of),
                "acquisition": acquisition_by_segment(
                    first_sessions(list(customers.values()), _load("contexts")), keys_of,
