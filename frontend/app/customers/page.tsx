@@ -48,7 +48,7 @@ function CustomersView() {
           <div className="page-title">Customers</div>
           <div className="page-desc">
             Customer segments by how they shop, ranked by what a customer earns the shop.
-            {summary && <> {summary.profiled.toLocaleString("fi-FI")} of {summary.customers.toLocaleString("fi-FI")} customers
+            {summary && <> {summary.profiled.toLocaleString("en-GB")} of {summary.customers.toLocaleString("en-GB")} customers
               are profiled: the others did not consent to behavioural profiling. Simulated data.</>}
           </div>
         </div>
@@ -101,7 +101,7 @@ function Headline({ summary }: { summary: ProfilesSummary }) {
     ["Profit, profiled customers", fmtEur(summary.profiled_profit_eur), `${Math.round(summary.gross_margin * 100)} % gross margin`],
     ["Profit per customer", fmtEur(summary.profiled_profit_eur / summary.profiled), `median ${fmtEur(d.median_eur)}`],
     ["Top tenth earns", `${Math.round(d.top_tenth_share * 100)} %`, "of the profit"],
-    ["Lose money", String(d.losing_money), `of ${d.customers.toLocaleString("fi-FI")}`],
+    ["Lose money", String(d.losing_money), `of ${d.customers.toLocaleString("en-GB")}`],
   ];
   return (
     <div className="card" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12 }}>

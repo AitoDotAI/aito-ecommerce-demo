@@ -359,7 +359,19 @@ export function shopkeeperPanel(): AitoPanelConfig {
       `<code style="color:var(--aito-teal);">_predict purchased_30d</code> per customer and candidate action. ` +
       `The gate then judges each on three things the step shows: the lift over no action, how many past rows match ` +
       `the customer's exact situation, and the kind of action. The thresholds are the store's.`,
-    query: `${k('"note"')}: ${s('"The agent adds no query of its own: see Retention for the _predict body."')}`,
+    query:
+`{
+  ${n('"from"')}: ${s('"customer_actions"')},
+  ${n('"where"')}: {
+    ${n('"recency_bucket"')}: ${s('"0-90d"')},
+    ${n('"spend_band"')}: ${s('"high"')},
+    ${n('"tracking_consent"')}: ${s('"yes"')},
+    ${n('"action"')}: ${s('"ad"')},
+    ${n('"action_x_tracking_consent"')}: ${s('"ad|yes"')}
+  },
+  ${n('"predict"')}: ${s('"purchased_30d"')},
+  ${n('"select"')}: [${s('"$p"')}, ${s('"feature"')}]
+}`,
     links: LEARN_MORE_LINKS,
   };
 }
@@ -374,7 +386,8 @@ export function customersPanel(): AitoPanelConfig {
       `cheaper half of their category, and well rated. The response table is the change in the share who ordered ` +
       `within 30 days after an action, from the action table the Shopkeeper's ` +
       `<code style="color:var(--aito-teal);">_predict purchased_30d</code> is fitted to.`,
-    query: `${k('"note"')}: ${s('"Observed rates over stored rows; the per-customer predictions are in Retention and Shopkeeper."')}`,
+    query: `${k('"source"')}: ${s('"stored counts"')},
+${k('"queries"')}: ${s('"none: see Retention"')}`,
     links: LEARN_MORE_LINKS,
   };
 }

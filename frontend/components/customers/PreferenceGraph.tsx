@@ -37,12 +37,12 @@ export default function PreferenceGraph({ summary, selected }: { summary: Profil
         </select>
       </div>
       <div style={{ fontSize: 14, lineHeight: 1.55, margin: "8px 0" }}>
-        Of {ranked.customers.toLocaleString("fi-FI")} customers ranked, the top fifth have <strong>{ranked.top_over_average}×</strong> the average
+        Of {ranked.customers.toLocaleString("en-GB")} customers ranked, the top fifth have <strong>{ranked.top_over_average}×</strong> the average
         share of this{ranked.top_over_bottom !== null
           ? <> and <strong>{ranked.top_over_bottom}×</strong> the bottom fifth&apos;s</>
           : <>; the bottom fifth buy none of it, so the ratio to them is undefined</>}.
       </div>
-      <div className="card-sub">Each bar is 5 % of the customers, strongest preference first; the height is their lift on the average share ({(ranked.mean_share * 100).toFixed(0)} % of lines).</div>
+      <div className="card-sub">Each bar is 5 % of the customers, strongest preference first; the height is how many times the average share they have ({(ranked.mean_share * 100).toFixed(0)} % of lines).</div>
       <div style={{ position: "relative", display: "flex", alignItems: "flex-end", gap: 2, height: 120, margin: "8px 0 4px", borderBottom: "1px solid var(--border)" }}>
         <div style={{ position: "absolute", left: 0, right: 0, bottom: `${(1 / top) * 100}%`, borderTop: "1px dashed var(--text-muted)" }} />
         <span className="card-sub" style={{ position: "absolute", right: 0, bottom: `calc(${(1 / top) * 100}% + 2px)`, fontSize: 11 }}>average</span>

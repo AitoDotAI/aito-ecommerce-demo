@@ -6,7 +6,8 @@ import { AITO_CALLS_EVENT, type AitoCallsEvent } from "@/lib/api";
 
 
 interface LatencyState {
-  ms: number;       // sum of all Aito calls in the most-recent request
+  ms: number;       // the median Aito call of the most-recent request
+  total: number;    // the sum of all its calls
   count: number;    // number of underlying _predict/_relate/... calls
   cached: boolean;  // true when no X-Aito-Calls header (cache hit)
 }
@@ -36,9 +37,10 @@ export default function LatencyBadge() {
   useEffect(() => {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent<AitoCallsEvent>).detail;
-      const ms = detail.calls.reduce((s, c) => s + c.ms, 0);
+      const sorted = detail.calls.map((c) => c.ms).sort((a, b) => a - b);
       setState({
-        ms,
+        ms: sorted.length ? sorted[Math.floor(sorted.length / 2)] : 0,
+        total: sorted.reduce((s, ms) => s + ms, 0),
         count: detail.calls.length,
         cached: detail.cached,
       });
@@ -66,12 +68,12 @@ export default function LatencyBadge() {
     <span
       className="pill pill-green latency-badge"
       style={{ fontFamily: "var(--mono)", fontSize: 11 }}
-      title={`Aito round-trip time across ${state.count} call${state.count === 1 ? "" : "s"}`}
+      title={`Median Aito call of ${state.count}: ${fmtMs(state.ms)}; all together ${fmtMs(state.total)} (calls run in parallel, so the page waited less)`}
     >
       <span style={{ marginRight: 4, color: "var(--green)" }}>aito</span>
       {fmtMs(state.ms)}
       {state.count > 1 && (
-        <span style={{ marginLeft: 4, color: "var(--text-muted)" }}>×{state.count}</span>
+        <span style={{ marginLeft: 4, color: "var(--text-muted)" }}>per call ×{state.count}</span>
       )}
     </span>
   );

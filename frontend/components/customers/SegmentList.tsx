@@ -74,7 +74,7 @@ function Group({ title, rows, selected, onSelect, scale, overall, showTrait }: {
             <td style={{ textAlign: "left", padding: "3px 4px" }}>
               {showTrait && <span className="card-sub">{TRAIT_TITLE[r.trait]}: </span>}{r.value}
             </td>
-            <td style={{ whiteSpace: "nowrap", paddingLeft: 8 }}><span title={`${Math.round(r.share * 100)} % of profiled customers`}>{r.customers.toLocaleString("fi-FI")}</span></td>
+            <td style={{ whiteSpace: "nowrap", paddingLeft: 8 }}><span title={`${Math.round(r.share * 100)} % of profiled customers`}>{r.customers.toLocaleString("en-GB")}</span></td>
             <td style={{ textAlign: "left", paddingLeft: 10, whiteSpace: "nowrap" }}>
               <span style={{ display: "inline-block", position: "relative", width: 56, height: 8, background: "var(--border-light)", borderRadius: 2, marginRight: 6 }}>
                 <span style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${(per / scale) * 100}%`, background: "var(--aito-teal)", borderRadius: 2 }} />
