@@ -1169,3 +1169,44 @@ def test_impressions_are_almost_all_identified_so_the_identified_only_cut_remove
         f"{anonymous} of {total} impressions have no customer ({anonymous / total:.1%}): Shop analytics "
         "restricts its funnel lifts to identified sessions, so they no longer cover the same rows. "
         "Re-measure them with and without the restriction before shipping this data.")
+
+
+# ── Snapshots: what is shipped must still be what the data says ──────
+
+
+@pytest.mark.parametrize("view", ["overview", "demand", "retention", "supply"])
+def test_a_precompute_snapshot_still_says_what_a_fresh_run_says(client, view):
+    """The views served from `precompute_entries` (ADR 0024) are only as true as the last
+    `./do precompute`. The Evaluation view once shipped pet-type accuracy 0.975 where the live
+    engine measured 0.055, and nothing compared the two (td-20260915230157220135). If this
+    fails, run `./do precompute` for the release env and commit the snapshots."""
+    from src import precompute_store as store
+    from src.precompute import PRECOMPUTED_ENDPOINTS
+    from src.snapshot_drift import drifts, headline_numbers
+
+    store.init(client)
+    shipped = store.get(view)
+    assert shipped is not None, f"no {view} snapshot is served; run `./do precompute`"
+    compute = dict(PRECOMPUTED_ENDPOINTS)[view]
+    live = compute(client)
+
+    found = drifts(headline_numbers(view, shipped["data"]), headline_numbers(view, live))
+    assert not found, f"the shipped {view} snapshot has drifted from the live data: {found}"
+
+
+def test_the_committed_model_checks_still_say_what_a_fresh_run_says(client):
+    """`data/evidence/model-checks.json` is what the Model checks page shows. Re-run the same
+    `_evaluate` models and compare their accuracy with what the file claims."""
+    import json
+
+    from src.evidence import result_file
+    from src.evidence.model_checks import churn_model, evaluate_demand_model
+    from src.eval_service import run_evaluation
+    from src.snapshot_drift import drifts, headline_numbers
+
+    shipped = json.loads((result_file.EVIDENCE_DIR / "model-checks.json").read_text(encoding="utf-8"))
+    live = {"models": run_evaluation(client).to_dict()["models"],
+            "churn": churn_model(client), "demand": evaluate_demand_model(client)}
+
+    found = drifts(headline_numbers("model-checks", shipped), headline_numbers("model-checks", live))
+    assert not found, f"data/evidence/model-checks.json has drifted from the live data: {found}"

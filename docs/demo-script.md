@@ -67,7 +67,7 @@ euros follow from that forecast."
 **Caveat (the page's one line):** the forecasts are Aito's estimates for
 May; the euros follow from them. **How well? →** opens the model checks.
 
-**Check first:** the page shows 730 units. If it shows 676 units and €11,097, it is serving release 2's snapshot:
+**Check first:** the page shows 664 units. If it shows 730 units and €11,682, it is serving release 3a's snapshot:
 `./do precompute` has not been run on master since the data release.
 
 **Recovery:** if Supply is slow on its first visit, the snapshot is
@@ -97,9 +97,11 @@ Trixie Hideout). Until a lever writes May, the view shows April.
 
 | On screen | Number | Basis |
 |---|---|---|
-| The decision | "Put it on offer at 10–15 % off": bought when shown 20.0 % → 31.5 % (×1.57) | `_predict purchased` on `impressions` per discount band (`src/discount_what_if.py`); margin per showing (`src/product_decision.py`) |
-| Margin per 100 showings | €201.02 → €228.10 (+13 %); break-even ×1.38 | list price €22.28, cost €12.25, one unit per purchase |
-| Why | 14.3 % (all impressions) × 1.38 (10–15 % off, shop-wide) × 1.63 (this product's own) × 0.98 (Aito's normalising constant) = 31.5 % | the band's `$why`; at 10–15 % it was shown 16 times (3 bought), at 20 %+ 7 times (4 bought) |
+| The decision | "Put it on offer at 10–15 % off": bought when shown 12.9 % → 20.4 % (×1.58) | `_predict purchased` on `impressions` per discount band (`src/discount_what_if.py`); margin per showing (`src/product_decision.py`) |
+| Margin per 100 showings | €129.80 → €147.94 (+14 %); break-even ×1.38 | list price €22.28, cost €12.25, one unit per purchase |
+| Why | 14.0 % (all impressions) × 1.32 (10–15 % off, shop-wide) × 1.11 (this product's own) × 1.00 (Aito's normalising constant) = 20.4 % | the band's `$why`; at 10–15 % it was shown 8 times (0 bought), at 20 %+ 7 times (4 bought) |
+
+**Presenter note, the Why row:** 0 of 8 is the observed count at 10–15 %; 20.4 % is the model's shop-wide lift.
 
 ## 2b. Pricing and the funnel (about 1 minute)
 
@@ -111,10 +113,10 @@ one, two or three units, so the blocks are tallest first. The money is just the 
 
 | On screen | Number | Basis |
 |---|---|---|
-| Funnel today | 10.6 showings → 6.8 clicks → 5.6 purchases (4.5 × 1 unit, 0.9 × 2, 0.1 × 3) + 2.5 units re-ordered without a showing = 9.2 units; profit €8.58 | showings: `_estimate showings_index`; clicks and purchases: `_predict clicked`, and `purchased` given `clicked` (`src/product_funnel.py`) |
-| At a list price of €1.75 | clicks 6.8 → 7.3, purchases 5.6 → 6.2, units 9.2 → 10.0, profit €8.58 → €8.14 | more shoppers, a thinner margin: the profit falls |
-| Pricing tab | units 8.0 → 10.0 (+25 %); most profit among the prices it has data for: €1.59 list, €8.27 a month | `_estimate units_index` per price (`src/product_pricing.py`) |
-| Cross-check | units by price 10.0, within 25 % of the funnel's 10.0 | the two routes are independent |
+| Funnel today | 9.6 showings → 5.7 clicks → 4.0 purchases (3.2 × 1 unit, 0.6 × 2, 0.1 × 3) + 2.1 units re-ordered without a showing = 6.9 units; profit €6.44 | showings: `_estimate showings_index`; clicks and purchases: `_predict clicked`, and `purchased` given `clicked` (`src/product_funnel.py`) |
+| At a list price of €1.75 | clicks 5.7 → 6.1, purchases 4.0 → 4.7, units 6.9 → 7.8, profit €6.44 → €6.32 | more shoppers, a thinner margin: the profit falls |
+| Pricing tab | units 6.4 → 8.7 (+35 %); most profit among the prices it has data for: €1.59 list, €7.62 a month | `_estimate units_index` per price (`src/product_pricing.py`) |
+| Cross-check | units by price 8.7, within 25 % of the funnel's 7.8 | the two routes are independent |
 
 **Caveats to say out loud:** typing a price beyond what the product has sold at (€1.41–€1.90 paid) shows "no data
 here", not a number. Advertising spend is our assumption (none, search €60, banner €180 a month), so a banner on a
@@ -135,13 +137,13 @@ reads it back from the database before it shows anything."
 
 | On screen | Number | Basis |
 |---|---|---|
-| Read back | "May 2026, 20 % or more off, €17.27, 5 stars" **(Sunday)** | `src/product_levers.py`: April's list price €22.28 at the band's typical 22.5 %; April's stars are 5 (1 review) |
-| The what-if's 20 %+ row | 32.7 % bought when shown, ×1.63 vs. no discount, band's lift 1.44 | the same `_predict`; shown 7 times at 20 %+ (4 bought) |
-| The decision, May | "Change its offer to 10–15 % off": margin per 100 showings €164.23 (20 %+) → €228.10 (10–15 %) | the same band table with May's band as the current one; a sandbox run confirms it **(Sunday)** |
+| Read back | "May 2026, 20 % or more off, €17.27, 4 stars" **(Sunday)** | `src/product_levers.py`: April's list price €22.28 at the band's typical 22.5 %; April's stars are 4 (1 review) |
+| The what-if's 20 %+ row | 22.3 % bought when shown, ×1.72 vs. no discount, band's lift 1.44 | the same `_predict`; shown 7 times at 20 %+ (4 bought) |
+| The decision, May | "Change its offer to 10–15 % off": margin per 100 showings €111.97 (20 %+) → €147.94 (10–15 %) | the same band table with May's band as the current one; a sandbox run confirms it **(Sunday)** |
 | Price model, May **(Sunday)** | units and profit at €17.27 and €19.50: read in the sandbox | `_estimate units_sold`, regression (`src/price_what_if.py`) |
 
 **Say:** "The decision pushes back. At 20 % off it sells about as well as
-at 10–15 % (32.7 % against 31.5 %), so the extra discount is margin given away. The owner gets the
+at 10–15 % (22.3 % against 20.4 %), so the extra discount is margin given away. The owner gets the
 estimate and the reason, and still decides."
 
 **Click:** press **10–15 % off**: the owner takes the advice. The read-back
@@ -168,12 +170,12 @@ far. A shop sees what a visit is for, so it shows one view per intent."
 
 | On screen | Number | Basis |
 |---|---|---|
-| Next for their kit | Trixie Hideout, small 22.5 %, Trixie Hideout, medium 18.9 %, Trixie Exercise Wheel 16.1 %, PetNord Hideout 10 % | `_predict product_sku` on `order_lines` where `owned_before` holds a small-animal cage and water bottle (`src/shop_suggestions.py`); read on master for April; May's list in the sandbox **(Sunday)** |
+| Next for their kit | PetNord Hideout 22 %, PetNord Exercise Wheel 18.4 %, Trixie Hideout, medium 18 %, Trixie Hideout, small 12.7 % | `_predict product_sku` on `order_lines` where `owned_before` holds a small-animal cage and water bottle (`src/shop_suggestions.py`); read on master for April; May's list in the sandbox **(Sunday)** |
 | Buy again | PetNord Guinea Pig Mix Food 15kg, 67 % | `_predict skus.$feature` over her own orders before the month |
 
 **Say, on the kit:** "Shoppers who owned a cage and a bottle bought a
-hideout next. Aito reads that from their order lines. The app has no kit
-rules."
+hideout next: the PetNord Hideout leads, then PetNord Exercise Wheel and the Trixie hideouts. Aito reads that from
+their order lines. The app has no kit rules."
 
 **On variants:** in release 2 a product's variants carry their size in the
 name ("Trixie Hideout, small" and "Trixie Hideout, medium"), so each shows as
@@ -185,7 +187,7 @@ shows it once, as the SKU Aito ranked highest; scores are never added
 
 | On screen | Number | Basis |
 |---|---|---|
-| Before the lever | Trixie Hideout, small is already the 3rd card, "57 % buy it when shown" (April; May's rank **(Sunday)**). The rise after the lever is from 3rd, not from 10th: find the rank in the sandbox before telling it as a story | the Shop's measured `_recommend`, top 40, read on master |
+| Before the lever | Trixie Hideout, small is already the 2nd card, "56 % buy it when shown" (April; May's rank **(Sunday)**). The rise after the lever is from 2nd, not from 10th: find the rank in the sandbox before telling it as a story | the Shop's measured `_recommend`, top 40, read on master |
 | After **(Sunday)** | Trixie Hideout, small rises, with "Score … ↑ … since the offer" and the chip "On offer ×…, learned across the shop" | `src/shop_rescore.py`: Aito's probability × the offer band's factor; the rank change counts cards, as the page shows them |
 | The card's explanation | "Aito's purchase probability … × offer band lift (shop-wide) × star band lift (shop-wide) = score …" | offer factor = lift(band) / lift(none), each from `$why` of `_predict purchased` (`src/shop_state_lifts.py`) |
 
@@ -193,7 +195,7 @@ shows it once, as the SKU Aito ranked highest; scores are never added
 "The query holds only what a shop knows: the pets she told us, the month
 and her cart."
 
-**Say:** "The hideout rises to first, and the card says why: the
+**Say:** "The hideout rises, and the card says why: the
 explanation multiplies out to the number shown. The probability is Aito's,
 and so is the offer's lift. Multiplying them is this app's choice, and the panel
 says so."
@@ -208,11 +210,11 @@ re-scored Shop exists only in the sandbox.
 
 | On screen | Number | Basis |
 |---|---|---|
-| Read back **(Sunday)** | the star band before and after, with the review count and average | April: Trixie Hideout, small is in the 3-star band with 2 reviews; `rating_band` uses the generator's rule (`data/shoppers.py`) |
+| Read back **(Sunday)** | the star band before and after, with the review count and average | April: Trixie Hideout, small is in the 4-star band with 1 review; `rating_band` uses the generator's rule (`data/shoppers.py`) |
 | Shop card **(Sunday)** | a chip "… stars ×…, learned across the shop" and the new score | lift(new stars) / lift(April's stars), from `$why` (`src/shop_state_lifts.py`) |
 
-**The honest case, to pick on Sunday:** release 2's products carry few
-reviews (the hideouts have 2), so one review often moves the band. The
+**The honest case, to pick on Sunday:** release 3b's products carry few
+reviews (the Trixie Hideout, small has 1), so one review often moves the band. The
 "no change" example (a 5-star review on a product with many 1–2 star ones,
 read back as "No change in its star band") needs a product with many
 reviews; find one in the sandbox and write it here. **Say:** "One good
@@ -225,7 +227,7 @@ If the Shop doesn't move, check that the URL still has `?db=` and
 
 **Without a sandbox:** the public Shop, `/shop/?shopper=paivi`, is April
 2026 and shows the same kit path and Buy again. Its "Picked for you" leads
-with PetNord Fruit Drops Treats 100g, classic, "59 % buy it when shown", ★ 3.8, no offer
+with Trixie Hideout, medium, "58 % buy it when shown", ★ 5, no offer
 (`_recommend impressions` with her pets read from her orders, the month and the cart,
 `src/shop_ranking.py`). Press the **?** on a card for the `$why` chain behind its
 percentage. Her Buy again rests on a single earlier order, so 67 % comes from
@@ -250,7 +252,7 @@ propose."
 | Expected | Basis |
 |---|---|
 | It finds the Trixie Hideout's May row: 20 % or more off, €17.27 **(Sunday)** | `search product_states where {month: 2026-05}` |
-| It quotes 20.0 % at no discount and 32.7 % at 20 %+, calls the lift shop-wide, and calls the 7 showings at 20 %+ thin (as April reads on master; the sandbox's May may differ) **(Sunday)** | the same `_predict purchased` per band the Product view sends |
+| It quotes 12.9 % at no discount and 22.3 % at 20 %+, calls the lift shop-wide, and calls the 7 showings at 20 %+ thin (as April reads on master; the sandbox's May may differ) **(Sunday)** | the same `_predict purchased` per band the Product view sends |
 
 **Caveat:** the agent's judgement varies from run to run on the same data.
 It proposes, and a person decides. Its brief tells it to quote only
@@ -259,6 +261,30 @@ numbers a tool returned.
 **Recovery:** if a tool call fails or stalls, play `agentic-demo.mp4` from
 the deck folder (68 s, two real runs on the same data, recorded
 2026-10-24).
+
+## 5b. The shopkeeper agent (about 1½ minutes)
+
+**Click:** Operate › Shopkeeper. The Weekly win-back run is open.
+
+**Say:** "This is the agent that runs the shop's routines. It went through the
+20 customers most likely to leave and picked the next best action for each.
+It acts only when the evidence is there. Everything here is simulated:
+nothing was sent."
+
+| Expected | Basis |
+|---|---|
+| "I acted on 8, expecting € 168 more than doing nothing. 4 are waiting for you, holding € 51 expected. I stayed quiet on 8." | the stored run `data/agent_runs/winback.json` at the recommended settings; the euros are expected values from Aito's predictions |
+| A "stayed quiet" step names why: for example "Only 9 past rows match this customer's exact situation and €10 voucher; the rule asks for 10" | rows of that action in that situation in `customer_actions` (a check on the evidence, not what the lift is estimated from) |
+| Moving "Act from a lift of" up turns acted steps into suggested ones; unticking a kind under "Always ask a person before" moves its steps out of "Needs a person", to Acted or Suggested by their lift | the gate's rules, re-judged on every change |
+| The Board lists what to improve: thin evidence, the approval load, and the churn tells (NPS 0–3: 1.9× the churn) | the Retention snapshot's `_relate` rates |
+
+**Say:** "The store sets how sure the agent must be, and which kinds always
+need a person. We don't claim it matches or forecasts better than a simpler
+method: the gate is what's new, it knows when not to act."
+
+**Caveat:** only the win-back routine is built; the others are shown as not built
+yet. The numbers are those of the stored run for the current data release; a run
+stored for another release shows a "stale" notice.
 
 ## 6. How well? Evidence: the close (about 1 minute)
 
@@ -294,7 +320,7 @@ it would lift your shop. The real-data number is the one on this page."
 **Optional, synthetic:** on months it hadn't seen, Aito's purchase
 estimate per discount band came within 6 % of what shoppers then did
 (`docs/aito-cheatsheet.md`, "A discount band as a what-if": Jan–Apr 2026
-held out, 56,005 impressions).
+held out, 56,005 impressions). That was measured on release 2 data and has not been re-run on release 3b.
 
 ## Close (20 seconds)
 
@@ -310,11 +336,11 @@ held out, 56,005 impressions).
 - **Patterns** stays out of the path; use it only if asked about baskets.
 
 - **Patterns** (`/patterns/?anchor=dog_dryfood`): dog dry food and dental
-  treats are in the same basket 3.11× more often than chance (interval
-  2.70–3.57). 64 % of dog dry-food orders have dental treats, and 96 %
-  the other way round (2,168 of 10,894 orders hold both). Source: `/api/shop-analytics/baskets`.
-- **What goes with a purchase** (Patterns): products on offer are 1.42×
-  over-represented in purchases ([1.30, 1.54], 2,602 of 6,276 rows). Say "on
+  treats are in the same basket 3.17× more often than chance (interval
+  2.75–3.66). 64 % of dog dry-food orders have dental treats, and 96 %
+  the other way round (2,044 of 10,594 orders hold both). Source: `/api/shop-analytics/baskets`.
+- **What goes with a purchase** (Patterns): products on offer are 1.41×
+  over-represented in purchases ([1.29, 1.53], 2,518 of 6,069 rows). Say "on
   generated data with a planted offer effect". Don't set it beside the
   planted ×2.5: one is a share ratio, the other an odds ratio.
 - **Shop search:** switch to Janne and search "food": only grain-free

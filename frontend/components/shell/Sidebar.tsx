@@ -47,6 +47,7 @@ const NAV: NavHeading[] = [
           { href: "/acquisition",      label: "Acquisition", icon: "🧲" },
           { href: "/supply",           label: "Supply",    icon: "📦" },
           { href: "/retention",        label: "Retention", icon: "🔁" },
+          { href: "/customers",        label: "Customers", icon: "👥" },
         ],
       },
       {
@@ -54,6 +55,7 @@ const NAV: NavHeading[] = [
         items: [
           { href: "/product-filling", label: "Product filling", icon: "⚡" },
           { href: "/review-triage",   label: "Review triage",   icon: "💬" },
+          { href: "/shopkeeper",      label: "Shopkeeper",      icon: "🤖" },
         ],
       },
     ],

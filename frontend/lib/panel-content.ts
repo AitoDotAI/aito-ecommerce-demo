@@ -348,3 +348,33 @@ export function evaluationPanel(): AitoPanelConfig {
     links: LEARN_MORE_LINKS,
   };
 }
+
+
+export function shopkeeperPanel(): AitoPanelConfig {
+  return {
+    operation: "Shopkeeper",
+    endpoints: ["_predict", "_estimate"],
+    description:
+      `The agent reads the same ranked actions Retention shows: a ` +
+      `<code style="color:var(--aito-teal);">_predict purchased_30d</code> per customer and candidate action. ` +
+      `The gate then judges each on three things the step shows: the lift over no action, how many past rows match ` +
+      `the customer's exact situation, and the kind of action. The thresholds are the store's.`,
+    query: `${k('"note"')}: ${s('"The agent adds no query of its own: see Retention for the _predict body."')}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
+export function customersPanel(): AitoPanelConfig {
+  return {
+    operation: "Customers",
+    endpoints: ["_predict", "_relate"],
+    description:
+      `Traits are counted from each consenting customer's purchase history: the share of lines on offer, in the ` +
+      `cheaper half of their category, and well rated. The response table is the change in the share who ordered ` +
+      `within 30 days after an action, from the action table the Shopkeeper's ` +
+      `<code style="color:var(--aito-teal);">_predict purchased_30d</code> is fitted to.`,
+    query: `${k('"note"')}: ${s('"Observed rates over stored rows; the per-customer predictions are in Retention and Shopkeeper."')}`,
+    links: LEARN_MORE_LINKS,
+  };
+}

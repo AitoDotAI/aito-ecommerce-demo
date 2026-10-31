@@ -160,6 +160,8 @@ Data
   sandbox-new       Branch a sandbox off the template, warm it, print its ?db= link
   sandbox-list      The live sandboxes and when they expire (read-only)
   sandbox-time      Time the lever → Shop loop 5× on a throwaway branch (deleted after)
+  customer-profiles Rewrite the stored customer profiles from the release's fixtures (offline, ADR 0053)
+  agent-runs        Rewrite the stored shopkeeper runs from the committed retention snapshot (offline, ADR 0052)
   agent-demo        <branch> ["question"]: an agent (aito-mcp, read-only key) on one sandbox branch
   uci-prepare       UCI Online Retail II xlsx → data/uci/*.json (local, no Aito; ADR 0034)
   uci-load          Load data/uci/ into Aito env uci (needs AITO_ENV=uci)
@@ -442,6 +444,17 @@ cfg = load_config()
 client = AitoClient(cfg)
 precompute_all(client, verbose=True, write_as_env=os.environ['WRITE_AS'] or None)
 "
+}
+
+cmd_customer_profiles() {
+  cd "$SCRIPT_DIR"
+  uv run python scripts/generate_customer_profiles.py
+}
+
+cmd_agent_runs() {
+  # Offline: reads data/precomputed/ and data/customer_actions.json, writes data/agent_runs/.
+  cd "$SCRIPT_DIR"
+  uv run python scripts/generate_agent_runs.py
 }
 
 cmd_release_file() {
@@ -923,6 +936,8 @@ case "${1:-help}" in
   sandbox-new)       cmd_sandbox new ;;
   sandbox-list)      cmd_sandbox list ;;
   sandbox-time)      cmd_sandbox time ;;
+  customer-profiles) cmd_customer_profiles ;;
+  agent-runs)        cmd_agent_runs ;;
   agent-demo)        shift; cmd_agent_demo "$@" ;;
   test)              shift; cmd_test "$@" ;;
   aito-check)        shift; cmd_aito_check "$@" ;;

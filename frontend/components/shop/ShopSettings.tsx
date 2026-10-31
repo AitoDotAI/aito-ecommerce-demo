@@ -66,10 +66,10 @@ export default function ShopSettings({ personalisation, lastOrder, season, month
       <div className="card-sub" style={{ lineHeight: 1.5 }}>
         Product state is an experiment: the score is Aito&apos;s probability times the shop-wide lifts Aito learned for the
         month&apos;s offer band and stars, a multiplication this app does, not one Aito query. Whether it ranks better is
-        what <code>state-rank-prereg.md</code> measures on held-out sessions.
+        pre-registered in <code>state-rank-prereg.md</code> and has not been run.
         <br /><br />
         Season is off by default: it is the same shop-wide lift for every product, and it lifted other pets&apos;
-        products over a dog household&apos;s own. What the held-out sweeps measured: ranking by the customer&apos;s own history ties on ranking and overconfides the
+        products over a dog household&apos;s own. What the held-out sweeps measured, on release 2 data in October 2026 and not re-run on release 3b: ranking by the customer&apos;s own history ties on ranking and overconfides the
         percentages on average (ADR 0033); a long history personalises well and a thin one (Anna has two orders) does
         not. The last order as cart words lost on both hit@12 and Brier (<code>last-basket-prereg.md</code>). They are
         the demo&apos;s defaults because they show the personalisation; &quot;Their pets only&quot; is what measured best.

@@ -207,7 +207,7 @@ a first attempt at 10:01 was lost to this machine's DNS failures).
 | A2 | **pass**: for owners of cage, water bottle and hideout, two Exercise Wheels top `_predict product_sku` on `order_lines` (p 0.25, 0.23), then tunnels | `where order_id.owned_before: {$and: [{$match: token}…]}` plus the pet and accessory/toy categories. |
 | A4, A5 | **pass** again | |
 | A8 | **pass**: `_relate` on `impressions` where `purchased`, related to `just_bought`: lift 0.48 on 40 of 12,135 purchases; 95 % interval about 0.36–0.66 | |
-| A3 | pending: runs after 22:00, one query at a time | Six parallel nested-`from` predictions (3.5 s each, ~36,000-row populations) drew a 502 from the shared instance at 19:57; prod stayed at 200. |
+| A3 | pending on 2026-10-13: runs after 22:00, one query at a time. **Run on 2026-10-30, on release 3b: pass** (below) | Six parallel nested-`from` predictions (3.5 s each, ~36,000-row populations) drew a 502 from the shared instance at 19:57; prod stayed at 200. |
 | A6, A7 | not run | need the Smart Search changes (ADR 0031) |
 
 ### Query-pattern probes (ADR 0031), 2026-10-13, `shoppers`
@@ -215,3 +215,23 @@ a first attempt at 10:01 was lost to this machine's DNS failures).
 - **Same basket:** `_relate` on `orders` with `skus: {$match: SKU}`, related to `skus`, works on v2 (hits come back as `{"skus": {"$has": …}}`). It is thin at product level: SKU-PT-0177 is in 92 orders, and its partners appear 3–8 times each. Show counts and filter by interval.
 - **Nested `from` with `_relate`: unsupported on 2.11.4** (501, "nested from (population restriction) is not supported with relate yet"). "In your baskets" is therefore a `_search` of the shopper's own orders: history, not inference.
 - **Autofill:** `_predict` with `predict: "skus.$feature"` from a nested `from` of the shopper's orders works and returns one probability per SKU. The plain `predict: "skus"` returns whole SKU lists, each p = 0.1, which is useless for autofill.
+
+### A3, run on release 3b (2026-10-30)
+
+**Data:** release 3b as promoted on 2026-10-29, read as `v2@master` on shared.aito.ai (36,357 order lines, 3,000 customers). This is not the `shoppers` data this prereg was written for (2026-10-13): the generator and the data have changed since, so this is A3's question asked of the data the demo serves today.
+**Run:** `PYTHONPATH=. python scripts/next_basket_eval.py`, read-only, one query at a time, 300 customers with at least 3 orders (seed 0), hit@10.
+
+**The method changed before this run, and the change is visible here on purpose.** Until 2026-10-30 the model's population excluded only the sampled customer's own last order, while the popularity baseline excluded all 300 sampled last orders, so the model could read 299 other held-out baskets and the baseline none. The script now excludes every sampled customer's last order from the model's population as well. Before changing it the asymmetry was measured on 3b: 0.853 as it was, 0.857 symmetric, flattery −0.003 [−0.010, +0.000], so the change moves no number in the model's favour or against it. The script also now scores a household that declared no pets as its own group ("no declared pets"); on 3b it crashed on them (`KeyError: 'pets'`, `customers.pets` is nullable). It is still a leave-last-basket-out split, not a month-boundary split; a month split measured earlier on other data was indistinguishable (+0.600 vs +0.603, dev3, 2026-10-20).
+
+| arm | hit@10 |
+|:--|--:|
+| model: `_predict product_sku` conditioned on the customer | 0.857 |
+| popularity: the household group's 10 most bought products | 0.217 |
+| control: conditioned on another random customer | 0.067 |
+
+| comparison | difference | paired 95 % interval |
+|:--|--:|:--|
+| model − popularity | +0.640 | [+0.587, +0.693] |
+| control − popularity | −0.150 | [−0.203, −0.100] |
+
+**A3: pass.** The model beats popularity with the interval above 0, and the shuffled control does not. Script: `scripts/next_basket_eval.py`, test: `tests/test_next_basket_eval.py`.
