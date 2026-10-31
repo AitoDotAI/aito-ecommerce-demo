@@ -44,7 +44,7 @@ nDCG@10 per query, each query's value the mean over the three personas. Differen
 |:--|:--|:--|
 | P1 | meaning helps overall | `three_way` − `shipped`, all 60 queries: ≥ +0.05, interval lower bound > 0 |
 | P2 | meaning helps where words fail | same difference on synonym + paraphrase + misspelling + nordic (40 queries): ≥ +0.10, interval lower bound > 0 |
-| P3 | and costs nothing where words work | same difference on exact + brand (20 queries): ≥ −0.03 (point estimate; the interval is reported) |
+| P3 | and costs nothing where words work | same difference on exact + brand (20 queries): ≥ −0.03 (point estimate) and, by the amendment of 2026-10-31, interval lower bound ≥ −0.05 |
 | P4 | Finnish/Swedish is reachable | `three_way` nDCG@10 on the 10 nordic queries ≥ 0.30 (`shipped` is expected near 0) |
 | P5 | no empty results | zero-result rate 0 % on all 60 |
 | P6 | the gain is meaning, not noise | both vector controls within ±0.02 nDCG@10 of `shipped`, all 60 queries |
@@ -85,3 +85,10 @@ Made on the CPO's review. None of it touches a bar.
 3. **Who graded the 60 held-out queries.** Nobody and nothing judged search results. Each query is a spec (text, pet, categories, refinement) over the product's structured attributes, and `src/search_eval/relevance.py` grades every catalogue product against it with fixed rules. The 60 specs were written by Claude (model `claude-sonnet-5-5`) in the maintainer's session on 2026-10-30, from the catalogue's brands, categories, diet tags and name tokens. They were written before any search or embedding was run, and the author saw no candidate output of any arm. The only checks made after writing: no query text repeats one in `queries.json`, and each has at least three grade-2 products. The grader is code and sees only product attributes. The prompt is not recorded because no model graded: the specs are the file itself.
 
 Not yet done, and why: downloading the embedding model, the engine JAR (if not already on the machine) and installing `onnxruntime` in the experiment environment. Those are downloads and an install the maintainer has not yet approved in this session.
+
+### 2026-10-31, before any run: two tightenings, from a peer review
+
+No arm has been run and no query scored, so these tighten the plan and move no bar a result could have informed.
+
+1. **P3 is judged on the interval too.** P1 and P2 use the interval's lower bound; P3 used the point estimate only, so a loss with a wide interval could pass. P3 now also needs the interval's lower bound of `three_way` − `shipped` on exact + brand to be ≥ −0.05, which is the same as the loss's upper bound being at most 0.05. With only 20 queries the interval is wide, so P3 can fail on noise; that failure is reported as inconclusive, not as harm, and the exact + brand set is not enlarged to rescue it.
+2. **θ_vec is written before the held-out queries are scored.** The harness must refuse to score `queries_heldout.json` unless the run output already holds the chosen θ_vec and the sha256 of the held-out file (`e37912ae…bf695`). The refusal is a test of the harness, written with the harness; the held-out set is not opened before it exists.
