@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import pytest
 
-from src.snapshot_drift import Headline, drifts, headline_numbers
+from src.snapshot_drift import Headline, drifts, headline_numbers, _count
 
 
 def test_an_accuracy_far_from_the_live_one_is_reported_with_both_numbers():
@@ -30,8 +30,9 @@ def test_numbers_inside_their_tolerance_are_not_drift():
 
 
 def test_a_count_must_match_exactly():
-    shipped = {"orders": Headline(8505, tolerance=0)}
-    live = {"orders": Headline(8504, tolerance=0)}
+    """Counts are built by `_count`, so this is the tolerance the views' counts really get."""
+    shipped = {"orders": _count(8505)}
+    live = {"orders": _count(8504)}
 
     assert [d.name for d in drifts(shipped, live)] == ["orders"]
 
