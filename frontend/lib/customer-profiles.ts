@@ -38,19 +38,19 @@ export interface ProfilesSummary {
   profiled_revenue_eur: number; profiled_profit_eur: number; gross_margin: number; margin_cut: number;
   profit_distribution: { customers: number; median_eur: number; top_tenth_share: number; losing_money: number };
   overall: Segment; definitions: Record<string, string>;
-  by_trait: Record<"offer" | "price" | "rating" | "margin" | "pets" | "diets", Segment[]>;
+  by_trait: Record<"offer" | "price" | "rating" | "margin" | "status" | "pets" | "diets", Segment[]>;
 }
 
 /** Everything the view says about the customers who meet every ticked condition (GET /api/customer-profiles/segment). */
 export interface Trend {
-  months: string[]; customers: number[]; orders: number[]; revenue_eur: number[]; profit_per_customer_eur: number[]; nps: (number | null)[];
+  months: string[]; customers: number[]; orders: number[]; revenue_eur: number[]; profit_per_customer_eur: number[]; nps: (number | null)[]; churn_rate: (number | null)[];
   recent_vs_before: Record<KpiId, number | null>;
 }
 
 /** What the tree shows beside a condition: the figures the segment would have if it were ticked. */
-export interface TreeFigures { customers: number; orders: number; revenue_eur: number; profit_per_customer_eur: number | null; nps: number | null }
+export interface TreeFigures { customers: number; orders: number; revenue_eur: number; profit_per_customer_eur: number | null; nps: number | null; churn_rate: number | null }
 
-export type KpiId = "customers" | "orders" | "revenue_eur" | "profit_per_customer_eur" | "nps";
+export type KpiId = "customers" | "orders" | "revenue_eur" | "profit_per_customer_eur" | "nps" | "churn_rate";
 
 export interface FeedbackPair { selected: FeedbackEntry; all: FeedbackEntry }
 
@@ -74,19 +74,19 @@ export interface CustomerProfile {
 }
 
 export const TRAIT_TITLE: Record<string, string> = {
-  all: "Everyone", offer: "Buys on offer", price: "Prices they pick", rating: "Ratings they pick", margin: "Margin of their baskets",
+  all: "Everyone", offer: "Buys on offer", price: "Prices they pick", rating: "Ratings they pick", margin: "Margin of their baskets", status: "Customer status",
   pets: "Pets they buy for", diets: "Diets their pet's food is made for",
 };
 
 /** The topic tree: the groups in order, and the variables in each. */
 export const TREE: { title: string; traits: (keyof ProfilesSummary["by_trait"])[] }[] = [
   { title: "How they shop", traits: ["offer", "price", "rating"] },
-  { title: "Value to the shop", traits: ["margin"] },
+  { title: "Value to the shop", traits: ["margin", "status"] },
   { title: "Their pets", traits: ["pets", "diets"] },
 ];
 
 /** A customer has one value of each of these; pets and diets can be ticked more than once. */
-export const SINGLE_VALUED = ["offer", "price", "rating", "margin"];
+export const SINGLE_VALUED = ["offer", "price", "rating", "margin", "status"];
 
 export const ACTION_TITLE: Record<string, string> = {
   email: "Email", ad: "Ad", discount: "Discount", voucher: "Voucher", apology: "Apology",

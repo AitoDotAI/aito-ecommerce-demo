@@ -20,15 +20,15 @@ export default function SegmentTree({ summary, view, conditions, kpi, onKpi, onT
     <nav aria-label="Segment" style={{ position: "sticky", top: 8, display: "grid", gap: 12 }}>
       <div className="card">
         <div className="card-title" style={{ margin: "0 0 6px" }}>Compare by</div>
-        <div role="tablist" aria-label="Figure to compare by" style={{ display: "grid", gap: 4 }}>
+        <div role="tablist" aria-label="Figure to compare by" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 6 }}>
           {KPIS.map((k) => {
             const value = own ? figureOf(k.id, own) : null;
             return (
               <button key={k.id} role="tab" aria-selected={kpi === k.id} onClick={() => onKpi(k.id)} style={{
-                display: "flex", justifyContent: "space-between", gap: 8, textAlign: "left", cursor: "pointer", font: "inherit", fontSize: 13, color: "var(--text)",
-                borderRadius: 6, padding: "4px 8px", border: `1px solid ${kpi === k.id ? "var(--aito-teal)" : "var(--border)"}`,
-                background: kpi === k.id ? "rgba(0, 168, 150, 0.12)" : "transparent" }}>
-                <span>{k.label}</span><strong>{value === null ? "–" : k.format(value)}</strong>
+                textAlign: "left", cursor: "pointer", font: "inherit", color: "var(--text)", borderRadius: 6, padding: "6px 8px", minWidth: 0,
+                border: `1px solid ${kpi === k.id ? "var(--aito-teal)" : "var(--border)"}`, background: kpi === k.id ? "rgba(0, 168, 150, 0.12)" : "transparent" }}>
+                <div className="card-sub" style={{ fontSize: 11, lineHeight: 1.2 }}>{k.label}</div>
+                <div style={{ fontSize: 18, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{value === null ? "–" : k.format(value)}</div>
               </button>
             );
           })}

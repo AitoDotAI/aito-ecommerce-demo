@@ -5,9 +5,7 @@ import type { KpiId, SegmentView } from "@/lib/customer-profiles";
 
 const WIDTH = 520;
 const HEIGHT = 140;
-const DECLINE_BELOW = -0.05;      // a fall of more than 5 % ...
-const WORSE_THAN_ALL_BY = 0.03;   // ... and 3 points worse than everyone is called a decline
-const NPS_DECLINE_POINTS = -5;    // an NPS that fell more than 5 points, and more than everyone's
+const WORSE_THAN_ALL_BY = 0.03;   // ratio KPIs: and this much (3 points of change) worse than everyone's change
 
 /** The top right: the chosen figure over the shop's months for the segment, and whether it is in decline against everyone. */
 export default function SegmentTrend({ view, kpi }: { view: SegmentView; kpi: KpiId }) {
@@ -31,9 +29,9 @@ export default function SegmentTrend({ view, kpi }: { view: SegmentView; kpi: Kp
   const path = (xs: (number | null)[]) => xs.map((v, i) => (v === null ? "" : `${i === 0 || xs[i - 1] === null ? "M" : "L"}${x(i).toFixed(1)},${y(v).toFixed(1)}`)).join(" ");
   const change = mine.recent_vs_before[kpi];
   const everyoneChange = everyone.recent_vs_before[kpi];
-  const declining = change !== null && (kpi === "nps"
-    ? change < NPS_DECLINE_POINTS && (everyoneChange === null || change < everyoneChange)
-    : change < DECLINE_BELOW && (everyoneChange === null || change < everyoneChange - WORSE_THAN_ALL_BY));
+  const sign = spec.higherIsBetter ? 1 : -1;
+  const slack = kpi === "nps" || kpi === "churn_rate" ? 0 : WORSE_THAN_ALL_BY;
+  const declining = change !== null && sign * change < -spec.declineAt && (everyoneChange === null || sign * change < sign * everyoneChange - slack);
   return (
     <div className="card" style={{ borderTop: "3px solid var(--cta)" }}>
       <div className="card-title" style={{ margin: 0 }}>{spec.label} over time</div>
@@ -47,7 +45,7 @@ export default function SegmentTrend({ view, kpi }: { view: SegmentView; kpi: Kp
       </svg>
       <div className="card-sub" style={{ lineHeight: 1.5 }}>
         {spec.trendNote.charAt(0).toUpperCase() + spec.trendNote.slice(1)}. Solid: this segment. Dashed: everyone, scaled to the segment&apos;s average, to compare the shape.{" "}
-        {kpi === "nps" ? "Now against three months earlier" : "Last three months against the three before"}:{" "}
+        {kpi === "nps" || kpi === "churn_rate" ? "Now against three months earlier" : "Last three months against the three before"}:{" "}
         <strong style={{ color: declining ? "var(--cta)" : undefined }}>{change === null ? "–" : spec.change(change)}</strong>
         {view.conditions.length > 0 && <> (everyone {everyoneChange === null ? "–" : spec.change(everyoneChange)})</>}
         {declining ? ": falling faster than the shop as a whole." : "."}

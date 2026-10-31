@@ -4,20 +4,24 @@ import type { KpiId, SegmentView, TreeFigures } from "@/lib/customer-profiles";
 /** The figures the tree compares segments by, and the trend graph follows: what each is called, how it is written, and how it changes. */
 export interface KpiSpec {
   id: KpiId; label: string; trendNote: string; format: (n: number) => string;
-  /** How the change over the last three months is written: a percentage of the figure, or points for a score. */
+  /** How the change over the last three months is written: a percentage of the figure, or points for a score or a rate. */
   change: (n: number) => string;
+  /** A change this far in the bad direction (a fall, or a rise for churn) is called a decline, if it is also worse than everyone's. */
+  declineAt: number; higherIsBetter: boolean;
 }
 
 const percent = (n: number) => `${n > 0 ? "+" : n < 0 ? "−" : ""}${Math.abs(Math.round(n * 100))} %`;
 
 export const KPIS: KpiSpec[] = [
-  { id: "customers", label: "Customers", trendNote: "customers who ordered in the month", format: (n) => n.toLocaleString("en-GB"), change: percent },
-  { id: "orders", label: "Purchases", trendNote: "orders placed in the month", format: (n) => n.toLocaleString("en-GB"), change: percent },
-  { id: "revenue_eur", label: "Revenue", trendNote: "price paid on the lines kept, per month", format: (n) => fmtEur(n), change: percent },
+  { id: "customers", label: "Customers", trendNote: "customers who ordered in the month", format: (n) => n.toLocaleString("en-GB"), change: percent, declineAt: 0.05, higherIsBetter: true },
+  { id: "orders", label: "Purchases", trendNote: "orders placed in the month", format: (n) => n.toLocaleString("en-GB"), change: percent, declineAt: 0.05, higherIsBetter: true },
+  { id: "revenue_eur", label: "Revenue", trendNote: "price paid on the lines kept, per month", format: (n) => fmtEur(n), change: percent, declineAt: 0.05, higherIsBetter: true },
   { id: "profit_per_customer_eur", label: "Profit per customer", trendNote: "gross profit per customer who ordered in the month (before action costs)",
-    format: (n) => fmtEur(n), change: percent },
+    format: (n) => fmtEur(n), change: percent, declineAt: 0.05, higherIsBetter: true },
   { id: "nps", label: "NPS", trendNote: "NPS of the answers in the six months up to the month; blank where there are fewer than 30",
-    format: (n) => `${n > 0 ? "+" : ""}${n}`, change: (n) => `${n > 0 ? "+" : n < 0 ? "−" : ""}${Math.abs(n)} points` },
+    format: (n) => `${n > 0 ? "+" : ""}${n}`, change: (n) => `${n > 0 ? "+" : n < 0 ? "−" : ""}${Math.abs(n)} points`, declineAt: 5, higherIsBetter: true },
+  { id: "churn_rate", label: "Churn", trendNote: "share of the customers who had ordered by then that had not in the three months up to the month",
+    format: (n) => `${Math.round(n * 100)} %`, change: (n) => `${n > 0 ? "+" : n < 0 ? "−" : ""}${Math.abs(Math.round(n * 100))} points`, declineAt: 0.05, higherIsBetter: false },
 ];
 
 export const kpiSpec = (id: KpiId): KpiSpec => KPIS.find((k) => k.id === id)!;
@@ -32,5 +36,6 @@ export function figuresOf(view: SegmentView): TreeFigures | null {
   if (view.too_small || !view.trend || !view.segment || !view.feedback) return null;
   const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0);
   return { customers: view.customers, orders: sum(view.trend.selected.orders), revenue_eur: Math.round(sum(view.trend.selected.revenue_eur) * 100) / 100,
-           profit_per_customer_eur: view.segment.profit_per_customer_eur ?? null, nps: view.feedback.selected.nps };
+           profit_per_customer_eur: view.segment.profit_per_customer_eur ?? null, nps: view.feedback.selected.nps,
+           churn_rate: view.segment.churn_rate ?? null };
 }

@@ -33,10 +33,10 @@ A new view, **Customers**, with the rules below.
 5. **A topic tree selects the segment, by any number of conditions at once.** Ticking "premium-leaning", "dog" and "high-margin" describes
    the customers who meet all three (the shopping traits and margin take one value each; pets and diets can be ticked more than once).
    Nothing ticked is every profiled customer. Above the tree, a figure to compare by (customers, purchases, revenue, profit per customer,
-   NPS): each condition shows what that figure would be for the segment if it were ticked, as a number and a bar, so a dead end or a
+   NPS, churn), shown as six tiles: each condition shows what that figure would be for the segment if it were ticked, as a number and a bar, so a dead end or a
    standout shows before it is picked. A selection is counted when asked for, from `data/customer_profiles/facts.json` (per-customer
    facts for the profiled customers, no names), by `GET /api/customer-profiles/segment?c=trait:value&c=...`; a selection under 30 customers
-   is given its size and nothing else. Margin is a customer's basket margin (gross profit over the price paid for what they kept), high
+   is given its size and nothing else. Churn is the shop's own rule (no order in the last three months of the data), a status a customer is in (churned or active) and a rate a segment has; its trend applies the same rule to every month. Margin is a customer's basket margin (gross profit over the price paid for what they kept), high
    or low against the median customer's. On top: the segment's name and size, and a "?" that opens where the segment sits in the preference ranking of the variable it is a slice of (offer, price or rating).
    Then the chosen figure's trend over the months, full width, against everyone's shape, and whether the last three months are in decline.
    Below, tabs as in Product: highlights (what to do, only differences larger than their margins, and who the customers are in words), key figures and the showing funnel (impressions, clicks, carts, purchases over the identified sessions of
