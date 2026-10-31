@@ -58,7 +58,7 @@ function PatternsView() {
       <div className="page-header">
         <div className="page-title">Patterns</div>
         <div className="page-desc">
-          The patterns behind the shop, each a <code>_relate</code> lift with the counts behind it. A lift is shown
+          The patterns behind the shop, each a <code>_relate</code>{" "}lift with the counts behind it. A lift is shown
           when its interval clears 1 at 95 % for its whole section, with the interval widened because one
           customer&apos;s rows are not independent.
         </div>

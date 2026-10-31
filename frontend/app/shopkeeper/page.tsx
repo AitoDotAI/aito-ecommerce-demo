@@ -69,7 +69,7 @@ function ShopkeeperView() {
       {error && <ErrorState title="Couldn't load Shopkeeper" message={error} command="./do dev" />}
       {!overview && !error && <div className="card" style={{ height: 160, background: "var(--border-light)" }} />}
       {overview && settings && (
-        <div style={{ display: "grid", gridTemplateColumns: "minmax(240px, 1fr) minmax(0, 2fr)", gap: 16, alignItems: "start" }}>
+        <div className="two-pane">
           <LeftLists board={overview.board} routines={overview.routines} conversations={overview.conversations}
             selected={selected} onSelect={setSelected} />
           <div>

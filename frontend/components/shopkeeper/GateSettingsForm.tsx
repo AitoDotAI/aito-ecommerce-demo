@@ -86,10 +86,10 @@ function Zone({ width, label, bg, colour }: { width: string; label: string; bg: 
 
 function Slider({ label, points, onChange }: { label: string; points: number; onChange: (points: number) => void }) {
   return (
-    <label style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 8, fontSize: 13 }}>
+    <label style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 8, fontSize: 13, flexWrap: "wrap" }}>
       <span style={{ width: 92 }}>{label}</span>
       <input type="range" min={0} max={SCALE_MAX} value={points} onChange={(e) => onChange(Number(e.target.value))}
-        style={{ flex: 1, accentColor: "var(--aito-teal)" }} />
+        style={{ flex: "1 1 140px", minWidth: 0, accentColor: "var(--aito-teal)" }} />
       <strong style={{ width: 68, textAlign: "right" }}>{points} points</strong>
     </label>
   );

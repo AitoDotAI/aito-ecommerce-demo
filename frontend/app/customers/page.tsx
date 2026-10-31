@@ -44,7 +44,7 @@ function CustomersView() {
   return (
     <div className="fade-in">
       <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
-        <div>
+        <div style={{ minWidth: 0 }}>
           <div className="page-title">Customers</div>
           <div className="page-desc">
             Customer segments by how they shop, ranked by what a customer earns the shop.
@@ -67,14 +67,14 @@ function CustomersView() {
         </div>
       )}
       {summary && (
-        <div style={{ display: "grid", gap: 12 }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: 12, alignItems: "start" }}>
+        <div className="fit-grid" style={{ display: "grid", gap: 12 }}>
+          <div className="fit-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: 12, alignItems: "start" }}>
             <SegmentProfile summary={summary} selected={key} />
             <SegmentKpis summary={summary} selected={key} />
           </div>
           <PreferenceGraph summary={summary} selected={key} />
           <SegmentAcquisition summary={summary} selected={key} />
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 420px), 1fr))", gap: 12, alignItems: "start" }}>
+          <div className="fit-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 420px), 1fr))", gap: 12, alignItems: "start" }}>
             <div style={{ display: "grid", gap: 12 }}>
               <SegmentRelations summary={summary} selected={key} />
               <SegmentBuys summary={summary} selected={key} />

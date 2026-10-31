@@ -7,10 +7,10 @@ export default function SegmentPicker({ summary, selected, onSelect }: {
   summary: ProfilesSummary; selected: string; onSelect: (key: string) => void;
 }) {
   return (
-    <label style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14 }}>
+    <label style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: 14, maxWidth: "100%" }}>
       <span className="card-sub">Segment</span>
       <select value={selected} onChange={(e) => onSelect(e.target.value)}
-        style={{ font: "inherit", fontWeight: 600, padding: "5px 10px", borderRadius: 6, border: "1px solid var(--border)", minWidth: 280 }}>
+        style={{ font: "inherit", fontWeight: 600, padding: "5px 10px", borderRadius: 6, border: "1px solid var(--border)", minWidth: 0, width: "min(100%, 360px)" }}>
         <option value="all">Everyone profiled · {summary.profiled.toLocaleString("fi-FI")} customers</option>
         {TRAITS.map((trait) => (
           <optgroup key={trait} label={TRAIT_TITLE[trait]}>

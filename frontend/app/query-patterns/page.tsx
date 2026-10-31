@@ -92,7 +92,7 @@ function QueryPatternsView() {
         <div className="card-sub" style={{ lineHeight: 1.6 }}>
           <strong>Not the Shop&apos;s query.</strong> The{" "}
           <Link href="/shop/">Shop</Link>&apos;s &ldquo;Picked for you&rdquo; sends a fuller{" "}
-          <code>_recommend</code> on the same table and goal: the household&apos;s declared pets, the month
+          <code>_recommend</code>{" "}on the same table and goal: the household&apos;s declared pets, the month
           and the cart as context, the household&apos;s diet rule as a filter, and no customer id. In a
           held-out comparison (ADR 0033), adding the id to that form found no more of what shoppers bought
           and made its probabilities less well calibrated, so the Shop leaves it out.

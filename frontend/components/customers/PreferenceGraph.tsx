@@ -28,7 +28,7 @@ export default function PreferenceGraph({ summary, selected }: { summary: Profil
     <div className="card">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: 8 }}>
         <div className="card-title" style={{ margin: 0 }}>Preference ranking</div>
-        <select value={variable} onChange={(e) => setVariable(e.target.value)} style={{ font: "inherit", padding: "3px 8px", maxWidth: 360 }}>
+        <select value={variable} onChange={(e) => setVariable(e.target.value)} style={{ font: "inherit", padding: "3px 8px", maxWidth: "min(100%, 360px)" }}>
           {GROUP_TITLES.map((title) => (
             <optgroup key={title} label={title}>
               {variables.filter((v) => group(v) === title).map((v) => <option key={v} value={v}>{summary.preference_ranking[v].label}</option>)}

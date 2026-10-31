@@ -32,6 +32,7 @@ export default function SegmentList({ summary, selected, onSelect }: {
           ))}
         </span>
       </div>
+      <div className="scroll-x">
       <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse", marginTop: 8 }}>
         <thead>
           <tr className="card-sub" style={{ textAlign: "right" }}>
@@ -46,6 +47,7 @@ export default function SegmentList({ summary, selected, onSelect }: {
             : <Group rows={sorted} showTrait {...shared} />}
         </tbody>
       </table>
+      </div>
       <div className="card-sub" style={{ marginTop: 8, lineHeight: 1.5 }}>
         Profit: price paid less unit cost on the lines kept (returned lines earn nothing), less the shop&apos;s action costs; no delivery
         or payment cost is in the data. Unit cost is the inventory&apos;s current cost per product (about two-thirds of the base price)
