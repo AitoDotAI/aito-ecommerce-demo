@@ -73,7 +73,8 @@ function ShopkeeperView() {
           <LeftLists board={overview.board} routines={overview.routines} conversations={overview.conversations}
             selected={selected} onSelect={setSelected} />
           <div>
-            <GateSettingsForm view={overview.settings} value={settings} onChange={changeSettings} />
+            <GateSettingsForm view={overview.settings} value={settings} onChange={changeSettings}
+              lifts={run ? run.steps.map((s) => s.best.purchase_lift_p) : []} />
             {run && <RunPane run={run} decisions={decisions} onDecide={decide} />}
           </div>
         </div>
