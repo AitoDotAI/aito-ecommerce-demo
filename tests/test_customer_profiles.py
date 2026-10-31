@@ -93,8 +93,9 @@ def test_exactly_the_customers_who_consented_are_profiled():
 
 
 def test_segments_count_customers_and_say_when_a_segment_is_thin():
-    customers = {"C1": {"churned": True, "total_spent_eur": 100.0, "revenue_eur": 100.0, "revenue_12m_eur": 40.0},
-                 "C2": {"churned": False, "total_spent_eur": 300.0, "revenue_eur": 300.0, "revenue_12m_eur": 60.0}}
+    money = {"gross_profit_12m_eur": 0.0, "net_revenue_eur": 100.0, "gross_profit_eur": 30.0, "profit_eur": 30.0}
+    customers = {"C1": {"churned": True, "total_spent_eur": 100.0, "revenue_eur": 100.0, "revenue_12m_eur": 40.0, **money},
+                 "C2": {"churned": False, "total_spent_eur": 300.0, "revenue_eur": 300.0, "revenue_12m_eur": 60.0, **money}}
     profiles = [{"customer_id": cid, "profiled": True, "offer": "mostly", "price": "mixed", "rating": "average ratings",
                  "pets": ["dog"], "diets": []} for cid in customers]
 
@@ -104,36 +105,42 @@ def test_segments_count_customers_and_say_when_a_segment_is_thin():
     assert (result["revenue_eur"], result["revenue_12m_eur"], result["revenue_share"]) == (400.0, 100.0, 1.0)
 
 
-def rows(action: str, ordered: int, total: int, value: str = "yes") -> list[dict]:
+BY_OFFER = lambda row: [row["offer_buyer"]]
+
+
+def rows(action: str, ordered: int, total: int, value: str = "yes", cost: float = 0.0) -> list[dict]:
     return [{"offer_buyer": value, "recency_bucket": "0-90d", "email_history": "never_sent", "tracking_consent": "yes",
-             "spend_band": "mid", "open_issue": "none", "action": action, "purchased_30d": i < ordered} for i in range(total)]
+             "spend_band": "mid", "open_issue": "none", "action": action, "purchased_30d": i < ordered,
+             "spend_30d_eur": 50.0 if i < ordered else 0.0, "cost_eur": cost} for i in range(total)]
 
 
 def test_a_response_lift_is_the_difference_to_no_action_in_points_with_its_margin():
-    cell = response(rows("none", 20, 100) + rows("discount", 40, 100))["offer_buyer"][0]["actions"]["discount"]
+    cell = response(rows("none", 20, 100) + rows("discount", 40, 100), 0.3, BY_OFFER)["yes"]["actions"]["discount"]
 
     assert cell["lift_points"] == 20.0 and cell["clear"] is True and 0 < cell["margin_points"] < 20
 
 
 def test_a_lift_inside_its_margin_is_not_called_clear():
-    cell = response(rows("none", 20, 100) + rows("email", 24, 100))["offer_buyer"][0]["actions"]["email"]
+    cell = response(rows("none", 20, 100) + rows("email", 24, 100), 0.3, BY_OFFER)["yes"]["actions"]["email"]
 
     assert cell["lift_points"] == 4.0 and cell["clear"] is False
 
 
 def test_a_cell_with_few_rows_has_no_lift_at_all():
-    cell = response(rows("none", 20, 100) + rows("ad", 5, THIN_BELOW - 1))["offer_buyer"][0]["actions"]["ad"]
+    cell = response(rows("none", 20, 100) + rows("ad", 5, THIN_BELOW - 1), 0.3, BY_OFFER)["yes"]["actions"]["ad"]
 
     assert cell["thin"] is True and cell["lift_points"] is None and cell["clear"] is None
 
 
-def test_the_planted_discount_effect_shows_where_it_was_planted():
-    """A2: a discount helps shoppers who mostly buy on offer, and does not help those who rarely do."""
-    stored = json.loads((PROFILES / "summary.json").read_text())["response"]["offer_buyer"]
-    by_value = {e["value"]: e["actions"]["discount"] for e in stored}
+def test_the_planted_discount_effect_shows_in_the_orders_of_those_who_buy_on_offer_and_not_in_what_it_earns():
+    """A2: a discount lifts the orders of customers who mostly buy on offer. The action costs more than the extra orders earn."""
+    stored = json.loads((PROFILES / "summary.json").read_text())["response"]
 
-    assert by_value["mostly"]["clear"] is True and by_value["mostly"]["lift_points"] > 5
-    assert by_value["rarely"]["clear"] is False
+    mostly = stored["offer:mostly"]["actions"]["discount"]
+    rarely = stored["offer:rarely"]["actions"]["discount"]
+
+    assert mostly["lift_points"] > 5 and rarely["lift_points"] < mostly["lift_points"]
+    assert not (mostly["profit_clear"] and mostly["profit_lift_eur"] > 0), "a discount does not clearly pay for itself here"
 
 
 @pytest.fixture
@@ -227,6 +234,27 @@ def test_a_preference_compares_a_segment_with_customers_who_buy_for_the_same_pet
     assert all(entry["pet"] in ("dog", "cat") for entry in preferences(profiles, bought).values())
 
 
+def test_the_stored_profiles_give_profit_per_segment_that_adds_up_to_the_profiled_profit():
+    summary = json.loads((PROFILES / "summary.json").read_text())
+
+    for trait in ("offer", "price", "rating"):
+        assert abs(sum(s["profit_eur"] for s in summary["by_trait"][trait]) - summary["profiled_profit_eur"]) < 1.0, trait
+
+
+def test_the_stored_profit_is_the_profit_of_the_fixtures_for_the_profiled_customers():
+    from src.customer_profit import profit_by_customer
+
+    orders = {o["order_id"]: o for o in json.loads((DATA / "orders.json").read_text())}
+    states = {s["product_state_id"]: s for s in json.loads((DATA / "product_states.json").read_text())}
+    cost = {i["sku"]: i["unit_cost_eur"] for i in json.loads((DATA / "inventory.json").read_text())}
+    profits = profit_by_customer(json.loads((DATA / "order_lines.json").read_text()), orders, states, cost,
+                                 json.loads((DATA / "customer_actions.json").read_text()), "2025-05")
+    stored = json.loads((PROFILES / "customers.json").read_text())
+    summary = json.loads((PROFILES / "summary.json").read_text())
+
+    assert round(sum(profits.get(t["customer_id"], {"profit_eur": 0.0})["profit_eur"] for t in stored if t["profiled"]), 2) == summary["profiled_profit_eur"]
+
+
 def test_the_stored_profiles_give_revenue_per_segment_that_adds_up_to_the_profiled_revenue():
     summary = json.loads((PROFILES / "summary.json").read_text())
 
@@ -310,3 +338,69 @@ def test_a_request_that_names_a_sandbox_is_told_the_profiles_are_the_release_dat
     sandboxed = api.get("/api/customer-profiles", params={"db": "tmp-abc"}).json()
 
     assert plain["scope"] == "release" and sandboxed["scope"] == "release-not-sandbox"
+
+
+# ── Profit (ADR 0053): what a customer earned the shop ──
+
+from src.customer_profit import distribution, gross_margin, profit_by_customer
+
+
+def _profit_inputs():
+    orders = {"O1": {"customer_id": "C1", "month": "2026-01"}, "O2": {"customer_id": "C1", "month": "2024-01"}}
+    states = {"S1": {"price_eur": 10.0}, "S2": {"price_eur": 8.0}}
+    cost = {"A": 6.0, "B": 5.0}
+    lines = [{"order_id": "O1", "product_sku": "A", "product_state": "S1", "qty": 2, "returned": False},
+             {"order_id": "O2", "product_sku": "B", "product_state": "S2", "qty": 1, "returned": False},
+             {"order_id": "O1", "product_sku": "A", "product_state": "S1", "qty": 1, "returned": True}]
+    return lines, orders, states, cost
+
+
+def test_profit_is_the_price_paid_less_the_unit_cost_per_line_kept_less_the_action_costs():
+    lines, orders, states, cost = _profit_inputs()
+
+    result = profit_by_customer(lines, orders, states, cost, [{"customer_id": "C1", "cost_eur": 1.5}], "2025-05")["C1"]
+
+    assert result["net_revenue_eur"] == 28.0           # 2 x 10 + 1 x 8; the returned line earns nothing
+    assert result["gross_profit_eur"] == 11.0          # (10 - 6) x 2 + (8 - 5)
+    assert result["gross_profit_12m_eur"] == 8.0       # only the 2026 order is in the last 12 months
+    assert result["profit_eur"] == 9.5 and result["returned_lines"] == 1
+
+
+def test_an_offer_lowers_profit_because_the_price_paid_is_what_counts():
+    lines, orders, _, cost = _profit_inputs()
+
+    full = profit_by_customer(lines, orders, {"S1": {"price_eur": 10.0}, "S2": {"price_eur": 8.0}}, cost, [], "2025-05")["C1"]
+    offer = profit_by_customer(lines, orders, {"S1": {"price_eur": 8.0}, "S2": {"price_eur": 8.0}}, cost, [], "2025-05")["C1"]
+
+    assert full["profit_eur"] - offer["profit_eur"] == 4.0
+
+
+def test_the_gross_margin_is_profit_over_the_price_paid_for_the_lines_kept():
+    lines, orders, states, cost = _profit_inputs()
+
+    assert round(gross_margin(profit_by_customer(lines, orders, states, cost, [], "2025-05")), 4) == round(11.0 / 28.0, 4)
+
+
+def test_the_distribution_names_the_median_the_top_tenths_share_and_who_loses_money():
+    by_customer = {f"C{i}": {"profit_eur": float(v)} for i, v in enumerate([-5, 10, 10, 10, 10, 10, 10, 10, 10, 100])}
+
+    found = distribution(by_customer, list(by_customer))
+
+    assert found["median_eur"] == 10.0 and found["losing_money"] == 1 and found["top_tenth_share"] == round(100 / 175, 3)
+
+
+def test_an_action_that_costs_more_than_it_brings_has_a_negative_clear_profit_lift():
+    costly = rows("discount", 40, 200, cost=4.0)       # 20 % order at 50 spend, margin 0.3: 3.0 earned per row less 4.0 cost
+    cheap = rows("none", 40, 200)
+
+    cell = response(costly + cheap, 0.3, BY_OFFER)["yes"]["actions"]["discount"]
+
+    assert cell["profit_lift_eur"] == -4.0 and cell["profit_clear"] is True
+
+
+def test_a_profit_lift_inside_its_margin_is_not_clear_and_a_thin_cell_has_none():
+    lifted = response(rows("email", 41, 200) + rows("none", 40, 200), 0.3, BY_OFFER)["yes"]["actions"]["email"]
+    thin = response(rows("ad", 5, THIN_BELOW - 1) + rows("none", 40, 200), 0.3, BY_OFFER)["yes"]["actions"]["ad"]
+
+    assert lifted["profit_clear"] is False
+    assert thin["profit_lift_eur"] is None and thin["profit_clear"] is None

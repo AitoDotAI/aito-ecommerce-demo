@@ -28,7 +28,14 @@ A new view, **Customers**, with the rules below.
 4. **Who responds to what.** For each segment (offer buyers, last order, earlier emails, tracking consent, order size, open
    issue) and each action, the change in the share who ordered within 30 days against no action in the same segment, with
    its 95 % margin. A lift inside its margin is shown grey, a cell under 30 rows is blank: no result is claimed from noise.
-5. **Revenue per profile.** Each segment shows the sum of its customers' orders (lifetime and the last 12 months) and its share of all
+5. **Profit first, in one list.** The view is one list of every segment (the variables and their variations) with its key figures,
+   profit per customer first, and a detail pane for the selected one: how it compares, how it relates to the other variables, what it buys
+   and what the shop's actions did for it. Profit is the price paid less the unit cost on the lines kept (a returned line earns nothing),
+   less the shop's action costs; there is no delivery or payment cost in the data, so it is profit after products and actions, not a full P&L.
+   The headline shows total profit, profit per customer and median, the share the top tenth earns and how many lose money. Revenue (orders at
+   list price) stays as a figure beside it. The response table is per segment, in orders and in estimated profit (the 30-day spend at the shop's
+   gross margin less the action's cost): a discount that lifts orders can still lose money.
+5b. **Revenue per profile.** Each segment shows the sum of its customers' orders (lifetime and the last 12 months) and its share of all
    profiled customers' revenue. Pets and diets overlap, so their shares add up to more than 100 %.
 6. **Relations.** Among customers with one trait, how many more points have another trait than those without it, for the three
    ways of shopping and the pets. Diet tags are left out of relations and preferences: a diet belongs to a kind of pet, so it would
@@ -59,6 +66,9 @@ with `$why`) and adds `_relate` for what separates a segment.
 - [x] A cell with fewer than 30 rows has no lift, and a lift inside its margin is not called a result.
 - [x] The planted discount effect (A2) shows: a discount lifts customers who buy mostly on offer, and not those who rarely do.
 - [x] Stored profiles that no longer match the fixtures or the release fail a test.
+- [x] A user can see every segment in one list with customers, profit per customer, profit and churn, and select one to inspect.
+- [x] A user can see profit per customer per segment, against the average, and how many customers lose money.
+- [x] A user can see, for a segment, what each action did to orders and to estimated profit, with its margin.
 - [x] A user can see revenue per segment, with its share and the last 12 months.
 - [x] A user can see how a trait relates to the others, each with its margin; a group under 30 customers has no relation.
 - [x] A user can see what a way of shopping buys over-proportionally within a pet group, with the margin.

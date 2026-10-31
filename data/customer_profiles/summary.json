@@ -5,9 +5,11 @@
  "profiled": 1790,
  "not_profiled": 1210,
  "profiled_revenue_eur": 505890.74,
+ "profiled_profit_eur": 139913.04,
  "by_trait": {
   "offer": [
    {
+    "key": "offer:mostly",
     "value": "mostly",
     "customers": 377,
     "share": 0.211,
@@ -16,9 +18,15 @@
     "revenue_eur": 90334.02,
     "revenue_12m_eur": 74725.05,
     "revenue_share": 0.179,
+    "profit_eur": 22400.67,
+    "profit_12m_eur": 18882.55,
+    "profit_per_customer_eur": 59.42,
+    "margin": 0.287,
+    "profit_share": 0.16,
     "thin": false
    },
    {
+    "key": "offer:rarely",
     "value": "rarely",
     "customers": 471,
     "share": 0.263,
@@ -27,9 +35,15 @@
     "revenue_eur": 120665.56,
     "revenue_12m_eur": 98611.4,
     "revenue_share": 0.239,
+    "profit_eur": 36933.51,
+    "profit_12m_eur": 30703.02,
+    "profit_per_customer_eur": 78.42,
+    "margin": 0.327,
+    "profit_share": 0.264,
     "thin": false
    },
    {
+    "key": "offer:sometimes",
     "value": "sometimes",
     "customers": 868,
     "share": 0.485,
@@ -38,18 +52,27 @@
     "revenue_eur": 291316.63,
     "revenue_12m_eur": 227048.0,
     "revenue_share": 0.576,
+    "profit_eur": 79423.0,
+    "profit_12m_eur": 62374.93,
+    "profit_per_customer_eur": 91.5,
+    "margin": 0.301,
+    "profit_share": 0.568,
     "thin": false
    },
    {
+    "key": "offer:too few purchases",
     "value": "too few purchases",
     "customers": 74,
     "share": 0.041,
     "revenue_eur": 3574.53,
-    "revenue_share": 0.007
+    "revenue_share": 0.007,
+    "profit_eur": 1155.86,
+    "profit_share": 0.008
    }
   ],
   "price": [
    {
+    "key": "price:mixed",
     "value": "mixed",
     "customers": 903,
     "share": 0.504,
@@ -58,9 +81,15 @@
     "revenue_eur": 289953.79,
     "revenue_12m_eur": 229008.68,
     "revenue_share": 0.573,
+    "profit_eur": 80027.18,
+    "profit_12m_eur": 63795.24,
+    "profit_per_customer_eur": 88.62,
+    "margin": 0.305,
+    "profit_share": 0.572,
     "thin": false
    },
    {
+    "key": "price:premium-leaning",
     "value": "premium-leaning",
     "customers": 446,
     "share": 0.249,
@@ -69,9 +98,15 @@
     "revenue_eur": 144000.4,
     "revenue_12m_eur": 116672.08,
     "revenue_share": 0.285,
+    "profit_eur": 39361.22,
+    "profit_12m_eur": 32234.98,
+    "profit_per_customer_eur": 88.25,
+    "margin": 0.3,
+    "profit_share": 0.281,
     "thin": false
    },
    {
+    "key": "price:value-leaning",
     "value": "value-leaning",
     "customers": 367,
     "share": 0.205,
@@ -80,18 +115,27 @@
     "revenue_eur": 68362.02,
     "revenue_12m_eur": 54703.69,
     "revenue_share": 0.135,
+    "profit_eur": 19368.78,
+    "profit_12m_eur": 15930.28,
+    "profit_per_customer_eur": 52.78,
+    "margin": 0.317,
+    "profit_share": 0.138,
     "thin": false
    },
    {
+    "key": "price:too few purchases",
     "value": "too few purchases",
     "customers": 74,
     "share": 0.041,
     "revenue_eur": 3574.53,
-    "revenue_share": 0.007
+    "revenue_share": 0.007,
+    "profit_eur": 1155.86,
+    "profit_share": 0.008
    }
   ],
   "rating": [
    {
+    "key": "rating:above-average ratings",
     "value": "above-average ratings",
     "customers": 387,
     "share": 0.216,
@@ -100,9 +144,15 @@
     "revenue_eur": 106194.31,
     "revenue_12m_eur": 84347.37,
     "revenue_share": 0.21,
+    "profit_eur": 29864.11,
+    "profit_12m_eur": 24179.22,
+    "profit_per_customer_eur": 77.17,
+    "margin": 0.309,
+    "profit_share": 0.213,
     "thin": false
    },
    {
+    "key": "rating:average ratings",
     "value": "average ratings",
     "customers": 853,
     "share": 0.477,
@@ -111,9 +161,15 @@
     "revenue_eur": 258793.47,
     "revenue_12m_eur": 209951.82,
     "revenue_share": 0.512,
+    "profit_eur": 70657.0,
+    "profit_12m_eur": 58053.47,
+    "profit_per_customer_eur": 82.83,
+    "margin": 0.303,
+    "profit_share": 0.505,
     "thin": false
    },
    {
+    "key": "rating:below-average ratings",
     "value": "below-average ratings",
     "customers": 476,
     "share": 0.266,
@@ -122,18 +178,27 @@
     "revenue_eur": 137328.43,
     "revenue_12m_eur": 106085.26,
     "revenue_share": 0.271,
+    "profit_eur": 38236.07,
+    "profit_12m_eur": 29727.81,
+    "profit_per_customer_eur": 80.33,
+    "margin": 0.306,
+    "profit_share": 0.273,
     "thin": false
    },
    {
+    "key": "rating:too few purchases",
     "value": "too few purchases",
     "customers": 74,
     "share": 0.041,
     "revenue_eur": 3574.53,
-    "revenue_share": 0.007
+    "revenue_share": 0.007,
+    "profit_eur": 1155.86,
+    "profit_share": 0.008
    }
   ],
   "pets": [
    {
+    "key": "pets:aquarium",
     "value": "aquarium",
     "customers": 105,
     "share": 0.059,
@@ -142,9 +207,15 @@
     "revenue_eur": 24998.87,
     "revenue_12m_eur": 19301.35,
     "revenue_share": 0.049,
+    "profit_eur": 9310.95,
+    "profit_12m_eur": 7465.85,
+    "profit_per_customer_eur": 88.68,
+    "margin": 0.415,
+    "profit_share": 0.067,
     "thin": false
    },
    {
+    "key": "pets:bird",
     "value": "bird",
     "customers": 4,
     "share": 0.002,
@@ -153,9 +224,15 @@
     "revenue_eur": 1447.06,
     "revenue_12m_eur": 1112.51,
     "revenue_share": 0.003,
+    "profit_eur": 381.32,
+    "profit_12m_eur": 282.93,
+    "profit_per_customer_eur": 95.33,
+    "margin": 0.285,
+    "profit_share": 0.003,
     "thin": true
    },
    {
+    "key": "pets:cat",
     "value": "cat",
     "customers": 805,
     "share": 0.45,
@@ -164,9 +241,15 @@
     "revenue_eur": 262388.17,
     "revenue_12m_eur": 209508.78,
     "revenue_share": 0.519,
+    "profit_eur": 69334.85,
+    "profit_12m_eur": 56206.32,
+    "profit_per_customer_eur": 86.13,
+    "margin": 0.291,
+    "profit_share": 0.496,
     "thin": false
    },
    {
+    "key": "pets:dog",
     "value": "dog",
     "customers": 1027,
     "share": 0.574,
@@ -175,9 +258,15 @@
     "revenue_eur": 284987.97,
     "revenue_12m_eur": 227946.08,
     "revenue_share": 0.563,
+    "profit_eur": 80325.52,
+    "profit_12m_eur": 64760.48,
+    "profit_per_customer_eur": 78.21,
+    "margin": 0.312,
+    "profit_share": 0.574,
     "thin": false
    },
    {
+    "key": "pets:small_animal",
     "value": "small_animal",
     "customers": 145,
     "share": 0.081,
@@ -186,11 +275,17 @@
     "revenue_eur": 45762.29,
     "revenue_12m_eur": 36217.92,
     "revenue_share": 0.09,
+    "profit_eur": 12194.78,
+    "profit_12m_eur": 9754.74,
+    "profit_per_customer_eur": 84.1,
+    "margin": 0.292,
+    "profit_share": 0.087,
     "thin": false
    }
   ],
   "diets": [
    {
+    "key": "diets:grain-free",
     "value": "grain-free",
     "customers": 793,
     "share": 0.443,
@@ -199,9 +294,15 @@
     "revenue_eur": 296393.41,
     "revenue_12m_eur": 228701.07,
     "revenue_share": 0.586,
+    "profit_eur": 79783.01,
+    "profit_12m_eur": 61986.12,
+    "profit_per_customer_eur": 100.61,
+    "margin": 0.296,
+    "profit_share": 0.57,
     "thin": false
    },
    {
+    "key": "diets:senior",
     "value": "senior",
     "customers": 509,
     "share": 0.284,
@@ -210,9 +311,15 @@
     "revenue_eur": 199078.1,
     "revenue_12m_eur": 157256.63,
     "revenue_share": 0.394,
+    "profit_eur": 52943.69,
+    "profit_12m_eur": 41984.62,
+    "profit_per_customer_eur": 104.02,
+    "margin": 0.292,
+    "profit_share": 0.378,
     "thin": false
    },
    {
+    "key": "diets:sensitive",
     "value": "sensitive",
     "customers": 460,
     "share": 0.257,
@@ -221,9 +328,15 @@
     "revenue_eur": 188472.6,
     "revenue_12m_eur": 146895.39,
     "revenue_share": 0.373,
+    "profit_eur": 49584.09,
+    "profit_12m_eur": 38791.24,
+    "profit_per_customer_eur": 107.79,
+    "margin": 0.29,
+    "profit_share": 0.354,
     "thin": false
    },
    {
+    "key": "diets:indoor",
     "value": "indoor",
     "customers": 258,
     "share": 0.144,
@@ -232,9 +345,15 @@
     "revenue_eur": 102838.9,
     "revenue_12m_eur": 79293.34,
     "revenue_share": 0.203,
+    "profit_eur": 26708.53,
+    "profit_12m_eur": 20816.89,
+    "profit_per_customer_eur": 103.52,
+    "margin": 0.285,
+    "profit_share": 0.191,
     "thin": false
    },
    {
+    "key": "diets:weight-control",
     "value": "weight-control",
     "customers": 233,
     "share": 0.13,
@@ -243,9 +362,15 @@
     "revenue_eur": 109884.21,
     "revenue_12m_eur": 79826.18,
     "revenue_share": 0.217,
+    "profit_eur": 29224.99,
+    "profit_12m_eur": 21444.84,
+    "profit_per_customer_eur": 125.43,
+    "margin": 0.291,
+    "profit_share": 0.209,
     "thin": false
    },
    {
+    "key": "diets:puppy",
     "value": "puppy",
     "customers": 233,
     "share": 0.13,
@@ -254,9 +379,15 @@
     "revenue_eur": 93190.96,
     "revenue_12m_eur": 71664.76,
     "revenue_share": 0.184,
+    "profit_eur": 25720.84,
+    "profit_12m_eur": 19544.08,
+    "profit_per_customer_eur": 110.39,
+    "margin": 0.303,
+    "profit_share": 0.184,
     "thin": false
    },
    {
+    "key": "diets:large-breed",
     "value": "large-breed",
     "customers": 214,
     "share": 0.12,
@@ -265,856 +396,1472 @@
     "revenue_eur": 76095.33,
     "revenue_12m_eur": 59705.66,
     "revenue_share": 0.15,
+    "profit_eur": 20966.86,
+    "profit_12m_eur": 16481.28,
+    "profit_per_customer_eur": 97.98,
+    "margin": 0.305,
+    "profit_share": 0.15,
     "thin": false
    }
   ]
  },
+ "gross_margin": 0.303,
+ "profit_distribution": {
+  "customers": 1789,
+  "median_eur": 60.2,
+  "top_tenth_share": 0.288,
+  "losing_money": 3
+ },
  "response": {
-  "offer_buyer": [
-   {
-    "value": "mostly",
-    "none": {
-     "rows": 266,
-     "order_rate": 0.158
-    },
-    "actions": {
-     "email": {
-      "rows": 160,
-      "order_rate": 0.2,
-      "thin": false,
-      "lift_points": 4.2,
-      "margin_points": 7.6,
-      "clear": false
-     },
-     "ad": {
-      "rows": 166,
-      "order_rate": 0.241,
-      "thin": false,
-      "lift_points": 8.3,
-      "margin_points": 7.8,
-      "clear": true
-     },
-     "discount": {
-      "rows": 256,
-      "order_rate": 0.238,
-      "thin": false,
-      "lift_points": 8.0,
-      "margin_points": 6.8,
-      "clear": true
-     },
-     "voucher": {
-      "rows": 196,
-      "order_rate": 0.153,
-      "thin": false,
-      "lift_points": -0.5,
-      "margin_points": 6.7,
-      "clear": false
-     },
-     "apology": {
-      "rows": 187,
-      "order_rate": 0.155,
-      "thin": false,
-      "lift_points": -0.3,
-      "margin_points": 6.8,
-      "clear": false
-     }
-    }
+  "diets:grain-free": {
+   "none": {
+    "rows": 409,
+    "order_rate": 0.166,
+    "profit_eur": 4.12
    },
-   {
-    "value": "rarely",
-    "none": {
-     "rows": 433,
-     "order_rate": 0.132
+   "actions": {
+    "email": {
+     "rows": 236,
+     "order_rate": 0.174,
+     "thin": false,
+     "lift_points": 0.7,
+     "margin_points": 6.0,
+     "clear": false,
+     "profit_eur": 3.79,
+     "profit_lift_eur": -0.33,
+     "profit_margin_eur": 1.77,
+     "profit_clear": false
     },
-    "actions": {
-     "email": {
-      "rows": 222,
-      "order_rate": 0.099,
-      "thin": false,
-      "lift_points": -3.3,
-      "margin_points": 5.1,
-      "clear": false
-     },
-     "ad": {
-      "rows": 216,
-      "order_rate": 0.167,
-      "thin": false,
-      "lift_points": 3.5,
-      "margin_points": 5.9,
-      "clear": false
-     },
-     "discount": {
-      "rows": 232,
-      "order_rate": 0.112,
-      "thin": false,
-      "lift_points": -2.0,
-      "margin_points": 5.2,
-      "clear": false
-     },
-     "voucher": {
-      "rows": 286,
-      "order_rate": 0.171,
-      "thin": false,
-      "lift_points": 4.0,
-      "margin_points": 5.4,
-      "clear": false
-     },
-     "apology": {
-      "rows": 313,
-      "order_rate": 0.153,
-      "thin": false,
-      "lift_points": 2.2,
-      "margin_points": 5.1,
-      "clear": false
-     }
-    }
-   },
-   {
-    "value": "sometimes",
-    "none": {
-     "rows": 694,
-     "order_rate": 0.127
+    "ad": {
+     "rows": 249,
+     "order_rate": 0.273,
+     "thin": false,
+     "lift_points": 10.7,
+     "margin_points": 6.6,
+     "clear": true,
+     "profit_eur": 5.2,
+     "profit_lift_eur": 1.08,
+     "profit_margin_eur": 1.9,
+     "profit_clear": false
     },
-    "actions": {
-     "email": {
-      "rows": 389,
-      "order_rate": 0.206,
-      "thin": false,
-      "lift_points": 7.9,
-      "margin_points": 4.7,
-      "clear": true
-     },
-     "ad": {
-      "rows": 372,
-      "order_rate": 0.218,
-      "thin": false,
-      "lift_points": 9.1,
-      "margin_points": 4.9,
-      "clear": true
-     },
-     "discount": {
-      "rows": 418,
-      "order_rate": 0.146,
-      "thin": false,
-      "lift_points": 1.9,
-      "margin_points": 4.2,
-      "clear": false
-     },
-     "voucher": {
-      "rows": 404,
-      "order_rate": 0.153,
-      "thin": false,
-      "lift_points": 2.7,
-      "margin_points": 4.3,
-      "clear": false
-     },
-     "apology": {
-      "rows": 416,
-      "order_rate": 0.154,
-      "thin": false,
-      "lift_points": 2.7,
-      "margin_points": 4.3,
-      "clear": false
-     }
+    "discount": {
+     "rows": 280,
+     "order_rate": 0.146,
+     "thin": false,
+     "lift_points": -2.0,
+     "margin_points": 5.5,
+     "clear": false,
+     "profit_eur": 3.22,
+     "profit_lift_eur": -0.9,
+     "profit_margin_eur": 1.51,
+     "profit_clear": false
+    },
+    "voucher": {
+     "rows": 231,
+     "order_rate": 0.169,
+     "thin": false,
+     "lift_points": 0.3,
+     "margin_points": 6.0,
+     "clear": false,
+     "profit_eur": 3.26,
+     "profit_lift_eur": -0.87,
+     "profit_margin_eur": 1.65,
+     "profit_clear": false
+    },
+    "apology": {
+     "rows": 280,
+     "order_rate": 0.164,
+     "thin": false,
+     "lift_points": -0.2,
+     "margin_points": 5.6,
+     "clear": false,
+     "profit_eur": 3.42,
+     "profit_lift_eur": -0.7,
+     "profit_margin_eur": 1.62,
+     "profit_clear": false
     }
    }
-  ],
-  "recency_bucket": [
-   {
-    "value": "0-90d",
-    "none": {
-     "rows": 641,
-     "order_rate": 0.176
-    },
-    "actions": {
-     "email": {
-      "rows": 346,
-      "order_rate": 0.234,
-      "thin": false,
-      "lift_points": 5.8,
-      "margin_points": 5.3,
-      "clear": true
-     },
-     "ad": {
-      "rows": 339,
-      "order_rate": 0.286,
-      "thin": false,
-      "lift_points": 11.0,
-      "margin_points": 5.6,
-      "clear": true
-     },
-     "discount": {
-      "rows": 362,
-      "order_rate": 0.232,
-      "thin": false,
-      "lift_points": 5.6,
-      "margin_points": 5.3,
-      "clear": true
-     },
-     "voucher": {
-      "rows": 371,
-      "order_rate": 0.224,
-      "thin": false,
-      "lift_points": 4.7,
-      "margin_points": 5.2,
-      "clear": false
-     },
-     "apology": {
-      "rows": 429,
-      "order_rate": 0.224,
-      "thin": false,
-      "lift_points": 4.7,
-      "margin_points": 4.9,
-      "clear": false
-     }
-    }
+  },
+  "diets:indoor": {
+   "none": {
+    "rows": 136,
+    "order_rate": 0.199,
+    "profit_eur": 4.94
    },
-   {
-    "value": "180d+",
-    "none": {
-     "rows": 317,
-     "order_rate": 0.05
+   "actions": {
+    "email": {
+     "rows": 81,
+     "order_rate": 0.272,
+     "thin": false,
+     "lift_points": 7.3,
+     "margin_points": 11.8,
+     "clear": false,
+     "profit_eur": 7.39,
+     "profit_lift_eur": 2.44,
+     "profit_margin_eur": 3.8,
+     "profit_clear": false
     },
-    "actions": {
-     "email": {
-      "rows": 192,
-      "order_rate": 0.057,
-      "thin": false,
-      "lift_points": 0.7,
-      "margin_points": 4.1,
-      "clear": false
-     },
-     "ad": {
-      "rows": 164,
-      "order_rate": 0.061,
-      "thin": false,
-      "lift_points": 1.1,
-      "margin_points": 4.4,
-      "clear": false
-     },
-     "discount": {
-      "rows": 233,
-      "order_rate": 0.112,
-      "thin": false,
-      "lift_points": 6.1,
-      "margin_points": 4.7,
-      "clear": true
-     },
-     "voucher": {
-      "rows": 217,
-      "order_rate": 0.083,
-      "thin": false,
-      "lift_points": 3.2,
-      "margin_points": 4.4,
-      "clear": false
-     },
-     "apology": {
-      "rows": 213,
-      "order_rate": 0.066,
-      "thin": false,
-      "lift_points": 1.5,
-      "margin_points": 4.1,
-      "clear": false
-     }
-    }
-   },
-   {
-    "value": "90-180d",
-    "none": {
-     "rows": 435,
-     "order_rate": 0.133
+    "ad": {
+     "rows": 91,
+     "order_rate": 0.286,
+     "thin": false,
+     "lift_points": 8.7,
+     "margin_points": 11.4,
+     "clear": false,
+     "profit_eur": 6.78,
+     "profit_lift_eur": 1.83,
+     "profit_margin_eur": 3.72,
+     "profit_clear": false
     },
-    "actions": {
-     "email": {
-      "rows": 233,
-      "order_rate": 0.18,
-      "thin": false,
-      "lift_points": 4.7,
-      "margin_points": 5.9,
-      "clear": false
-     },
-     "ad": {
-      "rows": 251,
-      "order_rate": 0.199,
-      "thin": false,
-      "lift_points": 6.6,
-      "margin_points": 5.9,
-      "clear": true
-     },
-     "discount": {
-      "rows": 311,
-      "order_rate": 0.122,
-      "thin": false,
-      "lift_points": -1.1,
-      "margin_points": 4.8,
-      "clear": false
-     },
-     "voucher": {
-      "rows": 298,
-      "order_rate": 0.134,
-      "thin": false,
-      "lift_points": 0.1,
-      "margin_points": 5.0,
-      "clear": false
-     },
-     "apology": {
-      "rows": 274,
-      "order_rate": 0.113,
-      "thin": false,
-      "lift_points": -2.0,
-      "margin_points": 4.9,
-      "clear": false
-     }
+    "discount": {
+     "rows": 76,
+     "order_rate": 0.145,
+     "thin": false,
+     "lift_points": -5.4,
+     "margin_points": 10.4,
+     "clear": false,
+     "profit_eur": 2.52,
+     "profit_lift_eur": -2.42,
+     "profit_margin_eur": 2.39,
+     "profit_clear": true
+    },
+    "voucher": {
+     "rows": 81,
+     "order_rate": 0.123,
+     "thin": false,
+     "lift_points": -7.5,
+     "margin_points": 9.8,
+     "clear": false,
+     "profit_eur": 1.99,
+     "profit_lift_eur": -2.96,
+     "profit_margin_eur": 2.36,
+     "profit_clear": true
+    },
+    "apology": {
+     "rows": 81,
+     "order_rate": 0.111,
+     "thin": false,
+     "lift_points": -8.7,
+     "margin_points": 9.6,
+     "clear": false,
+     "profit_eur": 2.27,
+     "profit_lift_eur": -2.67,
+     "profit_margin_eur": 2.72,
+     "profit_clear": false
     }
    }
-  ],
-  "email_history": [
-   {
-    "value": "ignored",
-    "none": {
-     "rows": 389,
-     "order_rate": 0.123
-    },
-    "actions": {
-     "email": {
-      "rows": 189,
-      "order_rate": 0.159,
-      "thin": false,
-      "lift_points": 3.5,
-      "margin_points": 6.2,
-      "clear": false
-     },
-     "ad": {
-      "rows": 222,
-      "order_rate": 0.185,
-      "thin": false,
-      "lift_points": 6.1,
-      "margin_points": 6.1,
-      "clear": false
-     },
-     "discount": {
-      "rows": 256,
-      "order_rate": 0.16,
-      "thin": false,
-      "lift_points": 3.7,
-      "margin_points": 5.6,
-      "clear": false
-     },
-     "voucher": {
-      "rows": 222,
-      "order_rate": 0.162,
-      "thin": false,
-      "lift_points": 3.9,
-      "margin_points": 5.8,
-      "clear": false
-     },
-     "apology": {
-      "rows": 260,
-      "order_rate": 0.2,
-      "thin": false,
-      "lift_points": 7.7,
-      "margin_points": 5.9,
-      "clear": true
-     }
-    }
+  },
+  "diets:large-breed": {
+   "none": {
+    "rows": 120,
+    "order_rate": 0.192,
+    "profit_eur": 4.53
    },
-   {
-    "value": "never_sent",
-    "none": {
-     "rows": 865,
-     "order_rate": 0.138
+   "actions": {
+    "email": {
+     "rows": 59,
+     "order_rate": 0.203,
+     "thin": false,
+     "lift_points": 1.2,
+     "margin_points": 12.5,
+     "clear": false,
+     "profit_eur": 4.16,
+     "profit_lift_eur": -0.37,
+     "profit_margin_eur": 3.71,
+     "profit_clear": false
     },
-    "actions": {
-     "email": {
-      "rows": 495,
-      "order_rate": 0.164,
-      "thin": false,
-      "lift_points": 2.6,
-      "margin_points": 4.0,
-      "clear": false
-     },
-     "ad": {
-      "rows": 457,
-      "order_rate": 0.23,
-      "thin": false,
-      "lift_points": 9.2,
-      "margin_points": 4.5,
-      "clear": true
-     },
-     "discount": {
-      "rows": 551,
-      "order_rate": 0.16,
-      "thin": false,
-      "lift_points": 2.2,
-      "margin_points": 3.8,
-      "clear": false
-     },
-     "voucher": {
-      "rows": 562,
-      "order_rate": 0.158,
-      "thin": false,
-      "lift_points": 2.1,
-      "margin_points": 3.8,
-      "clear": false
-     },
-     "apology": {
-      "rows": 552,
-      "order_rate": 0.132,
-      "thin": false,
-      "lift_points": -0.5,
-      "margin_points": 3.6,
-      "clear": false
-     }
-    }
-   },
-   {
-    "value": "responded",
-    "none": {
-     "rows": 139,
-     "order_rate": 0.144
+    "ad": {
+     "rows": 71,
+     "order_rate": 0.268,
+     "thin": false,
+     "lift_points": 7.6,
+     "margin_points": 12.5,
+     "clear": false,
+     "profit_eur": 4.42,
+     "profit_lift_eur": -0.11,
+     "profit_margin_eur": 3.42,
+     "profit_clear": false
     },
-    "actions": {
-     "email": {
-      "rows": 87,
-      "order_rate": 0.264,
-      "thin": false,
-      "lift_points": 12.0,
-      "margin_points": 11.0,
-      "clear": true
-     },
-     "ad": {
-      "rows": 75,
-      "order_rate": 0.147,
-      "thin": false,
-      "lift_points": 0.3,
-      "margin_points": 9.9,
-      "clear": false
-     },
-     "discount": {
-      "rows": 99,
-      "order_rate": 0.192,
-      "thin": false,
-      "lift_points": 4.8,
-      "margin_points": 9.7,
-      "clear": false
-     },
-     "voucher": {
-      "rows": 102,
-      "order_rate": 0.157,
-      "thin": false,
-      "lift_points": 1.3,
-      "margin_points": 9.2,
-      "clear": false
-     },
-     "apology": {
-      "rows": 104,
-      "order_rate": 0.154,
-      "thin": false,
-      "lift_points": 1.0,
-      "margin_points": 9.1,
-      "clear": false
-     }
+    "discount": {
+     "rows": 86,
+     "order_rate": 0.163,
+     "thin": false,
+     "lift_points": -2.9,
+     "margin_points": 10.5,
+     "clear": false,
+     "profit_eur": 3.04,
+     "profit_lift_eur": -1.49,
+     "profit_margin_eur": 2.92,
+     "profit_clear": false
+    },
+    "voucher": {
+     "rows": 61,
+     "order_rate": 0.131,
+     "thin": false,
+     "lift_points": -6.1,
+     "margin_points": 11.0,
+     "clear": false,
+     "profit_eur": 1.72,
+     "profit_lift_eur": -2.81,
+     "profit_margin_eur": 2.81,
+     "profit_clear": true
+    },
+    "apology": {
+     "rows": 67,
+     "order_rate": 0.209,
+     "thin": false,
+     "lift_points": 1.7,
+     "margin_points": 12.0,
+     "clear": false,
+     "profit_eur": 3.41,
+     "profit_lift_eur": -1.12,
+     "profit_margin_eur": 3.11,
+     "profit_clear": false
     }
    }
-  ],
-  "tracking_consent": [
-   {
-    "value": "no",
-    "none": {
-     "rows": 563,
-     "order_rate": 0.121
-    },
-    "actions": {
-     "email": {
-      "rows": 320,
-      "order_rate": 0.172,
-      "thin": false,
-      "lift_points": 5.1,
-      "margin_points": 4.9,
-      "clear": true
-     },
-     "ad": {
-      "rows": 232,
-      "order_rate": 0.121,
-      "thin": false,
-      "lift_points": -0.0,
-      "margin_points": 5.0,
-      "clear": false
-     },
-     "discount": {
-      "rows": 347,
-      "order_rate": 0.176,
-      "thin": false,
-      "lift_points": 5.5,
-      "margin_points": 4.8,
-      "clear": true
-     },
-     "voucher": {
-      "rows": 378,
-      "order_rate": 0.188,
-      "thin": false,
-      "lift_points": 6.7,
-      "margin_points": 4.8,
-      "clear": true
-     },
-     "apology": {
-      "rows": 371,
-      "order_rate": 0.175,
-      "thin": false,
-      "lift_points": 5.4,
-      "margin_points": 4.7,
-      "clear": true
-     }
-    }
+  },
+  "diets:puppy": {
+   "none": {
+    "rows": 142,
+    "order_rate": 0.141,
+    "profit_eur": 2.99
    },
-   {
-    "value": "yes",
-    "none": {
-     "rows": 830,
-     "order_rate": 0.143
+   "actions": {
+    "email": {
+     "rows": 75,
+     "order_rate": 0.173,
+     "thin": false,
+     "lift_points": 3.2,
+     "margin_points": 10.3,
+     "clear": false,
+     "profit_eur": 2.66,
+     "profit_lift_eur": -0.33,
+     "profit_margin_eur": 2.23,
+     "profit_clear": false
     },
-    "actions": {
-     "email": {
-      "rows": 451,
-      "order_rate": 0.175,
-      "thin": false,
-      "lift_points": 3.2,
-      "margin_points": 4.2,
-      "clear": false
-     },
-     "ad": {
-      "rows": 522,
-      "order_rate": 0.247,
-      "thin": false,
-      "lift_points": 10.4,
-      "margin_points": 4.4,
-      "clear": true
-     },
-     "discount": {
-      "rows": 559,
-      "order_rate": 0.156,
-      "thin": false,
-      "lift_points": 1.2,
-      "margin_points": 3.8,
-      "clear": false
-     },
-     "voucher": {
-      "rows": 508,
-      "order_rate": 0.138,
-      "thin": false,
-      "lift_points": -0.6,
-      "margin_points": 3.8,
-      "clear": false
-     },
-     "apology": {
-      "rows": 545,
-      "order_rate": 0.139,
-      "thin": false,
-      "lift_points": -0.4,
-      "margin_points": 3.8,
-      "clear": false
-     }
+    "ad": {
+     "rows": 71,
+     "order_rate": 0.268,
+     "thin": false,
+     "lift_points": 12.7,
+     "margin_points": 11.8,
+     "clear": true,
+     "profit_eur": 4.08,
+     "profit_lift_eur": 1.1,
+     "profit_margin_eur": 2.82,
+     "profit_clear": false
+    },
+    "discount": {
+     "rows": 76,
+     "order_rate": 0.118,
+     "thin": false,
+     "lift_points": -2.2,
+     "margin_points": 9.2,
+     "clear": false,
+     "profit_eur": 2.17,
+     "profit_lift_eur": -0.82,
+     "profit_margin_eur": 2.09,
+     "profit_clear": false
+    },
+    "voucher": {
+     "rows": 74,
+     "order_rate": 0.108,
+     "thin": false,
+     "lift_points": -3.3,
+     "margin_points": 9.1,
+     "clear": false,
+     "profit_eur": 1.52,
+     "profit_lift_eur": -1.47,
+     "profit_margin_eur": 1.89,
+     "profit_clear": false
+    },
+    "apology": {
+     "rows": 70,
+     "order_rate": 0.2,
+     "thin": false,
+     "lift_points": 5.9,
+     "margin_points": 11.0,
+     "clear": false,
+     "profit_eur": 2.82,
+     "profit_lift_eur": -0.17,
+     "profit_margin_eur": 2.81,
+     "profit_clear": false
     }
    }
-  ],
-  "spend_band": [
-   {
-    "value": "high",
-    "none": {
-     "rows": 695,
-     "order_rate": 0.135
-    },
-    "actions": {
-     "email": {
-      "rows": 403,
-      "order_rate": 0.199,
-      "thin": false,
-      "lift_points": 6.3,
-      "margin_points": 4.7,
-      "clear": true
-     },
-     "ad": {
-      "rows": 397,
-      "order_rate": 0.214,
-      "thin": false,
-      "lift_points": 7.9,
-      "margin_points": 4.8,
-      "clear": true
-     },
-     "discount": {
-      "rows": 445,
-      "order_rate": 0.162,
-      "thin": false,
-      "lift_points": 2.7,
-      "margin_points": 4.3,
-      "clear": false
-     },
-     "voucher": {
-      "rows": 454,
-      "order_rate": 0.176,
-      "thin": false,
-      "lift_points": 4.1,
-      "margin_points": 4.3,
-      "clear": false
-     },
-     "apology": {
-      "rows": 476,
-      "order_rate": 0.16,
-      "thin": false,
-      "lift_points": 2.4,
-      "margin_points": 4.2,
-      "clear": false
-     }
-    }
+  },
+  "diets:senior": {
+   "none": {
+    "rows": 272,
+    "order_rate": 0.14,
+    "profit_eur": 4.17
    },
-   {
-    "value": "low",
-    "none": {
-     "rows": 163,
-     "order_rate": 0.147
+   "actions": {
+    "email": {
+     "rows": 130,
+     "order_rate": 0.169,
+     "thin": false,
+     "lift_points": 3.0,
+     "margin_points": 7.6,
+     "clear": false,
+     "profit_eur": 4.16,
+     "profit_lift_eur": -0.0,
+     "profit_margin_eur": 2.64,
+     "profit_clear": false
     },
-    "actions": {
-     "email": {
-      "rows": 70,
-      "order_rate": 0.157,
-      "thin": false,
-      "lift_points": 1.0,
-      "margin_points": 10.1,
-      "clear": false
-     },
-     "ad": {
-      "rows": 89,
-      "order_rate": 0.247,
-      "thin": false,
-      "lift_points": 10.0,
-      "margin_points": 10.5,
-      "clear": false
-     },
-     "discount": {
-      "rows": 87,
-      "order_rate": 0.184,
-      "thin": false,
-      "lift_points": 3.7,
-      "margin_points": 9.8,
-      "clear": false
-     },
-     "voucher": {
-      "rows": 88,
-      "order_rate": 0.159,
-      "thin": false,
-      "lift_points": 1.2,
-      "margin_points": 9.4,
-      "clear": false
-     },
-     "apology": {
-      "rows": 91,
-      "order_rate": 0.154,
-      "thin": false,
-      "lift_points": 0.7,
-      "margin_points": 9.2,
-      "clear": false
-     }
-    }
-   },
-   {
-    "value": "mid",
-    "none": {
-     "rows": 535,
-     "order_rate": 0.129
+    "ad": {
+     "rows": 170,
+     "order_rate": 0.294,
+     "thin": false,
+     "lift_points": 15.4,
+     "margin_points": 8.0,
+     "clear": true,
+     "profit_eur": 5.63,
+     "profit_lift_eur": 1.46,
+     "profit_margin_eur": 2.63,
+     "profit_clear": false
     },
-    "actions": {
-     "email": {
-      "rows": 298,
-      "order_rate": 0.144,
-      "thin": false,
-      "lift_points": 1.5,
-      "margin_points": 4.9,
-      "clear": false
-     },
-     "ad": {
-      "rows": 268,
-      "order_rate": 0.187,
-      "thin": false,
-      "lift_points": 5.8,
-      "margin_points": 5.5,
-      "clear": true
-     },
-     "discount": {
-      "rows": 374,
-      "order_rate": 0.16,
-      "thin": false,
-      "lift_points": 3.1,
-      "margin_points": 4.7,
-      "clear": false
-     },
-     "voucher": {
-      "rows": 344,
-      "order_rate": 0.137,
-      "thin": false,
-      "lift_points": 0.8,
-      "margin_points": 4.6,
-      "clear": false
-     },
-     "apology": {
-      "rows": 349,
-      "order_rate": 0.146,
-      "thin": false,
-      "lift_points": 1.7,
-      "margin_points": 4.7,
-      "clear": false
-     }
+    "discount": {
+     "rows": 165,
+     "order_rate": 0.139,
+     "thin": false,
+     "lift_points": -0.0,
+     "margin_points": 6.7,
+     "clear": false,
+     "profit_eur": 2.87,
+     "profit_lift_eur": -1.29,
+     "profit_margin_eur": 2.09,
+     "profit_clear": false
+    },
+    "voucher": {
+     "rows": 159,
+     "order_rate": 0.157,
+     "thin": false,
+     "lift_points": 1.8,
+     "margin_points": 7.0,
+     "clear": false,
+     "profit_eur": 2.82,
+     "profit_lift_eur": -1.35,
+     "profit_margin_eur": 1.98,
+     "profit_clear": false
+    },
+    "apology": {
+     "rows": 166,
+     "order_rate": 0.12,
+     "thin": false,
+     "lift_points": -1.9,
+     "margin_points": 6.4,
+     "clear": false,
+     "profit_eur": 2.85,
+     "profit_lift_eur": -1.32,
+     "profit_margin_eur": 2.23,
+     "profit_clear": false
     }
    }
-  ],
-  "open_issue": [
-   {
-    "value": "late_delivery",
-    "none": {
-     "rows": 38,
-     "order_rate": 0.158
-    },
-    "actions": {
-     "email": {
-      "rows": 12,
-      "order_rate": 0.167,
-      "thin": true,
-      "lift_points": null,
-      "margin_points": null,
-      "clear": null
-     },
-     "ad": {
-      "rows": 20,
-      "order_rate": 0.1,
-      "thin": true,
-      "lift_points": null,
-      "margin_points": null,
-      "clear": null
-     },
-     "discount": {
-      "rows": 21,
-      "order_rate": 0.143,
-      "thin": true,
-      "lift_points": null,
-      "margin_points": null,
-      "clear": null
-     },
-     "voucher": {
-      "rows": 20,
-      "order_rate": 0.05,
-      "thin": true,
-      "lift_points": null,
-      "margin_points": null,
-      "clear": null
-     },
-     "apology": {
-      "rows": 42,
-      "order_rate": 0.333,
-      "thin": false,
-      "lift_points": 17.5,
-      "margin_points": 18.4,
-      "clear": false
-     }
-    }
+  },
+  "diets:sensitive": {
+   "none": {
+    "rows": 243,
+    "order_rate": 0.14,
+    "profit_eur": 3.52
    },
-   {
-    "value": "low_rating",
-    "none": {
+   "actions": {
+    "email": {
+     "rows": 147,
+     "order_rate": 0.211,
+     "thin": false,
+     "lift_points": 7.1,
+     "margin_points": 7.9,
+     "clear": false,
+     "profit_eur": 6.01,
+     "profit_lift_eur": 2.48,
+     "profit_margin_eur": 2.73,
+     "profit_clear": false
+    },
+    "ad": {
+     "rows": 149,
+     "order_rate": 0.349,
+     "thin": false,
+     "lift_points": 20.9,
+     "margin_points": 8.8,
+     "clear": true,
+     "profit_eur": 7.87,
+     "profit_lift_eur": 4.34,
+     "profit_margin_eur": 2.74,
+     "profit_clear": true
+    },
+    "discount": {
+     "rows": 146,
+     "order_rate": 0.199,
+     "thin": false,
+     "lift_points": 5.9,
+     "margin_points": 7.8,
+     "clear": false,
+     "profit_eur": 3.99,
+     "profit_lift_eur": 0.47,
+     "profit_margin_eur": 2.07,
+     "profit_clear": false
+    },
+    "voucher": {
+     "rows": 148,
+     "order_rate": 0.122,
+     "thin": false,
+     "lift_points": -1.8,
+     "margin_points": 6.8,
+     "clear": false,
+     "profit_eur": 2.38,
+     "profit_lift_eur": -1.14,
+     "profit_margin_eur": 1.9,
+     "profit_clear": false
+    },
+    "apology": {
+     "rows": 142,
+     "order_rate": 0.19,
+     "thin": false,
+     "lift_points": 5.0,
+     "margin_points": 7.8,
+     "clear": false,
+     "profit_eur": 5.24,
+     "profit_lift_eur": 1.72,
+     "profit_margin_eur": 2.7,
+     "profit_clear": false
+    }
+   }
+  },
+  "diets:weight-control": {
+   "none": {
+    "rows": 141,
+    "order_rate": 0.177,
+    "profit_eur": 4.04
+   },
+   "actions": {
+    "email": {
+     "rows": 77,
+     "order_rate": 0.143,
+     "thin": false,
+     "lift_points": -3.4,
+     "margin_points": 10.0,
+     "clear": false,
+     "profit_eur": 3.06,
+     "profit_lift_eur": -0.98,
+     "profit_margin_eur": 2.82,
+     "profit_clear": false
+    },
+    "ad": {
+     "rows": 72,
+     "order_rate": 0.347,
+     "thin": false,
+     "lift_points": 17.0,
+     "margin_points": 12.7,
+     "clear": true,
+     "profit_eur": 6.49,
+     "profit_lift_eur": 2.46,
+     "profit_margin_eur": 3.52,
+     "profit_clear": false
+    },
+    "discount": {
+     "rows": 88,
+     "order_rate": 0.182,
+     "thin": false,
+     "lift_points": 0.5,
+     "margin_points": 10.2,
+     "clear": false,
+     "profit_eur": 3.62,
+     "profit_lift_eur": -0.41,
+     "profit_margin_eur": 2.55,
+     "profit_clear": false
+    },
+    "voucher": {
+     "rows": 78,
+     "order_rate": 0.103,
+     "thin": false,
+     "lift_points": -7.5,
+     "margin_points": 9.2,
+     "clear": false,
+     "profit_eur": 1.78,
+     "profit_lift_eur": -2.26,
+     "profit_margin_eur": 2.23,
+     "profit_clear": true
+    },
+    "apology": {
+     "rows": 99,
+     "order_rate": 0.202,
+     "thin": false,
+     "lift_points": 2.5,
+     "margin_points": 10.1,
+     "clear": false,
+     "profit_eur": 4.44,
+     "profit_lift_eur": 0.4,
+     "profit_margin_eur": 2.85,
+     "profit_clear": false
+    }
+   }
+  },
+  "offer:mostly": {
+   "none": {
+    "rows": 146,
+    "order_rate": 0.11,
+    "profit_eur": 2.46
+   },
+   "actions": {
+    "email": {
+     "rows": 85,
+     "order_rate": 0.2,
+     "thin": false,
+     "lift_points": 9.0,
+     "margin_points": 9.9,
+     "clear": false,
+     "profit_eur": 5.76,
+     "profit_lift_eur": 3.3,
+     "profit_margin_eur": 3.47,
+     "profit_clear": false
+    },
+    "ad": {
+     "rows": 98,
+     "order_rate": 0.265,
+     "thin": false,
+     "lift_points": 15.6,
+     "margin_points": 10.1,
+     "clear": true,
+     "profit_eur": 5.24,
+     "profit_lift_eur": 2.78,
+     "profit_margin_eur": 3.0,
+     "profit_clear": false
+    },
+    "discount": {
+     "rows": 128,
+     "order_rate": 0.188,
+     "thin": false,
+     "lift_points": 7.8,
+     "margin_points": 8.4,
+     "clear": false,
+     "profit_eur": 3.86,
+     "profit_lift_eur": 1.4,
+     "profit_margin_eur": 2.27,
+     "profit_clear": false
+    },
+    "voucher": {
+     "rows": 102,
+     "order_rate": 0.137,
+     "thin": false,
+     "lift_points": 2.8,
+     "margin_points": 8.4,
+     "clear": false,
+     "profit_eur": 2.38,
+     "profit_lift_eur": -0.09,
+     "profit_margin_eur": 2.28,
+     "profit_clear": false
+    },
+    "apology": {
+     "rows": 100,
+     "order_rate": 0.12,
+     "thin": false,
+     "lift_points": 1.0,
+     "margin_points": 8.1,
+     "clear": false,
+     "profit_eur": 1.8,
+     "profit_lift_eur": -0.66,
+     "profit_margin_eur": 2.11,
+     "profit_clear": false
+    }
+   }
+  },
+  "offer:rarely": {
+   "none": {
+    "rows": 216,
+    "order_rate": 0.157,
+    "profit_eur": 3.86
+   },
+   "actions": {
+    "email": {
+     "rows": 124,
+     "order_rate": 0.153,
+     "thin": false,
+     "lift_points": -0.4,
+     "margin_points": 8.0,
+     "clear": false,
+     "profit_eur": 3.21,
+     "profit_lift_eur": -0.64,
+     "profit_margin_eur": 2.49,
+     "profit_clear": false
+    },
+    "ad": {
+     "rows": 127,
+     "order_rate": 0.252,
+     "thin": false,
+     "lift_points": 9.5,
+     "margin_points": 9.0,
+     "clear": true,
+     "profit_eur": 4.2,
+     "profit_lift_eur": 0.34,
+     "profit_margin_eur": 2.68,
+     "profit_clear": false
+    },
+    "discount": {
+     "rows": 115,
+     "order_rate": 0.165,
+     "thin": false,
+     "lift_points": 0.8,
+     "margin_points": 8.3,
+     "clear": false,
+     "profit_eur": 3.18,
+     "profit_lift_eur": -0.68,
+     "profit_margin_eur": 2.26,
+     "profit_clear": false
+    },
+    "voucher": {
+     "rows": 125,
+     "order_rate": 0.144,
+     "thin": false,
+     "lift_points": -1.3,
+     "margin_points": 7.8,
+     "clear": false,
+     "profit_eur": 3.33,
+     "profit_lift_eur": -0.53,
+     "profit_margin_eur": 2.49,
+     "profit_clear": false
+    },
+    "apology": {
+     "rows": 138,
+     "order_rate": 0.123,
+     "thin": false,
+     "lift_points": -3.4,
+     "margin_points": 7.3,
+     "clear": false,
+     "profit_eur": 2.65,
+     "profit_lift_eur": -1.21,
+     "profit_margin_eur": 2.21,
+     "profit_clear": false
+    }
+   }
+  },
+  "offer:sometimes": {
+   "none": {
+    "rows": 437,
+    "order_rate": 0.149,
+    "profit_eur": 4.19
+   },
+   "actions": {
+    "email": {
+     "rows": 219,
+     "order_rate": 0.187,
+     "thin": false,
+     "lift_points": 3.8,
+     "margin_points": 6.2,
+     "clear": false,
+     "profit_eur": 4.67,
+     "profit_lift_eur": 0.48,
+     "profit_margin_eur": 2.02,
+     "profit_clear": false
+    },
+    "ad": {
+     "rows": 279,
+     "order_rate": 0.251,
+     "thin": false,
+     "lift_points": 10.2,
+     "margin_points": 6.1,
+     "clear": true,
+     "profit_eur": 6.07,
+     "profit_lift_eur": 1.88,
+     "profit_margin_eur": 2.15,
+     "profit_clear": false
+    },
+    "discount": {
+     "rows": 281,
+     "order_rate": 0.142,
+     "thin": false,
+     "lift_points": -0.6,
+     "margin_points": 5.3,
+     "clear": false,
+     "profit_eur": 2.99,
+     "profit_lift_eur": -1.2,
+     "profit_margin_eur": 1.49,
+     "profit_clear": false
+    },
+    "voucher": {
+     "rows": 257,
+     "order_rate": 0.136,
+     "thin": false,
+     "lift_points": -1.3,
+     "margin_points": 5.4,
+     "clear": false,
+     "profit_eur": 2.29,
+     "profit_lift_eur": -1.91,
+     "profit_margin_eur": 1.42,
+     "profit_clear": true
+    },
+    "apology": {
+     "rows": 279,
+     "order_rate": 0.158,
+     "thin": false,
+     "lift_points": 0.9,
+     "margin_points": 5.4,
+     "clear": false,
+     "profit_eur": 3.77,
+     "profit_lift_eur": -0.42,
+     "profit_margin_eur": 1.86,
+     "profit_clear": false
+    }
+   }
+  },
+  "pets:aquarium": {
+   "none": {
+    "rows": 54,
+    "order_rate": 0.167,
+    "profit_eur": 3.99
+   },
+   "actions": {
+    "email": {
+     "rows": 20,
+     "order_rate": 0.3,
+     "thin": true,
+     "lift_points": null,
+     "margin_points": null,
+     "clear": null,
+     "profit_eur": 5.29,
+     "profit_lift_eur": null,
+     "profit_margin_eur": null,
+     "profit_clear": null
+    },
+    "ad": {
+     "rows": 40,
+     "order_rate": 0.2,
+     "thin": false,
+     "lift_points": 3.3,
+     "margin_points": 15.9,
+     "clear": false,
+     "profit_eur": 4.04,
+     "profit_lift_eur": 0.05,
+     "profit_margin_eur": 4.46,
+     "profit_clear": false
+    },
+    "discount": {
+     "rows": 41,
+     "order_rate": 0.171,
+     "thin": false,
+     "lift_points": 0.4,
+     "margin_points": 15.2,
+     "clear": false,
+     "profit_eur": 3.36,
+     "profit_lift_eur": -0.63,
+     "profit_margin_eur": 3.53,
+     "profit_clear": false
+    },
+    "voucher": {
+     "rows": 37,
+     "order_rate": 0.108,
+     "thin": false,
+     "lift_points": -5.9,
+     "margin_points": 14.1,
+     "clear": false,
+     "profit_eur": 1.56,
+     "profit_lift_eur": -2.43,
+     "profit_margin_eur": 3.1,
+     "profit_clear": false
+    },
+    "apology": {
+     "rows": 40,
+     "order_rate": 0.125,
+     "thin": false,
+     "lift_points": -4.2,
+     "margin_points": 14.3,
+     "clear": false,
+     "profit_eur": 2.77,
+     "profit_lift_eur": -1.22,
+     "profit_margin_eur": 4.11,
+     "profit_clear": false
+    }
+   }
+  },
+  "pets:bird": {
+   "none": {
+    "rows": 2,
+    "order_rate": 0.0,
+    "profit_eur": 0.0
+   },
+   "actions": {
+    "email": {
+     "rows": 0,
+     "order_rate": null,
+     "thin": true,
+     "lift_points": null,
+     "margin_points": null,
+     "clear": null,
+     "profit_eur": null,
+     "profit_lift_eur": null,
+     "profit_margin_eur": null,
+     "profit_clear": null
+    },
+    "ad": {
+     "rows": 5,
+     "order_rate": 0.2,
+     "thin": true,
+     "lift_points": null,
+     "margin_points": null,
+     "clear": null,
+     "profit_eur": 4.42,
+     "profit_lift_eur": null,
+     "profit_margin_eur": null,
+     "profit_clear": null
+    },
+    "discount": {
+     "rows": 1,
+     "order_rate": 0.0,
+     "thin": true,
+     "lift_points": null,
+     "margin_points": null,
+     "clear": null,
+     "profit_eur": 0.0,
+     "profit_lift_eur": null,
+     "profit_margin_eur": null,
+     "profit_clear": null
+    },
+    "voucher": {
+     "rows": 3,
+     "order_rate": 0.0,
+     "thin": true,
+     "lift_points": null,
+     "margin_points": null,
+     "clear": null,
+     "profit_eur": 0.0,
+     "profit_lift_eur": null,
+     "profit_margin_eur": null,
+     "profit_clear": null
+    },
+    "apology": {
+     "rows": 1,
+     "order_rate": 0.0,
+     "thin": true,
+     "lift_points": null,
+     "margin_points": null,
+     "clear": null,
+     "profit_eur": -0.5,
+     "profit_lift_eur": null,
+     "profit_margin_eur": null,
+     "profit_clear": null
+    }
+   }
+  },
+  "pets:cat": {
+   "none": {
+    "rows": 348,
+    "order_rate": 0.155,
+    "profit_eur": 4.52
+   },
+   "actions": {
+    "email": {
+     "rows": 196,
+     "order_rate": 0.199,
+     "thin": false,
+     "lift_points": 4.4,
+     "margin_points": 6.8,
+     "clear": false,
+     "profit_eur": 5.87,
+     "profit_lift_eur": 1.36,
+     "profit_margin_eur": 2.46,
+     "profit_clear": false
+    },
+    "ad": {
+     "rows": 221,
+     "order_rate": 0.276,
+     "thin": false,
+     "lift_points": 12.1,
+     "margin_points": 7.0,
+     "clear": true,
+     "profit_eur": 7.05,
+     "profit_lift_eur": 2.53,
+     "profit_margin_eur": 2.53,
+     "profit_clear": true
+    },
+    "discount": {
+     "rows": 249,
+     "order_rate": 0.149,
+     "thin": false,
+     "lift_points": -0.7,
+     "margin_points": 5.8,
+     "clear": false,
+     "profit_eur": 3.18,
+     "profit_lift_eur": -1.34,
+     "profit_margin_eur": 1.7,
+     "profit_clear": false
+    },
+    "voucher": {
+     "rows": 196,
+     "order_rate": 0.158,
+     "thin": false,
+     "lift_points": 0.3,
+     "margin_points": 6.4,
+     "clear": false,
+     "profit_eur": 3.4,
+     "profit_lift_eur": -1.12,
+     "profit_margin_eur": 1.94,
+     "profit_clear": false
+    },
+    "apology": {
+     "rows": 219,
+     "order_rate": 0.128,
+     "thin": false,
+     "lift_points": -2.7,
+     "margin_points": 5.8,
+     "clear": false,
+     "profit_eur": 2.8,
+     "profit_lift_eur": -1.72,
+     "profit_margin_eur": 1.94,
+     "profit_clear": false
+    }
+   }
+  },
+  "pets:dog": {
+   "none": {
+    "rows": 507,
+    "order_rate": 0.146,
+    "profit_eur": 3.87
+   },
+   "actions": {
+    "email": {
+     "rows": 263,
+     "order_rate": 0.144,
+     "thin": false,
+     "lift_points": -0.1,
+     "margin_points": 5.2,
+     "clear": false,
+     "profit_eur": 2.79,
+     "profit_lift_eur": -1.09,
+     "profit_margin_eur": 1.52,
+     "profit_clear": false
+    },
+    "ad": {
+     "rows": 281,
+     "order_rate": 0.27,
+     "thin": false,
+     "lift_points": 12.5,
+     "margin_points": 6.0,
+     "clear": true,
+     "profit_eur": 5.38,
+     "profit_lift_eur": 1.51,
+     "profit_margin_eur": 1.94,
+     "profit_clear": false
+    },
+    "discount": {
+     "rows": 341,
+     "order_rate": 0.155,
+     "thin": false,
+     "lift_points": 0.9,
+     "margin_points": 4.9,
+     "clear": false,
+     "profit_eur": 3.1,
+     "profit_lift_eur": -0.77,
+     "profit_margin_eur": 1.4,
+     "profit_clear": false
+    },
+    "voucher": {
+     "rows": 305,
+     "order_rate": 0.144,
+     "thin": false,
+     "lift_points": -0.2,
+     "margin_points": 5.0,
+     "clear": false,
+     "profit_eur": 2.49,
+     "profit_lift_eur": -1.38,
+     "profit_margin_eur": 1.43,
+     "profit_clear": false
+    },
+    "apology": {
+     "rows": 322,
+     "order_rate": 0.152,
+     "thin": false,
+     "lift_points": 0.6,
+     "margin_points": 5.0,
+     "clear": false,
+     "profit_eur": 3.06,
+     "profit_lift_eur": -0.82,
+     "profit_margin_eur": 1.57,
+     "profit_clear": false
+    }
+   }
+  },
+  "pets:small_animal": {
+   "none": {
+    "rows": 71,
+    "order_rate": 0.085,
+    "profit_eur": 2.96
+   },
+   "actions": {
+    "email": {
+     "rows": 42,
+     "order_rate": 0.143,
+     "thin": false,
+     "lift_points": 5.8,
+     "margin_points": 12.4,
+     "clear": false,
+     "profit_eur": 5.18,
+     "profit_lift_eur": 2.22,
+     "profit_margin_eur": 5.99,
+     "profit_clear": false
+    },
+    "ad": {
+     "rows": 60,
+     "order_rate": 0.167,
+     "thin": false,
+     "lift_points": 8.2,
+     "margin_points": 11.4,
+     "clear": false,
+     "profit_eur": 4.5,
+     "profit_lift_eur": 1.54,
+     "profit_margin_eur": 4.61,
+     "profit_clear": false
+    },
+    "discount": {
+     "rows": 41,
+     "order_rate": 0.122,
+     "thin": false,
+     "lift_points": 3.7,
+     "margin_points": 11.9,
+     "clear": false,
+     "profit_eur": 4.49,
+     "profit_lift_eur": 1.53,
+     "profit_margin_eur": 5.02,
+     "profit_clear": false
+    },
+    "voucher": {
+     "rows": 46,
+     "order_rate": 0.043,
+     "thin": false,
+     "lift_points": -4.1,
+     "margin_points": 8.8,
+     "clear": false,
+     "profit_eur": 1.11,
+     "profit_lift_eur": -1.85,
+     "profit_margin_eur": 3.29,
+     "profit_clear": false
+    },
+    "apology": {
      "rows": 47,
-     "order_rate": 0.128
-    },
-    "actions": {
-     "email": {
-      "rows": 37,
-      "order_rate": 0.135,
-      "thin": false,
-      "lift_points": 0.7,
-      "margin_points": 14.6,
-      "clear": false
-     },
-     "ad": {
-      "rows": 30,
-      "order_rate": 0.167,
-      "thin": false,
-      "lift_points": 3.9,
-      "margin_points": 16.4,
-      "clear": false
-     },
-     "discount": {
-      "rows": 36,
-      "order_rate": 0.139,
-      "thin": false,
-      "lift_points": 1.1,
-      "margin_points": 14.8,
-      "clear": false
-     },
-     "voucher": {
-      "rows": 31,
-      "order_rate": 0.129,
-      "thin": false,
-      "lift_points": 0.1,
-      "margin_points": 15.2,
-      "clear": false
-     },
-     "apology": {
-      "rows": 67,
-      "order_rate": 0.418,
-      "thin": false,
-      "lift_points": 29.0,
-      "margin_points": 15.2,
-      "clear": true
-     }
-    }
-   },
-   {
-    "value": "none",
-    "none": {
-     "rows": 1308,
-     "order_rate": 0.134
-    },
-    "actions": {
-     "email": {
-      "rows": 722,
-      "order_rate": 0.176,
-      "thin": false,
-      "lift_points": 4.2,
-      "margin_points": 3.3,
-      "clear": true
-     },
-     "ad": {
-      "rows": 704,
-      "order_rate": 0.213,
-      "thin": false,
-      "lift_points": 7.9,
-      "margin_points": 3.5,
-      "clear": true
-     },
-     "discount": {
-      "rows": 849,
-      "order_rate": 0.165,
-      "thin": false,
-      "lift_points": 3.1,
-      "margin_points": 3.1,
-      "clear": false
-     },
-     "voucher": {
-      "rows": 835,
-      "order_rate": 0.163,
-      "thin": false,
-      "lift_points": 2.9,
-      "margin_points": 3.1,
-      "clear": false
-     },
-     "apology": {
-      "rows": 807,
-      "order_rate": 0.123,
-      "thin": false,
-      "lift_points": -1.1,
-      "margin_points": 2.9,
-      "clear": false
-     }
+     "order_rate": 0.17,
+     "thin": false,
+     "lift_points": 8.6,
+     "margin_points": 12.5,
+     "clear": false,
+     "profit_eur": 5.42,
+     "profit_lift_eur": 2.46,
+     "profit_margin_eur": 4.89,
+     "profit_clear": false
     }
    }
-  ]
+  },
+  "price:mixed": {
+   "none": {
+    "rows": 436,
+    "order_rate": 0.142,
+    "profit_eur": 3.6
+   },
+   "actions": {
+    "email": {
+     "rows": 228,
+     "order_rate": 0.175,
+     "thin": false,
+     "lift_points": 3.3,
+     "margin_points": 5.9,
+     "clear": false,
+     "profit_eur": 4.25,
+     "profit_lift_eur": 0.64,
+     "profit_margin_eur": 1.86,
+     "profit_clear": false
+    },
+    "ad": {
+     "rows": 278,
+     "order_rate": 0.245,
+     "thin": false,
+     "lift_points": 10.2,
+     "margin_points": 6.0,
+     "clear": true,
+     "profit_eur": 4.72,
+     "profit_lift_eur": 1.11,
+     "profit_margin_eur": 1.85,
+     "profit_clear": false
+    },
+    "discount": {
+     "rows": 308,
+     "order_rate": 0.162,
+     "thin": false,
+     "lift_points": 2.0,
+     "margin_points": 5.3,
+     "clear": false,
+     "profit_eur": 3.12,
+     "profit_lift_eur": -0.48,
+     "profit_margin_eur": 1.37,
+     "profit_clear": false
+    },
+    "voucher": {
+     "rows": 250,
+     "order_rate": 0.144,
+     "thin": false,
+     "lift_points": 0.2,
+     "margin_points": 5.4,
+     "clear": false,
+     "profit_eur": 2.4,
+     "profit_lift_eur": -1.21,
+     "profit_margin_eur": 1.42,
+     "profit_clear": false
+    },
+    "apology": {
+     "rows": 277,
+     "order_rate": 0.173,
+     "thin": false,
+     "lift_points": 3.1,
+     "margin_points": 5.5,
+     "clear": false,
+     "profit_eur": 3.79,
+     "profit_lift_eur": 0.18,
+     "profit_margin_eur": 1.71,
+     "profit_clear": false
+    }
+   }
+  },
+  "price:premium-leaning": {
+   "none": {
+    "rows": 212,
+    "order_rate": 0.137,
+    "profit_eur": 4.53
+   },
+   "actions": {
+    "email": {
+     "rows": 120,
+     "order_rate": 0.217,
+     "thin": false,
+     "lift_points": 8.0,
+     "margin_points": 8.7,
+     "clear": false,
+     "profit_eur": 6.84,
+     "profit_lift_eur": 2.3,
+     "profit_margin_eur": 3.49,
+     "profit_clear": false
+    },
+    "ad": {
+     "rows": 122,
+     "order_rate": 0.246,
+     "thin": false,
+     "lift_points": 10.9,
+     "margin_points": 8.9,
+     "clear": true,
+     "profit_eur": 7.01,
+     "profit_lift_eur": 2.48,
+     "profit_margin_eur": 3.44,
+     "profit_clear": false
+    },
+    "discount": {
+     "rows": 112,
+     "order_rate": 0.196,
+     "thin": false,
+     "lift_points": 6.0,
+     "margin_points": 8.7,
+     "clear": false,
+     "profit_eur": 5.24,
+     "profit_lift_eur": 0.71,
+     "profit_margin_eur": 3.05,
+     "profit_clear": false
+    },
+    "voucher": {
+     "rows": 128,
+     "order_rate": 0.156,
+     "thin": false,
+     "lift_points": 1.9,
+     "margin_points": 7.8,
+     "clear": false,
+     "profit_eur": 3.3,
+     "profit_lift_eur": -1.24,
+     "profit_margin_eur": 2.58,
+     "profit_clear": false
+    },
+    "apology": {
+     "rows": 142,
+     "order_rate": 0.106,
+     "thin": false,
+     "lift_points": -3.1,
+     "margin_points": 6.9,
+     "clear": false,
+     "profit_eur": 3.2,
+     "profit_lift_eur": -1.34,
+     "profit_margin_eur": 2.76,
+     "profit_clear": false
+    }
+   }
+  },
+  "price:value-leaning": {
+   "none": {
+    "rows": 151,
+    "order_rate": 0.159,
+    "profit_eur": 3.26
+   },
+   "actions": {
+    "email": {
+     "rows": 80,
+     "order_rate": 0.138,
+     "thin": false,
+     "lift_points": -2.1,
+     "margin_points": 9.5,
+     "clear": false,
+     "profit_eur": 1.53,
+     "profit_lift_eur": -1.73,
+     "profit_margin_eur": 1.89,
+     "profit_clear": false
+    },
+    "ad": {
+     "rows": 104,
+     "order_rate": 0.288,
+     "thin": false,
+     "lift_points": 13.0,
+     "margin_points": 10.5,
+     "clear": true,
+     "profit_eur": 5.52,
+     "profit_lift_eur": 2.25,
+     "profit_margin_eur": 3.29,
+     "profit_clear": false
+    },
+    "discount": {
+     "rows": 104,
+     "order_rate": 0.106,
+     "thin": false,
+     "lift_points": -5.3,
+     "margin_points": 8.3,
+     "clear": false,
+     "profit_eur": 1.45,
+     "profit_lift_eur": -1.81,
+     "profit_margin_eur": 1.67,
+     "profit_clear": true
+    },
+    "voucher": {
+     "rows": 106,
+     "order_rate": 0.104,
+     "thin": false,
+     "lift_points": -5.5,
+     "margin_points": 8.2,
+     "clear": false,
+     "profit_eur": 2.12,
+     "profit_lift_eur": -1.15,
+     "profit_margin_eur": 2.09,
+     "profit_clear": false
+    },
+    "apology": {
+     "rows": 98,
+     "order_rate": 0.102,
+     "thin": false,
+     "lift_points": -5.7,
+     "margin_points": 8.4,
+     "clear": false,
+     "profit_eur": 0.98,
+     "profit_lift_eur": -2.28,
+     "profit_margin_eur": 1.77,
+     "profit_clear": true
+    }
+   }
+  },
+  "rating:above-average ratings": {
+   "none": {
+    "rows": 169,
+    "order_rate": 0.13,
+    "profit_eur": 3.43
+   },
+   "actions": {
+    "email": {
+     "rows": 83,
+     "order_rate": 0.181,
+     "thin": false,
+     "lift_points": 5.1,
+     "margin_points": 9.7,
+     "clear": false,
+     "profit_eur": 3.45,
+     "profit_lift_eur": 0.02,
+     "profit_margin_eur": 2.89,
+     "profit_clear": false
+    },
+    "ad": {
+     "rows": 102,
+     "order_rate": 0.255,
+     "thin": false,
+     "lift_points": 12.5,
+     "margin_points": 9.9,
+     "clear": true,
+     "profit_eur": 5.62,
+     "profit_lift_eur": 2.19,
+     "profit_margin_eur": 3.37,
+     "profit_clear": false
+    },
+    "discount": {
+     "rows": 94,
+     "order_rate": 0.191,
+     "thin": false,
+     "lift_points": 6.1,
+     "margin_points": 9.4,
+     "clear": false,
+     "profit_eur": 4.28,
+     "profit_lift_eur": 0.86,
+     "profit_margin_eur": 2.77,
+     "profit_clear": false
+    },
+    "voucher": {
+     "rows": 112,
+     "order_rate": 0.089,
+     "thin": false,
+     "lift_points": -4.1,
+     "margin_points": 7.3,
+     "clear": false,
+     "profit_eur": 2.73,
+     "profit_lift_eur": -0.7,
+     "profit_margin_eur": 2.62,
+     "profit_clear": false
+    },
+    "apology": {
+     "rows": 98,
+     "order_rate": 0.143,
+     "thin": false,
+     "lift_points": 1.3,
+     "margin_points": 8.6,
+     "clear": false,
+     "profit_eur": 2.53,
+     "profit_lift_eur": -0.9,
+     "profit_margin_eur": 2.67,
+     "profit_clear": false
+    }
+   }
+  },
+  "rating:average ratings": {
+   "none": {
+    "rows": 401,
+    "order_rate": 0.127,
+    "profit_eur": 3.45
+   },
+   "actions": {
+    "email": {
+     "rows": 218,
+     "order_rate": 0.183,
+     "thin": false,
+     "lift_points": 5.6,
+     "margin_points": 6.1,
+     "clear": false,
+     "profit_eur": 4.48,
+     "profit_lift_eur": 1.03,
+     "profit_margin_eur": 1.94,
+     "profit_clear": false
+    },
+    "ad": {
+     "rows": 239,
+     "order_rate": 0.243,
+     "thin": false,
+     "lift_points": 11.5,
+     "margin_points": 6.3,
+     "clear": true,
+     "profit_eur": 4.43,
+     "profit_lift_eur": 0.98,
+     "profit_margin_eur": 1.92,
+     "profit_clear": false
+    },
+    "discount": {
+     "rows": 264,
+     "order_rate": 0.155,
+     "thin": false,
+     "lift_points": 2.8,
+     "margin_points": 5.5,
+     "clear": false,
+     "profit_eur": 3.05,
+     "profit_lift_eur": -0.41,
+     "profit_margin_eur": 1.47,
+     "profit_clear": false
+    },
+    "voucher": {
+     "rows": 216,
+     "order_rate": 0.167,
+     "thin": false,
+     "lift_points": 3.9,
+     "margin_points": 5.9,
+     "clear": false,
+     "profit_eur": 3.08,
+     "profit_lift_eur": -0.38,
+     "profit_margin_eur": 1.65,
+     "profit_clear": false
+    },
+    "apology": {
+     "rows": 266,
+     "order_rate": 0.154,
+     "thin": false,
+     "lift_points": 2.7,
+     "margin_points": 5.4,
+     "clear": false,
+     "profit_eur": 3.17,
+     "profit_lift_eur": -0.29,
+     "profit_margin_eur": 1.65,
+     "profit_clear": false
+    }
+   }
+  },
+  "rating:below-average ratings": {
+   "none": {
+    "rows": 229,
+    "order_rate": 0.183,
+    "profit_eur": 4.63
+   },
+   "actions": {
+    "email": {
+     "rows": 127,
+     "order_rate": 0.173,
+     "thin": false,
+     "lift_points": -1.0,
+     "margin_points": 8.3,
+     "clear": false,
+     "profit_eur": 5.1,
+     "profit_lift_eur": 0.47,
+     "profit_margin_eur": 2.99,
+     "profit_clear": false
+    },
+    "ad": {
+     "rows": 163,
+     "order_rate": 0.27,
+     "thin": false,
+     "lift_points": 8.7,
+     "margin_points": 8.5,
+     "clear": true,
+     "profit_eur": 6.8,
+     "profit_lift_eur": 2.17,
+     "profit_margin_eur": 2.98,
+     "profit_clear": false
+    },
+    "discount": {
+     "rows": 166,
+     "order_rate": 0.145,
+     "thin": false,
+     "lift_points": -3.9,
+     "margin_points": 7.3,
+     "clear": false,
+     "profit_eur": 2.97,
+     "profit_lift_eur": -1.66,
+     "profit_margin_eur": 2.04,
+     "profit_clear": false
+    },
+    "voucher": {
+     "rows": 156,
+     "order_rate": 0.135,
+     "thin": false,
+     "lift_points": -4.9,
+     "margin_points": 7.3,
+     "clear": false,
+     "profit_eur": 1.77,
+     "profit_lift_eur": -2.87,
+     "profit_margin_eur": 1.79,
+     "profit_clear": true
+    },
+    "apology": {
+     "rows": 153,
+     "order_rate": 0.118,
+     "thin": false,
+     "lift_points": -6.6,
+     "margin_points": 7.2,
+     "clear": false,
+     "profit_eur": 3.32,
+     "profit_lift_eur": -1.31,
+     "profit_margin_eur": 2.52,
+     "profit_clear": false
+    }
+   }
+  }
  },
  "relations": [
   {

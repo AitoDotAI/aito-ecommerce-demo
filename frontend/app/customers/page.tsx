@@ -2,29 +2,30 @@
 
 import { Suspense, useEffect, useState } from "react";
 
-import { apiFetch } from "@/lib/api";
+import { apiFetch, fmtEur } from "@/lib/api";
 import type { ProfilesSummary } from "@/lib/customer-profiles";
 import { customersPanel } from "@/lib/panel-content";
+import { useUrlState } from "@/lib/use-url-state";
 import { usePagePanel } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
 import CustomerLookup from "@/components/customers/CustomerLookup";
-import PreferencesCard from "@/components/customers/PreferencesCard";
-import RelationsCard from "@/components/customers/RelationsCard";
-import ResponseMatrix from "@/components/customers/ResponseMatrix";
-import SegmentTables from "@/components/customers/SegmentTables";
+import SegmentDetail from "@/components/customers/SegmentDetail";
+import SegmentList from "@/components/customers/SegmentList";
 
 /**
- * Customers (ADR 0053): how the shop's customers shop, and who responds to what. Traits are counted from
- * purchase history for customers who consented to behavioural profiling; they describe how a customer
- * chooses and which pets they buy for, nothing about the person. Stored and simulated.
+ * Customers (ADR 0053): the shop's customer variables and their variations in one list, with profit per customer
+ * first. Select a segment to see how it compares, relates, buys and responds. Traits are counted from purchase
+ * history for customers who consented to behavioural profiling; they describe how a customer chooses and which pets
+ * they buy for, nothing about the person. Stored and simulated.
  */
 function CustomersView() {
   usePagePanel(customersPanel(), {
     title: "Customers",
-    description: "How customers shop, and which actions each group responds to.",
+    description: "Customer segments by how they shop, with profit per customer, and what each one responds to.",
     breadcrumb: "Run the shop › Customers",
   });
   const [summary, setSummary] = useState<ProfilesSummary | null>(null);
+  const [selected, setSelected] = useUrlState("seg", "offer:mostly");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -36,7 +37,7 @@ function CustomersView() {
       <div className="page-header">
         <div className="page-title">Customers</div>
         <div className="page-desc">
-          How customers shop, counted from what they bought, and which actions each group responds to.
+          Customer segments by how they shop, ranked by what a customer earns the shop.
           {summary && <> {summary.profiled.toLocaleString("fi-FI")} of {summary.customers.toLocaleString("fi-FI")} customers
             are profiled: the others did not consent to behavioural profiling. Simulated data.</>}
         </div>
@@ -55,10 +56,11 @@ function CustomersView() {
       )}
       {summary && (
         <div style={{ display: "grid", gap: 12 }}>
-          <SegmentTables summary={summary} />
-          <RelationsCard summary={summary} />
-          <PreferencesCard summary={summary} />
-          <ResponseMatrix summary={summary} />
+          <Headline summary={summary} />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 420px), 1fr))", gap: 12, alignItems: "start" }}>
+            <SegmentList summary={summary} selected={selected} onSelect={setSelected} />
+            <SegmentDetail summary={summary} selected={selected} />
+          </div>
           <CustomerLookup />
           <div className="card-sub">
             Every trait is a share of the lines a customer bought: no health, religion or similar is inferred, and the diet
@@ -67,6 +69,27 @@ function CustomersView() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function Headline({ summary }: { summary: ProfilesSummary }) {
+  const d = summary.profit_distribution;
+  const items: [string, string, string][] = [
+    ["Profit, profiled customers", fmtEur(summary.profiled_profit_eur), `${Math.round(summary.gross_margin * 100)} % gross margin`],
+    ["Profit per customer", fmtEur(summary.profiled_profit_eur / summary.profiled), `median ${fmtEur(d.median_eur)}`],
+    ["Top tenth earns", `${Math.round(d.top_tenth_share * 100)} %`, "of the profit"],
+    ["Lose money", String(d.losing_money), `of ${d.customers.toLocaleString("fi-FI")}`],
+  ];
+  return (
+    <div className="card" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12 }}>
+      {items.map(([label, value, note]) => (
+        <div key={label}>
+          <div className="card-sub">{label}</div>
+          <div style={{ fontSize: 22, fontWeight: 700 }}>{value}</div>
+          <div className="card-sub">{note}</div>
+        </div>
+      ))}
     </div>
   );
 }

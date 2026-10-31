@@ -6,8 +6,9 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
+from src.customer_profit import distribution, gross_margin, profit_by_customer
 from src.customer_relations import PET_GROUPS, preferences, relations
-from src.customer_segments import response, segments
+from src.customer_segments import response, segment_keys, segments
 from src.customer_traits import reference_for, traits_for
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -34,6 +35,13 @@ def build() -> tuple[dict, list[dict]]:
     lines_of = defaultdict(list)
     for line in _load("order_lines"):
         lines_of[orders[line["order_id"]]].append(line)
+    profits = profit_by_customer(_load("order_lines"), {o["order_id"]: o for o in _load("orders")}, states,
+                                 {i["sku"]: i["unit_cost_eur"] for i in _load("inventory")}, _load("customer_actions"),
+                                 LAST_12_MONTHS_FROM)
+    margin = gross_margin(profits)
+    zero = {"net_revenue_eur": 0.0, "gross_profit_eur": 0.0, "gross_profit_12m_eur": 0.0, "action_cost_eur": 0.0, "profit_eur": 0.0}
+    for cid, customer in customers.items():
+        customer.update(profits.get(cid, zero))
     ref = reference_for(list(products.values()), list(states.values()))
     traits = [traits_for(c, lines_of[cid], products, states, ref) for cid, c in customers.items()]
     bought = {cid: {pet: {"categories": set(), "brands": set(), "products": set()} for pet in PET_GROUPS} for cid in customers}
@@ -46,7 +54,13 @@ def build() -> tuple[dict, list[dict]]:
                 mine["brands"].add(product["brand"])
                 mine["products"].add(ln["product_sku"])
     release = json.loads((DATA / "release-env.json").read_text())["env"]
-    summary = {"release": release, "simulated": True, **segments(traits, customers), "response": response(_load("customer_actions")),
+    for t in traits:
+        if t["profiled"]:
+            t["profit_eur"] = round(customers[t["customer_id"]]["profit_eur"], 2)
+    keys_of = {t["customer_id"]: segment_keys(t) for t in traits}
+    summary = {"release": release, "simulated": True, **segments(traits, customers), "gross_margin": round(margin, 3),
+               "profit_distribution": distribution(profits, [t["customer_id"] for t in traits if t["profiled"]]),
+               "response": response(_load("customer_actions"), margin, lambda row: keys_of.get(row["customer_id"], ())),
                "relations": relations(traits), "preferences": _named(preferences(traits, bought), products)}
     return summary, traits
 
