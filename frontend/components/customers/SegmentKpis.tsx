@@ -38,12 +38,12 @@ export default function SegmentKpis({ summary, selected }: { summary: ProfilesSu
             const allRate = i === 0 ? null : allFunnel[step] / allFunnel[STEPS[i - 1][0]];
             return (
               <div key={step} style={{ margin: "6px 0" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
-                  <span style={{ fontWeight: 600 }}>{label}</span>
-                  <span style={{ fontFamily: "var(--mono)" }}>
-                    {n.toLocaleString("fi-FI")}
+                <div style={{ display: "flex", justifyContent: "space-between", gap: 12, fontSize: 13 }}>
+                  <span style={{ fontWeight: 600, whiteSpace: "nowrap" }}>{label}</span>
+                  <span style={{ fontFamily: "var(--mono)", textAlign: "right" }}>
+                    <span style={{ whiteSpace: "nowrap" }}>{n.toLocaleString("fi-FI")}</span>
                     {rate !== null && allRate !== null && (
-                      <span className="card-sub"> · {Math.round(rate * 100)} % of the step before{selected === "all" ? "" : ` (all ${Math.round(allRate * 100)} %)`}</span>
+                      <span className="card-sub"> · {Math.round(rate * 100)} % of the step before{selected === "all" ? "" : `, all ${Math.round(allRate * 100)} %`}</span>
                     )}
                   </span>
                 </div>
