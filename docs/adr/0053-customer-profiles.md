@@ -37,10 +37,9 @@ A new view, **Customers**, with the rules below.
    standout shows before it is picked. A selection is counted when asked for, from `data/customer_profiles/facts.json` (per-customer
    facts for the profiled customers, no names), by `GET /api/customer-profiles/segment?c=trait:value&c=...`; a selection under 30 customers
    is given its size and nothing else. Margin is a customer's basket margin (gross profit over the price paid for what they kept), high
-   or low against the median customer's. Top left: who the segment is, in words, what to do (only differences larger than their margins),
-   and a "?" that opens where the segment sits in the preference ranking of the variable it is a slice of (offer, price or rating).
-   Top right: the chosen figure's trend over the months against everyone's shape, and whether the last three months are in decline.
-   Below, tabs as in Product: key figures and the showing funnel (impressions, clicks, carts, purchases over the identified sessions of
+   or low against the median customer's. On top: the segment's name and size, and a "?" that opens where the segment sits in the preference ranking of the variable it is a slice of (offer, price or rating).
+   Then the chosen figure's trend over the months, full width, against everyone's shape, and whether the last three months are in decline.
+   Below, tabs as in Product: highlights (what to do, only differences larger than their margins, and who the customers are in words), key figures and the showing funnel (impressions, clicks, carts, purchases over the identified sessions of
    its customers), other preferences, channels, what the shop's actions did for it, and what it says in reviews and NPS answers. Profit is the price paid less the unit cost on the lines kept (a returned line earns nothing),
    less the shop's action costs; there is no delivery or payment cost in the data, so it is profit after products and actions, not a full P&L.
    The unit cost is the inventory's current cost per product, applied to two years of sales. Profit per customer carries a 95 % bootstrap interval

@@ -11,22 +11,23 @@ import ErrorState from "@/components/shell/ErrorState";
 import SegmentAcquisition from "@/components/customers/SegmentAcquisition";
 import SegmentFeedback from "@/components/customers/SegmentFeedback";
 import SegmentKpis from "@/components/customers/SegmentKpis";
-import SegmentProfile from "@/components/customers/SegmentProfile";
+import SegmentHeader from "@/components/customers/SegmentHeader";
+import SegmentHighlights from "@/components/customers/SegmentHighlights";
 import SegmentRelated from "@/components/customers/SegmentRelated";
 import SegmentResponse from "@/components/customers/SegmentResponse";
 import SegmentTree from "@/components/customers/SegmentTree";
 import SegmentTrend from "@/components/customers/SegmentTrend";
 
 const TABS = [
-  { id: "figures", label: "Figures" }, { id: "preferences", label: "Other preferences" },
+  { id: "highlights", label: "Highlights" }, { id: "figures", label: "Figures" }, { id: "preferences", label: "Other preferences" },
   { id: "channels", label: "Channels" }, { id: "actions", label: "Actions" }, { id: "feedback", label: "Feedback" },
 ];
 
 /**
  * Customers (ADR 0053): a topic tree selects the segment, by any number of conditions at once ("premium-leaning" and "dog" and
  * "high-margin"), and the page describes the customers who meet all of them. Above the tree, the figure to compare by: each
- * condition shows it as a number and a bar. The profile and what to do sit top left, the figure's trend over the months top right
- * (is the segment in decline?), and below, tabs: key figures and the showing funnel, other preferences, channels, the shop's actions
+ * condition shows it as a number and a bar. The segment's name sits on top, then the figure's trend over the months (is the
+ * segment in decline?), and below, tabs: highlights (what to do, who they are), key figures and the showing funnel, other preferences, channels, the shop's actions
  * and what the segment says. Nothing ticked is every profiled customer. Traits are counted from purchase history for customers who
  * consented to behavioural profiling; they describe how a customer chooses and which pets they buy for, nothing about the person.
  */
@@ -39,7 +40,7 @@ function CustomersView() {
   const [summary, setSummary] = useState<ProfilesSummary | null>(null);
   const [view, setView] = useState<SegmentView | null>(null);
   const [seg, setSeg] = useUrlState("seg", "");
-  const [tab, setTab] = useUrlState("tab", "figures");
+  const [tab, setTab] = useUrlState("tab", "highlights");
   const [kpi, setKpi] = useUrlState("kpi", "revenue_eur");
   const [error, setError] = useState<string | null>(null);
   const conditions = parseConditions(seg);
@@ -89,10 +90,8 @@ function CustomersView() {
           )}
           {view && !view.too_small && (
             <div style={{ display: "grid", gap: 12, minWidth: 0 }}>
-              <div className="fit-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))", gap: 12, alignItems: "start" }}>
-                <SegmentProfile summary={summary} view={view} />
-                <SegmentTrend view={view} kpi={kpi as KpiId} />
-              </div>
+              <SegmentHeader summary={summary} view={view} />
+              <SegmentTrend view={view} kpi={kpi as KpiId} />
               <div role="tablist" aria-label="Segment details" style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                 {TABS.map((t) => (
                   <button key={t.id} role="tab" aria-selected={tab === t.id} className={`toggle-btn${tab === t.id ? " active" : ""}`}
@@ -104,7 +103,8 @@ function CustomersView() {
                tab === "channels" ? <SegmentAcquisition view={view} /> :
                tab === "actions" ? <SegmentResponse summary={summary} view={view} /> :
                tab === "feedback" ? <SegmentFeedback view={view} /> :
-               <SegmentKpis summary={summary} view={view} />}
+               tab === "figures" ? <SegmentKpis summary={summary} view={view} /> :
+               <SegmentHighlights summary={summary} view={view} />}
               <div className="card-sub">
                 Profit: price paid less unit cost on the lines kept (returned lines earn nothing), less the shop&apos;s action costs; no delivery
                 or payment cost is in the data. Unit cost is the inventory&apos;s current cost per product (about two-thirds of the base price)
