@@ -84,3 +84,11 @@ def ranking(shares: dict[str, float], segments_of: dict[str, list[str]], segment
     return {"customers": n, "mean_share": round(mean, 4), "curve": [round(lift(part(b, BINS)), 3) for b in range(BINS)],
             "quintiles": quintiles, "top_over_average": round(top / mean, 2),
             "top_over_bottom": round(top / bottom, 1) if bottom > 0 else None}
+
+
+_LABELS = {"offer": "Lines bought on offer", "cheaper": "Lines in the cheaper half of their category",
+           "rated": "Lines in better-rated products than their category's average"}
+
+
+def label(variable: str) -> str:
+    return _LABELS.get(variable) or variable.replace("category:", "Category: ").replace("brand:", "Brand: ")

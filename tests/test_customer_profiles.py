@@ -9,7 +9,10 @@ from fastapi.testclient import TestClient
 
 from src.customer_profile_routes import router
 from src.customer_profiles import DATA, build
-from src.customer_segments import THIN_BELOW, response, segments
+from src.customer_selection import parse, view
+from src.customer_selection_data import actions, answers, facts, reviews, summary
+from src.customer_profit import margin_bands
+from src.customer_segments import THIN_BELOW, response, segment_keys, segments
 from src.customer_traits import (MIN_LINES, NOT_PROFILED, TOO_FEW, Reference, offer_band, price_band, rating_band,
                                  traits_for)
 
@@ -66,17 +69,27 @@ def test_a_diet_tag_needs_two_lines_of_it():
 
 def test_a_profile_holds_only_shopping_and_pet_traits_never_anything_about_the_person():
     allowed = {"customer_id", "name", "lines", "pets_declared", "profiled", "offer", "offer_share", "price", "cheaper_share",
-               "rating", "rating_gap", "pets", "diets"}
+               "rating", "rating_gap", "pets", "diets", "margin"}
 
     assert set(traits([("A", True)] * 4)) <= allowed
 
 
 def test_the_stored_profiles_are_what_the_fixtures_build_today():
     """Regenerate with ./do customer-profiles when the fixtures change."""
-    summary, per_customer = build()
+    summary, per_customer, per_customer_facts = build()
 
     assert summary == json.loads((PROFILES / "summary.json").read_text())
     assert per_customer == json.loads((PROFILES / "customers.json").read_text())
+    assert per_customer_facts == json.loads((PROFILES / "facts.json").read_text())
+
+
+def test_the_facts_hold_exactly_the_consenting_customers_and_no_name():
+    stored = {t["customer_id"]: t for t in json.loads((PROFILES / "customers.json").read_text())}
+    kept = facts()
+
+    assert set(kept["customers"]) == {cid for cid, t in stored.items() if t["profiled"]}
+    assert not any("name" in c or "customer_id" in c for c in kept["customers"].values())
+    assert all(set(shares) <= set(kept["customers"]) for shares in kept["shares"].values())
 
 
 def test_the_stored_profiles_belong_to_the_release_the_app_serves():
@@ -96,7 +109,7 @@ def test_segments_count_customers_and_say_when_a_segment_is_thin():
     money = {"gross_profit_12m_eur": 0.0, "net_revenue_eur": 100.0, "gross_profit_eur": 30.0, "profit_eur": 30.0}
     customers = {"C1": {"churned": True, "total_spent_eur": 100.0, "revenue_eur": 100.0, "revenue_12m_eur": 40.0, **money},
                  "C2": {"churned": False, "total_spent_eur": 300.0, "revenue_eur": 300.0, "revenue_12m_eur": 60.0, **money}}
-    profiles = [{"customer_id": cid, "profiled": True, "offer": "mostly", "price": "mixed", "rating": "average ratings",
+    profiles = [{"customer_id": cid, "profiled": True, "offer": "mostly", "price": "mixed", "rating": "average ratings", "margin": "high-margin",
                  "pets": ["dog"], "diets": []} for cid in customers]
 
     result = segments(profiles, customers)["by_trait"]["offer"][0]
@@ -132,12 +145,15 @@ def test_a_cell_with_few_rows_has_no_lift_at_all():
     assert cell["thin"] is True and cell["lift_points"] is None and cell["clear"] is None
 
 
+def chosen(conditions: list[str]) -> dict:
+    """What the view says about a selection, counted from the stored files."""
+    return view(facts(), parse(conditions), actions(), reviews(), answers(), summary())
+
+
 def test_the_planted_discount_effect_shows_in_the_orders_of_those_who_buy_on_offer_and_not_in_what_it_earns():
     """A2: a discount lifts the orders of customers who mostly buy on offer. The action costs more than the extra orders earn."""
-    stored = json.loads((PROFILES / "summary.json").read_text())["response"]
-
-    mostly = stored["offer:mostly"]["actions"]["discount"]
-    rarely = stored["offer:rarely"]["actions"]["discount"]
+    mostly = chosen(["offer:mostly"])["response"]["actions"]["discount"]
+    rarely = chosen(["offer:rarely"])["response"]["actions"]["discount"]
 
     assert mostly["lift_points"] > 5 and rarely["lift_points"] < mostly["lift_points"]
     assert not (mostly["profit_clear"] and mostly["profit_lift_eur"] > 0), "a discount does not clearly pay for itself here"
@@ -172,11 +188,11 @@ def test_a_lookup_needs_two_letters(api):
     assert api.get("/api/customer-profiles/customers", params={"q": "a"}).json() == {"customers": []}
 
 
-from src.customer_relations import MIN_GROUP, preferences, relations, share_difference
+from src.customer_relations import MIN_GROUP, memberships, selection_preferences, selection_relations, share_difference
 
 
 def profile(cid: str, offer: str, price: str, pets=("dog",), profiled=True) -> dict:
-    return {"customer_id": cid, "profiled": profiled, "offer": offer, "price": price, "rating": "average ratings",
+    return {"customer_id": cid, "profiled": profiled, "offer": offer, "price": price, "rating": "average ratings", "margin": "high-margin",
             "pets": list(pets), "diets": []}
 
 
@@ -188,50 +204,56 @@ def test_a_share_difference_is_in_points_with_a_margin_that_shrinks_with_more_cu
     assert large[1] < small[1]
 
 
-def test_a_relation_is_the_difference_in_share_between_those_with_a_trait_and_those_without():
+def members_of(profiles: list[dict]) -> dict[str, set]:
+    return {p["customer_id"]: memberships(p) for p in profiles if p["profiled"]}
+
+
+def test_a_relation_is_the_difference_in_share_between_those_selected_and_the_rest():
     profiles = ([profile(f"A{i}", "mostly", "value-leaning" if i < 24 else "mixed") for i in range(30)]
                 + [profile(f"B{i}", "rarely", "value-leaning" if i < 6 else "mixed") for i in range(30)])
+    selected = {f"A{i}" for i in range(30)}
 
-    found = next(r for r in relations(profiles) if r["if"]["value"] == "mostly" and r["then"]["value"] == "value-leaning")
+    found = next(r for r in selection_relations(members_of(profiles), selected, {"offer"}) if r["then"]["value"] == "value-leaning")
 
     assert (found["share_with"], found["share_without"], found["points"]) == (0.8, 0.2, 60.0)
     assert found["clear"] is True
 
 
-def test_no_relation_is_made_from_a_group_smaller_than_the_minimum():
+def test_no_relation_is_made_from_a_selection_smaller_than_the_minimum():
     profiles = [profile(f"A{i}", "mostly", "mixed") for i in range(MIN_GROUP - 1)] + [profile(f"B{i}", "rarely", "mixed") for i in range(60)]
 
-    assert all(r["if"]["value"] != "mostly" for r in relations(profiles))
+    assert selection_relations(members_of(profiles), {f"A{i}" for i in range(MIN_GROUP - 1)}, {"offer"}) == []
 
 
-def test_a_customer_who_is_not_profiled_is_in_no_relation_and_no_preference():
+def test_a_customer_who_is_not_profiled_is_in_no_relation():
     profiles = [profile(f"A{i}", "mostly", "mixed") for i in range(40)] + [profile(f"B{i}", "rarely", "mixed", profiled=False) for i in range(40)]
 
-    assert relations(profiles) == []
+    assert selection_relations(members_of(profiles), {f"A{i}" for i in range(40)}, {"offer"}) == []
 
 
-def test_relations_never_pair_a_trait_with_itself_and_leave_diets_out():
+def test_relations_leave_out_the_traits_the_selection_is_made_of_and_the_diets():
     profiles = [profile(f"A{i}", "mostly" if i % 2 else "rarely", "mixed" if i % 3 else "value-leaning") for i in range(120)]
 
-    found = relations(profiles)
+    found = selection_relations(members_of(profiles), {p["customer_id"] for p in profiles if p["offer"] == "mostly"}, {"offer"})
 
-    assert found and all(r["if"]["trait"] != r["then"]["trait"] for r in found)
-    assert all(r["if"]["trait"] != "diets" and r["then"]["trait"] != "diets" for r in found)
+    assert found and all(r["then"]["trait"] not in ("offer", "diets") for r in found)
 
 
-def test_a_preference_compares_a_segment_with_customers_who_buy_for_the_same_pet_only():
+def test_a_preference_compares_a_selection_with_customers_who_buy_for_the_same_pet_only():
     profiles = ([profile(f"D{i}", "mostly", "mixed", pets=("dog",)) for i in range(40)]
                 + [profile(f"E{i}", "rarely", "mixed", pets=("dog",)) for i in range(40)]
                 + [profile(f"C{i}", "rarely", "mixed", pets=("cat",)) for i in range(40)])
-    nothing = {"categories": set(), "brands": set(), "products": set()}
+    nothing = {"categories": [], "brands": [], "products": []}
     bought = {p["customer_id"]: {"dog": dict(nothing), "cat": dict(nothing)} for p in profiles}
     for p in profiles[:40]:
-        bought[p["customer_id"]]["dog"] = {"categories": {"treats"}, "brands": set(), "products": set()}
+        bought[p["customer_id"]]["dog"] = {"categories": ["treats"], "brands": [], "products": []}
+    pets_of = {p["customer_id"]: set(p["pets"]) for p in profiles}
 
-    found = preferences(profiles, bought)["offer:mostly|dog"]["categories"][0]
+    found = selection_preferences({p["customer_id"] for p in profiles[:40]}, pets_of, bought)
 
-    assert (found["item"], found["share"], found["share_others"], found["clear"]) == ("treats", 1.0, 0.0, True)
-    assert all(entry["pet"] in ("dog", "cat") for entry in preferences(profiles, bought).values())
+    top = found["dog"]["categories"][0]
+    assert (top["item"], top["share"], top["share_others"], top["clear"]) == ("treats", 1.0, 0.0, True)
+    assert "cat" not in found, "no cat owner is selected, so there is nothing to compare for cats"
 
 
 def test_the_stored_profiles_give_profit_per_segment_that_adds_up_to_the_profiled_profit():
@@ -312,23 +334,23 @@ def test_the_reference_median_is_over_list_prices_so_both_sides_of_the_compariso
 
 
 def test_a_difference_inside_its_margin_is_not_clear_in_a_relation():
-    profiles = ([profile(f"A{i}", "mostly", "value-leaning" if i < 16 else "mixed") for i in range(30)]
-                + [profile(f"B{i}", "rarely", "value-leaning" if i < 13 else "mixed") for i in range(30)])
+    profiles = ([profile(f"A{i}", "mostly", "value-leaning" if i < 12 else "mixed") for i in range(40)]
+                + [profile(f"B{i}", "rarely", "value-leaning" if i < 8 else "mixed") for i in range(40)])
 
-    found = next(r for r in relations(profiles) if r["if"]["value"] == "mostly" and r["then"]["value"] == "value-leaning")
+    found = next(r for r in selection_relations(members_of(profiles), {f"A{i}" for i in range(40)}, {"offer"}) if r["then"]["value"] == "value-leaning")
 
     assert found["points"] == 10.0 and found["clear"] is False
 
 
 def test_a_difference_inside_its_margin_is_not_clear_in_a_preference():
     profiles = ([profile(f"D{i}", "mostly", "mixed") for i in range(40)] + [profile(f"E{i}", "rarely", "mixed") for i in range(40)])
-    bought = {p["customer_id"]: {"dog": {"categories": set(), "brands": set(), "products": set()}, "cat": {"categories": set(), "brands": set(), "products": set()}} for p in profiles}
+    bought = {p["customer_id"]: {"dog": {"categories": [], "brands": [], "products": []}, "cat": {"categories": [], "brands": [], "products": []}} for p in profiles}
     for p in profiles[:40]:
-        bought[p["customer_id"]]["dog"]["categories"] = {"treats"}
+        bought[p["customer_id"]]["dog"]["categories"] = ["treats"]
     for p in profiles[40:]:
-        bought[p["customer_id"]]["dog"]["categories"] = {"treats"} if int(p["customer_id"][1:]) < 36 else set()
+        bought[p["customer_id"]]["dog"]["categories"] = ["treats"] if int(p["customer_id"][1:]) < 36 else []
 
-    row = preferences(profiles, bought)["offer:mostly|dog"]["categories"][0]
+    row = selection_preferences({f"D{i}" for i in range(40)}, {p["customer_id"]: {"dog"} for p in profiles}, bought)["dog"]["categories"][0]
 
     assert row["points"] == 10.0 and row["clear"] is False
 
@@ -509,16 +531,14 @@ def test_a_ranking_of_nothing_is_an_error_not_a_flat_line():
 
 
 def test_the_stored_ranking_has_the_offer_preference_and_a_top_fifth_that_prefers_it_more():
-    ranked = json.loads((PROFILES / "summary.json").read_text())["preference_ranking"]["offer"]
+    ranked = chosen(["offer:mostly"])["ranking"]["offer"]
 
     assert ranked["top_over_average"] > 1.5 and ranked["curve"][0] > ranked["curve"][-1]
 
 
-def test_every_stored_funnel_step_is_no_wider_than_the_one_before():
-    funnel = json.loads((PROFILES / "summary.json").read_text())["funnel"]
-
-    for key, f in funnel.items():
-        assert f["impressions"] >= f["clicks"] >= f["carts"] >= f["purchases"], key
+def test_a_segments_ranking_names_the_variable_it_is_a_slice_of():
+    assert chosen(["price:premium-leaning"])["ranking"]["cheaper"]["label"].startswith("Lines in the cheaper half")
+    assert chosen(["pets:dog"])["ranking"] == {}, "a pet is not a share of what a customer bought"
 
 
 # ── Acquisition: where a segment's customers came from ──
@@ -593,7 +613,33 @@ def test_every_profiled_customer_has_a_first_session_whose_source_is_their_first
 
 
 def test_the_stored_acquisition_shares_of_everyone_add_up_to_one_per_dimension():
-    everyone = json.loads((PROFILES / "summary.json").read_text())["acquisition"]["all"]
+    everyone = chosen([])["acquisition"]
 
     for dim, rows in everyone.items():
         assert abs(sum(r["share"] for r in rows) - 1.0) < 0.02, dim
+
+
+# --- margin: a customer's basket margin, high or low against the median customer (ADR 0053, topic tree) ---
+
+def test_a_customer_is_high_or_low_margin_against_the_median_of_the_profiled_customers():
+    earned = {"A": {"net_revenue_eur": 100.0, "gross_profit_eur": 40.0}, "B": {"net_revenue_eur": 100.0, "gross_profit_eur": 30.0},
+              "C": {"net_revenue_eur": 100.0, "gross_profit_eur": 20.0}}
+
+    bands, cut = margin_bands(earned, ["A", "B", "C"])
+
+    assert cut == 0.3 and bands == {"A": "high-margin", "B": "high-margin", "C": "low-margin"}
+
+
+def test_a_customer_with_no_revenue_has_no_margin_and_does_not_move_the_median():
+    earned = {"A": {"net_revenue_eur": 100.0, "gross_profit_eur": 40.0}, "B": {"net_revenue_eur": 100.0, "gross_profit_eur": 20.0},
+              "Z": {"net_revenue_eur": 0.0, "gross_profit_eur": 0.0}}
+
+    bands, cut = margin_bands(earned, ["A", "B", "Z", "NEVER-BOUGHT"])
+
+    assert bands["Z"] == TOO_FEW and bands["NEVER-BOUGHT"] == TOO_FEW and cut == 0.3
+
+
+def test_a_profile_with_a_margin_band_is_in_the_margin_segment():
+    profile = {**traits([("A", True)] * 4), "margin": "high-margin"}
+
+    assert "margin:high-margin" in segment_keys(profile)

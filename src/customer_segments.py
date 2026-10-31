@@ -26,7 +26,7 @@ from src.customer_traits import (DIET_MIN_LINES, MIN_LINES, NOT_PROFILED, OFFER_
                                  LOW_RATED_BELOW, TOO_FEW, VALUE_FROM)
 
 THIN_BELOW = 30
-TRAITS = ("offer", "price", "rating", "pets")
+TRAITS = ("offer", "price", "rating", "margin", "pets")
 ACTIONS = ("email", "ad", "discount", "voucher", "apology")
 
 
@@ -41,20 +41,20 @@ def segments(traits: list[dict], customers: dict[str, dict]) -> dict:
         for t in profiled:
             for value in (t["pets"] if trait == "pets" else [t[trait]]):
                 groups[value].append(customers[t["customer_id"]])
-        out["by_trait"][trait] = [_segment(trait, value, rows, len(profiled), revenue, profit) for value, rows in sorted(groups.items())
+        out["by_trait"][trait] = [segment_stats(trait, value, rows, len(profiled), revenue, profit) for value, rows in sorted(groups.items())
                                   if value not in (NOT_PROFILED, TOO_FEW)] + (
             [{"key": f"{trait}:{TOO_FEW}", "value": TOO_FEW, **_count(groups[TOO_FEW], len(profiled)),
                "revenue_eur": round(sum(r["net_revenue_eur"] for r in groups[TOO_FEW]), 2),
                "revenue_share": round(sum(r["net_revenue_eur"] for r in groups[TOO_FEW]) / revenue, 3),
                "profit_eur": round(sum(r["profit_eur"] for r in groups[TOO_FEW]), 2),
                "profit_share": round(sum(r["profit_eur"] for r in groups[TOO_FEW]) / profit, 3)}] if TOO_FEW in groups else [])
-    out["overall"] = {**_segment("all", "all", [customers[t["customer_id"]] for t in profiled], len(profiled), revenue, profit),
+    out["overall"] = {**segment_stats("all", "all", [customers[t["customer_id"]] for t in profiled], len(profiled), revenue, profit),
                       "key": "all", "value": "All profiled customers"}
     diets = defaultdict(list)
     for t in profiled:
         for tag in t["diets"]:
             diets[tag].append(customers[t["customer_id"]])
-    out["by_trait"]["diets"] = [_segment("diets", tag, rows, len(profiled), revenue, profit) for tag, rows in sorted(diets.items(), key=lambda kv: -len(kv[1]))]
+    out["by_trait"]["diets"] = [segment_stats("diets", tag, rows, len(profiled), revenue, profit) for tag, rows in sorted(diets.items(), key=lambda kv: -len(kv[1]))]
     return out
 
 
@@ -72,6 +72,8 @@ def definitions() -> dict[str, str]:
         "rating:above-average ratings": f"On average they bought products rated {RATING_LED_FROM} stars or more above their category's average.",
         "rating:average ratings": f"On average they bought products rated within {RATING_LED_FROM} stars above, or not below, their category's average.",
         "rating:below-average ratings": "On average they bought products rated below their category's average.",
+        "margin:high-margin": "Their purchases carry a gross margin at or above the median customer's.",
+        "margin:low-margin": "Their purchases carry a gross margin below the median customer's.",
         "_pets": "They bought at least one product for this pet.",
         "_diets": f"They bought at least {DIET_MIN_LINES} lines of food made for this diet (the pet's diet, from the product's tag).",
         "_all": f"Needs {MIN_LINES} or more purchased lines for the shopping traits.",
@@ -82,7 +84,7 @@ def _count(rows: list[dict], profiled: int) -> dict:
     return {"customers": len(rows), "share": round(len(rows) / profiled, 3)}
 
 
-def _segment(trait: str, value: str, rows: list[dict], profiled: int, profiled_revenue: float, profiled_profit: float) -> dict:
+def segment_stats(trait: str, value: str, rows: list[dict], profiled: int, profiled_revenue: float, profiled_profit: float) -> dict:
     return {"key": f"{trait}:{value}", "value": value, **_count(rows, profiled),
             "churn_rate": round(sum(r["churned"] for r in rows) / len(rows), 3),
             "avg_spend_eur": round(sum(r["total_spent_eur"] for r in rows) / len(rows), 2),
@@ -101,7 +103,7 @@ def segment_keys(profile: dict) -> list[str]:
     """The segments a profiled customer is in, as "trait:value" (the key every segment is listed and looked up by), and "all"."""
     if not profile["profiled"]:
         return []
-    keys = ["all"] + [f"{trait}:{profile[trait]}" for trait in ("offer", "price", "rating") if profile[trait] != TOO_FEW]
+    keys = ["all"] + [f"{trait}:{profile[trait]}" for trait in ("offer", "price", "rating", "margin") if profile[trait] != TOO_FEW]
     return keys + [f"pets:{pet}" for pet in profile["pets"]] + [f"diets:{tag}" for tag in profile["diets"]]
 
 

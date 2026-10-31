@@ -1,4 +1,4 @@
-"""The Customers view's routes (ADR 0053): segments, who responds to what, and one customer's profile.
+"""The Customers view's routes (ADR 0053): the segments to choose from, a selection of them, and one customer's profile.
 
 Read-only, from the stored profiles in `data/customer_profiles/` (written by `./do customer-profiles`).
 A stored file for another data release is served with `stale: true`, so the page says so.
@@ -10,9 +10,11 @@ import json
 from functools import lru_cache
 from pathlib import Path
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Query, Request
 from fastapi.responses import JSONResponse
 
+from src.customer_selection import parse, view
+from src.customer_selection_data import actions, answers, facts, reviews
 from src.demo_mode import requested_sandbox
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -46,6 +48,23 @@ def customer_profiles(request: Request):
     release data and `scope: release-not-sandbox`, so the page does not pass them off as that sandbox's."""
     scope = "release-not-sandbox" if requested_sandbox(request) else "release"
     return {**_summary(), "stale": _stale(), "scope": scope}
+
+
+@lru_cache(maxsize=256)
+def _selection(conditions: tuple[str, ...]) -> dict:
+    return view(facts(), parse(list(conditions)), actions(), reviews(), answers(), _summary())
+
+
+@router.get("/api/customer-profiles/segment")
+def customer_segment(request: Request, c: list[str] = Query(default=[])):
+    """Everything the view says about the customers who meet every condition `c` (repeat it: `?c=offer:mostly&c=pets:dog`);
+    nothing ticked is every profiled customer. Counted from the stored facts, so any combination is answered."""
+    try:
+        parsed = parse(c)
+    except ValueError as error:
+        return JSONResponse(status_code=400, content={"error": str(error)})
+    return {**_selection(tuple(f"{t}:{v}" for t, v in parsed)), "stale": _stale(),
+            "scope": "release-not-sandbox" if requested_sandbox(request) else "release"}
 
 
 @router.get("/api/customer-profiles/customers")
