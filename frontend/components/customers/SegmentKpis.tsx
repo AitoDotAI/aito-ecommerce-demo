@@ -23,11 +23,17 @@ export default function SegmentKpis({ summary, selected }: { summary: ProfilesSu
     <div className="card" style={{ borderTop: "3px solid var(--cta)" }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 12 }}>
         <Kpi label="Profit per customer" value={segment.customers < 30 || !ci ? `${fmtEur(per)}` : fmtEur(per)}
-          note={!ci ? `only ${segment.customers} customers: no interval` : `${fmtEur(ci[0])} to ${fmtEur(ci[1])}${selected === "all" ? "" : `, ${diff >= 0 ? "+" : ""}${fmtEur(diff)} vs all${clear ? "" : " (not clearly different)"}`}`} />
+          note={!ci ? `only ${segment.customers} customers: no interval` : `${fmtEur(ci[0])} to ${fmtEur(ci[1])}${selected === "all" ? `, median ${fmtEur(summary.profit_distribution.median_eur)}` : `, ${diff >= 0 ? "+" : ""}${fmtEur(diff)} vs all${clear ? "" : " (not clearly different)"}`}`} />
         <Kpi label="Profit" value={fmtEur(segment.profit_eur ?? 0)} note={`${Math.round((segment.profit_share ?? 0) * 100)} % of all`} />
         <Kpi label="Gross margin" value={`${Math.round((segment.margin ?? 0) * 100)} %`} note={`all ${Math.round((all.margin ?? 0) * 100)} %`} />
         <Kpi label="Revenue" value={fmtEur(segment.revenue_eur ?? 0)} note="price paid, lines kept" />
         <Kpi label="Churned" value={`${Math.round((segment.churn_rate ?? 0) * 100)} %`} note={`all ${Math.round((all.churn_rate ?? 0) * 100)} %`} />
+        {selected === "all" && (
+          <>
+            <Kpi label="Top tenth earns" value={`${Math.round(summary.profit_distribution.top_tenth_share * 100)} %`} note="of the profit" />
+            <Kpi label="Lose money" value={String(summary.profit_distribution.losing_money)} note={`of ${summary.profit_distribution.customers.toLocaleString("en-GB")}`} />
+          </>
+        )}
       </div>
       {funnel && (
         <div style={{ marginTop: 16 }}>

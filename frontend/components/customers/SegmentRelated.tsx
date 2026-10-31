@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { ACQUISITION_TITLE, TRAIT_TITLE, type ProfilesSummary } from "@/lib/customer-profiles";
+import { TRAIT_TITLE, type ProfilesSummary } from "@/lib/customer-profiles";
 
 interface Related {
   kind: string; label: string; points: number; margin: number; clear: boolean; share: number; shareOthers: number; note?: string;
@@ -10,7 +10,7 @@ interface Related {
 
 const LIST_LENGTH = 25;
 
-/** Everything the selected segment is related to, as one list: the points more (or fewer) of it have each item than the rest. */
+/** What else the selected segment prefers, as one list: the points more (or fewer) of it have each item than the rest. */
 export function relatedItems(summary: ProfilesSummary, selected: string): Related[] {
   const rows: Related[] = [];
   for (const r of summary.relations.filter((x) => `${x.if.trait}:${x.if.value}` === selected)) {
@@ -28,13 +28,6 @@ export function relatedItems(summary: ProfilesSummary, selected: string): Relate
       }
     }
   }
-  for (const dimension of ["source", "landing", "landing_category"] as const) {
-    for (const r of summary.acquisition[selected]?.[dimension] ?? []) {
-      if (r.points === undefined) continue;
-      rows.push({ kind: ACQUISITION_TITLE[dimension], label: r.value.replace("_", " "), points: r.points, margin: r.margin_points ?? 0,
-        clear: Boolean(r.clear), share: r.share, shareOthers: r.share_others ?? 0 });
-    }
-  }
   return rows.sort((a, b) => Math.abs(b.points) - Math.abs(a.points));
 }
 
@@ -42,7 +35,7 @@ export default function SegmentRelated({ summary, selected }: { summary: Profile
   const [kind, setKind] = useState<string | null>(null);
   const [hints, setHints] = useState(false);
   const [more, setMore] = useState(false);
-  if (selected === "all") return null;
+  if (selected === "all") return <div className="card card-sub">Pick a segment to see what goes with it.</div>;
   const all = relatedItems(summary, selected);
   const kinds = [...new Set(all.map((r) => r.kind))];
   const visible = all.filter((r) => (kind === null || r.kind === kind) && (hints || r.clear));
@@ -50,10 +43,10 @@ export default function SegmentRelated({ summary, selected }: { summary: Profile
   const scale = Math.max(30, ...all.map((r) => Math.abs(r.points)));
   return (
     <div className="card">
-      <div className="card-title">What goes with them</div>
+      <div className="card-title">Their other preferences</div>
       <div className="card-sub" style={{ marginBottom: 8, lineHeight: 1.5 }}>
-        How many more (or fewer) points of this segment have each item than the customers outside it: other ways of shopping, what they buy
-        (against customers who buy for the same pet) and where they came from (their first session). Only differences larger than their 99.7 %
+        How many more (or fewer) points of this segment have each item than the customers outside it: other ways of shopping and what they buy
+        (against customers who buy for the same pet). Only differences larger than their 99.7 %
         margin are listed; many pairs are compared, so the bar is high. At product level most are hints.
       </div>
       <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 8 }}>
@@ -83,7 +76,7 @@ export default function SegmentRelated({ summary, selected }: { summary: Profile
 function Bar({ r, scale }: { r: Related; scale: number }) {
   const width = `${(Math.abs(r.points) / scale) * 50}%`;
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "minmax(150px, 1.3fr) 1fr 150px", gap: 8, alignItems: "center", fontSize: 13, margin: "3px 0", opacity: r.clear ? 1 : 0.45 }}>
+    <div style={{ display: "grid", gridTemplateColumns: "minmax(120px, 1.3fr) minmax(60px, 0.8fr) minmax(110px, 140px)", gap: 8, alignItems: "center", fontSize: 13, margin: "3px 0", opacity: r.clear ? 1 : 0.45 }}>
       <span><span className="card-sub">{r.kind} · </span>{r.label}</span>
       <span style={{ position: "relative", height: 12, background: "var(--border-light)", borderRadius: 3 }}>
         <span style={{ position: "absolute", left: "50%", top: 0, bottom: 0, width: 1, background: "var(--border)" }} />

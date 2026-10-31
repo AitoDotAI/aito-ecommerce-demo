@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 
-import { apiFetch, fmtEur } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import { findSegment, type ProfilesSummary } from "@/lib/customer-profiles";
 import { customersPanel } from "@/lib/panel-content";
 import { useUrlState } from "@/lib/use-url-state";
@@ -13,13 +13,19 @@ import PreferenceGraph from "@/components/customers/PreferenceGraph";
 import SegmentKpis from "@/components/customers/SegmentKpis";
 import SegmentPicker from "@/components/customers/SegmentPicker";
 import SegmentRelated from "@/components/customers/SegmentRelated";
+import SegmentAcquisition from "@/components/customers/SegmentAcquisition";
 import SegmentProfile from "@/components/customers/SegmentProfile";
 import SegmentResponse from "@/components/customers/SegmentResponse";
 
+const TABS = [
+  { id: "figures", label: "Figures" }, { id: "preferences", label: "Other preferences" },
+  { id: "channels", label: "Channels" }, { id: "actions", label: "Actions" },
+];
+
 /**
- * Customers (ADR 0053): pick a segment and every pane follows it, as in Product. The profile and what to do sit
- * top left, the key figures and the showing funnel top right; below, how customers rank by a preference and where the
- * segment sits in that ranking, how it relates to other variables, what it buys, and what the shop's actions did for it.
+ * Customers (ADR 0053): pick a segment and every pane follows it, as in Product. The profile, what to do and where
+ * the segment sits in the ranking of its variable are on the left; on the right, tabs: the key figures and the showing funnel,
+ * its other preferences, the channels it came through, and what the shop's actions did for it.
  * Traits are counted from purchase history for customers who consented to behavioural profiling; they describe how a
  * customer chooses and which pets they buy for, nothing about the person. Stored and simulated.
  */
@@ -31,6 +37,7 @@ function CustomersView() {
   });
   const [summary, setSummary] = useState<ProfilesSummary | null>(null);
   const [selected, setSelected] = useUrlState("seg", "all");
+  const [tab, setTab] = useUrlState("tab", "figures");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -70,13 +77,20 @@ function CustomersView() {
               <SegmentProfile summary={summary} selected={key} />
               <PreferenceGraph summary={summary} selected={key} />
             </div>
-            <SegmentKpis summary={summary} selected={key} />
+            <div>
+              <div role="tablist" aria-label="Segment details" style={{ display: "flex", gap: 6, marginBottom: 10, flexWrap: "wrap" }}>
+                {TABS.map((t) => (
+                  <button key={t.id} role="tab" aria-selected={tab === t.id} className={`toggle-btn${tab === t.id ? " active" : ""}`}
+                          onClick={() => setTab(t.id)}
+                          style={{ width: "auto", height: "auto", padding: "6px 14px", whiteSpace: "nowrap", fontSize: 13 }}>{t.label}</button>
+                ))}
+              </div>
+              {tab === "preferences" ? <SegmentRelated summary={summary} selected={key} /> :
+               tab === "channels" ? <SegmentAcquisition summary={summary} selected={key} /> :
+               tab === "actions" ? <SegmentResponse summary={summary} selected={key} /> :
+               <SegmentKpis summary={summary} selected={key} />}
+            </div>
           </div>
-          <div className="fit-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 420px), 1fr))", gap: 12, alignItems: "start" }}>
-            <SegmentRelated summary={summary} selected={key} />
-            <SegmentResponse summary={summary} selected={key} />
-          </div>
-          <Headline summary={summary} />
           <CustomerLookup />
           <div className="card-sub">
             Profit: price paid less unit cost on the lines kept (returned lines earn nothing), less the shop&apos;s action costs; no delivery
@@ -91,27 +105,6 @@ function CustomersView() {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-function Headline({ summary }: { summary: ProfilesSummary }) {
-  const d = summary.profit_distribution;
-  const items: [string, string, string][] = [
-    ["Profit, profiled customers", fmtEur(summary.profiled_profit_eur), `${Math.round(summary.gross_margin * 100)} % gross margin`],
-    ["Profit per customer", fmtEur(summary.profiled_profit_eur / summary.profiled), `median ${fmtEur(d.median_eur)}`],
-    ["Top tenth earns", `${Math.round(d.top_tenth_share * 100)} %`, "of the profit"],
-    ["Lose money", String(d.losing_money), `of ${d.customers.toLocaleString("en-GB")}`],
-  ];
-  return (
-    <div className="card" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12 }}>
-      {items.map(([label, value, note]) => (
-        <div key={label}>
-          <div className="card-sub">{label}</div>
-          <div style={{ fontSize: 22, fontWeight: 700 }}>{value}</div>
-          <div className="card-sub">{note}</div>
-        </div>
-      ))}
     </div>
   );
 }

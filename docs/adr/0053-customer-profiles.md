@@ -31,13 +31,13 @@ A new view, **Customers**, with the rules below.
    rows as independent although one customer can have several, so they are approximate; a cell inside its margin is shown grey, one under
    30 rows is blank, and about one cell in twenty would pass by chance.
 5. **A segment picker, as in Product.** A drop-down picks a segment (or everyone) and every pane follows it. Top left: who the segment is, in words, and what to do
-   (only differences larger than their margins). Top right: its key figures against everyone, and its showing funnel (impressions, clicks, carts,
-   purchases) over the identified sessions of its customers. Below the profile: where the segment sits in the ranking of the variable it is a slice of (offer, price or rating; none for pets and diets), so the
-   only control is the segment drop-down. Then one list of what goes with the segment, with its lift in points (other ways of shopping, categories, brands, products, channels and landing pages), and what the shop's actions did for it. The view examines one segment; there is no list comparing all segments. Profit is the price paid less the unit cost on the lines kept (a returned line earns nothing),
+   (only differences larger than their margins). Top right, in tabs as in Product: its key figures against everyone (for everyone also the profit distribution: median, what the top tenth earns, how many lose money) and its showing funnel (impressions, clicks, carts,
+   purchases) over the identified sessions of its customers; its other preferences; the channels it came through; what the shop's actions did for it. Below the profile: where the segment sits in the ranking of the variable it is a slice of (offer, price or rating; none for pets and diets), so the
+   only control is the segment drop-down. The preferences tab is one list of what goes with the segment, with its lift in points (other ways of shopping, categories, brands, products). The view examines one segment; there is no list comparing all segments. Profit is the price paid less the unit cost on the lines kept (a returned line earns nothing),
    less the shop's action costs; there is no delivery or payment cost in the data, so it is profit after products and actions, not a full P&L.
    The unit cost is the inventory's current cost per product, applied to two years of sales. Profit per customer carries a 95 % bootstrap interval
    (a few customers earn much of it), and no interval is given under 30 customers. Revenue is the price paid on the lines kept, the same basis as profit and
-   margin. The headline shows total profit, profit per customer and median, the share the top tenth earns and how many lose money. The response table is per segment, in orders and in estimated profit (the 30-day spend at the shop's
+   margin. The profit distribution (total, per customer and median, the share the top tenth earns, how many lose money) is in the figures tab for everyone. The response table is per segment, in orders and in estimated profit (the 30-day spend at the shop's
    gross margin less the action's cost): a discount that lifts orders can still lose money.
 5b. **Preference ranking.** All customers ranked by how much they prefer something (their share of lines on offer, in the cheaper half, in better-rated
    products, in a category or of a brand, over the average share), as a curve in twenty steps and five fifths, with the top fifth over the average and over the
