@@ -11,7 +11,6 @@ import ErrorState from "@/components/shell/ErrorState";
 import CustomerLookup from "@/components/customers/CustomerLookup";
 import PreferenceGraph from "@/components/customers/PreferenceGraph";
 import SegmentKpis from "@/components/customers/SegmentKpis";
-import SegmentList from "@/components/customers/SegmentList";
 import SegmentPicker from "@/components/customers/SegmentPicker";
 import SegmentRelated from "@/components/customers/SegmentRelated";
 import SegmentProfile from "@/components/customers/SegmentProfile";
@@ -77,9 +76,14 @@ function CustomersView() {
             <SegmentRelated summary={summary} selected={key} />
             <SegmentResponse summary={summary} selected={key} />
           </div>
-          <SegmentList summary={summary} selected={key} onSelect={setSelected} />
           <Headline summary={summary} />
           <CustomerLookup />
+          <div className="card-sub">
+            Profit: price paid less unit cost on the lines kept (returned lines earn nothing), less the shop&apos;s action costs; no delivery
+            or payment cost is in the data. Unit cost is the inventory&apos;s current cost per product (about two-thirds of the base price)
+            applied to two years of sales, and 165 kept lines were sold below it. ± is half the 95 % bootstrap interval of profit per
+            customer: a few customers earn much of it. Pets and diets overlap.
+          </div>
           <div className="card-sub">
             Every trait is a share of the lines a customer bought: no health, religion or similar is inferred, and the diet
             traits are the pet&apos;s, from the product&apos;s diet tag. They choose which offer or message a customer sees,
