@@ -51,7 +51,7 @@ export interface RunStep {
 }
 
 export interface Run {
-  id: string; title: string; release: string; as_of_month: string; source: string; stale: boolean;
+  id: string; title: string; release: string; as_of_month: string; source: string; stale: boolean; stale_reason: string | null;
   steps: RunStep[]; tally: Record<Outcome, Tally>; settings: SettingsView;
 }
 

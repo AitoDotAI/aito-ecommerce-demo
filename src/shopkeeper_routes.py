@@ -9,12 +9,12 @@ from __future__ import annotations
 
 import statistics
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
 from src.shopkeeper_board import board_for
 from src.shopkeeper_gate import RECOMMENDED_NEVER_AUTO, GateSettings
-from src.shopkeeper_run import decide_steps, load_run, release_env, stored_run_ids, tally
+from src.shopkeeper_run import decide_steps, load_run, release_env, snapshot_digest, stored_run_ids, tally
 
 router = APIRouter()
 
@@ -40,12 +40,27 @@ def settings_from(act_lift: float | None, suggest_lift: float | None, min_rows: 
         never_auto=defaults.never_auto if never_auto is None else frozenset(k for k in never_auto.split(",") if k))
 
 
+def stale_reason(run: dict, request: Request) -> str | None:
+    """Why a stored run no longer matches what the app serves, else None.
+
+    The release must be the app's, and the numbers must be those Retention serves now: the same view through
+    the same precompute store (so a sandbox or another namespace is compared with its own snapshot).
+    Without that view wired in (a bare router in a test) only the release is checked.
+    """
+    if run["release"] != release_env():
+        return f"stored for data release {run['release']}; the app serves {release_env()}"
+    serve_retention = getattr(request.app.state, "ask_retention", None)
+    if serve_retention is not None and snapshot_digest(serve_retention()) != run["snapshot_digest"]:
+        return "Retention now serves different numbers than this run read"
+    return None
+
+
 def _bad_request(exc: Exception) -> JSONResponse:
     return JSONResponse(status_code=400, content={"error": str(exc)})
 
 
 @router.get("/api/shopkeeper")
-def shopkeeper_overview(act_lift: float | None = None, suggest_lift: float | None = None,
+def shopkeeper_overview(request: Request, act_lift: float | None = None, suggest_lift: float | None = None,
                         min_rows: int | None = None, never_auto: str | None = None):
     """The three lists of the view: the Board, the routines with their latest run, the past conversations."""
     try:
@@ -60,13 +75,13 @@ def shopkeeper_overview(act_lift: float | None = None, suggest_lift: float | Non
         "board": [item for run in runs for item in board_for(run, settings)],
         "routines": [{**r, "latest_run": next((run["id"] for run in runs if run["routine"] == r["id"]), None)} for r in ROUTINES],
         "conversations": [{"id": run["id"], "title": run["title"], "as_of_month": run["as_of_month"],
-                           "stale": run["release"] != release_env(),
+                           "stale": stale_reason(run, request) is not None,
                            "tally": tally(decide_steps(run, settings))} for run in runs],
     }
 
 
 @router.get("/api/shopkeeper/runs/{run_id}")
-def shopkeeper_run(run_id: str, act_lift: float | None = None, suggest_lift: float | None = None,
+def shopkeeper_run(request: Request, run_id: str, act_lift: float | None = None, suggest_lift: float | None = None,
                    min_rows: int | None = None, never_auto: str | None = None):
     """One stored run, every step judged under the thresholds the request names."""
     try:
@@ -78,7 +93,7 @@ def shopkeeper_run(run_id: str, act_lift: float | None = None, suggest_lift: flo
         return JSONResponse(status_code=404, content={"error": str(exc)})
     decided = decide_steps(run, settings)
     return {**run, "steps": decided, "tally": tally(decided), "settings": _settings_view(settings, [run]),
-            "stale": run["release"] != release_env()}
+            "stale": (reason := stale_reason(run, request)) is not None, "stale_reason": reason}
 
 
 def _settings_view(settings: GateSettings, runs: list[dict]) -> dict:

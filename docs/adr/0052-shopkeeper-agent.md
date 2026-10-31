@@ -1,6 +1,9 @@
 # ADR 0052: The shopkeeper agent — routine runs with a confidence gate and an approval step
 
-**Status:** Accepted (2026-10-31, Antti: "merge it and implement it"). Slice 1 built: the gate, the stored win-back run, the Board, the view. The stock check, portfolio, product-entry routines, live questions and the Toolbox switch are not built.
+**Status:** Accepted (2026-10-31, Antti: "merge it and implement it"). Slice 1 built and merged (#138, fixed forward in the follow-up): the gate, one stored win-back run, the Board, the view, the Retention link.
+**Built, differing from the plan:** approvals and edited settings live in the browser, so there is no `agent_runs` / `agent_steps` log and no approvals table; the Board holds findings about thin evidence, approval load and churn drivers, not yet findings about action kinds against their baselines.
+**Not built:** the stock-aware check, portfolio, product-entry routines; live questions; the Toolbox switch; scheduled running; a server-side approve/reject log.
+**Seen in the stored run at the recommended settings:** 8 acted, 2 suggested, 2 needing a person, 8 quiet: "suggest" appears for only 2 of 20 customers, so the middle band of the gate is thin in this data.
 **Date:** 2026-10-31
 **Deciders:** Antti
 
@@ -39,8 +42,8 @@ A new view, **Shopkeeper**. Three columns of navigation, one reading pane:
 
 ### The gate (the product)
 
-Every proposed action carries its calibrated probability or lift, its `$why`, the rows it rests on and the threshold in
-force, shown on the step:
+Every proposed action carries its lift over no action, how many past rows match the customer's exact situation and action, and the threshold in
+force, shown on the step. The lift is Aito's estimate over the whole action table; the matching rows are a check that the situation has history, not what the lift rests on:
 
 | Outcome | When | Effect |
 |---|---|---|
@@ -58,7 +61,7 @@ browser, so no table is written; the simulated log tables of the plan wait for t
 
 There is one win-back dataset and one record of its actions and outcomes (ADR 0051's `customer_actions`, shown by
 `/winback` and Retention). The agent does not keep a copy: its runs read that record and write their actions to it, so a
-run and the page cannot disagree. A run may roll on a schedule.
+run is built from the snapshot Retention serves and marked stale when Retention serves different numbers (a digest of the numbers it read). A run may roll on a schedule (not built).
 
 ### Two learning loops
 
@@ -118,26 +121,26 @@ when stock is low?) is a separate ticket (td-20261030080248329856); this ADR mak
 
 ## Acceptance criteria
 
-- [ ] A user can open the Board, the routines and the past conversations, and the reading pane shows the selected one.
-- [ ] A user can open a stored win-back run and see, per customer, the ranked actions, the chosen
+- [x] A user can open the Board, the routines and the past conversations, and the reading pane shows the selected one.
+- [x] A user can open a stored win-back run and see, per customer, the ranked actions, the chosen
       outcome (act, suggest, stay quiet, never auto), the threshold, the `$why` and the euros over no action.
-- [ ] The run's "euros added vs doing nothing" equals the sum of the acted-on steps, and a test recomputes it.
-- [ ] A customer with no evidence gets "stay quiet" with the reason, not a guess.
-- [ ] The thresholds and "never auto" kinds are editable in the store's settings; the steps change outcome accordingly and show the values in force.
-- [ ] A kind marked "never auto" is never executed without approval, whatever the confidence.
-- [ ] A run and the win-back page show the same actions: both read one record.
-- [ ] After a win-back run the Board holds at least one finding with its evidence (an action kind, parameter or segment against its baseline).
+- [x] The run's "euros added vs doing nothing" equals the sum of the acted-on steps, and a test recomputes it.
+- [x] A customer with no evidence gets "stay quiet" with the reason, not a guess.
+- [x] The thresholds and "never auto" kinds are editable in the store's settings; the steps change outcome accordingly and show the values in force.
+- [x] A kind marked "never auto" is never executed without approval, whatever the confidence.
+- [x] A run is built from the snapshot Retention serves, and is marked stale when Retention serves different numbers.
+- [ ] After a win-back run the Board holds at least one finding with its evidence (an action kind, parameter or segment against its baseline). (The Board's findings are thin evidence, approval load and churn drivers; none yet compares an action kind with its baseline.)
 - [ ] A portfolio run proposes retiring products with the stock and margin at stake, and a price change with the units and profit it implies, both as decisions awaiting approval.
-- [ ] A user can approve or reject a queued step; the log shows it, labelled simulated.
+- [ ] A user can approve or reject a queued step; the log shows it, labelled simulated. (Approve and reject work in the browser; there is no log.)
 - [ ] With the stock filters on, no recommendation list in the stock-aware run shows an out-of-stock product (asserted by `aito-check`).
 - [ ] The Toolbox switch makes the agent say it is guessing and drops the "act" outcome.
-- [ ] A stored run recorded under another data release fails its test.
-- [ ] No page copy names a prospect or states a price.
+- [x] A stored run recorded under another data release, or from other numbers than Retention serves, is marked stale (tested).
+- [x] No page copy names a prospect or states a price (a test checks the stored run for prospect names).
 
 ## Demo impact
 
 A new moment in `docs/demo-script.md`: the weekly win-back run. Existing moments are unchanged.
-The Retention and Supply views gain a link to the run that uses them.
+The Retention view links to the run that uses it; Supply gains one when the stock-aware routine exists.
 
 ## Out of scope
 
@@ -151,7 +154,7 @@ The Retention and Supply views gain a link to the run that uses them.
 
 **Good:**
 - The trust story is something a person can read step by step, with numbers they can check.
-- The agent reuses the services the views use, so the two cannot disagree.
+- The agent reads the numbers the views serve, and a run is marked stale when they differ.
 
 **Bad:**
 - A new surface to keep current; stored runs go stale on every data release and the test will say so.

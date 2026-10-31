@@ -57,7 +57,7 @@ def test_moving_the_bar_moves_the_outcome():
 
 
 def test_every_decision_says_why():
-    assert "30 rows" in decide("ad", "Ad", 0.18, 20.0, 30, GateSettings()).reason
+    assert "30 past rows match" in decide("ad", "Ad", 0.18, 20.0, 30, GateSettings()).reason
 
 
 @pytest.mark.parametrize("act,suggest,rows", [(0.05, 0.15, 10), (1.5, 0.1, 10), (0.15, -0.1, 10), (0.15, 0.05, -1)])

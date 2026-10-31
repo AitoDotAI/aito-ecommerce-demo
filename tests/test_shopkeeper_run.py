@@ -44,14 +44,15 @@ def test_the_run_is_labelled_simulated(run):
     assert run["simulated"] is True
 
 
-def test_the_headline_euros_are_the_sum_of_the_steps_that_made_each_group(run):
-    decided = decide_steps(run, GateSettings())
-    summary = tally(decided)
-
-    for outcome in (ACT, SUGGEST, NEVER_AUTO):
-        expected = round(sum(s["best"]["net_vs_none_eur"] for s in decided if s["outcome"] == outcome), 2)
-        assert summary[outcome]["expected_net_eur"] == expected
-    assert sum(g["steps"] for g in summary.values()) == len(run["steps"])
+def test_the_headline_at_the_recommended_settings_is_these_numbers(run):
+    """Literal values, so a change in how a step is counted or summed fails here and is not recomputed away.
+    Regenerate the run and read the new numbers into this test and into demo-script 5b together."""
+    assert tally(decide_steps(run, GateSettings())) == {
+        ACT: {"steps": 8, "expected_net_eur": 167.98},
+        SUGGEST: {"steps": 2, "expected_net_eur": 21.88},
+        NEVER_AUTO: {"steps": 2, "expected_net_eur": 29.61},
+        QUIET: {"steps": 8, "expected_net_eur": 0.0},
+    }
 
 
 def test_the_recommended_settings_give_the_run_every_outcome_but_suggest_on_the_stored_customers(run):
@@ -138,3 +139,37 @@ def test_the_demo_script_says_what_the_stored_run_says_at_the_recommended_settin
     assert acted in section
     assert f"{waiting} are waiting for you, holding € {waiting_eur:.0f} expected" in section
     assert f"I stayed quiet on {summary[QUIET]['steps']}" in section
+
+
+def test_the_stored_run_carries_the_digest_of_the_snapshot_it_was_built_from(run):
+    from src.shopkeeper_run import snapshot_digest
+
+    assert run["snapshot_digest"] == snapshot_digest(json.loads(RETENTION_SNAPSHOT.read_text())["data"])
+
+
+def served_with(retention: dict | None) -> TestClient:
+    app = FastAPI()
+    app.include_router(router)
+    if retention is not None:
+        app.state.ask_retention = lambda: retention
+    return TestClient(app)
+
+
+def test_a_run_is_current_when_retention_serves_the_numbers_it_read():
+    snapshot = json.loads(RETENTION_SNAPSHOT.read_text())["data"]
+
+    body = served_with(snapshot).get("/api/shopkeeper/runs/winback").json()
+
+    assert body["stale"] is False and body["stale_reason"] is None
+
+
+def test_a_run_is_stale_when_retention_serves_other_numbers_than_it_read():
+    """A re-precompute, another namespace or a sandbox serves its own snapshot."""
+    snapshot = json.loads(RETENTION_SNAPSHOT.read_text())["data"]
+    changed = {**snapshot, "at_risk": [dict(snapshot["at_risk"][0], customer_id="CUST-99999"), *snapshot["at_risk"][1:]]}
+
+    client = served_with(changed)
+
+    assert client.get("/api/shopkeeper/runs/winback").json()["stale"] is True
+    assert "different numbers" in client.get("/api/shopkeeper/runs/winback").json()["stale_reason"]
+    assert client.get("/api/shopkeeper").json()["conversations"][0]["stale"] is True

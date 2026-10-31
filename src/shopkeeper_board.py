@@ -27,7 +27,7 @@ def _thin_evidence(run: dict, decided: list[dict], settings: GateSettings) -> li
     by_action = Counter(s["best"]["label"] for s in thin)
     return [{
         "kind": "evidence", "owner": "shopkeeper",
-        "title": f"{len(thin)} of {len(decided)} best actions rest on fewer than {settings.min_rows} past rows",
+        "title": f"{len(thin)} of {len(decided)} best actions have fewer than {settings.min_rows} past rows matching their exact situation",
         "detail": ("The agent stayed quiet on these: " + ", ".join(f"{label} ({n})" for label, n in by_action.most_common())
                    + ". Trying those actions on more customers in the same situations would give the next run something to act on."),
         "evidence": [f"{s['name']}: {s['best']['label']}, {s['rows']} rows" for s in thin],

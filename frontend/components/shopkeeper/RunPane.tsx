@@ -21,7 +21,7 @@ export default function RunPane({ run, decisions, onDecide }: {
     <div>
       {run.stale && (
         <div className="card" style={{ borderLeft: "4px solid var(--cta)" }}>
-          This run was stored for data release {run.release}; the app now serves another. Its numbers are not current.
+          This run is stale: {run.stale_reason}. Its numbers are not current.
         </div>
       )}
       <div className="card" style={{ marginBottom: 12 }}>
@@ -43,15 +43,15 @@ export default function RunPane({ run, decisions, onDecide }: {
         </div>
       </div>
       {run.steps.map((step) => (
-        <StepCard key={step.customer_id} step={step} decision={decisions[`${run.id}:${step.customer_id}`]}
+        <StepCard key={step.customer_id} step={step} minRows={run.settings.in_force.min_rows} decision={decisions[`${run.id}:${step.customer_id}`]}
           onDecide={(choice) => onDecide(`${run.id}:${step.customer_id}`, choice)} />
       ))}
     </div>
   );
 }
 
-function StepCard({ step, decision, onDecide }: {
-  step: RunStep; decision?: "approved" | "rejected"; onDecide: (choice: "approved" | "rejected" | null) => void;
+function StepCard({ step, minRows, decision, onDecide }: {
+  step: RunStep; minRows: number; decision?: "approved" | "rejected"; onDecide: (choice: "approved" | "rejected" | null) => void;
 }) {
   const { best } = step;
   const queued = step.outcome === "suggest" || step.outcome === "never_auto";
@@ -72,7 +72,8 @@ function StepCard({ step, decision, onDecide }: {
         <summary className="card-sub" style={{ cursor: "pointer" }}>Why, and what else was considered</summary>
         <div className="card-sub" style={{ lineHeight: 1.6 }}>
           Situation: {Object.entries(step.context).map(([k, v]) => `${k.replace("_", " ")} ${v}`).join(" · ")}.<br />
-          Rests on {step.rows} past rows of {best.label.toLowerCase()} in this situation ({step.rows_no_action} of no action).
+          Aito estimates the lift from the whole action table. {step.rows} past rows match this exact situation and {best.label.toLowerCase()}
+          ({step.rows_no_action} of no action); the gate asks for {minRows}, as a check that the situation has history.
           Spent {fmtEur(step.spend_12m_eur)} in 12 months; an order is about {fmtEur(step.order_value_eur)}.
           {step.tells.length > 0 && <><br />Observed: {step.tells.join("; ")}.</>}
           <br />Others: {step.alternatives.map((a) => `${a.label} ${fmtEur(a.net_vs_none_eur, 2)}`).join(" · ")}
