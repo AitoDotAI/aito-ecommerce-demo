@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 
+import Confidence from "@/components/customers/Confidence";
 import { fmtEur } from "@/lib/api";
 import { ACQUISITION_TITLE, type AcquisitionRow, type ProfilesSummary } from "@/lib/customer-profiles";
 
@@ -30,7 +31,7 @@ export default function SegmentAcquisition({ summary, selected }: { summary: Pro
       </div>
       <div className="card-sub" style={{ margin: "6px 0 8px", lineHeight: 1.5 }}>
         The first session of each customer, found through their visitor id: only what was known when they arrived.
-        {everyone ? " Profit per customer by how they came, for all profiled customers." : " Points: how many more (or fewer) of this segment came that way than of the other customers; solid when larger than the 99.7 % margin."}{" "}
+        {everyone ? " Profit per customer by how they came, for all profiled customers." : " Points: how many more (or fewer) of this segment came that way than of the other customers; confidence is the difference divided by its 99.7 % margin."}{" "}
         Profit per customer is shown where 30 or more customers stand behind it.{" "}
         <Link href="/acquisition/">The Acquisition view →</Link>
       </div>
@@ -40,7 +41,7 @@ export default function SegmentAcquisition({ summary, selected }: { summary: Pro
           <tr className="card-sub" style={{ textAlign: "right" }}>
             <th style={{ textAlign: "left" }}> </th><th>Customers</th>
             {!everyone && <th style={{ textAlign: "left", paddingLeft: 12 }}>Segment vs others</th>}
-            <th>Profit per customer</th>{!everyone && <th>All from here</th>}
+            {!everyone && <th>Confidence</th>}<th>Profit per customer</th>{!everyone && <th>All from here</th>}
           </tr>
         </thead>
         <tbody>
@@ -55,7 +56,7 @@ export default function SegmentAcquisition({ summary, selected }: { summary: Pro
 function Row({ r, everyone }: { r: AcquisitionRow; everyone: boolean }) {
   const label = r.value.replace("_", " ");
   return (
-    <tr style={{ textAlign: "right", opacity: everyone || r.clear ? 1 : 0.55 }}>
+    <tr style={{ textAlign: "right" }}>
       <td style={{ textAlign: "left", padding: "3px 4px" }}>{label}</td>
       <td style={{ paddingLeft: 8 }}>{r.customers} <span className="card-sub">({Math.round(r.share * 100)} %)</span></td>
       {!everyone && (
@@ -63,6 +64,7 @@ function Row({ r, everyone }: { r: AcquisitionRow; everyone: boolean }) {
           {r.points !== undefined && <>{r.points > 0 ? "+" : ""}{r.points} <span className="card-sub">±{r.margin_points} ({Math.round(r.share * 100)} % vs {Math.round((r.share_others ?? 0) * 100)} %)</span></>}
         </td>
       )}
+      {!everyone && <td style={{ paddingLeft: 8 }}>{r.points !== undefined && <Confidence points={r.points} margin={r.margin_points ?? 0} />}</td>}
       <td style={{ paddingLeft: 8 }}>
         {r.profit_per_customer_eur === null ? <span className="card-sub">n={r.customers}</span> : <strong>{fmtEur(r.profit_per_customer_eur)}</strong>}
         {r.profit_per_customer_ci && <span className="card-sub"> ±{Math.round((r.profit_per_customer_ci[1] - r.profit_per_customer_ci[0]) / 2)}</span>}

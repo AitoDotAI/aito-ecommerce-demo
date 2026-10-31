@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import Confidence from "@/components/customers/Confidence";
 import { TRAIT_TITLE, type ProfilesSummary } from "@/lib/customer-profiles";
 
 interface Related {
@@ -28,17 +29,16 @@ export function relatedItems(summary: ProfilesSummary, selected: string): Relate
       }
     }
   }
-  return rows.sort((a, b) => Math.abs(b.points) - Math.abs(a.points));
+  return rows.sort((a, b) => Number(b.clear) - Number(a.clear) || Math.abs(b.points) - Math.abs(a.points));
 }
 
 export default function SegmentRelated({ summary, selected }: { summary: ProfilesSummary; selected: string }) {
   const [kind, setKind] = useState<string | null>(null);
-  const [hints, setHints] = useState(false);
   const [more, setMore] = useState(false);
   if (selected === "all") return <div className="card card-sub">Pick a segment to see what goes with it.</div>;
   const all = relatedItems(summary, selected);
   const kinds = [...new Set(all.map((r) => r.kind))];
-  const visible = all.filter((r) => (kind === null || r.kind === kind) && (hints || r.clear));
+  const visible = all.filter((r) => (kind === null || r.kind === kind));
   const shown = more ? visible : visible.slice(0, LIST_LENGTH);
   const scale = Math.max(30, ...all.map((r) => Math.abs(r.points)));
   return (
@@ -46,8 +46,9 @@ export default function SegmentRelated({ summary, selected }: { summary: Profile
       <div className="card-title">Their other preferences</div>
       <div className="card-sub" style={{ marginBottom: 8, lineHeight: 1.5 }}>
         How many more (or fewer) points of this segment have each item than the customers outside it: other ways of shopping and what they buy
-        (against customers who buy for the same pet). Only differences larger than their 99.7 %
-        margin are listed; many pairs are compared, so the bar is high. At product level most are hints.
+        (against customers who buy for the same pet). The confidence column is the difference divided
+        by its 99.7 % margin: above 1× it is larger than chance would give. Many pairs are compared, so the bar is high, and at product level
+        most sit below it. Clear ones first.
       </div>
       <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 8 }}>
         {[null, ...kinds].map((k) => (
@@ -57,7 +58,7 @@ export default function SegmentRelated({ summary, selected }: { summary: Profile
             background: kind === k ? "rgba(0, 168, 150, 0.15)" : "transparent" }}>{k ?? "All"}</button>
         ))}
       </div>
-      {visible.length === 0 && <div className="card-sub">Nothing clears the margin.</div>}
+      {visible.length === 0 && <div className="card-sub">Nothing to show.</div>}
       {shown.map((r) => <Bar key={`${r.kind}:${r.label}`} r={r} scale={scale} />)}
       <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
         {visible.length > LIST_LENGTH && (
@@ -65,9 +66,6 @@ export default function SegmentRelated({ summary, selected }: { summary: Profile
             {more ? "Fewer" : `Show all ${visible.length}`}
           </button>
         )}
-        <button className="btn btn-ghost" style={{ padding: "2px 10px", fontSize: 12 }} onClick={() => setHints(!hints)}>
-          {hints ? "Only the clear ones" : "Include hints"}
-        </button>
       </div>
     </div>
   );
@@ -76,7 +74,7 @@ export default function SegmentRelated({ summary, selected }: { summary: Profile
 function Bar({ r, scale }: { r: Related; scale: number }) {
   const width = `${(Math.abs(r.points) / scale) * 50}%`;
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "minmax(120px, 1.3fr) minmax(60px, 0.8fr) minmax(110px, 140px)", gap: 8, alignItems: "center", fontSize: 13, margin: "3px 0", opacity: r.clear ? 1 : 0.45 }}>
+    <div style={{ display: "grid", gridTemplateColumns: "minmax(120px, 1.3fr) minmax(60px, 0.8fr) minmax(110px, 140px) 44px", gap: 8, alignItems: "center", fontSize: 13, margin: "3px 0", }}>
       <span><span className="card-sub">{r.kind} · </span>{r.label}</span>
       <span style={{ position: "relative", height: 12, background: "var(--border-light)", borderRadius: 3 }}>
         <span style={{ position: "absolute", left: "50%", top: 0, bottom: 0, width: 1, background: "var(--border)" }} />
@@ -84,6 +82,7 @@ function Bar({ r, scale }: { r: Related; scale: number }) {
           ...(r.points >= 0 ? { left: "50%", width } : { right: "50%", width }) }} />
       </span>
       <span className="card-sub">{r.points > 0 ? "+" : ""}{r.points} ±{r.margin} ({Math.round(r.share * 100)} % vs {Math.round(r.shareOthers * 100)} %)</span>
+      <Confidence points={r.points} margin={r.margin} />
     </div>
   );
 }

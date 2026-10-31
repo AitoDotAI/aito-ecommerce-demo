@@ -22,7 +22,7 @@ A new view, **Customers**, with the rules below.
    pet food they bought, after two lines of it. Nothing about health, religion, ethnicity or the like is read or
    guessed, and the test names the allowed fields.
 2. **Only for customers who consented.** `consent_behavioural` (ADR 0044) decides: a customer without it is counted and
-   not profiled. Customers who did not consent are not searchable by name and the lookup returns only their id. A customer with fewer than three purchased lines has "too few purchases", not a guess.
+   not profiled. Customers who did not consent are not searchable by name and the lookup returns only their id (the view has no lookup box since 2026-11-01; the API remains). A customer with fewer than three purchased lines has "too few purchases", not a guess.
 3. **Segments carry their evidence.** Each segment shows customers, share, churn rate and average spend; a segment under
    30 customers is faded.
 4. **What the actions did, per segment.** For each segment and each action in the action table, the change in the share who ordered within
@@ -33,7 +33,7 @@ A new view, **Customers**, with the rules below.
 5. **A segment picker, as in Product.** A drop-down picks a segment (or everyone) and every pane follows it. Top left: who the segment is, in words, and what to do
    (only differences larger than their margins). Top right, in tabs as in Product: its key figures against everyone (for everyone also the profit distribution: median, what the top tenth earns, how many lose money) and its showing funnel (impressions, clicks, carts,
    purchases) over the identified sessions of its customers; its other preferences; the channels it came through; what the shop's actions did for it. Below the profile: where the segment sits in the ranking of the variable it is a slice of (offer, price or rating; none for pets and diets), so the
-   only control is the segment drop-down. The preferences tab is one list of what goes with the segment, with its lift in points (other ways of shopping, categories, brands, products). The view examines one segment; there is no list comparing all segments. Profit is the price paid less the unit cost on the lines kept (a returned line earns nothing),
+   only control is the segment drop-down. The preferences tab is one list of what goes with the segment, every row with a confidence column (the difference over its margin; above 1× it is larger than chance would give), clear rows first; nothing is hidden, with its lift in points (other ways of shopping, categories, brands, products). The view examines one segment; there is no list comparing all segments. Profit is the price paid less the unit cost on the lines kept (a returned line earns nothing),
    less the shop's action costs; there is no delivery or payment cost in the data, so it is profit after products and actions, not a full P&L.
    The unit cost is the inventory's current cost per product, applied to two years of sales. Profit per customer carries a 95 % bootstrap interval
    (a few customers earn much of it), and no interval is given under 30 customers. Revenue is the price paid on the lines kept, the same basis as profit and

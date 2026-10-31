@@ -8,7 +8,6 @@ import { customersPanel } from "@/lib/panel-content";
 import { useUrlState } from "@/lib/use-url-state";
 import { usePagePanel } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
-import CustomerLookup from "@/components/customers/CustomerLookup";
 import PreferenceGraph from "@/components/customers/PreferenceGraph";
 import SegmentKpis from "@/components/customers/SegmentKpis";
 import SegmentPicker from "@/components/customers/SegmentPicker";
@@ -91,7 +90,6 @@ function CustomersView() {
                <SegmentKpis summary={summary} selected={key} />}
             </div>
           </div>
-          <CustomerLookup />
           <div className="card-sub">
             Profit: price paid less unit cost on the lines kept (returned lines earn nothing), less the shop&apos;s action costs; no delivery
             or payment cost is in the data. Unit cost is the inventory&apos;s current cost per product (about two-thirds of the base price)
@@ -101,7 +99,7 @@ function CustomersView() {
           <div className="card-sub">
             Every trait is a share of the lines a customer bought: no health, religion or similar is inferred, and the diet
             traits are the pet&apos;s, from the product&apos;s diet tag. They choose which offer or message a customer sees,
-            never what price they pay. A customer who withdraws consent is no longer profiled, and cannot be looked up by name.
+            never what price they pay. A customer who withdraws consent is no longer profiled.
           </div>
         </div>
       )}
