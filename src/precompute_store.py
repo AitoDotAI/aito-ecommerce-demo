@@ -182,6 +182,19 @@ def init(client: AitoClient) -> None:
 # ── Low-level get / put ───────────────────────────────────────────
 
 
+# What a snapshot of a view must hold for the current code to read it. A snapshot filed before a view changed shape (the
+# shared Aito keeps the old row until `./do precompute` is run) lacks these and is not served: the committed JSON,
+# which ships with the code, is. Without this a deploy would need the precompute run in lockstep.
+REQUIRED_KEYS: dict[str, tuple[str, ...]] = {
+    "supply": ("planning_month",),     # Supply plans on observed sales (ADR 0041, amended 2026-10-31)
+}
+
+
+def _has_required_keys(name: str, value: Any) -> bool:
+    data = value.get("data") if isinstance(value, dict) else None
+    return all(isinstance(data, dict) and key in data for key in REQUIRED_KEYS.get(name, ()))
+
+
 def get(name: str) -> Any | None:
     """Read a snapshot entry, falling back L1 → Aito → git JSON → None.
 
@@ -209,9 +222,10 @@ def _get_in(namespace: str, name: str) -> Any | None:
                 # first hit.
                 newest = max(hits, key=lambda hit: hit["computed_at"])
                 value = json.loads(newest["payload"])
-                with _l1_mutex:
-                    _l1[key] = value
-                return value
+                if _has_required_keys(name, value):
+                    with _l1_mutex:
+                        _l1[key] = value
+                    return value
         except (AitoError, KeyError, json.JSONDecodeError):
             pass  # fall through to the bootstrap file
 
