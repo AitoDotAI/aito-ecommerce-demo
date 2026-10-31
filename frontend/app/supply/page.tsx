@@ -54,7 +54,7 @@ function SupplyView() {
         <div className="page-title">Supply</div>
         <div className="page-desc">
           What to reorder, what is overstocked, and what markdown clears it.
-          {data && <> Forecasts are Aito&apos;s estimates for {month}; euros follow from them.</>}
+          {data && <> Reorder quantities rest on the last three months&apos; sales; the markdown estimates are Aito&apos;s.</>}
         </div>
       </div>
 
