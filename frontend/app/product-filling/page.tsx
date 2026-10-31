@@ -78,7 +78,7 @@ function ProductFillingView() {
         <div className="page-title">Product Filling</div>
         <div className="page-desc">
           Five fields predicted from the product name + brand alone, in
-          parallel. Confidence chips and per-field <code>$why</code>
+          parallel. Confidence chips and per-field <code>$why</code>{" "}
           decompositions come straight from Aito.
         </div>
       </div>

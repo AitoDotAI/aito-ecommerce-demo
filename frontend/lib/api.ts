@@ -134,9 +134,9 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
   return res.json();
 }
 
-/** "€ 1 234" — Finnish space-grouping, no decimals by default. */
+/** "€1,234" and "−€1.81": English grouping and decimals (the UI is English), no decimals by default. */
 export function fmtEur(n: number, decimals: number = 0): string {
-  return "€ " + n.toLocaleString("fi-FI", {
+  return (n < 0 ? "−" : "") + "€" + Math.abs(n).toLocaleString("en-GB", {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   });

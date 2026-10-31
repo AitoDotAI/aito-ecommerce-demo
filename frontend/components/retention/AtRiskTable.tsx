@@ -38,7 +38,7 @@ export default function AtRiskTable({ rows }: { rows: AtRiskRow[] }) {
                 <strong>{c.name}</strong>
                 <div style={{ color: "var(--text-muted)", fontSize: 11 }}>
                   {c.pets.replace(/_/g, " ")}{c.pets_declared ? "" : " (from their orders)"}{c.dog_size ? ` (${c.dog_size} dog)` : ""} · {c.region} ·{" "}
-                  {c.tenure_months} months a customer
+                  {c.tenure_months} {c.tenure_months === 1 ? "month" : "months"} a customer
                 </div>
                 {c.tells.length > 0 && (
                   <div style={{ marginTop: 3, display: "flex", flexWrap: "wrap", gap: 4 }}>

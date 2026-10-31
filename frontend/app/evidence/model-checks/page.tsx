@@ -60,7 +60,7 @@ function ModelChecksView() {
       <EvidenceHeader title="Model checks" data="Synthetic">
         Held-out accuracy of the predictions the demo shows, each against the simplest rule that would do
         without Aito. A catalogue model <strong>passes</strong> when it beats always guessing the most
-        common value by {data?.threshold_pp ?? 10} points or more; <strong>fail</strong> means Aito is honestly
+        common value by {data?.threshold_pp ?? 10} points or more; <strong>fail</strong>{" "}means Aito is honestly
         telling you it doesn&apos;t know, even when the raw accuracy is high.
       </EvidenceHeader>
       {unknownModel && (
@@ -108,8 +108,8 @@ function ModelChecksView() {
         <div className="tip-box" style={{ marginTop: 16 }}>
           <span className="tip-icon" aria-hidden="true">💡</span>
           <span>
-            <strong>The failure that earns trust:</strong> Return Risk&apos;s accuracy looks impressive
-            ({pct(returnRisk.accuracy, 0)}), but the baseline gets {pct(returnRisk.base_accuracy, 0)} by always
+            <strong>The failure that earns trust:</strong>{" "}Return Risk&apos;s accuracy looks impressive
+            ({pct(returnRisk.accuracy, 0)}), but the baseline gets {pct(returnRisk.base_accuracy, 0)}{" "}by always
             guessing &ldquo;not returned&rdquo;. Aito learned nothing the baseline didn&apos;t already know, and
             says so: &ldquo;I can&apos;t predict this from your current data.&rdquo;
           </span>
@@ -134,7 +134,7 @@ function ModelChecksView() {
           method={<>
             Aito&apos;s <code>_evaluate</code> holds rows out, predicts each from the rest and counts the right answers.
             The intervals are 95 % normal intervals. A difference against a baseline treats the two accuracies as
-            independent, because <code>_evaluate</code> returns totals rather than each row&apos;s answer: on the
+            independent, because <code>_evaluate</code>{" "}returns totals rather than each row&apos;s answer: on the
             same rows, that interval is wider than a paired one. A difference whose interval spans 0 is a tie.
           </>}
           sources={[

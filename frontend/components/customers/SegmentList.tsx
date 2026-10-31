@@ -32,6 +32,7 @@ export default function SegmentList({ summary, selected, onSelect }: {
           ))}
         </span>
       </div>
+      <div className="scroll-x">
       <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse", marginTop: 8 }}>
         <thead>
           <tr className="card-sub" style={{ textAlign: "right" }}>
@@ -46,6 +47,7 @@ export default function SegmentList({ summary, selected, onSelect }: {
             : <Group rows={sorted} showTrait {...shared} />}
         </tbody>
       </table>
+      </div>
       <div className="card-sub" style={{ marginTop: 8, lineHeight: 1.5 }}>
         Profit: price paid less unit cost on the lines kept (returned lines earn nothing), less the shop&apos;s action costs; no delivery
         or payment cost is in the data. Unit cost is the inventory&apos;s current cost per product (about two-thirds of the base price)
@@ -72,7 +74,7 @@ function Group({ title, rows, selected, onSelect, scale, overall, showTrait }: {
             <td style={{ textAlign: "left", padding: "3px 4px" }}>
               {showTrait && <span className="card-sub">{TRAIT_TITLE[r.trait]}: </span>}{r.value}
             </td>
-            <td style={{ whiteSpace: "nowrap", paddingLeft: 8 }}><span title={`${Math.round(r.share * 100)} % of profiled customers`}>{r.customers.toLocaleString("fi-FI")}</span></td>
+            <td style={{ whiteSpace: "nowrap", paddingLeft: 8 }}><span title={`${Math.round(r.share * 100)} % of profiled customers`}>{r.customers.toLocaleString("en-GB")}</span></td>
             <td style={{ textAlign: "left", paddingLeft: 10, whiteSpace: "nowrap" }}>
               <span style={{ display: "inline-block", position: "relative", width: 56, height: 8, background: "var(--border-light)", borderRadius: 2, marginRight: 6 }}>
                 <span style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${(per / scale) * 100}%`, background: "var(--aito-teal)", borderRadius: 2 }} />

@@ -15,9 +15,9 @@ export function actionableItems(summary: ProfilesSummary, key: string): Item[] {
     for (const [action, cell] of Object.entries(entry.actions)) {
       const name = ACTION_TITLE[action];
       if (cell.profit_clear && cell.profit_lift_eur !== null && cell.profit_lift_eur > 0) {
-        items.push({ tone: "good", text: `${name} pays: ${fmtEur(cell.profit_lift_eur, 2)} more profit per customer-row than no action (±${cell.profit_margin_eur}).` });
+        items.push({ tone: "good", text: `${name} pays: ${fmtEur(cell.profit_lift_eur, 2)} more profit per action than no action (±${cell.profit_margin_eur}).` });
       } else if (cell.profit_clear && cell.profit_lift_eur !== null && cell.profit_lift_eur < 0) {
-        items.push({ tone: "bad", text: `${name} loses money: ${fmtEur(cell.profit_lift_eur, 2)} per customer-row against no action (±${cell.profit_margin_eur}).` });
+        items.push({ tone: "bad", text: `${name} loses money: ${fmtEur(cell.profit_lift_eur, 2)} per action against no action (±${cell.profit_margin_eur}).` });
       } else if (cell.clear && cell.lift_points !== null && cell.lift_points > 0) {
         items.push({ tone: "note", text: `${name} lifts orders by ${cell.lift_points} points, but not clearly their profit.` });
       }
@@ -56,7 +56,7 @@ export default function SegmentProfile({ summary, selected }: { summary: Profile
       <div className="page-title" style={{ fontSize: 24, margin: "2px 0 6px" }}>{segment.value}</div>
       <div style={{ fontSize: 14, lineHeight: 1.55 }}>{definitionOf(summary, selected)}</div>
       <div className="card-sub" style={{ marginTop: 6 }}>
-        {segment.customers.toLocaleString("fi-FI")} customers, {Math.round(segment.share * 100)} % of those profiled.
+        {segment.customers.toLocaleString("en-GB")} customers, {Math.round(segment.share * 100)} % of those profiled.
       </div>
       <div style={{ fontWeight: 600, margin: "14px 0 6px" }}>What to do</div>
       {items.map((item, i) => (

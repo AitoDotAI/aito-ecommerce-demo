@@ -35,7 +35,7 @@ export default function GateSettingsForm({ view, value, onChange, lifts }: {
           onClick={() => onChange(view.recommended)}>Reset to recommended</button>}
       </div>
       <div className="card-sub" style={{ margin: "4px 0 14px" }}>
-        Lift: how many points more likely a customer is to order after the action than after none. Each dot is a customer in this run.
+        Lift: how many percentage points more likely a customer is to order after the action than after none. Each dot is a customer in this run.
       </div>
 
       <div style={{ position: "relative", height: 34, borderRadius: 6, overflow: "hidden", display: "flex", border: "1px solid var(--border)" }}>
@@ -86,11 +86,11 @@ function Zone({ width, label, bg, colour }: { width: string; label: string; bg: 
 
 function Slider({ label, points, onChange }: { label: string; points: number; onChange: (points: number) => void }) {
   return (
-    <label style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 8, fontSize: 13 }}>
+    <label style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 8, fontSize: 13, flexWrap: "wrap" }}>
       <span style={{ width: 92 }}>{label}</span>
       <input type="range" min={0} max={SCALE_MAX} value={points} onChange={(e) => onChange(Number(e.target.value))}
-        style={{ flex: 1, accentColor: "var(--aito-teal)" }} />
-      <strong style={{ width: 68, textAlign: "right" }}>{points} points</strong>
+        style={{ flex: "1 1 140px", minWidth: 0, accentColor: "var(--aito-teal)" }} />
+      <strong style={{ width: 52, textAlign: "right" }}>{points} pts</strong>
     </label>
   );
 }

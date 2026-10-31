@@ -44,7 +44,7 @@ export default function SandboxBanner() {
     window.location.assign(url.toString());
   };
   const sandbox = status?.sandbox;
-  const expires = sandbox && new Date(sandbox.expires_at).toLocaleTimeString("fi-FI", { hour: "2-digit", minute: "2-digit" });
+  const expires = sandbox && new Date(sandbox.expires_at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
 
   return (
     <div className="card sandbox-banner" role="status">

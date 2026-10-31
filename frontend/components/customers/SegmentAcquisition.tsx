@@ -34,6 +34,7 @@ export default function SegmentAcquisition({ summary, selected }: { summary: Pro
         Profit per customer is shown where 30 or more customers stand behind it.{" "}
         <Link href="/acquisition/">The Acquisition view →</Link>
       </div>
+      <div className="scroll-x">
       <table style={{ width: "100%", fontSize: 13, borderCollapse: "collapse" }}>
         <thead>
           <tr className="card-sub" style={{ textAlign: "right" }}>
@@ -46,6 +47,7 @@ export default function SegmentAcquisition({ summary, selected }: { summary: Pro
           {rows.map((r) => <Row key={r.value} r={r} everyone={everyone} />)}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

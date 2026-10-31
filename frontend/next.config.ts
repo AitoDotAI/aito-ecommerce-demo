@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
   // what `StaticFiles(html=True)` expects to resolve `/markdown/`.
   // Skip the redirect so the FastAPI proxy below sees `/api/*` in
   // whichever form the client sent (avoids 308 ↔ 307 ping-pong).
+  // Dev only: Next blocks its dev resources (and with them hydration) for any origin but localhost. To open the dev server
+  // from another device, name the host: NEXT_DEV_ORIGINS=192.168.1.20 ./do dev. Unset, nothing changes.
+  ...(isDev ? { allowedDevOrigins: (process.env.NEXT_DEV_ORIGINS ?? "").split(",").map((h) => h.trim()).filter(Boolean) } : {}),
+
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
 

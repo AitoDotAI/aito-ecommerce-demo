@@ -44,11 +44,11 @@ function CustomersView() {
   return (
     <div className="fade-in">
       <div className="page-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
-        <div>
+        <div style={{ minWidth: 0 }}>
           <div className="page-title">Customers</div>
           <div className="page-desc">
             Customer segments by how they shop, ranked by what a customer earns the shop.
-            {summary && <> {summary.profiled.toLocaleString("fi-FI")} of {summary.customers.toLocaleString("fi-FI")} customers
+            {summary && <> {summary.profiled.toLocaleString("en-GB")} of {summary.customers.toLocaleString("en-GB")} customers
               are profiled: the others did not consent to behavioural profiling. Simulated data.</>}
           </div>
         </div>
@@ -67,14 +67,14 @@ function CustomersView() {
         </div>
       )}
       {summary && (
-        <div style={{ display: "grid", gap: 12 }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: 12, alignItems: "start" }}>
+        <div className="fit-grid" style={{ display: "grid", gap: 12 }}>
+          <div className="fit-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: 12, alignItems: "start" }}>
             <SegmentProfile summary={summary} selected={key} />
             <SegmentKpis summary={summary} selected={key} />
           </div>
           <PreferenceGraph summary={summary} selected={key} />
           <SegmentAcquisition summary={summary} selected={key} />
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 420px), 1fr))", gap: 12, alignItems: "start" }}>
+          <div className="fit-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 420px), 1fr))", gap: 12, alignItems: "start" }}>
             <div style={{ display: "grid", gap: 12 }}>
               <SegmentRelations summary={summary} selected={key} />
               <SegmentBuys summary={summary} selected={key} />
@@ -101,7 +101,7 @@ function Headline({ summary }: { summary: ProfilesSummary }) {
     ["Profit, profiled customers", fmtEur(summary.profiled_profit_eur), `${Math.round(summary.gross_margin * 100)} % gross margin`],
     ["Profit per customer", fmtEur(summary.profiled_profit_eur / summary.profiled), `median ${fmtEur(d.median_eur)}`],
     ["Top tenth earns", `${Math.round(d.top_tenth_share * 100)} %`, "of the profit"],
-    ["Lose money", String(d.losing_money), `of ${d.customers.toLocaleString("fi-FI")}`],
+    ["Lose money", String(d.losing_money), `of ${d.customers.toLocaleString("en-GB")}`],
   ];
   return (
     <div className="card" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12 }}>

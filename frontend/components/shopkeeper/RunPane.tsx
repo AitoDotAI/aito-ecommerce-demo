@@ -80,7 +80,7 @@ function StepCard({ step, minRows, decision, onDecide }: {
         </div>
       </details>
       {queued && (
-        <div style={{ marginTop: 8, display: "flex", gap: 8, alignItems: "center" }}>
+        <div style={{ marginTop: 8, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
           {decision ? (
             <>
               <span>{decision === "approved" ? "Approved (simulated send)" : "Rejected"}</span>

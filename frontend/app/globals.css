@@ -864,3 +864,11 @@ a { color: inherit; text-decoration: none; }
   .product-hero-facts { grid-template-columns: repeat(2, 1fr); row-gap: 12px; }
   .product-hero-facts > div:nth-child(odd) { border-left: none; padding-left: 0; }
 }
+
+/* Grids whose children hold wide content (a select, a nowrap table) must be allowed to shrink below it, or the
+   page scrolls sideways on a phone. */
+.fit-grid > * { min-width: 0; }
+.scroll-x { overflow-x: auto; }
+.two-pane { display: grid; grid-template-columns: minmax(240px, 1fr) minmax(0, 2fr); gap: 16px; align-items: start; }
+.two-pane > * { min-width: 0; }
+@media (max-width: 800px) { .two-pane { grid-template-columns: minmax(0, 1fr); } }

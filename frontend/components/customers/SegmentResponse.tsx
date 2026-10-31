@@ -19,13 +19,13 @@ export default function SegmentResponse({ summary, selected }: { summary: Profil
       <div className="card-sub" style={{ marginBottom: 8, lineHeight: 1.5 }}>
         Observed in the shop&apos;s action table (simulated), against no action in this segment ({entry.none.rows} rows
         {entry.none.order_rate === null ? "" : `, ${Math.round(entry.none.order_rate * 100)} % ordered`}
-        {entry.none.profit_eur === null ? "" : `, ${fmtEur(entry.none.profit_eur, 2)} profit per row`}).
+        {entry.none.profit_eur === null ? "" : `, ${fmtEur(entry.none.profit_eur, 2)} profit per action`}).
         Orders: points more or fewer who ordered within 30 days. Profit: the 30-day spend at the shop&apos;s {Math.round(summary.gross_margin * 100)} % gross
-        margin less the action&apos;s cost, per row. Shaded: larger than its 95 % margin; the margins are approximate, because one customer
+        margin less the action&apos;s cost, per action. Shaded: larger than its 95 % margin; the margins are approximate, because one customer
         can have several rows, and about one cell in twenty passes by chance. A difference does not prove the action caused the order.
       </div>
       <table style={{ width: "100%", fontSize: 13, borderCollapse: "separate", borderSpacing: 3, textAlign: "center" }}>
-        <thead><tr className="card-sub"><th style={{ textAlign: "left" }}> </th><th>Rows</th><th>Orders, points</th><th>Profit per row</th></tr></thead>
+        <thead><tr className="card-sub"><th style={{ textAlign: "left" }}> </th><th>Actions</th><th>Orders, points</th><th>Profit per action</th></tr></thead>
         <tbody>
           {Object.keys(ACTION_TITLE).map((a) => {
             const c = entry.actions[a];
