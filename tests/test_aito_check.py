@@ -1153,6 +1153,24 @@ def test_acquisition_sources_convert_and_stay_as_planted(client):
         assert rows[source].source_lift < 1 < rows["organic_search"].source_lift
 
 
+# ── Anonymous showings: Shop analytics' identified-only cut must stay a no-op ──
+
+
+def test_impressions_are_almost_all_identified_so_the_identified_only_cut_removes_nothing(client):
+    """Shop analytics runs its funnel lifts on impressions with a customer (ADR 0040). On
+    release 3b that drops 6 of 43,390 rows, and the lists are identical with and without the
+    cut. If anonymous showings are ever loaded into `impressions`, the cut starts to select a
+    different population: this fails first, so the view's copy and its lifts get re-read."""
+    total = _count(client, {})
+    anonymous = _count(client, {"context.customer": {"$exists": False}})
+
+    assert total > 0
+    assert anonymous / total <= 0.01, (
+        f"{anonymous} of {total} impressions have no customer ({anonymous / total:.1%}): Shop analytics "
+        "restricts its funnel lifts to identified sessions, so they no longer cover the same rows. "
+        "Re-measure them with and without the restriction before shipping this data.")
+
+
 # ── Snapshots: what is shipped must still be what the data says ──────
 
 
