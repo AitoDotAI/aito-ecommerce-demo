@@ -93,47 +93,54 @@ def test_exactly_the_customers_who_consented_are_profiled():
 
 
 def test_segments_count_customers_and_say_when_a_segment_is_thin():
-    customers = {"C1": {"churned": True, "total_spent_eur": 100.0, "revenue_eur": 100.0, "revenue_12m_eur": 40.0},
-                 "C2": {"churned": False, "total_spent_eur": 300.0, "revenue_eur": 300.0, "revenue_12m_eur": 60.0}}
+    money = {"gross_profit_12m_eur": 0.0, "net_revenue_eur": 100.0, "gross_profit_eur": 30.0, "profit_eur": 30.0}
+    customers = {"C1": {"churned": True, "total_spent_eur": 100.0, "revenue_eur": 100.0, "revenue_12m_eur": 40.0, **money},
+                 "C2": {"churned": False, "total_spent_eur": 300.0, "revenue_eur": 300.0, "revenue_12m_eur": 60.0, **money}}
     profiles = [{"customer_id": cid, "profiled": True, "offer": "mostly", "price": "mixed", "rating": "average ratings",
                  "pets": ["dog"], "diets": []} for cid in customers]
 
     result = segments(profiles, customers)["by_trait"]["offer"][0]
 
     assert (result["customers"], result["churn_rate"], result["avg_spend_eur"], result["thin"]) == (2, 0.5, 200.0, True)
-    assert (result["revenue_eur"], result["revenue_12m_eur"], result["revenue_share"]) == (400.0, 100.0, 1.0)
+    assert (result["revenue_eur"], result["revenue_share"]) == (200.0, 1.0)
 
 
-def rows(action: str, ordered: int, total: int, value: str = "yes") -> list[dict]:
+BY_OFFER = lambda row: [row["offer_buyer"]]
+
+
+def rows(action: str, ordered: int, total: int, value: str = "yes", cost: float = 0.0) -> list[dict]:
     return [{"offer_buyer": value, "recency_bucket": "0-90d", "email_history": "never_sent", "tracking_consent": "yes",
-             "spend_band": "mid", "open_issue": "none", "action": action, "purchased_30d": i < ordered} for i in range(total)]
+             "spend_band": "mid", "open_issue": "none", "action": action, "purchased_30d": i < ordered,
+             "spend_30d_eur": 50.0 if i < ordered else 0.0, "cost_eur": cost} for i in range(total)]
 
 
 def test_a_response_lift_is_the_difference_to_no_action_in_points_with_its_margin():
-    cell = response(rows("none", 20, 100) + rows("discount", 40, 100))["offer_buyer"][0]["actions"]["discount"]
+    cell = response(rows("none", 20, 100) + rows("discount", 40, 100), 0.3, BY_OFFER)["yes"]["actions"]["discount"]
 
     assert cell["lift_points"] == 20.0 and cell["clear"] is True and 0 < cell["margin_points"] < 20
 
 
 def test_a_lift_inside_its_margin_is_not_called_clear():
-    cell = response(rows("none", 20, 100) + rows("email", 24, 100))["offer_buyer"][0]["actions"]["email"]
+    cell = response(rows("none", 20, 100) + rows("email", 24, 100), 0.3, BY_OFFER)["yes"]["actions"]["email"]
 
     assert cell["lift_points"] == 4.0 and cell["clear"] is False
 
 
 def test_a_cell_with_few_rows_has_no_lift_at_all():
-    cell = response(rows("none", 20, 100) + rows("ad", 5, THIN_BELOW - 1))["offer_buyer"][0]["actions"]["ad"]
+    cell = response(rows("none", 20, 100) + rows("ad", 5, THIN_BELOW - 1), 0.3, BY_OFFER)["yes"]["actions"]["ad"]
 
     assert cell["thin"] is True and cell["lift_points"] is None and cell["clear"] is None
 
 
-def test_the_planted_discount_effect_shows_where_it_was_planted():
-    """A2: a discount helps shoppers who mostly buy on offer, and does not help those who rarely do."""
-    stored = json.loads((PROFILES / "summary.json").read_text())["response"]["offer_buyer"]
-    by_value = {e["value"]: e["actions"]["discount"] for e in stored}
+def test_the_planted_discount_effect_shows_in_the_orders_of_those_who_buy_on_offer_and_not_in_what_it_earns():
+    """A2: a discount lifts the orders of customers who mostly buy on offer. The action costs more than the extra orders earn."""
+    stored = json.loads((PROFILES / "summary.json").read_text())["response"]
 
-    assert by_value["mostly"]["clear"] is True and by_value["mostly"]["lift_points"] > 5
-    assert by_value["rarely"]["clear"] is False
+    mostly = stored["offer:mostly"]["actions"]["discount"]
+    rarely = stored["offer:rarely"]["actions"]["discount"]
+
+    assert mostly["lift_points"] > 5 and rarely["lift_points"] < mostly["lift_points"]
+    assert not (mostly["profit_clear"] and mostly["profit_lift_eur"] > 0), "a discount does not clearly pay for itself here"
 
 
 @pytest.fixture
@@ -227,6 +234,27 @@ def test_a_preference_compares_a_segment_with_customers_who_buy_for_the_same_pet
     assert all(entry["pet"] in ("dog", "cat") for entry in preferences(profiles, bought).values())
 
 
+def test_the_stored_profiles_give_profit_per_segment_that_adds_up_to_the_profiled_profit():
+    summary = json.loads((PROFILES / "summary.json").read_text())
+
+    for trait in ("offer", "price", "rating"):
+        assert abs(sum(s["profit_eur"] for s in summary["by_trait"][trait]) - summary["profiled_profit_eur"]) < 1.0, trait
+
+
+def test_the_stored_profit_is_the_profit_of_the_fixtures_for_the_profiled_customers():
+    from src.customer_profit import profit_by_customer
+
+    orders = {o["order_id"]: o for o in json.loads((DATA / "orders.json").read_text())}
+    states = {s["product_state_id"]: s for s in json.loads((DATA / "product_states.json").read_text())}
+    cost = {i["sku"]: i["unit_cost_eur"] for i in json.loads((DATA / "inventory.json").read_text())}
+    profits = profit_by_customer(json.loads((DATA / "order_lines.json").read_text()), orders, states, cost,
+                                 json.loads((DATA / "customer_actions.json").read_text()), "2025-05")
+    stored = json.loads((PROFILES / "customers.json").read_text())
+    summary = json.loads((PROFILES / "summary.json").read_text())
+
+    assert round(sum(profits.get(t["customer_id"], {"profit_eur": 0.0})["profit_eur"] for t in stored if t["profiled"]), 2) == summary["profiled_profit_eur"]
+
+
 def test_the_stored_profiles_give_revenue_per_segment_that_adds_up_to_the_profiled_revenue():
     summary = json.loads((PROFILES / "summary.json").read_text())
 
@@ -235,12 +263,25 @@ def test_the_stored_profiles_give_revenue_per_segment_that_adds_up_to_the_profil
         assert abs(total - summary["profiled_revenue_eur"]) < 1.0, trait
 
 
-def test_revenue_is_the_sum_of_the_orders_of_the_profiled_customers():
-    orders = json.loads((DATA / "orders.json").read_text())
+def test_revenue_is_the_price_paid_on_the_lines_kept_by_the_profiled_customers_the_basis_profit_uses():
+    from src.customer_profit import profit_by_customer
+
+    orders = {o["order_id"]: o for o in json.loads((DATA / "orders.json").read_text())}
+    states = {st["product_state_id"]: st for st in json.loads((DATA / "product_states.json").read_text())}
+    cost = {i["sku"]: i["unit_cost_eur"] for i in json.loads((DATA / "inventory.json").read_text())}
+    profits = profit_by_customer(json.loads((DATA / "order_lines.json").read_text()), orders, states, cost, [], "2025-05")
     stored = {t["customer_id"] for t in json.loads((PROFILES / "customers.json").read_text()) if t["profiled"]}
     summary = json.loads((PROFILES / "summary.json").read_text())
 
-    assert round(sum(o["total_eur"] for o in orders if o["customer_id"] in stored), 2) == summary["profiled_revenue_eur"]
+    assert round(sum(profits[c]["net_revenue_eur"] for c in stored if c in profits), 2) == summary["profiled_revenue_eur"]
+
+
+def test_the_stored_totals_are_these_numbers():
+    """Literal values: a change in how revenue or profit is counted fails here. Regenerate and read them in when the fixtures change."""
+    summary = json.loads((PROFILES / "summary.json").read_text())
+
+    assert (summary["profiled"], summary["profiled_revenue_eur"], summary["profiled_profit_eur"], summary["gross_margin"]) == (
+        1790, 467332.96, 139913.04, 0.303)
 
 
 # ── Review of #139: the price trait is not made by discounts, scope, margins, consent ──
@@ -310,3 +351,249 @@ def test_a_request_that_names_a_sandbox_is_told_the_profiles_are_the_release_dat
     sandboxed = api.get("/api/customer-profiles", params={"db": "tmp-abc"}).json()
 
     assert plain["scope"] == "release" and sandboxed["scope"] == "release-not-sandbox"
+
+
+# ── Profit (ADR 0053): what a customer earned the shop ──
+
+from src.customer_profit import distribution, gross_margin, profit_by_customer
+
+
+def _profit_inputs():
+    orders = {"O1": {"customer_id": "C1", "month": "2026-01"}, "O2": {"customer_id": "C1", "month": "2024-01"}}
+    states = {"S1": {"price_eur": 10.0}, "S2": {"price_eur": 8.0}}
+    cost = {"A": 6.0, "B": 5.0}
+    lines = [{"order_id": "O1", "product_sku": "A", "product_state": "S1", "qty": 2, "returned": False},
+             {"order_id": "O2", "product_sku": "B", "product_state": "S2", "qty": 1, "returned": False},
+             {"order_id": "O1", "product_sku": "A", "product_state": "S1", "qty": 1, "returned": True}]
+    return lines, orders, states, cost
+
+
+def test_profit_is_the_price_paid_less_the_unit_cost_per_line_kept_less_the_action_costs():
+    lines, orders, states, cost = _profit_inputs()
+
+    result = profit_by_customer(lines, orders, states, cost, [{"customer_id": "C1", "cost_eur": 1.5}], "2025-05")["C1"]
+
+    assert result["net_revenue_eur"] == 28.0           # 2 x 10 + 1 x 8; the returned line earns nothing
+    assert result["gross_profit_eur"] == 11.0          # (10 - 6) x 2 + (8 - 5)
+    assert result["gross_profit_12m_eur"] == 8.0       # only the 2026 order is in the last 12 months
+    assert result["profit_eur"] == 9.5 and result["returned_lines"] == 1
+
+
+def test_an_offer_lowers_profit_because_the_price_paid_is_what_counts():
+    lines, orders, _, cost = _profit_inputs()
+
+    full = profit_by_customer(lines, orders, {"S1": {"price_eur": 10.0}, "S2": {"price_eur": 8.0}}, cost, [], "2025-05")["C1"]
+    offer = profit_by_customer(lines, orders, {"S1": {"price_eur": 8.0}, "S2": {"price_eur": 8.0}}, cost, [], "2025-05")["C1"]
+
+    assert full["profit_eur"] - offer["profit_eur"] == 4.0
+
+
+def test_the_gross_margin_is_profit_over_the_price_paid_for_the_lines_kept():
+    lines, orders, states, cost = _profit_inputs()
+
+    assert round(gross_margin(profit_by_customer(lines, orders, states, cost, [], "2025-05")), 4) == round(11.0 / 28.0, 4)
+
+
+def test_the_distribution_names_the_median_the_top_tenths_share_and_who_loses_money():
+    by_customer = {f"C{i}": {"profit_eur": float(v)} for i, v in enumerate([-5, 10, 10, 10, 10, 10, 10, 10, 10, 100])}
+
+    found = distribution(by_customer, list(by_customer))
+
+    assert found["median_eur"] == 10.0 and found["losing_money"] == 1 and found["top_tenth_share"] == round(100 / 175, 3)
+
+
+def test_an_action_that_costs_more_than_it_brings_has_a_negative_clear_profit_lift():
+    costly = rows("discount", 40, 200, cost=4.0)       # 20 % order at 50 spend, margin 0.3: 3.0 earned per row less 4.0 cost
+    cheap = rows("none", 40, 200)
+
+    cell = response(costly + cheap, 0.3, BY_OFFER)["yes"]["actions"]["discount"]
+
+    assert cell["profit_lift_eur"] == -4.0 and cell["profit_clear"] is True
+
+
+def test_a_profit_lift_inside_its_margin_is_not_clear_and_a_thin_cell_has_none():
+    lifted = response(rows("email", 41, 200) + rows("none", 40, 200), 0.3, BY_OFFER)["yes"]["actions"]["email"]
+    thin = response(rows("ad", 5, THIN_BELOW - 1) + rows("none", 40, 200), 0.3, BY_OFFER)["yes"]["actions"]["ad"]
+
+    assert lifted["profit_clear"] is False
+    assert thin["profit_lift_eur"] is None and thin["profit_clear"] is None
+
+
+# ── Review of #142 and the segment view ──
+
+from src.customer_segments import bootstrap_mean_interval
+
+
+def test_a_profit_interval_brackets_the_mean_and_is_wider_for_a_skewed_group():
+    even = [50.0] * 40
+    skewed = [10.0] * 36 + [400.0] * 4
+
+    low, high = bootstrap_mean_interval(skewed)
+
+    assert low < sum(skewed) / len(skewed) < high
+    assert bootstrap_mean_interval(even) == [50.0, 50.0]
+    assert high - low > 20
+
+
+def test_a_group_under_thirty_customers_has_no_profit_interval():
+    assert bootstrap_mean_interval([10.0] * (THIN_BELOW - 1)) is None
+
+
+def test_the_interval_is_the_same_every_time():
+    values = [float(v) for v in range(1, 61)]
+
+    assert bootstrap_mean_interval(values) == bootstrap_mean_interval(values)
+
+
+from src.customer_funnel import funnel_by_segment
+
+
+def test_a_segments_funnel_counts_each_stage_over_the_showings_of_its_customers_only():
+    showings = [{"context": "S1", "clicked": True, "added_to_cart": True, "purchased": True},
+                {"context": "S1", "clicked": True, "added_to_cart": False, "purchased": False},
+                {"context": "S2", "clicked": False, "added_to_cart": False, "purchased": False},
+                {"context": "S3", "clicked": True, "added_to_cart": True, "purchased": True}]
+    customer_of = {"S1": "C1", "S2": "C2", "S3": None}
+    segments = {"C1": ["all", "offer:mostly"], "C2": ["all"]}
+
+    result = funnel_by_segment(showings, customer_of, segments)
+
+    assert result["offer:mostly"] == {"impressions": 2, "clicks": 2, "carts": 1, "purchases": 1}
+    assert result["all"]["impressions"] == 3, "the anonymous session S3 is in no segment"
+
+
+from src.customer_preference_ranking import GROUPS, ranking
+
+
+def _ranked(shares: dict[str, float], segments_of=None):
+    return ranking(shares, segments_of or {}, ["a", "b"])
+
+
+def test_the_ranking_puts_the_customers_with_the_biggest_share_in_the_top_fifth():
+    shares = {f"C{i:02d}": float(i) for i in range(1, 101)}
+
+    result = _ranked(shares)
+
+    assert result["quintiles"][0]["mean_share"] > result["quintiles"][-1]["mean_share"]
+    assert [q["customers"] for q in result["quintiles"]] == [20] * GROUPS
+    assert result["curve"][0] > result["curve"][-1] and len(result["curve"]) == 20
+
+
+def test_the_top_fifth_is_given_over_the_average_and_over_the_bottom_fifth():
+    shares = {f"C{i:03d}": (4.0 if i < 20 else 1.0) for i in range(100)}
+
+    result = _ranked(shares)
+
+    assert result["top_over_bottom"] == 4.0 and result["top_over_average"] == round(4.0 / 1.6, 2)
+
+
+def test_when_the_bottom_fifth_has_none_the_ratio_to_it_is_left_out_and_not_infinite():
+    shares = {f"C{i:03d}": (0.0 if i >= 30 else 0.5) for i in range(100)}
+
+    assert _ranked(shares)["top_over_bottom"] is None
+
+
+def test_each_quintile_says_how_many_of_a_segment_it_holds():
+    shares = {f"C{i:02d}": float(100 - i) for i in range(100)}
+    segments_of = {f"C{i:02d}": (["a"] if i < 20 else ["b"]) for i in range(100)}
+
+    quintiles = _ranked(shares, segments_of)["quintiles"]
+
+    assert quintiles[0]["segment_share"] == {"a": 1.0, "b": 0.0}
+    assert quintiles[1]["segment_share"] == {"a": 0.0, "b": 1.0}
+
+
+def test_a_ranking_of_nothing_is_an_error_not_a_flat_line():
+    with pytest.raises(ValueError, match="nothing to rank"):
+        _ranked({f"C{i}": 0.0 for i in range(10)})
+
+
+def test_the_stored_ranking_has_the_offer_preference_and_a_top_fifth_that_prefers_it_more():
+    ranked = json.loads((PROFILES / "summary.json").read_text())["preference_ranking"]["offer"]
+
+    assert ranked["top_over_average"] > 1.5 and ranked["curve"][0] > ranked["curve"][-1]
+
+
+def test_every_stored_funnel_step_is_no_wider_than_the_one_before():
+    funnel = json.loads((PROFILES / "summary.json").read_text())["funnel"]
+
+    for key, f in funnel.items():
+        assert f["impressions"] >= f["clicks"] >= f["carts"] >= f["purchases"], key
+
+
+# ── Acquisition: where a segment's customers came from ──
+
+from src.customer_acquisition import NO_CATEGORY, acquisition_by_segment, first_sessions
+
+
+def _ctx(cid: str, visitor: str, month: str, source: str, landing: str = "product", category: str | None = "treats") -> dict:
+    return {"context_id": cid, "visitor": visitor, "month": month, "source": source, "landing": landing, "landing_category": category}
+
+
+def test_a_customers_first_session_is_the_earliest_of_their_visitors_sessions():
+    contexts = [_ctx("S2", "V1", "2025-03", "email"), _ctx("S1", "V1", "2025-01", "paid_search", "offer", None), _ctx("S9", "V2", "2024-01", "direct")]
+
+    found = first_sessions([{"customer_id": "C1", "visitor": "V1"}, {"customer_id": "C3", "visitor": "V404"}], contexts)
+
+    assert found == {"C1": {"source": "paid_search", "landing": "offer", "landing_category": NO_CATEGORY}}
+
+
+def _people(n_in: int, n_out: int, in_social: int, out_social: int):
+    first, segments_of, profit = {}, {}, {}
+    for i in range(n_in):
+        first[f"I{i}"] = {"source": "social" if i < in_social else "direct", "landing": "product", "landing_category": "treats"}
+        segments_of[f"I{i}"] = ["all", "offer:mostly"]
+        profit[f"I{i}"] = 40.0
+    for i in range(n_out):
+        first[f"O{i}"] = {"source": "social" if i < out_social else "direct", "landing": "product", "landing_category": "treats"}
+        segments_of[f"O{i}"] = ["all"]
+        profit[f"O{i}"] = 90.0
+    return first, segments_of, profit
+
+
+def test_a_segment_that_comes_mostly_from_one_channel_has_that_channel_over_represented_beyond_its_margin():
+    first, segments_of, profit = _people(60, 300, in_social=30, out_social=30)
+
+    rows = acquisition_by_segment(first, segments_of, profit, ["offer:mostly"])["offer:mostly"]["source"]
+    social = next(r for r in rows if r["value"] == "social")
+
+    assert (social["share"], social["share_others"], social["points"]) == (0.5, 0.1, 40.0)
+    assert social["clear"] is True
+
+
+def test_a_difference_inside_its_margin_is_not_clear_in_acquisition():
+    first, segments_of, profit = _people(60, 300, in_social=12, out_social=54)
+
+    social = next(r for r in acquisition_by_segment(first, segments_of, profit, ["offer:mostly"])["offer:mostly"]["source"] if r["value"] == "social")
+
+    assert social["points"] == 2.0 and social["clear"] is False
+
+
+def test_profit_per_customer_by_channel_is_given_only_where_thirty_customers_stand_behind_it():
+    first, segments_of, profit = _people(60, 300, in_social=10, out_social=0)
+
+    rows = {r["value"]: r for r in acquisition_by_segment(first, segments_of, profit, ["offer:mostly"])["offer:mostly"]["source"]}
+
+    assert rows["social"]["profit_per_customer_eur"] is None, "10 customers"
+    assert rows["direct"]["profit_per_customer_eur"] == 40.0 and rows["direct"]["profit_per_customer_all_eur"] == round((50 * 40 + 300 * 90) / 350, 2)
+
+
+def test_a_segment_under_the_minimum_has_no_acquisition_rows():
+    first, segments_of, profit = _people(20, 300, in_social=5, out_social=30)
+
+    assert "offer:mostly" not in acquisition_by_segment(first, segments_of, profit, ["offer:mostly"])
+
+
+def test_every_profiled_customer_has_a_first_session_whose_source_is_their_first_source():
+    customers = [c for c in json.loads((DATA / "customers.json").read_text()) if c["consent_behavioural"]]
+    found = first_sessions(customers, json.loads((DATA / "contexts.json").read_text()))
+
+    assert len(found) == len(customers)
+    assert all(found[c["customer_id"]]["source"] == c["first_source"] for c in customers)
+
+
+def test_the_stored_acquisition_shares_of_everyone_add_up_to_one_per_dimension():
+    everyone = json.loads((PROFILES / "summary.json").read_text())["acquisition"]["all"]
+
+    for dim, rows in everyone.items():
+        assert abs(sum(r["share"] for r in rows) - 1.0) < 0.02, dim

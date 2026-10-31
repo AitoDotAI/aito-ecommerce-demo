@@ -6,8 +6,13 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
+from src.customer_profit import distribution, gross_margin, profit_by_customer
+from src.customer_acquisition import acquisition_by_segment, first_sessions
+from src.customer_funnel import funnel_by_segment
+from src.customer_preference_ranking import line_features, ranking, scores
 from src.customer_relations import PET_GROUPS, preferences, relations
-from src.customer_segments import response, segments
+from src.data_loader import split_showings
+from src.customer_segments import definitions, response, segment_keys, segments
 from src.customer_traits import reference_for, traits_for
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -34,6 +39,13 @@ def build() -> tuple[dict, list[dict]]:
     lines_of = defaultdict(list)
     for line in _load("order_lines"):
         lines_of[orders[line["order_id"]]].append(line)
+    profits = profit_by_customer(_load("order_lines"), {o["order_id"]: o for o in _load("orders")}, states,
+                                 {i["sku"]: i["unit_cost_eur"] for i in _load("inventory")}, _load("customer_actions"),
+                                 LAST_12_MONTHS_FROM)
+    margin = gross_margin(profits)
+    zero = {"net_revenue_eur": 0.0, "gross_profit_eur": 0.0, "gross_profit_12m_eur": 0.0, "action_cost_eur": 0.0, "profit_eur": 0.0}
+    for cid, customer in customers.items():
+        customer.update(profits.get(cid, zero))
     ref = reference_for(list(products.values()), list(states.values()))
     traits = [traits_for(c, lines_of[cid], products, states, ref) for cid, c in customers.items()]
     bought = {cid: {pet: {"categories": set(), "brands": set(), "products": set()} for pet in PET_GROUPS} for cid in customers}
@@ -46,8 +58,31 @@ def build() -> tuple[dict, list[dict]]:
                 mine["brands"].add(product["brand"])
                 mine["products"].add(ln["product_sku"])
     release = json.loads((DATA / "release-env.json").read_text())["env"]
-    summary = {"release": release, "simulated": True, **segments(traits, customers), "response": response(_load("customer_actions")),
-               "relations": relations(traits), "preferences": _named(preferences(traits, bought), products)}
+    for t in traits:
+        if t["profiled"]:
+            t["profit_eur"] = round(customers[t["customer_id"]]["profit_eur"], 2)
+    keys_of = {t["customer_id"]: segment_keys(t) for t in traits}
+    ranked_lines = defaultdict(list)
+    for cid, lines in lines_of.items():
+        for ln in lines:
+            product, state = products[ln["product_sku"]], states[ln["product_state"]]
+            key = (product["category"], product["pet_type"])
+            ranked_lines[cid].append({"pet": product["pet_type"],
+                                      "features": line_features(product, state, ref.median_price[key], ref.mean_rating.get(key))})
+    profiled_ids = {t["customer_id"] for t in traits if t["profiled"]}
+    segment_list = sorted({k for ks in keys_of.values() for k in ks} - {"all"})
+    contexts = {c["context_id"]: c.get("customer") for c in _load("contexts")}
+    showings, _unranked = split_showings(_load("impressions"), _load("contexts"))
+    summary = {"release": release, "simulated": True, **segments(traits, customers), "gross_margin": round(margin, 3),
+               "profit_distribution": distribution(profits, [t["customer_id"] for t in traits if t["profiled"]]),
+               "response": response(_load("customer_actions"), margin, lambda row: keys_of.get(row["customer_id"], ())),
+               "definitions": definitions(), "relations": relations(traits), "preferences": _named(preferences(traits, bought), products),
+               "funnel": funnel_by_segment(showings, contexts, keys_of),
+               "acquisition": acquisition_by_segment(
+                   first_sessions(list(customers.values()), _load("contexts")), keys_of,
+                   {cid: c["profit_eur"] for cid, c in customers.items()}, segment_list),
+               "preference_ranking": {var: {"label": _label(var), **ranking(share, keys_of, segment_list)}
+                                      for var, share in sorted(scores(ranked_lines, profiled_ids).items())}}
     return summary, traits
 
 
@@ -57,3 +92,11 @@ def _named(prefs: dict, products: dict[str, dict]) -> dict:
         for row in entry["products"]:
             row["name"] = products[row["item"]]["name"]
     return prefs
+
+
+_LABELS = {"offer": "Lines bought on offer", "cheaper": "Lines in the cheaper half of their category",
+           "rated": "Lines in better-rated products than their category's average"}
+
+
+def _label(var: str) -> str:
+    return _LABELS.get(var) or var.replace("category:", "Category: ").replace("brand:", "Brand: ")
