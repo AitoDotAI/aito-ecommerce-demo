@@ -363,3 +363,18 @@ export function shopkeeperPanel(): AitoPanelConfig {
     links: LEARN_MORE_LINKS,
   };
 }
+
+
+export function customersPanel(): AitoPanelConfig {
+  return {
+    operation: "Customers",
+    endpoints: ["_predict", "_relate"],
+    description:
+      `Traits are counted from each consenting customer's purchase history: the share of lines on offer, in the ` +
+      `cheaper half of their category, and well rated. The response table is the change in the share who ordered ` +
+      `within 30 days after an action, from the action table the Shopkeeper's ` +
+      `<code style="color:var(--aito-teal);">_predict purchased_30d</code> is fitted to.`,
+    query: `${k('"note"')}: ${s('"Observed rates over stored rows; the per-customer predictions are in Retention and Shopkeeper."')}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
