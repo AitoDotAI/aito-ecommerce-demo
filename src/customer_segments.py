@@ -26,7 +26,7 @@ from src.customer_traits import (DIET_MIN_LINES, MIN_LINES, NOT_PROFILED, OFFER_
                                  LOW_RATED_BELOW, TOO_FEW, VALUE_FROM)
 
 THIN_BELOW = 30
-TRAITS = ("offer", "price", "rating", "margin", "pets")
+TRAITS = ("offer", "price", "rating", "margin", "status", "pets")
 ACTIONS = ("email", "ad", "discount", "voucher", "apology")
 
 
@@ -74,6 +74,8 @@ def definitions() -> dict[str, str]:
         "rating:below-average ratings": "On average they bought products rated below their category's average.",
         "margin:high-margin": "Their purchases carry a gross margin at or above the median customer's.",
         "margin:low-margin": "Their purchases carry a gross margin below the median customer's.",
+        "status:churned": "No order in the last three months of the data (the shop's own churn rule).",
+        "status:active": "Ordered in the last three months of the data.",
         "_pets": "They bought at least one product for this pet.",
         "_diets": f"They bought at least {DIET_MIN_LINES} lines of food made for this diet (the pet's diet, from the product's tag).",
         "_all": f"Needs {MIN_LINES} or more purchased lines for the shopping traits.",
@@ -103,7 +105,7 @@ def segment_keys(profile: dict) -> list[str]:
     """The segments a profiled customer is in, as "trait:value" (the key every segment is listed and looked up by), and "all"."""
     if not profile["profiled"]:
         return []
-    keys = ["all"] + [f"{trait}:{profile[trait]}" for trait in ("offer", "price", "rating", "margin") if profile[trait] != TOO_FEW]
+    keys = ["all"] + [f"{trait}:{profile[trait]}" for trait in ("offer", "price", "rating", "margin", "status") if profile[trait] != TOO_FEW]
     return keys + [f"pets:{pet}" for pet in profile["pets"]] + [f"diets:{tag}" for tag in profile["diets"]]
 
 

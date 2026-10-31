@@ -21,7 +21,7 @@ MIN_BUYERS = 5                 # customers in the segment who bought the item, b
 TOP_LISTED = 6
 # How a customer shops, and which pets they buy for. Diet tags are left out: a diet belongs to a kind of pet, so
 # "buys indoor food" and "has a cat" would show a relation that is only the product catalogue.
-RELATION_TRAITS = ("offer", "price", "rating", "margin", "pets")
+RELATION_TRAITS = ("offer", "price", "rating", "margin", "status", "pets")
 BEHAVIOUR_TRAITS = ("offer", "price", "rating", "margin")
 PET_GROUPS = ("dog", "cat")     # the two with enough customers; preferences are compared within one pet group
 

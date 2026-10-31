@@ -19,7 +19,7 @@ from src.customer_preference_ranking import label, ranking
 from src.customer_relations import MIN_GROUP, memberships, selection_preferences, selection_relations
 from src.customer_segments import TRAITS, response, segment_stats
 
-SINGLE_VALUED = ("offer", "price", "rating", "margin")
+SINGLE_VALUED = ("offer", "price", "rating", "margin", "status")
 # The ranking each shopping condition is a slice of; margin, pets and diets are not a share of what a customer bought.
 RANKED_BY = {"offer": "offer", "price": "cheaper", "rating": "rated"}
 STAGES = ("impressions", "clicks", "carts", "purchases")
@@ -71,7 +71,8 @@ def _tree_figures(rows: list[dict]) -> dict:
     return {"customers": len(rows), "orders": sum(n for r in rows for n, _, _ in r["months"].values()),
             "revenue_eur": round(sum(r["net_revenue_eur"] for r in rows), 2),
             "profit_per_customer_eur": round(sum(r["profit_eur"] for r in rows) / len(rows), 2) if rows else None,
-            "nps": _nps([group for r in rows for _, group in r["nps"]])}
+            "nps": _nps([group for r in rows for _, group in r["nps"]]),
+            "churn_rate": round(sum(r["churned"] for r in rows) / len(rows), 3) if rows else None}
 
 
 def _nps(groups: list[str]) -> float | None:
@@ -133,9 +134,10 @@ def _trend(rows, months: list[str]) -> dict:
     out = {"months": months, "customers": [per_month[m][0] for m in months], "orders": [per_month[m][1] for m in months],
            "revenue_eur": [round(per_month[m][2], 2) for m in months],
            "profit_per_customer_eur": [round(per_month[m][3] / per_month[m][0], 2) if per_month[m][0] else 0.0 for m in months],
-           "nps": _rolling_nps(rows, months)}
+           "nps": _rolling_nps(rows, months), "churn_rate": _churn_rate(rows, months)}
     out["recent_vs_before"] = {kpi: _change(out[kpi]) for kpi in ("customers", "orders", "revenue_eur", "profit_per_customer_eur")}
-    out["recent_vs_before"]["nps"] = _nps_change(out["nps"])
+    out["recent_vs_before"]["nps"] = _point_change(out["nps"])
+    out["recent_vs_before"]["churn_rate"] = _point_change(out["churn_rate"])
     return out
 
 
@@ -149,10 +151,28 @@ def _rolling_nps(rows, months: list[str]) -> list[float | None]:
     return out
 
 
-def _nps_change(series: list[float | None]) -> float | None:
-    """The score now against the score `TREND_RECENT_MONTHS` months earlier, in NPS points (None where either has too few answers)."""
+def _month_number(month: str) -> int:
+    year, number = month.split("-")
+    return int(year) * 12 + int(number)
+
+
+def _churn_rate(rows, months: list[str]) -> list[float | None]:
+    """Per month, the share of the customers who had ordered by then that had not ordered in the three months up to it: the rule
+    the churned flag follows at the end of the data (no order in the last three months), applied to every month."""
+    ordered = [{_month_number(m) for m in r["months"]} for r in rows]
+    out = []
+    for month in months:
+        now = _month_number(month)
+        known = [o for o in ordered if o and min(o) <= now]
+        lapsed = [o for o in known if not any(now - 2 <= m <= now for m in o)]
+        out.append(round(len(lapsed) / len(known), 3) if known else None)
+    return out
+
+
+def _point_change(series: list[float | None]) -> float | None:
+    """The figure now against `TREND_RECENT_MONTHS` months earlier, as a difference (None where either is missing)."""
     now, before = (series[-1], series[-1 - TREND_RECENT_MONTHS]) if len(series) > TREND_RECENT_MONTHS else (None, None)
-    return round(now - before, 1) if now is not None and before is not None else None
+    return round(now - before, 3) if now is not None and before is not None else None
 
 
 def _change(series: list[float]) -> float | None:

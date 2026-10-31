@@ -7,7 +7,7 @@ from src.customer_selection_data import actions, answers, facts, reviews, summar
 
 
 def customer(**own) -> dict:
-    return {"offer": "mostly", "price": "mixed", "rating": "average ratings", "margin": "high-margin", "pets": ["dog"], "diets": [],
+    return {"offer": "mostly", "price": "mixed", "rating": "average ratings", "margin": "high-margin", "status": "active", "pets": ["dog"], "diets": [],
             "churned": False, "total_spent_eur": 10.0, "net_revenue_eur": 10.0, "gross_profit_eur": 3.0, "gross_profit_12m_eur": 3.0,
             "profit_eur": 3.0, "funnel": [4, 3, 2, 1], "first": None, "months": {}, "nps": [],
             "bought": {"dog": {"categories": [], "brands": [], "products": []}, "cat": {"categories": [], "brands": [], "products": []}}, **own}
@@ -146,7 +146,7 @@ def test_the_tree_gives_each_condition_the_figures_the_segment_would_have():
 
     kpis = options(customers, parse([]))["price:mixed"]
 
-    assert kpis == {"customers": 4, "orders": 8, "revenue_eur": 40.0, "profit_per_customer_eur": 4.0, "nps": None}
+    assert kpis == {"customers": 4, "orders": 8, "revenue_eur": 40.0, "profit_per_customer_eur": 4.0, "nps": None, "churn_rate": 0.0}
 
 
 def test_nps_in_the_tree_needs_enough_answers():
@@ -165,3 +165,29 @@ def test_the_trend_gives_gross_profit_per_customer_who_ordered_and_leaves_nps_em
 
     assert trend["profit_per_customer_eur"] == [4.0]
     assert trend["nps"] == [100.0], "thirty promoters in the window"
+
+
+def test_churned_is_a_status_a_customer_has_one_of():
+    with pytest.raises(ValueError, match="one value of each"):
+        parse(["status:churned", "status:active"])
+    customers = {"A": customer(status="churned", churned=True), "B": customer()}
+
+    assert members(customers, parse(["status:churned"])) == ["A"]
+
+
+def test_the_tree_gives_each_condition_its_churn_rate():
+    customers = {"A": customer(churned=True), "B": customer(churned=False), "C": customer(price="value-leaning", churned=True)}
+
+    assert options(customers, parse([]))["price:mixed"]["churn_rate"] == 0.5
+
+
+def test_the_churn_trend_is_the_share_who_had_ordered_and_have_not_in_the_three_months_up_to_each_month():
+    """The same rule the churned flag uses at the end of the data: no order in the last three months."""
+    own = {f"C{i}": customer(months={"2026-01": [1, 10.0, 4.0]}, churned=True, status="churned") for i in range(MIN_GROUP)}
+    own["Z"] = customer(months={"2026-04": [1, 10.0, 4.0]})
+    stored = {"customers": own, "shares": {"cheaper": {cid: 0.1 * (i % 5) + 0.1 for i, cid in enumerate(own)}}, "product_names": {}}
+
+    trend = view(stored, parse([]), [], [], [], {"profiled": 31, "profiled_revenue_eur": 1.0, "profiled_profit_eur": 1.0, "gross_margin": 0.3})["trend"]["selected"]
+
+    assert trend["months"] == ["2026-01", "2026-04"]
+    assert trend["churn_rate"] == [0.0, round(30 / 31, 3)], "in January all thirty ordered; by April those thirty had not for three months"

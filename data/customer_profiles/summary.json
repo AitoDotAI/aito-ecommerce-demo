@@ -275,6 +275,48 @@
     "profit_share": -0.0
    }
   ],
+  "status": [
+   {
+    "key": "status:active",
+    "value": "active",
+    "customers": 1220,
+    "share": 0.682,
+    "churn_rate": 0.0,
+    "avg_spend_eur": 308.7,
+    "revenue_eur": 347611.98,
+    "revenue_share": 0.744,
+    "profit_eur": 103767.32,
+    "profit_12m_eur": 89784.33,
+    "profit_per_customer_eur": 85.06,
+    "profit_per_customer_ci": [
+     81.56,
+     88.66
+    ],
+    "margin": 0.302,
+    "profit_share": 0.742,
+    "thin": false
+   },
+   {
+    "key": "status:churned",
+    "value": "churned",
+    "customers": 570,
+    "share": 0.318,
+    "churn_rate": 1.0,
+    "avg_spend_eur": 226.81,
+    "revenue_eur": 119720.98,
+    "revenue_share": 0.256,
+    "profit_eur": 36145.72,
+    "profit_12m_eur": 23243.36,
+    "profit_per_customer_eur": 63.41,
+    "profit_per_customer_ci": [
+     58.58,
+     67.46
+    ],
+    "margin": 0.315,
+    "profit_share": 0.258,
+    "thin": false
+   }
+  ],
   "pets": [
    {
     "key": "pets:aquarium",
@@ -558,6 +600,8 @@
   "rating:below-average ratings": "On average they bought products rated below their category's average.",
   "margin:high-margin": "Their purchases carry a gross margin at or above the median customer's.",
   "margin:low-margin": "Their purchases carry a gross margin below the median customer's.",
+  "status:churned": "No order in the last three months of the data (the shop's own churn rule).",
+  "status:active": "Ordered in the last three months of the data.",
   "_pets": "They bought at least one product for this pet.",
   "_diets": "They bought at least 2 lines of food made for this diet (the pet's diet, from the product's tag).",
   "_all": "Needs 3 or more purchased lines for the shopping traits."

@@ -69,7 +69,7 @@ def test_a_diet_tag_needs_two_lines_of_it():
 
 def test_a_profile_holds_only_shopping_and_pet_traits_never_anything_about_the_person():
     allowed = {"customer_id", "name", "lines", "pets_declared", "profiled", "offer", "offer_share", "price", "cheaper_share",
-               "rating", "rating_gap", "pets", "diets", "margin"}
+               "rating", "rating_gap", "pets", "diets", "margin", "status"}
 
     assert set(traits([("A", True)] * 4)) <= allowed
 
@@ -109,7 +109,7 @@ def test_segments_count_customers_and_say_when_a_segment_is_thin():
     money = {"gross_profit_12m_eur": 0.0, "net_revenue_eur": 100.0, "gross_profit_eur": 30.0, "profit_eur": 30.0}
     customers = {"C1": {"churned": True, "total_spent_eur": 100.0, "revenue_eur": 100.0, "revenue_12m_eur": 40.0, **money},
                  "C2": {"churned": False, "total_spent_eur": 300.0, "revenue_eur": 300.0, "revenue_12m_eur": 60.0, **money}}
-    profiles = [{"customer_id": cid, "profiled": True, "offer": "mostly", "price": "mixed", "rating": "average ratings", "margin": "high-margin",
+    profiles = [{"customer_id": cid, "profiled": True, "offer": "mostly", "price": "mixed", "rating": "average ratings", "margin": "high-margin", "status": "active",
                  "pets": ["dog"], "diets": []} for cid in customers]
 
     result = segments(profiles, customers)["by_trait"]["offer"][0]
@@ -192,7 +192,7 @@ from src.customer_relations import MIN_GROUP, memberships, selection_preferences
 
 
 def profile(cid: str, offer: str, price: str, pets=("dog",), profiled=True) -> dict:
-    return {"customer_id": cid, "profiled": profiled, "offer": offer, "price": price, "rating": "average ratings", "margin": "high-margin",
+    return {"customer_id": cid, "profiled": profiled, "offer": offer, "price": price, "rating": "average ratings", "margin": "high-margin", "status": "active",
             "pets": list(pets), "diets": []}
 
 
@@ -640,6 +640,6 @@ def test_a_customer_with_no_revenue_has_no_margin_and_does_not_move_the_median()
 
 
 def test_a_profile_with_a_margin_band_is_in_the_margin_segment():
-    profile = {**traits([("A", True)] * 4), "margin": "high-margin"}
+    profile = {**traits([("A", True)] * 4), "margin": "high-margin", "status": "active"}
 
     assert "margin:high-margin" in segment_keys(profile)

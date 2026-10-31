@@ -52,6 +52,7 @@ def build() -> tuple[dict, list[dict], dict]:
     bands, margin_cut = margin_bands(customers, [t["customer_id"] for t in traits if t["profiled"]])
     for t in traits:
         t["margin"] = bands.get(t["customer_id"], NOT_PROFILED)
+        t["status"] = ("churned" if customers[t["customer_id"]]["churned"] else "active") if t["profiled"] else NOT_PROFILED
     bought = {cid: {pet: {"categories": set(), "brands": set(), "products": set()} for pet in PET_GROUPS} for cid in customers}
     for cid, lines in lines_of.items():
         for ln in lines:
