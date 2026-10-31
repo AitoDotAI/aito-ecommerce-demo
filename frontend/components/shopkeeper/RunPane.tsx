@@ -43,15 +43,15 @@ export default function RunPane({ run, decisions, onDecide }: {
         </div>
       </div>
       {run.steps.map((step) => (
-        <StepCard key={step.customer_id} step={step} decision={decisions[`${run.id}:${step.customer_id}`]}
+        <StepCard key={step.customer_id} step={step} minRows={run.settings.in_force.min_rows} decision={decisions[`${run.id}:${step.customer_id}`]}
           onDecide={(choice) => onDecide(`${run.id}:${step.customer_id}`, choice)} />
       ))}
     </div>
   );
 }
 
-function StepCard({ step, decision, onDecide }: {
-  step: RunStep; decision?: "approved" | "rejected"; onDecide: (choice: "approved" | "rejected" | null) => void;
+function StepCard({ step, minRows, decision, onDecide }: {
+  step: RunStep; minRows: number; decision?: "approved" | "rejected"; onDecide: (choice: "approved" | "rejected" | null) => void;
 }) {
   const { best } = step;
   const queued = step.outcome === "suggest" || step.outcome === "never_auto";
@@ -73,7 +73,7 @@ function StepCard({ step, decision, onDecide }: {
         <div className="card-sub" style={{ lineHeight: 1.6 }}>
           Situation: {Object.entries(step.context).map(([k, v]) => `${k.replace("_", " ")} ${v}`).join(" · ")}.<br />
           Aito estimates the lift from the whole action table. {step.rows} past rows match this exact situation and {best.label.toLowerCase()}
-          ({step.rows_no_action} of no action); the gate asks for {run.settings.in_force.min_rows}, as a check that the situation has history.
+          ({step.rows_no_action} of no action); the gate asks for {minRows}, as a check that the situation has history.
           Spent {fmtEur(step.spend_12m_eur)} in 12 months; an order is about {fmtEur(step.order_value_eur)}.
           {step.tells.length > 0 && <><br />Observed: {step.tells.join("; ")}.</>}
           <br />Others: {step.alternatives.map((a) => `${a.label} ${fmtEur(a.net_vs_none_eur, 2)}`).join(" · ")}
