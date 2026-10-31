@@ -340,3 +340,14 @@ def test_the_committed_supply_snapshot_has_the_keys_the_guard_asks_for():
     data = json.loads((root / "data" / "precomputed" / "v2-master" / "supply.json").read_text())["data"]
 
     assert set(store.REQUIRED_KEYS["supply"]) <= set(data)
+
+
+def test_skipping_an_old_shape_row_is_logged_with_the_view_and_the_missing_keys(tmp_path, monkeypatch, caplog):
+    """Otherwise a bad future precompute would be hidden behind the committed JSON for good."""
+    monkeypatch.setattr(store, "_FALLBACK_DIR", tmp_path)
+    store._aito = _aito_holding("supply", {"data": {"forecast_month": "2026-05"}, "timings": []})
+
+    with caplog.at_level("WARNING", logger=store.logger.name):
+        store.get("supply")
+
+    assert any("supply" in r.message and "planning_month" in r.message for r in caplog.records), caplog.text

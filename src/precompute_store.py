@@ -226,6 +226,8 @@ def _get_in(namespace: str, name: str) -> Any | None:
                     with _l1_mutex:
                         _l1[key] = value
                     return value
+                logger.warning("Snapshot %r in Aito lacks %s: serving the committed JSON. Run ./do precompute to refresh it.",
+                               key, [k for k in REQUIRED_KEYS[name] if k not in ((value.get("data") if isinstance(value, dict) else None) or {})])
         except (AitoError, KeyError, json.JSONDecodeError):
             pass  # fall through to the bootstrap file
 
