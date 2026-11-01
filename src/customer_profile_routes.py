@@ -13,11 +13,12 @@ from pathlib import Path
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import JSONResponse
 
+from src.customer_journey import journey
 from src.customer_period import NoPreviousPeriod, compare
 from src.customer_relations import MIN_GROUP
 from src.customer_rows import page_of
 from src.customer_selection import members, parse, ranking_for, view
-from src.customer_selection_data import actions, answers, facts, reviews, rows
+from src.customer_selection_data import actions, answers, facts, journeys, reviews, rows
 from src.demo_mode import requested_sandbox
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -85,6 +86,22 @@ def customer_segment(request: Request, c: list[str] = Query(default=[]), start: 
         return JSONResponse(status_code=400, content={"error": str(error)})
     return {**selected, **({"period": period} if period else {}), "stale": _stale(),
             "scope": "release-not-sandbox" if requested_sandbox(request) else "release"}
+
+
+@router.get("/api/customer-profiles/journey")
+def customer_journey(c: list[str] = Query(default=[])):
+    """What happened in the months around each customer's last order, for the selection `c`: the share of those who left and of those who
+    stayed with each kind of event (ADR 0059). A selection under the minimum size gets its size and no grid."""
+    try:
+        parsed = parse(c)
+    except ValueError as error:
+        return JSONResponse(status_code=400, content={"error": str(error)})
+    customers = facts()["customers"]
+    chosen = members(customers, parsed)
+    if len(chosen) < MIN_GROUP:
+        return {"too_small": True, "customers": len(chosen), "min_customers": MIN_GROUP}
+    months = sorted({m for cid in customers for m in customers[cid]["months"]})
+    return {"too_small": False, **journey(journeys(), customers, chosen, months)}
 
 
 @router.get("/api/customer-profiles/rows")
