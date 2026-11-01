@@ -86,9 +86,9 @@ def _units(fx, skus, months=None, after=None) -> int:
     return sum(int(ln["qty"]) for ln in _lines(fx, skus, months, after))
 
 
-def _grain_free_dog_dry_units(fx, months, excluding) -> int:
+def _grain_free_dog_dry_units(fx, months, excluding, exclude_customers=frozenset()) -> int:
     skus = {p["sku"] for p in fx.load("products") if p["pet_type"] == "dog" and p["category"] == "dry-food" and p.get("dietary") == "grain-free"}
-    return _units(fx, skus - set(excluding), months)
+    return sum(int(ln["qty"]) for ln in _lines(fx, skus - set(excluding), months) if ln["customer_id"] not in exclude_customers)
 
 
 def _repeat_units(fx, skus, customers, months, after) -> int:
@@ -110,14 +110,15 @@ def _after_pull(months_after: int) -> tuple[str, ...]:
     return tuple(incidents._add_months("2025-11", i) for i in range(months_after))
 
 
-def customers_of(fx: metrics.Fixtures, incident_id: str) -> tuple[set[str], set[str]]:
-    """(customers with a bad unit, the other buyers in the incident months) in a planted generation: the groups both generations are read on."""
+def customers_of(fx: metrics.Fixtures, incident_id: str) -> tuple[set[str], set[str], set[str]]:
+    """(customers with a bad unit, the other buyers in the incident months, everyone who ever bought the line) in a planted generation:
+    the groups both generations are read on."""
     inc = _planted(fx, incident_id)
     hit = _bad_customers(fx, incident_id)
-    return hit, {ln["customer_id"] for ln in _lines(fx, inc.skus, inc.months)} - hit
+    return hit, {ln["customer_id"] for ln in _lines(fx, inc.skus, inc.months)} - hit, {ln["customer_id"] for ln in _lines(fx, inc.skus)}
 
 
-def measure(fx: metrics.Fixtures, incident_id: str, groups: tuple[set[str], set[str]] | None = None) -> dict[str, float]:
+def measure(fx: metrics.Fixtures, incident_id: str, groups: tuple[set[str], set[str], set[str]] | None = None) -> dict[str, float]:
     """The numbers one incident's checks read from one generation. `groups` are the planted generation's customers (the same ids in the null)."""
     inc = _planted(fx, incident_id)
     out: dict[str, float] = {}
@@ -128,12 +129,14 @@ def measure(fx: metrics.Fixtures, incident_id: str, groups: tuple[set[str], set[
     if incident_id == "E1":
         out["batch_units"] = _units(fx, inc.skus, inc.months)
         out["units_after_pull"] = _units(fx, inc.skus, None, "2025-10")
-        out["type_units_after_pull"] = _grain_free_dog_dry_units(fx, _after_pull(2), inc.skus)
+        # Trust is read on customers who never bought the line: those who did switch to other grain-free food when it was pulled.
+        bought_line = groups[2] if groups is not None else {ln["customer_id"] for ln in _lines(fx, inc.skus)}
+        out["type_units_after_pull"] = _grain_free_dog_dry_units(fx, _after_pull(2), inc.skus, exclude_customers=bought_line)
         buyers = {ln["customer_id"] for ln in _lines(fx, inc.skus, inc.months)}
         churned = {c["customer_id"] for c in fx.load("customers") if c["churned"]}
         out["batch_buyers"], out["batch_buyers_churned"] = len(buyers), len(buyers & churned)
     else:
-        hit, buyers = groups if groups is not None else customers_of(fx, incident_id)
+        hit, buyers, _ = groups if groups is not None else customers_of(fx, incident_id)
         last = inc.months[-1]
         out["bad_customers"] = len(hit)
         out["bad_customers_repeat_units"] = _repeat_units(fx, inc.skus, hit, None, last) if hit else 0
@@ -162,7 +165,7 @@ def judge(incident_id: str, planted: dict, null: dict) -> list[tuple[str, str, f
         add("E1-hit", "units of the line in the batch months, planted ÷ null (a house-label hit)", safe(planted["batch_units"], null["batch_units"]), operator.ge, 2.0)
         add("E1-pulled", "units of the line after the pull, planted", planted["units_after_pull"], operator.eq, 0)
         add("E1-null-sells", "units of the line after the pull, null (it would have sold)", null["units_after_pull"], operator.gt, 0)
-        add("E1-trust", "other grain-free dog dry food in the two months after the pull, planted ÷ null",
+        add("E1-trust", "other grain-free dog dry food bought by customers who never bought the line, two months after the pull, planted ÷ null",
             safe(planted["type_units_after_pull"], null["type_units_after_pull"]), operator.le, 0.95)
         add("E1-churn", "churn of the batch's buyers, planted ÷ null",
             safe(planted["batch_buyers_churned"] / max(planted["batch_buyers"], 1), null["batch_buyers_churned"] / max(null["batch_buyers"], 1)), operator.ge, 1.3)
