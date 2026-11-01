@@ -10,7 +10,7 @@ const COLOUR: Record<Outcome, string> = {
 
 type Decisions = Record<string, "approved" | "rejected">;
 
-/** The selected run: the agent's summary, then each step with the gate's outcome and the numbers behind it. */
+/** The selected run: the run's summary, then each step with the gate's outcome and the numbers behind it. */
 export default function RunPane({ run, decisions, onDecide }: {
   run: Run; decisions: Decisions; onDecide: (key: string, choice: "approved" | "rejected" | null) => void;
 }) {

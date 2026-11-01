@@ -274,14 +274,14 @@ numbers a tool returned.
 the deck folder (68 s, two real runs on the same data, recorded
 2026-10-24).
 
-## 5b. The shopkeeper agent (about 1½ minutes)
+## 5b. The shopkeeper: rules and agents (about 2 minutes)
 
 **Click:** Operate › Shopkeeper. The Weekly win-back run is open.
 
-**Say:** "This is the agent that runs the shop's routines. It went through the
-20 customers most likely to leave and picked the next best action for each.
-It acts only when the evidence is there. Everything here is simulated:
-nothing was sent."
+**Say:** "These are the shop's routines, each marked Rule or Agent. The win-back
+is a rule: a calculation on Aito's numbers, no model in it. It went through the
+20 customers most likely to leave and picked the next best action for each, and
+acts only when the evidence is there. Everything here is simulated: nothing was sent."
 
 | Expected | Basis |
 |---|---|
@@ -290,9 +290,13 @@ nothing was sent."
 | Moving "Act from a lift of" up turns acted steps into suggested ones; unticking a kind under "Always ask a person before" moves its steps out of "Needs a person", to Acted or Suggested by their lift | the gate's rules, re-judged on every change |
 | The Board lists what to improve: thin evidence, the approval load, and the churn tells (NPS 0–3: 1.9× the churn) | the Retention snapshot's `_relate` rates |
 
-**Say:** "The store sets how sure the agent must be, and which kinds always
+**Say:** "The store sets how sure the rule must be, and which kinds always
 need a person. We don't claim it matches or forecasts better than a simpler
 method: the gate is what's new, it knows when not to act."
+
+**Then:** open a stored conversation under Past conversations (when one is stored: `./do record-conversation "question"`
+stores one from a server where Ask is on). It shows the question, each tool call with its input and result, the
+answer and the tokens: this is where a model works, read-only, and it replays without a key.
 
 **Caveat:** only the win-back routine is built; the others are shown as not built
 yet. The numbers are those of the stored run for the current data release; a run

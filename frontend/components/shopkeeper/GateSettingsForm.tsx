@@ -30,7 +30,7 @@ export default function GateSettingsForm({ view, value, onChange, lifts }: {
   return (
     <div className="card" style={{ marginBottom: 12 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-        <div className="card-title" style={{ margin: 0 }}>When the agent acts · the store&apos;s settings</div>
+        <div className="card-title" style={{ margin: 0 }}>When the rule acts · the store&apos;s settings</div>
         {changed && <button className="btn btn-ghost" style={{ padding: "2px 10px", fontSize: 12 }}
           onClick={() => onChange(view.recommended)}>Reset to recommended</button>}
       </div>

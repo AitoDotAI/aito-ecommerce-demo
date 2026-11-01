@@ -12,6 +12,7 @@ import statistics
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
+from src import ask_conversations
 from src.shopkeeper_board import board_for
 from src.shopkeeper_gate import RECOMMENDED_NEVER_AUTO, GateSettings
 from src.shopkeeper_run import decide_steps, load_run, release_env, snapshot_digest, stored_run_ids, tally
@@ -20,13 +21,20 @@ router = APIRouter()
 
 ROUTINES = (
     {"id": "winback", "name": "Weekly win-back", "schedule": "Mondays 07:00 (simulated)", "built": True,
-     "does": "Reads who is likely to leave, picks the next best action per customer, acts on the confident ones."},
+     "does": "Reads who is likely to leave, picks the next best action per customer, acts on the confident ones.",
+     "kind": "rule", "why": "Aito's lift per action and a threshold decide; the same data gives the same list. No model is involved."},
     {"id": "stock", "name": "Stock-aware morning check", "schedule": "Daily 06:30", "built": False,
-     "does": "Ranks reorder and overstock, proposes markdowns with their margin impact."},
+     "does": "Ranks reorder and overstock, proposes markdowns with their margin impact.",
+     "kind": "rule", "why": "Counts of observed sales and arithmetic rank the list; a model would add nothing."},
     {"id": "portfolio", "name": "Portfolio review", "schedule": "Monthly", "built": False,
-     "does": "Proposes products to retire, price changes and additions."},
+     "does": "Proposes products to retire, price changes and additions.",
+     "kind": "rule", "why": "Sales, margin and the discount what-if decide; a person reads the list."},
     {"id": "product-entry", "name": "New-product entry", "schedule": "On demand", "built": False,
-     "does": "Suggests the fields of a new product from similar ones."},
+     "does": "Suggests the fields of a new product from similar ones.",
+     "kind": "agent", "why": "The fields come from Aito's predictions; a model would write the free text and check it against them."},
+    {"id": "advertising", "name": "Advertisement orchestration", "schedule": "On demand", "built": False,
+     "does": "Plans which products to advertise to which segment, given stock and margin.",
+     "kind": "agent", "why": "Several steps across stock, segments and copy that no single rule covers; a person approves."},
 )
 
 
@@ -62,7 +70,7 @@ def _bad_request(exc: Exception) -> JSONResponse:
 @router.get("/api/shopkeeper")
 def shopkeeper_overview(request: Request, act_lift: float | None = None, suggest_lift: float | None = None,
                         min_rows: int | None = None, never_auto: str | None = None):
-    """The three lists of the view: the Board, the routines with their latest run, the past conversations."""
+    """The three lists of the view: the Board, the routines with their latest run, the stored runs and conversations."""
     try:
         settings = settings_from(act_lift, suggest_lift, min_rows, never_auto)
     except ValueError as exc:
@@ -74,10 +82,22 @@ def shopkeeper_overview(request: Request, act_lift: float | None = None, suggest
         "settings": _settings_view(settings, runs),
         "board": [item for run in runs for item in board_for(run, settings)],
         "routines": [{**r, "latest_run": next((run["id"] for run in runs if run["routine"] == r["id"]), None)} for r in ROUTINES],
-        "conversations": [{"id": run["id"], "title": run["title"], "as_of_month": run["as_of_month"],
-                           "stale": stale_reason(run, request) is not None,
-                           "tally": tally(decide_steps(run, settings))} for run in runs],
+        "runs": [{"id": run["id"], "title": run["title"], "as_of_month": run["as_of_month"],
+                  "stale": stale_reason(run, request) is not None,
+                  "tally": tally(decide_steps(run, settings))} for run in runs],
+        "conversations": ask_conversations.list_conversations(),
     }
+
+
+@router.get("/api/shopkeeper/conversations/{conversation_id}")
+def shopkeeper_conversation(conversation_id: str):
+    """One stored conversation with Ask the store: the question, its tool calls and results, the answer."""
+    try:
+        return ask_conversations.load(conversation_id)
+    except ValueError as exc:
+        return _bad_request(exc)
+    except FileNotFoundError as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
 
 
 @router.get("/api/shopkeeper/runs/{run_id}")

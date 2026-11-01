@@ -95,11 +95,11 @@ def api():
     return TestClient(app)
 
 
-def test_the_overview_lists_board_routines_and_conversations(api):
+def test_the_overview_lists_board_routines_and_runs(api):
     body = api.get("/api/shopkeeper").json()
 
     assert body["board"] and body["simulated"] is True
-    assert [c["id"] for c in body["conversations"]] == ["winback"]
+    assert [c["id"] for c in body["runs"]] == ["winback"]
     assert {r["id"]: r["built"] for r in body["routines"]}["winback"] is True
     assert body["settings"]["in_force"] == body["settings"]["recommended"]
 
@@ -130,7 +130,7 @@ def test_the_demo_script_says_what_the_stored_run_says_at_the_recommended_settin
     from pathlib import Path
     summary = tally(decide_steps(run, GateSettings()))
     script = (Path(__file__).resolve().parent.parent / "docs" / "demo-script.md").read_text()
-    section = script.split("## 5b. The shopkeeper agent")[1].split("## 6.")[0]
+    section = script.split("## 5b. The shopkeeper: rules and agents")[1].split("## 6.")[0]
 
     acted = f"I acted on {summary[ACT]['steps']}, expecting € {summary[ACT]['expected_net_eur']:.0f}"
     waiting = summary[SUGGEST]["steps"] + summary[NEVER_AUTO]["steps"]
@@ -172,4 +172,4 @@ def test_a_run_is_stale_when_retention_serves_other_numbers_than_it_read():
 
     assert client.get("/api/shopkeeper/runs/winback").json()["stale"] is True
     assert "different numbers" in client.get("/api/shopkeeper/runs/winback").json()["stale_reason"]
-    assert client.get("/api/shopkeeper").json()["conversations"][0]["stale"] is True
+    assert client.get("/api/shopkeeper").json()["runs"][0]["stale"] is True
