@@ -206,3 +206,83 @@ def test_the_ranking_route_places_the_selection_and_refuses_an_unknown_preferenc
     ranked = api.get("/api/customer-profiles/ranking", params=[("var", "pet:dog"), ("c", "price:premium-leaning")]).json()
     assert ranked["label"] == "Lines bought for: dog" and ranked["key"] == "price:premium-leaning"
     assert api.get("/api/customer-profiles/ranking", params={"var": "colour"}).status_code == 400
+
+
+# A trend over six months of a segment that grows in the last three, against everyone who is flat.
+MONTHS = ["2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06"]
+
+
+def trend_of(customers, orders, revenue, profit, nps, churn) -> dict:
+    return {"months": MONTHS, "customers": customers, "orders": orders, "revenue_eur": revenue,
+            "profit_per_customer_eur": profit, "nps": nps, "churn_rate": churn}
+
+
+def test_a_period_is_compared_per_month_with_the_months_outside_it():
+    from src.customer_period import period_comparison
+    selected = trend_of([10, 10, 10, 20, 20, 20], [10, 10, 10, 30, 30, 30], [100.0] * 3 + [300.0] * 3, [2.0] * 3 + [4.0] * 3,
+                        [None, None, 10.0, 12.0, 20.0, 30.0], [0.1, 0.1, 0.1, 0.2, 0.2, 0.3])
+    everyone = trend_of([100] * 6, [100] * 6, [1000.0] * 6, [3.0] * 6, [10.0] * 6, [0.2] * 6)
+
+    result = period_comparison(selected, everyone, "2026-04", "2026-06")
+
+    assert result["months"] == 3
+    assert result["selected"]["orders"] == {"inside": 30.0, "outside": 10.0, "change": 2.0}
+    assert result["selected"]["customers"]["inside"] == 20.0
+    assert result["selected"]["profit_per_customer_eur"] == {"inside": 4.0, "outside": 2.0, "change": 1.0}
+    assert result["all"]["orders"]["change"] == 0.0, "everyone is flat, so the segment's growth is its own"
+
+
+def test_nps_and_churn_are_read_at_the_end_of_the_period_against_the_month_before_it_and_differ_in_points():
+    from src.customer_period import period_comparison
+    selected = trend_of([10] * 6, [10] * 6, [1.0] * 6, [1.0] * 6, [None, None, 10.0, 12.0, 20.0, 30.0], [0.1, 0.1, 0.1, 0.2, 0.2, 0.3])
+
+    result = period_comparison(selected, selected, "2026-04", "2026-06")
+
+    assert result["selected"]["nps"] == {"inside": 30.0, "outside": 10.0, "change": 20.0}
+    assert result["selected"]["churn_rate"] == {"inside": 0.3, "outside": 0.1, "change": 0.2}
+
+
+def test_a_period_starting_at_the_first_month_has_nothing_to_compare_nps_and_churn_with():
+    from src.customer_period import period_comparison
+    selected = trend_of([10] * 6, [10] * 6, [1.0] * 6, [1.0] * 6, [5.0] * 6, [0.1] * 6)
+
+    result = period_comparison(selected, selected, "2026-01", "2026-03")
+
+    assert result["selected"]["nps"] == {"inside": 5.0, "outside": None, "change": None}
+
+
+@pytest.mark.parametrize("start, end", [("2026-06", "2026-04"), ("2025-01", "2026-03"), ("2026-02", "2026-13"), ("x", "2026-03")])
+def test_a_period_that_is_backwards_or_outside_the_data_is_refused(start, end):
+    from src.customer_period import period_comparison
+    selected = trend_of([1] * 6, [1] * 6, [1.0] * 6, [1.0] * 6, [None] * 6, [None] * 6)
+
+    with pytest.raises(ValueError, match="period"):
+        period_comparison(selected, selected, start, end)
+
+
+def test_the_whole_history_as_a_period_leaves_nothing_outside_to_compare_with():
+    from src.customer_period import period_comparison
+    selected = trend_of([1] * 6, [2] * 6, [1.0] * 6, [1.0] * 6, [None] * 6, [None] * 6)
+
+    with pytest.raises(ValueError, match="period.*outside"):
+        period_comparison(selected, selected, "2026-01", "2026-06")
+
+
+def test_the_segment_route_adds_a_period_when_asked_and_refuses_a_bad_one(release):
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+
+    from src.customer_profile_routes import router
+
+    app = FastAPI()
+    app.include_router(router)
+    api = TestClient(app)
+    months = api.get("/api/customer-profiles/segment").json()["trend"]["selected"]["months"]
+
+    asked = api.get("/api/customer-profiles/segment", params={"c": "pets:dog", "start": months[-6], "end": months[-1]}).json()
+
+    assert asked["period"]["months"] == 6 and asked["period"]["from"] == months[-6]
+    assert "period" not in api.get("/api/customer-profiles/segment", params={"c": "pets:dog"}).json()
+    assert api.get("/api/customer-profiles/segment", params={"start": months[-6]}).status_code == 400
+    assert api.get("/api/customer-profiles/segment", params={"start": months[-1], "end": months[0]}).status_code == 400
+    assert api.get("/api/customer-profiles/segment", params={"start": months[0], "end": months[-1]}).status_code == 400

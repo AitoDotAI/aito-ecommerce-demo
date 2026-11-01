@@ -5,7 +5,7 @@ import { Suspense, useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { parseConditions, toggle, type KpiId, type ProfilesSummary, type SegmentView } from "@/lib/customer-profiles";
 import { customersPanel } from "@/lib/panel-content";
-import { useUrlState } from "@/lib/use-url-state";
+import { useSetUrlParams, useUrlState } from "@/lib/use-url-state";
 import { usePagePanel } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
 import SegmentAcquisition from "@/components/customers/SegmentAcquisition";
@@ -13,6 +13,7 @@ import SegmentFeedback from "@/components/customers/SegmentFeedback";
 import SegmentKpis from "@/components/customers/SegmentKpis";
 import SegmentHeader from "@/components/customers/SegmentHeader";
 import SegmentHighlights from "@/components/customers/SegmentHighlights";
+import SegmentPeriod from "@/components/customers/SegmentPeriod";
 import SegmentOthers from "@/components/customers/SegmentOthers";
 import SegmentRelated from "@/components/customers/SegmentRelated";
 import SegmentResponse from "@/components/customers/SegmentResponse";
@@ -43,6 +44,9 @@ function CustomersView() {
   const [seg, setSeg] = useUrlState("seg", "");
   const [tab, setTab] = useUrlState("tab", "highlights");
   const [kpi, setKpi] = useUrlState("kpi", "revenue_eur");
+  const [from] = useUrlState("from", "");
+  const [to] = useUrlState("to", "");
+  const setUrlParams = useSetUrlParams();
   const [error, setError] = useState<string | null>(null);
   const conditions = parseConditions(seg);
 
@@ -52,9 +56,11 @@ function CustomersView() {
 
   // The previous segment stays on screen until the next one arrives, so ticking a condition does not blank the page.
   useEffect(() => {
-    const query = parseConditions(seg).map((c) => `c=${encodeURIComponent(c)}`).join("&");
-    apiFetch<SegmentView>(`/api/customer-profiles/segment${query ? `?${query}` : ""}`).then(setView).catch((e) => setError(String(e)));
-  }, [seg]);
+    const parts = parseConditions(seg).map((c) => `c=${encodeURIComponent(c)}`);
+    if (from && to) parts.push(`start=${from}`, `end=${to}`);
+    apiFetch<SegmentView>(`/api/customer-profiles/segment${parts.length ? `?${parts.join("&")}` : ""}`).then(setView).catch((e) => setError(String(e)));
+  }, [seg, from, to]);
+  const setPeriod = (start: string, end: string) => setUrlParams({ from: start || null, to: end || null });
 
   const select = (next: string[]) => setSeg(next.join(","));
   return (
@@ -92,7 +98,8 @@ function CustomersView() {
           {view && !view.too_small && (
             <div className="segment-details" style={{ display: "grid", gap: 12, minWidth: 0 }}>
               <SegmentHeader summary={summary} view={view} />
-              <SegmentTrend view={view} kpi={kpi as KpiId} />
+              <SegmentTrend view={view} kpi={kpi as KpiId} from={from} to={to} onPeriod={setPeriod} />
+              {view.period && <SegmentPeriod period={view.period} conditions={view.conditions.length} onClear={() => setPeriod("", "")} />}
               <div role="tablist" aria-label="Segment details" style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                 {TABS.map((t) => (
                   <button key={t.id} role="tab" aria-selected={tab === t.id} className={`toggle-btn${tab === t.id ? " active" : ""}`}
