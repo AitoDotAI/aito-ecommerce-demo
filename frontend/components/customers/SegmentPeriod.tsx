@@ -1,6 +1,7 @@
 "use client";
 
 import { KPIS } from "@/lib/customer-kpis";
+import Pattern from "@/components/customers/Pattern";
 import type { PeriodComparison } from "@/lib/customer-profiles";
 
 /**
@@ -27,7 +28,7 @@ export default function SegmentPeriod({ period, conditions, onClear }: { period:
               <thead>
                 <tr className="card-sub" style={{ textAlign: "right" }}>
                   <th style={{ textAlign: "left", fontWeight: 500 }}></th><th style={{ fontWeight: 500 }}>This period</th><th style={{ fontWeight: 500 }}>Previous</th>
-                  <th style={{ fontWeight: 500 }}>Change</th>{conditions > 0 && <th style={{ fontWeight: 500 }}>Everyone&apos;s change</th>}
+                  <th style={{ fontWeight: 500 }}>Change</th><th style={{ fontWeight: 500 }}>Pattern?</th>{conditions > 0 && <th style={{ fontWeight: 500 }}>Everyone&apos;s change</th>}
                 </tr>
               </thead>
               <tbody>
@@ -41,9 +42,9 @@ export default function SegmentPeriod({ period, conditions, onClear }: { period:
                       <td style={{ textAlign: "left", padding: "4px 0" }}>{k.label}</td>
                       <td>{show(own.this)}</td>
                       <td>{show(own.previous)}</td>
-                      <td style={{ fontWeight: own.clear ? 700 : 400, color: own.clear && worse ? "var(--cta)" : undefined }}
-                          title={own.margin === null ? "No margin: a count of customers" : `A change beyond ±${k.change(own.margin).replace(/^[+−]/, "")} is not chance`}>
-                        {own.change === null ? "–" : k.change(own.change)}{own.clear === false ? " ·" : ""}
+                      <td style={{ color: own.z !== null && own.z >= 3 && worse ? "var(--cta)" : undefined }}>{own.change === null ? "–" : k.change(own.change)}</td>
+                      <td title={own.z === null ? "A count of customers: no margin to test" : undefined}>
+                        <Pattern z={own.z} detail={own.change === null ? undefined : k.change(own.change)} />
                       </td>
                       {conditions > 0 && <td className="card-sub">{everyone?.change == null ? "–" : k.change(everyone.change)}</td>}
                     </tr>
@@ -55,7 +56,7 @@ export default function SegmentPeriod({ period, conditions, onClear }: { period:
           <div className="card-sub" style={{ marginTop: 6, lineHeight: 1.5 }}>
             The {period.context_customers?.toLocaleString("en-GB")}{" "}customers who ordered in either period, each against themselves: orders, revenue and profit are per
             customer. NPS is of the answers given in each period; churn is the share of customers who had ordered by then that had not in the three months up to the
-            period&apos;s end. Bold: the change is beyond what chance gives at 95 % (churn 99.7 %); a dot after it: it is not. The tabs below still describe the whole
+            period&apos;s end. "Pattern?" says whether the change is a pattern in the data (Yes, Likely, Possibly) or Unlikely to be more than luck; hover for the chance. The same words are used in the other tabs. The tabs below still describe the whole
             history; the data is monthly, so a period is whole months.
           </div>
         </>
