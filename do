@@ -628,7 +628,7 @@ cmd_uci_check() {
 cmd_backtest_prepare() {
   # Local only. The Email salt comes from BACKTEST_EMAIL_SALT; never commit it.
   cd "$SCRIPT_DIR"
-  PYTHONPATH=. uv run --group backtest python scripts/backtest.py prepare "$@"
+  PYTHONPATH=. uv run python scripts/backtest.py prepare "$@"
 }
 
 cmd_backtest_load() {
@@ -643,7 +643,7 @@ cmd_backtest() {
   # --offline: the three baselines only. Otherwise AITO_ENV must be the
   # dataset's env (uci, or backtest-<name>); only _predict is read.
   cd "$SCRIPT_DIR"
-  PYTHONPATH=. uv run --group backtest python scripts/backtest.py run "$@"
+  PYTHONPATH=. uv run python scripts/backtest.py run "$@"
 }
 
 # ── Workbook ────────────────────────────────────────────────────────
@@ -696,7 +696,7 @@ cmd_test() {
   # write its cache (aito-azure saw 14 cache writes on master on 2026-10-24).
   export PUBLIC_DEMO="${PUBLIC_DEMO:-1}"
   # The backtest group adds numpy, which the EASE baseline's tests need (ADR 0036).
-  uv run --group backtest pytest "${@:-tests/}" -v
+  uv run pytest "${@:-tests/}" -v
 }
 
 cmd_aito_check() {
