@@ -56,13 +56,20 @@ def members(customers: dict[str, dict], parsed: list[tuple[str, str]]) -> list[s
 
 
 def options(customers: dict[str, dict], parsed: list[tuple[str, str]]) -> dict[str, dict]:
-    """For every condition the tree offers: the figures the selection would have if it were ticked (replacing the same trait's value)."""
-    values = sorted({(t, v) for c in customers.values() for t in TRAITS + ("diets",) + FILTERS
-                     for v in (c[MULTI_VALUED[t]] if t in MULTI_VALUED else [c[t]]) if v not in ("too few purchases",)})
+    """For every condition the tree offers: the figures the selection would have if it were ticked (replacing the same trait's value).
+
+    The customers who meet each condition are listed once, so every option is an intersection of those lists, not a new pass over everyone."""
+    who: dict[tuple[str, str], set[str]] = defaultdict(set)
+    for cid, c in customers.items():
+        for trait in TRAITS + ("diets",) + FILTERS:
+            for value in (c[MULTI_VALUED[trait]] if trait in MULTI_VALUED else [c[trait]]):
+                if value not in ("too few purchases",):
+                    who[(trait, value)].add(cid)
     out = {}
-    for trait, value in values:
-        kept = [(t, v) for t, v in parsed if t != trait or t not in SINGLE_VALUED]
-        out[f"{trait}:{value}"] = _tree_figures([customers[cid] for cid in members(customers, sorted({*kept, (trait, value)}))])
+    for trait, value in sorted(who):
+        kept = {(t, v) for t, v in parsed if t != trait or t not in SINGLE_VALUED} | {(trait, value)}
+        ids = set.intersection(*(who.get(condition, set()) for condition in kept))
+        out[f"{trait}:{value}"] = _tree_figures([c for cid, c in customers.items() if cid in ids])
     return out
 
 
