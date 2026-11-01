@@ -287,3 +287,14 @@ def test_the_stored_facts_say_what_each_customers_reviews_were_about_and_how_the
 
     assert topics == {"praise", "question", "quality", "shipping", "fit"} and groups == {"promoter", "passive", "detractor"}
     assert all(c["nps_groups"] == sorted({g for _, g in c["nps"]}) for c in release[0]["customers"].values())
+
+
+def test_the_options_of_a_selection_are_counted_fast_enough_for_a_request(release):
+    # ~60 conditions, each a different selection of the same customers: a request that rescans everyone for each took 0.35 s here and 2-5 s on the demo host.
+    import time
+
+    customers = release[0]["customers"]
+    started = time.perf_counter()
+    options(customers, parse(["pets:dog", "price:mixed"]))
+
+    assert time.perf_counter() - started < 0.15
