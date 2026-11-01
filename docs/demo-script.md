@@ -55,7 +55,7 @@ tracking, and that the model's top action is the generator's best for 81 % of cu
 
 A different order from the owner's walk-through below: it starts from what a shopper sees and ends on how well it works.
 Shop (Be Anna: what the shop suggests, and the query behind it) → Retention (who is about to leave, the ranked next action and what it adds) →
-Shopkeeper (the agent that acts when it is sure and asks when it is not) → Customers (tick conditions to build a segment, compare by profit per customer or NPS, see its trend and where they came from) →
+Shopkeeper (rules that act when the evidence is there, and the conversations of the agent that answers questions) → Customers (tick conditions to build a segment, compare by profit per customer or NPS, drag a period on its trend to set it against the rest, see where they came from) →
 Supply (reorder on observed sales; the markdown sweep is the Aito part) → Product (what a discount or price change does) →
 Evidence (every number against a baseline, including the model that fails honestly). Every screen shows its query in the right panel.
 Say once, early: all data is synthetic with planted effects; what is tested is whether Aito finds them.

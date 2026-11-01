@@ -55,6 +55,14 @@ export interface TreeFigures { customers: number; orders: number; revenue_eur: n
 
 export type KpiId = "customers" | "orders" | "revenue_eur" | "profit_per_customer_eur" | "nps" | "churn_rate";
 
+/** One figure in a chosen period against the months outside it (ADR 0055): monthly averages, or points for NPS and churn. */
+export interface PeriodFigure { inside: number | null; outside: number | null; change: number | null }
+
+export interface PeriodComparison {
+  from: string; to: string; months: number; months_outside: number;
+  selected: Record<KpiId, PeriodFigure>; all: Record<KpiId, PeriodFigure>;
+}
+
 export interface FeedbackPair { selected: FeedbackEntry; all: FeedbackEntry }
 
 export interface SegmentView {
@@ -63,7 +71,7 @@ export interface SegmentView {
   segment?: Segment; funnel?: { selected: FunnelCounts; all: FunnelCounts };
   relations?: SelectionRelation[]; preferences?: Record<string, PreferenceGroup>;
   acquisition?: Record<"source" | "landing" | "landing_category", AcquisitionRow[]>;
-  response?: ResponseEntry | null; feedback?: FeedbackPair; trend?: { selected: Trend; all: Trend };
+  response?: ResponseEntry | null; feedback?: FeedbackPair; trend?: { selected: Trend; all: Trend }; period?: PeriodComparison;
 }
 
 export interface SelectionRelation {
