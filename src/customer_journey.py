@@ -10,6 +10,7 @@ is an aggregate: no row names or numbers a customer.
 
 from __future__ import annotations
 
+import random
 from collections import defaultdict
 
 from src.customer_relations import MIN_GROUP, share_difference
@@ -18,6 +19,8 @@ OFFSETS = (-5, -4, -3, -2, -1, 0, 1, 2)
 EVENTS = [{"code": "order", "label": "Ordered"}, {"code": "visit", "label": "Visited the shop"}, {"code": "return", "label": "Returned a line"},
           {"code": "incident", "label": "Late or damaged delivery"}, {"code": "low_review", "label": "Wrote a 1–2 star review"},
           {"code": "detractor", "label": "Answered the NPS survey 0–6"}, {"code": "action", "label": "The shop sent an action"}]
+ORDER_BOUND = frozenset({"order", "return", "incident", "low_review", "detractor"})     # events that follow an order, so cannot follow a customer's last one
+FOLLOW_UP_MONTHS = 3          # a control order has this many months of data after it, the window the shop calls churn
 DETRACTOR_MAX = 6
 LOW_REVIEW_MAX = 2
 
@@ -50,19 +53,35 @@ def build_events(customer_ids: set[str], orders: list[dict], order_lines: list[d
 
 def journey(events: dict, customers: dict[str, dict], selected: list[str], months: list[str]) -> dict:
     """The grid for the selected customers: per event and offset, the share of those who left and of those who stayed with the event that month."""
-    groups: dict[str, list[tuple[str, str]]] = {"churned": [], "active": []}
+    groups: dict[str, list[tuple[str, str, str]]] = {"churned": [], "active": []}
+    without_control = 0
     for cid in selected:
         ordered = [m for m, (n, _, _) in customers[cid]["months"].items() if n > 0]
-        if ordered:
-            groups["churned" if customers[cid]["churned"] else "active"].append((cid, max(ordered)))
+        if not ordered:
+            continue
+        if customers[cid]["churned"]:
+            groups["churned"].append((cid, max(ordered), min(ordered)))
+        elif (control := control_month(cid, customers[cid], months)) is not None:
+            groups["active"].append((cid, control, min(ordered)))
+        else:
+            without_control += 1
     known = set(months)
     comparable = all(len(g) >= MIN_GROUP for g in groups.values())
-    out = {"customers": {name: len(g) for name, g in groups.items()}, "comparable": comparable, "offsets": list(OFFSETS), "events": EVENTS,
+    out = {"customers": {name: len(g) for name, g in groups.items()}, "without_control": without_control, "comparable": comparable, "offsets": list(OFFSETS), "events": EVENTS,
            "cells": {e["code"]: [_cell(e["code"], offset, groups, events, customers, known, comparable) for offset in OFFSETS] for e in EVENTS}}
     if not comparable:
         small = {name: n for name, n in out["customers"].items() if n < MIN_GROUP}
         out["reason"] = "; ".join(f"only {n} {name} customers" for name, n in small.items()) + f": a comparison needs {MIN_GROUP} in each group"
     return out
+
+
+def control_month(cid: str, customer: dict, months: list[str]) -> str | None:
+    """The month a customer who stayed is lined up on: one of their orders, picked at random (the same one every time) among those with at least
+    `FOLLOW_UP_MONTHS` months of data after it. Lined up on their *last* order they would have no orders after it, by definition, and would
+    not be a control for those who left. None if no order of theirs is old enough."""
+    last_month = months[-1]
+    candidates = sorted(m for m, (n, _, _) in customer["months"].items() if n > 0 and _shift(m, FOLLOW_UP_MONTHS) <= last_month)
+    return random.Random(f"journey-control:{cid}").choice(candidates) if candidates else None
 
 
 def _shift(month: str, n: int) -> str:
@@ -80,12 +99,15 @@ def _has(code: str, cid: str, month: str, events: dict, customers: dict) -> bool
 def _cell(code: str, offset: int, groups: dict, events: dict, customers: dict, known: set[str], comparable: bool) -> dict:
     counts = {}
     for name, members in groups.items():
-        in_data = [(cid, _shift(last, offset)) for cid, last in members if _shift(last, offset) in known]
+        # A month counts for a customer only if it is a month of the data and not before their first order: before it they did not exist.
+        in_data = [(cid, _shift(anchor, offset)) for cid, anchor, first in members if _shift(anchor, offset) in known and _shift(anchor, offset) >= first]
         counts[name] = (sum(_has(code, cid, month, events, customers) for cid, month in in_data), len(in_data))
     (hits_c, n_c), (hits_a, n_a) = counts["churned"], counts["active"]
+    # Those who left have no order after their last one, and so no return, late delivery, review or answer that follows an order: by definition, not a finding.
+    by_definition = offset > 0 and code in ORDER_BOUND
     cell = {"offset": offset, "churned": round(hits_c / n_c, 3) if n_c else None, "active": round(hits_a / n_a, 3) if n_a else None,
-            "n_churned": n_c, "n_active": n_a, "points": None, "margin": None, "clear": None}
-    if comparable and n_c and n_a:
+            "n_churned": n_c, "n_active": n_a, "points": None, "margin": None, "clear": None, "by_definition": by_definition}
+    if comparable and n_c and n_a and not by_definition:
         cell["points"], cell["margin"] = share_difference(hits_c, n_c, hits_a, n_a)
         cell["clear"] = abs(cell["points"]) > cell["margin"]
     return cell
