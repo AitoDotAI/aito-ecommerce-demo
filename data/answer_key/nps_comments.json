@@ -1,0 +1,9357 @@
+[
+  {
+    "nps_response_id": "NPS-00002",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00003",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00006",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00007",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00009",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00016",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00017",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00018",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00019",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00020",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00021",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00022",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00023",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00024",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00029",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00032",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00033",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00044",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00045",
+    "topics": [
+      "overall",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00046",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00048",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00049",
+    "topics": [
+      "overall",
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00055",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00058",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00063",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00067",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00068",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00071",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00072",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00073",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00074",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00076",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00081",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00083",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00085",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00086",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00087",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00089",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00091",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00092",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00095",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00097",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00099",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00101",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00103",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00104",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00107",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00110",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00111",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00113",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00114",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00116",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00121",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00123",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00131",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00132",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00134",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00137",
+    "topics": [
+      "overall",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00139",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00146",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00148",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00149",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00151",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00152",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00153",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00154",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00155",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00158",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00160",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00167",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00173",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00174",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00179",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00186",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00187",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00189",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00190",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00192",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00193",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00196",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00200",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00201",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00202",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00203",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00204",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00206",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00207",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00215",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00216",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00217",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00221",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00231",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00234",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00235",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00240",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00242",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00243",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00245",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00246",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00250",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00257",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00259",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00261",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00262",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00265",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00266",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00268",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00272",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00276",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00277",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00281",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00282",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00287",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00288",
+    "topics": [
+      "delivery",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00292",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00294",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00295",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00296",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00298",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00302",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00303",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00304",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00305",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00307",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00311",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00313",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00319",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00320",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00323",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00325",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00328",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00329",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00330",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00331",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00333",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00334",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00337",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00338",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00341",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00342",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00344",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00345",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00348",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00350",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00351",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00356",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00358",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00359",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00360",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00361",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00362",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00364",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00367",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00371",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00372",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00375",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00379",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00381",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00382",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00384",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00385",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00388",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00389",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00393",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00398",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00400",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00403",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00404",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00405",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00406",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00408",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00415",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00417",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00418",
+    "topics": [
+      "delivery",
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00423",
+    "topics": [
+      "overall",
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00431",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00433",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00434",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00435",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00437",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00441",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00442",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00451",
+    "topics": [
+      "overall",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00455",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00463",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00469",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00470",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00471",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00474",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00475",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00476",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00479",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00480",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00483",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00485",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00487",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00488",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00494",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00499",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00500",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00501",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00502",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00507",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00512",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00514",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00515",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00516",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00517",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00522",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00524",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00529",
+    "topics": [
+      "overall",
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00530",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00534",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00538",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00539",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00540",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00541",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00546",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00548",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00550",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00553",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00555",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00557",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00559",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00562",
+    "topics": [
+      "delivery",
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00563",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00567",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00568",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00569",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00571",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00575",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00579",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00580",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00584",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00585",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00586",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00590",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00592",
+    "topics": [
+      "overall",
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00599",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00600",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00601",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00606",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00607",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00613",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00615",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00616",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00617",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00620",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00622",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00623",
+    "topics": [
+      "overall",
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00633",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00640",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00643",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00645",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00647",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00650",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00654",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00655",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00660",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00663",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00664",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00665",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00666",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00667",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00669",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00670",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00671",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00673",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00674",
+    "topics": [
+      "overall",
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00675",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00676",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00681",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00684",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00686",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00690",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00694",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00700",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00702",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00706",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00708",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00709",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00710",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00712",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00713",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00714",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00717",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00718",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00723",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00725",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00726",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00728",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00733",
+    "topics": [
+      "overall",
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00734",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00737",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00738",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00742",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00743",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00745",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00746",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00747",
+    "topics": [
+      "delivery",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00748",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00749",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00751",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00752",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00753",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00756",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00758",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00763",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00765",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00766",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00767",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00768",
+    "topics": [
+      "overall",
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00769",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00772",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00773",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00774",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00782",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00789",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00791",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00795",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00799",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00802",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00803",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00806",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00811",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00814",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00818",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00822",
+    "topics": [
+      "overall",
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00824",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00825",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00827",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00829",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00830",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00832",
+    "topics": [
+      "overall",
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00834",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00836",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00838",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00839",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00843",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00846",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00849",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00851",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00852",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00854",
+    "topics": [
+      "overall",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00857",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00858",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00863",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00868",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00873",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00875",
+    "topics": [
+      "overall",
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00876",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00877",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00883",
+    "topics": [
+      "health",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00887",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00892",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00893",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00896",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00898",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00900",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00901",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00902",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00904",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00905",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00908",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00910",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00911",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00916",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00917",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00923",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00926",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00929",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00930",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00932",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00934",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00937",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00939",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00942",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00949",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00950",
+    "topics": [
+      "overall",
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00951",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00958",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00962",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00964",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00965",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00966",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00967",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00969",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00976",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00977",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00980",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00983",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00987",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-00988",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00989",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-00995",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01001",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01002",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01003",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01004",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01006",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01009",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01014",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01019",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01020",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01021",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01023",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01030",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01031",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01032",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01034",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01039",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01041",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01044",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01045",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01046",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01050",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01051",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01053",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01055",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01058",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01062",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01066",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01068",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01069",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01070",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01071",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01074",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01082",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01084",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01085",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01086",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01087",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01088",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01090",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01091",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01093",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01094",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01095",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01096",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01101",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01105",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01109",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01111",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01116",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01120",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01126",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01128",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01130",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01134",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01136",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01137",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01138",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01142",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01144",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01147",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01148",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01149",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01151",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01153",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01154",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01155",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01156",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01158",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01159",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01161",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01162",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01164",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01166",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01168",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01171",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01173",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01174",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01176",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01182",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01184",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01190",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01191",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01194",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01196",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01197",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01198",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01200",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01201",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01204",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01206",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01212",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01214",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01216",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01220",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01221",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01222",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01224",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01226",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01232",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01235",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01236",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01237",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01239",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01242",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01243",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01244",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01245",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01246",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01247",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01248",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01250",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01252",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01255",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01256",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01262",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01263",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01267",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01270",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01272",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01275",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01278",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01279",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01284",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01289",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01290",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01291",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01295",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01300",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01302",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01305",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01307",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01309",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01310",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01311",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01314",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01316",
+    "topics": [
+      "overall",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01318",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01322",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01327",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01330",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01331",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01336",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01338",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01342",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01343",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01344",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01347",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01348",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01353",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01357",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01358",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01359",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01360",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01365",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01366",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01367",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01368",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01369",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01374",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01375",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01378",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01379",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01383",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01386",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01387",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01389",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01397",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01398",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01404",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01405",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01406",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01407",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01408",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01412",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01420",
+    "topics": [
+      "overall",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01424",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01425",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01430",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01431",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01432",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01434",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01435",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01436",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01437",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01438",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01439",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01441",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01445",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01449",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01451",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01453",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01454",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01456",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01461",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01463",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01468",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01469",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01470",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01477",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01486",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01488",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01491",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01492",
+    "topics": [
+      "overall",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01496",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01498",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01499",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01504",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01507",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01509",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01511",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01513",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01516",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01518",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01520",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01523",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01526",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01527",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01528",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01540",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01541",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01542",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01543",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01545",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01546",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01547",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01550",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01553",
+    "topics": [
+      "overall",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01554",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01556",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01557",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01558",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01559",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01561",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01563",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01567",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01568",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01573",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01575",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01577",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01583",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01584",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01587",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01588",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01590",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01591",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01593",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01594",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01597",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01601",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01608",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01610",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01611",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01614",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01616",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01618",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01622",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01626",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01628",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01635",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01636",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01647",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01648",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01651",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01654",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01662",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01664",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01665",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01667",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01672",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01676",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01680",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01682",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01685",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01688",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01689",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01690",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01693",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01694",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01698",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01700",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01702",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01703",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01705",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01707",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01712",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01716",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01717",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01719",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01721",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01722",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01723",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01727",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01728",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01730",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01733",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01734",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01736",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01738",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01739",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01740",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01741",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01744",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01750",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01753",
+    "topics": [
+      "overall",
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01755",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01760",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01763",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01766",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01767",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01768",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01770",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01774",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01776",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01780",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01781",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01787",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01789",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01793",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01795",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01797",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01804",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01805",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01806",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01808",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01810",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01811",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01812",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01818",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01820",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01821",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01823",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01824",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01827",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01832",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01833",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01838",
+    "topics": [
+      "overall",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01841",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01842",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01848",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01849",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01851",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01853",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01855",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01856",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01857",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01858",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01859",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01862",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01864",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01868",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01869",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01872",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01874",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01876",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01877",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01879",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01882",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01883",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01886",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01890",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01893",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01907",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01908",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01913",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01919",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01924",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01927",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01928",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01931",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01932",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01939",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01941",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01942",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01943",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01944",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01951",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01955",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01957",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01959",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01961",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01962",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01964",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01969",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01970",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01972",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01975",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01982",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01984",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01985",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01987",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01988",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01989",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01991",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-01997",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01998",
+    "topics": [
+      "delivery",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-01999",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02000",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02001",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02002",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02008",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02012",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02013",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02014",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02017",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02018",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02019",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02021",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02026",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02027",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02031",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02035",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02044",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02045",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02047",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02048",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02049",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02059",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02062",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02063",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02067",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02068",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02076",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02082",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02084",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02090",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02091",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02092",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02096",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02103",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02104",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02107",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02112",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02116",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02117",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02122",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02124",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02125",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02126",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02128",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02129",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02131",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02134",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02136",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02138",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02140",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02141",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02143",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02146",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02147",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02148",
+    "topics": [
+      "delivery",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02151",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02152",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02163",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02168",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02173",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02174",
+    "topics": [
+      "health",
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02176",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02180",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02183",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02188",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02194",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02195",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02197",
+    "topics": [
+      "overall",
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02200",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02202",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02204",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02208",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02211",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02212",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02213",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02214",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02217",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02218",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02223",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02225",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02226",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02230",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02231",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02236",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02237",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02238",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02240",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02242",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02243",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02247",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02249",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02250",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02252",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02261",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02263",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02264",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02269",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02270",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02276",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02277",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02278",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02281",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02282",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02285",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02286",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02288",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02289",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02290",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02291",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02294",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02297",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02298",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02299",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02300",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02301",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02304",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02306",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02309",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02312",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02314",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02317",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02318",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02324",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02325",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02331",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02333",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02334",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02342",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02343",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02353",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02354",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02355",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02356",
+    "topics": [
+      "delivery",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02357",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02361",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02366",
+    "topics": [
+      "overall",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02368",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02372",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02377",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02378",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02383",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02387",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02388",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02389",
+    "topics": [
+      "overall",
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02394",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02395",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02400",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02401",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02404",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02409",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02411",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02415",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02419",
+    "topics": [
+      "delivery",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02421",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02424",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02425",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02426",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02427",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02428",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02429",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02431",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02432",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02434",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02436",
+    "topics": [
+      "overall",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02437",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02438",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02440",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02442",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02443",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02444",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02446",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02450",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02452",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02454",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02460",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02462",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02463",
+    "topics": [
+      "overall",
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02464",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02467",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02473",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02476",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02479",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02481",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02482",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02483",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02484",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02485",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02486",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02488",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02490",
+    "topics": [
+      "overall",
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02491",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02493",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02494",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02496",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02498",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02500",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02502",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02503",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02504",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02506",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02510",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02514",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02516",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02517",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02522",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02526",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02528",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02532",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02533",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02534",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02536",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02543",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02547",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02548",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02549",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02550",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02552",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02554",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02564",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02566",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02571",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02572",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02573",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02578",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02581",
+    "topics": [
+      "delivery",
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02584",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02586",
+    "topics": [
+      "delivery",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02588",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02590",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02591",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02592",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02596",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02597",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02599",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02604",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02611",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02614",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02620",
+    "topics": [
+      "overall",
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02621",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02623",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02624",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02627",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02628",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02636",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02640",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02642",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02646",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02647",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02648",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02649",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02653",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02655",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02656",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02657",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02659",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02663",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02666",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02670",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02671",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02674",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02678",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02679",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02683",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02686",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02688",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02691",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02692",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02694",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02696",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02700",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02702",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02708",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02710",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02719",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02723",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02725",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02728",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02731",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02732",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02733",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02734",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02737",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02741",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02742",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02743",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02745",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02753",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02754",
+    "topics": [
+      "overall",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02755",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02758",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02760",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02762",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02763",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02764",
+    "topics": [
+      "overall",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02776",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02778",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02786",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02790",
+    "topics": [
+      "overall",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02792",
+    "topics": [
+      "overall",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02793",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02796",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02799",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02803",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02806",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02807",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02809",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02810",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02818",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02821",
+    "topics": [
+      "delivery",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02824",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02825",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02828",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02830",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02831",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02832",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02836",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02837",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02838",
+    "topics": [
+      "overall",
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02842",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02844",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02845",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02847",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02848",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02861",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02862",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02863",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02865",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02871",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02872",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02873",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02876",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02878",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02882",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02884",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02886",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02889",
+    "topics": [
+      "overall",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02890",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02894",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02901",
+    "topics": [
+      "delivery",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02902",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02909",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02911",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02912",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02913",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02917",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02923",
+    "topics": [
+      "overall",
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02927",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02929",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02930",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02934",
+    "topics": [
+      "overall",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02938",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02941",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02944",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02949",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02950",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02955",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02959",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02961",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02964",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02966",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02967",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02968",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02969",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02974",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02975",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02978",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-02981",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02984",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02989",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02990",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02992",
+    "topics": [
+      "delivery",
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02996",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02998",
+    "topics": [
+      "product",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-02999",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03001",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-03003",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03005",
+    "topics": [
+      "overall",
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03006",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03007",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03010",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03012",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03016",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03017",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03019",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03021",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03022",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03024",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-03026",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-03027",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03029",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03030",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03033",
+    "topics": [
+      "overall",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-03036",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03037",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03040",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03041",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03042",
+    "topics": [
+      "overall",
+      "returns"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-03044",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-03045",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03051",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03054",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-03055",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03057",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-03059",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03062",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03063",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03067",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-03075",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03077",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03083",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03088",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03090",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03091",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03093",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-03094",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-03095",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03098",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03099",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03100",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03107",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03112",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03115",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-03116",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03123",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03128",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03132",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03134",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03138",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-03139",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03145",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03148",
+    "topics": [
+      "overall",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03150",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03151",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03154",
+    "topics": [
+      "delivery"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-03155",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-03156",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03160",
+    "topics": [
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03161",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03162",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03165",
+    "topics": [
+      "delivery",
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03166",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-03168",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03169",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03173",
+    "topics": [
+      "overall"
+    ],
+    "names_product": false
+  },
+  {
+    "nps_response_id": "NPS-03177",
+    "topics": [
+      "overall",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03178",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03183",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03186",
+    "topics": [
+      "overall",
+      "product",
+      "quality",
+      "returns"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03187",
+    "topics": [
+      "product",
+      "quality"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03190",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03191",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03192",
+    "topics": [
+      "delivery",
+      "product"
+    ],
+    "names_product": true
+  },
+  {
+    "nps_response_id": "NPS-03193",
+    "topics": [
+      "product"
+    ],
+    "names_product": true
+  }
+]

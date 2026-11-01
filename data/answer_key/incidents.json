@@ -1,0 +1,120 @@
+[
+  {
+    "id": "E1",
+    "kind": "recall",
+    "planted": true,
+    "skus": [
+      "SKU-PT-0010",
+      "SKU-PT-0027",
+      "SKU-PT-0050",
+      "SKU-PT-0067"
+    ],
+    "months": [
+      "2025-09",
+      "2025-10"
+    ],
+    "withdrawn_from": "2025-11",
+    "customers_with_a_bad_unit": [
+      "CUST-00304",
+      "CUST-00329",
+      "CUST-00582",
+      "CUST-00884",
+      "CUST-00893",
+      "CUST-01036",
+      "CUST-01208",
+      "CUST-01619",
+      "CUST-02111",
+      "CUST-02118",
+      "CUST-02369",
+      "CUST-02405",
+      "CUST-02708",
+      "CUST-02803"
+    ]
+  },
+  {
+    "id": "E2",
+    "kind": "quality",
+    "planted": true,
+    "skus": [
+      "SKU-PT-0443",
+      "SKU-PT-0444",
+      "SKU-PT-0445",
+      "SKU-PT-0446"
+    ],
+    "months": [
+      "2025-02"
+    ],
+    "customers_with_a_bad_unit": [
+      "CUST-01087",
+      "CUST-01146",
+      "CUST-01998",
+      "CUST-02162"
+    ]
+  },
+  {
+    "id": "E3",
+    "kind": "quality",
+    "planted": true,
+    "skus": [
+      "SKU-PT-0165",
+      "SKU-PT-0166",
+      "SKU-PT-0167",
+      "SKU-PT-0168",
+      "SKU-PT-0169",
+      "SKU-PT-0170",
+      "SKU-PT-0171",
+      "SKU-PT-0172",
+      "SKU-PT-0173",
+      "SKU-PT-0174",
+      "SKU-PT-0175",
+      "SKU-PT-0176",
+      "SKU-PT-0178",
+      "SKU-PT-0179",
+      "SKU-PT-0180",
+      "SKU-PT-0181"
+    ],
+    "months": [
+      "2025-06",
+      "2025-07"
+    ],
+    "customers_with_a_bad_unit": [
+      "CUST-00331",
+      "CUST-00807",
+      "CUST-01018",
+      "CUST-01111",
+      "CUST-01209",
+      "CUST-01331",
+      "CUST-01349",
+      "CUST-01363",
+      "CUST-01607",
+      "CUST-01986",
+      "CUST-02038",
+      "CUST-02070",
+      "CUST-02386",
+      "CUST-02510",
+      "CUST-02777",
+      "CUST-02886"
+    ]
+  },
+  {
+    "id": "E4",
+    "kind": "quality",
+    "planted": true,
+    "skus": [
+      "SKU-PT-0537",
+      "SKU-PT-0538",
+      "SKU-PT-0539",
+      "SKU-PT-0540"
+    ],
+    "months": [
+      "2026-01"
+    ],
+    "customers_with_a_bad_unit": [
+      "CUST-00293",
+      "CUST-00307",
+      "CUST-00589",
+      "CUST-01319",
+      "CUST-02349"
+    ]
+  }
+]

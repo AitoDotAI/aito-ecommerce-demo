@@ -113,7 +113,7 @@ def test_the_stock_run_is_served_judged_under_the_settings_the_request_names():
     default = api().get("/api/shopkeeper/runs/stock").json()
     strict = api().get("/api/shopkeeper/runs/stock", params={"min_recent_units": 1000}).json()
 
-    assert default["tally"][ACT]["steps"] == 45 and default["tally"][SUGGEST]["steps"] + default["tally"][NEVER_AUTO]["steps"] > 0
+    assert default["tally"][ACT]["steps"] == 40 and default["tally"][SUGGEST]["steps"] + default["tally"][NEVER_AUTO]["steps"] > 0
     assert strict["tally"][ACT]["steps"] == 0
     assert default["settings"]["recommended"] == {"min_recent_units": 5, "order_limit_eur": 500.0, "urgent_share": 0.5}
 

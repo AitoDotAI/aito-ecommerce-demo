@@ -71,14 +71,14 @@ place, in how far a markdown moves the stock."
 
 | On screen | Number | Basis |
 |---|---|---|
-| Reorder these 83 now | if May sells like the last three months, about €13,200 of its sales can't be served without them; 839 units, €11,832 at cost | each product's units a month over February to April (observed), against stock, the reorder point and safety stock (`src/supply_rows.py`); no forecast. Served from the precompute snapshot (`./do precompute`), which must be re-taken after a data release |
-| €27,566 tied up in 79 overstocked products | say only the €27,566. Don't present the markdown split ("14 won't clear, none worth marking down") as a finding: it is the units model by price alone, which counts neither an offer's lift on purchases when shown (×1.79 at 20 %+) nor the higher place it earns in the shop, so it understates an offer and contradicts Product's "put it on offer" | the same `_estimate` at 5–20 % off, over 13 weeks; price only |
+| Reorder these 83 now | if May sells like the last three months, about €14,383 of its sales can't be served without them; 833 units, €12,620 at cost | each product's units a month over February to April (observed), against stock, the reorder point and safety stock (`src/supply_rows.py`); no forecast. Served from the precompute snapshot (`./do precompute`), which must be re-taken after a data release |
+| €27,691 tied up in 79 overstocked products | say only the €27,691. Don't present the markdown split ("14 won't clear, none worth marking down") as a finding: it is the units model by price alone, which counts neither an offer's lift on purchases when shown (×1.79 at 20 %+) nor the higher place it earns in the shop, so it understates an offer and contradicts Product's "put it on offer" | the same `_estimate` at 5–20 % off, over 13 weeks; price only |
 
 **Caveat (the page's one line):** the quantities assume May sells like the last
 three months: observed sales, not a forecast. Aito's per-product forecast only ties
 last month's naive rule, which is why it sets no quantity here. **How well? →** opens the model checks.
 
-**Check first:** the page shows 839 units. If it shows 664 units, or a "forecast" column, it is serving the snapshot
+**Check first:** the page shows 833 units. If it shows 664 units, or a "forecast" column, it is serving the snapshot
 from before Supply moved to observed sales; if 730 units and €11,682, release 3a's: `./do precompute` has not been run
 on master since the change or the data release.
 
@@ -285,7 +285,7 @@ acts only when the evidence is there. Everything here is simulated: nothing was 
 
 | Expected | Basis |
 |---|---|
-| "I acted on 8, expecting € 168 more than doing nothing. 4 are waiting for you, holding € 51 expected. I stayed quiet on 8." | the stored run `data/agent_runs/winback.json` at the recommended settings; the euros are expected values from Aito's predictions |
+| "I acted on 4, expecting € 67 more than doing nothing. 5 are waiting for you, holding € 48 expected. I stayed quiet on 11." | the stored run `data/agent_runs/winback.json` at the recommended settings; the euros are expected values from Aito's predictions |
 | A "stayed quiet" step names why: for example "Only 9 past rows match this customer's exact situation and €10 voucher; the rule asks for 10" | rows of that action in that situation in `customer_actions` (a check on the evidence, not what the lift is estimated from) |
 | Moving "Act from a lift of" up turns acted steps into suggested ones; unticking a kind under "Always ask a person before" moves its steps out of "Needs a person", to Acted or Suggested by their lift | the gate's rules, re-judged on every change |
 | The Board lists what to improve: thin evidence, the approval load, and the churn tells (NPS 0–3: 1.9× the churn) | the Retention snapshot's `_relate` rates |
@@ -294,7 +294,7 @@ acts only when the evidence is there. Everything here is simulated: nothing was 
 need a person. We don't claim it matches or forecasts better than a simpler
 method: the gate is what's new, it knows when not to act."
 
-**Then:** open "Stock-aware morning check" under Runs: a second rule, over what Supply serves. Of 98 products it orders 45 (€5,173), leaves 7 for a person and 46 quiet; move "Units sold, at least" or the order limit and the outcomes move. It orders nothing and says it is a rule on observed sales.
+**Then:** open "Stock-aware morning check" under Runs: a second rule, over what Supply serves. Of 98 products it orders 40 (€4,991), leaves 9 for a person and 49 quiet; move "Units sold, at least" or the order limit and the outcomes move. It orders nothing and says it is a rule on observed sales.
 
 **Then:** open a stored conversation under Past conversations (when one is stored: `./do record-conversations`
 stores one from a server where Ask is on). It shows the question, each tool call with its input and result, the

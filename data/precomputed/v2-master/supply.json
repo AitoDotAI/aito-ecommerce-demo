@@ -9,13 +9,13 @@
     },
     "reorder": {
       "skus": 83,
-      "units": 839,
-      "order_cost_eur": 11831.55,
-      "revenue_at_risk_eur": 13199.84
+      "units": 833,
+      "order_cost_eur": 12619.74,
+      "revenue_at_risk_eur": 14383.47
     },
     "overstock_decision": {
       "skus": 79,
-      "tied_capital_eur": 27565.93,
+      "tied_capital_eur": 27691.06,
       "scored": 15,
       "hold": 1,
       "markdown": 0,
@@ -32,10 +32,10 @@
         "supplier": "S-12",
         "lead_time_days": 7,
         "current_stock": 2,
-        "reorder_point": 30,
+        "reorder_point": 28,
         "recent_units": 74,
-        "order_qty": 87,
-        "order_cost_eur": 1625.16,
+        "order_qty": 86,
+        "order_cost_eur": 1606.48,
         "revenue_at_risk_eur": 1868.4,
         "price": {
           "list_price_eur": 25.95,
@@ -47,6 +47,27 @@
         }
       },
       {
+        "sku": "SKU-PT-0494",
+        "name": "PetNord Scratching Post",
+        "category": "accessories",
+        "supplier": "S-03",
+        "lead_time_days": 21,
+        "current_stock": 6,
+        "reorder_point": 14,
+        "recent_units": 49,
+        "order_qty": 46,
+        "order_cost_eur": 545.1,
+        "revenue_at_risk_eur": 926.65,
+        "price": {
+          "list_price_eur": 21.55,
+          "mean_price_eur": 19.53,
+          "band_low_eur": 16.52,
+          "band_high_eur": 22.53,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
         "sku": "SKU-PT-0044",
         "name": "Eukanuba Senior Lamb Dog Food 12kg",
         "category": "dry-food",
@@ -54,10 +75,10 @@
         "lead_time_days": 7,
         "current_stock": 0,
         "reorder_point": 3,
-        "recent_units": 11,
-        "order_qty": 13,
-        "order_cost_eur": 807.3,
-        "revenue_at_risk_eur": 948.75,
+        "recent_units": 10,
+        "order_qty": 12,
+        "order_cost_eur": 745.2,
+        "revenue_at_risk_eur": 862.5,
         "price": {
           "list_price_eur": 86.25,
           "mean_price_eur": 78.17,
@@ -68,22 +89,43 @@
         }
       },
       {
-        "sku": "SKU-PT-0494",
-        "name": "PetNord Scratching Post",
-        "category": "accessories",
-        "supplier": "S-03",
-        "lead_time_days": 21,
-        "current_stock": 6,
-        "reorder_point": 14,
-        "recent_units": 45,
-        "order_qty": 42,
-        "order_cost_eur": 497.7,
-        "revenue_at_risk_eur": 840.45,
+        "sku": "SKU-PT-0025",
+        "name": "Hill's Science Plan Puppy Lamb Dog Food 15kg, light recipe",
+        "category": "dry-food",
+        "supplier": "S-02",
+        "lead_time_days": 7,
+        "current_stock": 1,
+        "reorder_point": 4,
+        "recent_units": 8,
+        "order_qty": 9,
+        "order_cost_eur": 675.63,
+        "revenue_at_risk_eur": 729.89,
         "price": {
-          "list_price_eur": 21.55,
-          "mean_price_eur": 19.53,
-          "band_low_eur": 16.52,
-          "band_high_eur": 22.53,
+          "list_price_eur": 104.27,
+          "mean_price_eur": 102.28,
+          "band_low_eur": 93.42,
+          "band_high_eur": 111.13,
+          "observations": 9,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0049",
+        "name": "Eukanuba Grain Free Salmon Dog Food 12kg",
+        "category": "dry-food",
+        "supplier": "S-02",
+        "lead_time_days": 7,
+        "current_stock": 0,
+        "reorder_point": 3,
+        "recent_units": 8,
+        "order_qty": 10,
+        "order_cost_eur": 596.2,
+        "revenue_at_risk_eur": 662.4,
+        "price": {
+          "list_price_eur": 82.8,
+          "mean_price_eur": 81.88,
+          "band_low_eur": 76.33,
+          "band_high_eur": 87.43,
           "observations": 24,
           "outlier": false
         }
@@ -96,36 +138,15 @@
         "lead_time_days": 7,
         "current_stock": 1,
         "reorder_point": 3,
-        "recent_units": 11,
-        "order_qty": 12,
-        "order_cost_eur": 697.44,
-        "revenue_at_risk_eur": 807.2,
+        "recent_units": 9,
+        "order_qty": 10,
+        "order_cost_eur": 581.2,
+        "revenue_at_risk_eur": 645.76,
         "price": {
           "list_price_eur": 80.72,
           "mean_price_eur": 75.4,
           "band_low_eur": 64.13,
           "band_high_eur": 86.67,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0049",
-        "name": "Eukanuba Grain Free Salmon Dog Food 12kg",
-        "category": "dry-food",
-        "supplier": "S-02",
-        "lead_time_days": 7,
-        "current_stock": 0,
-        "reorder_point": 3,
-        "recent_units": 9,
-        "order_qty": 11,
-        "order_cost_eur": 655.82,
-        "revenue_at_risk_eur": 745.2,
-        "price": {
-          "list_price_eur": 82.8,
-          "mean_price_eur": 81.88,
-          "band_low_eur": 76.33,
-          "band_high_eur": 87.43,
           "observations": 24,
           "outlier": false
         }
@@ -138,10 +159,10 @@
         "lead_time_days": 7,
         "current_stock": 0,
         "reorder_point": 3,
-        "recent_units": 7,
-        "order_qty": 9,
-        "order_cost_eur": 662.58,
-        "revenue_at_risk_eur": 715.75,
+        "recent_units": 6,
+        "order_qty": 8,
+        "order_cost_eur": 588.96,
+        "revenue_at_risk_eur": 613.5,
         "price": {
           "list_price_eur": 102.25,
           "mean_price_eur": 94.37,
@@ -159,36 +180,15 @@
         "lead_time_days": 21,
         "current_stock": 7,
         "reorder_point": 14,
-        "recent_units": 34,
-        "order_qty": 30,
-        "order_cost_eur": 354.0,
-        "revenue_at_risk_eur": 579.42,
+        "recent_units": 35,
+        "order_qty": 31,
+        "order_cost_eur": 365.8,
+        "revenue_at_risk_eur": 600.88,
         "price": {
           "list_price_eur": 21.46,
           "mean_price_eur": 20.34,
           "band_low_eur": 17.65,
           "band_high_eur": 23.04,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0484",
-        "name": "PetNord Clumping Clay Cat Litter 7kg, lavender scent",
-        "category": "litter",
-        "supplier": "S-05",
-        "lead_time_days": 10,
-        "current_stock": 2,
-        "reorder_point": 8,
-        "recent_units": 43,
-        "order_qty": 44,
-        "order_cost_eur": 331.32,
-        "revenue_at_risk_eur": 441.16,
-        "price": {
-          "list_price_eur": 10.76,
-          "mean_price_eur": 10.02,
-          "band_low_eur": 8.66,
-          "band_high_eur": 11.37,
           "observations": 24,
           "outlier": false
         }
@@ -201,16 +201,79 @@
         "lead_time_days": 7,
         "current_stock": 0,
         "reorder_point": 3,
-        "recent_units": 5,
-        "order_qty": 7,
-        "order_cost_eur": 434.07,
-        "revenue_at_risk_eur": 430.6,
+        "recent_units": 6,
+        "order_qty": 8,
+        "order_cost_eur": 496.08,
+        "revenue_at_risk_eur": 516.72,
         "price": {
           "list_price_eur": 86.12,
           "mean_price_eur": 85.3,
           "band_low_eur": 80.64,
           "band_high_eur": 89.97,
           "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0269",
+        "name": "Royal Canin Sensitive Whitefish Cat Food 12kg",
+        "category": "dry-food",
+        "supplier": "S-06",
+        "lead_time_days": 7,
+        "current_stock": 2,
+        "reorder_point": 3,
+        "recent_units": 9,
+        "order_qty": 9,
+        "order_cost_eur": 476.55,
+        "revenue_at_risk_eur": 514.78,
+        "price": {
+          "list_price_eur": 73.54,
+          "mean_price_eur": 72.72,
+          "band_low_eur": 62.64,
+          "band_high_eur": 82.81,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0053",
+        "name": "Eukanuba Large Breed Beef Dog Food 12kg",
+        "category": "dry-food",
+        "supplier": "S-06",
+        "lead_time_days": 7,
+        "current_stock": 1,
+        "reorder_point": 3,
+        "recent_units": 7,
+        "order_qty": 8,
+        "order_cost_eur": 485.92,
+        "revenue_at_risk_eur": 506.16,
+        "price": {
+          "list_price_eur": 84.36,
+          "mean_price_eur": 77.16,
+          "band_low_eur": 66.54,
+          "band_high_eur": 87.78,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0003",
+        "name": "Royal Canin Large Breed Chicken Dog Food 12kg",
+        "category": "dry-food",
+        "supplier": "S-04",
+        "lead_time_days": 7,
+        "current_stock": 0,
+        "reorder_point": 3,
+        "recent_units": 7,
+        "order_qty": 9,
+        "order_cost_eur": 468.27,
+        "revenue_at_risk_eur": 505.82,
+        "price": {
+          "list_price_eur": 72.26,
+          "mean_price_eur": 70.92,
+          "band_low_eur": 63.59,
+          "band_high_eur": 78.25,
+          "observations": 11,
           "outlier": false
         }
       },
@@ -236,101 +299,17 @@
         }
       },
       {
-        "sku": "SKU-PT-0025",
-        "name": "Hill's Science Plan Puppy Lamb Dog Food 15kg, light recipe",
-        "category": "dry-food",
-        "supplier": "S-02",
-        "lead_time_days": 7,
-        "current_stock": 1,
-        "reorder_point": 3,
-        "recent_units": 5,
-        "order_qty": 6,
-        "order_cost_eur": 450.42,
-        "revenue_at_risk_eur": 417.08,
-        "price": {
-          "list_price_eur": 104.27,
-          "mean_price_eur": 102.28,
-          "band_low_eur": 93.42,
-          "band_high_eur": 111.13,
-          "observations": 9,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0042",
-        "name": "Eukanuba Chicken Dog Food 12kg",
-        "category": "dry-food",
-        "supplier": "S-07",
-        "lead_time_days": 7,
-        "current_stock": 0,
-        "reorder_point": 3,
-        "recent_units": 5,
-        "order_qty": 7,
-        "order_cost_eur": 371.77,
-        "revenue_at_risk_eur": 368.8,
-        "price": {
-          "list_price_eur": 73.76,
-          "mean_price_eur": 73.51,
-          "band_low_eur": 69.82,
-          "band_high_eur": 77.2,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0003",
-        "name": "Royal Canin Large Breed Chicken Dog Food 12kg",
-        "category": "dry-food",
-        "supplier": "S-04",
-        "lead_time_days": 7,
-        "current_stock": 0,
-        "reorder_point": 3,
-        "recent_units": 5,
-        "order_qty": 7,
-        "order_cost_eur": 364.21,
-        "revenue_at_risk_eur": 361.3,
-        "price": {
-          "list_price_eur": 72.26,
-          "mean_price_eur": 70.92,
-          "band_low_eur": 63.59,
-          "band_high_eur": 78.25,
-          "observations": 11,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0269",
-        "name": "Royal Canin Sensitive Whitefish Cat Food 12kg",
-        "category": "dry-food",
-        "supplier": "S-06",
-        "lead_time_days": 7,
-        "current_stock": 2,
-        "reorder_point": 3,
-        "recent_units": 6,
-        "order_qty": 6,
-        "order_cost_eur": 317.7,
-        "revenue_at_risk_eur": 294.16,
-        "price": {
-          "list_price_eur": 73.54,
-          "mean_price_eur": 72.72,
-          "band_low_eur": 62.64,
-          "band_high_eur": 82.81,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
         "sku": "SKU-PT-0499",
         "name": "PetNord Carrier",
         "category": "accessories",
         "supplier": "S-08",
         "lead_time_days": 21,
         "current_stock": 2,
-        "reorder_point": 5,
-        "recent_units": 14,
-        "order_qty": 14,
-        "order_cost_eur": 184.8,
-        "revenue_at_risk_eur": 288.0,
+        "reorder_point": 6,
+        "recent_units": 19,
+        "order_qty": 19,
+        "order_cost_eur": 250.8,
+        "revenue_at_risk_eur": 408.0,
         "price": {
           "list_price_eur": 24.0,
           "mean_price_eur": 22.49,
@@ -341,127 +320,22 @@
         }
       },
       {
-        "sku": "SKU-PT-0270",
-        "name": "Royal Canin Grain Free Whitefish Cat Food 7kg",
-        "category": "dry-food",
-        "supplier": "S-07",
-        "lead_time_days": 7,
-        "current_stock": 0,
-        "reorder_point": 3,
-        "recent_units": 5,
-        "order_qty": 7,
-        "order_cost_eur": 252.21,
-        "revenue_at_risk_eur": 250.2,
+        "sku": "SKU-PT-0484",
+        "name": "PetNord Clumping Clay Cat Litter 7kg, lavender scent",
+        "category": "litter",
+        "supplier": "S-05",
+        "lead_time_days": 10,
+        "current_stock": 2,
+        "reorder_point": 8,
+        "recent_units": 39,
+        "order_qty": 40,
+        "order_cost_eur": 301.2,
+        "revenue_at_risk_eur": 398.12,
         "price": {
-          "list_price_eur": 50.04,
-          "mean_price_eur": 48.54,
-          "band_low_eur": 40.6,
-          "band_high_eur": 56.48,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0504",
-        "name": "Trixie Carrier, medium",
-        "category": "accessories",
-        "supplier": "S-01",
-        "lead_time_days": 21,
-        "current_stock": 3,
-        "reorder_point": 6,
-        "recent_units": 14,
-        "order_qty": 13,
-        "order_cost_eur": 150.8,
-        "revenue_at_risk_eur": 231.99,
-        "price": {
-          "list_price_eur": 21.09,
-          "mean_price_eur": 19.52,
-          "band_low_eur": 16.39,
-          "band_high_eur": 22.65,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0609",
-        "name": "JBL Filter Pads, single",
-        "category": "aquarium",
-        "supplier": "S-10",
-        "lead_time_days": 28,
-        "current_stock": 1,
-        "reorder_point": 4,
-        "recent_units": 9,
-        "order_qty": 10,
-        "order_cost_eur": 146.1,
-        "revenue_at_risk_eur": 212.56,
-        "price": {
-          "list_price_eur": 26.57,
-          "mean_price_eur": 25.8,
-          "band_low_eur": 22.87,
-          "band_high_eur": 28.74,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0503",
-        "name": "Trixie Carrier, small",
-        "category": "accessories",
-        "supplier": "S-12",
-        "lead_time_days": 21,
-        "current_stock": 1,
-        "reorder_point": 4,
-        "recent_units": 12,
-        "order_qty": 13,
-        "order_cost_eur": 137.41,
-        "revenue_at_risk_eur": 211.42,
-        "price": {
-          "list_price_eur": 19.22,
-          "mean_price_eur": 20.73,
-          "band_low_eur": 16.56,
-          "band_high_eur": 24.9,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0094",
-        "name": "Orijen Puppy Beef Dog Food 2kg",
-        "category": "dry-food",
-        "supplier": "S-11",
-        "lead_time_days": 7,
-        "current_stock": 3,
-        "reorder_point": 10,
-        "recent_units": 17,
-        "order_qty": 19,
-        "order_cost_eur": 185.82,
-        "revenue_at_risk_eur": 190.26,
-        "price": {
-          "list_price_eur": 13.59,
-          "mean_price_eur": 13.41,
-          "band_low_eur": 12.49,
-          "band_high_eur": 14.33,
-          "observations": 6,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0274",
-        "name": "Hill's Science Plan Salmon Cat Food 7kg, light recipe",
-        "category": "dry-food",
-        "supplier": "S-11",
-        "lead_time_days": 7,
-        "current_stock": 0,
-        "reorder_point": 3,
-        "recent_units": 4,
-        "order_qty": 6,
-        "order_cost_eur": 188.64,
-        "revenue_at_risk_eur": 174.68,
-        "price": {
-          "list_price_eur": 43.67,
-          "mean_price_eur": 40.94,
-          "band_low_eur": 34.75,
-          "band_high_eur": 47.12,
+          "list_price_eur": 10.76,
+          "mean_price_eur": 10.02,
+          "band_low_eur": 8.66,
+          "band_high_eur": 11.37,
           "observations": 24,
           "outlier": false
         }
@@ -474,16 +348,226 @@
         "lead_time_days": 7,
         "current_stock": 1,
         "reorder_point": 3,
-        "recent_units": 3,
-        "order_qty": 4,
-        "order_cost_eur": 207.64,
-        "revenue_at_risk_eur": 144.2,
+        "recent_units": 6,
+        "order_qty": 7,
+        "order_cost_eur": 363.37,
+        "revenue_at_risk_eur": 360.5,
         "price": {
           "list_price_eur": 72.1,
           "mean_price_eur": 67.29,
           "band_low_eur": 57.84,
           "band_high_eur": 76.75,
           "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0356",
+        "name": "Whiskas Sensitive Whitefish Cat Food 7kg",
+        "category": "dry-food",
+        "supplier": "S-09",
+        "lead_time_days": 7,
+        "current_stock": 0,
+        "reorder_point": 3,
+        "recent_units": 7,
+        "order_qty": 9,
+        "order_cost_eur": 287.55,
+        "revenue_at_risk_eur": 310.59,
+        "price": {
+          "list_price_eur": 44.37,
+          "mean_price_eur": 44.71,
+          "band_low_eur": 37.73,
+          "band_high_eur": 51.7,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0503",
+        "name": "Trixie Carrier, small",
+        "category": "accessories",
+        "supplier": "S-12",
+        "lead_time_days": 21,
+        "current_stock": 2,
+        "reorder_point": 5,
+        "recent_units": 17,
+        "order_qty": 17,
+        "order_cost_eur": 179.69,
+        "revenue_at_risk_eur": 288.3,
+        "price": {
+          "list_price_eur": 19.22,
+          "mean_price_eur": 20.73,
+          "band_low_eur": 16.56,
+          "band_high_eur": 24.9,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0273",
+        "name": "Hill's Science Plan Sensitive Salmon Cat Food 4kg",
+        "category": "dry-food",
+        "supplier": "S-10",
+        "lead_time_days": 7,
+        "current_stock": 1,
+        "reorder_point": 3,
+        "recent_units": 11,
+        "order_qty": 12,
+        "order_cost_eur": 237.72,
+        "revenue_at_risk_eur": 275.1,
+        "price": {
+          "list_price_eur": 27.51,
+          "mean_price_eur": 26.09,
+          "band_low_eur": 22.38,
+          "band_high_eur": 29.8,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0274",
+        "name": "Hill's Science Plan Salmon Cat Food 7kg, light recipe",
+        "category": "dry-food",
+        "supplier": "S-11",
+        "lead_time_days": 7,
+        "current_stock": 0,
+        "reorder_point": 3,
+        "recent_units": 6,
+        "order_qty": 8,
+        "order_cost_eur": 251.52,
+        "revenue_at_risk_eur": 262.02,
+        "price": {
+          "list_price_eur": 43.67,
+          "mean_price_eur": 40.94,
+          "band_low_eur": 34.75,
+          "band_high_eur": 47.12,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0042",
+        "name": "Eukanuba Chicken Dog Food 12kg",
+        "category": "dry-food",
+        "supplier": "S-07",
+        "lead_time_days": 7,
+        "current_stock": 0,
+        "reorder_point": 3,
+        "recent_units": 3,
+        "order_qty": 5,
+        "order_cost_eur": 265.55,
+        "revenue_at_risk_eur": 221.28,
+        "price": {
+          "list_price_eur": 73.76,
+          "mean_price_eur": 73.51,
+          "band_low_eur": 69.82,
+          "band_high_eur": 77.2,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0504",
+        "name": "Trixie Carrier, medium",
+        "category": "accessories",
+        "supplier": "S-01",
+        "lead_time_days": 21,
+        "current_stock": 2,
+        "reorder_point": 5,
+        "recent_units": 12,
+        "order_qty": 12,
+        "order_cost_eur": 139.2,
+        "revenue_at_risk_eur": 210.9,
+        "price": {
+          "list_price_eur": 21.09,
+          "mean_price_eur": 19.52,
+          "band_low_eur": 16.39,
+          "band_high_eur": 22.65,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0270",
+        "name": "Royal Canin Grain Free Whitefish Cat Food 7kg",
+        "category": "dry-food",
+        "supplier": "S-07",
+        "lead_time_days": 7,
+        "current_stock": 0,
+        "reorder_point": 3,
+        "recent_units": 4,
+        "order_qty": 6,
+        "order_cost_eur": 216.18,
+        "revenue_at_risk_eur": 200.16,
+        "price": {
+          "list_price_eur": 50.04,
+          "mean_price_eur": 48.54,
+          "band_low_eur": 40.6,
+          "band_high_eur": 56.48,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0630",
+        "name": "Tetra Tropical Flakes, single",
+        "category": "aquarium",
+        "supplier": "S-07",
+        "lead_time_days": 28,
+        "current_stock": 1,
+        "reorder_point": 4,
+        "recent_units": 9,
+        "order_qty": 10,
+        "order_cost_eur": 134.8,
+        "revenue_at_risk_eur": 196.0,
+        "price": {
+          "list_price_eur": 24.5,
+          "mean_price_eur": 23.13,
+          "band_low_eur": 19.8,
+          "band_high_eur": 26.45,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0609",
+        "name": "JBL Filter Pads, single",
+        "category": "aquarium",
+        "supplier": "S-10",
+        "lead_time_days": 28,
+        "current_stock": 1,
+        "reorder_point": 4,
+        "recent_units": 8,
+        "order_qty": 9,
+        "order_cost_eur": 131.49,
+        "revenue_at_risk_eur": 185.99,
+        "price": {
+          "list_price_eur": 26.57,
+          "mean_price_eur": 25.8,
+          "band_low_eur": 22.87,
+          "band_high_eur": 28.74,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0094",
+        "name": "Orijen Puppy Beef Dog Food 2kg",
+        "category": "dry-food",
+        "supplier": "S-11",
+        "lead_time_days": 7,
+        "current_stock": 2,
+        "reorder_point": 8,
+        "recent_units": 15,
+        "order_qty": 17,
+        "order_cost_eur": 166.26,
+        "revenue_at_risk_eur": 176.67,
+        "price": {
+          "list_price_eur": 13.59,
+          "mean_price_eur": 13.41,
+          "band_low_eur": 12.49,
+          "band_high_eur": 14.33,
+          "observations": 6,
           "outlier": false
         }
       },
@@ -509,48 +593,6 @@
         }
       },
       {
-        "sku": "SKU-PT-0273",
-        "name": "Hill's Science Plan Sensitive Salmon Cat Food 4kg",
-        "category": "dry-food",
-        "supplier": "S-10",
-        "lead_time_days": 7,
-        "current_stock": 1,
-        "reorder_point": 3,
-        "recent_units": 6,
-        "order_qty": 7,
-        "order_cost_eur": 138.67,
-        "revenue_at_risk_eur": 137.55,
-        "price": {
-          "list_price_eur": 27.51,
-          "mean_price_eur": 26.09,
-          "band_low_eur": 22.38,
-          "band_high_eur": 29.8,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0356",
-        "name": "Whiskas Sensitive Whitefish Cat Food 7kg",
-        "category": "dry-food",
-        "supplier": "S-09",
-        "lead_time_days": 7,
-        "current_stock": 0,
-        "reorder_point": 3,
-        "recent_units": 3,
-        "order_qty": 5,
-        "order_cost_eur": 159.75,
-        "revenue_at_risk_eur": 133.11,
-        "price": {
-          "list_price_eur": 44.37,
-          "mean_price_eur": 44.71,
-          "band_low_eur": 37.73,
-          "band_high_eur": 51.7,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
         "sku": "SKU-PT-0536",
         "name": "PetNord Sensitive Guinea Pig Mix Food 4kg",
         "category": "dry-food",
@@ -558,10 +600,10 @@
         "lead_time_days": 7,
         "current_stock": 1,
         "reorder_point": 3,
-        "recent_units": 5,
-        "order_qty": 6,
-        "order_cost_eur": 137.34,
-        "revenue_at_risk_eur": 127.16,
+        "recent_units": 4,
+        "order_qty": 5,
+        "order_cost_eur": 114.45,
+        "revenue_at_risk_eur": 95.37,
         "price": {
           "list_price_eur": 31.79,
           "mean_price_eur": 27.18,
@@ -572,27 +614,6 @@
         }
       },
       {
-        "sku": "SKU-PT-0614",
-        "name": "JBL Tropical Flakes, single",
-        "category": "aquarium",
-        "supplier": "S-03",
-        "lead_time_days": 28,
-        "current_stock": 0,
-        "reorder_point": 3,
-        "recent_units": 5,
-        "order_qty": 7,
-        "order_cost_eur": 91.91,
-        "revenue_at_risk_eur": 119.4,
-        "price": {
-          "list_price_eur": 23.88,
-          "mean_price_eur": 22.29,
-          "band_low_eur": 19.08,
-          "band_high_eur": 25.5,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
         "sku": "SKU-PT-0351",
         "name": "Whiskas Turkey Cat Food 4kg",
         "category": "dry-food",
@@ -600,162 +621,15 @@
         "lead_time_days": 7,
         "current_stock": 1,
         "reorder_point": 3,
-        "recent_units": 5,
-        "order_qty": 6,
-        "order_cost_eur": 116.64,
-        "revenue_at_risk_eur": 108.0,
+        "recent_units": 4,
+        "order_qty": 5,
+        "order_cost_eur": 97.2,
+        "revenue_at_risk_eur": 81.0,
         "price": {
           "list_price_eur": 27.0,
           "mean_price_eur": 26.29,
           "band_low_eur": 24.11,
           "band_high_eur": 28.46,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0630",
-        "name": "Tetra Tropical Flakes, single",
-        "category": "aquarium",
-        "supplier": "S-07",
-        "lead_time_days": 28,
-        "current_stock": 1,
-        "reorder_point": 3,
-        "recent_units": 5,
-        "order_qty": 6,
-        "order_cost_eur": 80.88,
-        "revenue_at_risk_eur": 98.0,
-        "price": {
-          "list_price_eur": 24.5,
-          "mean_price_eur": 23.13,
-          "band_low_eur": 19.8,
-          "band_high_eur": 26.45,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0053",
-        "name": "Eukanuba Large Breed Beef Dog Food 12kg",
-        "category": "dry-food",
-        "supplier": "S-06",
-        "lead_time_days": 7,
-        "current_stock": 1,
-        "reorder_point": 3,
-        "recent_units": 2,
-        "order_qty": 3,
-        "order_cost_eur": 182.22,
-        "revenue_at_risk_eur": 84.36,
-        "price": {
-          "list_price_eur": 84.36,
-          "mean_price_eur": 77.16,
-          "band_low_eur": 66.54,
-          "band_high_eur": 87.78,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0117",
-        "name": "Royal Canin Senior Turkey Dog Food 400g",
-        "category": "wet-food",
-        "supplier": "S-10",
-        "lead_time_days": 10,
-        "current_stock": 5,
-        "reorder_point": 13,
-        "recent_units": 24,
-        "order_qty": 24,
-        "order_cost_eur": 68.88,
-        "revenue_at_risk_eur": 80.18,
-        "price": {
-          "list_price_eur": 4.22,
-          "mean_price_eur": 4.06,
-          "band_low_eur": 3.63,
-          "band_high_eur": 4.48,
-          "observations": 9,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0184",
-        "name": "Whimzees Grain Free Daily Dental Treats 200g, medium dogs",
-        "category": "dental-treats",
-        "supplier": "S-05",
-        "lead_time_days": 14,
-        "current_stock": 1,
-        "reorder_point": 5,
-        "recent_units": 18,
-        "order_qty": 19,
-        "order_cost_eur": 44.27,
-        "revenue_at_risk_eur": 79.39,
-        "price": {
-          "list_price_eur": 4.67,
-          "mean_price_eur": 4.23,
-          "band_low_eur": 3.47,
-          "band_high_eur": 4.99,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0300",
-        "name": "Acana Tuna Cat Food 2kg",
-        "category": "dry-food",
-        "supplier": "S-01",
-        "lead_time_days": 7,
-        "current_stock": 1,
-        "reorder_point": 3,
-        "recent_units": 8,
-        "order_qty": 9,
-        "order_cost_eur": 67.77,
-        "revenue_at_risk_eur": 73.22,
-        "price": {
-          "list_price_eur": 10.46,
-          "mean_price_eur": 12.03,
-          "band_low_eur": 9.92,
-          "band_high_eur": 14.15,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0181",
-        "name": "PetNord Mixed Reward Treats 500g, soft",
-        "category": "treats",
-        "supplier": "S-02",
-        "lead_time_days": 14,
-        "current_stock": 0,
-        "reorder_point": 3,
-        "recent_units": 8,
-        "order_qty": 10,
-        "order_cost_eur": 50.0,
-        "revenue_at_risk_eur": 72.72,
-        "price": {
-          "list_price_eur": 9.09,
-          "mean_price_eur": 8.32,
-          "band_low_eur": 6.99,
-          "band_high_eur": 9.64,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0199",
-        "name": "PetNord Fresh Breath Dental Treats 200g",
-        "category": "dental-treats",
-        "supplier": "S-08",
-        "lead_time_days": 14,
-        "current_stock": 2,
-        "reorder_point": 4,
-        "recent_units": 18,
-        "order_qty": 18,
-        "order_cost_eur": 33.48,
-        "revenue_at_risk_eur": 59.68,
-        "price": {
-          "list_price_eur": 3.73,
-          "mean_price_eur": 3.74,
-          "band_low_eur": 3.04,
-          "band_high_eur": 4.44,
           "observations": 24,
           "outlier": false
         }
@@ -768,10 +642,10 @@
         "lead_time_days": 7,
         "current_stock": 0,
         "reorder_point": 3,
-        "recent_units": 4,
-        "order_qty": 6,
-        "order_cost_eur": 61.98,
-        "revenue_at_risk_eur": 57.4,
+        "recent_units": 5,
+        "order_qty": 7,
+        "order_cost_eur": 72.31,
+        "revenue_at_risk_eur": 71.75,
         "price": {
           "list_price_eur": 14.35,
           "mean_price_eur": 14.11,
@@ -782,64 +656,85 @@
         }
       },
       {
-        "sku": "SKU-PT-0188",
-        "name": "Whimzees Grain Free Puppy Dental Treats 80g",
-        "category": "dental-treats",
-        "supplier": "S-09",
-        "lead_time_days": 14,
+        "sku": "SKU-PT-0614",
+        "name": "JBL Tropical Flakes, single",
+        "category": "aquarium",
+        "supplier": "S-03",
+        "lead_time_days": 28,
         "current_stock": 0,
-        "reorder_point": 6,
-        "recent_units": 30,
-        "order_qty": 32,
-        "order_cost_eur": 26.88,
-        "revenue_at_risk_eur": 50.4,
+        "reorder_point": 3,
+        "recent_units": 3,
+        "order_qty": 5,
+        "order_cost_eur": 65.65,
+        "revenue_at_risk_eur": 71.64,
         "price": {
-          "list_price_eur": 1.68,
-          "mean_price_eur": 1.5,
-          "band_low_eur": 1.24,
-          "band_high_eur": 1.76,
+          "list_price_eur": 23.88,
+          "mean_price_eur": 22.29,
+          "band_low_eur": 19.08,
+          "band_high_eur": 25.5,
           "observations": 24,
           "outlier": false
         }
       },
       {
-        "sku": "SKU-PT-0072",
-        "name": "Acana Beef Dog Food 1kg, value pack",
-        "category": "dry-food",
-        "supplier": "S-01",
-        "lead_time_days": 7,
-        "current_stock": 0,
-        "reorder_point": 3,
-        "recent_units": 7,
-        "order_qty": 9,
-        "order_cost_eur": 43.56,
-        "revenue_at_risk_eur": 47.04,
+        "sku": "SKU-PT-0184",
+        "name": "Whimzees Grain Free Daily Dental Treats 200g, medium dogs",
+        "category": "dental-treats",
+        "supplier": "S-05",
+        "lead_time_days": 14,
+        "current_stock": 1,
+        "reorder_point": 5,
+        "recent_units": 16,
+        "order_qty": 17,
+        "order_cost_eur": 39.61,
+        "revenue_at_risk_eur": 70.05,
         "price": {
-          "list_price_eur": 6.72,
-          "mean_price_eur": 6.52,
-          "band_low_eur": 5.91,
-          "band_high_eur": 7.14,
-          "observations": 17,
+          "list_price_eur": 4.67,
+          "mean_price_eur": 4.23,
+          "band_low_eur": 3.47,
+          "band_high_eur": 4.99,
+          "observations": 24,
           "outlier": false
         }
       },
       {
-        "sku": "SKU-PT-0150",
-        "name": "Eukanuba Large Breed Chicken Dog Food 400g, classic recipe",
-        "category": "wet-food",
-        "supplier": "S-07",
-        "lead_time_days": 10,
-        "current_stock": 3,
-        "reorder_point": 7,
-        "recent_units": 15,
-        "order_qty": 15,
-        "order_cost_eur": 39.6,
-        "revenue_at_risk_eur": 46.56,
+        "sku": "SKU-PT-0181",
+        "name": "PetNord Mixed Reward Treats 500g, soft",
+        "category": "treats",
+        "supplier": "S-02",
+        "lead_time_days": 14,
+        "current_stock": 0,
+        "reorder_point": 3,
+        "recent_units": 7,
+        "order_qty": 9,
+        "order_cost_eur": 45.0,
+        "revenue_at_risk_eur": 63.63,
         "price": {
-          "list_price_eur": 3.88,
-          "mean_price_eur": 4.28,
-          "band_low_eur": 3.62,
-          "band_high_eur": 4.94,
+          "list_price_eur": 9.09,
+          "mean_price_eur": 8.32,
+          "band_low_eur": 6.99,
+          "band_high_eur": 9.64,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0117",
+        "name": "Royal Canin Senior Turkey Dog Food 400g",
+        "category": "wet-food",
+        "supplier": "S-10",
+        "lead_time_days": 10,
+        "current_stock": 4,
+        "reorder_point": 10,
+        "recent_units": 18,
+        "order_qty": 18,
+        "order_cost_eur": 51.66,
+        "revenue_at_risk_eur": 59.08,
+        "price": {
+          "list_price_eur": 4.22,
+          "mean_price_eur": 4.06,
+          "band_low_eur": 3.63,
+          "band_high_eur": 4.48,
           "observations": 9,
           "outlier": false
         }
@@ -852,57 +747,15 @@
         "lead_time_days": 14,
         "current_stock": 1,
         "reorder_point": 4,
-        "recent_units": 17,
-        "order_qty": 18,
-        "order_cost_eur": 25.02,
-        "revenue_at_risk_eur": 44.48,
+        "recent_units": 20,
+        "order_qty": 21,
+        "order_cost_eur": 29.19,
+        "revenue_at_risk_eur": 52.82,
         "price": {
           "list_price_eur": 2.78,
           "mean_price_eur": 2.61,
           "band_low_eur": 2.27,
           "band_high_eur": 2.95,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0191",
-        "name": "Whimzees Grain Free Fresh Breath Dental Treats 120g",
-        "category": "dental-treats",
-        "supplier": "S-12",
-        "lead_time_days": 14,
-        "current_stock": 2,
-        "reorder_point": 5,
-        "recent_units": 18,
-        "order_qty": 18,
-        "order_cost_eur": 24.48,
-        "revenue_at_risk_eur": 43.68,
-        "price": {
-          "list_price_eur": 2.73,
-          "mean_price_eur": 2.64,
-          "band_low_eur": 2.32,
-          "band_high_eur": 2.95,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0247",
-        "name": "PetNord Calming Tablets, single",
-        "category": "health",
-        "supplier": "S-08",
-        "lead_time_days": 14,
-        "current_stock": 0,
-        "reorder_point": 3,
-        "recent_units": 2,
-        "order_qty": 4,
-        "order_cost_eur": 43.28,
-        "revenue_at_risk_eur": 39.34,
-        "price": {
-          "list_price_eur": 19.67,
-          "mean_price_eur": 18.54,
-          "band_low_eur": 16.15,
-          "band_high_eur": 20.94,
           "observations": 24,
           "outlier": false
         }
@@ -915,15 +768,141 @@
         "lead_time_days": 10,
         "current_stock": 0,
         "reorder_point": 3,
-        "recent_units": 8,
-        "order_qty": 10,
-        "order_cost_eur": 31.7,
-        "revenue_at_risk_eur": 37.28,
+        "recent_units": 11,
+        "order_qty": 13,
+        "order_cost_eur": 41.21,
+        "revenue_at_risk_eur": 51.26,
         "price": {
           "list_price_eur": 4.66,
           "mean_price_eur": 4.6,
           "band_low_eur": 3.77,
           "band_high_eur": 5.44,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0191",
+        "name": "Whimzees Grain Free Fresh Breath Dental Treats 120g",
+        "category": "dental-treats",
+        "supplier": "S-12",
+        "lead_time_days": 14,
+        "current_stock": 2,
+        "reorder_point": 5,
+        "recent_units": 20,
+        "order_qty": 20,
+        "order_cost_eur": 27.2,
+        "revenue_at_risk_eur": 49.14,
+        "price": {
+          "list_price_eur": 2.73,
+          "mean_price_eur": 2.64,
+          "band_low_eur": 2.32,
+          "band_high_eur": 2.95,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0199",
+        "name": "PetNord Fresh Breath Dental Treats 200g",
+        "category": "dental-treats",
+        "supplier": "S-08",
+        "lead_time_days": 14,
+        "current_stock": 2,
+        "reorder_point": 4,
+        "recent_units": 15,
+        "order_qty": 15,
+        "order_cost_eur": 27.9,
+        "revenue_at_risk_eur": 48.49,
+        "price": {
+          "list_price_eur": 3.73,
+          "mean_price_eur": 3.74,
+          "band_low_eur": 3.04,
+          "band_high_eur": 4.44,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0400",
+        "name": "Whiskas Salmon Cat Food 400g",
+        "category": "wet-food",
+        "supplier": "S-05",
+        "lead_time_days": 10,
+        "current_stock": 2,
+        "reorder_point": 4,
+        "recent_units": 12,
+        "order_qty": 12,
+        "order_cost_eur": 38.88,
+        "revenue_at_risk_eur": 47.6,
+        "price": {
+          "list_price_eur": 4.76,
+          "mean_price_eur": 4.68,
+          "band_low_eur": 4.27,
+          "band_high_eur": 5.08,
+          "observations": 14,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0096",
+        "name": "Orijen Beef Dog Food 2kg",
+        "category": "dry-food",
+        "supplier": "S-01",
+        "lead_time_days": 7,
+        "current_stock": 1,
+        "reorder_point": 3,
+        "recent_units": 5,
+        "order_qty": 6,
+        "order_cost_eur": 50.04,
+        "revenue_at_risk_eur": 46.36,
+        "price": {
+          "list_price_eur": 11.59,
+          "mean_price_eur": 12.2,
+          "band_low_eur": 10.38,
+          "band_high_eur": 14.01,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0150",
+        "name": "Eukanuba Large Breed Chicken Dog Food 400g, classic recipe",
+        "category": "wet-food",
+        "supplier": "S-07",
+        "lead_time_days": 10,
+        "current_stock": 3,
+        "reorder_point": 8,
+        "recent_units": 13,
+        "order_qty": 13,
+        "order_cost_eur": 34.32,
+        "revenue_at_risk_eur": 38.8,
+        "price": {
+          "list_price_eur": 3.88,
+          "mean_price_eur": 4.28,
+          "band_low_eur": 3.62,
+          "band_high_eur": 4.94,
+          "observations": 9,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0188",
+        "name": "Whimzees Grain Free Puppy Dental Treats 80g",
+        "category": "dental-treats",
+        "supplier": "S-09",
+        "lead_time_days": 14,
+        "current_stock": 0,
+        "reorder_point": 5,
+        "recent_units": 20,
+        "order_qty": 22,
+        "order_cost_eur": 18.48,
+        "revenue_at_risk_eur": 33.6,
+        "price": {
+          "list_price_eur": 1.68,
+          "mean_price_eur": 1.5,
+          "band_low_eur": 1.24,
+          "band_high_eur": 1.76,
           "observations": 24,
           "outlier": false
         }
@@ -950,27 +929,6 @@
         }
       },
       {
-        "sku": "SKU-PT-0400",
-        "name": "Whiskas Salmon Cat Food 400g",
-        "category": "wet-food",
-        "supplier": "S-05",
-        "lead_time_days": 10,
-        "current_stock": 2,
-        "reorder_point": 4,
-        "recent_units": 9,
-        "order_qty": 9,
-        "order_cost_eur": 29.16,
-        "revenue_at_risk_eur": 33.32,
-        "price": {
-          "list_price_eur": 4.76,
-          "mean_price_eur": 4.68,
-          "band_low_eur": 4.27,
-          "band_high_eur": 5.08,
-          "observations": 14,
-          "outlier": false
-        }
-      },
-      {
         "sku": "SKU-PT-0054",
         "name": "Eukanuba Turkey Dog Food 1kg",
         "category": "dry-food",
@@ -992,86 +950,65 @@
         }
       },
       {
-        "sku": "SKU-PT-0052",
-        "name": "Eukanuba Beef Dog Food 2kg",
+        "sku": "SKU-PT-0300",
+        "name": "Acana Tuna Cat Food 2kg",
         "category": "dry-food",
-        "supplier": "S-05",
+        "supplier": "S-01",
         "lead_time_days": 7,
         "current_stock": 1,
         "reorder_point": 3,
-        "recent_units": 3,
-        "order_qty": 4,
-        "order_cost_eur": 44.6,
-        "revenue_at_risk_eur": 30.98,
-        "price": {
-          "list_price_eur": 15.49,
-          "mean_price_eur": 14.18,
-          "band_low_eur": 12.71,
-          "band_high_eur": 15.65,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0471",
-        "name": "Felix Grain Free Salmon Drops Treats 500g",
-        "category": "treats",
-        "supplier": "S-04",
-        "lead_time_days": 14,
-        "current_stock": 0,
-        "reorder_point": 3,
-        "recent_units": 3,
-        "order_qty": 5,
-        "order_cost_eur": 26.55,
-        "revenue_at_risk_eur": 28.98,
-        "price": {
-          "list_price_eur": 9.66,
-          "mean_price_eur": 9.33,
-          "band_low_eur": 8.38,
-          "band_high_eur": 10.28,
-          "observations": 16,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0506",
-        "name": "Kong Catnip Mouse",
-        "category": "toys",
-        "supplier": "S-03",
-        "lead_time_days": 21,
-        "current_stock": 0,
-        "reorder_point": 3,
-        "recent_units": 2,
-        "order_qty": 4,
-        "order_cost_eur": 26.56,
-        "revenue_at_risk_eur": 25.52,
-        "price": {
-          "list_price_eur": 12.76,
-          "mean_price_eur": 12.05,
-          "band_low_eur": 10.11,
-          "band_high_eur": 14.0,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0226",
-        "name": "Kong Tennis Ball, large",
-        "category": "toys",
-        "supplier": "S-11",
-        "lead_time_days": 21,
-        "current_stock": 2,
-        "reorder_point": 4,
         "recent_units": 4,
-        "order_qty": 4,
-        "order_cost_eur": 26.08,
-        "revenue_at_risk_eur": 25.08,
+        "order_qty": 5,
+        "order_cost_eur": 37.65,
+        "revenue_at_risk_eur": 31.38,
         "price": {
-          "list_price_eur": 12.54,
-          "mean_price_eur": 11.97,
-          "band_low_eur": 10.1,
-          "band_high_eur": 13.85,
-          "observations": 11,
+          "list_price_eur": 10.46,
+          "mean_price_eur": 12.03,
+          "band_low_eur": 9.92,
+          "band_high_eur": 14.15,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0128",
+        "name": "Hill's Science Plan Large Breed Chicken Dog Food 400g",
+        "category": "wet-food",
+        "supplier": "S-09",
+        "lead_time_days": 10,
+        "current_stock": 1,
+        "reorder_point": 3,
+        "recent_units": 7,
+        "order_qty": 8,
+        "order_cost_eur": 24.4,
+        "revenue_at_risk_eur": 26.88,
+        "price": {
+          "list_price_eur": 4.48,
+          "mean_price_eur": 4.28,
+          "band_low_eur": 3.77,
+          "band_high_eur": 4.8,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0371",
+        "name": "Royal Canin Beef Cat Food 400g",
+        "category": "wet-food",
+        "supplier": "S-12",
+        "lead_time_days": 10,
+        "current_stock": 2,
+        "reorder_point": 3,
+        "recent_units": 7,
+        "order_qty": 7,
+        "order_cost_eur": 23.24,
+        "revenue_at_risk_eur": 24.4,
+        "price": {
+          "list_price_eur": 4.88,
+          "mean_price_eur": 4.19,
+          "band_low_eur": 3.34,
+          "band_high_eur": 5.05,
+          "observations": 24,
           "outlier": false
         }
       },
@@ -1097,85 +1034,22 @@
         }
       },
       {
-        "sku": "SKU-PT-0612",
-        "name": "JBL Aquatic Plants, single",
-        "category": "aquarium",
-        "supplier": "S-01",
-        "lead_time_days": 28,
-        "current_stock": 2,
-        "reorder_point": 3,
-        "recent_units": 3,
-        "order_qty": 3,
-        "order_cost_eur": 39.39,
-        "revenue_at_risk_eur": 23.88,
-        "price": {
-          "list_price_eur": 23.88,
-          "mean_price_eur": 23.46,
-          "band_low_eur": 21.4,
-          "band_high_eur": 25.51,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0096",
-        "name": "Orijen Beef Dog Food 2kg",
+        "sku": "SKU-PT-0092",
+        "name": "Orijen Weight Control Salmon Dog Food 1kg",
         "category": "dry-food",
-        "supplier": "S-01",
-        "lead_time_days": 7,
-        "current_stock": 1,
-        "reorder_point": 3,
-        "recent_units": 3,
-        "order_qty": 4,
-        "order_cost_eur": 33.36,
-        "revenue_at_risk_eur": 23.18,
-        "price": {
-          "list_price_eur": 11.59,
-          "mean_price_eur": 12.2,
-          "band_low_eur": 10.38,
-          "band_high_eur": 14.01,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0128",
-        "name": "Hill's Science Plan Large Breed Chicken Dog Food 400g",
-        "category": "wet-food",
         "supplier": "S-09",
-        "lead_time_days": 10,
-        "current_stock": 1,
-        "reorder_point": 3,
-        "recent_units": 6,
-        "order_qty": 7,
-        "order_cost_eur": 21.35,
-        "revenue_at_risk_eur": 22.4,
-        "price": {
-          "list_price_eur": 4.48,
-          "mean_price_eur": 4.28,
-          "band_low_eur": 3.77,
-          "band_high_eur": 4.8,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0014",
-        "name": "Royal Canin Beef Dog Food 1kg",
-        "category": "dry-food",
-        "supplier": "S-03",
         "lead_time_days": 7,
-        "current_stock": 1,
+        "current_stock": 0,
         "reorder_point": 3,
-        "recent_units": 4,
+        "recent_units": 3,
         "order_qty": 5,
-        "order_cost_eur": 25.6,
-        "revenue_at_risk_eur": 21.33,
+        "order_cost_eur": 28.35,
+        "revenue_at_risk_eur": 23.64,
         "price": {
-          "list_price_eur": 7.11,
-          "mean_price_eur": 6.98,
-          "band_low_eur": 6.44,
-          "band_high_eur": 7.52,
+          "list_price_eur": 7.88,
+          "mean_price_eur": 7.04,
+          "band_low_eur": 6.14,
+          "band_high_eur": 7.93,
           "observations": 24,
           "outlier": false
         }
@@ -1202,6 +1076,69 @@
         }
       },
       {
+        "sku": "SKU-PT-0072",
+        "name": "Acana Beef Dog Food 1kg, value pack",
+        "category": "dry-food",
+        "supplier": "S-01",
+        "lead_time_days": 7,
+        "current_stock": 0,
+        "reorder_point": 3,
+        "recent_units": 3,
+        "order_qty": 5,
+        "order_cost_eur": 24.2,
+        "revenue_at_risk_eur": 20.16,
+        "price": {
+          "list_price_eur": 6.72,
+          "mean_price_eur": 6.52,
+          "band_low_eur": 5.91,
+          "band_high_eur": 7.14,
+          "observations": 17,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0247",
+        "name": "PetNord Calming Tablets, single",
+        "category": "health",
+        "supplier": "S-08",
+        "lead_time_days": 14,
+        "current_stock": 0,
+        "reorder_point": 3,
+        "recent_units": 1,
+        "order_qty": 3,
+        "order_cost_eur": 32.46,
+        "revenue_at_risk_eur": 19.67,
+        "price": {
+          "list_price_eur": 19.67,
+          "mean_price_eur": 18.54,
+          "band_low_eur": 16.15,
+          "band_high_eur": 20.94,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0471",
+        "name": "Felix Grain Free Salmon Drops Treats 500g",
+        "category": "treats",
+        "supplier": "S-04",
+        "lead_time_days": 14,
+        "current_stock": 0,
+        "reorder_point": 3,
+        "recent_units": 2,
+        "order_qty": 4,
+        "order_cost_eur": 21.24,
+        "revenue_at_risk_eur": 19.32,
+        "price": {
+          "list_price_eur": 9.66,
+          "mean_price_eur": 9.33,
+          "band_low_eur": 8.38,
+          "band_high_eur": 10.28,
+          "observations": 16,
+          "outlier": false
+        }
+      },
+      {
         "sku": "SKU-PT-0461",
         "name": "Whiskas Salmon Drops Treats 200g",
         "category": "treats",
@@ -1223,22 +1160,22 @@
         }
       },
       {
-        "sku": "SKU-PT-0547",
-        "name": "PetNord Hay Sticks Treats 500g, classic",
-        "category": "treats",
-        "supplier": "S-08",
-        "lead_time_days": 14,
+        "sku": "SKU-PT-0332",
+        "name": "Orijen Turkey Cat Food 1kg",
+        "category": "dry-food",
+        "supplier": "S-09",
+        "lead_time_days": 7,
         "current_stock": 1,
         "reorder_point": 3,
-        "recent_units": 3,
-        "order_qty": 4,
-        "order_cost_eur": 19.28,
-        "revenue_at_risk_eur": 17.54,
+        "recent_units": 4,
+        "order_qty": 5,
+        "order_cost_eur": 20.9,
+        "revenue_at_risk_eur": 17.43,
         "price": {
-          "list_price_eur": 8.77,
-          "mean_price_eur": 8.55,
-          "band_low_eur": 7.78,
-          "band_high_eur": 9.32,
+          "list_price_eur": 5.81,
+          "mean_price_eur": 5.96,
+          "band_low_eur": 5.04,
+          "band_high_eur": 6.89,
           "observations": 24,
           "outlier": false
         }
@@ -1265,43 +1202,64 @@
         }
       },
       {
-        "sku": "SKU-PT-0092",
-        "name": "Orijen Weight Control Salmon Dog Food 1kg",
-        "category": "dry-food",
-        "supplier": "S-09",
-        "lead_time_days": 7,
+        "sku": "SKU-PT-0149",
+        "name": "Eukanuba Chicken Dog Food 150g",
+        "category": "wet-food",
+        "supplier": "S-06",
+        "lead_time_days": 10,
         "current_stock": 0,
         "reorder_point": 3,
-        "recent_units": 2,
-        "order_qty": 4,
-        "order_cost_eur": 22.68,
-        "revenue_at_risk_eur": 15.76,
+        "recent_units": 8,
+        "order_qty": 10,
+        "order_cost_eur": 14.3,
+        "revenue_at_risk_eur": 16.8,
         "price": {
-          "list_price_eur": 7.88,
-          "mean_price_eur": 7.04,
-          "band_low_eur": 6.14,
-          "band_high_eur": 7.93,
+          "list_price_eur": 2.1,
+          "mean_price_eur": 1.99,
+          "band_low_eur": 1.75,
+          "band_high_eur": 2.22,
           "observations": 24,
           "outlier": false
         }
       },
       {
-        "sku": "SKU-PT-0371",
-        "name": "Royal Canin Beef Cat Food 400g",
-        "category": "wet-food",
-        "supplier": "S-12",
-        "lead_time_days": 10,
-        "current_stock": 2,
+        "sku": "SKU-PT-0545",
+        "name": "PetNord Veggie Crunch Treats 200g, crunchy",
+        "category": "treats",
+        "supplier": "S-06",
+        "lead_time_days": 14,
+        "current_stock": 0,
         "reorder_point": 3,
-        "recent_units": 5,
-        "order_qty": 5,
-        "order_cost_eur": 16.6,
-        "revenue_at_risk_eur": 14.64,
+        "recent_units": 4,
+        "order_qty": 6,
+        "order_cost_eur": 12.48,
+        "revenue_at_risk_eur": 15.12,
         "price": {
-          "list_price_eur": 4.88,
-          "mean_price_eur": 4.19,
-          "band_low_eur": 3.34,
-          "band_high_eur": 5.05,
+          "list_price_eur": 3.78,
+          "mean_price_eur": 3.61,
+          "band_low_eur": 3.17,
+          "band_high_eur": 4.05,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0014",
+        "name": "Royal Canin Beef Dog Food 1kg",
+        "category": "dry-food",
+        "supplier": "S-03",
+        "lead_time_days": 7,
+        "current_stock": 1,
+        "reorder_point": 3,
+        "recent_units": 3,
+        "order_qty": 4,
+        "order_cost_eur": 20.48,
+        "revenue_at_risk_eur": 14.22,
+        "price": {
+          "list_price_eur": 7.11,
+          "mean_price_eur": 6.98,
+          "band_low_eur": 6.44,
+          "band_high_eur": 7.52,
           "observations": 24,
           "outlier": false
         }
@@ -1328,6 +1286,27 @@
         }
       },
       {
+        "sku": "SKU-PT-0506",
+        "name": "Kong Catnip Mouse",
+        "category": "toys",
+        "supplier": "S-03",
+        "lead_time_days": 21,
+        "current_stock": 0,
+        "reorder_point": 3,
+        "recent_units": 1,
+        "order_qty": 3,
+        "order_cost_eur": 19.92,
+        "revenue_at_risk_eur": 12.76,
+        "price": {
+          "list_price_eur": 12.76,
+          "mean_price_eur": 12.05,
+          "band_low_eur": 10.11,
+          "band_high_eur": 14.0,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
         "sku": "SKU-PT-0382",
         "name": "Hill's Science Plan Sensitive Salmon Cat Food 85g",
         "category": "wet-food",
@@ -1335,99 +1314,15 @@
         "lead_time_days": 10,
         "current_stock": 1,
         "reorder_point": 3,
-        "recent_units": 13,
-        "order_qty": 14,
-        "order_cost_eur": 9.94,
-        "revenue_at_risk_eur": 12.6,
+        "recent_units": 12,
+        "order_qty": 13,
+        "order_cost_eur": 9.23,
+        "revenue_at_risk_eur": 11.55,
         "price": {
           "list_price_eur": 1.05,
           "mean_price_eur": 1.0,
           "band_low_eur": 0.86,
           "band_high_eur": 1.14,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0332",
-        "name": "Orijen Turkey Cat Food 1kg",
-        "category": "dry-food",
-        "supplier": "S-09",
-        "lead_time_days": 7,
-        "current_stock": 1,
-        "reorder_point": 3,
-        "recent_units": 3,
-        "order_qty": 4,
-        "order_cost_eur": 16.72,
-        "revenue_at_risk_eur": 11.62,
-        "price": {
-          "list_price_eur": 5.81,
-          "mean_price_eur": 5.96,
-          "band_low_eur": 5.04,
-          "band_high_eur": 6.89,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0545",
-        "name": "PetNord Veggie Crunch Treats 200g, crunchy",
-        "category": "treats",
-        "supplier": "S-06",
-        "lead_time_days": 14,
-        "current_stock": 0,
-        "reorder_point": 3,
-        "recent_units": 3,
-        "order_qty": 5,
-        "order_cost_eur": 10.4,
-        "revenue_at_risk_eur": 11.34,
-        "price": {
-          "list_price_eur": 3.78,
-          "mean_price_eur": 3.61,
-          "band_low_eur": 3.17,
-          "band_high_eur": 4.05,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0149",
-        "name": "Eukanuba Chicken Dog Food 150g",
-        "category": "wet-food",
-        "supplier": "S-06",
-        "lead_time_days": 10,
-        "current_stock": 0,
-        "reorder_point": 3,
-        "recent_units": 5,
-        "order_qty": 7,
-        "order_cost_eur": 10.01,
-        "revenue_at_risk_eur": 10.5,
-        "price": {
-          "list_price_eur": 2.1,
-          "mean_price_eur": 1.99,
-          "band_low_eur": 1.75,
-          "band_high_eur": 2.22,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0447",
-        "name": "Sheba Indoor Liver Cat Food 150g",
-        "category": "wet-food",
-        "supplier": "S-04",
-        "lead_time_days": 10,
-        "current_stock": 0,
-        "reorder_point": 3,
-        "recent_units": 7,
-        "order_qty": 9,
-        "order_cost_eur": 8.91,
-        "revenue_at_risk_eur": 10.22,
-        "price": {
-          "list_price_eur": 1.46,
-          "mean_price_eur": 1.65,
-          "band_low_eur": 1.42,
-          "band_high_eur": 1.89,
           "observations": 24,
           "outlier": false
         }
@@ -1440,10 +1335,10 @@
         "lead_time_days": 10,
         "current_stock": 1,
         "reorder_point": 3,
-        "recent_units": 7,
-        "order_qty": 8,
-        "order_cost_eur": 8.72,
-        "revenue_at_risk_eur": 9.66,
+        "recent_units": 8,
+        "order_qty": 9,
+        "order_cost_eur": 9.81,
+        "revenue_at_risk_eur": 11.27,
         "price": {
           "list_price_eur": 1.61,
           "mean_price_eur": 1.7,
@@ -1454,22 +1349,43 @@
         }
       },
       {
-        "sku": "SKU-PT-0126",
-        "name": "Hill's Science Plan Grain Free Chicken Dog Food 85g, classic recipe",
+        "sku": "SKU-PT-0375",
+        "name": "Royal Canin Sensitive Liver Cat Food 85g, classic recipe",
         "category": "wet-food",
-        "supplier": "S-07",
+        "supplier": "S-04",
         "lead_time_days": 10,
         "current_stock": 1,
         "reorder_point": 3,
-        "recent_units": 10,
-        "order_qty": 11,
-        "order_cost_eur": 7.7,
-        "revenue_at_risk_eur": 9.27,
+        "recent_units": 12,
+        "order_qty": 13,
+        "order_cost_eur": 8.06,
+        "revenue_at_risk_eur": 10.01,
         "price": {
-          "list_price_eur": 1.03,
-          "mean_price_eur": 0.97,
-          "band_low_eur": 0.86,
-          "band_high_eur": 1.08,
+          "list_price_eur": 0.91,
+          "mean_price_eur": 0.87,
+          "band_low_eur": 0.77,
+          "band_high_eur": 0.97,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0547",
+        "name": "PetNord Hay Sticks Treats 500g, classic",
+        "category": "treats",
+        "supplier": "S-08",
+        "lead_time_days": 14,
+        "current_stock": 1,
+        "reorder_point": 3,
+        "recent_units": 2,
+        "order_qty": 3,
+        "order_cost_eur": 14.46,
+        "revenue_at_risk_eur": 8.77,
+        "price": {
+          "list_price_eur": 8.77,
+          "mean_price_eur": 8.55,
+          "band_low_eur": 7.78,
+          "band_high_eur": 9.32,
           "observations": 24,
           "outlier": false
         }
@@ -1496,27 +1412,6 @@
         }
       },
       {
-        "sku": "SKU-PT-0421",
-        "name": "Felix Salmon Cat Food 85g, light recipe",
-        "category": "wet-food",
-        "supplier": "S-02",
-        "lead_time_days": 10,
-        "current_stock": 0,
-        "reorder_point": 3,
-        "recent_units": 7,
-        "order_qty": 9,
-        "order_cost_eur": 6.93,
-        "revenue_at_risk_eur": 7.91,
-        "price": {
-          "list_price_eur": 1.13,
-          "mean_price_eur": 0.99,
-          "band_low_eur": 0.87,
-          "band_high_eur": 1.11,
-          "observations": 24,
-          "outlier": true
-        }
-      },
-      {
         "sku": "SKU-PT-0380",
         "name": "Hill's Science Plan Grain Free Tuna Cat Food 150g",
         "category": "wet-food",
@@ -1538,69 +1433,6 @@
         }
       },
       {
-        "sku": "SKU-PT-0132",
-        "name": "Hill's Science Plan Large Breed Lamb Dog Food 85g",
-        "category": "wet-food",
-        "supplier": "S-01",
-        "lead_time_days": 10,
-        "current_stock": 0,
-        "reorder_point": 3,
-        "recent_units": 8,
-        "order_qty": 10,
-        "order_cost_eur": 5.7,
-        "revenue_at_risk_eur": 6.72,
-        "price": {
-          "list_price_eur": 0.84,
-          "mean_price_eur": 0.94,
-          "band_low_eur": 0.8,
-          "band_high_eur": 1.07,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0010",
-        "name": "Royal Canin Salmon Dog Food 1kg",
-        "category": "dry-food",
-        "supplier": "S-11",
-        "lead_time_days": 7,
-        "current_stock": 1,
-        "reorder_point": 3,
-        "recent_units": 2,
-        "order_qty": 3,
-        "order_cost_eur": 14.43,
-        "revenue_at_risk_eur": 6.68,
-        "price": {
-          "list_price_eur": 6.68,
-          "mean_price_eur": 6.33,
-          "band_low_eur": 5.56,
-          "band_high_eur": 7.11,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
-        "sku": "SKU-PT-0375",
-        "name": "Royal Canin Sensitive Liver Cat Food 85g, classic recipe",
-        "category": "wet-food",
-        "supplier": "S-04",
-        "lead_time_days": 10,
-        "current_stock": 1,
-        "reorder_point": 3,
-        "recent_units": 7,
-        "order_qty": 8,
-        "order_cost_eur": 4.96,
-        "revenue_at_risk_eur": 5.46,
-        "price": {
-          "list_price_eur": 0.91,
-          "mean_price_eur": 0.87,
-          "band_low_eur": 0.77,
-          "band_high_eur": 0.97,
-          "observations": 24,
-          "outlier": false
-        }
-      },
-      {
         "sku": "SKU-PT-0544",
         "name": "PetNord Veggie Crunch Treats 100g, soft",
         "category": "treats",
@@ -1608,10 +1440,10 @@
         "lead_time_days": 14,
         "current_stock": 0,
         "reorder_point": 3,
-        "recent_units": 3,
-        "order_qty": 5,
-        "order_cost_eur": 4.9,
-        "revenue_at_risk_eur": 5.34,
+        "recent_units": 4,
+        "order_qty": 6,
+        "order_cost_eur": 5.88,
+        "revenue_at_risk_eur": 7.12,
         "price": {
           "list_price_eur": 1.78,
           "mean_price_eur": 1.58,
@@ -1622,22 +1454,106 @@
         }
       },
       {
-        "sku": "SKU-PT-0407",
-        "name": "Whiskas Beef Cat Food 150g, classic recipe",
+        "sku": "SKU-PT-0421",
+        "name": "Felix Salmon Cat Food 85g, light recipe",
         "category": "wet-food",
-        "supplier": "S-12",
+        "supplier": "S-02",
         "lead_time_days": 10,
         "current_stock": 0,
         "reorder_point": 3,
-        "recent_units": 3,
-        "order_qty": 5,
-        "order_cost_eur": 5.7,
+        "recent_units": 6,
+        "order_qty": 8,
+        "order_cost_eur": 6.16,
+        "revenue_at_risk_eur": 6.78,
+        "price": {
+          "list_price_eur": 1.13,
+          "mean_price_eur": 0.99,
+          "band_low_eur": 0.87,
+          "band_high_eur": 1.11,
+          "observations": 24,
+          "outlier": true
+        }
+      },
+      {
+        "sku": "SKU-PT-0126",
+        "name": "Hill's Science Plan Grain Free Chicken Dog Food 85g, classic recipe",
+        "category": "wet-food",
+        "supplier": "S-07",
+        "lead_time_days": 10,
+        "current_stock": 1,
+        "reorder_point": 3,
+        "recent_units": 7,
+        "order_qty": 8,
+        "order_cost_eur": 5.6,
+        "revenue_at_risk_eur": 6.18,
+        "price": {
+          "list_price_eur": 1.03,
+          "mean_price_eur": 0.97,
+          "band_low_eur": 0.86,
+          "band_high_eur": 1.08,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0447",
+        "name": "Sheba Indoor Liver Cat Food 150g",
+        "category": "wet-food",
+        "supplier": "S-04",
+        "lead_time_days": 10,
+        "current_stock": 0,
+        "reorder_point": 3,
+        "recent_units": 4,
+        "order_qty": 6,
+        "order_cost_eur": 5.94,
+        "revenue_at_risk_eur": 5.84,
+        "price": {
+          "list_price_eur": 1.46,
+          "mean_price_eur": 1.65,
+          "band_low_eur": 1.42,
+          "band_high_eur": 1.89,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0132",
+        "name": "Hill's Science Plan Large Breed Lamb Dog Food 85g",
+        "category": "wet-food",
+        "supplier": "S-01",
+        "lead_time_days": 10,
+        "current_stock": 0,
+        "reorder_point": 3,
+        "recent_units": 6,
+        "order_qty": 8,
+        "order_cost_eur": 4.56,
         "revenue_at_risk_eur": 5.04,
         "price": {
-          "list_price_eur": 1.68,
-          "mean_price_eur": 1.66,
-          "band_low_eur": 1.53,
-          "band_high_eur": 1.79,
+          "list_price_eur": 0.84,
+          "mean_price_eur": 0.94,
+          "band_low_eur": 0.8,
+          "band_high_eur": 1.07,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0542",
+        "name": "PetNord Veggie Crunch Treats 100g, classic",
+        "category": "treats",
+        "supplier": "S-03",
+        "lead_time_days": 14,
+        "current_stock": 1,
+        "reorder_point": 3,
+        "recent_units": 2,
+        "order_qty": 3,
+        "order_cost_eur": 2.91,
+        "revenue_at_risk_eur": 1.76,
+        "price": {
+          "list_price_eur": 1.76,
+          "mean_price_eur": 1.56,
+          "band_low_eur": 1.3,
+          "band_high_eur": 1.81,
           "observations": 24,
           "outlier": false
         }
@@ -1650,10 +1566,10 @@
         "lead_time_days": 10,
         "current_stock": 1,
         "reorder_point": 3,
-        "recent_units": 5,
-        "order_qty": 6,
-        "order_cost_eur": 3.96,
-        "revenue_at_risk_eur": 3.88,
+        "recent_units": 2,
+        "order_qty": 3,
+        "order_cost_eur": 1.98,
+        "revenue_at_risk_eur": 0.97,
         "price": {
           "list_price_eur": 0.97,
           "mean_price_eur": 0.94,
@@ -1671,15 +1587,36 @@
         "lead_time_days": 10,
         "current_stock": 0,
         "reorder_point": 3,
-        "recent_units": 3,
-        "order_qty": 5,
-        "order_cost_eur": 2.95,
-        "revenue_at_risk_eur": 2.61,
+        "recent_units": 1,
+        "order_qty": 3,
+        "order_cost_eur": 1.77,
+        "revenue_at_risk_eur": 0.87,
         "price": {
           "list_price_eur": 0.87,
           "mean_price_eur": 0.84,
           "band_low_eur": 0.75,
           "band_high_eur": 0.94,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0010",
+        "name": "PetNord Grain Free Salmon Adult Dog Food 1kg",
+        "category": "dry-food",
+        "supplier": "S-11",
+        "lead_time_days": 7,
+        "current_stock": 1,
+        "reorder_point": 3,
+        "recent_units": 0,
+        "order_qty": 1,
+        "order_cost_eur": 4.81,
+        "revenue_at_risk_eur": 0.0,
+        "price": {
+          "list_price_eur": 6.68,
+          "mean_price_eur": 6.33,
+          "band_low_eur": 5.56,
+          "band_high_eur": 7.11,
           "observations": 24,
           "outlier": false
         }
@@ -1706,22 +1643,64 @@
         }
       },
       {
-        "sku": "SKU-PT-0542",
-        "name": "PetNord Veggie Crunch Treats 100g, classic",
-        "category": "treats",
-        "supplier": "S-03",
-        "lead_time_days": 14,
+        "sku": "SKU-PT-0052",
+        "name": "Eukanuba Beef Dog Food 2kg",
+        "category": "dry-food",
+        "supplier": "S-05",
+        "lead_time_days": 7,
         "current_stock": 1,
         "reorder_point": 3,
         "recent_units": 1,
         "order_qty": 2,
-        "order_cost_eur": 1.94,
+        "order_cost_eur": 22.3,
         "revenue_at_risk_eur": 0.0,
         "price": {
-          "list_price_eur": 1.76,
-          "mean_price_eur": 1.56,
-          "band_low_eur": 1.3,
-          "band_high_eur": 1.81,
+          "list_price_eur": 15.49,
+          "mean_price_eur": 14.18,
+          "band_low_eur": 12.71,
+          "band_high_eur": 15.65,
+          "observations": 24,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0226",
+        "name": "Kong Tennis Ball, large",
+        "category": "toys",
+        "supplier": "S-11",
+        "lead_time_days": 21,
+        "current_stock": 2,
+        "reorder_point": 4,
+        "recent_units": 2,
+        "order_qty": 2,
+        "order_cost_eur": 13.04,
+        "revenue_at_risk_eur": 0.0,
+        "price": {
+          "list_price_eur": 12.54,
+          "mean_price_eur": 11.97,
+          "band_low_eur": 10.1,
+          "band_high_eur": 13.85,
+          "observations": 11,
+          "outlier": false
+        }
+      },
+      {
+        "sku": "SKU-PT-0407",
+        "name": "Whiskas Beef Cat Food 150g, classic recipe",
+        "category": "wet-food",
+        "supplier": "S-12",
+        "lead_time_days": 10,
+        "current_stock": 0,
+        "reorder_point": 3,
+        "recent_units": 0,
+        "order_qty": 2,
+        "order_cost_eur": 2.28,
+        "revenue_at_risk_eur": 0.0,
+        "price": {
+          "list_price_eur": 1.68,
+          "mean_price_eur": 1.66,
+          "band_low_eur": 1.53,
+          "band_high_eur": 1.79,
           "observations": 24,
           "outlier": false
         }
@@ -1767,6 +1746,27 @@
           "observations": 24,
           "outlier": false
         }
+      },
+      {
+        "sku": "SKU-PT-0612",
+        "name": "JBL Aquatic Plants, single",
+        "category": "aquarium",
+        "supplier": "S-01",
+        "lead_time_days": 28,
+        "current_stock": 2,
+        "reorder_point": 3,
+        "recent_units": 2,
+        "order_qty": 2,
+        "order_cost_eur": 26.26,
+        "revenue_at_risk_eur": 0.0,
+        "price": {
+          "list_price_eur": 23.88,
+          "mean_price_eur": 23.46,
+          "band_low_eur": 21.4,
+          "band_high_eur": 25.51,
+          "observations": 24,
+          "outlier": false
+        }
       }
     ],
     "overstock": [
@@ -1791,41 +1791,41 @@
           "action": "wont_clear",
           "discount_pct": 20,
           "price_eur": 69.5,
-          "weeks_to_clear": 45.9,
-          "units_cleared": 7,
+          "weeks_to_clear": 61.4,
+          "units_cleared": 5,
           "extra_units_vs_full_price": 3,
-          "capital_freed_eur": 437.85,
-          "margin_given_up_eur": 121.66,
+          "capital_freed_eur": 312.75,
+          "margin_given_up_eur": 86.9,
           "curve": [
             {
               "discount_pct": 0,
               "price_eur": 86.88,
-              "monthly_units": 1.63,
-              "weeks_to_clear": 68.9
+              "monthly_units": 0.99,
+              "weeks_to_clear": 114.2
             },
             {
               "discount_pct": 5,
               "price_eur": 82.54,
-              "monthly_units": 1.82,
-              "weeks_to_clear": 61.8
+              "monthly_units": 1.18,
+              "weeks_to_clear": 95.4
             },
             {
               "discount_pct": 10,
               "price_eur": 78.19,
-              "monthly_units": 2.02,
-              "weeks_to_clear": 55.7
+              "monthly_units": 1.39,
+              "weeks_to_clear": 81.2
             },
             {
               "discount_pct": 15,
               "price_eur": 73.85,
-              "monthly_units": 2.23,
-              "weeks_to_clear": 50.5
+              "monthly_units": 1.6,
+              "weeks_to_clear": 70.2
             },
             {
               "discount_pct": 20,
               "price_eur": 69.5,
-              "monthly_units": 2.45,
-              "weeks_to_clear": 45.9
+              "monthly_units": 1.83,
+              "weeks_to_clear": 61.4
             }
           ]
         }
@@ -1851,41 +1851,41 @@
           "action": "wont_clear",
           "discount_pct": 20,
           "price_eur": 61.92,
-          "weeks_to_clear": 48.4,
-          "units_cleared": 7,
-          "extra_units_vs_full_price": 2,
-          "capital_freed_eur": 390.11,
-          "margin_given_up_eur": 108.36,
+          "weeks_to_clear": 89.4,
+          "units_cleared": 4,
+          "extra_units_vs_full_price": 3,
+          "capital_freed_eur": 222.92,
+          "margin_given_up_eur": 61.92,
           "curve": [
             {
               "discount_pct": 0,
               "price_eur": 77.4,
-              "monthly_units": 1.78,
-              "weeks_to_clear": 70.7
+              "monthly_units": 0.56,
+              "weeks_to_clear": 225.6
             },
             {
               "discount_pct": 5,
               "price_eur": 73.53,
-              "monthly_units": 1.96,
-              "weeks_to_clear": 63.9
+              "monthly_units": 0.75,
+              "weeks_to_clear": 167.1
             },
             {
               "discount_pct": 10,
               "price_eur": 69.66,
-              "monthly_units": 2.16,
-              "weeks_to_clear": 58.1
+              "monthly_units": 0.96,
+              "weeks_to_clear": 131.2
             },
             {
               "discount_pct": 15,
               "price_eur": 65.79,
-              "monthly_units": 2.37,
-              "weeks_to_clear": 53.0
+              "monthly_units": 1.17,
+              "weeks_to_clear": 107.0
             },
             {
               "discount_pct": 20,
               "price_eur": 61.92,
-              "monthly_units": 2.59,
-              "weeks_to_clear": 48.4
+              "monthly_units": 1.4,
+              "weeks_to_clear": 89.4
             }
           ]
         }
@@ -1911,41 +1911,41 @@
           "action": "wont_clear",
           "discount_pct": 20,
           "price_eur": 68.5,
-          "weeks_to_clear": 18.6,
-          "units_cleared": 16,
-          "extra_units_vs_full_price": 2,
-          "capital_freed_eur": 986.4,
-          "margin_given_up_eur": 274.08,
+          "weeks_to_clear": 20.7,
+          "units_cleared": 15,
+          "extra_units_vs_full_price": 3,
+          "capital_freed_eur": 924.75,
+          "margin_given_up_eur": 256.95,
           "curve": [
             {
               "discount_pct": 0,
               "price_eur": 85.63,
-              "monthly_units": 4.75,
-              "weeks_to_clear": 21.9
+              "monthly_units": 4.18,
+              "weeks_to_clear": 24.8
             },
             {
               "discount_pct": 5,
               "price_eur": 81.35,
-              "monthly_units": 4.94,
-              "weeks_to_clear": 21.0
+              "monthly_units": 4.38,
+              "weeks_to_clear": 23.7
             },
             {
               "discount_pct": 10,
               "price_eur": 77.07,
-              "monthly_units": 5.14,
-              "weeks_to_clear": 20.2
+              "monthly_units": 4.58,
+              "weeks_to_clear": 22.7
             },
             {
               "discount_pct": 15,
               "price_eur": 72.79,
-              "monthly_units": 5.35,
-              "weeks_to_clear": 19.4
+              "monthly_units": 4.8,
+              "weeks_to_clear": 21.6
             },
             {
               "discount_pct": 20,
               "price_eur": 68.5,
-              "monthly_units": 5.57,
-              "weeks_to_clear": 18.6
+              "monthly_units": 5.03,
+              "weeks_to_clear": 20.7
             }
           ]
         }
@@ -1971,41 +1971,41 @@
           "action": "wont_clear",
           "discount_pct": 20,
           "price_eur": 56.67,
-          "weeks_to_clear": 107.0,
-          "units_cleared": 3,
-          "extra_units_vs_full_price": 3,
-          "capital_freed_eur": 153.0,
-          "margin_given_up_eur": 42.51,
+          "weeks_to_clear": 60.3,
+          "units_cleared": 5,
+          "extra_units_vs_full_price": 2,
+          "capital_freed_eur": 255.0,
+          "margin_given_up_eur": 70.85,
           "curve": [
             {
               "discount_pct": 0,
               "price_eur": 70.84,
-              "monthly_units": 0.28,
-              "weeks_to_clear": 424.9
+              "monthly_units": 1.09,
+              "weeks_to_clear": 107.0
             },
             {
               "discount_pct": 5,
               "price_eur": 67.3,
-              "monthly_units": 0.46,
-              "weeks_to_clear": 252.6
+              "monthly_units": 1.29,
+              "weeks_to_clear": 90.8
             },
             {
               "discount_pct": 10,
               "price_eur": 63.76,
-              "monthly_units": 0.66,
-              "weeks_to_clear": 176.9
+              "monthly_units": 1.49,
+              "weeks_to_clear": 78.3
             },
             {
               "discount_pct": 15,
               "price_eur": 60.21,
-              "monthly_units": 0.87,
-              "weeks_to_clear": 134.3
+              "monthly_units": 1.71,
+              "weeks_to_clear": 68.4
             },
             {
               "discount_pct": 20,
               "price_eur": 56.67,
-              "monthly_units": 1.09,
-              "weeks_to_clear": 107.0
+              "monthly_units": 1.94,
+              "weeks_to_clear": 60.3
             }
           ]
         }
@@ -2031,41 +2031,41 @@
           "action": "wont_clear",
           "discount_pct": 20,
           "price_eur": 61.75,
-          "weeks_to_clear": 20.5,
-          "units_cleared": 13,
+          "weeks_to_clear": 15.4,
+          "units_cleared": 18,
           "extra_units_vs_full_price": 2,
-          "capital_freed_eur": 722.54,
-          "margin_given_up_eur": 200.72,
+          "capital_freed_eur": 1000.44,
+          "margin_given_up_eur": 277.92,
           "curve": [
             {
               "discount_pct": 0,
               "price_eur": 77.19,
-              "monthly_units": 3.83,
-              "weeks_to_clear": 24.9
+              "monthly_units": 5.34,
+              "weeks_to_clear": 17.8
             },
             {
               "discount_pct": 5,
               "price_eur": 73.33,
-              "monthly_units": 4.01,
-              "weeks_to_clear": 23.7
+              "monthly_units": 5.54,
+              "weeks_to_clear": 17.2
             },
             {
               "discount_pct": 10,
               "price_eur": 69.47,
-              "monthly_units": 4.21,
-              "weeks_to_clear": 22.6
+              "monthly_units": 5.74,
+              "weeks_to_clear": 16.6
             },
             {
               "discount_pct": 15,
               "price_eur": 65.61,
-              "monthly_units": 4.42,
-              "weeks_to_clear": 21.5
+              "monthly_units": 5.96,
+              "weeks_to_clear": 16.0
             },
             {
               "discount_pct": 20,
               "price_eur": 61.75,
-              "monthly_units": 4.64,
-              "weeks_to_clear": 20.5
+              "monthly_units": 6.19,
+              "weeks_to_clear": 15.4
             }
           ]
         }
@@ -2091,41 +2091,101 @@
           "action": "wont_clear",
           "discount_pct": 20,
           "price_eur": 53.44,
-          "weeks_to_clear": 28.8,
-          "units_cleared": 11,
+          "weeks_to_clear": 24.9,
+          "units_cleared": 13,
           "extra_units_vs_full_price": 3,
-          "capital_freed_eur": 529.1,
-          "margin_given_up_eur": 146.96,
+          "capital_freed_eur": 625.3,
+          "margin_given_up_eur": 173.68,
           "curve": [
             {
               "discount_pct": 0,
               "price_eur": 66.8,
-              "monthly_units": 2.95,
-              "weeks_to_clear": 36.7
+              "monthly_units": 3.49,
+              "weeks_to_clear": 31.0
             },
             {
               "discount_pct": 5,
               "price_eur": 63.46,
-              "monthly_units": 3.13,
-              "weeks_to_clear": 34.5
+              "monthly_units": 3.69,
+              "weeks_to_clear": 29.4
             },
             {
               "discount_pct": 10,
               "price_eur": 60.12,
-              "monthly_units": 3.33,
-              "weeks_to_clear": 32.5
+              "monthly_units": 3.89,
+              "weeks_to_clear": 27.8
             },
             {
               "discount_pct": 15,
               "price_eur": 56.78,
-              "monthly_units": 3.54,
-              "weeks_to_clear": 30.6
+              "monthly_units": 4.11,
+              "weeks_to_clear": 26.3
             },
             {
               "discount_pct": 20,
               "price_eur": 53.44,
-              "monthly_units": 3.76,
-              "weeks_to_clear": 28.8
+              "monthly_units": 4.34,
+              "weeks_to_clear": 24.9
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0501",
+        "name": "Trixie Bowl, large",
+        "category": "accessories",
+        "current_stock": 143,
+        "reorder_point": 17,
+        "excess_units": 109,
+        "unit_cost_eur": 10.7,
+        "tied_capital_eur": 1166.3,
+        "price": {
+          "list_price_eur": 19.45,
+          "mean_price_eur": 18.02,
+          "band_low_eur": 15.44,
+          "band_high_eur": 20.61,
+          "observations": 24,
+          "outlier": false
+        },
+        "markdown": {
+          "action": "wont_clear",
+          "discount_pct": 20,
+          "price_eur": 15.56,
+          "weeks_to_clear": 24.8,
+          "units_cleared": 57,
+          "extra_units_vs_full_price": 3,
+          "capital_freed_eur": 609.9,
+          "margin_given_up_eur": 221.73,
+          "curve": [
+            {
+              "discount_pct": 0,
+              "price_eur": 19.45,
+              "monthly_units": 18.16,
+              "weeks_to_clear": 26.0
+            },
+            {
+              "discount_pct": 5,
+              "price_eur": 18.48,
+              "monthly_units": 18.35,
+              "weeks_to_clear": 25.7
+            },
+            {
+              "discount_pct": 10,
+              "price_eur": 17.5,
+              "monthly_units": 18.56,
+              "weeks_to_clear": 25.4
+            },
+            {
+              "discount_pct": 15,
+              "price_eur": 16.53,
+              "monthly_units": 18.78,
+              "weeks_to_clear": 25.1
+            },
+            {
+              "discount_pct": 20,
+              "price_eur": 15.56,
+              "monthly_units": 19.01,
+              "weeks_to_clear": 24.8
             }
           ]
         }
@@ -2151,101 +2211,41 @@
           "action": "wont_clear",
           "discount_pct": 20,
           "price_eur": 15.25,
-          "weeks_to_clear": 26.3,
-          "units_cleared": 51,
-          "extra_units_vs_full_price": 2,
-          "capital_freed_eur": 534.48,
-          "margin_given_up_eur": 194.31,
+          "weeks_to_clear": 27.2,
+          "units_cleared": 50,
+          "extra_units_vs_full_price": 3,
+          "capital_freed_eur": 524.0,
+          "margin_given_up_eur": 190.5,
           "curve": [
             {
               "discount_pct": 0,
               "price_eur": 19.06,
-              "monthly_units": 16.47,
-              "weeks_to_clear": 27.6
+              "monthly_units": 15.87,
+              "weeks_to_clear": 28.7
             },
             {
               "discount_pct": 5,
               "price_eur": 18.11,
-              "monthly_units": 16.66,
-              "weeks_to_clear": 27.3
+              "monthly_units": 16.06,
+              "weeks_to_clear": 28.3
             },
             {
               "discount_pct": 10,
               "price_eur": 17.15,
-              "monthly_units": 16.85,
-              "weeks_to_clear": 27.0
+              "monthly_units": 16.27,
+              "weeks_to_clear": 28.0
             },
             {
               "discount_pct": 15,
               "price_eur": 16.2,
-              "monthly_units": 17.06,
-              "weeks_to_clear": 26.6
+              "monthly_units": 16.48,
+              "weeks_to_clear": 27.6
             },
             {
               "discount_pct": 20,
               "price_eur": 15.25,
-              "monthly_units": 17.28,
-              "weeks_to_clear": 26.3
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0501",
-        "name": "Trixie Bowl, large",
-        "category": "accessories",
-        "current_stock": 134,
-        "reorder_point": 16,
-        "excess_units": 102,
-        "unit_cost_eur": 10.7,
-        "tied_capital_eur": 1091.4,
-        "price": {
-          "list_price_eur": 19.45,
-          "mean_price_eur": 18.02,
-          "band_low_eur": 15.44,
-          "band_high_eur": 20.61,
-          "observations": 24,
-          "outlier": false
-        },
-        "markdown": {
-          "action": "wont_clear",
-          "discount_pct": 20,
-          "price_eur": 15.56,
-          "weeks_to_clear": 23.2,
-          "units_cleared": 57,
-          "extra_units_vs_full_price": 3,
-          "capital_freed_eur": 609.9,
-          "margin_given_up_eur": 221.73,
-          "curve": [
-            {
-              "discount_pct": 0,
-              "price_eur": 19.45,
-              "monthly_units": 18.25,
-              "weeks_to_clear": 24.2
-            },
-            {
-              "discount_pct": 5,
-              "price_eur": 18.48,
-              "monthly_units": 18.44,
-              "weeks_to_clear": 24.0
-            },
-            {
-              "discount_pct": 10,
-              "price_eur": 17.5,
-              "monthly_units": 18.64,
-              "weeks_to_clear": 23.7
-            },
-            {
-              "discount_pct": 15,
-              "price_eur": 16.53,
-              "monthly_units": 18.84,
-              "weeks_to_clear": 23.4
-            },
-            {
-              "discount_pct": 20,
-              "price_eur": 15.56,
-              "monthly_units": 19.07,
-              "weeks_to_clear": 23.2
+              "monthly_units": 16.71,
+              "weeks_to_clear": 27.2
             }
           ]
         }
@@ -2271,41 +2271,41 @@
           "action": "wont_clear",
           "discount_pct": 20,
           "price_eur": 72.58,
-          "weeks_to_clear": 41.5,
-          "units_cleared": 4,
-          "extra_units_vs_full_price": 2,
-          "capital_freed_eur": 261.32,
-          "margin_given_up_eur": 72.6,
+          "weeks_to_clear": 38.7,
+          "units_cleared": 5,
+          "extra_units_vs_full_price": 3,
+          "capital_freed_eur": 326.65,
+          "margin_given_up_eur": 90.75,
           "curve": [
             {
               "discount_pct": 0,
               "price_eur": 90.73,
-              "monthly_units": 0.75,
-              "weeks_to_clear": 86.7
+              "monthly_units": 0.83,
+              "weeks_to_clear": 78.1
             },
             {
               "discount_pct": 5,
               "price_eur": 86.19,
-              "monthly_units": 0.94,
-              "weeks_to_clear": 69.3
+              "monthly_units": 1.03,
+              "weeks_to_clear": 63.3
             },
             {
               "discount_pct": 10,
               "price_eur": 81.66,
-              "monthly_units": 1.14,
-              "weeks_to_clear": 57.2
+              "monthly_units": 1.23,
+              "weeks_to_clear": 52.8
             },
             {
               "discount_pct": 15,
               "price_eur": 77.12,
-              "monthly_units": 1.34,
-              "weeks_to_clear": 48.3
+              "monthly_units": 1.45,
+              "weeks_to_clear": 44.8
             },
             {
               "discount_pct": 20,
               "price_eur": 72.58,
-              "monthly_units": 1.57,
-              "weeks_to_clear": 41.5
+              "monthly_units": 1.68,
+              "weeks_to_clear": 38.7
             }
           ]
         }
@@ -2331,7 +2331,7 @@
           "action": "wont_clear",
           "discount_pct": 20,
           "price_eur": 13.64,
-          "weeks_to_clear": 17.5,
+          "weeks_to_clear": 17.4,
           "units_cleared": 76,
           "extra_units_vs_full_price": 2,
           "capital_freed_eur": 712.88,
@@ -2340,32 +2340,32 @@
             {
               "discount_pct": 0,
               "price_eur": 17.05,
-              "monthly_units": 24.69,
-              "weeks_to_clear": 18.1
+              "monthly_units": 24.79,
+              "weeks_to_clear": 18.0
             },
             {
               "discount_pct": 5,
               "price_eur": 16.2,
-              "monthly_units": 24.88,
+              "monthly_units": 24.98,
               "weeks_to_clear": 17.9
             },
             {
               "discount_pct": 10,
               "price_eur": 15.35,
-              "monthly_units": 25.07,
-              "weeks_to_clear": 17.8
+              "monthly_units": 25.19,
+              "weeks_to_clear": 17.7
             },
             {
               "discount_pct": 15,
               "price_eur": 14.49,
-              "monthly_units": 25.28,
+              "monthly_units": 25.4,
               "weeks_to_clear": 17.6
             },
             {
               "discount_pct": 20,
               "price_eur": 13.64,
-              "monthly_units": 25.51,
-              "weeks_to_clear": 17.5
+              "monthly_units": 25.63,
+              "weeks_to_clear": 17.4
             }
           ]
         }
@@ -2391,41 +2391,41 @@
           "action": "wont_clear",
           "discount_pct": 20,
           "price_eur": 83.86,
-          "weeks_to_clear": 36.9,
-          "units_cleared": 4,
-          "extra_units_vs_full_price": 3,
-          "capital_freed_eur": 301.92,
-          "margin_given_up_eur": 83.88,
+          "weeks_to_clear": 19.7,
+          "units_cleared": 7,
+          "extra_units_vs_full_price": 2,
+          "capital_freed_eur": 528.36,
+          "margin_given_up_eur": 146.79,
           "curve": [
             {
               "discount_pct": 0,
               "price_eur": 104.83,
-              "monthly_units": 0.59,
-              "weeks_to_clear": 88.0
+              "monthly_units": 1.79,
+              "weeks_to_clear": 29.0
             },
             {
               "discount_pct": 5,
               "price_eur": 99.59,
-              "monthly_units": 0.78,
-              "weeks_to_clear": 66.8
+              "monthly_units": 1.99,
+              "weeks_to_clear": 26.2
             },
             {
               "discount_pct": 10,
               "price_eur": 94.35,
-              "monthly_units": 0.98,
-              "weeks_to_clear": 53.2
+              "monthly_units": 2.19,
+              "weeks_to_clear": 23.7
             },
             {
               "discount_pct": 15,
               "price_eur": 89.11,
-              "monthly_units": 1.19,
-              "weeks_to_clear": 43.8
+              "monthly_units": 2.41,
+              "weeks_to_clear": 21.6
             },
             {
               "discount_pct": 20,
               "price_eur": 83.86,
-              "monthly_units": 1.41,
-              "weeks_to_clear": 36.9
+              "monthly_units": 2.64,
+              "weeks_to_clear": 19.7
             }
           ]
         }
@@ -2451,41 +2451,41 @@
           "action": "wont_clear",
           "discount_pct": 20,
           "price_eur": 69.1,
-          "weeks_to_clear": 38.5,
-          "units_cleared": 4,
+          "weeks_to_clear": 27.7,
+          "units_cleared": 6,
           "extra_units_vs_full_price": 2,
-          "capital_freed_eur": 248.76,
-          "margin_given_up_eur": 69.08,
+          "capital_freed_eur": 373.14,
+          "margin_given_up_eur": 103.62,
           "curve": [
             {
               "discount_pct": 0,
               "price_eur": 86.37,
-              "monthly_units": 0.76,
-              "weeks_to_clear": 80.2
+              "monthly_units": 1.34,
+              "weeks_to_clear": 45.1
             },
             {
               "discount_pct": 5,
               "price_eur": 82.05,
-              "monthly_units": 0.94,
-              "weeks_to_clear": 64.2
+              "monthly_units": 1.54,
+              "weeks_to_clear": 39.4
             },
             {
               "discount_pct": 10,
               "price_eur": 77.73,
-              "monthly_units": 1.14,
-              "weeks_to_clear": 53.1
+              "monthly_units": 1.74,
+              "weeks_to_clear": 34.8
             },
             {
               "discount_pct": 15,
               "price_eur": 73.41,
-              "monthly_units": 1.35,
-              "weeks_to_clear": 44.9
+              "monthly_units": 1.96,
+              "weeks_to_clear": 30.9
             },
             {
               "discount_pct": 20,
               "price_eur": 69.1,
-              "monthly_units": 1.57,
-              "weeks_to_clear": 38.5
+              "monthly_units": 2.19,
+              "weeks_to_clear": 27.7
             }
           ]
         }
@@ -2511,101 +2511,41 @@
           "action": "wont_clear",
           "discount_pct": 20,
           "price_eur": 41.22,
-          "weeks_to_clear": 19.4,
-          "units_cleared": 14,
+          "weeks_to_clear": 42.8,
+          "units_cleared": 6,
           "extra_units_vs_full_price": 2,
-          "capital_freed_eur": 519.4,
-          "margin_given_up_eur": 144.34,
+          "capital_freed_eur": 222.6,
+          "margin_given_up_eur": 61.86,
           "curve": [
             {
               "discount_pct": 0,
               "price_eur": 51.53,
-              "monthly_units": 4.09,
-              "weeks_to_clear": 23.3
+              "monthly_units": 1.38,
+              "weeks_to_clear": 69.0
             },
             {
               "discount_pct": 5,
               "price_eur": 48.95,
-              "monthly_units": 4.28,
-              "weeks_to_clear": 22.3
+              "monthly_units": 1.58,
+              "weeks_to_clear": 60.5
             },
             {
               "discount_pct": 10,
               "price_eur": 46.38,
-              "monthly_units": 4.47,
-              "weeks_to_clear": 21.3
+              "monthly_units": 1.78,
+              "weeks_to_clear": 53.5
             },
             {
               "discount_pct": 15,
               "price_eur": 43.8,
-              "monthly_units": 4.68,
-              "weeks_to_clear": 20.3
+              "monthly_units": 2.0,
+              "weeks_to_clear": 47.7
             },
             {
               "discount_pct": 20,
               "price_eur": 41.22,
-              "monthly_units": 4.91,
-              "weeks_to_clear": 19.4
-            }
-          ]
-        }
-      },
-      {
-        "sku": "SKU-PT-0496",
-        "name": "PetNord Bowl, natural wood",
-        "category": "accessories",
-        "current_stock": 96,
-        "reorder_point": 17,
-        "excess_units": 62,
-        "unit_cost_eur": 11.16,
-        "tied_capital_eur": 691.92,
-        "price": {
-          "list_price_eur": 20.29,
-          "mean_price_eur": 19.64,
-          "band_low_eur": 17.34,
-          "band_high_eur": 21.94,
-          "observations": 24,
-          "outlier": false
-        },
-        "markdown": {
-          "action": "hold",
-          "discount_pct": 0,
-          "price_eur": 20.29,
-          "weeks_to_clear": 11.0,
-          "units_cleared": 62,
-          "extra_units_vs_full_price": 0,
-          "capital_freed_eur": 691.92,
-          "margin_given_up_eur": 0.0,
-          "curve": [
-            {
-              "discount_pct": 0,
-              "price_eur": 20.29,
-              "monthly_units": 24.51,
-              "weeks_to_clear": 11.0
-            },
-            {
-              "discount_pct": 5,
-              "price_eur": 19.28,
-              "monthly_units": 24.69,
-              "weeks_to_clear": 10.9
-            },
-            {
-              "discount_pct": 10,
-              "price_eur": 18.26,
-              "monthly_units": 24.89,
-              "weeks_to_clear": 10.8
-            },
-            {
-              "discount_pct": 15,
-              "price_eur": 17.25,
-              "monthly_units": 25.1,
-              "weeks_to_clear": 10.7
-            },
-            {
-              "discount_pct": 20,
-              "price_eur": 16.23,
-              "monthly_units": 25.32,
-              "weeks_to_clear": 10.6
+              "monthly_units": 2.23,
+              "weeks_to_clear": 42.8
             }
           ]
         }
@@ -2631,41 +2571,101 @@
           "action": "wont_clear",
           "discount_pct": 20,
           "price_eur": 31.22,
-          "weeks_to_clear": 30.6,
-          "units_cleared": 10,
-          "extra_units_vs_full_price": 3,
-          "capital_freed_eur": 280.9,
-          "margin_given_up_eur": 78.0,
+          "weeks_to_clear": 26.8,
+          "units_cleared": 11,
+          "extra_units_vs_full_price": 2,
+          "capital_freed_eur": 308.99,
+          "margin_given_up_eur": 85.8,
           "curve": [
             {
               "discount_pct": 0,
               "price_eur": 39.02,
-              "monthly_units": 2.58,
-              "weeks_to_clear": 40.2
+              "monthly_units": 3.04,
+              "weeks_to_clear": 34.2
             },
             {
               "discount_pct": 5,
               "price_eur": 37.07,
-              "monthly_units": 2.77,
-              "weeks_to_clear": 37.5
+              "monthly_units": 3.23,
+              "weeks_to_clear": 32.1
             },
             {
               "discount_pct": 10,
               "price_eur": 35.12,
-              "monthly_units": 2.97,
-              "weeks_to_clear": 35.0
+              "monthly_units": 3.44,
+              "weeks_to_clear": 30.2
             },
             {
               "discount_pct": 15,
               "price_eur": 33.17,
-              "monthly_units": 3.18,
-              "weeks_to_clear": 32.7
+              "monthly_units": 3.65,
+              "weeks_to_clear": 28.4
             },
             {
               "discount_pct": 20,
               "price_eur": 31.22,
-              "monthly_units": 3.4,
-              "weeks_to_clear": 30.6
+              "monthly_units": 3.88,
+              "weeks_to_clear": 26.8
+            }
+          ]
+        }
+      },
+      {
+        "sku": "SKU-PT-0496",
+        "name": "PetNord Bowl, natural wood",
+        "category": "accessories",
+        "current_stock": 90,
+        "reorder_point": 16,
+        "excess_units": 58,
+        "unit_cost_eur": 11.16,
+        "tied_capital_eur": 647.28,
+        "price": {
+          "list_price_eur": 20.29,
+          "mean_price_eur": 19.64,
+          "band_low_eur": 17.34,
+          "band_high_eur": 21.94,
+          "observations": 24,
+          "outlier": false
+        },
+        "markdown": {
+          "action": "hold",
+          "discount_pct": 0,
+          "price_eur": 20.29,
+          "weeks_to_clear": 10.0,
+          "units_cleared": 58,
+          "extra_units_vs_full_price": 0,
+          "capital_freed_eur": 647.28,
+          "margin_given_up_eur": 0.0,
+          "curve": [
+            {
+              "discount_pct": 0,
+              "price_eur": 20.29,
+              "monthly_units": 25.0,
+              "weeks_to_clear": 10.0
+            },
+            {
+              "discount_pct": 5,
+              "price_eur": 19.28,
+              "monthly_units": 25.2,
+              "weeks_to_clear": 10.0
+            },
+            {
+              "discount_pct": 10,
+              "price_eur": 18.26,
+              "monthly_units": 25.4,
+              "weeks_to_clear": 9.9
+            },
+            {
+              "discount_pct": 15,
+              "price_eur": 17.25,
+              "monthly_units": 25.62,
+              "weeks_to_clear": 9.8
+            },
+            {
+              "discount_pct": 20,
+              "price_eur": 16.23,
+              "monthly_units": 25.85,
+              "weeks_to_clear": 9.7
             }
           ]
         }
@@ -2676,8 +2676,8 @@
         "sku": "SKU-PT-0287",
         "name": "Hill's Science Plan Turkey Cat Food 4kg",
         "category": "dry-food",
-        "avg_monthly_units": 66,
-        "last_month_units": 64,
+        "avg_monthly_units": 62,
+        "last_month_units": 69,
         "recent_units": 74,
         "current_stock": 2
       },
@@ -2685,82 +2685,82 @@
         "sku": "SKU-PT-0434",
         "name": "Sheba Senior Tuna Cat Food 400g",
         "category": "wet-food",
-        "avg_monthly_units": 41,
-        "last_month_units": 31,
-        "recent_units": 34,
+        "avg_monthly_units": 39,
+        "last_month_units": 35,
+        "recent_units": 35,
         "current_stock": 50
       },
       {
         "sku": "SKU-PT-0127",
         "name": "Hill's Science Plan Grain Free Chicken Dog Food 150g",
         "category": "wet-food",
-        "avg_monthly_units": 31,
-        "last_month_units": 15,
-        "recent_units": 28,
-        "current_stock": 29
-      },
-      {
-        "sku": "SKU-PT-0117",
-        "name": "Royal Canin Senior Turkey Dog Food 400g",
-        "category": "wet-food",
-        "avg_monthly_units": 25,
-        "last_month_units": 26,
-        "recent_units": 24,
-        "current_stock": 5
+        "avg_monthly_units": 34,
+        "last_month_units": 25,
+        "recent_units": 35,
+        "current_stock": 30
       },
       {
         "sku": "SKU-PT-0100",
         "name": "Orijen Turkey Dog Food 15kg",
         "category": "dry-food",
-        "avg_monthly_units": 24,
-        "last_month_units": 16,
-        "recent_units": 27,
-        "current_stock": 10
+        "avg_monthly_units": 27,
+        "last_month_units": 31,
+        "recent_units": 32,
+        "current_stock": 12
       },
       {
-        "sku": "SKU-PT-0094",
-        "name": "Orijen Puppy Beef Dog Food 2kg",
-        "category": "dry-food",
-        "avg_monthly_units": 23,
-        "last_month_units": 14,
-        "recent_units": 17,
-        "current_stock": 3
+        "sku": "SKU-PT-0168",
+        "name": "PetNord Bacon Treats 200g",
+        "category": "treats",
+        "avg_monthly_units": 26,
+        "last_month_units": 15,
+        "recent_units": 25,
+        "current_stock": 21
       },
       {
         "sku": "SKU-PT-0213",
         "name": "Trixie Collar, large",
         "category": "accessories",
         "avg_monthly_units": 23,
-        "last_month_units": 33,
-        "recent_units": 47,
+        "last_month_units": 36,
+        "recent_units": 46,
         "current_stock": 25
       },
       {
-        "sku": "SKU-PT-0168",
-        "name": "PetNord Bacon Treats 200g",
-        "category": "treats",
+        "sku": "SKU-PT-0211",
+        "name": "Trixie Collar, small",
+        "category": "accessories",
         "avg_monthly_units": 22,
-        "last_month_units": 22,
-        "recent_units": 21,
-        "current_stock": 17
+        "last_month_units": 19,
+        "recent_units": 37,
+        "current_stock": 54
       },
       {
         "sku": "SKU-PT-0203",
         "name": "PetNord Collar",
         "category": "accessories",
         "avg_monthly_units": 22,
-        "last_month_units": 17,
+        "last_month_units": 18,
         "recent_units": 44,
         "current_stock": 21
       },
       {
-        "sku": "SKU-PT-0483",
-        "name": "PetNord Clumping Clay Cat Litter 7kg, unscented",
-        "category": "litter",
+        "sku": "SKU-PT-0166",
+        "name": "PetNord Puppy Bacon Treats 100g, classic",
+        "category": "treats",
         "avg_monthly_units": 22,
-        "last_month_units": 68,
-        "recent_units": 67,
-        "current_stock": 34
+        "last_month_units": 29,
+        "recent_units": 23,
+        "current_stock": 20
+      },
+      {
+        "sku": "SKU-PT-0212",
+        "name": "Trixie Collar, medium",
+        "category": "accessories",
+        "avg_monthly_units": 21,
+        "last_month_units": 22,
+        "recent_units": 41,
+        "current_stock": 19
       }
     ],
     "price_outliers": [
@@ -2864,7 +2864,7 @@
       },
       {
         "sku": "SKU-PT-0050",
-        "name": "Eukanuba Grain Free Salmon Dog Food 1kg",
+        "name": "PetNord Grain Free Salmon Adult Dog Food 1kg, recipe 2",
         "category": "dry-food",
         "price": {
           "list_price_eur": 8.48,
@@ -3431,48 +3431,48 @@
         "offset": 0
       }
     },
-    "last_response_ms": 36359
+    "last_response_ms": 11696
   },
   "timings": [
     [
       "_search",
-      5.43
+      3.82
     ],
     [
       "_search",
-      34.25
+      10.03
     ],
     [
       "_search",
-      463.88
+      121.17
     ],
     [
       "_search",
-      534.57
+      184.79
     ],
     [
       "_search",
-      326.8
+      235.1
     ],
     [
       "_search",
-      23.86
+      5.86
     ],
     [
       "_search",
-      207.09
+      69.29
     ],
     [
       "_search",
-      190.35
+      69.05
     ],
     [
       "_search",
-      207.3
+      82.77
     ],
     [
       "_search",
-      13.26
+      3.55
     ]
   ]
 }

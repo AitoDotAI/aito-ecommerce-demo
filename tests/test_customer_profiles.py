@@ -157,7 +157,8 @@ def test_the_planted_discount_effect_shows_in_the_orders_of_those_who_buy_on_off
     mostly = chosen(["offer:mostly"])["response"]["actions"]["discount"]
     rarely = chosen(["offer:rarely"])["response"]["actions"]["discount"]
 
-    assert mostly["lift_points"] > 5 and rarely["lift_points"] < mostly["lift_points"]
+    # The planted effect is small beside a segment's margin (about 8 points at 99.7 %): the pooled check in `./do planted-effects` judges it. Here, only the direction.
+    assert mostly["lift_points"] > rarely["lift_points"]
     assert not (mostly["profit_clear"] and mostly["profit_lift_eur"] > 0), "a discount does not clearly pay for itself here"
 
 
@@ -305,7 +306,7 @@ def test_the_stored_totals_are_these_numbers():
     summary = json.loads((PROFILES / "summary.json").read_text())
 
     assert (summary["profiled"], summary["profiled_revenue_eur"], summary["profiled_profit_eur"], summary["gross_margin"]) == (
-        1790, 467332.96, 139913.04, 0.303)
+        1790, 463668.64, 137880.58, 0.302)
 
 
 # ── Review of #139: the price trait is not made by discounts, scope, margins, consent ──

@@ -1,7 +1,7 @@
 # ADR 0056: Planted incidents: one loud batch recall and three quiet quality problems
 
 **Status:** Accepted (2026-11-01, Antti: "Merge and implement"); built behind switches that are off in the committed fixtures, see the amendment
-**Amendment 2026-11-01 (found when building):** a single SKU sells about five units a month here, too few for a batch to leave a mark a check could tell from noise. So an incident hits a *line* of SKUs found in the catalogue by name (E1: the grain-free salmon dog foods, three to eight of them by seed, written under the house label *PetNord Grain Free Fish Adult Dog Food*; E2: Sheba beef cat food; E3: the house-label liver treats; E4: the house-label hamster mix), and the recalled line sells better before it fails (a hit: pick factor ×4 from 2025-01), so its failure has weight. The switches `E1`–`E4` are **off** in the committed fixtures, which a test shows are byte-identical to before; the release that carries the incidents flips them on, regenerates and reloads. `./do planted-incidents` judges them with the switches on.
+**Amendment 2026-11-01 (found when building):** a single SKU sells about five units a month here, too few for a batch to leave a mark a check could tell from noise. So an incident hits a *line* of SKUs found in the catalogue by name (E1: the grain-free salmon dog foods, three to eight of them by seed, written under the house label *PetNord Grain Free Salmon Adult Dog Food*; E2: Sheba beef cat food; E3: the house-label liver treats; E4: the house-label hamster mix), and the recalled line sells better before it fails (a hit: pick factor ×4 from 2025-01), so its failure has weight. The switches `E1`–`E4` are **off** in the committed fixtures, which a test shows are byte-identical to before; the release that carries the incidents flips them on, regenerates and reloads. `./do planted-incidents` judges them with the switches on.
 **Date:** 2026-11-01
 **Deciders:** Antti
 
@@ -31,7 +31,7 @@ switched off changes only what that incident touches.
 
 | | Incident | Where | When |
 |---|---|---|---|
-| E1 | **Loud**: a batch of a grain-free fish dry dog food, two pack sizes, made customers' dogs ill. Pulled after the news. | two SKUs of one catalogue line, renamed to a fictional house label | batch sold in 2025-09 and 2025-10; pulled from 2025-11 |
+| E1 | **Loud**: a batch of a grain-free fish dry dog food, two pack sizes, made customers' dogs ill. Pulled after the news. | two SKUs of one catalogue line, renamed to a fictional house label (*PetNord Grain Free Salmon Adult Dog Food*: it is still a salmon food, so the shop's search phrases about it stay true) | batch sold in 2025-09 and 2025-10; pulled from 2025-11 |
 | E2 | **Quiet**: bad units of one cat wet-food product | one SKU | one month in 2025-02 |
 | E3 | **Quiet**: bad units of the house-label dog treats | the line | two months, 2025-06 and 2025-07 |
 | E4 | **Quiet**: bad units of one small-animal dry food | one SKU | one month in 2026-01 |
@@ -42,7 +42,7 @@ The dates are inside the data (2024-05 to 2026-04). The real event predates it, 
 1. **The batch.** A purchase of the two SKUs in the batch months has the experience *bad* with probability 0.35 (it is about 0.05 otherwise). The
    existing chain does the rest: a bad experience is returned more often, is reviewed (category: quality, symptoms in the text, never deaths),
    lowers the order's NPS and raises the churn hazard (R3, R4, A7).
-2. **Pulled.** From 2025-11 the two SKUs are not in the shop's product list and are not bought again: sales are zero, in every view.
+2. **Pulled.** From 2025-11 nothing of the line sells: its purchase odds are zero, in every view. (Amended 2026-11-01: the line stays listed. Taking it out of the pools of the shop's lists and staple picks moved the random draws of the demo's hand-calibrated personas from that month, and their stories are what the demo scripts show.)
 3. **Trust.** From 2025-11, the odds to buy any other grain-free dog dry food are ×0.70 and recover linearly to ×1.00 over eight months.
    The customers who bought the batch are ×0.5 on that type for the same eight months.
 

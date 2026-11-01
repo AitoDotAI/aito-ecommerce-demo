@@ -1,6 +1,6 @@
 # ADR 0057: The stock routine as a rule, and the first real agent: product entry
 
-**Status:** Part 1 (the stock rule) built; part 2 (the product-entry agent) not yet. Accepted 2026-11-01, Antti: "Go for it" to the order in ADR 0054's follow-up: the stock routine first, then a product-entry agent.
+**Status:** Accepted. Part 1 (the stock rule) built; part 2 (the product-entry agent) not yet. Accepted 2026-11-01, Antti: "Go for it" to the order in ADR 0054's follow-up: the stock routine first, then a product-entry agent.
 **Built, differing from the plan:** approvals of queued steps and edited settings live in the browser (as in ADR 0052); the stock run adds nothing to the Board; the right-hand Aito panel still shows the win-back's Retention query when the stock run is open.
 **Date:** 2026-11-01
 **Deciders:** Antti
@@ -28,7 +28,7 @@ as ADR 0052, judged by a gate of its own, since there is no lift here: the evide
 | **Stay quiet** | fewer observed sales in the window than the evidence bar: nothing to base an order on | the sweep says the markdown would not clear it, or to hold |
 
 **Defaults** (the store's settings, shown on every step, as in ADR 0052): an evidence bar of **5 units sold** in the planning window, an order limit of **500 €**,
-the urgent share **0.5**. On the stored Supply snapshot (2026-05) that gives, of 83 reorder steps: 45 act, 2 suggest, 5 need a person, 31 stay quiet.
+the urgent share **0.5**. On the stored Supply snapshot (2026-05) that gives, of 83 reorder steps: 40 act, 2 suggest, 7 need a person, 34 stay quiet (release 4's data; release 3b's gave 45, 2, 5 and 31).
 **These are Antti's to set**: they decide what a rule may spend.
 
 Nothing is ordered: a run is simulated, like the win-back's. A reorder line says it uses the simple rule (ADR 0045's observed sales), not a forecast.

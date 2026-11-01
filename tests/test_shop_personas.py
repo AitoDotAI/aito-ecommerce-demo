@@ -93,11 +93,11 @@ def test_olli_reorders_eukanuba(history):
     assert max(set(food), key=food.count).startswith("Eukanuba")
 
 
-def test_saara_buys_the_same_large_breed_bag_in_7_of_12_orders(history):
+def test_saara_buys_the_same_large_breed_bag_in_7_of_13_orders(history):
     products, _, orders = history
     saara = orders[shopper("saara").customer_id]
     bag = "Acana Weight Control Salmon Dog Food 7kg"
-    assert len(saara) == 12
+    assert len(saara) == 13
     assert sum(any(products[s]["name"] == bag for s in o["skus"].split()) for o in saara) == 7
 
 
@@ -110,7 +110,7 @@ def test_eemil_declared_no_pets_and_the_shop_reads_a_dog_from_his_orders(history
     products, customers, orders = history
     eemil = shopper(NO_PET_PROFILE_SHOPPER).customer_id
     assert "pets" not in customers[eemil]
-    assert len(orders[eemil]) == 16
+    assert len(orders[eemil]) == 13
     assert {p["pet_type"] for p in _bought(products, orders[eemil])} == {"dog"}
     later = [c for c in _load("contexts.json") if c.get("customer") == eemil and c.get("pets_from_orders")]
     assert later and all(c["pets_from_orders"] == "dog" for c in later)

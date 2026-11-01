@@ -1051,7 +1051,7 @@ def test_the_shops_search_held_out_scores_every_allowed_match_and_keeps_the_rule
     name match the household's rule allows, and none for rule-breaking food."""
     from src.personalised_search.rankings import shop_search_p, text_lift
 
-    session = _search_session("SESS-002081")          # "cat food", a `sensitive` cat household with a declared profile
+    session = _search_session("SESS-000126")          # "cat food", a `sensitive` cat household with a declared profile (re-picked for data release 4)
     p = shop_search_p(client, session, list(text_lift(client, session.query)))
     rows = client.search("products", where={"sku": {"$or": list(p)}},
                          select=["sku", "name", "category", "pet_type"], limit=len(p))["hits"]
@@ -1072,7 +1072,7 @@ def test_the_just_bought_reask_runs_in_a_batch_over_a_nested_from(client):
     from src.personalised_search.rankings import held_out, shop_context
     from src.shop_ranking import _p_true
 
-    session = _search_session("SESS-000008")      # a returning customer: Maija ("salmon cat"), with a last order
+    session = _search_session("SESS-000005")      # a returning customer: Maija ("cat food"), with a last order (re-picked for data release 4)
     sku = session.last_order[0]
     [answer] = client.batch([{"from": held_out(session.session_id), "predict": "purchased",
                               "where": {**shop_context(session), "product_sku": sku, "just_bought": True}}])
