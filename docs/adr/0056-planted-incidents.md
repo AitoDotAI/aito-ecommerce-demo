@@ -33,7 +33,7 @@ switched off changes only what that incident touches.
 |---|---|---|---|
 | E1 | **Loud**: a batch of a grain-free fish dry dog food, two pack sizes, made customers' dogs ill. Pulled after the news. | two SKUs of one catalogue line, renamed to a fictional house label | batch sold in 2025-09 and 2025-10; pulled from 2025-11 |
 | E2 | **Quiet**: bad units of one cat wet-food product | one SKU | one month in 2025-02 |
-| E3 | **Quiet**: bad units of one dog treat | one SKU | one month in 2025-06 |
+| E3 | **Quiet**: bad units of the house-label dog treats | the line | two months, 2025-06 and 2025-07 |
 | E4 | **Quiet**: bad units of one small-animal dry food | one SKU | one month in 2026-01 |
 
 The dates are inside the data (2024-05 to 2026-04). The real event predates it, so this is a fiction in its own right.
@@ -43,7 +43,7 @@ The dates are inside the data (2024-05 to 2026-04). The real event predates it, 
    existing chain does the rest: a bad experience is returned more often, is reviewed (category: quality, symptoms in the text, never deaths),
    lowers the order's NPS and raises the churn hazard (R3, R4, A7).
 2. **Pulled.** From 2025-11 the two SKUs are not in the shop's product list and are not bought again: sales are zero, in every view.
-3. **Trust.** From 2025-11, the odds to buy any other grain-free dog dry food are ×0.90 and recover linearly to ×1.00 over eight months.
+3. **Trust.** From 2025-11, the odds to buy any other grain-free dog dry food are ×0.70 and recover linearly to ×1.00 over eight months.
    The customers who bought the batch are ×0.5 on that type for the same eight months.
 
 ### E2–E4, the quiet ones
@@ -90,3 +90,9 @@ database, precompute, then deploy. Figures quoted in articles change with it.
 
 Loading the new release into shared Aito and deploying it (Antti's decision, after the quoted figures are re-checked); an automatic incident detector in
 the app; a delivery-partner problem, a supplier stock-out and a competitor promotion (possible later incidents with their own switches).
+
+## Amendment 2026-11-01, after the first judgement
+The first run of `./do planted-incidents` passed 16 of 19 checks (docs/verification/planted-incidents-data.md). With Antti's "Fix those": the trust dip is
+×0.70, not ×0.90 (substitution to other grain-free food outweighed ×0.90); the recall's churn is its own larger hazard (×6, then ×8 after the second run, for eight months); E3 runs for two months and covers all the house-label dog treats, to give the check
+enough customers; and the trust check reads only customers who never bought the recalled line, since those who did switched to other grain-free food. The second run still failed
+E1-trust (the first definition), E1-churn (1.28 against 1.3) and both E3 checks, which led to the last three changes. These were changed after seeing the data, which the report says.

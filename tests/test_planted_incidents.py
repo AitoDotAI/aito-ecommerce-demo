@@ -16,7 +16,7 @@ def catalogue():
     return (
         [product(f"D{i}", name=f"Acana Grain Free Salmon Dog Food {i}kg") for i in range(4)]
         + [product(f"C{i}", pet="cat", category="wet-food", brand="Sheba", name="Sheba Sensitive Beef Cat Food", dietary=None) for i in range(3)]
-        + [product(f"T{i}", category="treats", brand="PetNord", name="PetNord Liver Treats 200g", dietary=None) for i in range(3)]
+        + [product(f"T{i}", category="treats", brand="PetNord", name="PetNord Cheese Treats 200g", dietary=None) for i in range(3)]
         + [product(f"H{i}", pet="small_animal", brand="PetNord", name="PetNord Hamster Mix Food 4kg", dietary=None) for i in range(3)]
         + [product("OTHER", name="Hill's Chicken Dog Food 2kg", dietary="grain-free")]
     )
@@ -139,3 +139,19 @@ def test_the_answer_key_lists_every_incident_and_says_which_are_planted(planned,
     rows = incidents.answer_key_rows(planned, {})
 
     assert {r["id"]: r["planted"] for r in rows} == {"E1": False, "E2": True, "E3": False, "E4": False}
+
+
+def test_a_bad_unit_from_the_recalled_batch_raises_the_churn_hazard_far_more_and_for_longer_than_an_ordinary_bad_experience(planned, all_on):
+    assert incidents.recall_churn_rise(planned, "D0", "2025-09", "bad") == (incidents.RECALL_CHURN_RISE, incidents.RECALL_CHURN_MONTHS)
+    assert incidents.recall_churn_rise(planned, "D0", "2025-09", "good") is None
+    assert incidents.recall_churn_rise(planned, "D0", "2025-08", "bad") is None, "outside the batch months"
+    assert incidents.recall_churn_rise(planned, "C0", "2025-02", "bad") is None, "a quiet incident makes customers switch, not leave"
+    assert incidents.RECALL_CHURN_RISE > 3.0 and incidents.RECALL_CHURN_MONTHS > 3, "more than the ordinary rise of ×3 for 3 months"
+
+
+def test_with_the_recall_off_a_bad_unit_has_no_extra_churn(planned):
+    assert incidents.recall_churn_rise(planned, "D0", "2025-09", "bad") is None
+
+
+def test_the_dog_treat_incident_runs_for_two_months_so_enough_customers_have_a_bad_unit_to_judge(planned):
+    assert next(i for i in planned if i.id == "E3").months == ("2025-06", "2025-07")

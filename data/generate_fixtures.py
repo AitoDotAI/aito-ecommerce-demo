@@ -1671,15 +1671,15 @@ class _ChurnClock:
         self.month: str | None = None          # the month the customer churned
         self.never = never
         self.trait_factor = review_chain.churn_factor(customer.satisfaction)
-        self.rises: list[tuple[str, float]] = []
+        self.rises: list[tuple[str, float, int]] = []
 
-    def rise(self, month: str, factor: float) -> None:
-        self.rises.append((month, factor))
+    def rise(self, month: str, factor: float, months: int = review_chain.CHURN_RISE_MONTHS) -> None:
+        self.rises.append((month, factor, months))
 
     def hazard(self, month: str) -> float:
         h = self.base * self.trait_factor
-        for since, factor in self.rises:
-            if since < month <= _add_months(since, review_chain.CHURN_RISE_MONTHS):
+        for since, factor, months in self.rises:
+            if since < month <= _add_months(since, months):
                 h *= factor
         return min(1.0, h)
 
@@ -1936,6 +1936,10 @@ def _customer_life(customer: Customer, persona: Persona | None, shop: _Shop) -> 
                 product_state=this_orders_lines[0].product_state, wrote_negative_review=wrote_negative))
         if experience == "bad":
             churn.rise(month, review_chain.churn_rise(replied_negative))
+        for ln, line_experience in zip(this_orders_lines, experiences):
+            recall = incidents.recall_churn_rise(shop.events.incidents, ln.product_sku, month, line_experience)
+            if recall:
+                churn.rise(month, *recall)        # ADR 0056: the recalled batch made the dog ill
         if planted_switches.ON["A6"] and incident:
             churn.rise(month, review_chain.INCIDENT_CHURN_RISE)
         for ln in this_orders_lines:
