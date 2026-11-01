@@ -8,7 +8,8 @@ import { TREE, TRAIT_TITLE, describe, type KpiId, type ProfilesSummary, type Seg
 /** The tabs of the tree: how they shop (the profiled traits), what they buy (a category or a brand bought) and where they live. */
 const TABS = [{ id: "behaviour", label: "Behaviour", traits: ["offer", "price", "rating", "margin", "status", "pets", "diets"] },
               { id: "products", label: "Products", traits: ["category", "brand"] },
-              { id: "where", label: "Where", traits: ["region"] }] as const;
+              { id: "where", label: "Where", traits: ["region"] },
+              { id: "feedback", label: "Feedback", traits: ["review", "nps"] }] as const;
 type TabId = (typeof TABS)[number]["id"];
 
 /**
@@ -108,6 +109,16 @@ export default function SegmentTree({ summary, view, conditions, kpi, onKpi, onT
                 {listed(trait).map((c) => row(c, c.slice(trait.length + 1)))}
               </div>
             ))}
+          </div>
+        )}
+        {tab === "feedback" && (
+          <div style={{ marginTop: 10 }}>
+            <div style={{ fontWeight: 700, fontSize: 13 }}>{TRAIT_TITLE.review}</div>
+            <div className="card-sub" style={{ fontSize: 12 }}>Customers who wrote at least one review of that kind about a product. A review is about a product; the topic is what it says.</div>
+            <div style={{ margin: "6px 0 10px 8px" }}>{listed("review").map((c) => row(c, c.slice("review:".length)))}</div>
+            <div style={{ fontWeight: 700, fontSize: 13 }}>{TRAIT_TITLE.nps}</div>
+            <div className="card-sub" style={{ fontSize: 12 }}>Customers who gave at least one answer in that group to the survey after an order: promoters 9–10, passives 7–8, detractors 0–6.</div>
+            <div style={{ margin: "6px 0 0 8px" }}>{listed("nps").map((c) => row(c, c.slice("nps:".length)))}</div>
           </div>
         )}
         {tab === "where" && (

@@ -18,7 +18,7 @@ LINES = [{"order_id": "ORD-1", "product_sku": "SKU-A", "qty": 2, "returned": Fal
          {"order_id": "ORD-3", "product_sku": "SKU-A", "qty": 9, "returned": False, "product_state": "S1"}]
 REVIEWS = [{"customer_id": "C1", "product_sku": "SKU-A", "rating": 1, "text": "Dog was sick.", "category": "quality", "created_at": "2026-02", "replied": False},
            {"customer_id": "C9", "product_sku": "SKU-A", "rating": 5, "text": "Great.", "category": "praise", "created_at": "2026-02", "replied": False}]
-ANSWERS = [{"customer": "C2", "month": "2026-03", "score": 9, "nps_group": "promoter"}]
+ANSWERS = [{"customer": "C2", "month": "2026-03", "score": 9, "nps_group": "promoter", "wrote_negative_review": False}]
 
 
 @pytest.fixture
@@ -47,12 +47,13 @@ def test_orders_are_listed_newest_first_with_no_customer_in_them(rows):
     assert result["rows"][1] == {"order": "ORD-1", "month": "2026-01", "total_eur": 24.0, "lines": 2, "returned_lines": 1}
 
 
-def test_feedback_is_reviews_and_nps_answers_of_the_selected_customers_only_newest_first(rows):
-    result = page_of(rows, REVIEWS, ANSWERS, ["C1", "C2"], "feedback", None, 0, 50)
+def test_reviews_and_nps_answers_are_separate_tabs_each_of_the_selected_customers_only_newest_first(rows):
+    reviews = page_of(rows, REVIEWS, ANSWERS, ["C1", "C2"], "reviews", None, 0, 50)
+    answers = page_of(rows, REVIEWS, ANSWERS, ["C1", "C2"], "nps", None, 0, 50)
 
-    assert [(r["kind"], r["month"]) for r in result["rows"]] == [("NPS answer", "2026-03"), ("Review", "2026-02")]
-    assert result["rows"][1]["text"] == "Dog was sick." and result["rows"][1]["rating"] == 1
-    assert "Great." not in json.dumps(result), "a review by a customer outside the selection is not shown"
+    assert reviews["rows"] == [{"month": "2026-02", "product": "Dog food 2kg", "stars": 1, "topic": "quality", "replied": False, "text": "Dog was sick."}]
+    assert answers["rows"] == [{"month": "2026-03", "score": 9, "group": "promoter", "also_wrote_a_negative_review": False}]
+    assert "Great." not in json.dumps(reviews), "a review by a customer outside the selection is not shown"
 
 
 def test_a_period_keeps_only_its_months_in_every_tab(rows):
@@ -60,7 +61,7 @@ def test_a_period_keeps_only_its_months_in_every_tab(rows):
 
     assert [r["order"] for r in page_of(rows, REVIEWS, ANSWERS, ["C1", "C2"], "orders", months, 0, 50)["rows"]] == ["ORD-2"]
     assert page_of(rows, REVIEWS, ANSWERS, ["C1", "C2"], "sales", months, 0, 50)["rows"][0]["units"] == 1
-    assert [r["kind"] for r in page_of(rows, REVIEWS, ANSWERS, ["C1", "C2"], "feedback", months, 0, 50)["rows"]] == ["Review"]
+    assert [r["stars"] for r in page_of(rows, REVIEWS, ANSWERS, ["C1", "C2"], "reviews", months, 0, 50)["rows"]] == [1]
 
 
 def test_a_page_is_a_slice_and_says_how_many_rows_there_are_in_all(rows):
@@ -88,7 +89,7 @@ def api():
 
 
 def test_the_route_serves_each_tab_for_a_selection_and_no_row_names_a_customer():
-    for tab in ("sales", "orders", "feedback"):
+    for tab in ("sales", "orders", "reviews", "nps"):
         body = api().get("/api/customer-profiles/rows", params={"tab": tab, "c": "pets:dog", "limit": 100}).json()
 
         assert body["too_small"] is False and body["total"] > 0 and len(body["rows"]) == min(100, body["total"])

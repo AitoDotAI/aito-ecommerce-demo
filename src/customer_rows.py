@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-TABS = ("sales", "orders", "feedback")
+TABS = ("sales", "orders", "reviews", "nps")
 PAGE_MAX = 100
 
 
@@ -42,7 +42,7 @@ def page_of(rows: dict, reviews: list[dict], answers: list[dict], customer_ids: 
         raise ValueError(f"A page is 1 to {PAGE_MAX} rows (limit) from a row that is not negative (offset); got limit {limit}, offset {offset}")
     selected = set(customer_ids)
     keep = (lambda month: True) if months is None else (lambda month: month in months)
-    listed = {"sales": _sales, "orders": _orders, "feedback": _feedback}[tab](rows, reviews, answers, selected, keep)
+    listed = {"sales": _sales, "orders": _orders, "reviews": _reviews, "nps": _nps}[tab](rows, reviews, answers, selected, keep)
     return {"tab": tab, "total": len(listed), "offset": offset, "rows": listed[offset:offset + limit]}
 
 
@@ -67,11 +67,14 @@ def _orders(rows: dict, reviews, answers, selected: set[str], keep) -> list[dict
     return sorted(listed, key=lambda r: (r["month"], r["order"]), reverse=True)
 
 
-def _feedback(rows: dict, reviews: list[dict], answers: list[dict], selected: set[str], keep) -> list[dict]:
+def _reviews(rows: dict, reviews: list[dict], answers, selected: set[str], keep) -> list[dict]:
     names = {sku: p["name"] for sku, p in rows["products"].items()}
-    listed = [{"kind": "Review", "month": r["created_at"], "product": names.get(r["product_sku"], r["product_sku"]), "rating": r["rating"],
-               "text": r["text"], "topic": r["category"], "replied": r["replied"]}
-              for r in reviews if r["customer_id"] in selected and keep(r["created_at"])]
-    listed += [{"kind": "NPS answer", "month": a["month"], "product": None, "rating": a["score"], "text": None, "topic": a["nps_group"], "replied": None}
-               for a in answers if a["customer"] in selected and keep(a["month"])]
-    return sorted(listed, key=lambda r: (r["month"], r["kind"]), reverse=True)
+    listed = [{"month": r["created_at"], "product": names.get(r["product_sku"], r["product_sku"]), "stars": r["rating"], "topic": r["category"],
+               "replied": r["replied"], "text": r["text"]} for r in reviews if r["customer_id"] in selected and keep(r["created_at"])]
+    return sorted(listed, key=lambda r: (r["month"], r["product"]), reverse=True)
+
+
+def _nps(rows: dict, reviews, answers: list[dict], selected: set[str], keep) -> list[dict]:
+    listed = [{"month": a["month"], "score": a["score"], "group": a["nps_group"], "also_wrote_a_negative_review": a["wrote_negative_review"]}
+              for a in answers if a["customer"] in selected and keep(a["month"])]
+    return sorted(listed, key=lambda r: (r["month"], r["score"]), reverse=True)

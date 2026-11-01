@@ -31,11 +31,14 @@ def monthly_orders(orders: list[dict], order_lines: list[dict], states: dict[str
 
 def build_facts(traits: list[dict], customers: dict[str, dict], funnel: dict[str, dict], first: dict[str, dict[str, str]],
                 bought: dict[str, dict[str, dict[str, set[str]]]], shares: dict[str, dict[str, float]],
-                months: dict[str, dict[str, list]], answers: list[dict], product_names: dict[str, str]) -> dict:
+                months: dict[str, dict[str, list]], answers: list[dict], product_names: dict[str, str], reviews: list[dict]) -> dict:
     """Facts for the profiled customers; a customer without consent is not here at all."""
     nps: dict[str, list] = defaultdict(list)
     for a in answers:
         nps[a["customer"]].append([a["month"], a["nps_group"]])
+    topics: dict[str, set[str]] = defaultdict(set)
+    for r in reviews:
+        topics[r["customer_id"]].add(r["category"])
     out = {}
     for t in traits:
         if not t["profiled"]:
@@ -53,6 +56,8 @@ def build_facts(traits: list[dict], customers: dict[str, dict], funnel: dict[str
             "first": first.get(cid),
             "months": {m: [n, round(eur, 2), round(gross, 2)] for m, (n, eur, gross) in sorted(months.get(cid, {}).items())},
             "nps": sorted(nps.get(cid, [])),
+            "review_topics": sorted(topics.get(cid, ())),
+            "nps_groups": sorted({group for _, group in nps.get(cid, [])}),
             "bought": {pet: {kind: sorted(items[kind]) for kind in PET_KINDS} for pet, items in bought[cid].items()},
         }
     named = {sku for c in out.values() for items in c["bought"].values() for sku in items["products"]}
