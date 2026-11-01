@@ -374,7 +374,7 @@ export function shopkeeperPanel(): AitoPanelConfig {
 
 export function customersPanel(): AitoPanelConfig {
   return {
-    operation: "Customers",
+    operation: "Analytics",
     endpoints: ["_predict", "_relate"],
     description:
       `Traits are counted from each consenting customer's purchase history: the share of lines on offer, in the ` +
