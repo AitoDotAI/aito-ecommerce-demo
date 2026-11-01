@@ -18,7 +18,7 @@ small rates is noise. A lift carries its 95 % margin, and is `clear` only when i
 from __future__ import annotations
 
 from collections import defaultdict
-import random
+import numpy as np
 from math import sqrt
 from statistics import mean, variance
 
@@ -172,7 +172,8 @@ def bootstrap_mean_interval(values: list[float]) -> list[float] | None:
     Profit is skewed (the top tenth of customers earns a large share), so a normal margin would mislead."""
     if len(values) < THIN_BELOW:
         return None
-    rng = random.Random(BOOTSTRAP_SEED)
+    rng = np.random.default_rng(BOOTSTRAP_SEED)
     n = len(values)
-    means = sorted(sum(values[rng.randrange(n)] for _ in range(n)) / n for _ in range(BOOTSTRAP_RESAMPLES))
-    return [round(means[int(0.025 * BOOTSTRAP_RESAMPLES)], 2), round(means[int(0.975 * BOOTSTRAP_RESAMPLES) - 1], 2)]
+    # One matrix of resampled positions: a segment view asks for ~45 intervals, too many for a Python loop per request
+    means = np.sort(np.asarray(values)[rng.integers(0, n, size=(BOOTSTRAP_RESAMPLES, n))].mean(axis=1))
+    return [round(float(means[int(0.025 * BOOTSTRAP_RESAMPLES)]), 2), round(float(means[int(0.975 * BOOTSTRAP_RESAMPLES) - 1]), 2)]
