@@ -52,7 +52,7 @@ def test_reviews_and_nps_answers_are_separate_tabs_each_of_the_selected_customer
     answers = page_of(rows, REVIEWS, ANSWERS, ["C1", "C2"], "nps", None, 0, 50)
 
     assert reviews["rows"] == [{"month": "2026-02", "product": "Dog food 2kg", "stars": 1, "topic": "quality", "replied": False, "text": "Dog was sick."}]
-    assert answers["rows"] == [{"month": "2026-03", "score": 9, "group": "promoter", "also_wrote_a_negative_review": False}]
+    assert answers["rows"] == [{"month": "2026-03", "score": 9, "group": "promoter", "also_wrote_a_negative_review": False, "comment": None}]
     assert "Great." not in json.dumps(reviews), "a review by a customer outside the selection is not shown"
 
 

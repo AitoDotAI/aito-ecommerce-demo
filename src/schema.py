@@ -344,6 +344,8 @@ SCHEMAS: dict[str, dict] = {
                                 "link": "orders.order_id"},
             "month":           {"type": "String", "nullable": False},
             "score":           {"type": "Int",    "nullable": False},
+            # What the respondent wrote beside the score (ADR 0058): Text, so `_predict` can read the topics and the product it mentions.
+            "comment":         {"type": "Text",   "nullable": True, "analyzer": "whitespace"},
             # promoter (9–10) | passive (7–8) | detractor (0–6)
             "nps_group":       {"type": "String", "nullable": False},
             # `_relate` cannot follow an order to its lines (one-to-many), so the order's

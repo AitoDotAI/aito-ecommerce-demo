@@ -155,3 +155,15 @@ def test_with_the_recall_off_a_bad_unit_has_no_extra_churn(planned):
 
 def test_the_dog_treat_incident_runs_for_two_months_so_enough_customers_have_a_bad_unit_to_judge(planned):
     assert next(i for i in planned if i.id == "E3").months == ("2025-06", "2025-07")
+
+
+def test_the_recalled_line_is_written_under_the_house_label_in_any_text_about_it_and_other_products_keep_their_names(catalogue, planned, all_on):
+    recalled = next(p for p in catalogue if p.sku == "D1")
+    other = next(p for p in catalogue if p.sku == "OTHER")
+
+    assert incidents.display_name(planned, recalled) == "PetNord Grain Free Fish Adult Dog Food 1kg"
+    assert incidents.display_name(planned, other) == other.name
+
+
+def test_with_the_recall_off_no_product_changes_its_name(catalogue, planned):
+    assert all(incidents.display_name(planned, p) == p.name for p in catalogue)

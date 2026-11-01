@@ -26,7 +26,7 @@ from pathlib import Path
 from typing import Callable, Iterable, Iterator
 
 from data import customer_actions as customer_actions_module
-from data import (acquisition, catalogue_events, incidents, lifecycle, listing, merchandising, observable, person_data, planted_switches,
+from data import (acquisition, catalogue_events, feedback_text, incidents, lifecycle, listing, merchandising, observable, person_data, planted_switches,
                   review_chain, sensitivities, shop_levers, shoppers)
 from data.planted_switches import stream
 
@@ -657,6 +657,7 @@ class NpsResponse:
     # lines (one-to-many), so the order's first product, as it was that month, is here:
     product_state: str              # link → product_states
     wrote_negative_review: bool     # the respondent reviewed a product of this order at 1–2 stars
+    comment: str | None = None      # ADR 0058 (T1): what the respondent wrote beside the score
 
 
 # ── Generation ──────────────────────────────────────────────────────
@@ -1596,6 +1597,7 @@ class OrderHistory:
     contexts: list[observable.Context]     # recorded: consenting customers' sessions only
     impressions: list[Impression]
     incident_hits: dict[tuple[str, str], str] = field(default_factory=dict)   # ADR 0056: the answer key
+    comment_truth: dict[str, dict] = field(default_factory=dict)              # ADR 0058: NPS answer id -> what its comment talks about
 
 
 @dataclass
@@ -1632,6 +1634,8 @@ class _Shop:
     sessions_of: dict[str, list[_Session]] = field(default_factory=dict)
     # ADR 0056: (customer, incident) → the month of the customer's bad unit from an incident's line.
     incident_hits: dict[tuple[str, str], str] = field(default_factory=dict)
+    # ADR 0058: (customer, order) -> what an NPS comment talks about (the answer key; the table never says).
+    comment_truth: dict[tuple[str, str], dict] = field(default_factory=dict)
 
     def begin_month(self, month: str) -> None:
         """This month's product states, from the stars, labels, stock and prices
@@ -1703,6 +1707,21 @@ def _review_text(rng: random.Random, category: str, pet: str) -> str:
         if placeholder in text:
             text = text.replace(placeholder, rng.choice(_REVIEW_VOCAB[slot]))
     return text.replace("{pet}", pet)
+
+
+def _pet_word(pet_type: str) -> str:
+    return pet_type if pet_type in ("dog", "cat") else "pet"
+
+
+def _review_text_for(review_rng: random.Random, drawn, product: Product, line: OrderLine, month: str, experience: str, shop) -> str:
+    """The review's text. The templated text is always drawn, so the review stream moves as it always did; ADR 0058's (T2) replaces it with a text
+    that reads like its stars, from a stream of its own."""
+    templated = _review_text(review_rng, drawn.category, product.pet_type)
+    if not planted_switches.ON["T2"]:
+        return templated
+    return feedback_text.review_text(stream(RNG_SEED, "review_text", line.line_id), drawn.category, drawn.rating,
+                                     incidents.display_name(shop.events.incidents, product), _pet_word(product.pet_type),
+                                     incidents.text_kind(shop.events.incidents, line.product_sku, month, experience))
 
 
 def _is_poor(sku: str) -> bool:
@@ -1796,6 +1815,8 @@ def _number_history(customers: list[Customer], shop: _Shop) -> OrderHistory:
             history.reviews.append(review)
         for answer in shop.nps_of.get(c.customer_id, []):
             answer.nps_response_id = f"NPS-{len(history.nps) + 1:05d}"
+            if (c.customer_id, answer.surveyed_order) in shop.comment_truth:
+                history.comment_truth[answer.nps_response_id] = shop.comment_truth[(c.customer_id, answer.surveyed_order)]
             answer.surveyed_order = order_id[answer.surveyed_order]
             history.nps.append(answer)
     for c in customers:
@@ -1922,7 +1943,7 @@ def _customer_life(customer: Customer, persona: Persona | None, shop: _Shop) -> 
             wrote_negative |= drawn.rating <= 2
             shop.reviews_of[cid].append(Review(
                 review_id="", customer_id=cid, product_sku=ln.product_sku, rating=drawn.rating,
-                text=_review_text(review_rng, drawn.category, shop.product_of[ln.product_sku].pet_type),
+                text=_review_text_for(review_rng, drawn, shop.product_of[ln.product_sku], ln, month, experience, shop),
                 category=drawn.category, sentiment=_sentiment_for(drawn.rating),
                 assigned_to=REVIEW_CATEGORY_TO_AGENT[drawn.category], created_at=month,
                 replied=drawn.replied, order_line=ln.line_id))
@@ -1930,10 +1951,20 @@ def _customer_life(customer: Customer, persona: Persona | None, shop: _Shop) -> 
         experience = review_chain.order_experience(experiences)
         score = review_chain.nps_score(nps_rng, experience, incident, replied_negative, customer.satisfaction)
         if score is not None:
+            comment = None
+            if planted_switches.ON["T1"]:
+                first = shop.product_of[this_orders_lines[0].product_sku]
+                kinds = [incidents.text_kind(shop.events.incidents, ln.product_sku, month, e) for ln, e in zip(this_orders_lines, experiences)]
+                comment, truth = feedback_text.nps_comment(
+                    stream(RNG_SEED, "nps_comment", order_ref), review_chain.nps_group(score), experience,
+                    incidents.display_name(shop.events.incidents, first), _pet_word(first.pet_type),
+                    incident, any(ln.returned for ln in this_orders_lines), "recalled" if "recalled" in kinds else "quiet" if "quiet" in kinds else None)
+                if comment:
+                    shop.comment_truth[(cid, order_ref)] = truth
             shop.nps_of[cid].append(NpsResponse(
                 nps_response_id="", customer=cid, surveyed_order=order_ref, month=month,
                 score=score, nps_group=review_chain.nps_group(score),
-                product_state=this_orders_lines[0].product_state, wrote_negative_review=wrote_negative))
+                product_state=this_orders_lines[0].product_state, wrote_negative_review=wrote_negative, comment=comment))
         if experience == "bad":
             churn.rise(month, review_chain.churn_rise(replied_negative))
         for ln, line_experience in zip(this_orders_lines, experiences):
@@ -3488,6 +3519,8 @@ def main() -> None:
                [{"sku": p.sku, "quality": review_chain.quality(p.sku)} for p in products])
     write_json(answer_key / "line_experiences.json",
                [{"line_id": line_id, "experience": e} for line_id, e in history.experience_of.items()])
+    if planted_switches.ON["T1"]:
+        write_json(answer_key / "nps_comments.json", [{"nps_response_id": rid, **truth} for rid, truth in sorted(history.comment_truth.items())])
     if any(planted_switches.ON[i] for i in ("E1", "E2", "E3", "E4")):
         write_json(answer_key / "incidents.json", incidents.answer_key_rows(events.incidents, history.incident_hits))
     write_json(DATA_DIR / "impressions.json", impressions)

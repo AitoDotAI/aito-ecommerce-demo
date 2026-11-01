@@ -30,6 +30,7 @@ const COLUMNS: Record<TabId, { key: string; label: string; right?: boolean; form
   nps: [
     { key: "month", label: "Month" }, { key: "score", label: "Score (0–10)", right: true }, { key: "group", label: "Group" },
     { key: "also_wrote_a_negative_review", label: "Also wrote a negative review", format: (v) => (v ? "yes" : "no") },
+    { key: "comment", label: "Comment", format: (v) => (v === null ? "" : String(v)) },
   ],
 };
 

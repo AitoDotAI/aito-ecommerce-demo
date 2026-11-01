@@ -75,6 +75,6 @@ def _reviews(rows: dict, reviews: list[dict], answers, selected: set[str], keep)
 
 
 def _nps(rows: dict, reviews, answers: list[dict], selected: set[str], keep) -> list[dict]:
-    listed = [{"month": a["month"], "score": a["score"], "group": a["nps_group"], "also_wrote_a_negative_review": a["wrote_negative_review"]}
+    listed = [{"month": a["month"], "score": a["score"], "group": a["nps_group"], "also_wrote_a_negative_review": a["wrote_negative_review"], "comment": a.get("comment")}
               for a in answers if a["customer"] in selected and keep(a["month"])]
     return sorted(listed, key=lambda r: (r["month"], r["score"]), reverse=True)
