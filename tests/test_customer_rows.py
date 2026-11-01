@@ -74,3 +74,44 @@ def test_an_unknown_tab_or_a_page_beyond_the_limit_is_refused(rows):
         page_of(rows, REVIEWS, ANSWERS, ["C1"], "customers", None, 0, 10)
     with pytest.raises(ValueError, match="limit"):
         page_of(rows, REVIEWS, ANSWERS, ["C1"], "orders", None, 0, PAGE_MAX + 1)
+
+
+def api():
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+
+    from src.customer_profile_routes import router
+
+    app = FastAPI()
+    app.include_router(router)
+    return TestClient(app)
+
+
+def test_the_route_serves_each_tab_for_a_selection_and_no_row_names_a_customer():
+    for tab in ("sales", "orders", "feedback"):
+        body = api().get("/api/customer-profiles/rows", params={"tab": tab, "c": "pets:dog", "limit": 100}).json()
+
+        assert body["too_small"] is False and body["total"] > 0 and len(body["rows"]) == min(100, body["total"])
+        assert "CUST-" not in json.dumps(body), f"{tab}: a row names a customer"
+
+
+def test_the_route_keeps_a_period_to_its_months_and_pages_through_the_rows():
+    everything = api().get("/api/customer-profiles/rows", params={"tab": "orders", "c": "pets:dog", "limit": 1}).json()["total"]
+    period = api().get("/api/customer-profiles/rows", params={"tab": "orders", "c": "pets:dog", "start": "2026-01", "end": "2026-03", "limit": 100}).json()
+
+    assert 0 < period["total"] < everything
+    assert {r["month"] for r in period["rows"]} <= {"2026-01", "2026-02", "2026-03"}
+    second = api().get("/api/customer-profiles/rows", params={"tab": "orders", "c": "pets:dog", "limit": 5, "offset": 5}).json()
+    first = api().get("/api/customer-profiles/rows", params={"tab": "orders", "c": "pets:dog", "limit": 10}).json()
+    assert second["rows"] == first["rows"][5:10]
+
+
+def test_a_selection_under_the_minimum_size_shows_no_rows():
+    body = api().get("/api/customer-profiles/rows", params={"tab": "orders", "c": ["pets:aquarium", "price:premium-leaning", "offer:mostly", "rating:above-average ratings"]}).json()
+
+    assert body["too_small"] is True and body["rows"] == [] and body["customers"] < body["min_customers"]
+
+
+def test_a_bad_tab_or_period_or_page_is_a_400():
+    for params in ({"tab": "customers"}, {"start": "2026-03", "end": "2026-01"}, {"limit": 1000}, {"start": "2026-01"}):
+        assert api().get("/api/customer-profiles/rows", params=params).status_code == 400, params

@@ -81,7 +81,7 @@ def test_the_stored_profiles_are_what_the_fixtures_build_today():
     assert summary == json.loads((PROFILES / "summary.json").read_text())
     assert per_customer == json.loads((PROFILES / "customers.json").read_text())
     assert per_customer_facts == json.loads((PROFILES / "facts.json").read_text())
-    assert stored_rows(set(per_customer_facts)) == json.loads((PROFILES / "rows.json").read_text())
+    assert stored_rows(set(per_customer_facts["customers"])) == json.loads((PROFILES / "rows.json").read_text())
 
 
 def test_the_facts_hold_exactly_the_consenting_customers_and_no_name():

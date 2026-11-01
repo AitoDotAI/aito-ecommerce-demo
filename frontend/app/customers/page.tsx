@@ -8,6 +8,7 @@ import { customersPanel } from "@/lib/panel-content";
 import { useSetUrlParams, useUrlState } from "@/lib/use-url-state";
 import { usePagePanel } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
+import RawData from "@/components/customers/RawData";
 import SegmentAcquisition from "@/components/customers/SegmentAcquisition";
 import SegmentFeedback from "@/components/customers/SegmentFeedback";
 import SegmentKpis from "@/components/customers/SegmentKpis";
@@ -86,6 +87,7 @@ function CustomersView() {
         </div>
       )}
       {summary && (
+        <>
         <div className="workbench customers-workbench">
           <SegmentTree summary={summary} view={view} conditions={conditions} kpi={kpi as KpiId} onKpi={setKpi}
                        onToggle={(c) => select(toggle(conditions, c))} onClear={() => select([])} />
@@ -130,6 +132,8 @@ function CustomersView() {
           )}
           {!view && !error && <div className="card segment-details" style={{ height: 240, background: "var(--border-light)" }} />}
         </div>
+        {view && !view.too_small && <RawData conditions={view.conditions} from={from} to={to} />}
+        </>
       )}
     </div>
   );

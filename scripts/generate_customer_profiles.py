@@ -21,7 +21,7 @@ def main() -> None:
     (OUT / "summary.json").write_text(json.dumps(summary, indent=1, ensure_ascii=False) + "\n")
     (OUT / "customers.json").write_text(json.dumps(traits, separators=(",", ":"), ensure_ascii=False) + "\n")
     (OUT / "facts.json").write_text(json.dumps(facts, separators=(",", ":"), ensure_ascii=False) + "\n")
-    (OUT / "rows.json").write_text(json.dumps(stored_rows(set(facts)), separators=(",", ":"), ensure_ascii=False) + "\n")
+    (OUT / "rows.json").write_text(json.dumps(stored_rows(set(facts["customers"])), separators=(",", ":"), ensure_ascii=False) + "\n")
     print(f"Wrote data/customer_profiles/: {summary['profiled']} of {summary['customers']} customers profiled, release {summary['release']}")
 
 
