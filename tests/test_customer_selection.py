@@ -7,7 +7,7 @@ from src.customer_selection_data import actions, answers, facts, reviews, summar
 
 
 def customer(**own) -> dict:
-    return {"offer": "mostly", "price": "mixed", "rating": "average ratings", "margin": "high-margin", "status": "active", "pets": ["dog"], "diets": [],
+    return {"offer": "mostly", "price": "mixed", "rating": "average ratings", "margin": "high-margin", "status": "active", "pets": ["dog"], "diets": [], "region": "helsinki", "categories": [], "brands": [],
             "churned": False, "total_spent_eur": 10.0, "net_revenue_eur": 10.0, "gross_profit_eur": 3.0, "gross_profit_12m_eur": 3.0,
             "profit_eur": 3.0, "funnel": [4, 3, 2, 1], "first": None, "months": {}, "nps": [],
             "bought": {"dog": {"categories": [], "brands": [], "products": []}, "cat": {"categories": [], "brands": [], "products": []}}, **own}
@@ -229,3 +229,41 @@ def test_the_segment_route_adds_a_period_against_the_one_before_and_says_when_th
     assert early["previous"] is None and "No previous period" in early["reason"]
     assert api.get("/api/customer-profiles/segment", params={"start": months[-6]}).status_code == 400
     assert api.get("/api/customer-profiles/segment", params={"start": months[-1], "end": months[0]}).status_code == 400
+
+
+def test_a_customer_can_be_selected_by_region_by_a_category_and_by_a_brand_they_bought():
+    from src.customer_selection import FILTERS
+
+    assert FILTERS == ("region", "category", "brand")
+    customers = {"A": customer(region="helsinki", categories=["dry-food", "toys"], brands=["Acana"]),
+                 "B": customer(region="turku", categories=["dry-food"], brands=["Orijen", "Acana"]),
+                 "C": customer(region="helsinki", categories=["litter"], brands=["Orijen"])}
+
+    assert members(customers, parse(["region:helsinki"])) == ["A", "C"]
+    assert members(customers, parse(["category:dry-food"])) == ["A", "B"]
+    assert members(customers, parse(["brand:Orijen", "region:helsinki"])) == ["C"]
+    assert members(customers, parse(["category:dry-food", "category:toys"])) == ["A"], "a customer buys in several categories"
+
+
+def test_a_customer_lives_in_one_region_so_two_are_refused_but_two_categories_are_not():
+    with pytest.raises(ValueError, match="one value of each"):
+        parse(["region:helsinki", "region:turku"])
+    assert parse(["category:toys", "category:dry-food"]) == [("category", "dry-food"), ("category", "toys")]
+
+
+def test_the_tree_offers_every_region_category_and_brand_with_the_figures_it_would_give():
+    customers = {"A": customer(region="helsinki", categories=["dry-food"], brands=["Acana"]),
+                 "B": customer(region="turku", categories=["dry-food", "toys"], brands=["Orijen"])}
+
+    counts = {condition: kpis["customers"] for condition, kpis in options(customers, parse([])).items()}
+
+    assert counts["region:helsinki"] == 1 and counts["region:turku"] == 1
+    assert counts["category:dry-food"] == 2 and counts["category:toys"] == 1
+    assert counts["brand:Acana"] == 1
+
+
+def test_the_stored_facts_say_where_each_customer_lives_and_what_they_bought(release):
+    one = next(iter(release[0]["customers"].values()))
+
+    assert one["region"] in {"helsinki", "espoo", "tampere", "turku", "oulu", "jyvaskyla"}
+    assert one["categories"] == sorted(set(one["categories"])) and one["brands"] == sorted(set(one["brands"]))

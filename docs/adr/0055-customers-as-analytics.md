@@ -3,6 +3,7 @@
 **Status:** Proposed (2026-11-01, Antti's requests; plan accepted: "Makes sense")
 **Slice 1 built (the time range):** a period of months is picked on the trend (drag, or the last 3, 6 or 12 months) and the page sets the selected customers in it against the period just before it and as long (Antti, 2026-11-01: a week against the week before, a month against the month before), beside everyone's change (`src/customer_period.py`, `?start=&end=` on the segment route, `from` and `to` in the page URL). The tabs under it still describe the whole history; narrowing them to the period is not built. Months only, since the data has no dates.
 **Slice 2 built (the raw data widget):** full width under both panes, tabs Sales by product, Orders and Feedback (reviews and NPS answers), paged, for the selected customers and only the months of the chosen period (`src/customer_rows.py`, `data/customer_profiles/rows.json`, `/api/customer-profiles/rows`). A row never names a customer; a selection under the minimum size shows no rows. The category and location tabs are not built.
+**Slice 3 built (the left-side tabs):** the tree has tabs Behaviour (as before), Products (a category or a brand the customer bought, any pet) and Where (the region); a condition of any tab is a condition of the same selection and combines with the period and the raw rows. The facts gain `region`, `categories` and `brands` per customer. Narrowing the detail tabs to the period is not built.
 **Date:** 2026-11-01
 **Deciders:** Antti
 
