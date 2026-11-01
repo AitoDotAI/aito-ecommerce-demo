@@ -73,14 +73,17 @@ def check_evaluation(body: dict) -> str:
     return f"{len(models)} models, {len(MUST_PASS)} held to pass all pass"
 
 
+OVERVIEW_HEADLINES = ["Patterns", "Product", "Supply", "Retention", "Evidence"]
+
+
 def check_overview(body: dict) -> str:
-    """Overview (ADR 0041): a headline whose view has no snapshot is shown as
-    unavailable rather than left out, so require every one to be available."""
+    """Overview (ADR 0041): a view with no answer yet is left out of the headlines
+    (the server logs which), so require one for every owner view."""
     headlines = _list(body, "headlines", "overview")
-    missing = [h["view"] for h in headlines if h.get("available") is not True]
-    assert not missing, f"overview headlines unavailable: {missing}"
+    missing = [v for v in OVERVIEW_HEADLINES if v not in {h.get("view") for h in headlines}]
+    assert not missing, f"overview has no headline for {missing}"
     _list(body, "households", "overview")
-    return f"{len(headlines)} headlines available"
+    return f"{len(headlines)} headlines present"
 
 
 def shape_only(*keys: str, what: str) -> Callable[[dict], str]:
