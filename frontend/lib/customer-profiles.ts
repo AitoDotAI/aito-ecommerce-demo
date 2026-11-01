@@ -88,7 +88,7 @@ export interface CustomerProfile {
 
 export const TRAIT_TITLE: Record<string, string> = {
   all: "Everyone", offer: "Buys on offer", price: "Prices they pick", rating: "Ratings they pick", margin: "Margin of their baskets", status: "Customer status",
-  pets: "Pets they buy for", diets: "Diets their pet's food is made for", review: "Wrote a review about", nps: "Answered the NPS survey as", region: "Region", category: "Bought from the category", brand: "Bought the brand",
+  pets: "Pets they buy for", diets: "Diets their pet's food is made for", review: "Wrote a review about", stars: "Wrote a review with", nps: "Answered the NPS survey as", region: "Region", category: "Bought from the category", brand: "Bought the brand",
 };
 
 /** The topic tree: the groups in order, and the variables in each. */
