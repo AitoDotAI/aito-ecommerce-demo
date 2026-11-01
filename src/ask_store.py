@@ -40,6 +40,7 @@ class ToolCall:
     input: dict
     ms: int
     error: str | None = None
+    result: object = None     # what the model was given back; a stored conversation shows it
 
 
 @dataclass(frozen=True)
@@ -90,7 +91,8 @@ def _run(by_name: dict[str, AskTool], block, calls: list[ToolCall]) -> dict:
         error = None
         content = json.dumps(result, default=str)
     except Exception as exc:    # noqa: BLE001: the model may recover (a wrong SKU); the person sees the error
+        result = None
         error = f"{type(exc).__name__}: {exc}"
         content = error
-    calls.append(ToolCall(block.name, block.input, int((time.perf_counter() - started) * 1000), error))
+    calls.append(ToolCall(block.name, block.input, int((time.perf_counter() - started) * 1000), error, result))
     return {"type": "tool_result", "tool_use_id": block.id, "content": content, **({"is_error": True} if error else {})}

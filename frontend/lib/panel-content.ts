@@ -350,7 +350,7 @@ export function shopkeeperPanel(): AitoPanelConfig {
     operation: "Shopkeeper",
     endpoints: ["_predict", "_estimate"],
     description:
-      `The agent reads the same ranked actions Retention shows: a ` +
+      `The rule reads the same ranked actions Retention shows: a ` +
       `<code style="color:var(--aito-teal);">_predict purchased_30d</code> per customer and candidate action. ` +
       `The gate then judges each on three things the step shows: the lift over no action, how many past rows match ` +
       `the customer's exact situation, and the kind of action. The thresholds are the store's.`,

@@ -88,3 +88,12 @@ def test_a_model_that_never_stops_calling_tools_is_stopped():
 
     with pytest.raises(AskError, match=f"{MAX_TURNS} rounds"):
         ask("Q?", _tools(lambda args: {}), client)
+
+
+def test_a_tool_call_keeps_the_result_the_model_saw_so_a_stored_conversation_can_show_it():
+    client = Scripted(_turn([_tool_use("offer_what_if", {"sku": "S"})], "tool_use"),
+                      _turn([NS(type="text", text="Put S on offer.")], "end_turn"))
+
+    answer = ask("What next?", _tools(lambda args: {"sku": args["sku"], "thin": False}), client)
+
+    assert answer.tool_calls[0].result == {"sku": "S", "thin": False}

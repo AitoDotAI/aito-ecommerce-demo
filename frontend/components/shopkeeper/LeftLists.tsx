@@ -1,13 +1,13 @@
 "use client";
 
 import { fmtEur } from "@/lib/api";
-import type { BoardItem, Conversation, Routine } from "@/lib/shopkeeper";
+import type { BoardItem, ConversationSummary, Routine, RunSummary } from "@/lib/shopkeeper";
 
 const ICON: Record<BoardItem["kind"], string> = { evidence: "🧪", approval: "✋", root_cause: "🔎" };
 
-/** The view's three lists, top to bottom: the Board, the routines, the past conversations. */
-export default function LeftLists({ board, routines, conversations, selected, onSelect }: {
-  board: BoardItem[]; routines: Routine[]; conversations: Conversation[];
+/** The view's lists, top to bottom: the Board, the routines (each a rule or an agent), the runs, the stored conversations. */
+export default function LeftLists({ board, routines, runs, conversations, selected, onSelect }: {
+  board: BoardItem[]; routines: Routine[]; runs: RunSummary[]; conversations: ConversationSummary[];
   selected: string; onSelect: (id: string) => void;
 }) {
   const pick = (id: string | null) => id && onSelect(id);
@@ -27,18 +27,18 @@ export default function LeftLists({ board, routines, conversations, selected, on
         ))}
       </div>
       <div className="card" style={{ marginBottom: 12 }}>
-        <div className="card-title">Agents and routines</div>
+        <div className="card-title">Routines</div>
         {routines.map((r) => (
           <button key={r.id} className="btn btn-ghost" disabled={!r.latest_run} onClick={() => pick(r.latest_run)}
             title={r.does} style={{ display: "block", width: "100%", textAlign: "left", marginBottom: 6, whiteSpace: "normal", opacity: r.built ? 1 : 0.55 }}>
-            <span>{r.name}</span>
+            <span>{r.name} <KindBadge routine={r} /></span>
             <span className="card-sub" style={{ display: "block" }}>{r.built ? r.schedule : "Not built yet"}</span>
           </button>
         ))}
       </div>
-      <div className="card">
-        <div className="card-title">Past conversations</div>
-        {conversations.map((c) => (
+      <div className="card" style={{ marginBottom: 12 }}>
+        <div className="card-title">Runs</div>
+        {runs.map((c) => (
           <button key={c.id} className="btn btn-ghost" onClick={() => onSelect(c.id)}
             style={{ display: "block", width: "100%", textAlign: "left", whiteSpace: "normal",
               borderColor: selected === c.id ? "var(--aito-teal)" : undefined }}>
@@ -49,6 +49,33 @@ export default function LeftLists({ board, routines, conversations, selected, on
           </button>
         ))}
       </div>
+      <div className="card">
+        <div className="card-title">Past conversations</div>
+        {conversations.length === 0 && (
+          <div className="card-sub">None stored yet. <code>./do record-conversation &quot;question&quot;</code> stores one from a server where Ask is on.</div>
+        )}
+        {conversations.map((c) => (
+          <button key={c.id} className="btn btn-ghost" onClick={() => onSelect(c.id)}
+            style={{ display: "block", width: "100%", textAlign: "left", whiteSpace: "normal", marginBottom: 6,
+              borderColor: selected === c.id ? "var(--aito-teal)" : undefined }}>
+            <span>{c.question}</span>
+            <span className="card-sub" style={{ display: "block" }}>
+              {c.asked_at.slice(0, 10)} · {c.tool_calls} tool calls · {c.tokens.toLocaleString("en-GB")} tokens
+            </span>
+          </button>
+        ))}
+      </div>
     </div>
+  );
+}
+
+/** Whether a routine is decided by a calculation or by a model (ADR 0054); the reason is the tooltip. */
+export function KindBadge({ routine }: { routine: Routine }) {
+  const rule = routine.kind === "rule";
+  return (
+    <span title={routine.why} style={{ fontSize: 11, fontWeight: 600, padding: "1px 6px", borderRadius: 8,
+      border: `1px solid ${rule ? "var(--border)" : "var(--aito-teal)"}`, color: rule ? "var(--text-muted)" : "var(--aito-teal)" }}>
+      {rule ? "Rule" : "Agent"}
+    </span>
   );
 }

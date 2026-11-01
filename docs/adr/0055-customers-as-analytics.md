@@ -1,0 +1,40 @@
+# ADR 0055: Customers as generic analytics: a time range, more narrowing tabs, and the raw rows
+
+**Status:** Proposed (2026-11-01, Antti's requests; plan accepted: "Makes sense")
+**Date:** 2026-11-01
+**Deciders:** Antti
+
+## Context
+
+The Customers view (ADR 0053) selects a segment from traits and describes it. Three extensions were asked for:
+
+1. Select a time period in the trend graph, so the analysis narrows to it. The recent period is analysed like a segment and set against the rest, to spot a trend.
+2. More narrowing tabs on the left, for product categories and locations, turning the view into a generic analytics view.
+3. A data widget at the bottom with tabs (sales by product, individual feedback, ...) showing the raw rows of the selection.
+
+## What the data allows
+
+Orders carry a month, not a date (`orders.json`: `month`), and so do customer-months. Last 7 and 30 days cannot be
+analysed from this data. Months and 6 months can. Regions and postcode areas exist on customers; categories on order lines.
+
+## Decision
+
+- **Time range.** The trend graph takes a range of months (drag, or the presets "last 3 months", "last 6 months", "last 12 months"). The range is a second selection beside the traits: the page analyses the selected customers *in that range* and sets them against the same customers outside it (the "recent against before" idea of ADR 0053, with a chosen range). The range is in the URL. Days need dated orders: a fixtures change, its own ADR.
+- **Narrowing tabs.** The left side gets tabs: **Behaviour** (the current tree), **Products** (category, brand, pet type) and **Where** (region). A condition from any tab is a condition of the same selection; counts are made from the per-customer facts as now (more facts per customer: the categories bought and region).
+- **Raw data.** A widget below the details with tabs: **Sales by product**, **Orders**, **Feedback** (the individual answers and reviews), each listing the rows of the selection, paged, without names or contact details.
+- **Privacy** is unchanged: profiled and consenting customers only; groups under the minimum size answer with their size.
+
+## Aito usage
+
+None new: counts come from the stored facts (ADR 0053). Raw rows come from the stored fixtures.
+
+## Acceptance criteria
+
+- [ ] A user can pick a range in the trend; the header, figures and tabs describe the selected customers in that range, and the page says what it is set against.
+- [ ] Categories, brands and regions can be ticked like the traits, and combine with them and with the range.
+- [ ] The raw-data widget shows sales by product, orders and individual feedback for the selection, and a selection under the minimum size shows no rows.
+- [ ] No names, emails or contact details appear in any widget.
+
+## Out of scope
+
+Days or weeks (needs dated fixtures); editing data; export of the rows.

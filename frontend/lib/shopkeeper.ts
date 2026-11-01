@@ -30,15 +30,27 @@ export interface BoardItem {
 
 export interface Routine {
   id: string; name: string; schedule: string; built: boolean; does: string; latest_run: string | null;
+  kind: "rule" | "agent"; why: string;
 }
 
-export interface Conversation {
+export interface RunSummary {
   id: string; title: string; as_of_month: string; stale: boolean; tally: Record<Outcome, Tally>;
+}
+
+/** A stored conversation with Ask the store, as the list shows it (ADR 0054). */
+export interface ConversationSummary {
+  id: string; asked_at: string; question: string; model: string; tool_calls: number; tokens: number; release: string;
+}
+
+export interface ConversationToolCall { name: string; input: Record<string, unknown>; ms: number; error: string | null; result: unknown }
+
+export interface Conversation extends Omit<ConversationSummary, "tool_calls" | "tokens"> {
+  answer: string; input_tokens: number; output_tokens: number; tool_calls: ConversationToolCall[];
 }
 
 export interface ShopkeeperOverview {
   simulated: boolean; release: string; settings: SettingsView;
-  board: BoardItem[]; routines: Routine[]; conversations: Conversation[];
+  board: BoardItem[]; routines: Routine[]; runs: RunSummary[]; conversations: ConversationSummary[];
 }
 
 export interface RunStep {
