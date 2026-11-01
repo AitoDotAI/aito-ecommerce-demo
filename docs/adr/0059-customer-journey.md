@@ -50,3 +50,22 @@ None: counted from the stored events, like the rest of the view.
 
 The path of a single customer (a timeline of one person's events). It shows one person's history, reverses the removal of the customer lookup and needs Antti's decision; if
 allowed it would be anonymous ("customer 1,204"), consenting customers only. Days or weeks (the data is monthly). Causes: this shows what came before leaving, not what caused it.
+
+## Idea, not built: the path around an event (Antti, 2026-11-01)
+
+Like the journey of a web visit in an analytics tool: pick an event, and see what came before it and what came after. Antti's sketch, for the event *gave a detractor NPS answer*:
+
+| Previous event | → Detractor feedback → | Next event | Then |
+|---|---|---|---|
+| 15 % bought a 1-star product | | 25 % did not visit | – |
+| 10 % bought a 2-star product | | 20 % an action was sent | 8 % visited |
+| 9 % a late delivery | | 15 % visited, no purchase | |
+
+What the data would allow, as far as the stored tables go:
+- **Events per customer and month** exist for visits, orders, returns, late or damaged deliveries, reviews (with their stars), NPS answers (with their scores) and the shop's actions. `customer_months` has a row for every month a customer is observed, so "did not visit" (visits = 0) and "visited, did not order" (visits > 0, purchases = 0) are events too.
+- **"Previous", "next" and "then" are months**: the month before the event, the month after, and the month after that among those who had a given next event. The order of events *within* a month is not known, so an event in the same month as the anchor cannot be called before or after it.
+- **Each row can be set against how the segment usually looks** (the share of all its customer-months with that event) and called a pattern with the same words as elsewhere (Pattern?: Yes, Likely, Possibly, Unlikely).
+- "Bought a 1-star product" is not in the stored events: a customer's own review stars are, a product's average rating at the time of purchase would have to be added.
+- A path is an aggregate like the rest of the view: no customer is shown, and an event with fewer than 30 occurrences gets its count and no path.
+
+The "months around the last order" grid above is the special case with *the last order* as the anchor. Not scheduled; written down on Antti's word, 2026-11-01.
