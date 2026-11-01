@@ -184,6 +184,7 @@ Quality
   verify-demo       End-to-end demo-path check
   verify-mobile     Mobile sweep of every view: screenshots, then an overflow check that fails on any overflow
   test-urls         Build the static export; check every view's link opens as shared
+  planted-incidents Generate fixtures with the planted incidents (ADR 0056) and one null each, 3 seeds; judge them (~1 h)
   planted-effects   Generate planted and null fixtures for 3 seeds; judge every planted effect (~30 min)
   pooled-effects    The impression-side checks over 10 seeds, pooled with intervals (~45 min)
   check             Pre-merge gate (test + fmt + aito-check)
@@ -765,6 +766,13 @@ cmd_test_urls() {
   node scripts/deeplink-test.cjs
 }
 
+cmd_planted_incidents() {
+  # ADR 0056: the four planted incidents against nulls, pooled over three seeds. Writes
+  # docs/verification/planted-incidents-data.md; leaves data/ alone.
+  cd "$SCRIPT_DIR"
+  PYTHONPATH=. uv run python scripts/planted_incidents.py
+}
+
 cmd_planted_effects() {
   # Each planted effect (ADRs 0032, 0033, 0038-0040) against the same seed's
   # generation without it, for three seeds in parallel. Writes
@@ -965,6 +973,7 @@ case "${1:-help}" in
   verify-demo)       cmd_verify_demo ;;
   verify-mobile)     cmd_verify_mobile ;;
   test-urls)         cmd_test_urls ;;
+  planted-incidents) cmd_planted_incidents ;;
   planted-effects)   cmd_planted_effects ;;
   pooled-effects)    cmd_pooled_effects ;;
   check)             cmd_check ;;

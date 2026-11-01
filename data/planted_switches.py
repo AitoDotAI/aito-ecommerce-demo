@@ -57,6 +57,12 @@ ON: dict[str, bool] = {
     "A3": True,        # a voucher brings back the lapsed
     "A4": True,        # an ad reaches those who consented to tracking
     "A5": True,        # an apology works on an open issue
+    # ADR 0056: planted incidents. Off in the committed fixtures until the release that carries them is cut;
+    # `scripts/planted_effects.py` generates the planted side with them on.
+    "E1": False,       # a batch recall: a bad batch, the line pulled, a trust dip
+    "E2": False,       # a quiet bad batch of a cat wet-food line, with customers who switch away
+    "E3": False,       # the same for a dog treat line
+    "E4": False,       # the same for a small-animal dry food line
     # ADR 0044: what a person declares.
     "C1": True,        # declared interests follow the hidden traits
 }

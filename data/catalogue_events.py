@@ -24,6 +24,7 @@ import random
 import re
 from dataclasses import dataclass
 
+from data import incidents as incidents_module
 from data import listing as listing_plan
 from data.planted_switches import stream
 from data.shop_levers import review_count_band
@@ -69,9 +70,10 @@ class CatalogueEvents:
     # ((pet_type, category), month) → the products launched in it in the last 3 months.
     recent_launches: dict[tuple[tuple[str, str], str], frozenset[str]]
     listing: listing_plan.Listing | None = None     # ADR 0049: list price policy, pictures, description, ads
+    incidents: tuple = ()                           # ADR 0056: planted incidents (data/incidents.py)
 
     def on_sale(self, sku: str, month: str) -> bool:
-        return month >= self.launch_month.get(sku, "")
+        return month >= self.launch_month.get(sku, "") and not incidents_module.withdrawn(self.incidents, sku, month)
 
     def is_new(self, sku: str, month: str) -> bool:
         launch = self.launch_month.get(sku)
@@ -115,7 +117,8 @@ class CatalogueEvents:
         besides price: a new product pulls (P2), and takes share from its rivals."""
         if self.is_new(sku, month):
             return LAUNCH_PICK_FACTOR
-        return RIVAL_PICK_FACTOR if self.rival_launched(sku, month) else 1.0
+        base = RIVAL_PICK_FACTOR if self.rival_launched(sku, month) else 1.0
+        return base * incidents_module.pick_factor(self.incidents, sku, month)
 
 
 def plan_catalogue_events(rng: random.Random, products: list, months: list[str],
