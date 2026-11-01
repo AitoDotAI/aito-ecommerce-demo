@@ -11,6 +11,7 @@ import ErrorState from "@/components/shell/ErrorState";
 import RawData from "@/components/customers/RawData";
 import SegmentAcquisition from "@/components/customers/SegmentAcquisition";
 import SegmentFeedback from "@/components/customers/SegmentFeedback";
+import SegmentJourney from "@/components/customers/SegmentJourney";
 import SegmentKpis from "@/components/customers/SegmentKpis";
 import SegmentHeader from "@/components/customers/SegmentHeader";
 import SegmentHighlights from "@/components/customers/SegmentHighlights";
@@ -23,7 +24,7 @@ import SegmentTrend from "@/components/customers/SegmentTrend";
 
 const TABS = [
   { id: "highlights", label: "Highlights" }, { id: "figures", label: "Figures" }, { id: "preferences", label: "Preferences" }, { id: "others", label: "Other segments" },
-  { id: "channels", label: "Channels" }, { id: "actions", label: "Actions" }, { id: "feedback", label: "Feedback" },
+  { id: "journey", label: "Journey" }, { id: "channels", label: "Channels" }, { id: "actions", label: "Actions" }, { id: "feedback", label: "Feedback" },
 ];
 
 /**
@@ -111,6 +112,7 @@ function CustomersView() {
               </div>
               {tab === "preferences" ? <SegmentRelated view={view} /> :
                tab === "others" ? <SegmentOthers view={view} kpi={kpi as KpiId} onTick={(c) => select(toggle(conditions, c))} /> :
+               tab === "journey" ? <SegmentJourney conditions={view.conditions} /> :
                tab === "channels" ? <SegmentAcquisition view={view} /> :
                tab === "actions" ? <SegmentResponse summary={summary} view={view} /> :
                tab === "feedback" ? <SegmentFeedback view={view} /> :

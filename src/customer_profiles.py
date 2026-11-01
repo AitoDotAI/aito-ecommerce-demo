@@ -9,6 +9,7 @@ from pathlib import Path
 from src.customer_profit import distribution, gross_margin, margin_bands, profit_by_customer
 from src.customer_acquisition import first_sessions
 from src.customer_facts import build_facts, monthly_orders
+from src.customer_journey import build_events
 from src.customer_rows import build_rows
 from src.customer_funnel import funnel_by_segment
 from src.customer_preference_ranking import label, line_features, scores
@@ -30,6 +31,12 @@ def stored_rows(profiled_ids: set[str]) -> dict:
     products = {p["sku"]: p for p in _load("products")}
     states = {s["product_state_id"]: s for s in _load("product_states")}
     return build_rows(profiled_ids, _load("orders"), _load("order_lines"), states, products)
+
+
+def stored_events(profiled_ids: set[str]) -> dict:
+    """The events by customer and month behind the journey view (`customer_journey.py`), for the profiled customers."""
+    return build_events(profiled_ids, _load("orders"), _load("order_lines"), _load("reviews"), _load("nps_responses"),
+                        _load("customer_actions"), _load("customer_months"))
 
 
 LAST_12_MONTHS_FROM = "2025-05"       # the window Retention calls the last 12 months (ending 2026-04)

@@ -30,6 +30,11 @@ def rows() -> dict:
 
 
 @lru_cache(maxsize=1)
+def journeys() -> dict:
+    return _read(PROFILES / "journeys.json")
+
+
+@lru_cache(maxsize=1)
 def actions() -> list[dict]:
     return _read(DATA / "customer_actions.json")
 
