@@ -1,0 +1,226 @@
+{
+  "id": "20261101135104-what-should-i-reorder-this-week-and-what",
+  "asked_at": "2026-11-01T13:51:04Z",
+  "release": "release3b",
+  "question": "What should I reorder this week, and what is overstocked?",
+  "answer": "**Reorder now (Supply view, May 2026).** 83 SKUs need ordering: 839 units, \u20ac11,831.55 in cost, with \u20ac13,199.84 of revenue at risk. The most urgent are:\n- **Hill's Science Plan Turkey Cat Food 4kg:** 2 in stock, 74 sold recently. Order 87 units for \u20ac1,625.16.\n- **Eukanuba Senior Lamb Dog Food 12kg:** out of stock. Order 13 for \u20ac807.30.\n- **PetNord Scratching Post:** 6 in stock, 45 sold recently. Order 42 for \u20ac497.70.\n- **Whiskas Indoor Salmon Cat Food 12kg:** 1 in stock. Order 12 for \u20ac697.44.\n- **Eukanuba Grain Free Salmon Dog Food 12kg:** out of stock. Order 11 for \u20ac655.82.\n\n**Overstocked (Supply view).** 79 SKUs tie up \u20ac27,565.93 of capital. Only 15 of them have been scored. Of those, 1 is a \"hold\" and 14 \"won't clear\". None is recommended for markdown. The biggest are:\n- **Acana Lamb Dog Food 12kg:** 26 excess units, \u20ac1,626.30 tied up.\n- **Royal Canin Salmon Dog Food 12kg:** 29 excess units, \u20ac1,616.17.\n- **Hill's Grain Free Tuna Cat Food 15kg:** 24 excess units, \u20ac1,479.60.\n- **Bowls (PetNord extra large, Trixie large):** about 100 excess units each, roughly \u20ac1,100 each.\n\n**Proposed actions**\n1. Place the orders for the out-of-stock and nearly out-of-stock items first, starting with the Hill's Turkey 4kg and the Eukanuba dog foods (Supply view, `/supply/`).\n2. Pause reordering of the overstocked foods and bowls (Supply view, `/supply/`).\n3. Don't mark down yet. The tool shows no markdown that would clear stock, so review the 14 \"won't clear\" items individually (Supply view, `/supply/`).",
+  "tool_calls": [
+    {
+      "name": "reorder_queue",
+      "input": {},
+      "ms": 133,
+      "error": null,
+      "result": {
+        "month": "2026-05",
+        "summary": {
+          "skus": 83,
+          "units": 839,
+          "order_cost_eur": 11831.55,
+          "revenue_at_risk_eur": 13199.84
+        },
+        "top": [
+          {
+            "sku": "SKU-PT-0287",
+            "name": "Hill's Science Plan Turkey Cat Food 4kg",
+            "current_stock": 2,
+            "reorder_point": 30,
+            "recent_units": 74,
+            "order_qty": 87,
+            "order_cost_eur": 1625.16,
+            "revenue_at_risk_eur": 1868.4
+          },
+          {
+            "sku": "SKU-PT-0044",
+            "name": "Eukanuba Senior Lamb Dog Food 12kg",
+            "current_stock": 0,
+            "reorder_point": 3,
+            "recent_units": 11,
+            "order_qty": 13,
+            "order_cost_eur": 807.3,
+            "revenue_at_risk_eur": 948.75
+          },
+          {
+            "sku": "SKU-PT-0494",
+            "name": "PetNord Scratching Post",
+            "current_stock": 6,
+            "reorder_point": 14,
+            "recent_units": 45,
+            "order_qty": 42,
+            "order_cost_eur": 497.7,
+            "revenue_at_risk_eur": 840.45
+          },
+          {
+            "sku": "SKU-PT-0338",
+            "name": "Whiskas Indoor Salmon Cat Food 12kg",
+            "current_stock": 1,
+            "reorder_point": 3,
+            "recent_units": 11,
+            "order_qty": 12,
+            "order_cost_eur": 697.44,
+            "revenue_at_risk_eur": 807.2
+          },
+          {
+            "sku": "SKU-PT-0049",
+            "name": "Eukanuba Grain Free Salmon Dog Food 12kg",
+            "current_stock": 0,
+            "reorder_point": 3,
+            "recent_units": 9,
+            "order_qty": 11,
+            "order_cost_eur": 655.82,
+            "revenue_at_risk_eur": 745.2
+          },
+          {
+            "sku": "SKU-PT-0320",
+            "name": "Orijen Sensitive Salmon Cat Food 15kg",
+            "current_stock": 0,
+            "reorder_point": 3,
+            "recent_units": 7,
+            "order_qty": 9,
+            "order_cost_eur": 662.58,
+            "revenue_at_risk_eur": 715.75
+          },
+          {
+            "sku": "SKU-PT-0208",
+            "name": "PetNord Bowl, medium",
+            "current_stock": 7,
+            "reorder_point": 14,
+            "recent_units": 34,
+            "order_qty": 30,
+            "order_cost_eur": 354.0,
+            "revenue_at_risk_eur": 579.42
+          },
+          {
+            "sku": "SKU-PT-0484",
+            "name": "PetNord Clumping Clay Cat Litter 7kg, lavender scent",
+            "current_stock": 2,
+            "reorder_point": 8,
+            "recent_units": 43,
+            "order_qty": 44,
+            "order_cost_eur": 331.32,
+            "revenue_at_risk_eur": 441.16
+          },
+          {
+            "sku": "SKU-PT-0530",
+            "name": "PetNord Rabbit Pellets Food 12kg",
+            "current_stock": 0,
+            "reorder_point": 3,
+            "recent_units": 5,
+            "order_qty": 7,
+            "order_cost_eur": 434.07,
+            "revenue_at_risk_eur": 430.6
+          },
+          {
+            "sku": "SKU-PT-0282",
+            "name": "Hill's Science Plan Indoor Chicken Cat Food 15kg, light recipe",
+            "current_stock": 0,
+            "reorder_point": 3,
+            "recent_units": 4,
+            "order_qty": 6,
+            "order_cost_eur": 453.96,
+            "revenue_at_risk_eur": 420.32
+          }
+        ],
+        "listed": 10,
+        "of": 83,
+        "view": "/supply/"
+      }
+    },
+    {
+      "name": "overstock",
+      "input": {},
+      "ms": 0,
+      "error": null,
+      "result": {
+        "summary": {
+          "skus": 79,
+          "tied_capital_eur": 27565.93,
+          "scored": 15,
+          "hold": 1,
+          "markdown": 0,
+          "wont_clear": 14,
+          "markdown_units_cleared": 0,
+          "markdown_capital_freed_eur": 0,
+          "markdown_margin_given_up_eur": 0
+        },
+        "top": [
+          {
+            "sku": "SKU-PT-0061",
+            "name": "Acana Lamb Dog Food 12kg",
+            "current_stock": 32,
+            "excess_units": 26,
+            "tied_capital_eur": 1626.3
+          },
+          {
+            "sku": "SKU-PT-0012",
+            "name": "Royal Canin Salmon Dog Food 12kg",
+            "current_stock": 35,
+            "excess_units": 29,
+            "tied_capital_eur": 1616.17
+          },
+          {
+            "sku": "SKU-PT-0277",
+            "name": "Hill's Science Plan Grain Free Tuna Cat Food 15kg",
+            "current_stock": 30,
+            "excess_units": 24,
+            "tied_capital_eur": 1479.6
+          },
+          {
+            "sku": "SKU-PT-0267",
+            "name": "Royal Canin Turkey Cat Food 12kg",
+            "current_stock": 33,
+            "excess_units": 27,
+            "tied_capital_eur": 1377.0
+          },
+          {
+            "sku": "SKU-PT-0039",
+            "name": "Hill's Science Plan Grain Free Turkey Dog Food 12kg",
+            "current_stock": 28,
+            "excess_units": 22,
+            "tied_capital_eur": 1222.76
+          },
+          {
+            "sku": "SKU-PT-0069",
+            "name": "Acana Sensitive Salmon Dog Food 12kg",
+            "current_stock": 31,
+            "excess_units": 25,
+            "tied_capital_eur": 1202.5
+          },
+          {
+            "sku": "SKU-PT-0495",
+            "name": "PetNord Bowl, extra large",
+            "current_stock": 133,
+            "excess_units": 105,
+            "tied_capital_eur": 1100.4
+          },
+          {
+            "sku": "SKU-PT-0501",
+            "name": "Trixie Bowl, large",
+            "current_stock": 134,
+            "excess_units": 102,
+            "tied_capital_eur": 1091.4
+          },
+          {
+            "sku": "SKU-PT-0334",
+            "name": "Orijen Indoor Whitefish Cat Food 15kg",
+            "current_stock": 21,
+            "excess_units": 15,
+            "tied_capital_eur": 979.95
+          },
+          {
+            "sku": "SKU-PT-0209",
+            "name": "PetNord Bowl, large",
+            "current_stock": 135,
+            "excess_units": 103,
+            "tied_capital_eur": 966.14
+          }
+        ],
+        "listed": 10,
+        "of": 15,
+        "view": "/supply/"
+      }
+    }
+  ],
+  "model": "claude-sonnet-5-5",
+  "input_tokens": 4880,
+  "output_tokens": 768
+}

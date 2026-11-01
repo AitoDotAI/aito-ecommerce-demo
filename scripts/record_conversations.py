@@ -32,10 +32,19 @@ def main() -> None:
     missing = [name for name in ("ANTHROPIC_API_KEY", "ADMIN_TOKEN") if not os.environ.get(name)]
     if missing:
         sys.exit(f"Set {' and '.join(missing)} in the project's dotenv file: Ask is off without them.")
-    os.environ.setdefault("AITO_SKIP_STARTUP_WARMUP", "1")
+    # No AITO_SKIP_STARTUP_WARMUP here: that is for tests, and it skips the data-release check, so every data route answers 503.
+    import time
 
     from fastapi.testclient import TestClient
-    from src.app import app
+    from src.app import app, release_gate
+
+    # The app checks that the data release is loaded in a background thread; Ask answers 503 until that check has passed.
+    for _ in range(60):
+        if release_gate.status()["state"] == "ready":
+            break
+        time.sleep(1)
+    else:
+        sys.exit(f"The data release is not ready after 60 s: {release_gate.status()}")
 
     with TestClient(app) as client:
         for question in questions:
