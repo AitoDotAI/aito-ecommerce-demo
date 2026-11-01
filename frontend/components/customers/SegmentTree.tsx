@@ -17,9 +17,10 @@ export default function SegmentTree({ summary, view, conditions, kpi, onKpi, onT
   const figures = view?.options ?? {};
   const largest = Math.max(1e-9, ...Object.values(figures).map((f) => Math.abs(figureOf(kpi, f) ?? 0)));
   return (
-    <nav aria-label="Segment" style={{ position: "sticky", top: 8, display: "grid", gap: 12 }}>
-      <div className="card">
+    <nav aria-label="Segment" className="segment-nav" style={{ position: "sticky", top: 8, display: "grid", gap: 12 }}>
+      <div className="card segment-compare">
         <div className="card-title" style={{ margin: "0 0 6px" }}>Compare by</div>
+        <a href="#segment-conditions" className="segment-jump">Change the segment ↓</a>
         <div role="tablist" aria-label="Figure to compare by" style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 6 }}>
           {KPIS.map((k) => {
             const value = own ? figureOf(k.id, own) : null;
@@ -34,7 +35,7 @@ export default function SegmentTree({ summary, view, conditions, kpi, onKpi, onT
           })}
         </div>
       </div>
-      <div className="card">
+      <div className="card segment-conditions" id="segment-conditions">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8 }}>
           <div className="card-title" style={{ margin: 0 }}>Segment</div>
           {conditions.length > 0 && <button className="btn btn-ghost" style={{ padding: "2px 10px", fontSize: 12 }} onClick={onClear}>Clear</button>}
