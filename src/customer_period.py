@@ -1,57 +1,114 @@
-"""A period of months set against the rest of the shop's history, for the selected customers and for everyone (ADR 0055).
+"""A period set against the one just before it, of the same length (ADR 0055).
 
-The period is picked on the trend graph. Orders, revenue and active customers are compared as a monthly average inside the
-period against the average outside it, so a short period and a long remainder compare fairly. Profit per active customer is
-weighted by the customers active each month. NPS and churn are rolling figures: they are read in the last month of the period
-and in the month before it, and differ in points. The data is monthly, so a period is whole months.
+The period is picked on the trend graph. What it is compared with is the timeframe immediately before it and as long as it:
+a week against the week before, three months against the three before. The two timeframes are one statistical context: the
+customers who ordered in either of them. Orders, revenue and gross profit are compared per customer of that context, each
+customer against themselves, so the interval is that of the mean of the changes. NPS is read from the answers given in each
+timeframe, and churn as the share of the customers who had ordered by then that had not in the three months up to the end of it.
+The data is monthly, so a timeframe is whole months. A period with no room for a previous one is refused, not shortened.
 """
 
 from __future__ import annotations
 
 import re
+from math import sqrt
+from statistics import mean, stdev
 
-AVERAGED = ("customers", "orders", "revenue_eur")
-POINT_FIGURES = ("nps", "churn_rate")
+from src.customer_feedback import MIN_RESPONDENTS
+from src.customer_relations import share_difference
+
+MEAN_Z = 1.96                      # 95 % for a mean of per-customer changes and for NPS
+LAPSE_MONTHS = 3                   # churned: no order in the three months up to the end of the timeframe
+PER_CUSTOMER = {"orders": 0, "revenue_eur": 1, "profit_per_customer_eur": 2}      # index into a customer's [orders, revenue, gross profit]
 
 
-def period_comparison(selected: dict, everyone: dict, start: str, end: str) -> dict:
-    """`selected` and `everyone` are trends (`customer_selection._trend`); `start` and `end` are months, `end` included."""
-    months = selected["months"]
+class NoPreviousPeriod(ValueError):
+    """The period starts too early to have a previous one of the same length."""
+
+
+def previous_period(months: list[str], start: str, end: str) -> tuple[str, str]:
     for month in (start, end):
         if not re.fullmatch(r"\d{4}-(0[1-9]|1[0-2])", month) or month not in months:
             raise ValueError(f"Not a month of the data in the period: {month!r}; the data runs {months[0]} to {months[-1]}")
     first, last = months.index(start), months.index(end)
     if first > last:
         raise ValueError(f"The period starts after it ends: {start} to {end}")
-    inside = list(range(first, last + 1))
-    outside = [i for i in range(len(months)) if i not in inside]
-    if not outside:
-        raise ValueError(f"The period {start} to {end} is the whole history: nothing outside it to compare with")
-    return {"from": start, "to": end, "months": len(inside), "months_outside": len(outside),
-            "selected": _compare(selected, inside, outside, first), "all": _compare(everyone, inside, outside, first)}
+    length = last - first + 1
+    if first - length < 0:
+        raise NoPreviousPeriod(f"No previous period of {length} month{'s' if length > 1 else ''}: {start} to {end} is preceded by only {first} "
+                               f"month{'s' if first != 1 else ''} of data (it starts {months[0]})")
+    return months[first - length], months[first - 1]
 
 
-def _compare(trend: dict, inside: list[int], outside: list[int], first: int) -> dict:
-    out = {kpi: _averaged(trend[kpi], inside, outside) for kpi in AVERAGED}
-    out["profit_per_customer_eur"] = _weighted(trend, inside, outside)
-    for kpi in POINT_FIGURES:
-        now, before = trend[kpi][inside[-1]], (trend[kpi][first - 1] if first > 0 else None)
-        out[kpi] = {"inside": now, "outside": before, "change": round(now - before, 3) if now is not None and before is not None else None}
-    return out
+def compare(rows: list[dict], months: list[str], start: str, end: str) -> dict:
+    """The period `start`..`end` against the one before it, for the customers `rows` (each with `months` and `nps`, as in the stored facts)."""
+    before = previous_period(months, start, end)
+    this = set(months[months.index(start):months.index(end) + 1])
+    previous = set(months[months.index(before[0]):months.index(before[1]) + 1])
+    context = [r for r in rows if any(m in r["months"] for m in this | previous)]
+    figures = {"customers": _count(context, this, previous)}
+    for kpi, index in PER_CUSTOMER.items():
+        figures[kpi] = _per_customer(context, this, previous, index)
+    figures["nps"] = _nps(context, this, previous)
+    figures["churn_rate"] = _churn(rows, end, before[1], months)
+    return {"from": start, "to": end, "months": len(this), "previous": {"from": before[0], "to": before[1]},
+            "context_customers": len(context), "figures": figures}
 
 
-def _averaged(series: list[float], inside: list[int], outside: list[int]) -> dict:
-    inner, outer = _mean([series[i] for i in inside]), _mean([series[i] for i in outside])
-    return {"inside": inner, "outside": outer, "change": round(inner / outer - 1, 3) if outer else None}
+def _total(row: dict, within: set[str], index: int) -> float:
+    return sum(v[index] for m, v in row["months"].items() if m in within)
 
 
-def _weighted(trend: dict, inside: list[int], outside: list[int]) -> dict:
-    def level(indices: list[int]) -> float:
-        customers = sum(trend["customers"][i] for i in indices)
-        return round(sum(trend["profit_per_customer_eur"][i] * trend["customers"][i] for i in indices) / customers, 2) if customers else 0.0
-    inner, outer = level(inside), level(outside)
-    return {"inside": inner, "outside": outer, "change": round(inner / outer - 1, 3) if outer else None}
+def _count(context: list[dict], this: set[str], previous: set[str]) -> dict:
+    now, before = (sum(any(m in r["months"] for m in span) for r in context) for span in (this, previous))
+    return {"this": now, "previous": before, "change": round(now / before - 1, 3) if before else None, "margin": None, "clear": None}
 
 
-def _mean(values: list[float]) -> float:
-    return round(sum(values) / len(values), 2)
+def _per_customer(context: list[dict], this: set[str], previous: set[str], index: int) -> dict:
+    now = [_total(r, this, index) for r in context]
+    before = [_total(r, previous, index) for r in context]
+    mean_now, mean_before = mean(now), mean(before)
+    differences = [a - b for a, b in zip(now, before)]
+    margin = MEAN_Z * stdev(differences) / sqrt(len(differences)) if len(differences) > 1 else float("inf")
+    return {"this": round(mean_now, 2), "previous": round(mean_before, 2),
+            "change": round(mean_now / mean_before - 1, 3) if mean_before else None,
+            "margin": round(margin / mean_before, 3) if mean_before else None, "clear": abs(mean_now - mean_before) > margin}
+
+
+def _nps(context: list[dict], this: set[str], previous: set[str]) -> dict:
+    now, before = (_answers(context, span) for span in (this, previous))
+    if len(now) < MIN_RESPONDENTS or len(before) < MIN_RESPONDENTS:
+        return {"this": None, "previous": None, "change": None, "margin": None, "clear": None}
+    score = lambda groups: 100 * (groups.count("promoter") - groups.count("detractor")) / len(groups)
+    spread = lambda groups: 100 * sqrt(max(0.0, (groups.count("promoter") + groups.count("detractor")) / len(groups)
+                                           - ((groups.count("promoter") - groups.count("detractor")) / len(groups)) ** 2) / len(groups))
+    margin = MEAN_Z * sqrt(spread(now) ** 2 + spread(before) ** 2)
+    return {"this": round(score(now), 1), "previous": round(score(before), 1), "change": round(score(now) - score(before), 1),
+            "margin": round(margin, 1), "clear": abs(score(now) - score(before)) > margin}
+
+
+def _answers(context: list[dict], within: set[str]) -> list[str]:
+    return [group for r in context for month, group in r["nps"] if month in within]
+
+
+def _month_number(month: str) -> int:
+    year, number = month.split("-")
+    return int(year) * 12 + int(number)
+
+
+def _lapsed(rows: list[dict], month: str) -> tuple[int, int]:
+    """(customers who had ordered by `month` and not in the three months up to it, customers who had ordered by then)."""
+    now = _month_number(month)
+    ordered = [{_month_number(m) for m in r["months"]} for r in rows]
+    known = [o for o in ordered if o and min(o) <= now]
+    return sum(not any(now - LAPSE_MONTHS + 1 <= m <= now for m in o) for o in known), len(known)
+
+
+def _churn(rows: list[dict], end: str, before_end: str, months: list[str]) -> dict:
+    lapsed_now, known_now = _lapsed(rows, end)
+    lapsed_before, known_before = _lapsed(rows, before_end)
+    if not known_now or not known_before:
+        return {"this": None, "previous": None, "change": None, "margin": None, "clear": None}
+    points, margin = share_difference(lapsed_now, known_now, lapsed_before, known_before)
+    return {"this": round(lapsed_now / known_now, 3), "previous": round(lapsed_before / known_before, 3),
+            "change": round(points / 100, 3), "margin": round(margin / 100, 3), "clear": abs(points) > margin}

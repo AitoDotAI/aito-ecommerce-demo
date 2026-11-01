@@ -63,13 +63,17 @@ export default function SegmentTrend({ view, kpi, from, to, onPeriod }: {
           );
         })}
         {from && <button className="btn btn-ghost" style={{ padding: "2px 10px", fontSize: 12 }} onClick={() => onPeriod("", "")}>Whole history</button>}
-        <span className="card-sub">or drag across the graph</span>
+        <span className="card-sub">or drag across the graph; the same length just before it is the comparison (grey)</span>
       </div>
       <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} role="img" aria-label={`${spec.label} per month`} style={{ width: "100%", height: "auto", marginTop: 6, touchAction: "pan-y", cursor: "crosshair" }}
            onPointerDown={(e) => { e.currentTarget.setPointerCapture(e.pointerId); const i = monthAt(e); setDrag({ anchor: i, at: i }); }}
            onPointerMove={(e) => drag && setDrag({ ...drag, at: monthAt(e) })}
            onPointerUp={(e) => { if (drag) { const end = monthAt(e); const [a, b] = [Math.min(drag.anchor, end), Math.max(drag.anchor, end)];
              if (!(a === 0 && b === months.length - 1)) onPeriod(months[a], months[b]); setDrag(null); } }}>
+        {chosen && chosen[0] - (chosen[1] - chosen[0] + 1) >= 0 && (
+          <rect x={x(chosen[0] - (chosen[1] - chosen[0] + 1)) - 4} width={x(chosen[0]) - x(chosen[0] - (chosen[1] - chosen[0] + 1))} y={4} height={HEIGHT - 22}
+                fill="var(--text-muted)" opacity="0.12" />
+        )}
         {chosen && <rect x={x(chosen[0]) - 4} width={x(chosen[1]) - x(chosen[0]) + 8} y={4} height={HEIGHT - 22} fill="var(--aito-teal)" opacity="0.14" />}
         <line x1="10" x2={WIDTH - 10} y1={y(0)} y2={y(0)} stroke="var(--border)" />
         <path d={path(scaled)} fill="none" stroke="var(--text-muted)" strokeWidth="1.5" strokeDasharray="4 3" />

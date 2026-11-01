@@ -1,7 +1,7 @@
 # ADR 0055: Customers as generic analytics: a time range, more narrowing tabs, and the raw rows
 
 **Status:** Proposed (2026-11-01, Antti's requests; plan accepted: "Makes sense")
-**Slice 1 built (the time range):** a period of months is picked on the trend (drag, or the last 3, 6 or 12 months) and the page sets the selected customers' monthly averages in it against the rest, beside everyone's change (`src/customer_period.py`, `?start=&end=` on the segment route, `from` and `to` in the page URL). The tabs under it still describe the whole history; narrowing them to the period is not built. Months only, since the data has no dates.
+**Slice 1 built (the time range):** a period of months is picked on the trend (drag, or the last 3, 6 or 12 months) and the page sets the selected customers in it against the period just before it and as long (Antti, 2026-11-01: a week against the week before, a month against the month before), beside everyone's change (`src/customer_period.py`, `?start=&end=` on the segment route, `from` and `to` in the page URL). The tabs under it still describe the whole history; narrowing them to the period is not built. Months only, since the data has no dates.
 **Date:** 2026-11-01
 **Deciders:** Antti
 
