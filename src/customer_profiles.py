@@ -88,7 +88,7 @@ def build() -> tuple[dict, list[dict], dict]:
     facts = build_facts(traits, customers, funnel, first_sessions(list(customers.values()), _load("contexts")), bought,
                         scores(ranked_lines, profiled_ids), monthly_orders(_load("orders"), _load("order_lines"), states, {i["sku"]: i["unit_cost_eur"] for i in _load("inventory")}),
                         _load("nps_responses"),
-                        {sku: p["name"] for sku, p in products.items()})
+                        {sku: p["name"] for sku, p in products.items()}, _load("reviews"))
     summary = {"release": release, "simulated": True, **segments(traits, customers), "gross_margin": round(margin, 3), "margin_cut": margin_cut,
                "ranking_variables": [{"id": var, "label": label(var)} for var in facts["shares"]],
                "profit_distribution": distribution(profits, sorted(profiled_ids)), "definitions": definitions()}

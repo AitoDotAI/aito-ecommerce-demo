@@ -11,7 +11,7 @@ export default function SegmentFeedback({ view }: { view: SegmentView }) {
   const scale = Math.max(30, ...entry.rows.map((r) => Math.abs(r.points ?? 0)));
   return (
     <div className="card">
-      <div className="card-title">What they say</div>
+      <div className="card-title">What they say: reviews about products, and the NPS survey after an order</div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 12, margin: "6px 0 10px" }}>
         <Kpi label="Wrote reviews" value={`${Math.round((entry.reviewers / entry.customers) * 100)} %`} note={`${entry.reviews} reviews${everyone ? "" : `, all ${Math.round((all.reviewers / all.customers) * 100)} %`}`} />
         <Kpi label="Average rating" value={entry.mean_rating === null ? "–" : entry.mean_rating.toFixed(2)} note={everyone ? "stars" : `all ${all.mean_rating?.toFixed(2)}`} />

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { apiFetch, fmtEur } from "@/lib/api";
 
-const TABS = [{ id: "sales", label: "Sales by product" }, { id: "orders", label: "Orders" }, { id: "feedback", label: "Feedback" }] as const;
+const TABS = [{ id: "sales", label: "Sales by product" }, { id: "orders", label: "Orders" }, { id: "reviews", label: "Reviews" }, { id: "nps", label: "NPS answers" }] as const;
 type TabId = (typeof TABS)[number]["id"];
 const PAGE = 25;
 
@@ -12,7 +12,6 @@ type Row = Record<string, string | number | boolean | null>;
 interface Page { tab: TabId; total: number; rows: Row[]; too_small: boolean }
 
 const eur = (v: Row[string]) => fmtEur(Number(v));
-const text = (v: Row[string]) => (v === null ? "" : String(v));
 
 const COLUMNS: Record<TabId, { key: string; label: string; right?: boolean; format?: (v: Row[string]) => string }[]> = {
   sales: [
@@ -24,9 +23,13 @@ const COLUMNS: Record<TabId, { key: string; label: string; right?: boolean; form
     { key: "order", label: "Order" }, { key: "month", label: "Month" }, { key: "total_eur", label: "Total", right: true, format: eur },
     { key: "lines", label: "Lines", right: true }, { key: "returned_lines", label: "Returned lines", right: true },
   ],
-  feedback: [
-    { key: "month", label: "Month" }, { key: "kind", label: "Kind" }, { key: "product", label: "Product", format: text },
-    { key: "rating", label: "Stars / score", right: true }, { key: "topic", label: "Topic" }, { key: "text", label: "Text", format: text },
+  reviews: [
+    { key: "month", label: "Month" }, { key: "product", label: "Product" }, { key: "stars", label: "Stars", right: true }, { key: "topic", label: "About" },
+    { key: "replied", label: "Replied", format: (v) => (v ? "yes" : "no") }, { key: "text", label: "Review" },
+  ],
+  nps: [
+    { key: "month", label: "Month" }, { key: "score", label: "Score (0–10)", right: true }, { key: "group", label: "Group" },
+    { key: "also_wrote_a_negative_review", label: "Also wrote a negative review", format: (v) => (v ? "yes" : "no") },
   ],
 };
 

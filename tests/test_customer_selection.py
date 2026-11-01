@@ -7,7 +7,7 @@ from src.customer_selection_data import actions, answers, facts, reviews, summar
 
 
 def customer(**own) -> dict:
-    return {"offer": "mostly", "price": "mixed", "rating": "average ratings", "margin": "high-margin", "status": "active", "pets": ["dog"], "diets": [], "region": "helsinki", "categories": [], "brands": [],
+    return {"offer": "mostly", "price": "mixed", "rating": "average ratings", "margin": "high-margin", "status": "active", "pets": ["dog"], "diets": [], "region": "helsinki", "categories": [], "brands": [], "review_topics": [], "nps_groups": [],
             "churned": False, "total_spent_eur": 10.0, "net_revenue_eur": 10.0, "gross_profit_eur": 3.0, "gross_profit_12m_eur": 3.0,
             "profit_eur": 3.0, "funnel": [4, 3, 2, 1], "first": None, "months": {}, "nps": [],
             "bought": {"dog": {"categories": [], "brands": [], "products": []}, "cat": {"categories": [], "brands": [], "products": []}}, **own}
@@ -234,7 +234,7 @@ def test_the_segment_route_adds_a_period_against_the_one_before_and_says_when_th
 def test_a_customer_can_be_selected_by_region_by_a_category_and_by_a_brand_they_bought():
     from src.customer_selection import FILTERS
 
-    assert FILTERS == ("region", "category", "brand")
+    assert FILTERS == ("region", "category", "brand", "review", "nps")
     customers = {"A": customer(region="helsinki", categories=["dry-food", "toys"], brands=["Acana"]),
                  "B": customer(region="turku", categories=["dry-food"], brands=["Orijen", "Acana"]),
                  "C": customer(region="helsinki", categories=["litter"], brands=["Orijen"])}
@@ -267,3 +267,23 @@ def test_the_stored_facts_say_where_each_customer_lives_and_what_they_bought(rel
 
     assert one["region"] in {"helsinki", "espoo", "tampere", "turku", "oulu", "jyvaskyla"}
     assert one["categories"] == sorted(set(one["categories"])) and one["brands"] == sorted(set(one["brands"]))
+
+
+def test_a_customer_can_be_selected_by_what_their_reviews_were_about_and_how_they_answered_the_nps_survey():
+    customers = {"A": customer(review_topics=["quality", "praise"], nps_groups=["detractor"]),
+                 "B": customer(review_topics=["praise"], nps_groups=["promoter", "passive"]),
+                 "C": customer(review_topics=[], nps_groups=[])}
+
+    assert members(customers, parse(["review:quality"])) == ["A"]
+    assert members(customers, parse(["review:praise"])) == ["A", "B"]
+    assert members(customers, parse(["nps:promoter"])) == ["B"]
+    assert members(customers, parse(["review:praise", "nps:detractor"])) == ["A"]
+    assert {"review:quality", "review:praise", "nps:detractor", "nps:promoter", "nps:passive"} <= set(options(customers, parse([])))
+
+
+def test_the_stored_facts_say_what_each_customers_reviews_were_about_and_how_they_answered_the_survey(release):
+    topics = {t for c in release[0]["customers"].values() for t in c["review_topics"]}
+    groups = {g for c in release[0]["customers"].values() for g in c["nps_groups"]}
+
+    assert topics == {"praise", "question", "quality", "shipping", "fit"} and groups == {"promoter", "passive", "detractor"}
+    assert all(c["nps_groups"] == sorted({g for _, g in c["nps"]}) for c in release[0]["customers"].values())
