@@ -148,3 +148,16 @@ def test_the_held_out_calibration_figure_says_which_release_it_was_measured_on()
     """The 6 % came from release 2 (117,026 impressions). Release 3b has fewer, so the figure must say it is not 3b's."""
     assert says("docs/demo-script.md", "within 6 % of what shoppers then did")
     assert says("docs/demo-script.md", "measured on release 2 data and has not been re-run on release 3b")
+
+
+# ── The Supply page's claim about the forecast against the simple rule ──────────
+
+
+def test_the_supply_card_names_the_baseline_the_forecast_test_uses_and_says_what_the_snapshot_shows():
+    """The card once said the forecast 'tied' a last-three-months rule; the test compares ranges against last month's."""
+    evaluation = json.loads((ROOT / "data" / "precomputed" / "v2-master" / "demand.json").read_text(encoding="utf-8"))["data"]["evaluation"]
+
+    assert evaluation["accuracy"] <= evaluation["naive_accuracy"], "the card says Aito did not beat the simple rule"
+    assert says("frontend/app/supply/page.tsx", 'against "the same range as last month"')
+    assert says("frontend/app/supply/page.tsx", "It did not beat it")
+    assert not says("frontend/app/supply/page.tsx", "It tied")
