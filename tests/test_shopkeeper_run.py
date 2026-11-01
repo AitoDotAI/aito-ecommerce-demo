@@ -48,10 +48,10 @@ def test_the_headline_at_the_recommended_settings_is_these_numbers(run):
     """Literal values, so a change in how a step is counted or summed fails here and is not recomputed away.
     Regenerate the run and read the new numbers into this test and into demo-script 5b together."""
     assert tally(decide_steps(run, GateSettings())) == {
-        ACT: {"steps": 8, "expected_net_eur": 167.98},
-        SUGGEST: {"steps": 2, "expected_net_eur": 21.88},
-        NEVER_AUTO: {"steps": 2, "expected_net_eur": 29.61},
-        QUIET: {"steps": 8, "expected_net_eur": 0.0},
+        ACT: {"steps": 4, "expected_net_eur": 66.7},
+        SUGGEST: {"steps": 2, "expected_net_eur": 14.66},
+        NEVER_AUTO: {"steps": 3, "expected_net_eur": 32.91},
+        QUIET: {"steps": 11, "expected_net_eur": 0.0},
     }
 
 

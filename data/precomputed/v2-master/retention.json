@@ -4,172 +4,23 @@
     "learned_until": "2026-01",
     "decision": {
       "customers": 20,
-      "spend_12m_eur": 8220.09,
+      "spend_12m_eur": 6498.27,
       "offers": 20,
-      "offers_expected_return_eur": 202.76,
+      "offers_expected_return_eur": 160.89,
       "email_cost_eur": 0.5,
       "best_actions": {
-        "Personalised ad": 12,
-        "€10 voucher": 3,
-        "Apology and €5 credit": 2,
-        "10 % discount": 2,
-        "Email": 1
+        "€10 voucher": 6,
+        "Apology and €5 credit": 3,
+        "Personalised ad": 11
       },
-      "best_actions_net_eur": 375.31
+      "best_actions_net_eur": 284.2
     },
     "counts": {
-      "active": 2047,
-      "likely_to_leave": 61,
-      "churned": 952
+      "active": 2034,
+      "likely_to_leave": 54,
+      "churned": 965
     },
     "at_risk": [
-      {
-        "customer_id": "CUST-01899",
-        "name": "Anneli Sinkkonen",
-        "pets": "small_animal",
-        "pets_declared": true,
-        "dog_size": null,
-        "region": "tampere",
-        "tenure_months": 8,
-        "last_order_month": "2026-04",
-        "latest_rating": null,
-        "risk": "likely",
-        "risk_p": 0.6401,
-        "spend_12m_eur": 803.6,
-        "why_explanation": {
-          "base_p": 0.1343,
-          "predicted_value": "true",
-          "lifts": [
-            {
-              "lift": 1.952,
-              "propositions": [
-                {
-                  "field": "spent_eur",
-                  "value": "100.95"
-                }
-              ],
-              "highlight": {
-                "field": "spent_eur",
-                "marked_text": "«100.95»"
-              }
-            },
-            {
-              "lift": 1.839,
-              "propositions": [
-                {
-                  "field": "visits",
-                  "value": "5"
-                }
-              ],
-              "highlight": {
-                "field": "visits",
-                "marked_text": "«5»"
-              }
-            },
-            {
-              "lift": 1.386,
-              "propositions": [
-                {
-                  "field": "pets",
-                  "value": "small_animal"
-                }
-              ],
-              "highlight": {
-                "field": "pets",
-                "marked_text": "«small_animal»"
-              }
-            }
-          ],
-          "final_p": 0.6401
-        },
-        "offer": {
-          "sku": "SKU-PT-0530",
-          "name": "PetNord Rabbit Pellets Food 12kg",
-          "category": "small_animal/dry-food",
-          "price_eur": 86.12,
-          "response_p": 0.183,
-          "order_value_eur": 72.32,
-          "expected_return_eur": 12.74
-        },
-        "actions": {
-          "context": {
-            "recency_bucket": "0-90d",
-            "spend_band": "high",
-            "offer_buyer": "sometimes",
-            "open_issue": "none",
-            "email_history": "never_sent",
-            "tracking_consent": "yes"
-          },
-          "order_value_eur": 121.58,
-          "options": [
-            {
-              "action": "ad",
-              "label": "Personalised ad",
-              "visit_p": 0.818,
-              "purchase_p": 0.374,
-              "purchase_lift_p": 0.183,
-              "net_vs_none_eur": 21.07,
-              "cost_eur": 1.2
-            },
-            {
-              "action": "email",
-              "label": "Email",
-              "visit_p": 0.698,
-              "purchase_p": 0.263,
-              "purchase_lift_p": 0.072,
-              "net_vs_none_eur": 8.28,
-              "cost_eur": 0.5
-            },
-            {
-              "action": "voucher",
-              "label": "€10 voucher",
-              "visit_p": 0.696,
-              "purchase_p": 0.246,
-              "purchase_lift_p": 0.056,
-              "net_vs_none_eur": 4.32,
-              "cost_eur": 2.46
-            },
-            {
-              "action": "discount",
-              "label": "10 % discount",
-              "visit_p": 0.574,
-              "purchase_p": 0.235,
-              "purchase_lift_p": 0.044,
-              "net_vs_none_eur": 2.52,
-              "cost_eur": 2.85
-            },
-            {
-              "action": "none",
-              "label": "No action",
-              "visit_p": 0.599,
-              "purchase_p": 0.191,
-              "purchase_lift_p": 0.0,
-              "net_vs_none_eur": 0.0,
-              "cost_eur": 0.0
-            },
-            {
-              "action": "apology",
-              "label": "Apology and €5 credit",
-              "visit_p": 0.637,
-              "purchase_p": 0.195,
-              "purchase_lift_p": 0.005,
-              "net_vs_none_eur": -0.89,
-              "cost_eur": 1.48
-            },
-            {
-              "action": "voucher",
-              "label": "€5 voucher",
-              "visit_p": 0.604,
-              "purchase_p": 0.161,
-              "purchase_lift_p": -0.029,
-              "net_vs_none_eur": -4.35,
-              "cost_eur": 0.81
-            }
-          ],
-          "best": "Personalised ad"
-        },
-        "tells": []
-      },
       {
         "customer_id": "CUST-01608",
         "name": "Suvi Mäkelä",
@@ -181,60 +32,27 @@
         "last_order_month": "2026-02",
         "latest_rating": 2,
         "risk": "likely",
-        "risk_p": 0.6675,
+        "risk_p": 0.697,
         "spend_12m_eur": 616.43,
         "why_explanation": {
-          "base_p": 0.1343,
+          "base_p": 0.1367,
           "predicted_value": "true",
           "lifts": [
             {
-              "lift": 1.952,
+              "lift": 4.353,
               "propositions": [
-                {
-                  "field": "spent_eur",
-                  "value": "115.92"
-                },
                 {
                   "field": "visits",
                   "value": "3"
                 }
               ],
               "highlight": {
-                "field": "spent_eur",
-                "marked_text": "«115.92»"
-              },
-              "joint_lift": 1.952,
-              "members": [
-                {
-                  "lift": 1.0,
-                  "propositions": [
-                    {
-                      "field": "visits",
-                      "value": "3"
-                    }
-                  ],
-                  "highlight": {
-                    "field": "visits",
-                    "marked_text": "«3»"
-                  }
-                },
-                {
-                  "lift": 1.0,
-                  "propositions": [
-                    {
-                      "field": "spent_eur",
-                      "value": "115.92"
-                    }
-                  ],
-                  "highlight": {
-                    "field": "spent_eur",
-                    "marked_text": "«115.92»"
-                  }
-                }
-              ]
+                "field": "visits",
+                "marked_text": "«3»"
+              }
             },
             {
-              "lift": 1.425,
+              "lift": 1.432,
               "propositions": [
                 {
                   "field": "tenure_months_at_month",
@@ -245,35 +63,18 @@
                 "field": "tenure_months_at_month",
                 "marked_text": "«5»"
               }
-            },
-            {
-              "lift": 1.304,
-              "propositions": [
-                {
-                  "field": "latest_rating",
-                  "value": "2"
-                },
-                {
-                  "field": "latest_sentiment",
-                  "value": "negative"
-                }
-              ],
-              "highlight": {
-                "field": "latest_rating",
-                "marked_text": "«2»"
-              }
             }
           ],
-          "final_p": 0.6675
+          "final_p": 0.697
         },
         "offer": {
-          "sku": "SKU-PT-0530",
-          "name": "PetNord Rabbit Pellets Food 12kg",
+          "sku": "SKU-PT-0533",
+          "name": "PetNord Sensitive Guinea Pig Mix Food 7kg",
           "category": "small_animal/dry-food",
-          "price_eur": 86.12,
-          "response_p": 0.171,
-          "order_value_eur": 64.58,
-          "expected_return_eur": 10.55
+          "price_eur": 46.04,
+          "response_p": 0.324,
+          "order_value_eur": 53.7,
+          "expected_return_eur": 16.88
         },
         "actions": {
           "context": {
@@ -281,52 +82,34 @@
             "spend_band": "high",
             "offer_buyer": "rarely",
             "open_issue": "none",
-            "email_history": "ignored",
+            "email_history": "responded",
             "tracking_consent": "no"
           },
-          "order_value_eur": 121.58,
+          "order_value_eur": 120.12,
           "options": [
             {
               "action": "voucher",
               "label": "€10 voucher",
-              "visit_p": 0.671,
-              "purchase_p": 0.297,
-              "purchase_lift_p": 0.153,
-              "net_vs_none_eur": 15.65,
-              "cost_eur": 2.97
+              "visit_p": 0.737,
+              "purchase_p": 0.355,
+              "purchase_lift_p": 0.123,
+              "net_vs_none_eur": 11.21,
+              "cost_eur": 3.55
             },
             {
               "action": "apology",
               "label": "Apology and €5 credit",
-              "visit_p": 0.637,
-              "purchase_p": 0.25,
-              "purchase_lift_p": 0.106,
-              "net_vs_none_eur": 11.18,
-              "cost_eur": 1.75
-            },
-            {
-              "action": "voucher",
-              "label": "€5 voucher",
-              "visit_p": 0.576,
-              "purchase_p": 0.199,
-              "purchase_lift_p": 0.056,
-              "net_vs_none_eur": 5.76,
-              "cost_eur": 0.99
-            },
-            {
-              "action": "discount",
-              "label": "10 % discount",
-              "visit_p": 0.574,
-              "purchase_p": 0.19,
-              "purchase_lift_p": 0.046,
-              "net_vs_none_eur": 3.3,
-              "cost_eur": 2.3
+              "visit_p": 0.734,
+              "purchase_p": 0.292,
+              "purchase_lift_p": 0.06,
+              "net_vs_none_eur": 5.24,
+              "cost_eur": 1.96
             },
             {
               "action": "none",
               "label": "No action",
-              "visit_p": 0.571,
-              "purchase_p": 0.143,
+              "visit_p": 0.723,
+              "purchase_p": 0.232,
               "purchase_lift_p": 0.0,
               "net_vs_none_eur": 0.0,
               "cost_eur": 0.0
@@ -334,11 +117,29 @@
             {
               "action": "email",
               "label": "Email",
-              "visit_p": 0.659,
-              "purchase_p": 0.127,
-              "purchase_lift_p": -0.016,
-              "net_vs_none_eur": -2.47,
+              "visit_p": 0.836,
+              "purchase_p": 0.23,
+              "purchase_lift_p": -0.002,
+              "net_vs_none_eur": -0.74,
               "cost_eur": 0.5
+            },
+            {
+              "action": "voucher",
+              "label": "€5 voucher",
+              "visit_p": 0.662,
+              "purchase_p": 0.226,
+              "purchase_lift_p": -0.006,
+              "net_vs_none_eur": -1.88,
+              "cost_eur": 1.13
+            },
+            {
+              "action": "discount",
+              "label": "10 % discount",
+              "visit_p": 0.565,
+              "purchase_p": 0.159,
+              "purchase_lift_p": -0.073,
+              "net_vs_none_eur": -10.69,
+              "cost_eur": 1.91
             }
           ],
           "best": "€10 voucher"
@@ -357,16 +158,16 @@
         "region": "tampere",
         "tenure_months": 8,
         "last_order_month": "2026-04",
-        "latest_rating": 4,
-        "risk": "likely",
-        "risk_p": 0.6809,
-        "spend_12m_eur": 584.06,
+        "latest_rating": null,
+        "risk": "very likely",
+        "risk_p": 0.8436,
+        "spend_12m_eur": 483.53,
         "why_explanation": {
-          "base_p": 0.1343,
+          "base_p": 0.1367,
           "predicted_value": "true",
           "lifts": [
             {
-              "lift": 5.042,
+              "lift": 4.353,
               "propositions": [
                 {
                   "field": "visits",
@@ -377,98 +178,112 @@
                 "field": "visits",
                 "marked_text": "«3»"
               }
+            },
+            {
+              "lift": 1.94,
+              "propositions": [
+                {
+                  "field": "spent_eur",
+                  "value": "95.3"
+                }
+              ],
+              "highlight": {
+                "field": "spent_eur",
+                "marked_text": "«95.3»"
+              }
             }
           ],
-          "final_p": 0.6809
+          "final_p": 0.8436
         },
         "offer": {
           "sku": "SKU-PT-0609",
           "name": "JBL Filter Pads, single",
           "category": "aquarium/aquarium",
           "price_eur": 26.57,
-          "response_p": 0.267,
-          "order_value_eur": 21.89,
-          "expected_return_eur": 5.34
+          "response_p": 0.177,
+          "order_value_eur": 29.16,
+          "expected_return_eur": 4.67
         },
         "actions": {
           "context": {
             "recency_bucket": "0-90d",
-            "spend_band": "high",
-            "offer_buyer": "sometimes",
+            "spend_band": "mid",
+            "offer_buyer": "rarely",
             "open_issue": "low_rating",
-            "email_history": "ignored",
+            "email_history": "never_sent",
             "tracking_consent": "yes"
           },
-          "order_value_eur": 121.58,
+          "order_value_eur": 56.83,
           "options": [
             {
               "action": "apology",
               "label": "Apology and €5 credit",
-              "visit_p": 0.918,
-              "purchase_p": 0.61,
-              "purchase_lift_p": 0.406,
-              "net_vs_none_eur": 45.79,
-              "cost_eur": 3.55
+              "visit_p": 0.881,
+              "purchase_p": 0.483,
+              "purchase_lift_p": 0.283,
+              "net_vs_none_eur": 13.17,
+              "cost_eur": 2.91
             },
             {
               "action": "ad",
               "label": "Personalised ad",
-              "visit_p": 0.858,
-              "purchase_p": 0.334,
-              "purchase_lift_p": 0.129,
-              "net_vs_none_eur": 14.5,
+              "visit_p": 0.841,
+              "purchase_p": 0.292,
+              "purchase_lift_p": 0.093,
+              "net_vs_none_eur": 4.07,
               "cost_eur": 1.2
-            },
-            {
-              "action": "email",
-              "label": "Email",
-              "visit_p": 0.739,
-              "purchase_p": 0.276,
-              "purchase_lift_p": 0.072,
-              "net_vs_none_eur": 8.25,
-              "cost_eur": 0.5
-            },
-            {
-              "action": "discount",
-              "label": "10 % discount",
-              "visit_p": 0.679,
-              "purchase_p": 0.26,
-              "purchase_lift_p": 0.056,
-              "net_vs_none_eur": 3.62,
-              "cost_eur": 3.16
-            },
-            {
-              "action": "voucher",
-              "label": "€10 voucher",
-              "visit_p": 0.638,
-              "purchase_p": 0.253,
-              "purchase_lift_p": 0.048,
-              "net_vs_none_eur": 3.35,
-              "cost_eur": 2.53
             },
             {
               "action": "none",
               "label": "No action",
-              "visit_p": 0.645,
-              "purchase_p": 0.204,
+              "visit_p": 0.65,
+              "purchase_p": 0.2,
               "purchase_lift_p": 0.0,
               "net_vs_none_eur": 0.0,
               "cost_eur": 0.0
             },
             {
               "action": "voucher",
+              "label": "€10 voucher",
+              "visit_p": 0.578,
+              "purchase_p": 0.221,
+              "purchase_lift_p": 0.021,
+              "net_vs_none_eur": -1.01,
+              "cost_eur": 2.21
+            },
+            {
+              "action": "email",
+              "label": "Email",
+              "visit_p": 0.658,
+              "purchase_p": 0.174,
+              "purchase_lift_p": -0.026,
+              "net_vs_none_eur": -1.95,
+              "cost_eur": 0.5
+            },
+            {
+              "action": "voucher",
               "label": "€5 voucher",
-              "visit_p": 0.557,
-              "purchase_p": 0.176,
-              "purchase_lift_p": -0.029,
-              "net_vs_none_eur": -4.39,
-              "cost_eur": 0.88
+              "visit_p": 0.517,
+              "purchase_p": 0.138,
+              "purchase_lift_p": -0.062,
+              "net_vs_none_eur": -4.21,
+              "cost_eur": 0.69
+            },
+            {
+              "action": "discount",
+              "label": "10 % discount",
+              "visit_p": 0.623,
+              "purchase_p": 0.11,
+              "purchase_lift_p": -0.09,
+              "net_vs_none_eur": -5.71,
+              "cost_eur": 0.63
             }
           ],
           "best": "Apology and €5 credit"
         },
         "tells": [
-          "Answered the NPS survey as a detractor (0–6)"
+          "Answered the NPS survey as a detractor (0–6)",
+          "Wrote a 1–2 star review"
         ]
       },
       {
@@ -482,14 +297,14 @@
         "last_order_month": "2026-03",
         "latest_rating": null,
         "risk": "very likely",
-        "risk_p": 0.8607,
+        "risk_p": 0.8622,
         "spend_12m_eur": 420.27,
         "why_explanation": {
-          "base_p": 0.1343,
+          "base_p": 0.1367,
           "predicted_value": "true",
           "lifts": [
             {
-              "lift": 5.949,
+              "lift": 5.85,
               "propositions": [
                 {
                   "field": "visits",
@@ -502,7 +317,7 @@
               }
             },
             {
-              "lift": 1.425,
+              "lift": 1.432,
               "propositions": [
                 {
                   "field": "tenure_months_at_month",
@@ -515,16 +330,16 @@
               }
             }
           ],
-          "final_p": 0.8607
+          "final_p": 0.8622
         },
         "offer": {
-          "sku": "SKU-PT-0530",
-          "name": "PetNord Rabbit Pellets Food 12kg",
+          "sku": "SKU-PT-0535",
+          "name": "PetNord Guinea Pig Mix Food 15kg",
           "category": "small_animal/dry-food",
-          "price_eur": 86.12,
-          "response_p": 0.121,
-          "order_value_eur": 64.58,
-          "expected_return_eur": 7.29
+          "price_eur": 105.37,
+          "response_p": 0.287,
+          "order_value_eur": 31.04,
+          "expected_return_eur": 8.42
         },
         "actions": {
           "context": {
@@ -532,64 +347,64 @@
             "spend_band": "high",
             "offer_buyer": "mostly",
             "open_issue": "low_rating",
-            "email_history": "ignored",
+            "email_history": "responded",
             "tracking_consent": "no"
           },
-          "order_value_eur": 121.58,
+          "order_value_eur": 120.12,
           "options": [
             {
               "action": "apology",
               "label": "Apology and €5 credit",
-              "visit_p": 0.907,
-              "purchase_p": 0.571,
-              "purchase_lift_p": 0.362,
-              "net_vs_none_eur": 40.71,
-              "cost_eur": 3.35
-            },
-            {
-              "action": "discount",
-              "label": "10 % discount",
-              "visit_p": 0.679,
-              "purchase_p": 0.346,
-              "purchase_lift_p": 0.138,
-              "net_vs_none_eur": 12.55,
-              "cost_eur": 4.21
+              "visit_p": 0.889,
+              "purchase_p": 0.662,
+              "purchase_lift_p": 0.28,
+              "net_vs_none_eur": 29.84,
+              "cost_eur": 3.81
             },
             {
               "action": "email",
               "label": "Email",
-              "visit_p": 0.729,
-              "purchase_p": 0.272,
-              "purchase_lift_p": 0.064,
-              "net_vs_none_eur": 7.23,
+              "visit_p": 0.847,
+              "purchase_p": 0.457,
+              "purchase_lift_p": 0.075,
+              "net_vs_none_eur": 8.56,
               "cost_eur": 0.5
-            },
-            {
-              "action": "voucher",
-              "label": "€10 voucher",
-              "visit_p": 0.63,
-              "purchase_p": 0.267,
-              "purchase_lift_p": 0.059,
-              "net_vs_none_eur": 4.51,
-              "cost_eur": 2.67
             },
             {
               "action": "none",
               "label": "No action",
-              "visit_p": 0.602,
-              "purchase_p": 0.208,
+              "visit_p": 0.751,
+              "purchase_p": 0.382,
               "purchase_lift_p": 0.0,
               "net_vs_none_eur": 0.0,
               "cost_eur": 0.0
             },
             {
               "action": "voucher",
+              "label": "€10 voucher",
+              "visit_p": 0.693,
+              "purchase_p": 0.376,
+              "purchase_lift_p": -0.006,
+              "net_vs_none_eur": -4.47,
+              "cost_eur": 3.76
+            },
+            {
+              "action": "discount",
+              "label": "10 % discount",
+              "visit_p": 0.643,
+              "purchase_p": 0.328,
+              "purchase_lift_p": -0.054,
+              "net_vs_none_eur": -10.38,
+              "cost_eur": 3.94
+            },
+            {
+              "action": "voucher",
               "label": "€5 voucher",
-              "visit_p": 0.555,
-              "purchase_p": 0.198,
-              "purchase_lift_p": -0.011,
-              "net_vs_none_eur": -2.27,
-              "cost_eur": 0.99
+              "visit_p": 0.621,
+              "purchase_p": 0.264,
+              "purchase_lift_p": -0.117,
+              "net_vs_none_eur": -15.41,
+              "cost_eur": 1.32
             }
           ],
           "best": "Apology and €5 credit"
@@ -598,265 +413,6 @@
           "Answered the NPS survey as a detractor (0–6)",
           "Wrote a 1–2 star review"
         ]
-      },
-      {
-        "customer_id": "CUST-02104",
-        "name": "Antero Saarinen",
-        "pets": "small_animal",
-        "pets_declared": false,
-        "dog_size": null,
-        "region": "tampere",
-        "tenure_months": 3,
-        "last_order_month": "2026-04",
-        "latest_rating": null,
-        "risk": "likely",
-        "risk_p": 0.5457,
-        "spend_12m_eur": 629.2,
-        "why_explanation": {
-          "base_p": 0.1343,
-          "predicted_value": "true",
-          "lifts": [
-            {
-              "lift": 1.952,
-              "propositions": [
-                {
-                  "field": "spent_eur",
-                  "value": "210.74"
-                }
-              ],
-              "highlight": {
-                "field": "spent_eur",
-                "marked_text": "«210.74»"
-              }
-            },
-            {
-              "lift": 1.839,
-              "propositions": [
-                {
-                  "field": "visits",
-                  "value": "5"
-                }
-              ],
-              "highlight": {
-                "field": "visits",
-                "marked_text": "«5»"
-              }
-            }
-          ],
-          "final_p": 0.5457
-        },
-        "offer": {
-          "sku": "SKU-PT-0530",
-          "name": "PetNord Rabbit Pellets Food 12kg",
-          "category": "small_animal/dry-food",
-          "price_eur": 86.12,
-          "response_p": 0.183,
-          "order_value_eur": 72.32,
-          "expected_return_eur": 12.74
-        },
-        "actions": {
-          "context": {
-            "recency_bucket": "0-90d",
-            "spend_band": "high",
-            "offer_buyer": "sometimes",
-            "open_issue": "none",
-            "email_history": "never_sent",
-            "tracking_consent": "yes"
-          },
-          "order_value_eur": 121.58,
-          "options": [
-            {
-              "action": "ad",
-              "label": "Personalised ad",
-              "visit_p": 0.818,
-              "purchase_p": 0.374,
-              "purchase_lift_p": 0.183,
-              "net_vs_none_eur": 21.07,
-              "cost_eur": 1.2
-            },
-            {
-              "action": "email",
-              "label": "Email",
-              "visit_p": 0.698,
-              "purchase_p": 0.263,
-              "purchase_lift_p": 0.072,
-              "net_vs_none_eur": 8.28,
-              "cost_eur": 0.5
-            },
-            {
-              "action": "voucher",
-              "label": "€10 voucher",
-              "visit_p": 0.696,
-              "purchase_p": 0.246,
-              "purchase_lift_p": 0.056,
-              "net_vs_none_eur": 4.32,
-              "cost_eur": 2.46
-            },
-            {
-              "action": "discount",
-              "label": "10 % discount",
-              "visit_p": 0.574,
-              "purchase_p": 0.235,
-              "purchase_lift_p": 0.044,
-              "net_vs_none_eur": 2.52,
-              "cost_eur": 2.85
-            },
-            {
-              "action": "none",
-              "label": "No action",
-              "visit_p": 0.599,
-              "purchase_p": 0.191,
-              "purchase_lift_p": 0.0,
-              "net_vs_none_eur": 0.0,
-              "cost_eur": 0.0
-            },
-            {
-              "action": "apology",
-              "label": "Apology and €5 credit",
-              "visit_p": 0.637,
-              "purchase_p": 0.195,
-              "purchase_lift_p": 0.005,
-              "net_vs_none_eur": -0.89,
-              "cost_eur": 1.48
-            },
-            {
-              "action": "voucher",
-              "label": "€5 voucher",
-              "visit_p": 0.604,
-              "purchase_p": 0.161,
-              "purchase_lift_p": -0.029,
-              "net_vs_none_eur": -4.35,
-              "cost_eur": 0.81
-            }
-          ],
-          "best": "Personalised ad"
-        },
-        "tells": []
-      },
-      {
-        "customer_id": "CUST-00293",
-        "name": "Suvi Jokinen",
-        "pets": "small_animal",
-        "pets_declared": false,
-        "dog_size": null,
-        "region": "espoo",
-        "tenure_months": 10,
-        "last_order_month": "2026-04",
-        "latest_rating": null,
-        "risk": "likely",
-        "risk_p": 0.5031,
-        "spend_12m_eur": 672.6,
-        "why_explanation": {
-          "base_p": 0.1343,
-          "predicted_value": "true",
-          "lifts": [
-            {
-              "lift": 3.387,
-              "propositions": [
-                {
-                  "field": "visits",
-                  "value": "4"
-                }
-              ],
-              "highlight": {
-                "field": "visits",
-                "marked_text": "«4»"
-              }
-            },
-            {
-              "lift": 1.148,
-              "propositions": [
-                {
-                  "field": "spent_eur",
-                  "value": "86.12"
-                }
-              ],
-              "highlight": {
-                "field": "spent_eur",
-                "marked_text": "«86.12»"
-              }
-            }
-          ],
-          "final_p": 0.5031
-        },
-        "offer": {
-          "sku": "SKU-PT-0530",
-          "name": "PetNord Rabbit Pellets Food 12kg",
-          "category": "small_animal/dry-food",
-          "price_eur": 86.12,
-          "response_p": 0.183,
-          "order_value_eur": 72.32,
-          "expected_return_eur": 12.74
-        },
-        "actions": {
-          "context": {
-            "recency_bucket": "0-90d",
-            "spend_band": "high",
-            "offer_buyer": "sometimes",
-            "open_issue": "none",
-            "email_history": "never_sent",
-            "tracking_consent": "no"
-          },
-          "order_value_eur": 121.58,
-          "options": [
-            {
-              "action": "voucher",
-              "label": "€10 voucher",
-              "visit_p": 0.696,
-              "purchase_p": 0.312,
-              "purchase_lift_p": 0.148,
-              "net_vs_none_eur": 14.83,
-              "cost_eur": 3.12
-            },
-            {
-              "action": "email",
-              "label": "Email",
-              "visit_p": 0.698,
-              "purchase_p": 0.263,
-              "purchase_lift_p": 0.098,
-              "net_vs_none_eur": 11.42,
-              "cost_eur": 0.5
-            },
-            {
-              "action": "discount",
-              "label": "10 % discount",
-              "visit_p": 0.574,
-              "purchase_p": 0.246,
-              "purchase_lift_p": 0.081,
-              "net_vs_none_eur": 6.89,
-              "cost_eur": 2.99
-            },
-            {
-              "action": "apology",
-              "label": "Apology and €5 credit",
-              "visit_p": 0.637,
-              "purchase_p": 0.229,
-              "purchase_lift_p": 0.064,
-              "net_vs_none_eur": 6.19,
-              "cost_eur": 1.65
-            },
-            {
-              "action": "voucher",
-              "label": "€5 voucher",
-              "visit_p": 0.604,
-              "purchase_p": 0.211,
-              "purchase_lift_p": 0.046,
-              "net_vs_none_eur": 4.58,
-              "cost_eur": 1.06
-            },
-            {
-              "action": "none",
-              "label": "No action",
-              "visit_p": 0.599,
-              "purchase_p": 0.165,
-              "purchase_lift_p": 0.0,
-              "net_vs_none_eur": 0.0,
-              "cost_eur": 0.0
-            }
-          ],
-          "best": "€10 voucher"
-        },
-        "tells": []
       },
       {
         "customer_id": "CUST-01645",
@@ -869,14 +425,14 @@
         "last_order_month": "2026-03",
         "latest_rating": 4,
         "risk": "likely",
-        "risk_p": 0.7339,
-        "spend_12m_eur": 404.57,
+        "risk_p": 0.5986,
+        "spend_12m_eur": 458.16,
         "why_explanation": {
-          "base_p": 0.1343,
+          "base_p": 0.1367,
           "predicted_value": "true",
           "lifts": [
             {
-              "lift": 5.042,
+              "lift": 4.353,
               "propositions": [
                 {
                   "field": "visits",
@@ -887,31 +443,18 @@
                 "field": "visits",
                 "marked_text": "«3»"
               }
-            },
-            {
-              "lift": 1.242,
-              "propositions": [
-                {
-                  "field": "tenure_months_at_month",
-                  "value": "4"
-                }
-              ],
-              "highlight": {
-                "field": "tenure_months_at_month",
-                "marked_text": "«4»"
-              }
             }
           ],
-          "final_p": 0.7339
+          "final_p": 0.5986
         },
         "offer": {
           "sku": "SKU-PT-0609",
           "name": "JBL Filter Pads, single",
           "category": "aquarium/aquarium",
           "price_eur": 26.57,
-          "response_p": 0.226,
-          "order_value_eur": 29.63,
-          "expected_return_eur": 6.18
+          "response_p": 0.177,
+          "order_value_eur": 29.16,
+          "expected_return_eur": 4.67
         },
         "actions": {
           "context": {
@@ -922,49 +465,49 @@
             "email_history": "never_sent",
             "tracking_consent": "yes"
           },
-          "order_value_eur": 121.58,
+          "order_value_eur": 120.12,
           "options": [
             {
               "action": "ad",
               "label": "Personalised ad",
-              "visit_p": 0.818,
-              "purchase_p": 0.396,
-              "purchase_lift_p": 0.181,
-              "net_vs_none_eur": 20.78,
+              "visit_p": 0.845,
+              "purchase_p": 0.451,
+              "purchase_lift_p": 0.193,
+              "net_vs_none_eur": 22.01,
               "cost_eur": 1.2
             },
             {
               "action": "discount",
               "label": "10 % discount",
-              "visit_p": 0.574,
-              "purchase_p": 0.329,
-              "purchase_lift_p": 0.114,
-              "net_vs_none_eur": 9.8,
-              "cost_eur": 4.0
-            },
-            {
-              "action": "email",
-              "label": "Email",
-              "visit_p": 0.698,
-              "purchase_p": 0.255,
-              "purchase_lift_p": 0.04,
-              "net_vs_none_eur": 4.33,
-              "cost_eur": 0.5
+              "visit_p": 0.617,
+              "purchase_p": 0.376,
+              "purchase_lift_p": 0.118,
+              "net_vs_none_eur": 9.64,
+              "cost_eur": 4.51
             },
             {
               "action": "voucher",
               "label": "€10 voucher",
-              "visit_p": 0.696,
-              "purchase_p": 0.246,
-              "purchase_lift_p": 0.031,
-              "net_vs_none_eur": 1.28,
-              "cost_eur": 2.46
+              "visit_p": 0.702,
+              "purchase_p": 0.328,
+              "purchase_lift_p": 0.07,
+              "net_vs_none_eur": 5.11,
+              "cost_eur": 3.28
+            },
+            {
+              "action": "email",
+              "label": "Email",
+              "visit_p": 0.687,
+              "purchase_p": 0.299,
+              "purchase_lift_p": 0.041,
+              "net_vs_none_eur": 4.42,
+              "cost_eur": 0.5
             },
             {
               "action": "none",
               "label": "No action",
-              "visit_p": 0.599,
-              "purchase_p": 0.215,
+              "visit_p": 0.663,
+              "purchase_p": 0.258,
               "purchase_lift_p": 0.0,
               "net_vs_none_eur": 0.0,
               "cost_eur": 0.0
@@ -972,20 +515,20 @@
             {
               "action": "apology",
               "label": "Apology and €5 credit",
-              "visit_p": 0.637,
-              "purchase_p": 0.195,
-              "purchase_lift_p": -0.02,
-              "net_vs_none_eur": -3.93,
-              "cost_eur": 1.48
+              "visit_p": 0.663,
+              "purchase_p": 0.241,
+              "purchase_lift_p": -0.016,
+              "net_vs_none_eur": -3.68,
+              "cost_eur": 1.71
             },
             {
               "action": "voucher",
               "label": "€5 voucher",
-              "visit_p": 0.604,
-              "purchase_p": 0.161,
-              "purchase_lift_p": -0.054,
-              "net_vs_none_eur": -7.39,
-              "cost_eur": 0.81
+              "visit_p": 0.623,
+              "purchase_p": 0.205,
+              "purchase_lift_p": -0.052,
+              "net_vs_none_eur": -7.33,
+              "cost_eur": 1.03
             }
           ],
           "best": "Personalised ad"
@@ -993,120 +536,146 @@
         "tells": []
       },
       {
-        "customer_id": "CUST-02857",
-        "name": "Tuula Sinkkonen",
+        "customer_id": "CUST-01878",
+        "name": "Kirsti Toivonen",
         "pets": "aquarium",
-        "pets_declared": false,
+        "pets_declared": true,
         "dog_size": null,
-        "region": "tampere",
-        "tenure_months": 3,
+        "region": "espoo",
+        "tenure_months": 12,
         "last_order_month": "2026-04",
-        "latest_rating": 5,
+        "latest_rating": null,
         "risk": "likely",
-        "risk_p": 0.6809,
-        "spend_12m_eur": 434.69,
+        "risk_p": 0.6644,
+        "spend_12m_eur": 366.02,
         "why_explanation": {
-          "base_p": 0.1343,
+          "base_p": 0.1367,
           "predicted_value": "true",
           "lifts": [
             {
-              "lift": 5.042,
+              "lift": 3.339,
               "propositions": [
                 {
                   "field": "visits",
-                  "value": "3"
+                  "value": "4"
                 }
               ],
               "highlight": {
                 "field": "visits",
-                "marked_text": "«3»"
+                "marked_text": "«4»"
+              }
+            },
+            {
+              "lift": 1.54,
+              "propositions": [
+                {
+                  "field": "spent_eur",
+                  "value": "23.88"
+                }
+              ],
+              "highlight": {
+                "field": "spent_eur",
+                "marked_text": "«23.88»"
+              }
+            },
+            {
+              "lift": 1.213,
+              "propositions": [
+                {
+                  "field": "pets",
+                  "value": "aquarium"
+                }
+              ],
+              "highlight": {
+                "field": "pets",
+                "marked_text": "«aquarium»"
               }
             }
           ],
-          "final_p": 0.6809
+          "final_p": 0.6644
         },
         "offer": {
           "sku": "SKU-PT-0609",
           "name": "JBL Filter Pads, single",
           "category": "aquarium/aquarium",
           "price_eur": 26.57,
-          "response_p": 0.226,
-          "order_value_eur": 29.63,
-          "expected_return_eur": 6.18
+          "response_p": 0.568,
+          "order_value_eur": 57.09,
+          "expected_return_eur": 31.95
         },
         "actions": {
           "context": {
             "recency_bucket": "0-90d",
             "spend_band": "high",
-            "offer_buyer": "sometimes",
+            "offer_buyer": "mostly",
             "open_issue": "none",
-            "email_history": "never_sent",
+            "email_history": "responded",
             "tracking_consent": "yes"
           },
-          "order_value_eur": 121.58,
+          "order_value_eur": 120.12,
           "options": [
             {
               "action": "ad",
               "label": "Personalised ad",
-              "visit_p": 0.818,
-              "purchase_p": 0.374,
-              "purchase_lift_p": 0.183,
-              "net_vs_none_eur": 21.07,
+              "visit_p": 0.752,
+              "purchase_p": 0.418,
+              "purchase_lift_p": 0.065,
+              "net_vs_none_eur": 6.64,
               "cost_eur": 1.2
             },
             {
               "action": "email",
               "label": "Email",
-              "visit_p": 0.698,
-              "purchase_p": 0.263,
-              "purchase_lift_p": 0.072,
-              "net_vs_none_eur": 8.28,
+              "visit_p": 0.836,
+              "purchase_p": 0.391,
+              "purchase_lift_p": 0.038,
+              "net_vs_none_eur": 4.01,
               "cost_eur": 0.5
-            },
-            {
-              "action": "voucher",
-              "label": "€10 voucher",
-              "visit_p": 0.696,
-              "purchase_p": 0.246,
-              "purchase_lift_p": 0.056,
-              "net_vs_none_eur": 4.32,
-              "cost_eur": 2.46
-            },
-            {
-              "action": "discount",
-              "label": "10 % discount",
-              "visit_p": 0.574,
-              "purchase_p": 0.235,
-              "purchase_lift_p": 0.044,
-              "net_vs_none_eur": 2.52,
-              "cost_eur": 2.85
             },
             {
               "action": "none",
               "label": "No action",
-              "visit_p": 0.599,
-              "purchase_p": 0.191,
+              "visit_p": 0.723,
+              "purchase_p": 0.353,
               "purchase_lift_p": 0.0,
               "net_vs_none_eur": 0.0,
               "cost_eur": 0.0
             },
             {
+              "action": "voucher",
+              "label": "€10 voucher",
+              "visit_p": 0.737,
+              "purchase_p": 0.373,
+              "purchase_lift_p": 0.02,
+              "net_vs_none_eur": -1.37,
+              "cost_eur": 3.73
+            },
+            {
               "action": "apology",
               "label": "Apology and €5 credit",
-              "visit_p": 0.637,
-              "purchase_p": 0.195,
+              "visit_p": 0.734,
+              "purchase_p": 0.358,
               "purchase_lift_p": 0.005,
-              "net_vs_none_eur": -0.89,
-              "cost_eur": 1.48
+              "net_vs_none_eur": -1.7,
+              "cost_eur": 2.29
+            },
+            {
+              "action": "discount",
+              "label": "10 % discount",
+              "visit_p": 0.565,
+              "purchase_p": 0.334,
+              "purchase_lift_p": -0.019,
+              "net_vs_none_eur": -6.33,
+              "cost_eur": 4.01
             },
             {
               "action": "voucher",
               "label": "€5 voucher",
-              "visit_p": 0.604,
-              "purchase_p": 0.161,
-              "purchase_lift_p": -0.029,
-              "net_vs_none_eur": -4.35,
-              "cost_eur": 0.81
+              "visit_p": 0.662,
+              "purchase_p": 0.239,
+              "purchase_lift_p": -0.114,
+              "net_vs_none_eur": -14.83,
+              "cost_eur": 1.2
             }
           ],
           "best": "Personalised ad"
@@ -1123,15 +692,15 @@
         "tenure_months": 4,
         "last_order_month": "2026-04",
         "latest_rating": 5,
-        "risk": "very likely",
-        "risk_p": 0.8016,
-        "spend_12m_eur": 321.58,
+        "risk": "likely",
+        "risk_p": 0.7268,
+        "spend_12m_eur": 298.32,
         "why_explanation": {
-          "base_p": 0.1343,
+          "base_p": 0.1367,
           "predicted_value": "true",
           "lifts": [
             {
-              "lift": 5.949,
+              "lift": 5.85,
               "propositions": [
                 {
                   "field": "visits",
@@ -1142,18 +711,31 @@
                 "field": "visits",
                 "marked_text": "«2»"
               }
+            },
+            {
+              "lift": 0.709,
+              "propositions": [
+                {
+                  "field": "spent_eur",
+                  "value": "73.31"
+                }
+              ],
+              "highlight": {
+                "field": "spent_eur",
+                "marked_text": "‹73.31›"
+              }
             }
           ],
-          "final_p": 0.8016
+          "final_p": 0.7268
         },
         "offer": {
           "sku": "SKU-PT-0609",
           "name": "JBL Filter Pads, single",
           "category": "aquarium/aquarium",
           "price_eur": 26.57,
-          "response_p": 0.363,
-          "order_value_eur": 21.89,
-          "expected_return_eur": 7.44
+          "response_p": 0.177,
+          "order_value_eur": 29.16,
+          "expected_return_eur": 4.67
         },
         "actions": {
           "context": {
@@ -1161,73 +743,73 @@
             "spend_band": "mid",
             "offer_buyer": "sometimes",
             "open_issue": "none",
-            "email_history": "ignored",
+            "email_history": "never_sent",
             "tracking_consent": "yes"
           },
-          "order_value_eur": 54.32,
+          "order_value_eur": 56.83,
           "options": [
             {
               "action": "ad",
               "label": "Personalised ad",
-              "visit_p": 0.818,
-              "purchase_p": 0.315,
-              "purchase_lift_p": 0.147,
-              "net_vs_none_eur": 6.8,
+              "visit_p": 0.827,
+              "purchase_p": 0.353,
+              "purchase_lift_p": 0.213,
+              "net_vs_none_eur": 10.89,
               "cost_eur": 1.2
             },
             {
               "action": "email",
               "label": "Email",
-              "visit_p": 0.668,
-              "purchase_p": 0.232,
-              "purchase_lift_p": 0.064,
-              "net_vs_none_eur": 2.99,
+              "visit_p": 0.62,
+              "purchase_p": 0.206,
+              "purchase_lift_p": 0.066,
+              "net_vs_none_eur": 3.27,
               "cost_eur": 0.5
-            },
-            {
-              "action": "discount",
-              "label": "10 % discount",
-              "visit_p": 0.607,
-              "purchase_p": 0.218,
-              "purchase_lift_p": 0.05,
-              "net_vs_none_eur": 1.53,
-              "cost_eur": 1.18
-            },
-            {
-              "action": "apology",
-              "label": "Apology and €5 credit",
-              "visit_p": 0.637,
-              "purchase_p": 0.215,
-              "purchase_lift_p": 0.047,
-              "net_vs_none_eur": 1.0,
-              "cost_eur": 1.58
             },
             {
               "action": "voucher",
               "label": "€10 voucher",
-              "visit_p": 0.671,
-              "purchase_p": 0.206,
-              "purchase_lift_p": 0.038,
-              "net_vs_none_eur": 0.01,
-              "cost_eur": 2.06
+              "visit_p": 0.576,
+              "purchase_p": 0.219,
+              "purchase_lift_p": 0.079,
+              "net_vs_none_eur": 2.3,
+              "cost_eur": 2.19
+            },
+            {
+              "action": "discount",
+              "label": "10 % discount",
+              "visit_p": 0.545,
+              "purchase_p": 0.199,
+              "purchase_lift_p": 0.059,
+              "net_vs_none_eur": 2.21,
+              "cost_eur": 1.13
             },
             {
               "action": "none",
               "label": "No action",
-              "visit_p": 0.571,
-              "purchase_p": 0.168,
+              "visit_p": 0.532,
+              "purchase_p": 0.14,
               "purchase_lift_p": 0.0,
               "net_vs_none_eur": 0.0,
               "cost_eur": 0.0
             },
             {
+              "action": "apology",
+              "label": "Apology and €5 credit",
+              "visit_p": 0.594,
+              "purchase_p": 0.156,
+              "purchase_lift_p": 0.016,
+              "net_vs_none_eur": -0.37,
+              "cost_eur": 1.28
+            },
+            {
               "action": "voucher",
               "label": "€5 voucher",
-              "visit_p": 0.576,
-              "purchase_p": 0.133,
-              "purchase_lift_p": -0.035,
-              "net_vs_none_eur": -2.58,
-              "cost_eur": 0.66
+              "visit_p": 0.487,
+              "purchase_p": 0.129,
+              "purchase_lift_p": -0.011,
+              "net_vs_none_eur": -1.25,
+              "cost_eur": 0.65
             }
           ],
           "best": "Personalised ad"
@@ -1235,24 +817,149 @@
         "tells": []
       },
       {
-        "customer_id": "CUST-02351",
-        "name": "Niina Saarinen",
+        "customer_id": "CUST-00724",
+        "name": "Elina Manninen",
         "pets": "aquarium",
         "pets_declared": true,
         "dog_size": null,
-        "region": "helsinki",
-        "tenure_months": 6,
+        "region": "tampere",
+        "tenure_months": 10,
         "last_order_month": "2026-04",
         "latest_rating": null,
         "risk": "likely",
-        "risk_p": 0.58,
-        "spend_12m_eur": 444.32,
+        "risk_p": 0.7489,
+        "spend_12m_eur": 272.33,
         "why_explanation": {
-          "base_p": 0.1343,
+          "base_p": 0.1367,
           "predicted_value": "true",
           "lifts": [
             {
-              "lift": 5.042,
+              "lift": 5.85,
+              "propositions": [
+                {
+                  "field": "visits",
+                  "value": "2"
+                }
+              ],
+              "highlight": {
+                "field": "visits",
+                "marked_text": "«2»"
+              }
+            },
+            {
+              "lift": 0.785,
+              "propositions": [
+                {
+                  "field": "spent_eur",
+                  "value": "53.62"
+                }
+              ],
+              "highlight": {
+                "field": "spent_eur",
+                "marked_text": "‹53.62›"
+              }
+            }
+          ],
+          "final_p": 0.7489
+        },
+        "offer": {
+          "sku": "SKU-PT-0609",
+          "name": "JBL Filter Pads, single",
+          "category": "aquarium/aquarium",
+          "price_eur": 26.57,
+          "response_p": 0.177,
+          "order_value_eur": 29.16,
+          "expected_return_eur": 4.67
+        },
+        "actions": {
+          "context": {
+            "recency_bucket": "0-90d",
+            "spend_band": "mid",
+            "offer_buyer": "sometimes",
+            "open_issue": "none",
+            "email_history": "never_sent",
+            "tracking_consent": "no"
+          },
+          "order_value_eur": 56.83,
+          "options": [
+            {
+              "action": "voucher",
+              "label": "€10 voucher",
+              "visit_p": 0.576,
+              "purchase_p": 0.267,
+              "purchase_lift_p": 0.13,
+              "net_vs_none_eur": 4.73,
+              "cost_eur": 2.67
+            },
+            {
+              "action": "discount",
+              "label": "10 % discount",
+              "visit_p": 0.545,
+              "purchase_p": 0.229,
+              "purchase_lift_p": 0.092,
+              "net_vs_none_eur": 3.94,
+              "cost_eur": 1.3
+            },
+            {
+              "action": "email",
+              "label": "Email",
+              "visit_p": 0.62,
+              "purchase_p": 0.206,
+              "purchase_lift_p": 0.07,
+              "net_vs_none_eur": 3.47,
+              "cost_eur": 0.5
+            },
+            {
+              "action": "voucher",
+              "label": "€5 voucher",
+              "visit_p": 0.487,
+              "purchase_p": 0.162,
+              "purchase_lift_p": 0.025,
+              "net_vs_none_eur": 0.62,
+              "cost_eur": 0.81
+            },
+            {
+              "action": "none",
+              "label": "No action",
+              "visit_p": 0.532,
+              "purchase_p": 0.136,
+              "purchase_lift_p": 0.0,
+              "net_vs_none_eur": 0.0,
+              "cost_eur": 0.0
+            },
+            {
+              "action": "apology",
+              "label": "Apology and €5 credit",
+              "visit_p": 0.594,
+              "purchase_p": 0.156,
+              "purchase_lift_p": 0.02,
+              "net_vs_none_eur": -0.17,
+              "cost_eur": 1.28
+            }
+          ],
+          "best": "€10 voucher"
+        },
+        "tells": []
+      },
+      {
+        "customer_id": "CUST-02857",
+        "name": "Tuula Sinkkonen",
+        "pets": "aquarium",
+        "pets_declared": false,
+        "dog_size": null,
+        "region": "tampere",
+        "tenure_months": 3,
+        "last_order_month": "2026-04",
+        "latest_rating": 5,
+        "risk": "likely",
+        "risk_p": 0.5555,
+        "spend_12m_eur": 365.42,
+        "why_explanation": {
+          "base_p": 0.1367,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 4.353,
               "propositions": [
                 {
                   "field": "visits",
@@ -1265,42 +972,29 @@
               }
             },
             {
-              "lift": 0.536,
+              "lift": 0.88,
               "propositions": [
                 {
-                  "field": "tenure_months_at_month",
-                  "value": "6"
+                  "field": "spent_eur",
+                  "value": "96.91"
                 }
               ],
               "highlight": {
-                "field": "tenure_months_at_month",
-                "marked_text": "‹6›"
-              }
-            },
-            {
-              "lift": 1.242,
-              "propositions": [
-                {
-                  "field": "pets",
-                  "value": "aquarium"
-                }
-              ],
-              "highlight": {
-                "field": "pets",
-                "marked_text": "«aquarium»"
+                "field": "spent_eur",
+                "marked_text": "‹96.91›"
               }
             }
           ],
-          "final_p": 0.58
+          "final_p": 0.5555
         },
         "offer": {
           "sku": "SKU-PT-0609",
           "name": "JBL Filter Pads, single",
           "category": "aquarium/aquarium",
           "price_eur": 26.57,
-          "response_p": 0.363,
-          "order_value_eur": 21.89,
-          "expected_return_eur": 7.44
+          "response_p": 0.177,
+          "order_value_eur": 29.16,
+          "expected_return_eur": 4.67
         },
         "actions": {
           "context": {
@@ -1308,173 +1002,34 @@
             "spend_band": "high",
             "offer_buyer": "rarely",
             "open_issue": "none",
-            "email_history": "ignored",
-            "tracking_consent": "yes"
-          },
-          "order_value_eur": 121.58,
-          "options": [
-            {
-              "action": "ad",
-              "label": "Personalised ad",
-              "visit_p": 0.808,
-              "purchase_p": 0.267,
-              "purchase_lift_p": 0.1,
-              "net_vs_none_eur": 10.94,
-              "cost_eur": 1.2
-            },
-            {
-              "action": "voucher",
-              "label": "€10 voucher",
-              "visit_p": 0.671,
-              "purchase_p": 0.245,
-              "purchase_lift_p": 0.079,
-              "net_vs_none_eur": 7.13,
-              "cost_eur": 2.45
-            },
-            {
-              "action": "apology",
-              "label": "Apology and €5 credit",
-              "visit_p": 0.637,
-              "purchase_p": 0.214,
-              "purchase_lift_p": 0.047,
-              "net_vs_none_eur": 4.17,
-              "cost_eur": 1.57
-            },
-            {
-              "action": "none",
-              "label": "No action",
-              "visit_p": 0.571,
-              "purchase_p": 0.167,
-              "purchase_lift_p": 0.0,
-              "net_vs_none_eur": 0.0,
-              "cost_eur": 0.0
-            },
-            {
-              "action": "discount",
-              "label": "10 % discount",
-              "visit_p": 0.574,
-              "purchase_p": 0.18,
-              "purchase_lift_p": 0.014,
-              "net_vs_none_eur": -0.54,
-              "cost_eur": 2.19
-            },
-            {
-              "action": "voucher",
-              "label": "€5 voucher",
-              "visit_p": 0.576,
-              "purchase_p": 0.161,
-              "purchase_lift_p": -0.006,
-              "net_vs_none_eur": -1.51,
-              "cost_eur": 0.8
-            },
-            {
-              "action": "email",
-              "label": "Email",
-              "visit_p": 0.659,
-              "purchase_p": 0.127,
-              "purchase_lift_p": -0.039,
-              "net_vs_none_eur": -5.28,
-              "cost_eur": 0.5
-            }
-          ],
-          "best": "Personalised ad"
-        },
-        "tells": []
-      },
-      {
-        "customer_id": "CUST-02320",
-        "name": "Raija Leppänen",
-        "pets": "aquarium",
-        "pets_declared": false,
-        "dog_size": null,
-        "region": "tampere",
-        "tenure_months": 2,
-        "last_order_month": "2026-04",
-        "latest_rating": null,
-        "risk": "likely",
-        "risk_p": 0.6809,
-        "spend_12m_eur": 317.26,
-        "why_explanation": {
-          "base_p": 0.1343,
-          "predicted_value": "true",
-          "lifts": [
-            {
-              "lift": 5.042,
-              "propositions": [
-                {
-                  "field": "visits",
-                  "value": "3"
-                }
-              ],
-              "highlight": {
-                "field": "visits",
-                "marked_text": "«3»"
-              }
-            }
-          ],
-          "final_p": 0.6809
-        },
-        "offer": {
-          "sku": "SKU-PT-0609",
-          "name": "JBL Filter Pads, single",
-          "category": "aquarium/aquarium",
-          "price_eur": 26.57,
-          "response_p": 0.226,
-          "order_value_eur": 29.63,
-          "expected_return_eur": 6.18
-        },
-        "actions": {
-          "context": {
-            "recency_bucket": "0-90d",
-            "spend_band": "high",
-            "offer_buyer": "sometimes",
-            "open_issue": "none",
             "email_history": "never_sent",
             "tracking_consent": "yes"
           },
-          "order_value_eur": 121.58,
+          "order_value_eur": 120.12,
           "options": [
             {
               "action": "ad",
               "label": "Personalised ad",
-              "visit_p": 0.818,
-              "purchase_p": 0.374,
-              "purchase_lift_p": 0.183,
-              "net_vs_none_eur": 21.07,
+              "visit_p": 0.831,
+              "purchase_p": 0.273,
+              "purchase_lift_p": 0.071,
+              "net_vs_none_eur": 7.33,
               "cost_eur": 1.2
-            },
-            {
-              "action": "email",
-              "label": "Email",
-              "visit_p": 0.698,
-              "purchase_p": 0.263,
-              "purchase_lift_p": 0.072,
-              "net_vs_none_eur": 8.28,
-              "cost_eur": 0.5
             },
             {
               "action": "voucher",
               "label": "€10 voucher",
-              "visit_p": 0.696,
-              "purchase_p": 0.246,
-              "purchase_lift_p": 0.056,
-              "net_vs_none_eur": 4.32,
-              "cost_eur": 2.46
-            },
-            {
-              "action": "discount",
-              "label": "10 % discount",
-              "visit_p": 0.574,
-              "purchase_p": 0.235,
-              "purchase_lift_p": 0.044,
-              "net_vs_none_eur": 2.52,
-              "cost_eur": 2.85
+              "visit_p": 0.702,
+              "purchase_p": 0.259,
+              "purchase_lift_p": 0.057,
+              "net_vs_none_eur": 4.2,
+              "cost_eur": 2.59
             },
             {
               "action": "none",
               "label": "No action",
-              "visit_p": 0.599,
-              "purchase_p": 0.191,
+              "visit_p": 0.663,
+              "purchase_p": 0.202,
               "purchase_lift_p": 0.0,
               "net_vs_none_eur": 0.0,
               "cost_eur": 0.0
@@ -1482,20 +1037,38 @@
             {
               "action": "apology",
               "label": "Apology and €5 credit",
-              "visit_p": 0.637,
-              "purchase_p": 0.195,
-              "purchase_lift_p": 0.005,
-              "net_vs_none_eur": -0.89,
-              "cost_eur": 1.48
+              "visit_p": 0.663,
+              "purchase_p": 0.209,
+              "purchase_lift_p": 0.007,
+              "net_vs_none_eur": -0.68,
+              "cost_eur": 1.55
+            },
+            {
+              "action": "email",
+              "label": "Email",
+              "visit_p": 0.687,
+              "purchase_p": 0.176,
+              "purchase_lift_p": -0.026,
+              "net_vs_none_eur": -3.65,
+              "cost_eur": 0.5
             },
             {
               "action": "voucher",
               "label": "€5 voucher",
-              "visit_p": 0.604,
-              "purchase_p": 0.161,
-              "purchase_lift_p": -0.029,
-              "net_vs_none_eur": -4.35,
-              "cost_eur": 0.81
+              "visit_p": 0.623,
+              "purchase_p": 0.156,
+              "purchase_lift_p": -0.046,
+              "net_vs_none_eur": -6.31,
+              "cost_eur": 0.78
+            },
+            {
+              "action": "discount",
+              "label": "10 % discount",
+              "visit_p": 0.617,
+              "purchase_p": 0.153,
+              "purchase_lift_p": -0.049,
+              "net_vs_none_eur": -7.72,
+              "cost_eur": 1.84
             }
           ],
           "best": "Personalised ad"
@@ -1513,14 +1086,14 @@
         "last_order_month": "2026-04",
         "latest_rating": null,
         "risk": "likely",
-        "risk_p": 0.5558,
+        "risk_p": 0.5149,
         "spend_12m_eur": 380.82,
         "why_explanation": {
-          "base_p": 0.1343,
+          "base_p": 0.1367,
           "predicted_value": "true",
           "lifts": [
             {
-              "lift": 3.387,
+              "lift": 3.339,
               "propositions": [
                 {
                   "field": "visits",
@@ -1533,7 +1106,7 @@
               }
             },
             {
-              "lift": 1.386,
+              "lift": 1.429,
               "propositions": [
                 {
                   "field": "pets",
@@ -1544,18 +1117,31 @@
                 "field": "pets",
                 "marked_text": "«small_animal»"
               }
+            },
+            {
+              "lift": 0.831,
+              "propositions": [
+                {
+                  "field": "region",
+                  "value": "turku"
+                }
+              ],
+              "highlight": {
+                "field": "region",
+                "marked_text": "‹turku›"
+              }
             }
           ],
-          "final_p": 0.5558
+          "final_p": 0.5149
         },
         "offer": {
-          "sku": "SKU-PT-0530",
-          "name": "PetNord Rabbit Pellets Food 12kg",
+          "sku": "SKU-PT-0535",
+          "name": "PetNord Guinea Pig Mix Food 15kg",
           "category": "small_animal/dry-food",
-          "price_eur": 86.12,
-          "response_p": 0.183,
-          "order_value_eur": 72.32,
-          "expected_return_eur": 12.74
+          "price_eur": 105.37,
+          "response_p": 0.148,
+          "order_value_eur": 33.07,
+          "expected_return_eur": 4.39
         },
         "actions": {
           "context": {
@@ -1566,49 +1152,49 @@
             "email_history": "never_sent",
             "tracking_consent": "yes"
           },
-          "order_value_eur": 121.58,
+          "order_value_eur": 120.12,
           "options": [
             {
               "action": "ad",
               "label": "Personalised ad",
-              "visit_p": 0.818,
-              "purchase_p": 0.396,
-              "purchase_lift_p": 0.181,
-              "net_vs_none_eur": 20.78,
+              "visit_p": 0.845,
+              "purchase_p": 0.451,
+              "purchase_lift_p": 0.193,
+              "net_vs_none_eur": 22.01,
               "cost_eur": 1.2
             },
             {
               "action": "discount",
               "label": "10 % discount",
-              "visit_p": 0.574,
-              "purchase_p": 0.329,
-              "purchase_lift_p": 0.114,
-              "net_vs_none_eur": 9.8,
-              "cost_eur": 4.0
-            },
-            {
-              "action": "email",
-              "label": "Email",
-              "visit_p": 0.698,
-              "purchase_p": 0.255,
-              "purchase_lift_p": 0.04,
-              "net_vs_none_eur": 4.33,
-              "cost_eur": 0.5
+              "visit_p": 0.617,
+              "purchase_p": 0.376,
+              "purchase_lift_p": 0.118,
+              "net_vs_none_eur": 9.64,
+              "cost_eur": 4.51
             },
             {
               "action": "voucher",
               "label": "€10 voucher",
-              "visit_p": 0.696,
-              "purchase_p": 0.246,
-              "purchase_lift_p": 0.031,
-              "net_vs_none_eur": 1.28,
-              "cost_eur": 2.46
+              "visit_p": 0.702,
+              "purchase_p": 0.328,
+              "purchase_lift_p": 0.07,
+              "net_vs_none_eur": 5.11,
+              "cost_eur": 3.28
+            },
+            {
+              "action": "email",
+              "label": "Email",
+              "visit_p": 0.687,
+              "purchase_p": 0.299,
+              "purchase_lift_p": 0.041,
+              "net_vs_none_eur": 4.42,
+              "cost_eur": 0.5
             },
             {
               "action": "none",
               "label": "No action",
-              "visit_p": 0.599,
-              "purchase_p": 0.215,
+              "visit_p": 0.663,
+              "purchase_p": 0.258,
               "purchase_lift_p": 0.0,
               "net_vs_none_eur": 0.0,
               "cost_eur": 0.0
@@ -1616,20 +1202,20 @@
             {
               "action": "apology",
               "label": "Apology and €5 credit",
-              "visit_p": 0.637,
-              "purchase_p": 0.195,
-              "purchase_lift_p": -0.02,
-              "net_vs_none_eur": -3.93,
-              "cost_eur": 1.48
+              "visit_p": 0.663,
+              "purchase_p": 0.241,
+              "purchase_lift_p": -0.016,
+              "net_vs_none_eur": -3.68,
+              "cost_eur": 1.71
             },
             {
               "action": "voucher",
               "label": "€5 voucher",
-              "visit_p": 0.604,
-              "purchase_p": 0.161,
-              "purchase_lift_p": -0.054,
-              "net_vs_none_eur": -7.39,
-              "cost_eur": 0.81
+              "visit_p": 0.623,
+              "purchase_p": 0.205,
+              "purchase_lift_p": -0.052,
+              "net_vs_none_eur": -7.33,
+              "cost_eur": 1.03
             }
           ],
           "best": "Personalised ad"
@@ -1639,294 +1225,24 @@
         ]
       },
       {
-        "customer_id": "CUST-02615",
-        "name": "Jouko Koivisto",
+        "customer_id": "CUST-01911",
+        "name": "Minna Ojala",
         "pets": "aquarium",
         "pets_declared": true,
         "dog_size": null,
-        "region": "espoo",
-        "tenure_months": 17,
-        "last_order_month": "2026-04",
-        "latest_rating": null,
-        "risk": "likely",
-        "risk_p": 0.6436,
-        "spend_12m_eur": 322.44,
-        "why_explanation": {
-          "base_p": 0.1343,
-          "predicted_value": "true",
-          "lifts": [
-            {
-              "lift": 3.387,
-              "propositions": [
-                {
-                  "field": "visits",
-                  "value": "4"
-                }
-              ],
-              "highlight": {
-                "field": "visits",
-                "marked_text": "«4»"
-              }
-            },
-            {
-              "lift": 1.498,
-              "propositions": [
-                {
-                  "field": "tenure_months_at_month",
-                  "value": "17"
-                }
-              ],
-              "highlight": {
-                "field": "tenure_months_at_month",
-                "marked_text": "«17»"
-              }
-            },
-            {
-              "lift": 1.242,
-              "propositions": [
-                {
-                  "field": "pets",
-                  "value": "aquarium"
-                }
-              ],
-              "highlight": {
-                "field": "pets",
-                "marked_text": "«aquarium»"
-              }
-            }
-          ],
-          "final_p": 0.6436
-        },
-        "offer": {
-          "sku": "SKU-PT-0609",
-          "name": "JBL Filter Pads, single",
-          "category": "aquarium/aquarium",
-          "price_eur": 26.57,
-          "response_p": 0.363,
-          "order_value_eur": 21.89,
-          "expected_return_eur": 7.44
-        },
-        "actions": {
-          "context": {
-            "recency_bucket": "0-90d",
-            "spend_band": "mid",
-            "offer_buyer": "mostly",
-            "open_issue": "none",
-            "email_history": "ignored",
-            "tracking_consent": "yes"
-          },
-          "order_value_eur": 54.32,
-          "options": [
-            {
-              "action": "ad",
-              "label": "Personalised ad",
-              "visit_p": 0.818,
-              "purchase_p": 0.35,
-              "purchase_lift_p": 0.168,
-              "net_vs_none_eur": 7.93,
-              "cost_eur": 1.2
-            },
-            {
-              "action": "discount",
-              "label": "10 % discount",
-              "visit_p": 0.607,
-              "purchase_p": 0.308,
-              "purchase_lift_p": 0.127,
-              "net_vs_none_eur": 5.2,
-              "cost_eur": 1.67
-            },
-            {
-              "action": "email",
-              "label": "Email",
-              "visit_p": 0.668,
-              "purchase_p": 0.225,
-              "purchase_lift_p": 0.044,
-              "net_vs_none_eur": 1.88,
-              "cost_eur": 0.5
-            },
-            {
-              "action": "apology",
-              "label": "Apology and €5 credit",
-              "visit_p": 0.637,
-              "purchase_p": 0.215,
-              "purchase_lift_p": 0.034,
-              "net_vs_none_eur": 0.26,
-              "cost_eur": 1.58
-            },
-            {
-              "action": "none",
-              "label": "No action",
-              "visit_p": 0.571,
-              "purchase_p": 0.181,
-              "purchase_lift_p": 0.0,
-              "net_vs_none_eur": 0.0,
-              "cost_eur": 0.0
-            },
-            {
-              "action": "voucher",
-              "label": "€10 voucher",
-              "visit_p": 0.671,
-              "purchase_p": 0.206,
-              "purchase_lift_p": 0.025,
-              "net_vs_none_eur": -0.73,
-              "cost_eur": 2.06
-            },
-            {
-              "action": "voucher",
-              "label": "€5 voucher",
-              "visit_p": 0.576,
-              "purchase_p": 0.133,
-              "purchase_lift_p": -0.049,
-              "net_vs_none_eur": -3.32,
-              "cost_eur": 0.66
-            }
-          ],
-          "best": "Personalised ad"
-        },
-        "tells": [
-          "Returned an item"
-        ]
-      },
-      {
-        "customer_id": "CUST-02087",
-        "name": "Ulla Savolainen",
-        "pets": "small_animal",
-        "pets_declared": false,
-        "dog_size": null,
-        "region": "jyvaskyla",
-        "tenure_months": 2,
-        "last_order_month": "2026-04",
-        "latest_rating": 5,
-        "risk": "likely",
-        "risk_p": 0.6809,
-        "spend_12m_eur": 302.99,
-        "why_explanation": {
-          "base_p": 0.1343,
-          "predicted_value": "true",
-          "lifts": [
-            {
-              "lift": 5.042,
-              "propositions": [
-                {
-                  "field": "visits",
-                  "value": "3"
-                }
-              ],
-              "highlight": {
-                "field": "visits",
-                "marked_text": "«3»"
-              }
-            }
-          ],
-          "final_p": 0.6809
-        },
-        "offer": {
-          "sku": "SKU-PT-0530",
-          "name": "PetNord Rabbit Pellets Food 12kg",
-          "category": "small_animal/dry-food",
-          "price_eur": 86.12,
-          "response_p": 0.121,
-          "order_value_eur": 64.58,
-          "expected_return_eur": 7.29
-        },
-        "actions": {
-          "context": {
-            "recency_bucket": "0-90d",
-            "spend_band": "high",
-            "offer_buyer": "rarely",
-            "open_issue": "none",
-            "email_history": "ignored",
-            "tracking_consent": "yes"
-          },
-          "order_value_eur": 121.58,
-          "options": [
-            {
-              "action": "ad",
-              "label": "Personalised ad",
-              "visit_p": 0.808,
-              "purchase_p": 0.267,
-              "purchase_lift_p": 0.1,
-              "net_vs_none_eur": 10.94,
-              "cost_eur": 1.2
-            },
-            {
-              "action": "voucher",
-              "label": "€10 voucher",
-              "visit_p": 0.671,
-              "purchase_p": 0.245,
-              "purchase_lift_p": 0.079,
-              "net_vs_none_eur": 7.13,
-              "cost_eur": 2.45
-            },
-            {
-              "action": "apology",
-              "label": "Apology and €5 credit",
-              "visit_p": 0.637,
-              "purchase_p": 0.214,
-              "purchase_lift_p": 0.047,
-              "net_vs_none_eur": 4.17,
-              "cost_eur": 1.57
-            },
-            {
-              "action": "none",
-              "label": "No action",
-              "visit_p": 0.571,
-              "purchase_p": 0.167,
-              "purchase_lift_p": 0.0,
-              "net_vs_none_eur": 0.0,
-              "cost_eur": 0.0
-            },
-            {
-              "action": "discount",
-              "label": "10 % discount",
-              "visit_p": 0.574,
-              "purchase_p": 0.18,
-              "purchase_lift_p": 0.014,
-              "net_vs_none_eur": -0.54,
-              "cost_eur": 2.19
-            },
-            {
-              "action": "voucher",
-              "label": "€5 voucher",
-              "visit_p": 0.576,
-              "purchase_p": 0.161,
-              "purchase_lift_p": -0.006,
-              "net_vs_none_eur": -1.51,
-              "cost_eur": 0.8
-            },
-            {
-              "action": "email",
-              "label": "Email",
-              "visit_p": 0.659,
-              "purchase_p": 0.127,
-              "purchase_lift_p": -0.039,
-              "net_vs_none_eur": -5.28,
-              "cost_eur": 0.5
-            }
-          ],
-          "best": "Personalised ad"
-        },
-        "tells": []
-      },
-      {
-        "customer_id": "CUST-00724",
-        "name": "Elina Manninen",
-        "pets": "aquarium",
-        "pets_declared": true,
-        "dog_size": null,
-        "region": "tampere",
-        "tenure_months": 10,
+        "region": "helsinki",
+        "tenure_months": 1,
         "last_order_month": "2026-04",
         "latest_rating": null,
         "risk": "very likely",
-        "risk_p": 0.8016,
-        "spend_12m_eur": 236.61,
+        "risk_p": 0.8023,
+        "spend_12m_eur": 240.69,
         "why_explanation": {
-          "base_p": 0.1343,
+          "base_p": 0.1367,
           "predicted_value": "true",
           "lifts": [
             {
-              "lift": 5.949,
+              "lift": 5.85,
               "propositions": [
                 {
                   "field": "visits",
@@ -1939,16 +1255,150 @@
               }
             }
           ],
-          "final_p": 0.8016
+          "final_p": 0.8023
         },
         "offer": {
           "sku": "SKU-PT-0609",
           "name": "JBL Filter Pads, single",
           "category": "aquarium/aquarium",
           "price_eur": 26.57,
-          "response_p": 0.226,
-          "order_value_eur": 29.63,
-          "expected_return_eur": 6.18
+          "response_p": 0.177,
+          "order_value_eur": 29.16,
+          "expected_return_eur": 4.67
+        },
+        "actions": {
+          "context": {
+            "recency_bucket": "0-90d",
+            "spend_band": "high",
+            "offer_buyer": "rarely",
+            "open_issue": "none",
+            "email_history": "never_sent",
+            "tracking_consent": "yes"
+          },
+          "order_value_eur": 120.12,
+          "options": [
+            {
+              "action": "ad",
+              "label": "Personalised ad",
+              "visit_p": 0.831,
+              "purchase_p": 0.273,
+              "purchase_lift_p": 0.071,
+              "net_vs_none_eur": 7.33,
+              "cost_eur": 1.2
+            },
+            {
+              "action": "voucher",
+              "label": "€10 voucher",
+              "visit_p": 0.702,
+              "purchase_p": 0.259,
+              "purchase_lift_p": 0.057,
+              "net_vs_none_eur": 4.2,
+              "cost_eur": 2.59
+            },
+            {
+              "action": "none",
+              "label": "No action",
+              "visit_p": 0.663,
+              "purchase_p": 0.202,
+              "purchase_lift_p": 0.0,
+              "net_vs_none_eur": 0.0,
+              "cost_eur": 0.0
+            },
+            {
+              "action": "apology",
+              "label": "Apology and €5 credit",
+              "visit_p": 0.663,
+              "purchase_p": 0.209,
+              "purchase_lift_p": 0.007,
+              "net_vs_none_eur": -0.68,
+              "cost_eur": 1.55
+            },
+            {
+              "action": "email",
+              "label": "Email",
+              "visit_p": 0.687,
+              "purchase_p": 0.176,
+              "purchase_lift_p": -0.026,
+              "net_vs_none_eur": -3.65,
+              "cost_eur": 0.5
+            },
+            {
+              "action": "voucher",
+              "label": "€5 voucher",
+              "visit_p": 0.623,
+              "purchase_p": 0.156,
+              "purchase_lift_p": -0.046,
+              "net_vs_none_eur": -6.31,
+              "cost_eur": 0.78
+            },
+            {
+              "action": "discount",
+              "label": "10 % discount",
+              "visit_p": 0.617,
+              "purchase_p": 0.153,
+              "purchase_lift_p": -0.049,
+              "net_vs_none_eur": -7.72,
+              "cost_eur": 1.84
+            }
+          ],
+          "best": "Personalised ad"
+        },
+        "tells": []
+      },
+      {
+        "customer_id": "CUST-01854",
+        "name": "Sofia Järvinen",
+        "pets": "small_animal",
+        "pets_declared": false,
+        "dog_size": null,
+        "region": "turku",
+        "tenure_months": 15,
+        "last_order_month": "2026-04",
+        "latest_rating": null,
+        "risk": "likely",
+        "risk_p": 0.6113,
+        "spend_12m_eur": 304.18,
+        "why_explanation": {
+          "base_p": 0.1367,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 3.339,
+              "propositions": [
+                {
+                  "field": "visits",
+                  "value": "4"
+                }
+              ],
+              "highlight": {
+                "field": "visits",
+                "marked_text": "«4»"
+              }
+            },
+            {
+              "lift": 1.54,
+              "propositions": [
+                {
+                  "field": "spent_eur",
+                  "value": "47.8"
+                }
+              ],
+              "highlight": {
+                "field": "spent_eur",
+                "marked_text": "«47.8»"
+              }
+            }
+          ],
+          "final_p": 0.6113
+        },
+        "offer": {
+          "sku": "SKU-PT-0535",
+          "name": "PetNord Guinea Pig Mix Food 15kg",
+          "category": "small_animal/dry-food",
+          "price_eur": 105.37,
+          "response_p": 0.325,
+          "order_value_eur": 23.93,
+          "expected_return_eur": 7.27
         },
         "actions": {
           "context": {
@@ -1956,52 +1406,61 @@
             "spend_band": "mid",
             "offer_buyer": "mostly",
             "open_issue": "none",
-            "email_history": "never_sent",
-            "tracking_consent": "no"
+            "email_history": "ignored",
+            "tracking_consent": "yes"
           },
-          "order_value_eur": 54.32,
+          "order_value_eur": 56.83,
           "options": [
+            {
+              "action": "ad",
+              "label": "Personalised ad",
+              "visit_p": 0.841,
+              "purchase_p": 0.421,
+              "purchase_lift_p": 0.256,
+              "net_vs_none_eur": 13.36,
+              "cost_eur": 1.2
+            },
             {
               "action": "discount",
               "label": "10 % discount",
-              "visit_p": 0.607,
-              "purchase_p": 0.308,
-              "purchase_lift_p": 0.13,
-              "net_vs_none_eur": 5.38,
-              "cost_eur": 1.67
-            },
-            {
-              "action": "email",
-              "label": "Email",
-              "visit_p": 0.698,
-              "purchase_p": 0.229,
-              "purchase_lift_p": 0.051,
-              "net_vs_none_eur": 2.25,
-              "cost_eur": 0.5
+              "visit_p": 0.545,
+              "purchase_p": 0.338,
+              "purchase_lift_p": 0.174,
+              "net_vs_none_eur": 7.94,
+              "cost_eur": 1.92
             },
             {
               "action": "voucher",
               "label": "€10 voucher",
-              "visit_p": 0.696,
-              "purchase_p": 0.265,
-              "purchase_lift_p": 0.087,
-              "net_vs_none_eur": 2.07,
-              "cost_eur": 2.65
+              "visit_p": 0.55,
+              "purchase_p": 0.254,
+              "purchase_lift_p": 0.089,
+              "net_vs_none_eur": 2.51,
+              "cost_eur": 2.54
+            },
+            {
+              "action": "email",
+              "label": "Email",
+              "visit_p": 0.557,
+              "purchase_p": 0.204,
+              "purchase_lift_p": 0.039,
+              "net_vs_none_eur": 1.73,
+              "cost_eur": 0.5
             },
             {
               "action": "apology",
               "label": "Apology and €5 credit",
-              "visit_p": 0.637,
-              "purchase_p": 0.213,
-              "purchase_lift_p": 0.034,
-              "net_vs_none_eur": 0.3,
-              "cost_eur": 1.56
+              "visit_p": 0.594,
+              "purchase_p": 0.192,
+              "purchase_lift_p": 0.027,
+              "net_vs_none_eur": 0.07,
+              "cost_eur": 1.46
             },
             {
               "action": "none",
               "label": "No action",
-              "visit_p": 0.599,
-              "purchase_p": 0.178,
+              "visit_p": 0.532,
+              "purchase_p": 0.165,
               "purchase_lift_p": 0.0,
               "net_vs_none_eur": 0.0,
               "cost_eur": 0.0
@@ -2009,14 +1468,14 @@
             {
               "action": "voucher",
               "label": "€5 voucher",
-              "visit_p": 0.604,
-              "purchase_p": 0.175,
-              "purchase_lift_p": -0.003,
-              "net_vs_none_eur": -1.04,
-              "cost_eur": 0.88
+              "visit_p": 0.465,
+              "purchase_p": 0.153,
+              "purchase_lift_p": -0.012,
+              "net_vs_none_eur": -1.45,
+              "cost_eur": 0.76
             }
           ],
-          "best": "10 % discount"
+          "best": "Personalised ad"
         },
         "tells": []
       },
@@ -2031,14 +1490,14 @@
         "last_order_month": "2026-04",
         "latest_rating": null,
         "risk": "likely",
-        "risk_p": 0.6809,
+        "risk_p": 0.5986,
         "spend_12m_eur": 276.19,
         "why_explanation": {
-          "base_p": 0.1343,
+          "base_p": 0.1367,
           "predicted_value": "true",
           "lifts": [
             {
-              "lift": 5.042,
+              "lift": 4.353,
               "propositions": [
                 {
                   "field": "visits",
@@ -2051,16 +1510,16 @@
               }
             }
           ],
-          "final_p": 0.6809
+          "final_p": 0.5986
         },
         "offer": {
-          "sku": "SKU-PT-0530",
-          "name": "PetNord Rabbit Pellets Food 12kg",
+          "sku": "SKU-PT-0535",
+          "name": "PetNord Guinea Pig Mix Food 15kg",
           "category": "small_animal/dry-food",
-          "price_eur": 86.12,
-          "response_p": 0.183,
-          "order_value_eur": 72.32,
-          "expected_return_eur": 12.74
+          "price_eur": 105.37,
+          "response_p": 0.148,
+          "order_value_eur": 33.07,
+          "expected_return_eur": 4.39
         },
         "actions": {
           "context": {
@@ -2071,225 +1530,76 @@
             "email_history": "never_sent",
             "tracking_consent": "yes"
           },
-          "order_value_eur": 121.58,
+          "order_value_eur": 120.12,
           "options": [
             {
               "action": "ad",
               "label": "Personalised ad",
-              "visit_p": 0.818,
-              "purchase_p": 0.374,
+              "visit_p": 0.853,
+              "purchase_p": 0.409,
               "purchase_lift_p": 0.183,
-              "net_vs_none_eur": 21.07,
+              "net_vs_none_eur": 20.75,
               "cost_eur": 1.2
             },
             {
               "action": "email",
               "label": "Email",
-              "visit_p": 0.698,
-              "purchase_p": 0.263,
-              "purchase_lift_p": 0.072,
-              "net_vs_none_eur": 8.28,
+              "visit_p": 0.687,
+              "purchase_p": 0.282,
+              "purchase_lift_p": 0.056,
+              "net_vs_none_eur": 6.17,
               "cost_eur": 0.5
             },
             {
               "action": "voucher",
               "label": "€10 voucher",
-              "visit_p": 0.696,
-              "purchase_p": 0.246,
-              "purchase_lift_p": 0.056,
-              "net_vs_none_eur": 4.32,
-              "cost_eur": 2.46
-            },
-            {
-              "action": "discount",
-              "label": "10 % discount",
-              "visit_p": 0.574,
-              "purchase_p": 0.235,
-              "purchase_lift_p": 0.044,
-              "net_vs_none_eur": 2.52,
-              "cost_eur": 2.85
+              "visit_p": 0.702,
+              "purchase_p": 0.287,
+              "purchase_lift_p": 0.061,
+              "net_vs_none_eur": 4.43,
+              "cost_eur": 2.87
             },
             {
               "action": "none",
               "label": "No action",
-              "visit_p": 0.599,
-              "purchase_p": 0.191,
+              "visit_p": 0.663,
+              "purchase_p": 0.226,
               "purchase_lift_p": 0.0,
               "net_vs_none_eur": 0.0,
               "cost_eur": 0.0
             },
             {
+              "action": "discount",
+              "label": "10 % discount",
+              "visit_p": 0.617,
+              "purchase_p": 0.24,
+              "purchase_lift_p": 0.014,
+              "net_vs_none_eur": -1.25,
+              "cost_eur": 2.88
+            },
+            {
               "action": "apology",
               "label": "Apology and €5 credit",
-              "visit_p": 0.637,
-              "purchase_p": 0.195,
-              "purchase_lift_p": 0.005,
-              "net_vs_none_eur": -0.89,
-              "cost_eur": 1.48
+              "visit_p": 0.663,
+              "purchase_p": 0.193,
+              "purchase_lift_p": -0.034,
+              "net_vs_none_eur": -5.49,
+              "cost_eur": 1.46
             },
             {
               "action": "voucher",
               "label": "€5 voucher",
-              "visit_p": 0.604,
-              "purchase_p": 0.161,
-              "purchase_lift_p": -0.029,
-              "net_vs_none_eur": -4.35,
-              "cost_eur": 0.81
+              "visit_p": 0.623,
+              "purchase_p": 0.176,
+              "purchase_lift_p": -0.05,
+              "net_vs_none_eur": -6.92,
+              "cost_eur": 0.88
             }
           ],
           "best": "Personalised ad"
         },
         "tells": [
           "Returned an item"
-        ]
-      },
-      {
-        "customer_id": "CUST-00189",
-        "name": "Kalle Rantanen",
-        "pets": "aquarium",
-        "pets_declared": true,
-        "dog_size": null,
-        "region": "turku",
-        "tenure_months": 19,
-        "last_order_month": "2026-04",
-        "latest_rating": 5,
-        "risk": "likely",
-        "risk_p": 0.6162,
-        "spend_12m_eur": 294.07,
-        "why_explanation": {
-          "base_p": 0.1343,
-          "predicted_value": "true",
-          "lifts": [
-            {
-              "lift": 3.387,
-              "propositions": [
-                {
-                  "field": "visits",
-                  "value": "4"
-                }
-              ],
-              "highlight": {
-                "field": "visits",
-                "marked_text": "«4»"
-              }
-            },
-            {
-              "lift": 1.363,
-              "propositions": [
-                {
-                  "field": "tenure_months_at_month",
-                  "value": "19"
-                }
-              ],
-              "highlight": {
-                "field": "tenure_months_at_month",
-                "marked_text": "«19»"
-              }
-            },
-            {
-              "lift": 1.242,
-              "propositions": [
-                {
-                  "field": "pets",
-                  "value": "aquarium"
-                }
-              ],
-              "highlight": {
-                "field": "pets",
-                "marked_text": "«aquarium»"
-              }
-            }
-          ],
-          "final_p": 0.6162
-        },
-        "offer": {
-          "sku": "SKU-PT-0609",
-          "name": "JBL Filter Pads, single",
-          "category": "aquarium/aquarium",
-          "price_eur": 26.57,
-          "response_p": 0.226,
-          "order_value_eur": 29.63,
-          "expected_return_eur": 6.18
-        },
-        "actions": {
-          "context": {
-            "recency_bucket": "0-90d",
-            "spend_band": "high",
-            "offer_buyer": "sometimes",
-            "open_issue": "none",
-            "email_history": "never_sent",
-            "tracking_consent": "yes"
-          },
-          "order_value_eur": 121.58,
-          "options": [
-            {
-              "action": "ad",
-              "label": "Personalised ad",
-              "visit_p": 0.818,
-              "purchase_p": 0.374,
-              "purchase_lift_p": 0.183,
-              "net_vs_none_eur": 21.07,
-              "cost_eur": 1.2
-            },
-            {
-              "action": "email",
-              "label": "Email",
-              "visit_p": 0.698,
-              "purchase_p": 0.263,
-              "purchase_lift_p": 0.072,
-              "net_vs_none_eur": 8.28,
-              "cost_eur": 0.5
-            },
-            {
-              "action": "voucher",
-              "label": "€10 voucher",
-              "visit_p": 0.696,
-              "purchase_p": 0.246,
-              "purchase_lift_p": 0.056,
-              "net_vs_none_eur": 4.32,
-              "cost_eur": 2.46
-            },
-            {
-              "action": "discount",
-              "label": "10 % discount",
-              "visit_p": 0.574,
-              "purchase_p": 0.235,
-              "purchase_lift_p": 0.044,
-              "net_vs_none_eur": 2.52,
-              "cost_eur": 2.85
-            },
-            {
-              "action": "none",
-              "label": "No action",
-              "visit_p": 0.599,
-              "purchase_p": 0.191,
-              "purchase_lift_p": 0.0,
-              "net_vs_none_eur": 0.0,
-              "cost_eur": 0.0
-            },
-            {
-              "action": "apology",
-              "label": "Apology and €5 credit",
-              "visit_p": 0.637,
-              "purchase_p": 0.195,
-              "purchase_lift_p": 0.005,
-              "net_vs_none_eur": -0.89,
-              "cost_eur": 1.48
-            },
-            {
-              "action": "voucher",
-              "label": "€5 voucher",
-              "visit_p": 0.604,
-              "purchase_p": 0.161,
-              "purchase_lift_p": -0.029,
-              "net_vs_none_eur": -4.35,
-              "cost_eur": 0.81
-            }
-          ],
-          "best": "Personalised ad"
-        },
-        "tells": [
-          "Had a late or damaged delivery"
         ]
       },
       {
@@ -2303,14 +1613,14 @@
         "last_order_month": "2026-03",
         "latest_rating": null,
         "risk": "likely",
-        "risk_p": 0.7596,
+        "risk_p": 0.6969,
         "spend_12m_eur": 235.24,
         "why_explanation": {
-          "base_p": 0.1343,
+          "base_p": 0.1367,
           "predicted_value": "true",
           "lifts": [
             {
-              "lift": 5.042,
+              "lift": 4.353,
               "propositions": [
                 {
                   "field": "visits",
@@ -2323,7 +1633,7 @@
               }
             },
             {
-              "lift": 1.386,
+              "lift": 1.429,
               "propositions": [
                 {
                   "field": "pets",
@@ -2336,16 +1646,16 @@
               }
             }
           ],
-          "final_p": 0.7596
+          "final_p": 0.6969
         },
         "offer": {
-          "sku": "SKU-PT-0530",
-          "name": "PetNord Rabbit Pellets Food 12kg",
+          "sku": "SKU-PT-0535",
+          "name": "PetNord Guinea Pig Mix Food 15kg",
           "category": "small_animal/dry-food",
-          "price_eur": 86.12,
-          "response_p": 0.183,
-          "order_value_eur": 72.32,
-          "expected_return_eur": 12.74
+          "price_eur": 105.37,
+          "response_p": 0.148,
+          "order_value_eur": 33.07,
+          "expected_return_eur": 4.39
         },
         "actions": {
           "context": {
@@ -2356,49 +1666,40 @@
             "email_history": "never_sent",
             "tracking_consent": "no"
           },
-          "order_value_eur": 121.58,
+          "order_value_eur": 120.12,
           "options": [
             {
               "action": "voucher",
               "label": "€10 voucher",
-              "visit_p": 0.696,
-              "purchase_p": 0.297,
-              "purchase_lift_p": 0.146,
-              "net_vs_none_eur": 14.78,
-              "cost_eur": 2.97
+              "visit_p": 0.702,
+              "purchase_p": 0.311,
+              "purchase_lift_p": 0.136,
+              "net_vs_none_eur": 13.23,
+              "cost_eur": 3.11
             },
             {
               "action": "apology",
               "label": "Apology and €5 credit",
-              "visit_p": 0.637,
-              "purchase_p": 0.211,
-              "purchase_lift_p": 0.06,
-              "net_vs_none_eur": 5.79,
-              "cost_eur": 1.56
+              "visit_p": 0.663,
+              "purchase_p": 0.209,
+              "purchase_lift_p": 0.034,
+              "net_vs_none_eur": 2.54,
+              "cost_eur": 1.55
             },
             {
               "action": "voucher",
               "label": "€5 voucher",
-              "visit_p": 0.604,
-              "purchase_p": 0.199,
-              "purchase_lift_p": 0.048,
-              "net_vs_none_eur": 4.89,
-              "cost_eur": 0.99
-            },
-            {
-              "action": "discount",
-              "label": "10 % discount",
-              "visit_p": 0.574,
-              "purchase_p": 0.19,
-              "purchase_lift_p": 0.039,
-              "net_vs_none_eur": 2.43,
-              "cost_eur": 2.3
+              "visit_p": 0.623,
+              "purchase_p": 0.193,
+              "purchase_lift_p": 0.018,
+              "net_vs_none_eur": 1.2,
+              "cost_eur": 0.97
             },
             {
               "action": "none",
               "label": "No action",
-              "visit_p": 0.599,
-              "purchase_p": 0.151,
+              "visit_p": 0.663,
+              "purchase_p": 0.175,
               "purchase_lift_p": 0.0,
               "net_vs_none_eur": 0.0,
               "cost_eur": 0.0
@@ -2406,14 +1707,297 @@
             {
               "action": "email",
               "label": "Email",
-              "visit_p": 0.665,
-              "purchase_p": 0.143,
-              "purchase_lift_p": -0.008,
-              "net_vs_none_eur": -1.45,
+              "visit_p": 0.687,
+              "purchase_p": 0.176,
+              "purchase_lift_p": 0.0,
+              "net_vs_none_eur": -0.44,
               "cost_eur": 0.5
+            },
+            {
+              "action": "discount",
+              "label": "10 % discount",
+              "visit_p": 0.617,
+              "purchase_p": 0.164,
+              "purchase_lift_p": -0.011,
+              "net_vs_none_eur": -3.34,
+              "cost_eur": 1.97
             }
           ],
           "best": "€10 voucher"
+        },
+        "tells": []
+      },
+      {
+        "customer_id": "CUST-01812",
+        "name": "Taina Lampinen",
+        "pets": "small_animal",
+        "pets_declared": true,
+        "dog_size": null,
+        "region": "tampere",
+        "tenure_months": 1,
+        "last_order_month": "2026-04",
+        "latest_rating": null,
+        "risk": "likely",
+        "risk_p": 0.5675,
+        "spend_12m_eur": 287.67,
+        "why_explanation": {
+          "base_p": 0.1367,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 3.339,
+              "propositions": [
+                {
+                  "field": "visits",
+                  "value": "4"
+                }
+              ],
+              "highlight": {
+                "field": "visits",
+                "marked_text": "«4»"
+              }
+            },
+            {
+              "lift": 1.429,
+              "propositions": [
+                {
+                  "field": "pets",
+                  "value": "small_animal"
+                }
+              ],
+              "highlight": {
+                "field": "pets",
+                "marked_text": "«small_animal»"
+              }
+            }
+          ],
+          "final_p": 0.5675
+        },
+        "offer": {
+          "sku": "SKU-PT-0535",
+          "name": "PetNord Guinea Pig Mix Food 15kg",
+          "category": "small_animal/dry-food",
+          "price_eur": 105.37,
+          "response_p": 0.287,
+          "order_value_eur": 34.84,
+          "expected_return_eur": 9.51
+        },
+        "actions": {
+          "context": {
+            "recency_bucket": "0-90d",
+            "spend_band": "high",
+            "offer_buyer": "sometimes",
+            "open_issue": "late_delivery",
+            "email_history": "responded",
+            "tracking_consent": "no"
+          },
+          "order_value_eur": 120.12,
+          "options": [
+            {
+              "action": "apology",
+              "label": "Apology and €5 credit",
+              "visit_p": 0.884,
+              "purchase_p": 0.461,
+              "purchase_lift_p": 0.177,
+              "net_vs_none_eur": 18.44,
+              "cost_eur": 2.8
+            },
+            {
+              "action": "email",
+              "label": "Email",
+              "visit_p": 0.902,
+              "purchase_p": 0.365,
+              "purchase_lift_p": 0.081,
+              "net_vs_none_eur": 9.26,
+              "cost_eur": 0.5
+            },
+            {
+              "action": "discount",
+              "label": "10 % discount",
+              "visit_p": 0.644,
+              "purchase_p": 0.331,
+              "purchase_lift_p": 0.047,
+              "net_vs_none_eur": 1.68,
+              "cost_eur": 3.98
+            },
+            {
+              "action": "none",
+              "label": "No action",
+              "visit_p": 0.833,
+              "purchase_p": 0.284,
+              "purchase_lift_p": 0.0,
+              "net_vs_none_eur": 0.0,
+              "cost_eur": 0.0
+            },
+            {
+              "action": "voucher",
+              "label": "€10 voucher",
+              "visit_p": 0.743,
+              "purchase_p": 0.191,
+              "purchase_lift_p": -0.093,
+              "net_vs_none_eur": -13.08,
+              "cost_eur": 1.91
+            },
+            {
+              "action": "voucher",
+              "label": "€5 voucher",
+              "visit_p": 0.68,
+              "purchase_p": 0.112,
+              "purchase_lift_p": -0.171,
+              "net_vs_none_eur": -21.16,
+              "cost_eur": 0.56
+            }
+          ],
+          "best": "Apology and €5 credit"
+        },
+        "tells": [
+          "Had a late or damaged delivery"
+        ]
+      },
+      {
+        "customer_id": "CUST-01178",
+        "name": "Sirpa Kuusisto",
+        "pets": "small_animal",
+        "pets_declared": true,
+        "dog_size": null,
+        "region": "oulu",
+        "tenure_months": 1,
+        "last_order_month": "2026-03",
+        "latest_rating": null,
+        "risk": "likely",
+        "risk_p": 0.7665,
+        "spend_12m_eur": 207.48,
+        "why_explanation": {
+          "base_p": 0.1367,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 4.353,
+              "propositions": [
+                {
+                  "field": "visits",
+                  "value": "3"
+                }
+              ],
+              "highlight": {
+                "field": "visits",
+                "marked_text": "«3»"
+              }
+            },
+            {
+              "lift": 1.429,
+              "propositions": [
+                {
+                  "field": "pets",
+                  "value": "small_animal"
+                }
+              ],
+              "highlight": {
+                "field": "pets",
+                "marked_text": "«small_animal»"
+              }
+            },
+            {
+              "lift": 1.347,
+              "propositions": [
+                {
+                  "field": "region",
+                  "value": "oulu"
+                }
+              ],
+              "highlight": {
+                "field": "region",
+                "marked_text": "«oulu»"
+              }
+            }
+          ],
+          "final_p": 0.7665
+        },
+        "offer": {
+          "sku": "SKU-PT-0530",
+          "name": "PetNord Rabbit Pellets Food 12kg",
+          "category": "small_animal/dry-food",
+          "price_eur": 86.12,
+          "response_p": 0.365,
+          "order_value_eur": 76.11,
+          "expected_return_eur": 27.29
+        },
+        "actions": {
+          "context": {
+            "recency_bucket": "0-90d",
+            "spend_band": "high",
+            "offer_buyer": "sometimes",
+            "open_issue": "none",
+            "email_history": "responded",
+            "tracking_consent": "yes"
+          },
+          "order_value_eur": 120.12,
+          "options": [
+            {
+              "action": "ad",
+              "label": "Personalised ad",
+              "visit_p": 0.752,
+              "purchase_p": 0.377,
+              "purchase_lift_p": 0.067,
+              "net_vs_none_eur": 6.79,
+              "cost_eur": 1.2
+            },
+            {
+              "action": "email",
+              "label": "Email",
+              "visit_p": 0.836,
+              "purchase_p": 0.355,
+              "purchase_lift_p": 0.044,
+              "net_vs_none_eur": 4.82,
+              "cost_eur": 0.5
+            },
+            {
+              "action": "none",
+              "label": "No action",
+              "visit_p": 0.723,
+              "purchase_p": 0.311,
+              "purchase_lift_p": 0.0,
+              "net_vs_none_eur": 0.0,
+              "cost_eur": 0.0
+            },
+            {
+              "action": "voucher",
+              "label": "€10 voucher",
+              "visit_p": 0.737,
+              "purchase_p": 0.329,
+              "purchase_lift_p": 0.018,
+              "net_vs_none_eur": -1.08,
+              "cost_eur": 3.29
+            },
+            {
+              "action": "apology",
+              "label": "Apology and €5 credit",
+              "visit_p": 0.734,
+              "purchase_p": 0.271,
+              "purchase_lift_p": -0.039,
+              "net_vs_none_eur": -6.59,
+              "cost_eur": 1.86
+            },
+            {
+              "action": "voucher",
+              "label": "€5 voucher",
+              "visit_p": 0.662,
+              "purchase_p": 0.206,
+              "purchase_lift_p": -0.104,
+              "net_vs_none_eur": -13.56,
+              "cost_eur": 1.03
+            },
+            {
+              "action": "discount",
+              "label": "10 % discount",
+              "visit_p": 0.565,
+              "purchase_p": 0.212,
+              "purchase_lift_p": -0.099,
+              "net_vs_none_eur": -14.42,
+              "cost_eur": 2.54
+            }
+          ],
+          "best": "Personalised ad"
         },
         "tells": []
       },
@@ -2428,14 +2012,14 @@
         "last_order_month": "2026-03",
         "latest_rating": null,
         "risk": "likely",
-        "risk_p": 0.6809,
+        "risk_p": 0.5986,
         "spend_12m_eur": 260.3,
         "why_explanation": {
-          "base_p": 0.1343,
+          "base_p": 0.1367,
           "predicted_value": "true",
           "lifts": [
             {
-              "lift": 5.042,
+              "lift": 4.353,
               "propositions": [
                 {
                   "field": "visits",
@@ -2448,16 +2032,16 @@
               }
             }
           ],
-          "final_p": 0.6809
+          "final_p": 0.5986
         },
         "offer": {
           "sku": "SKU-PT-0609",
           "name": "JBL Filter Pads, single",
           "category": "aquarium/aquarium",
           "price_eur": 26.57,
-          "response_p": 0.567,
-          "order_value_eur": 66.7,
-          "expected_return_eur": 37.29
+          "response_p": 0.149,
+          "order_value_eur": 20.02,
+          "expected_return_eur": 2.47
         },
         "actions": {
           "context": {
@@ -2465,319 +2049,799 @@
             "spend_band": "high",
             "offer_buyer": "sometimes",
             "open_issue": "none",
-            "email_history": "responded",
+            "email_history": "ignored",
             "tracking_consent": "no"
           },
-          "order_value_eur": 121.58,
+          "order_value_eur": 120.12,
           "options": [
-            {
-              "action": "email",
-              "label": "Email",
-              "visit_p": 0.839,
-              "purchase_p": 0.342,
-              "purchase_lift_p": 0.172,
-              "net_vs_none_eur": 20.35,
-              "cost_eur": 0.5
-            },
             {
               "action": "voucher",
               "label": "€10 voucher",
-              "visit_p": 0.739,
-              "purchase_p": 0.312,
-              "purchase_lift_p": 0.141,
-              "net_vs_none_eur": 14.07,
-              "cost_eur": 3.12
+              "visit_p": 0.648,
+              "purchase_p": 0.343,
+              "purchase_lift_p": 0.146,
+              "net_vs_none_eur": 14.09,
+              "cost_eur": 3.43
             },
             {
               "action": "discount",
               "label": "10 % discount",
-              "visit_p": 0.683,
-              "purchase_p": 0.259,
-              "purchase_lift_p": 0.088,
-              "net_vs_none_eur": 7.53,
-              "cost_eur": 3.15
+              "visit_p": 0.617,
+              "purchase_p": 0.288,
+              "purchase_lift_p": 0.091,
+              "net_vs_none_eur": 7.48,
+              "cost_eur": 3.46
             },
             {
-              "action": "apology",
-              "label": "Apology and €5 credit",
-              "visit_p": 0.685,
-              "purchase_p": 0.243,
-              "purchase_lift_p": 0.072,
-              "net_vs_none_eur": 7.09,
-              "cost_eur": 1.72
+              "action": "email",
+              "label": "Email",
+              "visit_p": 0.629,
+              "purchase_p": 0.262,
+              "purchase_lift_p": 0.065,
+              "net_vs_none_eur": 7.3,
+              "cost_eur": 0.5
             },
             {
               "action": "voucher",
               "label": "€5 voucher",
-              "visit_p": 0.653,
-              "purchase_p": 0.211,
-              "purchase_lift_p": 0.04,
-              "net_vs_none_eur": 3.82,
-              "cost_eur": 1.06
+              "visit_p": 0.567,
+              "purchase_p": 0.217,
+              "purchase_lift_p": 0.02,
+              "net_vs_none_eur": 1.28,
+              "cost_eur": 1.08
             },
             {
               "action": "none",
               "label": "No action",
-              "visit_p": 0.698,
-              "purchase_p": 0.171,
+              "visit_p": 0.663,
+              "purchase_p": 0.197,
               "purchase_lift_p": 0.0,
               "net_vs_none_eur": 0.0,
               "cost_eur": 0.0
+            },
+            {
+              "action": "apology",
+              "label": "Apology and €5 credit",
+              "visit_p": 0.663,
+              "purchase_p": 0.206,
+              "purchase_lift_p": 0.009,
+              "net_vs_none_eur": -0.41,
+              "cost_eur": 1.53
             }
           ],
-          "best": "Email"
+          "best": "€10 voucher"
         },
         "tells": []
       },
       {
-        "customer_id": "CUST-02011",
-        "name": "Sirpa Virtanen",
+        "customer_id": "CUST-02615",
+        "name": "Jouko Koivisto",
         "pets": "aquarium",
         "pets_declared": true,
         "dog_size": null,
-        "region": "tampere",
-        "tenure_months": 6,
+        "region": "espoo",
+        "tenure_months": 17,
         "last_order_month": "2026-04",
-        "latest_rating": null,
+        "latest_rating": 3,
         "risk": "likely",
-        "risk_p": 0.6687,
-        "spend_12m_eur": 262.85,
+        "risk_p": 0.55,
+        "spend_12m_eur": 271.86,
         "why_explanation": {
-          "base_p": 0.1343,
+          "base_p": 0.1367,
           "predicted_value": "true",
           "lifts": [
             {
-              "lift": 5.949,
+              "lift": 3.339,
               "propositions": [
                 {
                   "field": "visits",
-                  "value": "2"
+                  "value": "4"
                 }
               ],
               "highlight": {
                 "field": "visits",
-                "marked_text": "«2»"
+                "marked_text": "«4»"
               }
             },
             {
-              "lift": 0.536,
+              "lift": 1.557,
               "propositions": [
                 {
                   "field": "tenure_months_at_month",
-                  "value": "6"
+                  "value": "17"
                 }
               ],
               "highlight": {
                 "field": "tenure_months_at_month",
-                "marked_text": "‹6›"
+                "marked_text": "«17»"
+              }
+            },
+            {
+              "lift": 0.709,
+              "propositions": [
+                {
+                  "field": "spent_eur",
+                  "value": "28.75"
+                }
+              ],
+              "highlight": {
+                "field": "spent_eur",
+                "marked_text": "‹28.75›"
+              }
+            },
+            {
+              "lift": 1.213,
+              "propositions": [
+                {
+                  "field": "pets",
+                  "value": "aquarium"
+                }
+              ],
+              "highlight": {
+                "field": "pets",
+                "marked_text": "«aquarium»"
               }
             }
           ],
-          "final_p": 0.6687
+          "final_p": 0.55
         },
         "offer": {
           "sku": "SKU-PT-0609",
           "name": "JBL Filter Pads, single",
           "category": "aquarium/aquarium",
           "price_eur": 26.57,
-          "response_p": 0.267,
-          "order_value_eur": 21.89,
-          "expected_return_eur": 5.34
+          "response_p": 0.177,
+          "order_value_eur": 29.16,
+          "expected_return_eur": 4.67
+        },
+        "actions": {
+          "context": {
+            "recency_bucket": "0-90d",
+            "spend_band": "mid",
+            "offer_buyer": "sometimes",
+            "open_issue": "none",
+            "email_history": "never_sent",
+            "tracking_consent": "yes"
+          },
+          "order_value_eur": 56.83,
+          "options": [
+            {
+              "action": "ad",
+              "label": "Personalised ad",
+              "visit_p": 0.827,
+              "purchase_p": 0.353,
+              "purchase_lift_p": 0.213,
+              "net_vs_none_eur": 10.89,
+              "cost_eur": 1.2
+            },
+            {
+              "action": "email",
+              "label": "Email",
+              "visit_p": 0.62,
+              "purchase_p": 0.206,
+              "purchase_lift_p": 0.066,
+              "net_vs_none_eur": 3.27,
+              "cost_eur": 0.5
+            },
+            {
+              "action": "voucher",
+              "label": "€10 voucher",
+              "visit_p": 0.576,
+              "purchase_p": 0.219,
+              "purchase_lift_p": 0.079,
+              "net_vs_none_eur": 2.3,
+              "cost_eur": 2.19
+            },
+            {
+              "action": "discount",
+              "label": "10 % discount",
+              "visit_p": 0.545,
+              "purchase_p": 0.199,
+              "purchase_lift_p": 0.059,
+              "net_vs_none_eur": 2.21,
+              "cost_eur": 1.13
+            },
+            {
+              "action": "none",
+              "label": "No action",
+              "visit_p": 0.532,
+              "purchase_p": 0.14,
+              "purchase_lift_p": 0.0,
+              "net_vs_none_eur": 0.0,
+              "cost_eur": 0.0
+            },
+            {
+              "action": "apology",
+              "label": "Apology and €5 credit",
+              "visit_p": 0.594,
+              "purchase_p": 0.156,
+              "purchase_lift_p": 0.016,
+              "net_vs_none_eur": -0.37,
+              "cost_eur": 1.28
+            },
+            {
+              "action": "voucher",
+              "label": "€5 voucher",
+              "visit_p": 0.487,
+              "purchase_p": 0.129,
+              "purchase_lift_p": -0.011,
+              "net_vs_none_eur": -1.25,
+              "cost_eur": 0.65
+            }
+          ],
+          "best": "Personalised ad"
+        },
+        "tells": [
+          "Returned an item"
+        ]
+      },
+      {
+        "customer_id": "CUST-02170",
+        "name": "Sami Karjalainen",
+        "pets": "small_animal",
+        "pets_declared": false,
+        "dog_size": null,
+        "region": "helsinki",
+        "tenure_months": 1,
+        "last_order_month": "2026-04",
+        "latest_rating": null,
+        "risk": "likely",
+        "risk_p": 0.6113,
+        "spend_12m_eur": 228.77,
+        "why_explanation": {
+          "base_p": 0.1367,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 3.339,
+              "propositions": [
+                {
+                  "field": "visits",
+                  "value": "4"
+                }
+              ],
+              "highlight": {
+                "field": "visits",
+                "marked_text": "«4»"
+              }
+            },
+            {
+              "lift": 1.54,
+              "propositions": [
+                {
+                  "field": "spent_eur",
+                  "value": "115.44"
+                }
+              ],
+              "highlight": {
+                "field": "spent_eur",
+                "marked_text": "«115.44»"
+              }
+            }
+          ],
+          "final_p": 0.6113
+        },
+        "offer": {
+          "sku": "SKU-PT-0530",
+          "name": "PetNord Rabbit Pellets Food 12kg",
+          "category": "small_animal/dry-food",
+          "price_eur": 86.12,
+          "response_p": 0.129,
+          "order_value_eur": 22.34,
+          "expected_return_eur": 2.37
         },
         "actions": {
           "context": {
             "recency_bucket": "0-90d",
             "spend_band": "high",
-            "offer_buyer": "mostly",
+            "offer_buyer": "sometimes",
             "open_issue": "none",
             "email_history": "ignored",
             "tracking_consent": "no"
           },
-          "order_value_eur": 121.58,
+          "order_value_eur": 120.12,
           "options": [
-            {
-              "action": "discount",
-              "label": "10 % discount",
-              "visit_p": 0.574,
-              "purchase_p": 0.329,
-              "purchase_lift_p": 0.142,
-              "net_vs_none_eur": 13.23,
-              "cost_eur": 4.0
-            },
             {
               "action": "voucher",
               "label": "€10 voucher",
-              "visit_p": 0.671,
-              "purchase_p": 0.312,
-              "purchase_lift_p": 0.125,
-              "net_vs_none_eur": 12.08,
-              "cost_eur": 3.12
+              "visit_p": 0.648,
+              "purchase_p": 0.343,
+              "purchase_lift_p": 0.146,
+              "net_vs_none_eur": 14.09,
+              "cost_eur": 3.43
             },
             {
-              "action": "apology",
-              "label": "Apology and €5 credit",
-              "visit_p": 0.637,
-              "purchase_p": 0.27,
-              "purchase_lift_p": 0.083,
-              "net_vs_none_eur": 8.21,
-              "cost_eur": 1.85
+              "action": "discount",
+              "label": "10 % discount",
+              "visit_p": 0.617,
+              "purchase_p": 0.288,
+              "purchase_lift_p": 0.091,
+              "net_vs_none_eur": 7.48,
+              "cost_eur": 3.46
             },
             {
               "action": "email",
               "label": "Email",
-              "visit_p": 0.668,
-              "purchase_p": 0.251,
-              "purchase_lift_p": 0.064,
-              "net_vs_none_eur": 7.28,
+              "visit_p": 0.629,
+              "purchase_p": 0.262,
+              "purchase_lift_p": 0.065,
+              "net_vs_none_eur": 7.3,
               "cost_eur": 0.5
             },
             {
               "action": "voucher",
               "label": "€5 voucher",
-              "visit_p": 0.576,
-              "purchase_p": 0.211,
-              "purchase_lift_p": 0.024,
-              "net_vs_none_eur": 1.83,
-              "cost_eur": 1.06
+              "visit_p": 0.567,
+              "purchase_p": 0.217,
+              "purchase_lift_p": 0.02,
+              "net_vs_none_eur": 1.28,
+              "cost_eur": 1.08
             },
             {
               "action": "none",
               "label": "No action",
-              "visit_p": 0.571,
-              "purchase_p": 0.187,
+              "visit_p": 0.663,
+              "purchase_p": 0.197,
               "purchase_lift_p": 0.0,
               "net_vs_none_eur": 0.0,
               "cost_eur": 0.0
+            },
+            {
+              "action": "apology",
+              "label": "Apology and €5 credit",
+              "visit_p": 0.663,
+              "purchase_p": 0.206,
+              "purchase_lift_p": 0.009,
+              "net_vs_none_eur": -0.41,
+              "cost_eur": 1.53
             }
           ],
-          "best": "10 % discount"
+          "best": "€10 voucher"
         },
         "tells": []
+      },
+      {
+        "customer_id": "CUST-01131",
+        "name": "Markku Toivonen",
+        "pets": "cat",
+        "pets_declared": true,
+        "dog_size": null,
+        "region": "oulu",
+        "tenure_months": 3,
+        "last_order_month": "2026-04",
+        "latest_rating": null,
+        "risk": "likely",
+        "risk_p": 0.5468,
+        "spend_12m_eur": 255.59,
+        "why_explanation": {
+          "base_p": 0.1367,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 3.339,
+              "propositions": [
+                {
+                  "field": "visits",
+                  "value": "4"
+                }
+              ],
+              "highlight": {
+                "field": "visits",
+                "marked_text": "«4»"
+              }
+            },
+            {
+              "lift": 1.347,
+              "propositions": [
+                {
+                  "field": "region",
+                  "value": "oulu"
+                }
+              ],
+              "highlight": {
+                "field": "region",
+                "marked_text": "«oulu»"
+              }
+            },
+            {
+              "lift": 0.815,
+              "propositions": [
+                {
+                  "field": "pets",
+                  "value": "cat"
+                }
+              ],
+              "highlight": {
+                "field": "pets",
+                "marked_text": "‹cat›"
+              }
+            },
+            {
+              "lift": 1.211,
+              "propositions": [
+                {
+                  "field": "tenure_months_at_month",
+                  "value": "3"
+                }
+              ],
+              "highlight": {
+                "field": "tenure_months_at_month",
+                "marked_text": "«3»"
+              }
+            }
+          ],
+          "final_p": 0.5468
+        },
+        "offer": {
+          "sku": "SKU-PT-0501",
+          "name": "Trixie Bowl, large",
+          "category": "cat/accessories",
+          "price_eur": 19.45,
+          "response_p": 0.192,
+          "order_value_eur": 24.56,
+          "expected_return_eur": 4.21
+        },
+        "actions": {
+          "context": {
+            "recency_bucket": "0-90d",
+            "spend_band": "high",
+            "offer_buyer": "rarely",
+            "open_issue": "none",
+            "email_history": "never_sent",
+            "tracking_consent": "no"
+          },
+          "order_value_eur": 120.12,
+          "options": [
+            {
+              "action": "voucher",
+              "label": "€10 voucher",
+              "visit_p": 0.702,
+              "purchase_p": 0.311,
+              "purchase_lift_p": 0.136,
+              "net_vs_none_eur": 13.23,
+              "cost_eur": 3.11
+            },
+            {
+              "action": "apology",
+              "label": "Apology and €5 credit",
+              "visit_p": 0.663,
+              "purchase_p": 0.209,
+              "purchase_lift_p": 0.034,
+              "net_vs_none_eur": 2.54,
+              "cost_eur": 1.55
+            },
+            {
+              "action": "voucher",
+              "label": "€5 voucher",
+              "visit_p": 0.623,
+              "purchase_p": 0.193,
+              "purchase_lift_p": 0.018,
+              "net_vs_none_eur": 1.2,
+              "cost_eur": 0.97
+            },
+            {
+              "action": "none",
+              "label": "No action",
+              "visit_p": 0.663,
+              "purchase_p": 0.175,
+              "purchase_lift_p": 0.0,
+              "net_vs_none_eur": 0.0,
+              "cost_eur": 0.0
+            },
+            {
+              "action": "email",
+              "label": "Email",
+              "visit_p": 0.687,
+              "purchase_p": 0.176,
+              "purchase_lift_p": 0.0,
+              "net_vs_none_eur": -0.44,
+              "cost_eur": 0.5
+            },
+            {
+              "action": "discount",
+              "label": "10 % discount",
+              "visit_p": 0.617,
+              "purchase_p": 0.164,
+              "purchase_lift_p": -0.011,
+              "net_vs_none_eur": -3.34,
+              "cost_eur": 1.97
+            }
+          ],
+          "best": "€10 voucher"
+        },
+        "tells": []
+      },
+      {
+        "customer_id": "CUST-00189",
+        "name": "Kalle Rantanen",
+        "pets": "aquarium",
+        "pets_declared": true,
+        "dog_size": null,
+        "region": "turku",
+        "tenure_months": 19,
+        "last_order_month": "2026-04",
+        "latest_rating": 5,
+        "risk": "likely",
+        "risk_p": 0.5103,
+        "spend_12m_eur": 269.0,
+        "why_explanation": {
+          "base_p": 0.1367,
+          "predicted_value": "true",
+          "lifts": [
+            {
+              "lift": 3.339,
+              "propositions": [
+                {
+                  "field": "visits",
+                  "value": "4"
+                }
+              ],
+              "highlight": {
+                "field": "visits",
+                "marked_text": "«4»"
+              }
+            },
+            {
+              "lift": 1.324,
+              "propositions": [
+                {
+                  "field": "tenure_months_at_month",
+                  "value": "19"
+                }
+              ],
+              "highlight": {
+                "field": "tenure_months_at_month",
+                "marked_text": "«19»"
+              }
+            },
+            {
+              "lift": 1.213,
+              "propositions": [
+                {
+                  "field": "pets",
+                  "value": "aquarium"
+                }
+              ],
+              "highlight": {
+                "field": "pets",
+                "marked_text": "«aquarium»"
+              }
+            },
+            {
+              "lift": 0.831,
+              "propositions": [
+                {
+                  "field": "region",
+                  "value": "turku"
+                }
+              ],
+              "highlight": {
+                "field": "region",
+                "marked_text": "‹turku›"
+              }
+            },
+            {
+              "lift": 0.868,
+              "propositions": [
+                {
+                  "field": "latest_rating",
+                  "value": "5"
+                }
+              ],
+              "highlight": {
+                "field": "latest_rating",
+                "marked_text": "‹5›"
+              }
+            }
+          ],
+          "final_p": 0.5103
+        },
+        "offer": {
+          "sku": "SKU-PT-0609",
+          "name": "JBL Filter Pads, single",
+          "category": "aquarium/aquarium",
+          "price_eur": 26.57,
+          "response_p": 0.258,
+          "order_value_eur": 20.02,
+          "expected_return_eur": 4.66
+        },
+        "actions": {
+          "context": {
+            "recency_bucket": "0-90d",
+            "spend_band": "high",
+            "offer_buyer": "sometimes",
+            "open_issue": "none",
+            "email_history": "ignored",
+            "tracking_consent": "yes"
+          },
+          "order_value_eur": 120.12,
+          "options": [
+            {
+              "action": "ad",
+              "label": "Personalised ad",
+              "visit_p": 0.865,
+              "purchase_p": 0.437,
+              "purchase_lift_p": 0.211,
+              "net_vs_none_eur": 24.17,
+              "cost_eur": 1.2
+            },
+            {
+              "action": "voucher",
+              "label": "€10 voucher",
+              "visit_p": 0.648,
+              "purchase_p": 0.287,
+              "purchase_lift_p": 0.061,
+              "net_vs_none_eur": 4.43,
+              "cost_eur": 2.87
+            },
+            {
+              "action": "email",
+              "label": "Email",
+              "visit_p": 0.629,
+              "purchase_p": 0.262,
+              "purchase_lift_p": 0.036,
+              "net_vs_none_eur": 3.8,
+              "cost_eur": 0.5
+            },
+            {
+              "action": "discount",
+              "label": "10 % discount",
+              "visit_p": 0.617,
+              "purchase_p": 0.253,
+              "purchase_lift_p": 0.027,
+              "net_vs_none_eur": 0.2,
+              "cost_eur": 3.04
+            },
+            {
+              "action": "none",
+              "label": "No action",
+              "visit_p": 0.663,
+              "purchase_p": 0.226,
+              "purchase_lift_p": 0.0,
+              "net_vs_none_eur": 0.0,
+              "cost_eur": 0.0
+            },
+            {
+              "action": "apology",
+              "label": "Apology and €5 credit",
+              "visit_p": 0.663,
+              "purchase_p": 0.206,
+              "purchase_lift_p": -0.02,
+              "net_vs_none_eur": -3.92,
+              "cost_eur": 1.53
+            },
+            {
+              "action": "voucher",
+              "label": "€5 voucher",
+              "visit_p": 0.567,
+              "purchase_p": 0.176,
+              "purchase_lift_p": -0.05,
+              "net_vs_none_eur": -6.92,
+              "cost_eur": 0.88
+            }
+          ],
+          "best": "Personalised ad"
+        },
+        "tells": [
+          "Had a late or damaged delivery"
+        ]
       }
     ],
     "drivers": [
       {
         "field": "tenure",
         "value": "18 months or more",
-        "lift": 1.86,
+        "lift": 1.88,
         "customers": 635,
-        "churners": 375,
-        "churn_rate": 0.5906,
-        "churn_rate_overall": 0.3173
+        "churners": 383,
+        "churn_rate": 0.6031,
+        "churn_rate_overall": 0.3217
       },
       {
         "field": "tenure",
         "value": "under 6 months",
-        "lift": 0.29,
+        "lift": 0.3,
         "customers": 1052,
-        "churners": 97,
-        "churn_rate": 0.0922,
-        "churn_rate_overall": 0.3173
-      },
-      {
-        "field": "region",
-        "value": "oulu",
-        "lift": 1.16,
-        "customers": 332,
-        "churners": 132,
-        "churn_rate": 0.3976,
-        "churn_rate_overall": 0.3173
+        "churners": 100,
+        "churn_rate": 0.0951,
+        "churn_rate_overall": 0.3217
       }
     ],
     "tells": [
       {
         "tell": "nps_0_3",
         "label": "Answered the NPS survey 0–3",
-        "customer_months": 321,
-        "churned": 91,
-        "churn_rate": 0.283,
-        "churn_rate_without": 0.147,
-        "lift": 1.93,
+        "customer_months": 354,
+        "churned": 105,
+        "churn_rate": 0.297,
+        "churn_rate_without": 0.149,
+        "lift": 1.99,
         "at_risk_listed": 1
-      },
-      {
-        "tell": "poor_review",
-        "label": "Wrote a 1–2 star review",
-        "customer_months": 1677,
-        "churned": 302,
-        "churn_rate": 0.18,
-        "churn_rate_without": 0.146,
-        "lift": 1.23,
-        "at_risk_listed": 3
-      },
-      {
-        "tell": "late_delivery",
-        "label": "Had a late or damaged delivery",
-        "customer_months": 1686,
-        "churned": 290,
-        "churn_rate": 0.172,
-        "churn_rate_without": 0.147,
-        "lift": 1.17,
-        "at_risk_listed": 1
-      },
-      {
-        "tell": "any",
-        "label": "Any of the four",
-        "customer_months": 6376,
-        "churned": 1053,
-        "churn_rate": 0.165,
-        "churn_rate_without": 0.141,
-        "lift": 1.17,
-        "at_risk_listed": 7
-      },
-      {
-        "tell": "detractor",
-        "label": "Answered the NPS survey as a detractor (0–6)",
-        "customer_months": 2265,
-        "churned": 385,
-        "churn_rate": 0.17,
-        "churn_rate_without": 0.146,
-        "lift": 1.16,
-        "at_risk_listed": 2
       },
       {
         "tell": "returned",
         "label": "Returned an item",
-        "customer_months": 2442,
-        "churned": 403,
-        "churn_rate": 0.165,
-        "churn_rate_without": 0.147,
-        "lift": 1.13,
+        "customer_months": 2544,
+        "churned": 479,
+        "churn_rate": 0.188,
+        "churn_rate_without": 0.146,
+        "lift": 1.29,
         "at_risk_listed": 3
+      },
+      {
+        "tell": "any",
+        "label": "Any of the four",
+        "customer_months": 6358,
+        "churned": 1109,
+        "churn_rate": 0.174,
+        "churn_rate_without": 0.14,
+        "lift": 1.25,
+        "at_risk_listed": 8
+      },
+      {
+        "tell": "late_delivery",
+        "label": "Had a late or damaged delivery",
+        "customer_months": 1666,
+        "churned": 305,
+        "churn_rate": 0.183,
+        "churn_rate_without": 0.149,
+        "lift": 1.23,
+        "at_risk_listed": 2
+      },
+      {
+        "tell": "detractor",
+        "label": "Answered the NPS survey as a detractor (0–6)",
+        "customer_months": 2259,
+        "churned": 407,
+        "churn_rate": 0.18,
+        "churn_rate_without": 0.148,
+        "lift": 1.22,
+        "at_risk_listed": 2
+      },
+      {
+        "tell": "poor_review",
+        "label": "Wrote a 1–2 star review",
+        "customer_months": 1696,
+        "churned": 294,
+        "churn_rate": 0.173,
+        "churn_rate_without": 0.149,
+        "lift": 1.16,
+        "at_risk_listed": 4
       },
       {
         "tell": "nps_4_6",
         "label": "Answered the NPS survey 4–6",
-        "customer_months": 1964,
-        "churned": 299,
-        "churn_rate": 0.152,
-        "churn_rate_without": 0.149,
-        "lift": 1.03,
+        "customer_months": 1930,
+        "churned": 311,
+        "churn_rate": 0.161,
+        "churn_rate_without": 0.15,
+        "lift": 1.07,
         "at_risk_listed": 1
       },
       {
         "tell": "nps_7_8",
         "label": "Answered the NPS survey 7–8",
-        "customer_months": 3124,
-        "churned": 407,
-        "churn_rate": 0.13,
-        "churn_rate_without": 0.153,
-        "lift": 0.85,
-        "at_risk_listed": 3
+        "customer_months": 3127,
+        "churned": 403,
+        "churn_rate": 0.129,
+        "churn_rate_without": 0.156,
+        "lift": 0.83,
+        "at_risk_listed": 4
       },
       {
         "tell": "nps_9_10",
         "label": "Answered the NPS survey 9–10",
-        "customer_months": 2702,
-        "churned": 296,
-        "churn_rate": 0.11,
-        "churn_rate_without": 0.155,
+        "customer_months": 2676,
+        "churned": 300,
+        "churn_rate": 0.112,
+        "churn_rate_without": 0.158,
         "lift": 0.71,
         "at_risk_listed": 3
       }
     ],
     "driver_fields_without_effect": [
       "pets",
+      "region",
       "dog_size",
       "diet"
     ],
@@ -2796,12 +2860,14 @@
           }
         },
         "where": {
-          "pets": "small_animal",
-          "region": "tampere",
-          "tenure_months_at_month": 8,
-          "visits": 5,
+          "region": "helsinki",
+          "tenure_months_at_month": 5,
+          "visits": 3,
           "purchases": 1,
-          "spent_eur": 100.95
+          "spent_eur": 115.92,
+          "latest_rating": 2,
+          "latest_sentiment": "negative",
+          "latest_category": "shipping"
         },
         "predict": "churned_in_3_months",
         "limit": 2,
@@ -2821,132 +2887,132 @@
         ]
       }
     },
-    "last_response_ms": 39590
+    "last_response_ms": 27211
   },
   "timings": [
     [
       "_search",
-      94.61
+      62.52
     ],
     [
       "_search",
-      246.6
+      181.52
     ],
     [
       "_search",
-      196.49
+      207.03
     ],
     [
       "_search",
-      7.25
+      9.72
     ],
     [
       "_batch",
-      130.6
+      242.68
     ],
     [
       "_search",
-      1.86
+      32.29
     ],
     [
       "_search",
-      1.92
+      2.88
     ],
     [
       "_search",
-      20.97
+      31.54
     ],
     [
       "_batch",
-      143.93
+      196.41
     ],
     [
       "_search",
-      0.99
+      1.01
     ],
     [
       "_batch",
-      77.33
+      107.47
     ],
     [
       "_search",
-      145.55
+      96.17
     ],
     [
       "_search",
-      134.02
+      121.92
     ],
     [
       "_search",
-      17.82
+      16.4
     ],
     [
       "_search",
-      19.07
+      26.87
     ],
     [
       "_search",
-      10.01
+      9.12
     ],
     [
       "_search",
-      7.45
+      8.27
     ],
     [
       "_search",
-      27.32
+      15.25
     ],
     [
       "_search",
-      107.49
+      108.36
     ],
     [
       "_search",
-      171.5
+      157.14
     ],
     [
       "_search",
-      208.88
+      206.79
     ],
     [
       "_search",
-      259.4
+      256.17
     ],
     [
       "_search",
-      316.43
+      322.08
     ],
     [
       "_search",
-      137.9
+      134.6
     ],
     [
       "_search",
-      1.15
+      1.56
     ],
     [
       "_batch",
-      1011.26
+      1244.91
     ],
     [
       "_batch",
-      766.87
+      1048.41
     ],
     [
       "_batch",
-      610.36
+      611.57
     ],
     [
       "_search",
-      0.69
+      0.47
     ],
     [
       "_search",
-      0.48
+      0.58
     ],
     [
       "_search",
-      0.53
+      0.44
     ]
   ]
 }

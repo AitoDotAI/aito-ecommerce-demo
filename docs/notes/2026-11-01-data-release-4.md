@@ -11,7 +11,15 @@ Cut 2026-11-01 on Antti's "Can you do the data now?". The generator's switches `
 - The NPS answers carry a comment (39 % do); reviews read like their stars and name the product. Ground truths are in `data/answer_key/` (`incidents.json`, `nps_comments.json`).
 - Three Shop shoppers were re-picked or renumbered because the incidents change product stars and so every pick that follows: Olli is now CUST-00159, Saara has 13 orders (7 hold the bag), Eemil has 13.
 
-## What is not final until the data is loaded (the five red tests)
+## State (2026-11-01 evening)
+
+Steps 1–5 below are done: the env `release4` exists on shared.aito.ai (a branch of master, so master is untouched), is loaded (283,274 rows, 16 tables, counts equal the release file), the snapshots are
+precomputed and committed, the runs regenerated and the literal numbers updated; the full suite passes (1,111). What is left is step 6, the cutover, and it needs Antti's yes. The four `test_aito_check` snapshot tests fail when run on `release4` itself
+because the snapshots are filed under master's namespace (`--as master`); they can only pass after the promote.
+
+The churn presets of the blog's widget on the new data (read-only `_predict` on `release4`): small_animal/tampere 34.6 % (was 64.0 %), aquarium/turku 41.8 % (was 24.7 %), cat/turku 1.9 % (unchanged).
+
+## What was not final until the data was loaded (the five red tests)
 
 The win-back run and the stock run are built from `data/precomputed/v2-master/retention.json` and `supply.json`, which come from Aito. Until the release env is loaded and
 `./do precompute` has run on it, they describe the old data. The five tests that compare them with a rebuild stay red until then.

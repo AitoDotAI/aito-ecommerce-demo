@@ -28,7 +28,7 @@ as ADR 0052, judged by a gate of its own, since there is no lift here: the evide
 | **Stay quiet** | fewer observed sales in the window than the evidence bar: nothing to base an order on | the sweep says the markdown would not clear it, or to hold |
 
 **Defaults** (the store's settings, shown on every step, as in ADR 0052): an evidence bar of **5 units sold** in the planning window, an order limit of **500 €**,
-the urgent share **0.5**. On the stored Supply snapshot (2026-05) that gives, of 83 reorder steps: 45 act, 2 suggest, 5 need a person, 31 stay quiet.
+the urgent share **0.5**. On the stored Supply snapshot (2026-05) that gives, of 83 reorder steps: 40 act, 2 suggest, 7 need a person, 34 stay quiet (release 4's data; release 3b's gave 45, 2, 5 and 31).
 **These are Antti's to set**: they decide what a rule may spend.
 
 Nothing is ordered: a run is simulated, like the win-back's. A reorder line says it uses the simple rule (ADR 0045's observed sales), not a forecast.
