@@ -23,9 +23,11 @@ from data.planted_switches import ON, stream
 BAD_P = {"recall": 0.35, "quality": 0.30}   # a purchase of the line in an incident month goes badly
 SWITCH_ODDS = 0.05          # a customer who had a bad unit buys that line at these odds ...
 SWITCH_MONTHS = 12          # ... for this many months after, whatever its quality is by then
-TRUST_ODDS = 0.90           # after the pull, the odds to buy any other grain-free dog dry food ...
+TRUST_ODDS = 0.70           # after the pull, the odds to buy any other grain-free dog dry food ...
 TRUST_RECOVERY_MONTHS = 8   # ... recover linearly to 1.0 over this many months
 BATCH_BUYER_ODDS = 0.5      # the customers who bought the batch buy that type at these odds for the same time
+RECALL_CHURN_RISE = 8.0         # a customer whose unit from the recalled batch went badly: the churn hazard ...
+RECALL_CHURN_MONTHS = 8         # ... for this many months (an ordinary bad experience: ×3 for 3)
 LINE_PICK_FACTOR = 4.0      # the house-label fish line is a hit from this month: it sells enough for its failure to matter
 LINE_HIT_FROM = "2025-01"
 
@@ -54,7 +56,7 @@ def plan(products: list) -> tuple[Incident, ...]:
     return (
         Incident("E1", "recall", line("dog", "dry-food", None, ("Salmon",), "grain-free"), ("2025-09", "2025-10"), "2025-11"),
         Incident("E2", "quality", line("cat", "wet-food", "Sheba", ("Beef",)), ("2025-02",), None),
-        Incident("E3", "quality", line("dog", "treats", HOUSE_LABEL, ("Liver Treats",)), ("2025-06",), None),
+        Incident("E3", "quality", line("dog", "treats", HOUSE_LABEL, ()), ("2025-06", "2025-07"), None),
         Incident("E4", "quality", line("small_animal", "dry-food", HOUSE_LABEL, ("Hamster Mix Food",)), ("2026-01",), None),
     )
 
@@ -82,6 +84,13 @@ def experience(incidents: tuple[Incident, ...], seed: int, drawn: str, line_id: 
                 hits.setdefault((customer_id, incident.id), month)
                 return "bad"
     return drawn
+
+
+def recall_churn_rise(incidents: tuple[Incident, ...], sku: str, month: str, experience: str) -> tuple[float, int] | None:
+    """(factor, months) of the extra churn hazard after a bad unit from the recalled batch, else None: the dog got ill, and the owner leaves."""
+    if experience == "bad" and any(i.id == "E1" and sku in i.skus and month in i.months for i in active(incidents)):
+        return RECALL_CHURN_RISE, RECALL_CHURN_MONTHS
+    return None
 
 
 def purchase_odds(incidents: tuple[Incident, ...], hits: dict[tuple[str, str], str], customer_id: str, product, month: str) -> float:
