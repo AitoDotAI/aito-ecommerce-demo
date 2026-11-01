@@ -67,13 +67,12 @@ def test_hidden_views_are_checked_for_shape_not_content():
             check({"error": "boom"})
 
 
-def test_overview_needs_every_headline_available():
-    with pytest.raises(AssertionError, match="unavailable: \\['Supply'\\]"):
-        smoke.check_overview({"headlines": [{"view": "Patterns", "available": True},
-                                            {"view": "Supply", "available": False}], "households": [{}]})
-    assert "2 headlines" in smoke.check_overview(
-        {"headlines": [{"view": "Patterns", "available": True}, {"view": "Supply", "available": True}],
-         "households": [{}]})
+def test_overview_needs_a_headline_for_every_owner_view():
+    # A view with no answer yet is left out of the Overview (src/overview_headlines.py), so absence is the failure
+    five = [{"view": v} for v in smoke.OVERVIEW_HEADLINES]
+    with pytest.raises(AssertionError, match="no headline for \\['Supply'\\]"):
+        smoke.check_overview({"headlines": [h for h in five if h["view"] != "Supply"], "households": [{}]})
+    assert "5 headlines" in smoke.check_overview({"headlines": five, "households": [{}]})
 
 
 def test_every_step_is_a_get(monkeypatch):
