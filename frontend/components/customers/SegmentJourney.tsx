@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 
 import { apiFetch } from "@/lib/api";
 
-interface Cell { offset: number; churned: number | null; active: number | null; n_churned: number; n_active: number; points: number | null; margin: number | null; clear: boolean | null }
+interface Cell { offset: number; churned: number | null; active: number | null; n_churned: number; n_active: number; points: number | null; margin: number | null; clear: boolean | null; by_definition: boolean }
 interface Journey {
-  too_small: boolean; customers: { churned: number; active: number }; comparable?: boolean; reason?: string;
+  too_small: boolean; customers: { churned: number; active: number }; without_control?: number; comparable?: boolean; reason?: string;
   offsets?: number[]; events?: { code: string; label: string }[]; cells?: Record<string, Cell[]>;
 }
 
 const pct = (n: number | null) => (n === null ? "–" : `${Math.round(n * 100)} %`);
-const heading = (offset: number) => (offset === 0 ? "Month of the last order" : offset < 0 ? `${-offset} month${offset === -1 ? "" : "s"} before` : `${offset} month${offset === 1 ? "" : "s"} after`);
+const heading = (offset: number) => (offset === 0 ? "Month of the order" : offset < 0 ? `${-offset} month${offset === -1 ? "" : "s"} before` : `${offset} month${offset === 1 ? "" : "s"} after`);
 
 // What a customer did, as a verb phrase, and the group each kind of event belongs to.
 const VERB: Record<string, string> = {
@@ -49,6 +49,10 @@ function standsOut(journey: Journey): { text: string; clear: boolean }[] {
       lines.push({ text: `Those who left ${verb} ${more} than those who stayed, clearly, in ${span(cells.map((c) => c.offset))}.`, clear: true });
     }
   }
+  const anyBefore = Object.values(journey.cells ?? {}).some((row) => row.some((c) => c.offset < 0 && c.clear));
+  if (journey.comparable && !anyBefore) {
+    lines.push({ text: "In the months before their last order, those who left look like those who stayed in every kind of event: there is no early warning in these events.", clear: true });
+  }
   const none = GROUPS[1].codes.filter((code) => (journey.cells?.[code] ?? []).every((c) => !c.clear));
   if (none.length > 0) {
     const all = none.length === GROUPS[1].codes.length;
@@ -80,9 +84,12 @@ export default function SegmentJourney({ conditions }: { conditions: string[] })
     <div className="card">
       <div className="card-title">What happened before customers left</div>
       <div className="card-sub" style={{ lineHeight: 1.55, marginBottom: 8 }}>
-        {journey.customers.churned.toLocaleString("en-GB")} customers in this segment have <strong>left</strong> (no order in the last three months of the data) and{" "}
-        {journey.customers.active.toLocaleString("en-GB")} have <strong>stayed</strong>. Each customer is lined up on the month of their <strong>own last order</strong>, so the
-        columns read as time before and after it. Each cell is the share of customers who had that kind of event that month.
+        <strong>Left</strong> is the shop&apos;s rule: no order in the last three months of the data. Nobody can tell the day someone decided to leave, only that three months passed with
+        no order. {journey.customers.churned.toLocaleString("en-GB")} customers in this segment have left. Each is lined up on their <strong>last order</strong> (the month of the order is the middle column).
+        {" "}{journey.customers.active.toLocaleString("en-GB")} customers <strong>stayed</strong>. For them there is no last order to line up on that means the same, so each is lined up on an
+        ordinary order of theirs, picked at random among those followed by at least three months of data: a control, an order after which they kept ordering.
+        {journey.without_control ? ` ${journey.without_control.toLocaleString("en-GB")} who stayed are left out because all their orders are within the last three months.` : ""}{" "}
+        Each cell is the share of customers who had that kind of event that month, counting only months the customer existed.
       </div>
 
       <div style={{ background: "var(--border-light)", borderRadius: 6, padding: "8px 12px", marginBottom: 10 }}>
@@ -122,8 +129,8 @@ export default function SegmentJourney({ conditions }: { conditions: string[] })
                     <tr key={code} style={{ borderTop: "1px solid var(--border-light)", textAlign: "center" }}>
                       <td style={{ textAlign: "left", padding: "4px 8px 4px 0" }}>{event.label.replace(/^The shop sent/, "Were sent")}</td>
                       {cells[code].map((cell) => (
-                        <td key={cell.offset} style={{ padding: "3px 6px", background: cell.clear ? "rgba(0, 168, 150, 0.2)" : undefined, textAlign: "left" }}
-                            title={cell.points === null ? "Not compared" : `${cell.n_churned} left: ${pct(cell.churned)}; ${cell.n_active} stayed: ${pct(cell.active)}. ${cell.points > 0 ? "+" : ""}${cell.points} points; ${cell.clear ? "a clear difference" : "within what luck gives"}.`}>
+                        <td key={cell.offset} style={{ padding: "3px 6px", background: cell.clear ? "rgba(0, 168, 150, 0.2)" : undefined, textAlign: "left", opacity: cell.by_definition ? 0.45 : 1 }}
+                            title={cell.by_definition ? "Not compared: those who left have no order after their last one, so nothing that follows an order can follow it either." : cell.points === null ? "Not compared" : `${cell.n_churned} left: ${pct(cell.churned)}; ${cell.n_active} stayed: ${pct(cell.active)}. ${cell.points > 0 ? "+" : ""}${cell.points} points; ${cell.clear ? "a clear difference" : "within what luck gives"}.`}>
                           {[{ share: cell.churned, colour: "var(--aito-teal)", opacity: 1 }, { share: cell.active, colour: "var(--text-muted)", opacity: 0.55 }].map((bar, i) => (
                             <div key={i} style={{ display: "flex", alignItems: "center", gap: 4, margin: "1px 0" }}>
                               <span style={{ display: "block", height: 6, borderRadius: 2, background: bar.colour, opacity: bar.opacity, width: `${Math.max(1, ((bar.share ?? 0) / top) * 36)}px` }} />
@@ -141,7 +148,8 @@ export default function SegmentJourney({ conditions }: { conditions: string[] })
         </table>
       </div>
       <div className="card-sub" style={{ marginTop: 8, lineHeight: 1.5 }}>
-        The data is monthly, so the order of events within a month is not known. This shows what came before leaving, not what caused it.
+        The data is monthly, so the order of events within a month is not known. Faded cells are not compared: after their last order, those who left have no orders, returns, deliveries or reviews, by definition.
+        This shows what came before leaving, not what caused it.
       </div>
     </div>
   );

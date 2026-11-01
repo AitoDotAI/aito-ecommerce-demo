@@ -13,8 +13,7 @@ also promises that no row says who it is about (ADR 0055); a timeline of one nam
 
 ## Decision
 
-A **Journey** tab on the Customers view, for the selected segment. Each customer is lined up on their own **last order** (month 0), from five months before it to
-two after. For each kind of event and each month, the grid shows the share of the customers who left (those the shop counts as churned: no order in the last three
+A **Journey** tab on the Customers view, for the selected segment. Each customer who left is lined up on their own **last order** (month 0); each who stayed on a **control order**: an ordinary order of theirs picked at random (the same every time) among those with at least three months of data after it. Lined up on their last order, they would have none after it by definition. Customers who stayed with no such order are left out and counted. Only months from a customer's first order count. From five months before to two after. For each kind of event and each month, the grid shows the share of the customers who left (those the shop counts as churned: no order in the last three
 months of the data) and of those who stayed with that event in the month, and whether the difference is beyond chance (99.7 %, the margin used elsewhere
 for differences of shares). The events: ordered, visited the shop, returned a line, a late or damaged delivery, a 1–2 star review, a 0–6 answer to the NPS
 survey, and an action the shop sent. A group under 30 customers is not compared. A month beyond the data is left out of the cell for the customers whose offset falls there.
@@ -22,14 +21,13 @@ survey, and an action the shop sent. A group under 30 customers is not compared.
 The events by customer and month are stored (`data/customer_profiles/journeys.json`, written by `./do customer-profiles`, checked against a rebuild); the route
 `/api/customer-profiles/journey?c=…` lines the selection up. No customer id appears in the answer.
 
-## What the data shows (all customers, stored data)
+## What the data shows (all customers, stored data; corrected 2026-11-01)
 
-- **They fade out.** Those who left ordered and visited less in every month before their last order, clearly so from five months before for visits and four for orders;
-  visits fall earliest. The less engaged are the ones who leave.
-- **The shop reacts.** In the last-order month and the two after, those who left were sent clearly more actions (13–15 % a month against 0–5 %): the win-back, working as designed.
-- **No spike of complaints before leaving.** Returns, late deliveries, low reviews and detractor answers are a little higher in the last-order month for those who left
-  (12 % returned against 9 %, 8 % low reviews against 6 %), and the difference is not beyond chance. The planted chain (a bad experience raises the churn hazard for three
-  months, ADR 0039) is real but small next to the fade-out. A journey that claimed "complaints lead to churn" would claim more than this data shows.
+- **Before their last order, those who left look like those who stayed.** In none of the five months before is any kind of event (visits, orders, returns, late deliveries, low reviews, detractor answers, actions) clearly different. These events carry **no early warning** of leaving.
+- **After it, they go quiet.** In the month of the last order and the months after, those who left visit the shop clearly less (90 %, 49 %, 40 %, against 100 % of the control). Orders, returns, deliveries and reviews after the last order are not compared: those who left have none, by definition.
+- **The shop's actions are not clearly different** between the groups in any month. The win-back is not visible here.
+
+**Correction.** The first version of this ADR said those who left faded out in visits and orders for five months and were sent more actions by the shop. That was a bug: months before a customer joined were counted as months with no visit and no order, and customers who stayed were lined up on their last order, which is simply the latest order in the data. Counting only the months a customer existed, and lining those who stayed up on an ordinary order that was followed by three months of data, removed both. Found by Antti's question of why Ordered was 0 % after the control month.
 
 ## Aito usage
 
@@ -37,14 +35,15 @@ None: counted from the stored events, like the rest of the view.
 
 ## Acceptance criteria
 
-- [ ] A user can open a Journey tab for any segment and see, per event and month around the last order, the shares of those who left and those who stayed.
+- [ ] A user can open a Journey tab for any segment and see, per event and month around the last order (and a control order for those who stayed), the shares of those who left and those who stayed, and a summary in words of what is clearly different.
+- [ ] Cells that cannot differ by definition (what follows an order, after the last one) are shown faded and are not compared; "left" is explained as the shop's inactivity rule.
 - [ ] A difference beyond chance is shaded; a group under 30 customers is not compared and says so.
 - [ ] No customer id or name is in the route's answer, and a selection under 30 customers gets its size and no grid.
 - [ ] The stored events are the ones the fixtures build today.
 
 ## Demo impact
 
-`docs/demo-script.md`: the Customers section can open Journey and say what it shows (fade-out, the shop's reaction, and that complaints are not the story).
+`docs/demo-script.md`: the Customers section can open Journey and say what it shows (no early warning before the last order; they go quiet after it).
 
 ## Out of scope
 
