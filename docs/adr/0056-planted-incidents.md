@@ -1,6 +1,7 @@
 # ADR 0056: Planted incidents: one loud batch recall and three quiet quality problems
 
-**Status:** Proposed (2026-11-01, Antti: "Go", after discussing a real grain-free batch recall in Finland and a quiet bad-batch complaint)
+**Status:** Accepted (2026-11-01, Antti: "Merge and implement"); built behind switches that are off in the committed fixtures, see the amendment
+**Amendment 2026-11-01 (found when building):** a single SKU sells about five units a month here, too few for a batch to leave a mark a check could tell from noise. So an incident hits a *line* of SKUs found in the catalogue by name (E1: four grain-free salmon dog foods, written under the house label *PetNord Grain Free Fish Adult Dog Food*; E2: Sheba beef cat food; E3: the house-label liver treats; E4: the house-label hamster mix), and the recalled line sells better before it fails (a hit: pick factor ×4 from 2025-01), so its failure has weight. The switches `E1`–`E4` are **off** in the committed fixtures, which a test shows are byte-identical to before; the release that carries the incidents flips them on, regenerates and reloads. `./do planted-incidents` judges them with the switches on.
 **Date:** 2026-11-01
 **Deciders:** Antti
 
@@ -60,7 +61,7 @@ keep every other draw where it was. The catalogue keeps the same number of produ
 The app does not read it. A test does, to check that what the data shows is what was planted.
 
 ### The checks (pre-registered, each against its null on seeds 42, 7 and 99)
-- E1: units of the two SKUs in the batch months are unchanged and fall to zero from 2025-11. The bad-experience share of the batch is at least 3× the null's.
+- E1: units of the line in the batch months are at least 2× the null's (the hit), and zero from 2025-11 while the null still sells it. The bad-experience share of the batch is at least 3× the null's.
   Average review rating of those SKUs in the batch months is at least 1 star lower. Grain-free dog dry food ex-batch is at least 5 % lower in the month after the
   pull than in the null. Customers who bought the batch churn at least 1.3× the null's rate in the following 8 months.
 - E2–E4: bad experiences on the SKU in the month are at least 3× the null's, and reviews of 1–2 stars and returns on it rise with them. The affected customers'

@@ -19,13 +19,14 @@ import json
 import math
 import random
 from collections import Counter
+import dataclasses
 from dataclasses import dataclass, asdict, field
 from datetime import date
 from pathlib import Path
 from typing import Callable, Iterable, Iterator
 
 from data import customer_actions as customer_actions_module
-from data import (acquisition, catalogue_events, lifecycle, listing, merchandising, observable, person_data, planted_switches,
+from data import (acquisition, catalogue_events, incidents, lifecycle, listing, merchandising, observable, person_data, planted_switches,
                   review_chain, sensitivities, shop_levers, shoppers)
 from data.planted_switches import stream
 
@@ -1594,6 +1595,7 @@ class OrderHistory:
     states: list[catalogue_events.ProductState]
     contexts: list[observable.Context]     # recorded: consenting customers' sessions only
     impressions: list[Impression]
+    incident_hits: dict[tuple[str, str], str] = field(default_factory=dict)   # ADR 0056: the answer key
 
 
 @dataclass
@@ -1628,6 +1630,8 @@ class _Shop:
     reviews_of: dict[str, list[Review]] = field(default_factory=dict)
     nps_of: dict[str, list[NpsResponse]] = field(default_factory=dict)
     sessions_of: dict[str, list[_Session]] = field(default_factory=dict)
+    # ADR 0056: (customer, incident) → the month of the customer's bad unit from an incident's line.
+    incident_hits: dict[tuple[str, str], str] = field(default_factory=dict)
 
     def begin_month(self, month: str) -> None:
         """This month's product states, from the stars, labels, stock and prices
@@ -1772,7 +1776,7 @@ def _number_history(customers: list[Customer], shop: _Shop) -> OrderHistory:
     with it is marked `first_order`. Only consenting customers' sessions are
     recorded (ADR 0044)."""
     states = [st for month in _MONTH_WINDOW for st in shop.states[month].values()]
-    history = OrderHistory([], [], [], [], {}, states, [], [])
+    history = OrderHistory([], [], [], [], {}, states, [], [], shop.incident_hits)
     line_id: dict[str, str] = {}
     order_id: dict[str, str] = {}
     for c in customers:
@@ -1898,6 +1902,8 @@ def _customer_life(customer: Customer, persona: Persona | None, shop: _Shop) -> 
         for ln in this_orders_lines:
             ln.incident = incident
             experience = review_chain.draw_experience(experience_rng, ln.product_sku)
+            experience = incidents.experience(shop.events.incidents, RNG_SEED, experience, ln.line_id, ln.product_sku, month, cid,
+                                              shop.incident_hits)
             experiences.append(experience)
             if planted_switches.ON["A7"]:
                 # After the household has recorded the order, so no later purchase depends on it: a line
@@ -2030,7 +2036,8 @@ def _buy_again(shop: _Shop, life: _Household, rng: random.Random, month: str) ->
             # rival's launch makes regulars reconsider (ADR 0032).
             switch_p = min(1.0, (shoppers.POOR_SWITCH_P if poor else lifecycle.SWITCH_P)
                            * events.reconsider_factor(current.sku, month))
-            if rng.random() < lifecycle.RESTOCK_P and rng.random() < switch_p:
+            pulled = not events.on_sale(current.sku, month)      # ADR 0056: a recalled line is gone: the household picks another
+            if pulled or (rng.random() < lifecycle.RESTOCK_P and rng.random() < switch_p):
                 rivals = [shop.product_of[r] for r in events.rivals(current.sku, month)
                           if catalogue_events.SWITCH_TO_RIVAL and lifecycle.is_staple(shop.product_of[r], pet)
                           and shoppers.keeps_diet_rule(shop.product_of[r].name, pet, category, customer.diet_rule)]
@@ -2079,7 +2086,10 @@ def _price_and_state_odds(shop, customer: Customer, product: Product, state) -> 
     # Seen on the product page, after the click: they scale cart and purchase, as the odds do. On the last step
     # alone they would barely show, since a relevant product is bought nearly whenever it is carted.
     listed = listing.purchase_given_click_odds(state.image_count, state.description_quality)
-    return click, odds * price * quality * listed, purchase_only
+    # ADR 0056: what a planted incident does to this customer's odds on this product (the impression pass has no customer history).
+    incident = incidents.purchase_odds(shop.events.incidents, shop.incident_hits, customer.customer_id, product, state.month) \
+        if hasattr(shop, "incident_hits") else 1.0
+    return click, odds * price * quality * listed * incident, purchase_only
 
 
 def _merchandising_weight(events: catalogue_events.CatalogueEvents, product: Product, state) -> float:
@@ -3390,6 +3400,8 @@ def main() -> None:
     # ADR 0032: launches and price rises, decided before any order too.
     events = catalogue_events.plan_catalogue_events(random.Random(RNG_SEED + 32), products, _MONTH_WINDOW,
                                                     promotions.mispriced)
+    # ADR 0056: planted incidents, found in the catalogue by name; each acts only when its switch is on.
+    events = dataclasses.replace(events, incidents=incidents.plan(products))
     # ADR 0039: orders month by month, with what each led to: experiences,
     # reviews (whose stars the next month's orders see), NPS answers, churn.
     # ADR 0044: consent decides what is recorded of the sessions below.
@@ -3398,6 +3410,8 @@ def main() -> None:
     # each order led to (ADR 0039): experiences, reviews, NPS answers, churn.
     history = gen_orders_and_lines(customers, products, promotions, events)
     orders, lines, reviews = history.orders, history.lines, history.reviews
+    # ADR 0056: the recalled line carries the house label from here on, so every table written below says so.
+    incidents.rename_for_output(products, events.incidents)
 
     # Post-pass: derive customer-level aggregates from the order
     # history (total_orders, total_spent_eur, last_order_month,
@@ -3466,6 +3480,8 @@ def main() -> None:
                [{"sku": p.sku, "quality": review_chain.quality(p.sku)} for p in products])
     write_json(answer_key / "line_experiences.json",
                [{"line_id": line_id, "experience": e} for line_id, e in history.experience_of.items()])
+    if any(planted_switches.ON[i] for i in ("E1", "E2", "E3", "E4")):
+        write_json(answer_key / "incidents.json", incidents.answer_key_rows(events.incidents, history.incident_hits))
     write_json(DATA_DIR / "impressions.json", impressions)
 
     # ── Summary print ───────────────────────────────────────────────
