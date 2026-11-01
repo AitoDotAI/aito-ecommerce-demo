@@ -19,7 +19,9 @@ from src.customer_preference_ranking import label, ranking
 from src.customer_relations import MIN_GROUP, memberships, selection_preferences, selection_relations
 from src.customer_segments import TRAITS, response, segment_stats
 
-SINGLE_VALUED = ("offer", "price", "rating", "margin", "status")
+SINGLE_VALUED = ("offer", "price", "rating", "margin", "status", "region")
+FILTERS = ("region", "category", "brand")    # where a customer lives and what they bought: they narrow a selection, they are not profiled traits
+MULTI_VALUED = {"pets": "pets", "diets": "diets", "category": "categories", "brand": "brands"}   # condition trait -> the customer fact that lists the values
 STAGES = ("impressions", "clicks", "carts", "purchases")
 TREND_RECENT_MONTHS = 3
 NPS_WINDOW_MONTHS = 6
@@ -30,8 +32,8 @@ def parse(conditions: list[str]) -> list[tuple[str, str]]:
     parsed = []
     for condition in conditions:
         trait, sep, value = condition.partition(":")
-        if not sep or not value or trait not in TRAITS + ("diets",):
-            raise ValueError(f"Not a condition: {condition!r} (expected trait:value, trait one of {', '.join(TRAITS + ('diets',))})")
+        if not sep or not value or trait not in TRAITS + ("diets",) + FILTERS:
+            raise ValueError(f"Not a condition: {condition!r} (expected trait:value, trait one of {', '.join(TRAITS + ('diets',) + FILTERS)})")
         parsed.append((trait, value))
     singles = [t for t, _ in parsed if t in SINGLE_VALUED]
     if len(singles) != len(set(singles)):
@@ -46,7 +48,7 @@ def key_of(parsed: list[tuple[str, str]]) -> str:
 
 
 def meets(customer: dict, trait: str, value: str) -> bool:
-    return value in customer[trait] if trait in ("pets", "diets") else customer[trait] == value
+    return value in customer[MULTI_VALUED[trait]] if trait in MULTI_VALUED else customer[trait] == value
 
 
 def members(customers: dict[str, dict], parsed: list[tuple[str, str]]) -> list[str]:
@@ -55,8 +57,8 @@ def members(customers: dict[str, dict], parsed: list[tuple[str, str]]) -> list[s
 
 def options(customers: dict[str, dict], parsed: list[tuple[str, str]]) -> dict[str, dict]:
     """For every condition the tree offers: the figures the selection would have if it were ticked (replacing the same trait's value)."""
-    values = sorted({(t, v) for c in customers.values() for t in TRAITS + ("diets",)
-                     for v in (c[t] if t in ("pets", "diets") else [c[t]]) if v not in ("too few purchases",)})
+    values = sorted({(t, v) for c in customers.values() for t in TRAITS + ("diets",) + FILTERS
+                     for v in (c[MULTI_VALUED[t]] if t in MULTI_VALUED else [c[t]]) if v not in ("too few purchases",)})
     out = {}
     for trait, value in values:
         kept = [(t, v) for t, v in parsed if t != trait or t not in SINGLE_VALUED]

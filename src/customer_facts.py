@@ -43,6 +43,9 @@ def build_facts(traits: list[dict], customers: dict[str, dict], funnel: dict[str
         cid, c = t["customer_id"], customers[t["customer_id"]]
         out[cid] = {
             "offer": t["offer"], "price": t["price"], "rating": t["rating"], "margin": t["margin"], "status": t["status"], "pets": t["pets"], "diets": t["diets"],
+            "region": c["region"],
+            "categories": sorted({k for items in bought[cid].values() for k in items["categories"]}),
+            "brands": sorted({k for items in bought[cid].values() for k in items["brands"]}),
             "churned": bool(c["churned"]), "total_spent_eur": round(c["total_spent_eur"], 2),
             "net_revenue_eur": round(c["net_revenue_eur"], 2), "gross_profit_eur": round(c["gross_profit_eur"], 2),
             "gross_profit_12m_eur": round(c["gross_profit_12m_eur"], 2), "profit_eur": round(c["profit_eur"], 2),

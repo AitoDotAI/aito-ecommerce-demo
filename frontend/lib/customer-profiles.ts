@@ -88,7 +88,7 @@ export interface CustomerProfile {
 
 export const TRAIT_TITLE: Record<string, string> = {
   all: "Everyone", offer: "Buys on offer", price: "Prices they pick", rating: "Ratings they pick", margin: "Margin of their baskets", status: "Customer status",
-  pets: "Pets they buy for", diets: "Diets their pet's food is made for",
+  pets: "Pets they buy for", diets: "Diets their pet's food is made for", region: "Region", category: "Bought from the category", brand: "Bought the brand",
 };
 
 /** The topic tree: the groups in order, and the variables in each. */
@@ -99,7 +99,7 @@ export const TREE: { title: string; traits: (keyof ProfilesSummary["by_trait"])[
 ];
 
 /** A customer has one value of each of these; pets and diets can be ticked more than once. */
-export const SINGLE_VALUED = ["offer", "price", "rating", "margin", "status"];
+export const SINGLE_VALUED = ["offer", "price", "rating", "margin", "status", "region"];
 
 export const ACTION_TITLE: Record<string, string> = {
   email: "Email", ad: "Ad", discount: "Discount", voucher: "Voucher", apology: "Apology",
