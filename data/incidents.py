@@ -16,6 +16,7 @@ too few for a batch to leave a mark that a check could tell from noise.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 from data.planted_switches import ON, stream
@@ -32,6 +33,7 @@ LINE_PICK_FACTOR = 4.0      # the house-label fish line is a hit from this month
 LINE_HIT_FROM = "2025-01"
 
 HOUSE_LABEL = "PetNord"
+_PACK_SIZE = re.compile(r"\d+(?:\.\d+)?\s*(?:kg|g)\b")
 EXPECTED_MIN_SKUS = 3
 
 
@@ -69,7 +71,9 @@ def _house_label_names(recalled: list) -> tuple[tuple[str, str], ...]:
     seen: dict[str, int] = {}
     names = []
     for p in sorted(recalled, key=lambda p: p.sku):
-        size = p.name.rsplit(" ", 1)[-1]
+        match = _PACK_SIZE.search(p.name)
+        assert match is not None, f"the recalled line's {p.sku} has no pack size in its name {p.name!r}"
+        size = match.group(0).replace(" ", "")
         seen[size] = seen.get(size, 0) + 1
         base = f"{HOUSE_LABEL} Grain Free Salmon Adult Dog Food {size}"
         names.append((p.sku, base if seen[size] == 1 else f"{base}, recipe {seen[size]}"))

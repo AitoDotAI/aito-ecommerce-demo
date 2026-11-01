@@ -191,3 +191,18 @@ def test_the_recalled_lines_house_label_names_are_unique_even_when_pack_sizes_re
     names = [incidents.display_name(plan, p) for p in twins]
 
     assert len(set(names)) == 4 and names[0] == "PetNord Grain Free Salmon Adult Dog Food 2kg" and names[1].endswith("2kg, recipe 2")
+
+
+def test_the_house_label_name_keeps_the_pack_size_when_the_catalogue_name_ends_in_a_recipe_note(all_on):
+    # "Dog Food 15kg, classic recipe": the size is not the last word. A name without a size breaks everything that reads pack sizes.
+    from data.catalogue_events import pack_kg
+
+    line = [product("A", name="Acana Grain Free Salmon Dog Food 15kg, classic recipe"), product("B", name="Hill's Grain Free Salmon Dog Food 400g"),
+            product("C", name="Orijen Grain Free Salmon Dog Food 2kg, light recipe")]
+    plan = incidents.plan(line + [product(f"C{i}", pet="cat", category="wet-food", brand="Sheba", name="Sheba Beef Cat Food", dietary=None) for i in range(3)]
+                          + [product(f"T{i}", category="treats", brand="PetNord", name="PetNord Treats", dietary=None) for i in range(3)]
+                          + [product(f"H{i}", pet="small_animal", brand="PetNord", name="PetNord Hamster Mix Food 4kg", dietary=None) for i in range(3)])
+
+    sizes = [pack_kg(incidents.display_name(plan, p)) for p in line]
+
+    assert sizes == [15.0, 0.4, 2.0]
