@@ -9,7 +9,7 @@ import { TREE, TRAIT_TITLE, describe, type KpiId, type ProfilesSummary, type Seg
 const TABS = [{ id: "behaviour", label: "Behaviour", traits: ["offer", "price", "rating", "margin", "status", "pets", "diets"] },
               { id: "products", label: "Products", traits: ["category", "brand"] },
               { id: "where", label: "Where", traits: ["region"] },
-              { id: "feedback", label: "Feedback", traits: ["review", "nps"] }] as const;
+              { id: "feedback", label: "Feedback", traits: ["review", "stars", "nps"] }] as const;
 type TabId = (typeof TABS)[number]["id"];
 
 /**
@@ -116,6 +116,12 @@ export default function SegmentTree({ summary, view, conditions, kpi, onKpi, onT
             <div style={{ fontWeight: 700, fontSize: 13 }}>{TRAIT_TITLE.review}</div>
             <div className="card-sub" style={{ fontSize: 12 }}>Customers who wrote at least one review of that kind about a product. A review is about a product; the topic is what it says.</div>
             <div style={{ margin: "6px 0 10px 8px" }}>{listed("review").map((c) => row(c, c.slice("review:".length)))}</div>
+            <div style={{ fontWeight: 700, fontSize: 13 }}>{TRAIT_TITLE.stars}</div>
+            <div className="card-sub" style={{ fontSize: 12 }}>Customers who wrote at least one review with that many stars.</div>
+            <div style={{ margin: "6px 0 10px 8px" }}>
+              {listed("stars").sort((a, b) => Number(b.slice("stars:".length)) - Number(a.slice("stars:".length)))
+                .map((c) => row(c, `${c.slice("stars:".length)} star${c.endsWith(":1") ? "" : "s"}`))}
+            </div>
             <div style={{ fontWeight: 700, fontSize: 13 }}>{TRAIT_TITLE.nps}</div>
             <div className="card-sub" style={{ fontSize: 12 }}>Customers who gave at least one answer in that group to the survey after an order: promoters 9–10, passives 7–8, detractors 0–6.</div>
             <div style={{ margin: "6px 0 0 8px" }}>{listed("nps").map((c) => row(c, c.slice("nps:".length)))}</div>

@@ -20,8 +20,8 @@ from src.customer_relations import MIN_GROUP, memberships, selection_preferences
 from src.customer_segments import TRAITS, response, segment_stats
 
 SINGLE_VALUED = ("offer", "price", "rating", "margin", "status", "region")
-FILTERS = ("region", "category", "brand", "review", "nps")    # where a customer lives and what they bought: they narrow a selection, they are not profiled traits
-MULTI_VALUED = {"pets": "pets", "diets": "diets", "category": "categories", "brand": "brands", "review": "review_topics", "nps": "nps_groups"}   # condition trait -> the customer fact that lists the values
+FILTERS = ("region", "category", "brand", "review", "stars", "nps")    # where a customer lives and what they bought: they narrow a selection, they are not profiled traits
+MULTI_VALUED = {"pets": "pets", "diets": "diets", "category": "categories", "brand": "brands", "review": "review_topics", "stars": "review_stars", "nps": "nps_groups"}   # condition trait -> the customer fact that lists the values
 STAGES = ("impressions", "clicks", "carts", "purchases")
 TREND_RECENT_MONTHS = 3
 NPS_WINDOW_MONTHS = 6
