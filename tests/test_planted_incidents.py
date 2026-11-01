@@ -131,3 +131,11 @@ def test_the_answer_key_lists_the_customers_who_had_a_bad_unit(planned, all_on):
 
     assert next(r for r in rows if r["id"] == "E2")["customers_with_a_bad_unit"] == ["CUST-1", "CUST-2"]
     assert next(r for r in rows if r["id"] == "E1")["customers_with_a_bad_unit"] == []
+
+
+def test_the_answer_key_lists_every_incident_and_says_which_are_planted(planned, monkeypatch):
+    monkeypatch.setitem(planted_switches.ON, "E2", True)
+
+    rows = incidents.answer_key_rows(planned, {})
+
+    assert {r["id"]: r["planted"] for r in rows} == {"E1": False, "E2": True, "E3": False, "E4": False}

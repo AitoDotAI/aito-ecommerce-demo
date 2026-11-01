@@ -2049,6 +2049,10 @@ def _buy_again(shop: _Shop, life: _Household, rng: random.Random, month: str) ->
                     life.staples[key] = _pick_staple(rng, products_by_pet_cat, pet, category, customer,
                                                      exclude=current.sku, novelty=novelty,
                                                      avoid_poorly_made=poor) or current
+                if not events.on_sale(life.staples[key].sku, month):
+                    # ADR 0056: a pulled line and nothing else that keeps the household's diet rule: no staple this month, a fresh pick next.
+                    del life.staples[key]
+                    continue
                 want(life.staples[key], "first")
             else:
                 want(current, "restock")

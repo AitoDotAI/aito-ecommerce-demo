@@ -110,8 +110,15 @@ def _after_pull(months_after: int) -> tuple[str, ...]:
     return tuple(incidents._add_months("2025-11", i) for i in range(months_after))
 
 
-def measure(fx: metrics.Fixtures, incident_id: str) -> dict[str, float]:
-    """The numbers one incident's checks read from one generation."""
+def customers_of(fx: metrics.Fixtures, incident_id: str) -> tuple[set[str], set[str]]:
+    """(customers with a bad unit, the other buyers in the incident months) in a planted generation: the groups both generations are read on."""
+    inc = _planted(fx, incident_id)
+    hit = _bad_customers(fx, incident_id)
+    return hit, {ln["customer_id"] for ln in _lines(fx, inc.skus, inc.months)} - hit
+
+
+def measure(fx: metrics.Fixtures, incident_id: str, groups: tuple[set[str], set[str]] | None = None) -> dict[str, float]:
+    """The numbers one incident's checks read from one generation. `groups` are the planted generation's customers (the same ids in the null)."""
     inc = _planted(fx, incident_id)
     out: dict[str, float] = {}
     bad, total = _bad_share(fx, inc.skus, inc.months)
@@ -126,11 +133,10 @@ def measure(fx: metrics.Fixtures, incident_id: str) -> dict[str, float]:
         churned = {c["customer_id"] for c in fx.load("customers") if c["churned"]}
         out["batch_buyers"], out["batch_buyers_churned"] = len(buyers), len(buyers & churned)
     else:
-        hit = _bad_customers(fx, incident_id)
+        hit, buyers = groups if groups is not None else customers_of(fx, incident_id)
         last = inc.months[-1]
         out["bad_customers"] = len(hit)
         out["bad_customers_repeat_units"] = _repeat_units(fx, inc.skus, hit, None, last) if hit else 0
-        buyers = {ln["customer_id"] for ln in _lines(fx, inc.skus, inc.months)} - hit
         out["other_buyers"] = len(buyers)
         out["other_buyers_repeat_units"] = _repeat_units(fx, inc.skus, buyers, None, last)
     return out
@@ -173,13 +179,14 @@ def main() -> int:
     pooled_null: dict[str, Counter] = {i: Counter() for i in INCIDENTS}
     for seed in SEEDS:
         fx = generate(seed, None)
+        groups = {incident: customers_of(fx, incident) for incident in INCIDENTS}
         for incident in INCIDENTS:
-            pooled_planted[incident].update(measure(fx, incident))
+            pooled_planted[incident].update(measure(fx, incident, groups[incident]))
         shutil.rmtree(fx.dir)
         metrics.clear_caches()
         for incident in INCIDENTS:
             fx = generate(seed, incident)
-            pooled_null[incident].update(measure(fx, incident))
+            pooled_null[incident].update(measure(fx, incident, groups[incident]))
             shutil.rmtree(fx.dir)
             metrics.clear_caches()
         print(f"seed {seed} done", file=sys.stderr)

@@ -52,7 +52,7 @@ def plan(products: list) -> tuple[Incident, ...]:
         return found
 
     return (
-        Incident("E1", "recall", line("dog", "dry-food", None, ("Grain Free", "Salmon"), "grain-free"), ("2025-09", "2025-10"), "2025-11"),
+        Incident("E1", "recall", line("dog", "dry-food", None, ("Salmon",), "grain-free"), ("2025-09", "2025-10"), "2025-11"),
         Incident("E2", "quality", line("cat", "wet-food", "Sheba", ("Beef",)), ("2025-02",), None),
         Incident("E3", "quality", line("dog", "treats", HOUSE_LABEL, ("Liver Treats",)), ("2025-06",), None),
         Incident("E4", "quality", line("small_animal", "dry-food", HOUSE_LABEL, ("Hamster Mix Food",)), ("2026-01",), None),
@@ -127,6 +127,8 @@ def rename_for_output(products: list, incidents: tuple[Incident, ...]) -> None:
 
 
 def answer_key_rows(incidents: tuple[Incident, ...], hits: dict[tuple[str, str], str]) -> list[dict]:
-    """What was planted, for the tests: the lines, the months, and the customers who had a bad unit."""
-    return [{"id": i.id, "kind": i.kind, "skus": sorted(i.skus), "months": list(i.months), "withdrawn_from": i.withdrawn_from,
-             "customers_with_a_bad_unit": sorted(c for (c, inc), _ in hits.items() if inc == i.id)} for i in active(incidents)]
+    """What was planted, for the tests: every incident with its line and months, whether it is on in this generation, and the
+    customers who had a bad unit from it."""
+    return [{"id": i.id, "kind": i.kind, "planted": ON[i.id], "skus": sorted(i.skus), "months": list(i.months),
+             "withdrawn_from": i.withdrawn_from,
+             "customers_with_a_bad_unit": sorted(c for (c, inc), _ in hits.items() if inc == i.id)} for i in incidents]
