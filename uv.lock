@@ -436,14 +436,12 @@ dependencies = [
     { name = "anthropic" },
     { name = "fastapi" },
     { name = "httpx" },
+    { name = "numpy" },
     { name = "python-dotenv" },
     { name = "uvicorn", extra = ["standard"] },
 ]
 
 [package.dev-dependencies]
-backtest = [
-    { name = "numpy" },
-]
 dev = [
     { name = "pytest" },
     { name = "pytest-httpx" },
@@ -454,12 +452,12 @@ requires-dist = [
     { name = "anthropic", specifier = ">=1,<2" },
     { name = "fastapi", specifier = ">=0.110,<1" },
     { name = "httpx", specifier = ">=0.27,<1" },
+    { name = "numpy", specifier = ">=2,<3" },
     { name = "python-dotenv", specifier = ">=1.0,<2" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.29,<1" },
 ]
 
 [package.metadata.requires-dev]
-backtest = [{ name = "numpy", specifier = ">=2,<3" }]
 dev = [
     { name = "pytest", specifier = ">=8.0,<9" },
     { name = "pytest-httpx", specifier = ">=0.30,<1" },

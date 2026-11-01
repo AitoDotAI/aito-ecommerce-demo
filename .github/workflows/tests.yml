@@ -20,7 +20,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
-      - run: uv sync --frozen --group backtest
+      # The image installs only the project's own dependencies (`--no-dev`): the app has to import with just those. A package the
+      # app imports but lists only under a group passes every test here and crash-loops in the image (numpy, 2026-11-01).
+      - name: The app imports with only the project's own dependencies
+        run: |
+          UV_PROJECT_ENVIRONMENT=/tmp/bare-env uv sync --frozen --no-dev
+          UV_PROJECT_ENVIRONMENT=/tmp/bare-env AITO_SKIP_STARTUP_WARMUP=1 uv run --no-sync python -c "import src.app"
+      - run: uv sync --frozen
       # impressions.json and contexts.json are generated, not committed (byte-stable: tests/test_generation_is_byte_stable.py)
       - run: uv run python -m data.generate_fixtures
       - uses: actions/setup-node@v4
