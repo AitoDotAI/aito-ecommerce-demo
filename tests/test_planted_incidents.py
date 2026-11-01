@@ -28,6 +28,12 @@ def planned(catalogue):
 
 
 @pytest.fixture
+def all_off(monkeypatch):
+    for switch in ("E1", "E2", "E3", "E4"):
+        monkeypatch.setitem(planted_switches.ON, switch, False)
+
+
+@pytest.fixture
 def all_on(monkeypatch):
     for switch in ("E1", "E2", "E3", "E4"):
         monkeypatch.setitem(planted_switches.ON, switch, True)
@@ -45,7 +51,7 @@ def test_a_line_too_thin_to_leave_a_mark_fails_loudly(catalogue):
         incidents.plan([p for p in catalogue if p.sku != "D0" and p.sku != "D1"])
 
 
-def test_with_the_switches_off_nothing_changes(planned):
+def test_with_the_switches_off_nothing_changes(planned, all_off):
     hits = {}
 
     assert incidents.experience(planned, 42, "good", "L1", "D0", "2025-09", "CUST-1", hits) == "good"
@@ -122,7 +128,7 @@ def test_the_recalled_line_is_written_under_the_house_label_and_nothing_else_is_
 
     recalled = [p for p in catalogue if p.sku.startswith("D")]
     assert {p.brand for p in recalled} == {incidents.HOUSE_LABEL}
-    assert [p.name for p in recalled][:2] == ["PetNord Grain Free Fish Adult Dog Food 0kg", "PetNord Grain Free Fish Adult Dog Food 1kg"]
+    assert [p.name for p in recalled][:2] == ["PetNord Grain Free Salmon Adult Dog Food 0kg", "PetNord Grain Free Salmon Adult Dog Food 1kg"]
     assert next(p for p in catalogue if p.sku == "OTHER").brand == "Acana"
 
 
@@ -133,7 +139,7 @@ def test_the_answer_key_lists_the_customers_who_had_a_bad_unit(planned, all_on):
     assert next(r for r in rows if r["id"] == "E1")["customers_with_a_bad_unit"] == []
 
 
-def test_the_answer_key_lists_every_incident_and_says_which_are_planted(planned, monkeypatch):
+def test_the_answer_key_lists_every_incident_and_says_which_are_planted(planned, all_off, monkeypatch):
     monkeypatch.setitem(planted_switches.ON, "E2", True)
 
     rows = incidents.answer_key_rows(planned, {})
@@ -149,7 +155,7 @@ def test_a_bad_unit_from_the_recalled_batch_raises_the_churn_hazard_far_more_and
     assert incidents.RECALL_CHURN_RISE > 3.0 and incidents.RECALL_CHURN_MONTHS > 3, "more than the ordinary rise of ×3 for 3 months"
 
 
-def test_with_the_recall_off_a_bad_unit_has_no_extra_churn(planned):
+def test_with_the_recall_off_a_bad_unit_has_no_extra_churn(planned, all_off):
     assert incidents.recall_churn_rise(planned, "D0", "2025-09", "bad") is None
 
 
@@ -161,9 +167,27 @@ def test_the_recalled_line_is_written_under_the_house_label_in_any_text_about_it
     recalled = next(p for p in catalogue if p.sku == "D1")
     other = next(p for p in catalogue if p.sku == "OTHER")
 
-    assert incidents.display_name(planned, recalled) == "PetNord Grain Free Fish Adult Dog Food 1kg"
+    assert incidents.display_name(planned, recalled) == "PetNord Grain Free Salmon Adult Dog Food 1kg"
     assert incidents.display_name(planned, other) == other.name
 
 
-def test_with_the_recall_off_no_product_changes_its_name(catalogue, planned):
+def test_with_the_recall_off_no_product_changes_its_name(catalogue, planned, all_off):
     assert all(incidents.display_name(planned, p) == p.name for p in catalogue)
+
+
+def test_a_demo_anchor_is_never_part_of_an_incident_line(catalogue):
+    anchored = incidents.plan(catalogue, anchors=frozenset({"D0"}))
+
+    assert "D0" not in next(i for i in anchored if i.id == "E1").skus
+
+
+def test_the_recalled_lines_house_label_names_are_unique_even_when_pack_sizes_repeat(all_on):
+    twins = [product("A", name="Acana Grain Free Salmon Dog Food 2kg"), product("B", name="Hill's Grain Free Salmon Dog Food 2kg"),
+             product("C", name="Eukanuba Grain Free Salmon Dog Food 12kg"), product("D", name="Orijen Grain Free Salmon Dog Food 12kg")]
+    plan = incidents.plan(twins + [product(f"C{i}", pet="cat", category="wet-food", brand="Sheba", name="Sheba Beef Cat Food", dietary=None) for i in range(3)]
+                          + [product(f"T{i}", category="treats", brand="PetNord", name="PetNord Treats", dietary=None) for i in range(3)]
+                          + [product(f"H{i}", pet="small_animal", brand="PetNord", name="PetNord Hamster Mix Food 4kg", dietary=None) for i in range(3)])
+
+    names = [incidents.display_name(plan, p) for p in twins]
+
+    assert len(set(names)) == 4 and names[0] == "PetNord Grain Free Salmon Adult Dog Food 2kg" and names[1].endswith("2kg, recipe 2")

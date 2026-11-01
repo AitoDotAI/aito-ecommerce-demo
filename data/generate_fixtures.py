@@ -2044,7 +2044,9 @@ def _buy_again(shop: _Shop, life: _Household, rng: random.Random, month: str) ->
     customer, events = life.customer, shop.events
     products_by_pet, products_by_pet_cat = shop.by_pet_in[month], shop.by_pet_cat_in[month]
     # A fresh pick of a staple: a new one pulls (ADR 0032, P2), and the stars so far move it (R5).
-    novelty = lambda sku: events.pick_factor(sku, month) * shop.stars.pick_factor(sku)
+    # The recalled line is a hit (ADR 0056) for everyone but the demo's personas, whose histories are hand-calibrated.
+    hit = customer.customer_id not in shop.persona_ids
+    novelty = lambda sku: events.pick_factor(sku, month, hit) * shop.stars.pick_factor(sku)
     wanted: list[tuple[Product, str]] = []
 
     def want(product: Product | None, intent: str) -> None:
@@ -2071,7 +2073,7 @@ def _buy_again(shop: _Shop, life: _Household, rng: random.Random, month: str) ->
             # rival's launch makes regulars reconsider (ADR 0032).
             switch_p = min(1.0, (shoppers.POOR_SWITCH_P if poor else lifecycle.SWITCH_P)
                            * events.reconsider_factor(current.sku, month))
-            pulled = not events.on_sale(current.sku, month)      # ADR 0056: a recalled line is gone: the household picks another
+            pulled = incidents.withdrawn(events.incidents, current.sku, month)      # ADR 0056: a recalled line no longer sells: the household picks another
             if pulled or (rng.random() < lifecycle.RESTOCK_P and rng.random() < switch_p):
                 rivals = [shop.product_of[r] for r in events.rivals(current.sku, month)
                           if catalogue_events.SWITCH_TO_RIVAL and lifecycle.is_staple(shop.product_of[r], pet)
@@ -2084,7 +2086,7 @@ def _buy_again(shop: _Shop, life: _Household, rng: random.Random, month: str) ->
                     life.staples[key] = _pick_staple(rng, products_by_pet_cat, pet, category, customer,
                                                      exclude=current.sku, novelty=novelty,
                                                      avoid_poorly_made=poor) or current
-                if not events.on_sale(life.staples[key].sku, month):
+                if incidents.withdrawn(events.incidents, life.staples[key].sku, month):
                     # ADR 0056: a pulled line and nothing else that keeps the household's diet rule: no staple this month, a fresh pick next.
                     del life.staples[key]
                     continue
@@ -2114,6 +2116,10 @@ def _price_and_state_odds(shop, customer: Customer, product: Product, state) -> 
     """(click, cart-and-purchase, purchase-only) odds from the product's state,
     its price and its quality: every price effect sits here (ADR 0045)."""
     click, odds, purchase_only = sensitivities.state_odds(state, customer.sensitivities)
+    if incidents.withdrawn(shop.events.incidents, product.sku, state.month):
+        # ADR 0056 (E1): the recalled line stays listed and nothing sells. It is not taken out of anyone's pool: that would move the random
+        # draws of the demo's hand-calibrated personas from the month it is pulled.
+        return 0.0, 0.0, 0.0
     price = merchandising.list_price_odds(
         shop.events.raised_since(product.sku, state.month),
         review_chain.rating_elasticity(state.rating_band, shop.promotions.elasticity[product.sku]))
@@ -2131,10 +2137,10 @@ def _price_and_state_odds(shop, customer: Customer, product: Product, state) -> 
     return click, odds * price * quality * listed * incident, purchase_only
 
 
-def _merchandising_weight(events: catalogue_events.CatalogueEvents, product: Product, state) -> float:
+def _merchandising_weight(events: catalogue_events.CatalogueEvents, product: Product, state, hit: bool = True) -> float:
     """How much the shop's ranker favours a product this month: its offer
     (placement), being new or a rival's launch (P2), its stars (R5), the season (S4)."""
-    return (merchandising.placement_factor(state) * events.pick_factor(product.sku, state.month)
+    return (merchandising.placement_factor(state) * events.pick_factor(product.sku, state.month, hit)
             * review_chain.rating_pick_factor(state.rating_band) * shoppers.season_factor(product.category, state.month))
 
 
@@ -2236,7 +2242,7 @@ def _show_list(shop: _Shop, life: _Household, rng: random.Random, month: str, su
 
     # What a good recommender would surface (65 %) and filler (35 %), each
     # weighted by the shop's merchandising: an offer is shown more.
-    merch = [_merchandising_weight(shop.events, p, shop.states[month][p.sku]) for p in pool]
+    merch = [_merchandising_weight(shop.events, p, shop.states[month][p.sku], customer.customer_id not in shop.persona_ids) for p in pool]
     weights = [w * m for w, m in zip(_browse_weights(pool, customer, life.pet_type_weights, life.cat_bias), merch)]
     filler = [shoppers.browse_weight(p.name, p.pet_type, p.category, customer.diet_rule) * m
               for p, m in zip(pool, merch)]
@@ -3440,7 +3446,7 @@ def main() -> None:
     events = catalogue_events.plan_catalogue_events(random.Random(RNG_SEED + 32), products, _MONTH_WINDOW,
                                                     promotions.mispriced)
     # ADR 0056: planted incidents, found in the catalogue by name; each acts only when its switch is on.
-    events = dataclasses.replace(events, incidents=incidents.plan(products))
+    events = dataclasses.replace(events, incidents=incidents.plan(products, catalogue_events.DEMO_ANCHORS))
     # ADR 0039: orders month by month, with what each led to: experiences,
     # reviews (whose stars the next month's orders see), NPS answers, churn.
     # ADR 0044: consent decides what is recorded of the sessions below.

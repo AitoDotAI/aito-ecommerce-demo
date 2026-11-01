@@ -166,9 +166,9 @@ AITO_API_KEY=your-dev-instance-key
 
 The data is deterministic (`data/generate_fixtures.py`, seed 42), so a
 dev instance is an exact copy. The release's row counts are in
-`data/release-env.json`: 658 products, 3,000 customers, 10,594 orders,
-36,357 order lines, 95,072 impressions (43,390 ranked and 51,682 unranked
-showings), 15,157 product states, 5,202 reviews, 5,626 recorded actions.
+`data/release-env.json`: 658 products, 3,000 customers, 10,539 orders,
+35,972 order lines, 94,536 impressions (42,974 ranked and 51,562 unranked
+showings), 15,157 product states, 5,170 reviews, 5,651 recorded actions.
 
 `GET /version` says which commit and which Aito env a deployment runs
 (`"api": "v2@master"`). Set `BUILD_SHA` at build time.

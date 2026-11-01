@@ -42,23 +42,38 @@ class Incident:
     skus: frozenset[str]
     months: tuple[str, ...]         # the months whose purchases of the line may go badly
     withdrawn_from: str | None      # recall: the first month the line is no longer on sale
+    names: tuple[tuple[str, str], ...] = ()    # (sku, the name it is written under), for the recalled line: one house-label name each
 
 
-def plan(products: list) -> tuple[Incident, ...]:
-    """The four incidents, their lines found in the catalogue by name. Fails loudly if a line is too thin to leave a mark."""
+def plan(products: list, anchors: frozenset[str] = frozenset()) -> tuple[Incident, ...]:
+    """The four incidents, their lines found in the catalogue by name, never an `anchors` product (the demo's personas buy those).
+    Fails loudly if a line is too thin to leave a mark."""
     def line(pet: str, category: str, brand: str | None, words: tuple[str, ...], dietary: str | None = None) -> frozenset[str]:
-        found = frozenset(p.sku for p in products if p.pet_type == pet and p.category == category
+        found = frozenset(p.sku for p in products if p.sku not in anchors and p.pet_type == pet and p.category == category
                           and (brand is None or p.brand == brand) and all(w in p.name for w in words)
                           and (dietary is None or p.dietary == dietary))
         assert len(found) >= EXPECTED_MIN_SKUS, f"incident line {pet}/{category}/{brand}/{words} has {len(found)} SKUs, need {EXPECTED_MIN_SKUS}"
         return found
 
+    recalled = line("dog", "dry-food", None, ("Salmon",), "grain-free")
     return (
-        Incident("E1", "recall", line("dog", "dry-food", None, ("Salmon",), "grain-free"), ("2025-09", "2025-10"), "2025-11"),
+        Incident("E1", "recall", recalled, ("2025-09", "2025-10"), "2025-11", _house_label_names([p for p in products if p.sku in recalled])),
         Incident("E2", "quality", line("cat", "wet-food", "Sheba", ("Beef",)), ("2025-02",), None),
         Incident("E3", "quality", line("dog", "treats", HOUSE_LABEL, ()), ("2025-06", "2025-07"), None),
         Incident("E4", "quality", line("small_animal", "dry-food", HOUSE_LABEL, ("Hamster Mix Food",)), ("2026-01",), None),
     )
+
+
+def _house_label_names(recalled: list) -> tuple[tuple[str, str], ...]:
+    """One house-label name per SKU of the recalled line. Pack sizes repeat (two 1 kg bags), and product names are unique: a repeat says which recipe."""
+    seen: dict[str, int] = {}
+    names = []
+    for p in sorted(recalled, key=lambda p: p.sku):
+        size = p.name.rsplit(" ", 1)[-1]
+        seen[size] = seen.get(size, 0) + 1
+        base = f"{HOUSE_LABEL} Grain Free Salmon Adult Dog Food {size}"
+        names.append((p.sku, base if seen[size] == 1 else f"{base}, recipe {seen[size]}"))
+    return tuple(names)
 
 
 def active(incidents: tuple[Incident, ...]) -> tuple[Incident, ...]:
@@ -137,9 +152,7 @@ def _months_between(first: str, last: str) -> int:
 def display_name(incidents: tuple[Incident, ...], product) -> str:
     """The name a product is written under: the recalled line carries the house label (not the catalogue brand it was drawn under)."""
     recalled = next((i for i in active(incidents) if i.id == "E1"), None)
-    if recalled is not None and product.sku in recalled.skus:
-        return f"{HOUSE_LABEL} Grain Free Fish Adult Dog Food {product.name.rsplit(' ', 1)[-1]}"
-    return product.name
+    return dict(recalled.names).get(product.sku, product.name) if recalled is not None else product.name
 
 
 def rename_for_output(products: list, incidents: tuple[Incident, ...]) -> None:

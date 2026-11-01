@@ -73,7 +73,7 @@ class CatalogueEvents:
     incidents: tuple = ()                           # ADR 0056: planted incidents (data/incidents.py)
 
     def on_sale(self, sku: str, month: str) -> bool:
-        return month >= self.launch_month.get(sku, "") and not incidents_module.withdrawn(self.incidents, sku, month)
+        return month >= self.launch_month.get(sku, "")
 
     def is_new(self, sku: str, month: str) -> bool:
         launch = self.launch_month.get(sku)
@@ -112,13 +112,13 @@ class CatalogueEvents:
         """The products of its pet and category launched in the last 3 months."""
         return sorted(self.recent_launches.get((self.slice_of[sku], month), frozenset()) - {sku})
 
-    def pick_factor(self, sku: str, month: str) -> float:
+    def pick_factor(self, sku: str, month: str, hit: bool = True) -> float:
         """How much more (or less) often an order picks this product this month,
         besides price: a new product pulls (P2), and takes share from its rivals."""
         if self.is_new(sku, month):
             return LAUNCH_PICK_FACTOR
         base = RIVAL_PICK_FACTOR if self.rival_launched(sku, month) else 1.0
-        return base * incidents_module.pick_factor(self.incidents, sku, month)
+        return base * (incidents_module.pick_factor(self.incidents, sku, month) if hit else 1.0)
 
 
 def plan_catalogue_events(rng: random.Random, products: list, months: list[str],
