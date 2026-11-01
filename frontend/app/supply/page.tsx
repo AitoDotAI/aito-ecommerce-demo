@@ -75,7 +75,7 @@ function SupplyView() {
                 of its sales can&apos;t be served without them. The orders total {data.reorder.units} units,{" "}
                 {fmtEur(data.reorder.order_cost_eur)} at cost.
               </>}
-              note={`We tested Aito's per-product forecast against "same as the last three months". It tied, so the reorder list uses the simple rule; Aito does what it is better at: which markdown clears the overstock. Each order covers those three months' sales plus safety stock.`}
+              note={`We tested Aito's per-product forecast against "the same range as last month". It did not beat it, so the reorder list uses the simple rule of the last three months' sales; Aito does what it is better at: which markdown clears the overstock. Each order covers those three months' sales plus safety stock.`}
               evidenceHref={MODEL_CHECKS}
             />
             <DecisionCard

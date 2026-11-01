@@ -75,7 +75,7 @@ place, in how far a markdown moves the stock."
 | €27,691 tied up in 79 overstocked products | say only the €27,691. Don't present the markdown split ("14 won't clear, none worth marking down") as a finding: it is the units model by price alone, which counts neither an offer's lift on purchases when shown (×1.79 at 20 %+) nor the higher place it earns in the shop, so it understates an offer and contradicts Product's "put it on offer" | the same `_estimate` at 5–20 % off, over 13 weeks; price only |
 
 **Caveat (the page's one line):** the quantities assume May sells like the last
-three months: observed sales, not a forecast. Aito's per-product forecast only ties
+three months: observed sales, not a forecast. Aito's per-product forecast does not beat
 last month's naive rule, which is why it sets no quantity here. **How well? →** opens the model checks.
 
 **Check first:** the page shows 833 units. If it shows 664 units, or a "forecast" column, it is serving the snapshot
