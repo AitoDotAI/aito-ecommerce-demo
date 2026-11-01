@@ -52,7 +52,7 @@ export default function LeftLists({ board, routines, runs, conversations, select
       <div className="card">
         <div className="card-title">Past conversations</div>
         {conversations.length === 0 && (
-          <div className="card-sub">None stored yet. <code>./do record-conversation &quot;question&quot;</code> stores one from a server where Ask is on.</div>
+          <div className="card-sub">None stored yet. <code>./do record-conversations</code> stores the predefined ones (needs the Anthropic key and the admin token).</div>
         )}
         {conversations.map((c) => (
           <button key={c.id} className="btn btn-ghost" onClick={() => onSelect(c.id)}

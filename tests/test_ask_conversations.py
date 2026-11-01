@@ -82,3 +82,17 @@ def test_every_routine_says_whether_it_is_a_rule_or_an_agent():
 
     assert {r["id"]: r["kind"] for r in routines}["winback"] == "rule"
     assert all(r["kind"] in ("rule", "agent") and r["why"] for r in routines)
+
+
+def test_only_the_predefined_questions_without_a_stored_conversation_are_missing(conversations_dir, monkeypatch):
+    monkeypatch.setattr(ask_conversations, "PREDEFINED_QUESTIONS", ("First?", "Second?"))
+    ask_conversations.save("First?", ANSWER, asked_at="2026-11-01T09:00:00Z", release="r")
+
+    assert ask_conversations.missing_questions() == ["Second?"]
+
+
+def test_nothing_is_missing_once_every_predefined_question_is_stored(conversations_dir, monkeypatch):
+    monkeypatch.setattr(ask_conversations, "PREDEFINED_QUESTIONS", ("What should I reorder?",))
+    ask_conversations.save("What should I reorder?", ANSWER, asked_at="2026-11-01T09:00:00Z", release="r")
+
+    assert ask_conversations.missing_questions() == []

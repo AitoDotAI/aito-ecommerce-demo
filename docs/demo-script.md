@@ -294,7 +294,7 @@ acts only when the evidence is there. Everything here is simulated: nothing was 
 need a person. We don't claim it matches or forecasts better than a simpler
 method: the gate is what's new, it knows when not to act."
 
-**Then:** open a stored conversation under Past conversations (when one is stored: `./do record-conversation "question"`
+**Then:** open a stored conversation under Past conversations (when one is stored: `./do record-conversations`
 stores one from a server where Ask is on). It shows the question, each tool call with its input and result, the
 answer and the tokens: this is where a model works, read-only, and it replays without a key.
 
