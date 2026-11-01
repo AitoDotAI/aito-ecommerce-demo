@@ -1,0 +1,166 @@
+{
+  "id": "20261101135117-which-customers-are-most-likely-to-leave",
+  "asked_at": "2026-11-01T13:51:17Z",
+  "release": "release3b",
+  "question": "Which customers are most likely to leave, and what should I do for them?",
+  "answer": "Retention view, April 2026: 61 customers are flagged as likely to leave, and 952 have already churned. The list below covers the 20 most valuable at-risk customers. Their combined spend over the last 12 months is \u20ac8,220.09.\n\n**Biggest names at risk (12-month spend)**\n- Anneli Sinkkonen, \u20ac803.60\n- Suvi Jokinen, \u20ac672.60\n- Antero Saarinen, \u20ac629.20\n- Suvi M\u00e4kel\u00e4, \u20ac616.43\n- Toivo Mattila (aquarium), \u20ac584.06\n\nTwo customers are rated \"very likely\" to leave: Raija Ojala (\u20ac420.27) and Laura Laitinen (\u20ac321.58).\n\n**What the view suggests**\n- Small-animal owners: an offer on PetNord Rabbit Pellets Food 12kg. Expected return is \u20ac7.29 to \u20ac12.74 per customer.\n- Aquarium owners: an offer on JBL Filter Pads. Expected return is \u20ac5.34 to \u20ac7.44 per customer.\n- Across all 20 customers, the best action is a personalised ad for 12, a \u20ac10 voucher for 3, an apology with \u20ac5 credit for 2, a 10% discount for 2, and a plain email for 1.\n- The 20 offers have an expected return of \u20ac202.76. The view puts the net gain of the best actions at \u20ac375.31, and each email costs \u20ac0.50. I can't explain why the net figure is higher than the expected return.\n\n**Proposed actions**\n1. Send the 12 personalised ads, starting with the rabbit-pellet customers (Retention view, `/retention/`).\n2. Contact the two \"very likely\" customers first, Raija Ojala and Laura Laitinen (Retention view).\n3. Send the \u20ac10 vouchers, the \u20ac5 credit apologies and the 10% discounts to the customers the view assigns them to (Retention view).",
+  "tool_calls": [
+    {
+      "name": "at_risk_customers",
+      "input": {},
+      "ms": 137,
+      "error": null,
+      "result": {
+        "as_of_month": "2026-04",
+        "decision": {
+          "customers": 20,
+          "spend_12m_eur": 8220.09,
+          "offers": 20,
+          "offers_expected_return_eur": 202.76,
+          "email_cost_eur": 0.5,
+          "best_actions": {
+            "Personalised ad": 12,
+            "\u20ac10 voucher": 3,
+            "Apology and \u20ac5 credit": 2,
+            "10 % discount": 2,
+            "Email": 1
+          },
+          "best_actions_net_eur": 375.31
+        },
+        "counts": {
+          "active": 2047,
+          "likely_to_leave": 61,
+          "churned": 952
+        },
+        "top": [
+          {
+            "customer_id": "CUST-01899",
+            "name": "Anneli Sinkkonen",
+            "pets": "small_animal",
+            "risk": "likely",
+            "spend_12m_eur": 803.6,
+            "last_order_month": "2026-04",
+            "offer": {
+              "name": "PetNord Rabbit Pellets Food 12kg",
+              "expected_return_eur": 12.74
+            }
+          },
+          {
+            "customer_id": "CUST-01608",
+            "name": "Suvi M\u00e4kel\u00e4",
+            "pets": "small_animal",
+            "risk": "likely",
+            "spend_12m_eur": 616.43,
+            "last_order_month": "2026-02",
+            "offer": {
+              "name": "PetNord Rabbit Pellets Food 12kg",
+              "expected_return_eur": 10.55
+            }
+          },
+          {
+            "customer_id": "CUST-02425",
+            "name": "Toivo Mattila",
+            "pets": "aquarium",
+            "risk": "likely",
+            "spend_12m_eur": 584.06,
+            "last_order_month": "2026-04",
+            "offer": {
+              "name": "JBL Filter Pads, single",
+              "expected_return_eur": 5.34
+            }
+          },
+          {
+            "customer_id": "CUST-02880",
+            "name": "Raija Ojala",
+            "pets": "small_animal",
+            "risk": "very likely",
+            "spend_12m_eur": 420.27,
+            "last_order_month": "2026-03",
+            "offer": {
+              "name": "PetNord Rabbit Pellets Food 12kg",
+              "expected_return_eur": 7.29
+            }
+          },
+          {
+            "customer_id": "CUST-02104",
+            "name": "Antero Saarinen",
+            "pets": "small_animal",
+            "risk": "likely",
+            "spend_12m_eur": 629.2,
+            "last_order_month": "2026-04",
+            "offer": {
+              "name": "PetNord Rabbit Pellets Food 12kg",
+              "expected_return_eur": 12.74
+            }
+          },
+          {
+            "customer_id": "CUST-00293",
+            "name": "Suvi Jokinen",
+            "pets": "small_animal",
+            "risk": "likely",
+            "spend_12m_eur": 672.6,
+            "last_order_month": "2026-04",
+            "offer": {
+              "name": "PetNord Rabbit Pellets Food 12kg",
+              "expected_return_eur": 12.74
+            }
+          },
+          {
+            "customer_id": "CUST-01645",
+            "name": "Kari Savolainen",
+            "pets": "aquarium",
+            "risk": "likely",
+            "spend_12m_eur": 404.57,
+            "last_order_month": "2026-03",
+            "offer": {
+              "name": "JBL Filter Pads, single",
+              "expected_return_eur": 6.18
+            }
+          },
+          {
+            "customer_id": "CUST-02857",
+            "name": "Tuula Sinkkonen",
+            "pets": "aquarium",
+            "risk": "likely",
+            "spend_12m_eur": 434.69,
+            "last_order_month": "2026-04",
+            "offer": {
+              "name": "JBL Filter Pads, single",
+              "expected_return_eur": 6.18
+            }
+          },
+          {
+            "customer_id": "CUST-02685",
+            "name": "Laura Laitinen",
+            "pets": "aquarium",
+            "risk": "very likely",
+            "spend_12m_eur": 321.58,
+            "last_order_month": "2026-04",
+            "offer": {
+              "name": "JBL Filter Pads, single",
+              "expected_return_eur": 7.44
+            }
+          },
+          {
+            "customer_id": "CUST-02351",
+            "name": "Niina Saarinen",
+            "pets": "aquarium",
+            "risk": "likely",
+            "spend_12m_eur": 444.32,
+            "last_order_month": "2026-04",
+            "offer": {
+              "name": "JBL Filter Pads, single",
+              "expected_return_eur": 7.44
+            }
+          }
+        ],
+        "listed": 10,
+        "of": 20,
+        "view": "/retention/"
+      }
+    }
+  ],
+  "model": "claude-sonnet-5-5",
+  "input_tokens": 4111,
+  "output_tokens": 637
+}
