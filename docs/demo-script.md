@@ -294,6 +294,8 @@ acts only when the evidence is there. Everything here is simulated: nothing was 
 need a person. We don't claim it matches or forecasts better than a simpler
 method: the gate is what's new, it knows when not to act."
 
+**Then:** open "Stock-aware morning check" under Runs: a second rule, over what Supply serves. Of 98 products it orders 45 (€5,173), leaves 7 for a person and 46 quiet; move "Units sold, at least" or the order limit and the outcomes move. It orders nothing and says it is a rule on observed sales.
+
 **Then:** open a stored conversation under Past conversations (when one is stored: `./do record-conversations`
 stores one from a server where Ask is on). It shows the question, each tool call with its input and result, the
 answer and the tokens: this is where a model works, read-only, and it replays without a key.

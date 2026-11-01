@@ -1,0 +1,1938 @@
+{
+ "id": "stock",
+ "routine": "stock",
+ "title": "Stock-aware morning check",
+ "release": "release3b",
+ "as_of_month": "2026-05",
+ "simulated": true,
+ "source": "data/precomputed/v2-master/supply.json (the snapshot Supply serves)",
+ "steps": [
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0287",
+   "name": "Hill's Science Plan Turkey Cat Food 4kg",
+   "category": "dry-food",
+   "supplier": "S-12",
+   "lead_time_days": 7,
+   "current_stock": 2,
+   "reorder_point": 30,
+   "recent_units": 74,
+   "order_qty": 87,
+   "order_cost_eur": 1625.16,
+   "revenue_at_risk_eur": 1868.4
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0044",
+   "name": "Eukanuba Senior Lamb Dog Food 12kg",
+   "category": "dry-food",
+   "supplier": "S-09",
+   "lead_time_days": 7,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 11,
+   "order_qty": 13,
+   "order_cost_eur": 807.3,
+   "revenue_at_risk_eur": 948.75
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0494",
+   "name": "PetNord Scratching Post",
+   "category": "accessories",
+   "supplier": "S-03",
+   "lead_time_days": 21,
+   "current_stock": 6,
+   "reorder_point": 14,
+   "recent_units": 45,
+   "order_qty": 42,
+   "order_cost_eur": 497.7,
+   "revenue_at_risk_eur": 840.45
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0338",
+   "name": "Whiskas Indoor Salmon Cat Food 12kg",
+   "category": "dry-food",
+   "supplier": "S-03",
+   "lead_time_days": 7,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 11,
+   "order_qty": 12,
+   "order_cost_eur": 697.44,
+   "revenue_at_risk_eur": 807.2
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0049",
+   "name": "Eukanuba Grain Free Salmon Dog Food 12kg",
+   "category": "dry-food",
+   "supplier": "S-02",
+   "lead_time_days": 7,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 9,
+   "order_qty": 11,
+   "order_cost_eur": 655.82,
+   "revenue_at_risk_eur": 745.2
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0320",
+   "name": "Orijen Sensitive Salmon Cat Food 15kg",
+   "category": "dry-food",
+   "supplier": "S-09",
+   "lead_time_days": 7,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 7,
+   "order_qty": 9,
+   "order_cost_eur": 662.58,
+   "revenue_at_risk_eur": 715.75
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0208",
+   "name": "PetNord Bowl, medium",
+   "category": "accessories",
+   "supplier": "S-05",
+   "lead_time_days": 21,
+   "current_stock": 7,
+   "reorder_point": 14,
+   "recent_units": 34,
+   "order_qty": 30,
+   "order_cost_eur": 354.0,
+   "revenue_at_risk_eur": 579.42
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0484",
+   "name": "PetNord Clumping Clay Cat Litter 7kg, lavender scent",
+   "category": "litter",
+   "supplier": "S-05",
+   "lead_time_days": 10,
+   "current_stock": 2,
+   "reorder_point": 8,
+   "recent_units": 43,
+   "order_qty": 44,
+   "order_cost_eur": 331.32,
+   "revenue_at_risk_eur": 441.16
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0530",
+   "name": "PetNord Rabbit Pellets Food 12kg",
+   "category": "dry-food",
+   "supplier": "S-03",
+   "lead_time_days": 7,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 5,
+   "order_qty": 7,
+   "order_cost_eur": 434.07,
+   "revenue_at_risk_eur": 430.6
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0282",
+   "name": "Hill's Science Plan Indoor Chicken Cat Food 15kg, light recipe",
+   "category": "dry-food",
+   "supplier": "S-07",
+   "lead_time_days": 7,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 4,
+   "order_qty": 6,
+   "order_cost_eur": 453.96,
+   "revenue_at_risk_eur": 420.32
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0025",
+   "name": "Hill's Science Plan Puppy Lamb Dog Food 15kg, light recipe",
+   "category": "dry-food",
+   "supplier": "S-02",
+   "lead_time_days": 7,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 5,
+   "order_qty": 6,
+   "order_cost_eur": 450.42,
+   "revenue_at_risk_eur": 417.08
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0042",
+   "name": "Eukanuba Chicken Dog Food 12kg",
+   "category": "dry-food",
+   "supplier": "S-07",
+   "lead_time_days": 7,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 5,
+   "order_qty": 7,
+   "order_cost_eur": 371.77,
+   "revenue_at_risk_eur": 368.8
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0003",
+   "name": "Royal Canin Large Breed Chicken Dog Food 12kg",
+   "category": "dry-food",
+   "supplier": "S-04",
+   "lead_time_days": 7,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 5,
+   "order_qty": 7,
+   "order_cost_eur": 364.21,
+   "revenue_at_risk_eur": 361.3
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0269",
+   "name": "Royal Canin Sensitive Whitefish Cat Food 12kg",
+   "category": "dry-food",
+   "supplier": "S-06",
+   "lead_time_days": 7,
+   "current_stock": 2,
+   "reorder_point": 3,
+   "recent_units": 6,
+   "order_qty": 6,
+   "order_cost_eur": 317.7,
+   "revenue_at_risk_eur": 294.16
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0499",
+   "name": "PetNord Carrier",
+   "category": "accessories",
+   "supplier": "S-08",
+   "lead_time_days": 21,
+   "current_stock": 2,
+   "reorder_point": 5,
+   "recent_units": 14,
+   "order_qty": 14,
+   "order_cost_eur": 184.8,
+   "revenue_at_risk_eur": 288.0
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0270",
+   "name": "Royal Canin Grain Free Whitefish Cat Food 7kg",
+   "category": "dry-food",
+   "supplier": "S-07",
+   "lead_time_days": 7,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 5,
+   "order_qty": 7,
+   "order_cost_eur": 252.21,
+   "revenue_at_risk_eur": 250.2
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0504",
+   "name": "Trixie Carrier, medium",
+   "category": "accessories",
+   "supplier": "S-01",
+   "lead_time_days": 21,
+   "current_stock": 3,
+   "reorder_point": 6,
+   "recent_units": 14,
+   "order_qty": 13,
+   "order_cost_eur": 150.8,
+   "revenue_at_risk_eur": 231.99
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0609",
+   "name": "JBL Filter Pads, single",
+   "category": "aquarium",
+   "supplier": "S-10",
+   "lead_time_days": 28,
+   "current_stock": 1,
+   "reorder_point": 4,
+   "recent_units": 9,
+   "order_qty": 10,
+   "order_cost_eur": 146.1,
+   "revenue_at_risk_eur": 212.56
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0503",
+   "name": "Trixie Carrier, small",
+   "category": "accessories",
+   "supplier": "S-12",
+   "lead_time_days": 21,
+   "current_stock": 1,
+   "reorder_point": 4,
+   "recent_units": 12,
+   "order_qty": 13,
+   "order_cost_eur": 137.41,
+   "revenue_at_risk_eur": 211.42
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0094",
+   "name": "Orijen Puppy Beef Dog Food 2kg",
+   "category": "dry-food",
+   "supplier": "S-11",
+   "lead_time_days": 7,
+   "current_stock": 3,
+   "reorder_point": 10,
+   "recent_units": 17,
+   "order_qty": 19,
+   "order_cost_eur": 185.82,
+   "revenue_at_risk_eur": 190.26
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0274",
+   "name": "Hill's Science Plan Salmon Cat Food 7kg, light recipe",
+   "category": "dry-food",
+   "supplier": "S-11",
+   "lead_time_days": 7,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 4,
+   "order_qty": 6,
+   "order_cost_eur": 188.64,
+   "revenue_at_risk_eur": 174.68
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0276",
+   "name": "Hill's Science Plan Indoor Tuna Cat Food 12kg",
+   "category": "dry-food",
+   "supplier": "S-01",
+   "lead_time_days": 7,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 3,
+   "order_qty": 4,
+   "order_cost_eur": 207.64,
+   "revenue_at_risk_eur": 144.2
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0557",
+   "name": "PetNord Water Bottle, medium",
+   "category": "accessories",
+   "supplier": "S-06",
+   "lead_time_days": 21,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 7,
+   "order_qty": 9,
+   "order_cost_eur": 100.08,
+   "revenue_at_risk_eur": 141.47
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0273",
+   "name": "Hill's Science Plan Sensitive Salmon Cat Food 4kg",
+   "category": "dry-food",
+   "supplier": "S-10",
+   "lead_time_days": 7,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 6,
+   "order_qty": 7,
+   "order_cost_eur": 138.67,
+   "revenue_at_risk_eur": 137.55
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0356",
+   "name": "Whiskas Sensitive Whitefish Cat Food 7kg",
+   "category": "dry-food",
+   "supplier": "S-09",
+   "lead_time_days": 7,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 3,
+   "order_qty": 5,
+   "order_cost_eur": 159.75,
+   "revenue_at_risk_eur": 133.11
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0536",
+   "name": "PetNord Sensitive Guinea Pig Mix Food 4kg",
+   "category": "dry-food",
+   "supplier": "S-09",
+   "lead_time_days": 7,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 5,
+   "order_qty": 6,
+   "order_cost_eur": 137.34,
+   "revenue_at_risk_eur": 127.16
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0614",
+   "name": "JBL Tropical Flakes, single",
+   "category": "aquarium",
+   "supplier": "S-03",
+   "lead_time_days": 28,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 5,
+   "order_qty": 7,
+   "order_cost_eur": 91.91,
+   "revenue_at_risk_eur": 119.4
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0351",
+   "name": "Whiskas Turkey Cat Food 4kg",
+   "category": "dry-food",
+   "supplier": "S-04",
+   "lead_time_days": 7,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 5,
+   "order_qty": 6,
+   "order_cost_eur": 116.64,
+   "revenue_at_risk_eur": 108.0
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0630",
+   "name": "Tetra Tropical Flakes, single",
+   "category": "aquarium",
+   "supplier": "S-07",
+   "lead_time_days": 28,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 5,
+   "order_qty": 6,
+   "order_cost_eur": 80.88,
+   "revenue_at_risk_eur": 98.0
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0053",
+   "name": "Eukanuba Large Breed Beef Dog Food 12kg",
+   "category": "dry-food",
+   "supplier": "S-06",
+   "lead_time_days": 7,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 2,
+   "order_qty": 3,
+   "order_cost_eur": 182.22,
+   "revenue_at_risk_eur": 84.36
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0117",
+   "name": "Royal Canin Senior Turkey Dog Food 400g",
+   "category": "wet-food",
+   "supplier": "S-10",
+   "lead_time_days": 10,
+   "current_stock": 5,
+   "reorder_point": 13,
+   "recent_units": 24,
+   "order_qty": 24,
+   "order_cost_eur": 68.88,
+   "revenue_at_risk_eur": 80.18
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0184",
+   "name": "Whimzees Grain Free Daily Dental Treats 200g, medium dogs",
+   "category": "dental-treats",
+   "supplier": "S-05",
+   "lead_time_days": 14,
+   "current_stock": 1,
+   "reorder_point": 5,
+   "recent_units": 18,
+   "order_qty": 19,
+   "order_cost_eur": 44.27,
+   "revenue_at_risk_eur": 79.39
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0300",
+   "name": "Acana Tuna Cat Food 2kg",
+   "category": "dry-food",
+   "supplier": "S-01",
+   "lead_time_days": 7,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 8,
+   "order_qty": 9,
+   "order_cost_eur": 67.77,
+   "revenue_at_risk_eur": 73.22
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0181",
+   "name": "PetNord Mixed Reward Treats 500g, soft",
+   "category": "treats",
+   "supplier": "S-02",
+   "lead_time_days": 14,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 8,
+   "order_qty": 10,
+   "order_cost_eur": 50.0,
+   "revenue_at_risk_eur": 72.72
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0199",
+   "name": "PetNord Fresh Breath Dental Treats 200g",
+   "category": "dental-treats",
+   "supplier": "S-08",
+   "lead_time_days": 14,
+   "current_stock": 2,
+   "reorder_point": 4,
+   "recent_units": 18,
+   "order_qty": 18,
+   "order_cost_eur": 33.48,
+   "revenue_at_risk_eur": 59.68
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0038",
+   "name": "Hill's Science Plan Sensitive Turkey Dog Food 2kg",
+   "category": "dry-food",
+   "supplier": "S-03",
+   "lead_time_days": 7,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 4,
+   "order_qty": 6,
+   "order_cost_eur": 61.98,
+   "revenue_at_risk_eur": 57.4
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0188",
+   "name": "Whimzees Grain Free Puppy Dental Treats 80g",
+   "category": "dental-treats",
+   "supplier": "S-09",
+   "lead_time_days": 14,
+   "current_stock": 0,
+   "reorder_point": 6,
+   "recent_units": 30,
+   "order_qty": 32,
+   "order_cost_eur": 26.88,
+   "revenue_at_risk_eur": 50.4
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0072",
+   "name": "Acana Beef Dog Food 1kg, value pack",
+   "category": "dry-food",
+   "supplier": "S-01",
+   "lead_time_days": 7,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 7,
+   "order_qty": 9,
+   "order_cost_eur": 43.56,
+   "revenue_at_risk_eur": 47.04
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0150",
+   "name": "Eukanuba Large Breed Chicken Dog Food 400g, classic recipe",
+   "category": "wet-food",
+   "supplier": "S-07",
+   "lead_time_days": 10,
+   "current_stock": 3,
+   "reorder_point": 7,
+   "recent_units": 15,
+   "order_qty": 15,
+   "order_cost_eur": 39.6,
+   "revenue_at_risk_eur": 46.56
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0192",
+   "name": "PetNord Grain Free Daily Dental Treats 120g, small dogs",
+   "category": "dental-treats",
+   "supplier": "S-01",
+   "lead_time_days": 14,
+   "current_stock": 1,
+   "reorder_point": 4,
+   "recent_units": 17,
+   "order_qty": 18,
+   "order_cost_eur": 25.02,
+   "revenue_at_risk_eur": 44.48
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0191",
+   "name": "Whimzees Grain Free Fresh Breath Dental Treats 120g",
+   "category": "dental-treats",
+   "supplier": "S-12",
+   "lead_time_days": 14,
+   "current_stock": 2,
+   "reorder_point": 5,
+   "recent_units": 18,
+   "order_qty": 18,
+   "order_cost_eur": 24.48,
+   "revenue_at_risk_eur": 43.68
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0247",
+   "name": "PetNord Calming Tablets, single",
+   "category": "health",
+   "supplier": "S-08",
+   "lead_time_days": 14,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 2,
+   "order_qty": 4,
+   "order_cost_eur": 43.28,
+   "revenue_at_risk_eur": 39.34
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0387",
+   "name": "Hill's Science Plan Chicken Cat Food 400g, classic recipe",
+   "category": "wet-food",
+   "supplier": "S-04",
+   "lead_time_days": 10,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 8,
+   "order_qty": 10,
+   "order_cost_eur": 31.7,
+   "revenue_at_risk_eur": 37.28
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0221",
+   "name": "Kong Squeak Ball",
+   "category": "toys",
+   "supplier": "S-06",
+   "lead_time_days": 21,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 3,
+   "order_qty": 5,
+   "order_cost_eur": 29.1,
+   "revenue_at_risk_eur": 33.6
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0400",
+   "name": "Whiskas Salmon Cat Food 400g",
+   "category": "wet-food",
+   "supplier": "S-05",
+   "lead_time_days": 10,
+   "current_stock": 2,
+   "reorder_point": 4,
+   "recent_units": 9,
+   "order_qty": 9,
+   "order_cost_eur": 29.16,
+   "revenue_at_risk_eur": 33.32
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0054",
+   "name": "Eukanuba Turkey Dog Food 1kg",
+   "category": "dry-food",
+   "supplier": "S-07",
+   "lead_time_days": 7,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 5,
+   "order_qty": 7,
+   "order_cost_eur": 32.48,
+   "revenue_at_risk_eur": 32.2
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0052",
+   "name": "Eukanuba Beef Dog Food 2kg",
+   "category": "dry-food",
+   "supplier": "S-05",
+   "lead_time_days": 7,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 3,
+   "order_qty": 4,
+   "order_cost_eur": 44.6,
+   "revenue_at_risk_eur": 30.98
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0471",
+   "name": "Felix Grain Free Salmon Drops Treats 500g",
+   "category": "treats",
+   "supplier": "S-04",
+   "lead_time_days": 14,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 3,
+   "order_qty": 5,
+   "order_cost_eur": 26.55,
+   "revenue_at_risk_eur": 28.98
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0506",
+   "name": "Kong Catnip Mouse",
+   "category": "toys",
+   "supplier": "S-03",
+   "lead_time_days": 21,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 2,
+   "order_qty": 4,
+   "order_cost_eur": 26.56,
+   "revenue_at_risk_eur": 25.52
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0226",
+   "name": "Kong Tennis Ball, large",
+   "category": "toys",
+   "supplier": "S-11",
+   "lead_time_days": 21,
+   "current_stock": 2,
+   "reorder_point": 4,
+   "recent_units": 4,
+   "order_qty": 4,
+   "order_cost_eur": 26.08,
+   "revenue_at_risk_eur": 25.08
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0225",
+   "name": "Kong Tennis Ball, medium",
+   "category": "toys",
+   "supplier": "S-10",
+   "lead_time_days": 21,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 2,
+   "order_qty": 4,
+   "order_cost_eur": 25.24,
+   "revenue_at_risk_eur": 24.26
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0612",
+   "name": "JBL Aquatic Plants, single",
+   "category": "aquarium",
+   "supplier": "S-01",
+   "lead_time_days": 28,
+   "current_stock": 2,
+   "reorder_point": 3,
+   "recent_units": 3,
+   "order_qty": 3,
+   "order_cost_eur": 39.39,
+   "revenue_at_risk_eur": 23.88
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0096",
+   "name": "Orijen Beef Dog Food 2kg",
+   "category": "dry-food",
+   "supplier": "S-01",
+   "lead_time_days": 7,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 3,
+   "order_qty": 4,
+   "order_cost_eur": 33.36,
+   "revenue_at_risk_eur": 23.18
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0128",
+   "name": "Hill's Science Plan Large Breed Chicken Dog Food 400g",
+   "category": "wet-food",
+   "supplier": "S-09",
+   "lead_time_days": 10,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 6,
+   "order_qty": 7,
+   "order_cost_eur": 21.35,
+   "revenue_at_risk_eur": 22.4
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0014",
+   "name": "Royal Canin Beef Dog Food 1kg",
+   "category": "dry-food",
+   "supplier": "S-03",
+   "lead_time_days": 7,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 4,
+   "order_qty": 5,
+   "order_cost_eur": 25.6,
+   "revenue_at_risk_eur": 21.33
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0138",
+   "name": "Hill's Science Plan Large Breed Beef Dog Food 400g",
+   "category": "wet-food",
+   "supplier": "S-07",
+   "lead_time_days": 10,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 6,
+   "order_qty": 7,
+   "order_cost_eur": 19.6,
+   "revenue_at_risk_eur": 20.6
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0461",
+   "name": "Whiskas Salmon Drops Treats 200g",
+   "category": "treats",
+   "supplier": "S-06",
+   "lead_time_days": 14,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 5,
+   "order_qty": 7,
+   "order_cost_eur": 14.7,
+   "revenue_at_risk_eur": 19.1
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0547",
+   "name": "PetNord Hay Sticks Treats 500g, classic",
+   "category": "treats",
+   "supplier": "S-08",
+   "lead_time_days": 14,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 3,
+   "order_qty": 4,
+   "order_cost_eur": 19.28,
+   "revenue_at_risk_eur": 17.54
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0518",
+   "name": "PetNord Hairball Paste, twin pack",
+   "category": "health",
+   "supplier": "S-03",
+   "lead_time_days": 14,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 1,
+   "order_qty": 3,
+   "order_cost_eur": 28.65,
+   "revenue_at_risk_eur": 17.36
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0092",
+   "name": "Orijen Weight Control Salmon Dog Food 1kg",
+   "category": "dry-food",
+   "supplier": "S-09",
+   "lead_time_days": 7,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 2,
+   "order_qty": 4,
+   "order_cost_eur": 22.68,
+   "revenue_at_risk_eur": 15.76
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0371",
+   "name": "Royal Canin Beef Cat Food 400g",
+   "category": "wet-food",
+   "supplier": "S-12",
+   "lead_time_days": 10,
+   "current_stock": 2,
+   "reorder_point": 3,
+   "recent_units": 5,
+   "order_qty": 5,
+   "order_cost_eur": 16.6,
+   "revenue_at_risk_eur": 14.64
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0516",
+   "name": "Trixie Laser Pointer, medium",
+   "category": "toys",
+   "supplier": "S-01",
+   "lead_time_days": 21,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 1,
+   "order_qty": 3,
+   "order_cost_eur": 20.25,
+   "revenue_at_risk_eur": 12.98
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0382",
+   "name": "Hill's Science Plan Sensitive Salmon Cat Food 85g",
+   "category": "wet-food",
+   "supplier": "S-11",
+   "lead_time_days": 10,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 13,
+   "order_qty": 14,
+   "order_cost_eur": 9.94,
+   "revenue_at_risk_eur": 12.6
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0332",
+   "name": "Orijen Turkey Cat Food 1kg",
+   "category": "dry-food",
+   "supplier": "S-09",
+   "lead_time_days": 7,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 3,
+   "order_qty": 4,
+   "order_cost_eur": 16.72,
+   "revenue_at_risk_eur": 11.62
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0545",
+   "name": "PetNord Veggie Crunch Treats 200g, crunchy",
+   "category": "treats",
+   "supplier": "S-06",
+   "lead_time_days": 14,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 3,
+   "order_qty": 5,
+   "order_cost_eur": 10.4,
+   "revenue_at_risk_eur": 11.34
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0149",
+   "name": "Eukanuba Chicken Dog Food 150g",
+   "category": "wet-food",
+   "supplier": "S-06",
+   "lead_time_days": 10,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 5,
+   "order_qty": 7,
+   "order_cost_eur": 10.01,
+   "revenue_at_risk_eur": 10.5
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0447",
+   "name": "Sheba Indoor Liver Cat Food 150g",
+   "category": "wet-food",
+   "supplier": "S-04",
+   "lead_time_days": 10,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 7,
+   "order_qty": 9,
+   "order_cost_eur": 8.91,
+   "revenue_at_risk_eur": 10.22
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0408",
+   "name": "Whiskas Beef Cat Food 150g, light recipe",
+   "category": "wet-food",
+   "supplier": "S-01",
+   "lead_time_days": 10,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 7,
+   "order_qty": 8,
+   "order_cost_eur": 8.72,
+   "revenue_at_risk_eur": 9.66
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0126",
+   "name": "Hill's Science Plan Grain Free Chicken Dog Food 85g, classic recipe",
+   "category": "wet-food",
+   "supplier": "S-07",
+   "lead_time_days": 10,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 10,
+   "order_qty": 11,
+   "order_cost_eur": 7.7,
+   "revenue_at_risk_eur": 9.27
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0129",
+   "name": "Hill's Science Plan Grain Free Chicken Dog Food 85g, light recipe",
+   "category": "wet-food",
+   "supplier": "S-10",
+   "lead_time_days": 10,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 8,
+   "order_qty": 10,
+   "order_cost_eur": 7.0,
+   "revenue_at_risk_eur": 8.24
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0421",
+   "name": "Felix Salmon Cat Food 85g, light recipe",
+   "category": "wet-food",
+   "supplier": "S-02",
+   "lead_time_days": 10,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 7,
+   "order_qty": 9,
+   "order_cost_eur": 6.93,
+   "revenue_at_risk_eur": 7.91
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0380",
+   "name": "Hill's Science Plan Grain Free Tuna Cat Food 150g",
+   "category": "wet-food",
+   "supplier": "S-09",
+   "lead_time_days": 10,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 4,
+   "order_qty": 6,
+   "order_cost_eur": 7.86,
+   "revenue_at_risk_eur": 7.72
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0132",
+   "name": "Hill's Science Plan Large Breed Lamb Dog Food 85g",
+   "category": "wet-food",
+   "supplier": "S-01",
+   "lead_time_days": 10,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 8,
+   "order_qty": 10,
+   "order_cost_eur": 5.7,
+   "revenue_at_risk_eur": 6.72
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0010",
+   "name": "Royal Canin Salmon Dog Food 1kg",
+   "category": "dry-food",
+   "supplier": "S-11",
+   "lead_time_days": 7,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 2,
+   "order_qty": 3,
+   "order_cost_eur": 14.43,
+   "revenue_at_risk_eur": 6.68
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0375",
+   "name": "Royal Canin Sensitive Liver Cat Food 85g, classic recipe",
+   "category": "wet-food",
+   "supplier": "S-04",
+   "lead_time_days": 10,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 7,
+   "order_qty": 8,
+   "order_cost_eur": 4.96,
+   "revenue_at_risk_eur": 5.46
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0544",
+   "name": "PetNord Veggie Crunch Treats 100g, soft",
+   "category": "treats",
+   "supplier": "S-05",
+   "lead_time_days": 14,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 3,
+   "order_qty": 5,
+   "order_cost_eur": 4.9,
+   "revenue_at_risk_eur": 5.34
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0407",
+   "name": "Whiskas Beef Cat Food 150g, classic recipe",
+   "category": "wet-food",
+   "supplier": "S-12",
+   "lead_time_days": 10,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 3,
+   "order_qty": 5,
+   "order_cost_eur": 5.7,
+   "revenue_at_risk_eur": 5.04
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0389",
+   "name": "Hill's Science Plan Beef Cat Food 85g",
+   "category": "wet-food",
+   "supplier": "S-06",
+   "lead_time_days": 10,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 5,
+   "order_qty": 6,
+   "order_cost_eur": 3.96,
+   "revenue_at_risk_eur": 3.88
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0436",
+   "name": "Sheba Sensitive Tuna Cat Food 85g",
+   "category": "wet-food",
+   "supplier": "S-05",
+   "lead_time_days": 10,
+   "current_stock": 0,
+   "reorder_point": 3,
+   "recent_units": 3,
+   "order_qty": 5,
+   "order_cost_eur": 2.95,
+   "revenue_at_risk_eur": 2.61
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0015",
+   "name": "Royal Canin Weight Control Beef Dog Food 7kg",
+   "category": "dry-food",
+   "supplier": "S-04",
+   "lead_time_days": 7,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 1,
+   "order_qty": 2,
+   "order_cost_eur": 71.2,
+   "revenue_at_risk_eur": 0.0
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0542",
+   "name": "PetNord Veggie Crunch Treats 100g, classic",
+   "category": "treats",
+   "supplier": "S-03",
+   "lead_time_days": 14,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 1,
+   "order_qty": 2,
+   "order_cost_eur": 1.94,
+   "revenue_at_risk_eur": 0.0
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0583",
+   "name": "PetNord Canary Seed Food 15kg, classic recipe",
+   "category": "dry-food",
+   "supplier": "S-08",
+   "lead_time_days": 7,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 0,
+   "order_qty": 1,
+   "order_cost_eur": 67.9,
+   "revenue_at_risk_eur": 0.0
+  },
+  {
+   "kind": "reorder",
+   "sku": "SKU-PT-0604",
+   "name": "PetNord Mirror",
+   "category": "toys",
+   "supplier": "S-05",
+   "lead_time_days": 21,
+   "current_stock": 1,
+   "reorder_point": 3,
+   "recent_units": 0,
+   "order_qty": 1,
+   "order_cost_eur": 7.23,
+   "revenue_at_risk_eur": 0.0
+  },
+  {
+   "kind": "overstock",
+   "sku": "SKU-PT-0061",
+   "name": "Acana Lamb Dog Food 12kg",
+   "category": "dry-food",
+   "current_stock": 32,
+   "excess_units": 26,
+   "tied_capital_eur": 1626.3,
+   "markdown": {
+    "action": "wont_clear",
+    "discount_pct": 20,
+    "price_eur": 69.5,
+    "weeks_to_clear": 45.9,
+    "units_cleared": 7,
+    "extra_units_vs_full_price": 3,
+    "capital_freed_eur": 437.85,
+    "margin_given_up_eur": 121.66,
+    "curve": [
+     {
+      "discount_pct": 0,
+      "price_eur": 86.88,
+      "monthly_units": 1.63,
+      "weeks_to_clear": 68.9
+     },
+     {
+      "discount_pct": 5,
+      "price_eur": 82.54,
+      "monthly_units": 1.82,
+      "weeks_to_clear": 61.8
+     },
+     {
+      "discount_pct": 10,
+      "price_eur": 78.19,
+      "monthly_units": 2.02,
+      "weeks_to_clear": 55.7
+     },
+     {
+      "discount_pct": 15,
+      "price_eur": 73.85,
+      "monthly_units": 2.23,
+      "weeks_to_clear": 50.5
+     },
+     {
+      "discount_pct": 20,
+      "price_eur": 69.5,
+      "monthly_units": 2.45,
+      "weeks_to_clear": 45.9
+     }
+    ]
+   }
+  },
+  {
+   "kind": "overstock",
+   "sku": "SKU-PT-0012",
+   "name": "Royal Canin Salmon Dog Food 12kg",
+   "category": "dry-food",
+   "current_stock": 35,
+   "excess_units": 29,
+   "tied_capital_eur": 1616.17,
+   "markdown": {
+    "action": "wont_clear",
+    "discount_pct": 20,
+    "price_eur": 61.92,
+    "weeks_to_clear": 48.4,
+    "units_cleared": 7,
+    "extra_units_vs_full_price": 2,
+    "capital_freed_eur": 390.11,
+    "margin_given_up_eur": 108.36,
+    "curve": [
+     {
+      "discount_pct": 0,
+      "price_eur": 77.4,
+      "monthly_units": 1.78,
+      "weeks_to_clear": 70.7
+     },
+     {
+      "discount_pct": 5,
+      "price_eur": 73.53,
+      "monthly_units": 1.96,
+      "weeks_to_clear": 63.9
+     },
+     {
+      "discount_pct": 10,
+      "price_eur": 69.66,
+      "monthly_units": 2.16,
+      "weeks_to_clear": 58.1
+     },
+     {
+      "discount_pct": 15,
+      "price_eur": 65.79,
+      "monthly_units": 2.37,
+      "weeks_to_clear": 53.0
+     },
+     {
+      "discount_pct": 20,
+      "price_eur": 61.92,
+      "monthly_units": 2.59,
+      "weeks_to_clear": 48.4
+     }
+    ]
+   }
+  },
+  {
+   "kind": "overstock",
+   "sku": "SKU-PT-0277",
+   "name": "Hill's Science Plan Grain Free Tuna Cat Food 15kg",
+   "category": "dry-food",
+   "current_stock": 30,
+   "excess_units": 24,
+   "tied_capital_eur": 1479.6,
+   "markdown": {
+    "action": "wont_clear",
+    "discount_pct": 20,
+    "price_eur": 68.5,
+    "weeks_to_clear": 18.6,
+    "units_cleared": 16,
+    "extra_units_vs_full_price": 2,
+    "capital_freed_eur": 986.4,
+    "margin_given_up_eur": 274.08,
+    "curve": [
+     {
+      "discount_pct": 0,
+      "price_eur": 85.63,
+      "monthly_units": 4.75,
+      "weeks_to_clear": 21.9
+     },
+     {
+      "discount_pct": 5,
+      "price_eur": 81.35,
+      "monthly_units": 4.94,
+      "weeks_to_clear": 21.0
+     },
+     {
+      "discount_pct": 10,
+      "price_eur": 77.07,
+      "monthly_units": 5.14,
+      "weeks_to_clear": 20.2
+     },
+     {
+      "discount_pct": 15,
+      "price_eur": 72.79,
+      "monthly_units": 5.35,
+      "weeks_to_clear": 19.4
+     },
+     {
+      "discount_pct": 20,
+      "price_eur": 68.5,
+      "monthly_units": 5.57,
+      "weeks_to_clear": 18.6
+     }
+    ]
+   }
+  },
+  {
+   "kind": "overstock",
+   "sku": "SKU-PT-0267",
+   "name": "Royal Canin Turkey Cat Food 12kg",
+   "category": "dry-food",
+   "current_stock": 33,
+   "excess_units": 27,
+   "tied_capital_eur": 1377.0,
+   "markdown": {
+    "action": "wont_clear",
+    "discount_pct": 20,
+    "price_eur": 56.67,
+    "weeks_to_clear": 107.0,
+    "units_cleared": 3,
+    "extra_units_vs_full_price": 3,
+    "capital_freed_eur": 153.0,
+    "margin_given_up_eur": 42.51,
+    "curve": [
+     {
+      "discount_pct": 0,
+      "price_eur": 70.84,
+      "monthly_units": 0.28,
+      "weeks_to_clear": 424.9
+     },
+     {
+      "discount_pct": 5,
+      "price_eur": 67.3,
+      "monthly_units": 0.46,
+      "weeks_to_clear": 252.6
+     },
+     {
+      "discount_pct": 10,
+      "price_eur": 63.76,
+      "monthly_units": 0.66,
+      "weeks_to_clear": 176.9
+     },
+     {
+      "discount_pct": 15,
+      "price_eur": 60.21,
+      "monthly_units": 0.87,
+      "weeks_to_clear": 134.3
+     },
+     {
+      "discount_pct": 20,
+      "price_eur": 56.67,
+      "monthly_units": 1.09,
+      "weeks_to_clear": 107.0
+     }
+    ]
+   }
+  },
+  {
+   "kind": "overstock",
+   "sku": "SKU-PT-0039",
+   "name": "Hill's Science Plan Grain Free Turkey Dog Food 12kg",
+   "category": "dry-food",
+   "current_stock": 28,
+   "excess_units": 22,
+   "tied_capital_eur": 1222.76,
+   "markdown": {
+    "action": "wont_clear",
+    "discount_pct": 20,
+    "price_eur": 61.75,
+    "weeks_to_clear": 20.5,
+    "units_cleared": 13,
+    "extra_units_vs_full_price": 2,
+    "capital_freed_eur": 722.54,
+    "margin_given_up_eur": 200.72,
+    "curve": [
+     {
+      "discount_pct": 0,
+      "price_eur": 77.19,
+      "monthly_units": 3.83,
+      "weeks_to_clear": 24.9
+     },
+     {
+      "discount_pct": 5,
+      "price_eur": 73.33,
+      "monthly_units": 4.01,
+      "weeks_to_clear": 23.7
+     },
+     {
+      "discount_pct": 10,
+      "price_eur": 69.47,
+      "monthly_units": 4.21,
+      "weeks_to_clear": 22.6
+     },
+     {
+      "discount_pct": 15,
+      "price_eur": 65.61,
+      "monthly_units": 4.42,
+      "weeks_to_clear": 21.5
+     },
+     {
+      "discount_pct": 20,
+      "price_eur": 61.75,
+      "monthly_units": 4.64,
+      "weeks_to_clear": 20.5
+     }
+    ]
+   }
+  },
+  {
+   "kind": "overstock",
+   "sku": "SKU-PT-0069",
+   "name": "Acana Sensitive Salmon Dog Food 12kg",
+   "category": "dry-food",
+   "current_stock": 31,
+   "excess_units": 25,
+   "tied_capital_eur": 1202.5,
+   "markdown": {
+    "action": "wont_clear",
+    "discount_pct": 20,
+    "price_eur": 53.44,
+    "weeks_to_clear": 28.8,
+    "units_cleared": 11,
+    "extra_units_vs_full_price": 3,
+    "capital_freed_eur": 529.1,
+    "margin_given_up_eur": 146.96,
+    "curve": [
+     {
+      "discount_pct": 0,
+      "price_eur": 66.8,
+      "monthly_units": 2.95,
+      "weeks_to_clear": 36.7
+     },
+     {
+      "discount_pct": 5,
+      "price_eur": 63.46,
+      "monthly_units": 3.13,
+      "weeks_to_clear": 34.5
+     },
+     {
+      "discount_pct": 10,
+      "price_eur": 60.12,
+      "monthly_units": 3.33,
+      "weeks_to_clear": 32.5
+     },
+     {
+      "discount_pct": 15,
+      "price_eur": 56.78,
+      "monthly_units": 3.54,
+      "weeks_to_clear": 30.6
+     },
+     {
+      "discount_pct": 20,
+      "price_eur": 53.44,
+      "monthly_units": 3.76,
+      "weeks_to_clear": 28.8
+     }
+    ]
+   }
+  },
+  {
+   "kind": "overstock",
+   "sku": "SKU-PT-0495",
+   "name": "PetNord Bowl, extra large",
+   "category": "accessories",
+   "current_stock": 133,
+   "excess_units": 105,
+   "tied_capital_eur": 1100.4,
+   "markdown": {
+    "action": "wont_clear",
+    "discount_pct": 20,
+    "price_eur": 15.25,
+    "weeks_to_clear": 26.3,
+    "units_cleared": 51,
+    "extra_units_vs_full_price": 2,
+    "capital_freed_eur": 534.48,
+    "margin_given_up_eur": 194.31,
+    "curve": [
+     {
+      "discount_pct": 0,
+      "price_eur": 19.06,
+      "monthly_units": 16.47,
+      "weeks_to_clear": 27.6
+     },
+     {
+      "discount_pct": 5,
+      "price_eur": 18.11,
+      "monthly_units": 16.66,
+      "weeks_to_clear": 27.3
+     },
+     {
+      "discount_pct": 10,
+      "price_eur": 17.15,
+      "monthly_units": 16.85,
+      "weeks_to_clear": 27.0
+     },
+     {
+      "discount_pct": 15,
+      "price_eur": 16.2,
+      "monthly_units": 17.06,
+      "weeks_to_clear": 26.6
+     },
+     {
+      "discount_pct": 20,
+      "price_eur": 15.25,
+      "monthly_units": 17.28,
+      "weeks_to_clear": 26.3
+     }
+    ]
+   }
+  },
+  {
+   "kind": "overstock",
+   "sku": "SKU-PT-0501",
+   "name": "Trixie Bowl, large",
+   "category": "accessories",
+   "current_stock": 134,
+   "excess_units": 102,
+   "tied_capital_eur": 1091.4,
+   "markdown": {
+    "action": "wont_clear",
+    "discount_pct": 20,
+    "price_eur": 15.56,
+    "weeks_to_clear": 23.2,
+    "units_cleared": 57,
+    "extra_units_vs_full_price": 3,
+    "capital_freed_eur": 609.9,
+    "margin_given_up_eur": 221.73,
+    "curve": [
+     {
+      "discount_pct": 0,
+      "price_eur": 19.45,
+      "monthly_units": 18.25,
+      "weeks_to_clear": 24.2
+     },
+     {
+      "discount_pct": 5,
+      "price_eur": 18.48,
+      "monthly_units": 18.44,
+      "weeks_to_clear": 24.0
+     },
+     {
+      "discount_pct": 10,
+      "price_eur": 17.5,
+      "monthly_units": 18.64,
+      "weeks_to_clear": 23.7
+     },
+     {
+      "discount_pct": 15,
+      "price_eur": 16.53,
+      "monthly_units": 18.84,
+      "weeks_to_clear": 23.4
+     },
+     {
+      "discount_pct": 20,
+      "price_eur": 15.56,
+      "monthly_units": 19.07,
+      "weeks_to_clear": 23.2
+     }
+    ]
+   }
+  },
+  {
+   "kind": "overstock",
+   "sku": "SKU-PT-0334",
+   "name": "Orijen Indoor Whitefish Cat Food 15kg",
+   "category": "dry-food",
+   "current_stock": 21,
+   "excess_units": 15,
+   "tied_capital_eur": 979.95,
+   "markdown": {
+    "action": "wont_clear",
+    "discount_pct": 20,
+    "price_eur": 72.58,
+    "weeks_to_clear": 41.5,
+    "units_cleared": 4,
+    "extra_units_vs_full_price": 2,
+    "capital_freed_eur": 261.32,
+    "margin_given_up_eur": 72.6,
+    "curve": [
+     {
+      "discount_pct": 0,
+      "price_eur": 90.73,
+      "monthly_units": 0.75,
+      "weeks_to_clear": 86.7
+     },
+     {
+      "discount_pct": 5,
+      "price_eur": 86.19,
+      "monthly_units": 0.94,
+      "weeks_to_clear": 69.3
+     },
+     {
+      "discount_pct": 10,
+      "price_eur": 81.66,
+      "monthly_units": 1.14,
+      "weeks_to_clear": 57.2
+     },
+     {
+      "discount_pct": 15,
+      "price_eur": 77.12,
+      "monthly_units": 1.34,
+      "weeks_to_clear": 48.3
+     },
+     {
+      "discount_pct": 20,
+      "price_eur": 72.58,
+      "monthly_units": 1.57,
+      "weeks_to_clear": 41.5
+     }
+    ]
+   }
+  },
+  {
+   "kind": "overstock",
+   "sku": "SKU-PT-0209",
+   "name": "PetNord Bowl, large",
+   "category": "accessories",
+   "current_stock": 135,
+   "excess_units": 103,
+   "tied_capital_eur": 966.14,
+   "markdown": {
+    "action": "wont_clear",
+    "discount_pct": 20,
+    "price_eur": 13.64,
+    "weeks_to_clear": 17.5,
+    "units_cleared": 76,
+    "extra_units_vs_full_price": 2,
+    "capital_freed_eur": 712.88,
+    "margin_given_up_eur": 259.16,
+    "curve": [
+     {
+      "discount_pct": 0,
+      "price_eur": 17.05,
+      "monthly_units": 24.69,
+      "weeks_to_clear": 18.1
+     },
+     {
+      "discount_pct": 5,
+      "price_eur": 16.2,
+      "monthly_units": 24.88,
+      "weeks_to_clear": 17.9
+     },
+     {
+      "discount_pct": 10,
+      "price_eur": 15.35,
+      "monthly_units": 25.07,
+      "weeks_to_clear": 17.8
+     },
+     {
+      "discount_pct": 15,
+      "price_eur": 14.49,
+      "monthly_units": 25.28,
+      "weeks_to_clear": 17.6
+     },
+     {
+      "discount_pct": 20,
+      "price_eur": 13.64,
+      "monthly_units": 25.51,
+      "weeks_to_clear": 17.5
+     }
+    ]
+   }
+  },
+  {
+   "kind": "overstock",
+   "sku": "SKU-PT-0279",
+   "name": "Hill's Science Plan Indoor Chicken Cat Food 15kg, classic recipe",
+   "category": "dry-food",
+   "current_stock": 18,
+   "excess_units": 12,
+   "tied_capital_eur": 905.76,
+   "markdown": {
+    "action": "wont_clear",
+    "discount_pct": 20,
+    "price_eur": 83.86,
+    "weeks_to_clear": 36.9,
+    "units_cleared": 4,
+    "extra_units_vs_full_price": 3,
+    "capital_freed_eur": 301.92,
+    "margin_given_up_eur": 83.88,
+    "curve": [
+     {
+      "discount_pct": 0,
+      "price_eur": 104.83,
+      "monthly_units": 0.59,
+      "weeks_to_clear": 88.0
+     },
+     {
+      "discount_pct": 5,
+      "price_eur": 99.59,
+      "monthly_units": 0.78,
+      "weeks_to_clear": 66.8
+     },
+     {
+      "discount_pct": 10,
+      "price_eur": 94.35,
+      "monthly_units": 0.98,
+      "weeks_to_clear": 53.2
+     },
+     {
+      "discount_pct": 15,
+      "price_eur": 89.11,
+      "monthly_units": 1.19,
+      "weeks_to_clear": 43.8
+     },
+     {
+      "discount_pct": 20,
+      "price_eur": 83.86,
+      "monthly_units": 1.41,
+      "weeks_to_clear": 36.9
+     }
+    ]
+   }
+  },
+  {
+   "kind": "overstock",
+   "sku": "SKU-PT-0293",
+   "name": "Hill's Science Plan Indoor Whitefish Cat Food 12kg",
+   "category": "dry-food",
+   "current_stock": 20,
+   "excess_units": 14,
+   "tied_capital_eur": 870.66,
+   "markdown": {
+    "action": "wont_clear",
+    "discount_pct": 20,
+    "price_eur": 69.1,
+    "weeks_to_clear": 38.5,
+    "units_cleared": 4,
+    "extra_units_vs_full_price": 2,
+    "capital_freed_eur": 248.76,
+    "margin_given_up_eur": 69.08,
+    "curve": [
+     {
+      "discount_pct": 0,
+      "price_eur": 86.37,
+      "monthly_units": 0.76,
+      "weeks_to_clear": 80.2
+     },
+     {
+      "discount_pct": 5,
+      "price_eur": 82.05,
+      "monthly_units": 0.94,
+      "weeks_to_clear": 64.2
+     },
+     {
+      "discount_pct": 10,
+      "price_eur": 77.73,
+      "monthly_units": 1.14,
+      "weeks_to_clear": 53.1
+     },
+     {
+      "discount_pct": 15,
+      "price_eur": 73.41,
+      "monthly_units": 1.35,
+      "weeks_to_clear": 44.9
+     },
+     {
+      "discount_pct": 20,
+      "price_eur": 69.1,
+      "monthly_units": 1.57,
+      "weeks_to_clear": 38.5
+     }
+    ]
+   }
+  },
+  {
+   "kind": "overstock",
+   "sku": "SKU-PT-0307",
+   "name": "Acana Senior Turkey Cat Food 7kg",
+   "category": "dry-food",
+   "current_stock": 28,
+   "excess_units": 22,
+   "tied_capital_eur": 816.2,
+   "markdown": {
+    "action": "wont_clear",
+    "discount_pct": 20,
+    "price_eur": 41.22,
+    "weeks_to_clear": 19.4,
+    "units_cleared": 14,
+    "extra_units_vs_full_price": 2,
+    "capital_freed_eur": 519.4,
+    "margin_given_up_eur": 144.34,
+    "curve": [
+     {
+      "discount_pct": 0,
+      "price_eur": 51.53,
+      "monthly_units": 4.09,
+      "weeks_to_clear": 23.3
+     },
+     {
+      "discount_pct": 5,
+      "price_eur": 48.95,
+      "monthly_units": 4.28,
+      "weeks_to_clear": 22.3
+     },
+     {
+      "discount_pct": 10,
+      "price_eur": 46.38,
+      "monthly_units": 4.47,
+      "weeks_to_clear": 21.3
+     },
+     {
+      "discount_pct": 15,
+      "price_eur": 43.8,
+      "monthly_units": 4.68,
+      "weeks_to_clear": 20.3
+     },
+     {
+      "discount_pct": 20,
+      "price_eur": 41.22,
+      "monthly_units": 4.91,
+      "weeks_to_clear": 19.4
+     }
+    ]
+   }
+  },
+  {
+   "kind": "overstock",
+   "sku": "SKU-PT-0496",
+   "name": "PetNord Bowl, natural wood",
+   "category": "accessories",
+   "current_stock": 96,
+   "excess_units": 62,
+   "tied_capital_eur": 691.92,
+   "markdown": {
+    "action": "hold",
+    "discount_pct": 0,
+    "price_eur": 20.29,
+    "weeks_to_clear": 11.0,
+    "units_cleared": 62,
+    "extra_units_vs_full_price": 0,
+    "capital_freed_eur": 691.92,
+    "margin_given_up_eur": 0.0,
+    "curve": [
+     {
+      "discount_pct": 0,
+      "price_eur": 20.29,
+      "monthly_units": 24.51,
+      "weeks_to_clear": 11.0
+     },
+     {
+      "discount_pct": 5,
+      "price_eur": 19.28,
+      "monthly_units": 24.69,
+      "weeks_to_clear": 10.9
+     },
+     {
+      "discount_pct": 10,
+      "price_eur": 18.26,
+      "monthly_units": 24.89,
+      "weeks_to_clear": 10.8
+     },
+     {
+      "discount_pct": 15,
+      "price_eur": 17.25,
+      "monthly_units": 25.1,
+      "weeks_to_clear": 10.7
+     },
+     {
+      "discount_pct": 20,
+      "price_eur": 16.23,
+      "monthly_units": 25.32,
+      "weeks_to_clear": 10.6
+     }
+    ]
+   }
+  },
+  {
+   "kind": "overstock",
+   "sku": "SKU-PT-0043",
+   "name": "Eukanuba Chicken Dog Food 7kg",
+   "category": "dry-food",
+   "current_stock": 30,
+   "excess_units": 24,
+   "tied_capital_eur": 674.16,
+   "markdown": {
+    "action": "wont_clear",
+    "discount_pct": 20,
+    "price_eur": 31.22,
+    "weeks_to_clear": 30.6,
+    "units_cleared": 10,
+    "extra_units_vs_full_price": 3,
+    "capital_freed_eur": 280.9,
+    "margin_given_up_eur": 78.0,
+    "curve": [
+     {
+      "discount_pct": 0,
+      "price_eur": 39.02,
+      "monthly_units": 2.58,
+      "weeks_to_clear": 40.2
+     },
+     {
+      "discount_pct": 5,
+      "price_eur": 37.07,
+      "monthly_units": 2.77,
+      "weeks_to_clear": 37.5
+     },
+     {
+      "discount_pct": 10,
+      "price_eur": 35.12,
+      "monthly_units": 2.97,
+      "weeks_to_clear": 35.0
+     },
+     {
+      "discount_pct": 15,
+      "price_eur": 33.17,
+      "monthly_units": 3.18,
+      "weeks_to_clear": 32.7
+     },
+     {
+      "discount_pct": 20,
+      "price_eur": 31.22,
+      "monthly_units": 3.4,
+      "weeks_to_clear": 30.6
+     }
+    ]
+   }
+  }
+ ]
+}

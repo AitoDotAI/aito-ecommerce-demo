@@ -99,7 +99,7 @@ def test_the_overview_lists_board_routines_and_runs(api):
     body = api.get("/api/shopkeeper").json()
 
     assert body["board"] and body["simulated"] is True
-    assert [c["id"] for c in body["runs"]] == ["winback"]
+    assert [c["id"] for c in body["runs"]] == ["stock", "winback"]
     assert {r["id"]: r["built"] for r in body["routines"]}["winback"] is True
     assert body["settings"]["in_force"] == body["settings"]["recommended"]
 
@@ -172,4 +172,4 @@ def test_a_run_is_stale_when_retention_serves_other_numbers_than_it_read():
 
     assert client.get("/api/shopkeeper/runs/winback").json()["stale"] is True
     assert "different numbers" in client.get("/api/shopkeeper/runs/winback").json()["stale_reason"]
-    assert client.get("/api/shopkeeper").json()["runs"][0]["stale"] is True
+    assert next(r for r in client.get("/api/shopkeeper").json()["runs"] if r["id"] == "winback")["stale"] is True

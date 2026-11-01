@@ -66,7 +66,7 @@ def test_the_overview_lists_conversations_apart_from_the_win_back_runs(conversat
     body = api().get("/api/shopkeeper").json()
 
     assert [c["question"] for c in body["conversations"]] == ["What should I reorder?"]
-    assert [r["id"] for r in body["runs"]] == ["winback"]
+    assert [r["id"] for r in body["runs"]] == ["stock", "winback"]
 
 
 def test_a_conversation_opens_by_route_and_an_unknown_one_is_a_404(conversations_dir):

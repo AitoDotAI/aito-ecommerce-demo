@@ -34,7 +34,25 @@ export interface Routine {
 }
 
 export interface RunSummary {
-  id: string; title: string; as_of_month: string; stale: boolean; tally: Record<Outcome, Tally>;
+  id: string; title: string; as_of_month: string; stale: boolean; routine: string; tally: Record<Outcome, Tally & StockTally>;
+}
+
+/** What a stock run's outcome groups would order and protect (ADR 0057); the win-back's groups hold expected euros instead. */
+export interface StockTally { order_cost_eur?: number; revenue_at_risk_eur?: number }
+
+export interface StockSettings { min_recent_units: number; order_limit_eur: number; urgent_share: number }
+
+export interface StockStep {
+  kind: "reorder" | "overstock"; sku: string; name: string; category: string; outcome: Outcome; reason: string; current_stock: number;
+  supplier?: string; lead_time_days?: number; reorder_point?: number; recent_units?: number; order_qty?: number; order_cost_eur?: number; revenue_at_risk_eur?: number;
+  excess_units?: number; tied_capital_eur?: number;
+  markdown?: { action: string; discount_pct: number; price_eur: number; weeks_to_clear: number; units_cleared: number; capital_freed_eur: number; margin_given_up_eur: number };
+}
+
+export interface StockRun {
+  id: string; routine: "stock"; title: string; release: string; as_of_month: string; source: string; stale: boolean; stale_reason: string | null;
+  steps: StockStep[]; tally: Record<Outcome, { steps: number; order_cost_eur: number; revenue_at_risk_eur: number }>;
+  settings: { in_force: StockSettings; recommended: StockSettings };
 }
 
 /** A stored conversation with Ask the store, as the list shows it (ADR 0054). */
@@ -51,6 +69,7 @@ export interface Conversation extends Omit<ConversationSummary, "tool_calls" | "
 export interface ShopkeeperOverview {
   simulated: boolean; release: string; settings: SettingsView;
   board: BoardItem[]; routines: Routine[]; runs: RunSummary[]; conversations: ConversationSummary[];
+  stock_settings: { in_force: StockSettings; recommended: StockSettings };
 }
 
 export interface RunStep {
@@ -63,7 +82,7 @@ export interface RunStep {
 }
 
 export interface Run {
-  id: string; title: string; release: string; as_of_month: string; source: string; stale: boolean; stale_reason: string | null;
+  routine: "winback"; id: string; title: string; release: string; as_of_month: string; source: string; stale: boolean; stale_reason: string | null;
   steps: RunStep[]; tally: Record<Outcome, Tally>; settings: SettingsView;
 }
 
@@ -90,7 +109,13 @@ export function settingsQuery(settings: GateSettings, recommended: GateSettings)
 
 const STORAGE_KEY = "shopkeeper-browser-state";
 
-interface BrowserState { settings?: GateSettings; decisions?: Record<string, "approved" | "rejected"> }
+/** The query string that makes the server judge a stock run under `settings`; empty when they are the recommended ones. */
+export function stockQuery(settings: StockSettings, recommended: StockSettings): string {
+  if (JSON.stringify(settings) === JSON.stringify(recommended)) return "";
+  return `?${new URLSearchParams({ min_recent_units: String(settings.min_recent_units), order_limit_eur: String(settings.order_limit_eur), urgent_share: String(settings.urgent_share) })}`;
+}
+
+interface BrowserState { settings?: GateSettings; stock?: StockSettings; decisions?: Record<string, "approved" | "rejected"> }
 
 export function readBrowserState(): BrowserState {
   try {
