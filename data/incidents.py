@@ -93,6 +93,16 @@ def recall_churn_rise(incidents: tuple[Incident, ...], sku: str, month: str, exp
     return None
 
 
+def text_kind(incidents: tuple[Incident, ...], sku: str, month: str, experience: str) -> str | None:
+    """"recalled" or "quiet" for a bad unit from a planted incident's line in its months (what its review or comment should say), else None."""
+    if experience != "bad":
+        return None
+    for incident in active(incidents):
+        if sku in incident.skus and month in incident.months:
+            return "recalled" if incident.kind == "recall" else "quiet"
+    return None
+
+
 def purchase_odds(incidents: tuple[Incident, ...], hits: dict[tuple[str, str], str], customer_id: str, product, month: str) -> float:
     """What the incidents do to the odds that this customer buys this product this month."""
     odds = 1.0
@@ -124,15 +134,20 @@ def _months_between(first: str, last: str) -> int:
     return (ly - fy) * 12 + lm - fm
 
 
+def display_name(incidents: tuple[Incident, ...], product) -> str:
+    """The name a product is written under: the recalled line carries the house label (not the catalogue brand it was drawn under)."""
+    recalled = next((i for i in active(incidents) if i.id == "E1"), None)
+    if recalled is not None and product.sku in recalled.skus:
+        return f"{HOUSE_LABEL} Grain Free Fish Adult Dog Food {product.name.rsplit(' ', 1)[-1]}"
+    return product.name
+
+
 def rename_for_output(products: list, incidents: tuple[Incident, ...]) -> None:
     """The recalled line carries the house label in the written fixtures (not in the draws, where its catalogue brand set its price)."""
-    if not ON["E1"]:
-        return
-    recalled = next(i for i in incidents if i.id == "E1")
     for p in products:
-        if p.sku in recalled.skus:
-            p.name = f"{HOUSE_LABEL} Grain Free Fish Adult Dog Food {p.name.rsplit(' ', 1)[-1]}"
-            p.brand = HOUSE_LABEL
+        name = display_name(incidents, p)
+        if name != p.name:
+            p.name, p.brand = name, HOUSE_LABEL
 
 
 def answer_key_rows(incidents: tuple[Incident, ...], hits: dict[tuple[str, str], str]) -> list[dict]:

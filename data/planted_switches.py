@@ -63,6 +63,9 @@ ON: dict[str, bool] = {
     "E2": False,       # a quiet bad batch of a cat wet-food line, with customers who switch away
     "E3": False,       # the same for a dog treat line
     "E4": False,       # the same for a small-animal dry food line
+    # ADR 0058: the words of feedback. Off in the committed fixtures until the release that carries them.
+    "T1": False,       # an NPS answer may carry a comment, from the causes of the order
+    "T2": False,       # a review's text reads like its stars and names its product
     # ADR 0044: what a person declares.
     "C1": True,        # declared interests follow the hidden traits
 }
