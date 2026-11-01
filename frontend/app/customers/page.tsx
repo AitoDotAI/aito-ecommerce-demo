@@ -24,7 +24,7 @@ import SegmentTrend from "@/components/customers/SegmentTrend";
 
 const TABS = [
   { id: "highlights", label: "Highlights" }, { id: "figures", label: "Figures" }, { id: "preferences", label: "Preferences" }, { id: "others", label: "Other segments" },
-  { id: "journey", label: "Journey" }, { id: "channels", label: "Channels" }, { id: "actions", label: "Actions" }, { id: "feedback", label: "Feedback" },
+  { id: "journey", label: "Journey" }, { id: "channels", label: "Acquisition" }, { id: "actions", label: "Actions" }, { id: "feedback", label: "Feedback" },
 ];
 
 /**
@@ -37,9 +37,9 @@ const TABS = [
  */
 function CustomersView() {
   usePagePanel(customersPanel(), {
-    title: "Customers",
+    title: "Analytics",
     description: "Customer segments by how they shop, with profit per customer, and what each one responds to.",
-    breadcrumb: "Run the shop › Customers",
+    breadcrumb: "Run the shop › Analytics",
   });
   const [summary, setSummary] = useState<ProfilesSummary | null>(null);
   const [view, setView] = useState<SegmentView | null>(null);
@@ -68,9 +68,9 @@ function CustomersView() {
   return (
     <div className="fade-in">
       <div className="page-header">
-        <div className="page-title">Customers</div>
+        <div className="page-title">Analytics</div>
         <div className="page-desc">
-          Customer segments by how they shop, ranked by what a customer earns the shop.
+          Analytics on the customers: segments by how they shop, what they bought, where they live and what they said, ranked by what a customer earns the shop.
           {summary && <> {summary.profiled.toLocaleString("en-GB")} of {summary.customers.toLocaleString("en-GB")} customers
             are profiled: the others did not consent to behavioural profiling. Simulated data.</>}
         </div>

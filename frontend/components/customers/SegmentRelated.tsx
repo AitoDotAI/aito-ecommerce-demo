@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 
-import Confidence from "@/components/customers/Confidence";
+import Pattern from "@/components/customers/Pattern";
+import { zOfShares } from "@/lib/pattern";
 import type { SegmentView } from "@/lib/customer-profiles";
 
 interface Related {
@@ -40,8 +41,8 @@ export default function SegmentRelated({ view }: { view: SegmentView }) {
       <div className="card-title">Preferences</div>
       <div className="card-sub" style={{ marginBottom: 8, lineHeight: 1.5 }}>
         How many more (or fewer) points of this segment bought each category, brand or product than the customers outside it who
-        buy for the same pet. The confidence column is the difference divided
-        by its 99.7 % margin: above 1× it is larger than chance would give. Many pairs are compared, so the bar is high, and at product level
+        buy for the same pet. "Pattern?" says whether the difference is a pattern
+        in the data or could be luck; hover for the chance. Many pairs are compared, so the bar for "Yes" is high, and at product level
         most sit below it. Clear ones first.
       </div>
       <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 8 }}>
@@ -76,7 +77,7 @@ function Bar({ r, scale }: { r: Related; scale: number }) {
           ...(r.points >= 0 ? { left: "50%", width } : { right: "50%", width }) }} />
       </span>
       <span className="card-sub">{r.points > 0 ? "+" : ""}{r.points} ±{r.margin} ({Math.round(r.share * 100)} % vs {Math.round(r.shareOthers * 100)} %)</span>
-      <Confidence points={r.points} margin={r.margin} />
+      <Pattern z={zOfShares(r.points, r.margin)} detail={`${r.points > 0 ? "+" : ""}${r.points} points`} />
     </div>
   );
 }

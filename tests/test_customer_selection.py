@@ -7,7 +7,7 @@ from src.customer_selection_data import actions, answers, facts, reviews, summar
 
 
 def customer(**own) -> dict:
-    return {"offer": "mostly", "price": "mixed", "rating": "average ratings", "margin": "high-margin", "status": "active", "pets": ["dog"], "diets": [], "region": "helsinki", "categories": [], "brands": [], "review_topics": [], "nps_groups": [],
+    return {"offer": "mostly", "price": "mixed", "rating": "average ratings", "margin": "high-margin", "status": "active", "pets": ["dog"], "diets": [], "region": "helsinki", "categories": [], "brands": [], "review_topics": [], "review_stars": [], "nps_groups": [],
             "churned": False, "total_spent_eur": 10.0, "net_revenue_eur": 10.0, "gross_profit_eur": 3.0, "gross_profit_12m_eur": 3.0,
             "profit_eur": 3.0, "funnel": [4, 3, 2, 1], "first": None, "months": {}, "nps": [],
             "bought": {"dog": {"categories": [], "brands": [], "products": []}, "cat": {"categories": [], "brands": [], "products": []}}, **own}
@@ -234,7 +234,7 @@ def test_the_segment_route_adds_a_period_against_the_one_before_and_says_when_th
 def test_a_customer_can_be_selected_by_region_by_a_category_and_by_a_brand_they_bought():
     from src.customer_selection import FILTERS
 
-    assert FILTERS == ("region", "category", "brand", "review", "nps")
+    assert FILTERS == ("region", "category", "brand", "review", "stars", "nps")
     customers = {"A": customer(region="helsinki", categories=["dry-food", "toys"], brands=["Acana"]),
                  "B": customer(region="turku", categories=["dry-food"], brands=["Orijen", "Acana"]),
                  "C": customer(region="helsinki", categories=["litter"], brands=["Orijen"])}
@@ -289,12 +289,36 @@ def test_the_stored_facts_say_what_each_customers_reviews_were_about_and_how_the
     assert all(c["nps_groups"] == sorted({g for _, g in c["nps"]}) for c in release[0]["customers"].values())
 
 
-def test_the_options_of_a_selection_are_counted_fast_enough_for_a_request(release):
-    # ~60 conditions, each a different selection of the same customers: a request that rescans everyone for each took 0.35 s here and 2-5 s on the demo host.
-    import time
+def test_the_options_of_a_selection_are_counted_from_per_condition_lists_not_by_rescanning_everyone(release, monkeypatch):
+    # ~60 conditions, each a different selection of the same customers. Asking every customer about every condition for each of them took 0.35 s here and
+    # 2-5 s on the demo host. Counted, not timed: a clock on a busy machine fails for the wrong reason.
+    import src.customer_selection as selection
 
-    customers = release[0]["customers"]
-    started = time.perf_counter()
-    options(customers, parse(["pets:dog", "price:mixed"]))
+    asked = []
+    monkeypatch.setattr(selection, "meets", lambda *args: asked.append(args) or True)
 
-    assert time.perf_counter() - started < 0.15
+    offered = options(release[0]["customers"], parse(["pets:dog", "price:mixed"]))
+
+    assert len(offered) > 50 and asked == [], "an option is an intersection of lists made once; no customer is asked about a condition again"
+
+
+def test_a_customer_can_be_selected_by_the_stars_of_a_review_they_wrote():
+    customers = {"A": customer(review_stars=["1", "5"]), "B": customer(review_stars=["5"]), "C": customer(review_stars=[])}
+
+    assert members(customers, parse(["stars:5"])) == ["A", "B"]
+    assert members(customers, parse(["stars:1"])) == ["A"]
+    assert members(customers, parse(["stars:5", "stars:1"])) == ["A"], "a customer can have written reviews of several kinds"
+    assert {"stars:1", "stars:5"} <= set(options(customers, parse([])))
+
+
+def test_the_stored_facts_say_which_star_ratings_each_customer_wrote():
+    import json
+    from pathlib import Path
+
+    reviews = json.loads((Path(__file__).resolve().parent.parent / "data" / "reviews.json").read_text())
+    written = {}
+    for r in reviews:
+        written.setdefault(r["customer_id"], set()).add(str(r["rating"]))
+
+    for cid, c in facts()["customers"].items():
+        assert c["review_stars"] == sorted(written.get(cid, set()), reverse=True), cid

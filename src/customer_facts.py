@@ -37,8 +37,10 @@ def build_facts(traits: list[dict], customers: dict[str, dict], funnel: dict[str
     for a in answers:
         nps[a["customer"]].append([a["month"], a["nps_group"]])
     topics: dict[str, set[str]] = defaultdict(set)
+    stars: dict[str, set[str]] = defaultdict(set)
     for r in reviews:
         topics[r["customer_id"]].add(r["category"])
+        stars[r["customer_id"]].add(str(r["rating"]))
     out = {}
     for t in traits:
         if not t["profiled"]:
@@ -57,6 +59,7 @@ def build_facts(traits: list[dict], customers: dict[str, dict], funnel: dict[str
             "months": {m: [n, round(eur, 2), round(gross, 2)] for m, (n, eur, gross) in sorted(months.get(cid, {}).items())},
             "nps": sorted(nps.get(cid, [])),
             "review_topics": sorted(topics.get(cid, ())),
+            "review_stars": sorted(stars.get(cid, ()), reverse=True),
             "nps_groups": sorted({group for _, group in nps.get(cid, [])}),
             "bought": {pet: {kind: sorted(items[kind]) for kind in PET_KINDS} for pet, items in bought[cid].items()},
         }

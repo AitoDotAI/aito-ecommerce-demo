@@ -68,7 +68,7 @@ def test_the_context_is_the_customers_who_ordered_in_either_timeframe_and_nobody
     result = compare(rows, MONTHS, "2026-04", "2026-06")
 
     assert result["context_customers"] == 5, "a customer active only in September is in neither timeframe"
-    assert result["figures"]["customers"] == {"this": 5, "previous": 5, "change": 0.0, "margin": None, "clear": None}
+    assert result["figures"]["customers"] == {"this": 5, "previous": 5, "change": 0.0, "margin": None, "clear": None, "z": None}
 
 
 def test_churn_is_the_share_who_had_ordered_but_not_in_the_three_months_to_the_end_of_each_timeframe():
@@ -90,3 +90,27 @@ def test_nps_needs_enough_answers_in_both_timeframes_and_is_a_difference_in_poin
 
     assert (nps["previous"], nps["this"], nps["change"]) == (-100.0, 100.0, 200.0)
     assert compare(few, MONTHS, "2026-04", "2026-06")["figures"]["nps"]["this"] is None
+
+
+def test_every_figure_with_a_margin_says_how_many_standard_errors_the_change_is():
+    """The page names the pattern from this (Yes from 3, Likely from 2, Possibly from 1): a mean is tested at 1.96 standard errors, a share at 3."""
+    rows = [row({"2026-01": [1, 10.0, 5.0], "2026-04": [1 + (i % 3), 10.0, 5.0]}) for i in range(60)]
+
+    figures = compare(rows, MONTHS, "2026-04", "2026-06")["figures"]
+
+    orders = figures["orders"]
+    assert orders["z"] == pytest.approx(1.96 * abs(orders["change"]) / orders["margin"], rel=0.02)
+    assert orders["z"] > 3 and figures["customers"]["z"] is None, "a count of customers has no margin"
+
+
+def test_a_change_every_customer_made_alike_has_no_spread_and_a_capped_z():
+    assert compare(customers(3, 1, 40), MONTHS, "2026-04", "2026-06")["figures"]["orders"]["z"] == 99.0
+
+
+def test_a_share_is_three_standard_errors_per_margin_and_a_mean_1_96():
+    stayed = [row({"2026-01": [1, 1.0, 1.0], "2026-03": [1, 1.0, 1.0], "2026-06": [1, 1.0, 1.0]}) for _ in range(30)]
+    left = [row({"2026-01": [1, 1.0, 1.0], "2026-03": [1, 1.0, 1.0]}) for _ in range(30)]
+
+    churn = compare(stayed + left, MONTHS, "2026-04", "2026-06")["figures"]["churn_rate"]
+
+    assert churn["z"] == pytest.approx(3 * abs(churn["change"]) / churn["margin"], rel=0.01)

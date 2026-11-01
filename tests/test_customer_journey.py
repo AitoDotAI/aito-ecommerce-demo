@@ -32,7 +32,8 @@ def test_events_of_customers_outside_the_asked_ones_are_not_kept():
     assert events == {"C1": {}}
 
 
-def test_each_cell_is_the_share_of_customers_with_the_event_that_month_relative_to_their_last_order_for_those_who_left_and_those_who_stayed():
+def test_each_cell_is_the_share_of_customers_with_the_event_that_month_relative_to_their_last_order_for_those_who_left_and_those_who_stayed(monkeypatch):
+    monkeypatch.setattr("src.customer_journey.control_month", lambda cid, customer, months: "2026-09")
     customers = {f"L{i}": customer("2026-06", True, "2026-01") for i in range(40)} | {f"S{i}": customer("2026-09", False, "2026-01") for i in range(40)}
     events = {f"L{i}": {"2026-05": {"return": 1}} for i in range(30)} | {f"L{i}": {} for i in range(30, 40)}
     events |= {f"S{i}": {"2026-08": {"return": 1}} for i in range(4)} | {f"S{i}": {} for i in range(4, 40)}
@@ -46,13 +47,13 @@ def test_each_cell_is_the_share_of_customers_with_the_event_that_month_relative_
 
 
 def test_a_month_outside_the_data_is_not_counted_for_the_customer_whose_offset_falls_there():
-    customers = {f"S{i}": customer("2026-12", False, "2026-01") for i in range(40)} | {f"L{i}": customer("2026-06", True, "2026-01") for i in range(40)}
+    customers = {f"S{i}": customer("2026-09", False) for i in range(40)} | {f"L{i}": customer("2026-12", True, "2026-01") for i in range(40)}
 
     result = journey({c: {} for c in customers}, customers, list(customers), MONTHS)
 
     after = next(c for c in result["cells"]["order"] if c["offset"] == 1)
-    assert after["n_active"] == 0 and after["active"] is None and after["clear"] is None, "December is the last month: nobody has a month after it"
-    assert after["n_churned"] == 40
+    assert after["n_churned"] == 0 and after["churned"] is None and after["clear"] is None, "December is the last month: nobody who left on it has a month after"
+    assert after["n_active"] == 40
 
 
 def test_the_offsets_run_from_five_months_before_the_last_order_to_two_after():
@@ -96,21 +97,19 @@ def test_the_route_serves_the_journey_of_everyone_and_of_a_segment_and_refuses_a
     assert api().get("/api/customer-profiles/journey", params={"c": "colour:red"}).status_code == 400
 
 
-def test_those_who_left_faded_out_visiting_and_ordering_less_in_each_month_before_their_last_order():
-    """Found in the data, not planted as such: the less engaged are the ones who leave, and visits fall before orders do."""
+def test_before_their_last_order_those_who_left_look_like_those_who_stayed_in_every_kind_of_event():
+    """What the data shows once only the months a customer existed are counted: no early warning in these events. (An earlier reading, that they faded out
+    before leaving, was months before the customer joined counted as 'no visit'.)"""
     cells = api().get("/api/customer-profiles/journey").json()["cells"]
 
-    for code in ("visit", "order"):
-        before = [c for c in cells[code] if c["offset"] in (-4, -3, -2, -1)]
-        assert all(c["churned"] < c["active"] and c["clear"] for c in before), code
-    first = lambda code: next(c["offset"] for c in cells[code] if c["clear"])
-    assert first("visit") <= first("order"), "visits fall at least as early as orders"
+    for code, row in cells.items():
+        assert not any(c["clear"] for c in row if c["offset"] < 0), f"{code}: a clear difference before the last order"
 
 
-def test_the_shop_sent_those_who_left_clearly_more_actions_after_their_last_order():
-    after = [c for c in api().get("/api/customer-profiles/journey").json()["cells"]["action"] if c["offset"] in (0, 1, 2)]
+def test_after_their_last_order_those_who_left_stop_visiting_the_shop():
+    cells = {c["offset"]: c for c in api().get("/api/customer-profiles/journey").json()["cells"]["visit"]}
 
-    assert all(c["churned"] > c["active"] and c["clear"] for c in after)
+    assert all(cells[o]["clear"] and cells[o]["churned"] < cells[o]["active"] for o in (1, 2))
 
 
 def test_a_segment_under_the_minimum_gets_its_size_and_no_grid():
@@ -122,3 +121,74 @@ def test_a_segment_under_the_minimum_gets_its_size_and_no_grid():
 def test_no_row_of_the_journey_names_a_customer():
     import json
     assert "CUST-" not in json.dumps(api().get("/api/customer-profiles/journey").json())
+
+
+def test_those_who_stayed_are_lined_up_on_an_ordinary_order_they_kept_ordering_after_not_on_their_last_one():
+    # Their last order is just the latest in the data: lined up on it, nobody orders in the months after, by definition.
+    stayed = {f"S{i}": customer("2026-12", False, "2026-03") for i in range(40)}
+    left = {f"L{i}": customer("2026-05", True, "2026-02") for i in range(40)}
+    customers = stayed | left
+    # the stayed also ordered in 2026-06 and 2026-08, in the three months after their control month
+    for c in stayed.values():
+        c["months"]["2026-05"] = [1, 10.0, 5.0]
+
+    result = journey({c: {} for c in customers}, customers, list(customers), MONTHS)
+
+    after = next(c for c in result["cells"]["order"] if c["offset"] == 1)
+    assert result["customers"] == {"churned": 40, "active": 40}
+    assert after["churned"] == 0.0, "after their last order, those who left have no order: by definition"
+    assert after["n_active"] > 0, "a control order has months after it to look at"
+
+
+def test_the_control_order_is_picked_among_orders_with_three_months_of_data_after_them_and_the_same_one_every_time():
+    customers = {f"S{i}": customer("2026-12", False, "2026-03") for i in range(40)}
+    for c in customers.values():
+        c["months"]["2026-07"] = [1, 1.0, 1.0]
+    customers |= {f"L{i}": customer("2026-04", True, "2026-02") for i in range(40)}
+
+    first = journey({c: {} for c in customers}, customers, list(customers), MONTHS)
+    again = journey({c: {} for c in customers}, customers, list(customers), MONTHS)
+
+    assert first == again
+    from src.customer_journey import control_month
+    assert control_month("S0", customers["S0"], MONTHS) in {"2026-03", "2026-07"}, "2026-12 has no three months after it"
+
+
+def test_a_customer_who_stayed_with_no_order_old_enough_to_have_three_months_after_it_has_no_control_and_is_counted_apart():
+    customers = {f"S{i}": customer("2026-12", False) for i in range(40)} | {f"L{i}": customer("2026-04", True, "2026-02") for i in range(40)}
+
+    result = journey({c: {} for c in customers}, customers, list(customers), MONTHS)
+
+    assert result["customers"]["active"] == 0 and result["without_control"] == 40
+
+
+def test_months_before_a_customer_existed_are_not_counted_as_months_without_the_event(monkeypatch):
+    monkeypatch.setattr("src.customer_journey.control_month", lambda cid, customer, months: "2026-06")
+    # Lined up on a control order early in life, most of the five months before it are before the customer's first order.
+    young = {f"S{i}": customer("2026-06", False, "2026-05") | {"months": {"2026-05": [1, 1.0, 1.0], "2026-06": [1, 1.0, 1.0]}} for i in range(40)}
+    left = {f"L{i}": customer("2026-08", True, "2026-02") for i in range(40)}
+    customers = young | left
+
+    result = journey({c: {} for c in customers}, customers, list(customers), MONTHS)
+
+    before = {c["offset"]: c for c in result["cells"]["visit"]}
+    assert before[-1]["n_active"] == 40, "one month before 2026-06 is 2026-05: the customer's first order month"
+    assert before[-2]["n_active"] == 0, "two months before is 2026-04: before the customer's first order"
+    assert before[-2]["n_churned"] == 40
+
+
+def test_events_that_need_an_order_are_not_compared_after_the_last_order_because_those_who_left_have_none_by_definition():
+    customers = {f"S{i}": customer("2026-03", False, "2026-01") | {"months": {"2026-01": [1, 1.0, 1.0], "2026-03": [1, 1.0, 1.0], "2026-04": [1, 1.0, 1.0]}} for i in range(40)}
+    customers |= {f"L{i}": customer("2026-03", True, "2026-01") for i in range(40)}
+    events = {c: {"2026-04": {"return": 1}} for c in customers if c.startswith("S")}
+
+    result = journey(events, customers, list(customers), MONTHS)
+
+    for code in ("order", "return", "incident", "low_review", "detractor"):
+        after = next(c for c in result["cells"][code] if c["offset"] == 1)
+        assert after["by_definition"] is True and after["clear"] is None and after["points"] is None, code
+    visit = next(c for c in result["cells"]["visit"] if c["offset"] == 1)
+    action = next(c for c in result["cells"]["action"] if c["offset"] == 1)
+    assert visit["by_definition"] is False and action["by_definition"] is False, "a visit or an action can follow the last order"
+    before = next(c for c in result["cells"]["return"] if c["offset"] == -1)
+    assert before["by_definition"] is False
