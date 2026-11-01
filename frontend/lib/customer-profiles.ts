@@ -56,7 +56,7 @@ export interface TreeFigures { customers: number; orders: number; revenue_eur: n
 export type KpiId = "customers" | "orders" | "revenue_eur" | "profit_per_customer_eur" | "nps" | "churn_rate";
 
 /** One figure in a chosen period against the period just before it (ADR 0055). `margin` is in the units of `change`; `clear` is whether the change is beyond it. */
-export interface PeriodFigure { this: number | null; previous: number | null; change: number | null; margin: number | null; clear: boolean | null }
+export interface PeriodFigure { this: number | null; previous: number | null; change: number | null; margin: number | null; clear: boolean | null; z: number | null }
 
 export interface PeriodComparison {
   from: string; to: string;

@@ -1,6 +1,7 @@
 "use client";
 
-import Confidence from "@/components/customers/Confidence";
+import Pattern from "@/components/customers/Pattern";
+import { zOfShares } from "@/lib/pattern";
 import type { FeedbackRow, SegmentView } from "@/lib/customer-profiles";
 
 /** What the segment says: how much it writes, what it writes about, and how likely it is to recommend the shop. */
@@ -22,7 +23,7 @@ export default function SegmentFeedback({ view }: { view: SegmentView }) {
         {everyone
           ? "Of all profiled customers, how many wrote each kind of review and answered each way in the NPS survey."
           : "How many more (or fewer) points of this segment wrote each kind of review or answered each way than the other profiled customers."}{" "}
-        A customer counts once. The confidence column is the difference divided by its 99.7 % margin; above 1× it is larger than chance would give.
+        A customer counts once. "Pattern?" says whether the difference is a pattern in the data or could be luck; hover for the chance.
         Simulated reviews and answers.
       </div>
       {entry.rows.length === 0 && <div className="card-sub">Too few customers in this segment to compare.</div>}
@@ -63,7 +64,7 @@ function Row({ r, scale, everyone }: { r: FeedbackRow; scale: number; everyone: 
           ...(r.points >= 0 ? { left: "50%", width } : { right: "50%", width }) }} />
       </span>
       <span className="card-sub">{r.points > 0 ? "+" : ""}{r.points} ±{r.margin_points} ({Math.round(r.share * 100)} % vs {Math.round((r.share_others ?? 0) * 100)} %)</span>
-      <Confidence points={r.points} margin={r.margin_points} />
+      <Pattern z={zOfShares(r.points, r.margin_points)} detail={`${r.points > 0 ? "+" : ""}${r.points} points`} />
     </div>
   );
 }
