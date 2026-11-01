@@ -13,8 +13,8 @@ from pathlib import Path
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import JSONResponse
 
-from src.customer_period import period_comparison
-from src.customer_selection import parse, ranking_for, view
+from src.customer_period import NoPreviousPeriod, compare
+from src.customer_selection import members, parse, ranking_for, view
 from src.customer_selection_data import actions, answers, facts, reviews
 from src.demo_mode import requested_sandbox
 
@@ -56,11 +56,21 @@ def _selection(conditions: tuple[str, ...]) -> dict:
     return view(facts(), parse(list(conditions)), actions(), reviews(), answers(), _summary())
 
 
+def _period(parsed: list[tuple[str, str]], months: list[str], start: str, end: str) -> dict:
+    """The period against the one before it, for the selection and for everyone; a period with no room before it says why instead."""
+    customers = facts()["customers"]
+    try:
+        own = compare([customers[cid] for cid in members(customers, parsed)], months, start, end)
+        return {**own, "all": compare(list(customers.values()), months, start, end)["figures"]}
+    except NoPreviousPeriod as error:
+        return {"from": start, "to": end, "previous": None, "reason": str(error)}
+
+
 @router.get("/api/customer-profiles/segment")
 def customer_segment(request: Request, c: list[str] = Query(default=[]), start: str | None = None, end: str | None = None):
     """Everything the view says about the customers who meet every condition `c` (repeat it: `?c=offer:mostly&c=pets:dog`);
     nothing ticked is every profiled customer. Counted from the stored facts, so any combination is answered.
-    `start` and `end` (months, `?start=2026-04&end=2026-06`) add `period`: those months set against the rest (ADR 0055)."""
+    `start` and `end` (months, `?start=2026-04&end=2026-06`) add `period`: those months set against the same number of months before them (ADR 0055)."""
     if (start is None) != (end is None):
         return JSONResponse(status_code=400, content={"error": "A period needs both start and end"})
     try:
@@ -68,7 +78,7 @@ def customer_segment(request: Request, c: list[str] = Query(default=[]), start: 
         selected = _selection(tuple(f"{t}:{v}" for t, v in parsed))
         period = None
         if start is not None and not selected["too_small"]:
-            period = period_comparison(selected["trend"]["selected"], selected["trend"]["all"], start, end)
+            period = _period(parsed, selected["trend"]["selected"]["months"], start, end)
     except ValueError as error:
         return JSONResponse(status_code=400, content={"error": str(error)})
     return {**selected, **({"period": period} if period else {}), "stale": _stale(),
