@@ -289,15 +289,22 @@ def test_the_stored_facts_say_what_each_customers_reviews_were_about_and_how_the
     assert all(c["nps_groups"] == sorted({g for _, g in c["nps"]}) for c in release[0]["customers"].values())
 
 
-def test_the_options_of_a_selection_are_counted_fast_enough_for_a_request(release):
-    # ~60 conditions, each a different selection of the same customers: a request that rescans everyone for each took 0.35 s here and 2-5 s on the demo host.
+def test_the_options_of_a_selection_are_counted_from_per_condition_lists_not_by_rescanning_everyone(release):
+    # ~60 conditions, each a different selection of the same customers. A request that rescans everyone for each took 0.35 s here and 2-5 s on the demo host.
+    # Compared with a rescan in the same process, so a busy machine slows both alike.
     import time
 
     customers = release[0]["customers"]
     started = time.perf_counter()
-    options(customers, parse(["pets:dog", "price:mixed"]))
+    offered = options(customers, parse(["pets:dog", "price:mixed"]))
+    listed = time.perf_counter() - started
 
-    assert time.perf_counter() - started < 0.15
+    started = time.perf_counter()
+    for condition in offered:
+        members(customers, parse([condition]))
+    rescanned = time.perf_counter() - started
+
+    assert listed < rescanned / 2
 
 
 def test_a_customer_can_be_selected_by_the_stars_of_a_review_they_wrote():
