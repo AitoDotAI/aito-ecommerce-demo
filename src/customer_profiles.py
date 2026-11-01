@@ -9,6 +9,7 @@ from pathlib import Path
 from src.customer_profit import distribution, gross_margin, margin_bands, profit_by_customer
 from src.customer_acquisition import first_sessions
 from src.customer_facts import build_facts, monthly_orders
+from src.customer_rows import build_rows
 from src.customer_funnel import funnel_by_segment
 from src.customer_preference_ranking import label, line_features, scores
 from src.customer_relations import PET_GROUPS
@@ -22,6 +23,13 @@ DATA = ROOT / "data"
 
 def _load(name: str) -> list[dict]:
     return json.loads((DATA / f"{name}.json").read_text())
+
+
+def stored_rows(profiled_ids: set[str]) -> dict:
+    """The raw rows behind the Customers view's data widget (`customer_rows.py`), for the profiled customers."""
+    products = {p["sku"]: p for p in _load("products")}
+    states = {s["product_state_id"]: s for s in _load("product_states")}
+    return build_rows(profiled_ids, _load("orders"), _load("order_lines"), states, products)
 
 
 LAST_12_MONTHS_FROM = "2025-05"       # the window Retention calls the last 12 months (ending 2026-04)

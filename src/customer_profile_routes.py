@@ -14,8 +14,10 @@ from fastapi import APIRouter, Query, Request
 from fastapi.responses import JSONResponse
 
 from src.customer_period import NoPreviousPeriod, compare
+from src.customer_relations import MIN_GROUP
+from src.customer_rows import page_of
 from src.customer_selection import members, parse, ranking_for, view
-from src.customer_selection_data import actions, answers, facts, reviews
+from src.customer_selection_data import actions, answers, facts, reviews, rows
 from src.demo_mode import requested_sandbox
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -83,6 +85,28 @@ def customer_segment(request: Request, c: list[str] = Query(default=[]), start: 
         return JSONResponse(status_code=400, content={"error": str(error)})
     return {**selected, **({"period": period} if period else {}), "stale": _stale(),
             "scope": "release-not-sandbox" if requested_sandbox(request) else "release"}
+
+
+@router.get("/api/customer-profiles/rows")
+def customer_rows(tab: str = "sales", c: list[str] = Query(default=[]), start: str | None = None, end: str | None = None,
+                  offset: int = 0, limit: int = 50):
+    """One page of the raw rows behind the selection `c` (`tab`: sales, orders or feedback), only the months `start` to `end` when
+    they are given. A selection under the minimum size answers with its size and no rows; a row never says who it is about."""
+    try:
+        parsed = parse(c)
+        customers = facts()["customers"]
+        chosen = members(customers, parsed)
+        if len(chosen) < MIN_GROUP:
+            return {"tab": tab, "too_small": True, "customers": len(chosen), "min_customers": MIN_GROUP, "total": 0, "rows": []}
+        months = None
+        if start is not None or end is not None:
+            all_months = sorted({m for cid in chosen for m in customers[cid]["months"]})
+            if start not in all_months or end not in all_months or start > end:
+                raise ValueError(f"Not a period of the data: {start!r} to {end!r}; the data runs {all_months[0]} to {all_months[-1]}")
+            months = {m for m in all_months if start <= m <= end}
+        return {**page_of(rows(), reviews(), answers(), chosen, tab, months, offset, limit), "too_small": False, "customers": len(chosen)}
+    except ValueError as error:
+        return JSONResponse(status_code=400, content={"error": str(error)})
 
 
 @router.get("/api/customer-profiles/ranking")

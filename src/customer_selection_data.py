@@ -25,6 +25,11 @@ def facts() -> dict:
 
 
 @lru_cache(maxsize=1)
+def rows() -> dict:
+    return _read(PROFILES / "rows.json")
+
+
+@lru_cache(maxsize=1)
 def actions() -> list[dict]:
     return _read(DATA / "customer_actions.json")
 

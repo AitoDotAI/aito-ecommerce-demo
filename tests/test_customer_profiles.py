@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from src.customer_profile_routes import router
-from src.customer_profiles import DATA, build
+from src.customer_profiles import DATA, build, stored_rows
 from src.customer_selection import parse, ranking_for, view
 from src.customer_selection_data import actions, answers, facts, reviews, summary
 from src.customer_profit import margin_bands
@@ -81,6 +81,7 @@ def test_the_stored_profiles_are_what_the_fixtures_build_today():
     assert summary == json.loads((PROFILES / "summary.json").read_text())
     assert per_customer == json.loads((PROFILES / "customers.json").read_text())
     assert per_customer_facts == json.loads((PROFILES / "facts.json").read_text())
+    assert stored_rows(set(per_customer_facts)) == json.loads((PROFILES / "rows.json").read_text())
 
 
 def test_the_facts_hold_exactly_the_consenting_customers_and_no_name():
