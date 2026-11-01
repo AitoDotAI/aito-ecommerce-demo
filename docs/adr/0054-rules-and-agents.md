@@ -1,6 +1,6 @@
 # ADR 0054: Rules and agents: what the shop decides by calculation, and what a model does
 
-**Status:** Proposed (2026-11-01, Antti: "Sounds good" to the split, stored conversations and the plan). Slice 1 built (labels, stored conversations, `./do record-conversations`); no conversation is stored yet: recording one costs a model run and needs the admin token, so it is Antti's to run.
+**Status:** Accepted (2026-11-01, Antti: "Sounds good" to the split, stored conversations and the plan). Slice 1 built (labels, stored conversations, `./do record-conversations`); no conversation is stored yet: recording one costs a model run and needs the admin token, so it is Antti's to run.
 **Supersedes in part:** ADR 0052 (the routines are not all "agents"; "Past conversations" meant stored runs).
 **Date:** 2026-11-01
 **Deciders:** Antti

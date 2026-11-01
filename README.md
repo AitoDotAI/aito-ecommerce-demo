@@ -45,6 +45,17 @@ outcomes are simulated (ADR 0051), and the page says so.
 
 ![Retention: the next best action for one customer](screenshots/retention-actions.png)
 
+**Analytics.** Pick any combination of conditions in a topic tree (how a customer shops, which categories and brands
+they bought, where they live, what their reviews and NPS answers said) and the page describes those customers: the figure to
+compare by (customers, purchases, revenue, profit per customer, NPS, churn) as a number and a bar beside every condition, its trend, and a period picked on
+the trend set against the period just before it. Tabs show what the segment prefers, how it differs from other segments, how it was acquired, how the shop's actions
+work on it, what it says, and **what happened before customers left** against those who stayed. Under both panes, the raw rows (sales by product, orders, reviews, NPS answers).
+Every difference is called *Yes, Likely, Possibly* or *Unlikely* a pattern, and the hover says how often luck would give it. The data is generated and the page says so.
+
+**The Shopkeeper.** Routines marked **Rule** (a calculation on Aito's numbers, repeatable, no model: the weekly win-back, the stock check) or **Agent** (a model works; today only "Ask the store",
+whose conversations are stored and can be replayed without a key). A rule acts when the evidence is there, proposes when it is not sure, stays quiet when there is none, and always asks a person
+before the kinds you name ([ADR 0052](docs/adr/0052-shopkeeper-agent.md), [0054](docs/adr/0054-rules-and-agents.md), [0057](docs/adr/0057-stock-rule-and-product-entry-agent.md)). Nothing is sent or ordered.
+
 **Evidence, on real data.** On UCI Online Retail II: "For buyers with 1–2
 earlier orders, Aito's top suggestion was in their next orders 31 % of the
 time, against 15 % for the strongest of five classical baselines."
@@ -68,7 +79,8 @@ cp .env.example .env      # 1. your Aito URL and key (a read-only key is enough)
 ./do dev                  # 3. http://localhost:8500
 ```
 
-The demo database's master holds data release 3b (ADR 0051, slice 1, and the churn tells of ADR 0039's amendment). The app
+The demo database's master holds data release 4: a loud product recall and three quiet quality problems planted in the data, and feedback with text
+([ADR 0056](docs/adr/0056-planted-incidents.md), [0058](docs/adr/0058-feedback-text.md)). The app
 waits for its data release (ADR 0035): until master matches
 `data/release-env.json` it answers "data release pending".
 
@@ -103,8 +115,8 @@ Browser → Next.js (8500) → /api/... → FastAPI (8501) → AitoClient → Ai
 | Section | Views | Aito |
 |---|---|---|
 | **360° intelligent ecommerce: Shop** | Shop: Buy again, Next for their kit, Picked for you, search, cart, product drawer | `_recommend`, `_predict`, `_search` with `$similarity`, `_relate`, `_batch` |
-| **Run the shop** | Overview · Patterns · Product (Funnel, Pricing, Clicks, Purchases, Offer & margin) · Supply · Retention | `_relate` with intervals; `_predict clicked` / `purchased` per property and list price band; `_estimate units_index` and `showings_index`; `_predict churned_in_3_months` |
-| **Operate** | Product filling · Review triage | `_predict` with `$why`, several fields in parallel |
+| **Run the shop** | Overview · Patterns · Product (Funnel, Pricing, Clicks, Purchases, Offer & margin) · Reviews · Acquisition · Supply · Retention · Analytics | `_relate` with intervals; `_predict clicked` / `purchased` per property and list price band; `_estimate units_index` and `showings_index`; `_predict churned_in_3_months`; Analytics counts from stored per-customer facts (ADR 0053) |
+| **Operate** | Product filling · Review triage · Shopkeeper (rules, and the stored conversations of the agent that answers questions) | `_predict` with `$why`, several fields in parallel |
 | **Evidence** | Business reorders (Real) · Personalised search · Model checks | committed results; `_evaluate` |
 | **For developers** | Query patterns: one minimal call per endpoint | — |
 
@@ -187,6 +199,8 @@ src/                   FastAPI backend: app.py lists every endpoint
   sandbox_*.py           sandbox config, branches, warm-up, CLI
   overview_service.py · shop_analytics_service.py (Patterns) · supply_service.py
   retention_service.py · filling_service.py · review_triage_service.py
+  customer_*.py          Analytics: the stored per-customer facts, a selection of conditions, periods, raw rows, journeys
+  shopkeeper_*.py       the Shopkeeper: the gate, the stored runs, the stock rule; ask_*.py: Ask the store and its stored conversations
   uci_*.py               Business reorders on UCI Online Retail II
 frontend/              Next.js (App Router), one page per view
   app/<view>/page.tsx    pages; app/evidence/ for Evidence
@@ -201,7 +215,7 @@ docs/
   adr/                   Architecture Decision Records
   aito-cheatsheet.md     verified query patterns and Aito gotchas
   demo-script.md         the partner walkthrough
-  notes/ · sessions/     working notes and session logs
+  notes/ · sessions/     working notes and session logs (notes/2026-11-01-data-release-4.md: how a data release is cut)
   verification/          verification reports
 do                     task runner: ./do help
 ```
@@ -242,7 +256,15 @@ Read them in order for the design's rationale. All are in
 | 0048 | [Product KPIs by properties](docs/adr/0048-product-kpis-by-properties.md): clicks and purchases, explained and editable |
 | 0049 | [Data release 3: the list price and the listing as state](docs/adr/0049-data-release-3-price-and-listing-state.md) |
 | 0050 | [Pricing tab and the funnel](docs/adr/0050-product-pricing-tab-and-funnel.md): impressions → clicks → purchases → profit |
-| 0051 | [Actions and their outcomes](docs/adr/0051-actions-and-their-outcomes.md) (slice 1 live in release 3b: ranked retention actions; messages and availability proposed) |
+| 0051 | [Actions and their outcomes](docs/adr/0051-actions-and-their-outcomes.md) (slice 1 live: ranked retention actions; messages and availability proposed) |
+| 0052 | [The shopkeeper agent](docs/adr/0052-shopkeeper-agent.md): routine runs, a confidence gate and an approval step |
+| 0053 | [Customer profiles](docs/adr/0053-customer-profiles.md): how customers shop, and who responds to what (the Analytics view) |
+| 0054 | [Rules and agents](docs/adr/0054-rules-and-agents.md): what the shop decides by calculation, and what a model does |
+| 0055 | [Customers as analytics](docs/adr/0055-customers-as-analytics.md): a time range, narrowing tabs, the raw rows, the words of a difference |
+| 0056 | [Planted incidents](docs/adr/0056-planted-incidents.md): a loud batch recall and three quiet quality problems |
+| 0057 | [The stock routine as a rule](docs/adr/0057-stock-rule-and-product-entry-agent.md), and the first agent to build: product entry |
+| 0058 | [Feedback with text and context](docs/adr/0058-feedback-text.md): NPS comments, reviews that read like their stars |
+| 0059 | [The journey of a segment](docs/adr/0059-customer-journey.md): the months around the last order, those who left against those who stayed |
 
 ---
 

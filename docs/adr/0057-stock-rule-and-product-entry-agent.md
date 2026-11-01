@@ -1,6 +1,6 @@
 # ADR 0057: The stock routine as a rule, and the first real agent: product entry
 
-**Status:** Part 1 (the stock rule) built; part 2 (the product-entry agent) not yet. Accepted 2026-11-01, Antti: "Go for it" to the order in ADR 0054's follow-up: the stock routine first, then a product-entry agent.
+**Status:** Accepted. Part 1 (the stock rule) built; part 2 (the product-entry agent) not yet. Accepted 2026-11-01, Antti: "Go for it" to the order in ADR 0054's follow-up: the stock routine first, then a product-entry agent.
 **Built, differing from the plan:** approvals of queued steps and edited settings live in the browser (as in ADR 0052); the stock run adds nothing to the Board; the right-hand Aito panel still shows the win-back's Retention query when the stock run is open.
 **Date:** 2026-11-01
 **Deciders:** Antti
