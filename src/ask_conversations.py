@@ -13,7 +13,14 @@ from pathlib import Path
 
 DIRECTORY = Path(__file__).resolve().parent.parent / "data" / "ask_conversations"
 
-ID_PATTERN = re.compile(r"[a-z0-9][a-z0-9-]{0,79}")
+# The conversations a demo should have stored: `./do record-conversations` records the ones that are missing.
+PREDEFINED_QUESTIONS = (
+    "What should I reorder this week, and what is overstocked?",
+    "Which customers are most likely to leave, and what should I do for them?",
+    "Which product is the best candidate for an offer next month, and what would it earn?",
+)
+
+ID_PATTERN =re.compile(r"[a-z0-9][a-z0-9-]{0,79}")
 REQUIRED = ("id", "asked_at", "release", "question", "answer", "model", "input_tokens", "output_tokens", "tool_calls")
 
 
@@ -58,3 +65,9 @@ def list_conversations() -> list[dict]:
     return [{"id": r["id"], "asked_at": r["asked_at"], "question": r["question"], "model": r["model"],
              "tool_calls": len(r["tool_calls"]), "tokens": r["input_tokens"] + r["output_tokens"], "release": r["release"]}
             for r in records]
+
+
+def missing_questions() -> list[str]:
+    """The predefined questions with no stored conversation yet (matched on the exact question)."""
+    stored = {c["question"] for c in list_conversations()}
+    return [q for q in PREDEFINED_QUESTIONS if q not in stored]
