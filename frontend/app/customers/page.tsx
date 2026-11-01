@@ -80,17 +80,17 @@ function CustomersView() {
         </div>
       )}
       {summary && (
-        <div className="workbench">
+        <div className="workbench customers-workbench">
           <SegmentTree summary={summary} view={view} conditions={conditions} kpi={kpi as KpiId} onKpi={setKpi}
                        onToggle={(c) => select(toggle(conditions, c))} onClear={() => select([])} />
           {view && view.too_small && (
-            <div className="card" style={{ borderLeft: "4px solid var(--cta)" }}>
+            <div className="card segment-details" style={{ borderLeft: "4px solid var(--cta)" }}>
               Only {view.customers} customers meet all {conditions.length} conditions. A segment needs {view.min_customers} before the page
               says anything about it: a rate over a handful of customers is not a finding. Untick a condition, or pick one the tree shows more customers for.
             </div>
           )}
           {view && !view.too_small && (
-            <div style={{ display: "grid", gap: 12, minWidth: 0 }}>
+            <div className="segment-details" style={{ display: "grid", gap: 12, minWidth: 0 }}>
               <SegmentHeader summary={summary} view={view} />
               <SegmentTrend view={view} kpi={kpi as KpiId} />
               <div role="tablist" aria-label="Segment details" style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
@@ -121,7 +121,7 @@ function CustomersView() {
               </div>
             </div>
           )}
-          {!view && !error && <div className="card" style={{ height: 240, background: "var(--border-light)" }} />}
+          {!view && !error && <div className="card segment-details" style={{ height: 240, background: "var(--border-light)" }} />}
         </div>
       )}
     </div>
