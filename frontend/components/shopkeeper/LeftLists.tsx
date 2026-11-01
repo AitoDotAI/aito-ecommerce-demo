@@ -44,7 +44,9 @@ export default function LeftLists({ board, routines, runs, conversations, select
               borderColor: selected === c.id ? "var(--aito-teal)" : undefined }}>
             <span>{c.title} · {c.as_of_month}{c.stale ? " (stale)" : ""}</span>
             <span className="card-sub" style={{ display: "block" }}>
-              Acted {c.tally.act.steps} · {fmtEur(c.tally.act.expected_net_eur)} expected · waiting {c.tally.suggest.steps + c.tally.never_auto.steps}
+              {c.routine === "stock"
+                ? `Ordered ${c.tally.act.steps} · ${fmtEur(c.tally.act.order_cost_eur ?? 0)} · waiting ${c.tally.suggest.steps + c.tally.never_auto.steps}`
+                : `Acted ${c.tally.act.steps} · ${fmtEur(c.tally.act.expected_net_eur)} expected · waiting ${c.tally.suggest.steps + c.tally.never_auto.steps}`}
             </span>
           </button>
         ))}

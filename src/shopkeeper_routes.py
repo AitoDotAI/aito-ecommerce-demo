@@ -16,6 +16,7 @@ from src import ask_conversations
 from src.shopkeeper_board import board_for
 from src.shopkeeper_gate import RECOMMENDED_NEVER_AUTO, GateSettings
 from src.shopkeeper_run import decide_steps, load_run, release_env, snapshot_digest, stored_run_ids, tally
+from src.shopkeeper_stock import StockSettings, decide_stock_steps, tally_stock
 
 router = APIRouter()
 
@@ -23,7 +24,7 @@ ROUTINES = (
     {"id": "winback", "name": "Weekly win-back", "schedule": "Mondays 07:00 (simulated)", "built": True,
      "does": "Reads who is likely to leave, picks the next best action per customer, acts on the confident ones.",
      "kind": "rule", "why": "Aito's lift per action and a threshold decide; the same data gives the same list. No model is involved."},
-    {"id": "stock", "name": "Stock-aware morning check", "schedule": "Daily 06:30", "built": False,
+    {"id": "stock", "name": "Stock-aware morning check", "schedule": "Daily 06:30 (simulated)", "built": True,
      "does": "Ranks reorder and overstock, proposes markdowns with their margin impact.",
      "kind": "rule", "why": "Counts of observed sales and arithmetic rank the list; a model would add nothing."},
     {"id": "portfolio", "name": "Portfolio review", "schedule": "Monthly", "built": False,
@@ -57,10 +58,28 @@ def stale_reason(run: dict, request: Request) -> str | None:
     """
     if run["release"] != release_env():
         return f"stored for data release {run['release']}; the app serves {release_env()}"
+    if run["routine"] == "stock":
+        return None       # the Supply snapshot is the one the app serves: the release check above is all there is to compare
     serve_retention = getattr(request.app.state, "ask_retention", None)
     if serve_retention is not None and snapshot_digest(serve_retention()) != run["snapshot_digest"]:
         return "Retention now serves different numbers than this run read"
     return None
+
+
+def stock_settings_from(min_recent_units: int | None, order_limit_eur: float | None, urgent_share: float | None) -> StockSettings:
+    defaults = StockSettings()
+    return StockSettings(min_recent_units=defaults.min_recent_units if min_recent_units is None else min_recent_units,
+                         order_limit_eur=defaults.order_limit_eur if order_limit_eur is None else order_limit_eur,
+                         urgent_share=defaults.urgent_share if urgent_share is None else urgent_share)
+
+
+def _judged(run: dict, settings: GateSettings, stock: StockSettings) -> tuple[list[dict], dict]:
+    """The run's steps judged by the gate its routine uses, and the tally of the outcomes."""
+    if run["routine"] == "stock":
+        decided = decide_stock_steps(run, stock)
+        return decided, tally_stock(decided)
+    decided = decide_steps(run, settings)
+    return decided, tally(decided)
 
 
 def _bad_request(exc: Exception) -> JSONResponse:
@@ -69,22 +88,26 @@ def _bad_request(exc: Exception) -> JSONResponse:
 
 @router.get("/api/shopkeeper")
 def shopkeeper_overview(request: Request, act_lift: float | None = None, suggest_lift: float | None = None,
-                        min_rows: int | None = None, never_auto: str | None = None):
+                        min_rows: int | None = None, never_auto: str | None = None, min_recent_units: int | None = None,
+                        order_limit_eur: float | None = None, urgent_share: float | None = None):
     """The three lists of the view: the Board, the routines with their latest run, the stored runs and conversations."""
     try:
         settings = settings_from(act_lift, suggest_lift, min_rows, never_auto)
+        stock = stock_settings_from(min_recent_units, order_limit_eur, urgent_share)
     except ValueError as exc:
         return _bad_request(exc)
     runs = [load_run(run_id) for run_id in stored_run_ids()]
+    winback = [run for run in runs if run["routine"] == "winback"]
     return {
         "simulated": True,
         "release": release_env(),
-        "settings": _settings_view(settings, runs),
-        "board": [item for run in runs for item in board_for(run, settings)],
+        "settings": _settings_view(settings, winback),
+        "stock_settings": _stock_settings_view(stock),
+        "board": [item for run in winback for item in board_for(run, settings)],
         "routines": [{**r, "latest_run": next((run["id"] for run in runs if run["routine"] == r["id"]), None)} for r in ROUTINES],
         "runs": [{"id": run["id"], "title": run["title"], "as_of_month": run["as_of_month"],
-                  "stale": stale_reason(run, request) is not None,
-                  "tally": tally(decide_steps(run, settings))} for run in runs],
+                  "stale": stale_reason(run, request) is not None, "routine": run["routine"],
+                  "tally": _judged(run, settings, stock)[1]} for run in runs],
         "conversations": ask_conversations.list_conversations(),
     }
 
@@ -102,18 +125,27 @@ def shopkeeper_conversation(conversation_id: str):
 
 @router.get("/api/shopkeeper/runs/{run_id}")
 def shopkeeper_run(request: Request, run_id: str, act_lift: float | None = None, suggest_lift: float | None = None,
-                   min_rows: int | None = None, never_auto: str | None = None):
+                   min_rows: int | None = None, never_auto: str | None = None, min_recent_units: int | None = None,
+                   order_limit_eur: float | None = None, urgent_share: float | None = None):
     """One stored run, every step judged under the thresholds the request names."""
     try:
         settings = settings_from(act_lift, suggest_lift, min_rows, never_auto)
+        stock = stock_settings_from(min_recent_units, order_limit_eur, urgent_share)
         run = load_run(run_id)
     except ValueError as exc:
         return _bad_request(exc)
     except FileNotFoundError as exc:
         return JSONResponse(status_code=404, content={"error": str(exc)})
-    decided = decide_steps(run, settings)
-    return {**run, "steps": decided, "tally": tally(decided), "settings": _settings_view(settings, [run]),
+    decided, summary = _judged(run, settings, stock)
+    view = _stock_settings_view(stock) if run["routine"] == "stock" else _settings_view(settings, [run])
+    return {**run, "steps": decided, "tally": summary, "settings": view,
             "stale": (reason := stale_reason(run, request)) is not None, "stale_reason": reason}
+
+
+def _stock_settings_view(settings: StockSettings) -> dict:
+    defaults = StockSettings()
+    keys = ("min_recent_units", "order_limit_eur", "urgent_share")
+    return {"in_force": {k: getattr(settings, k) for k in keys}, "recommended": {k: getattr(defaults, k) for k in keys}}
 
 
 def _settings_view(settings: GateSettings, runs: list[dict]) -> dict:
