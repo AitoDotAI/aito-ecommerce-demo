@@ -65,6 +65,7 @@ the starting point.
 | 0059 | [The journey of a segment: the months around the last order, those who left against those who stayed](0059-customer-journey.md) | Accepted |
 | 0060 | [The period as context in Analytics: figures, preferences, similar segments and feedback modelled within the window](0060-period-as-context.md) | Accepted in part |
 | 0061 | [Supply follows what drives demand, and the second lever: ending a line that does not move](0061-supply-follows-demand.md) | Accepted in part |
+| 0062 | [A dataset where demand moves: seasonal ware, trends, hit and flop launches](0062-demand-that-moves.md) | Proposed |
 
 ADRs are externally legible — an outside developer should understand
 the decision and its rationale without project-internal context. Keep
