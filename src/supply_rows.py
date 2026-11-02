@@ -3,7 +3,7 @@
 Stock bands are the shop's own rule, from the `inventory` table's reorder
 point. Reorder quantities and euros assume next month sells like the last
 three (`recent_units`): observed sales, because Aito's per-product forecast
-only ties the naive rule (Evidence › Model checks), so it sets no quantity
+does not beat the naive rule (Evidence › Model checks), so it sets no quantity
 and no euro figure here. Aito's estimates remain in the markdown sweep.
 """
 

@@ -186,7 +186,7 @@ def init(client: AitoClient) -> None:
 # shared Aito keeps the old row until `./do precompute` is run) lacks these and is not served: the committed JSON,
 # which ships with the code, is. Without this a deploy would need the precompute run in lockstep.
 REQUIRED_KEYS: dict[str, tuple[str, ...]] = {
-    "supply": ("planning_month",),     # Supply plans on observed sales (ADR 0041, amended 2026-10-31)
+    "supply": ("planning_month", "end_of_line"),     # Supply plans on observed sales (ADR 0041, amended 2026-10-31) and lists lines to end (ADR 0061)
 }
 
 

@@ -29,7 +29,7 @@ from dataclasses import dataclass, asdict
 from src.aito_client import AitoClient
 from src.aito_compat import related_value
 from src import cache
-from src.demand_evaluation import EvalSummary, evaluate_demand
+from src.demand_evaluation import EvalSummary, evaluate_demand_months
 from src.price_bands import is_real_lift
 from src.demand_forecast import (
     FORECAST_MONTH, LATEST_MONTH, SEASON_BY_MONTH, forecast_units, forecast_where, last_month_units,
@@ -226,7 +226,7 @@ def get_demand(
         ))
 
     seasonality = _seasonality(client)
-    evaluation = evaluate_demand(client, LATEST_MONTH)
+    evaluation = evaluate_demand_months(client, LATEST_MONTH)
 
     elapsed = int((time.perf_counter() - started) * 1000)
 

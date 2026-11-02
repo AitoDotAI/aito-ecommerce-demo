@@ -2671,6 +2671,190 @@
         }
       }
     ],
+    "end_of_line": [
+      {
+        "sku": "SKU-PT-0061",
+        "name": "Acana Lamb Dog Food 12kg",
+        "category": "dry-food",
+        "current_stock": 32,
+        "excess_units": 26,
+        "tied_capital_eur": 1626.3,
+        "discount_pct": 20,
+        "weeks_to_clear": 61.4,
+        "price_at_deepest_eur": 69.5,
+        "unit_cost_eur": 62.55,
+        "below_cost": false
+      },
+      {
+        "sku": "SKU-PT-0012",
+        "name": "Royal Canin Salmon Dog Food 12kg",
+        "category": "dry-food",
+        "current_stock": 35,
+        "excess_units": 29,
+        "tied_capital_eur": 1616.17,
+        "discount_pct": 20,
+        "weeks_to_clear": 89.4,
+        "price_at_deepest_eur": 61.92,
+        "unit_cost_eur": 55.73,
+        "below_cost": false
+      },
+      {
+        "sku": "SKU-PT-0277",
+        "name": "Hill's Science Plan Grain Free Tuna Cat Food 15kg",
+        "category": "dry-food",
+        "current_stock": 30,
+        "excess_units": 24,
+        "tied_capital_eur": 1479.6,
+        "discount_pct": 20,
+        "weeks_to_clear": 20.7,
+        "price_at_deepest_eur": 68.5,
+        "unit_cost_eur": 61.65,
+        "below_cost": false
+      },
+      {
+        "sku": "SKU-PT-0267",
+        "name": "Royal Canin Turkey Cat Food 12kg",
+        "category": "dry-food",
+        "current_stock": 33,
+        "excess_units": 27,
+        "tied_capital_eur": 1377.0,
+        "discount_pct": 20,
+        "weeks_to_clear": 60.3,
+        "price_at_deepest_eur": 56.67,
+        "unit_cost_eur": 51.0,
+        "below_cost": false
+      },
+      {
+        "sku": "SKU-PT-0039",
+        "name": "Hill's Science Plan Grain Free Turkey Dog Food 12kg",
+        "category": "dry-food",
+        "current_stock": 28,
+        "excess_units": 22,
+        "tied_capital_eur": 1222.76,
+        "discount_pct": 20,
+        "weeks_to_clear": 15.4,
+        "price_at_deepest_eur": 61.75,
+        "unit_cost_eur": 55.58,
+        "below_cost": false
+      },
+      {
+        "sku": "SKU-PT-0069",
+        "name": "Acana Sensitive Salmon Dog Food 12kg",
+        "category": "dry-food",
+        "current_stock": 31,
+        "excess_units": 25,
+        "tied_capital_eur": 1202.5,
+        "discount_pct": 20,
+        "weeks_to_clear": 24.9,
+        "price_at_deepest_eur": 53.44,
+        "unit_cost_eur": 48.1,
+        "below_cost": false
+      },
+      {
+        "sku": "SKU-PT-0501",
+        "name": "Trixie Bowl, large",
+        "category": "accessories",
+        "current_stock": 143,
+        "excess_units": 109,
+        "tied_capital_eur": 1166.3,
+        "discount_pct": 20,
+        "weeks_to_clear": 24.8,
+        "price_at_deepest_eur": 15.56,
+        "unit_cost_eur": 10.7,
+        "below_cost": false
+      },
+      {
+        "sku": "SKU-PT-0495",
+        "name": "PetNord Bowl, extra large",
+        "category": "accessories",
+        "current_stock": 133,
+        "excess_units": 105,
+        "tied_capital_eur": 1100.4,
+        "discount_pct": 20,
+        "weeks_to_clear": 27.2,
+        "price_at_deepest_eur": 15.25,
+        "unit_cost_eur": 10.48,
+        "below_cost": false
+      },
+      {
+        "sku": "SKU-PT-0334",
+        "name": "Orijen Indoor Whitefish Cat Food 15kg",
+        "category": "dry-food",
+        "current_stock": 21,
+        "excess_units": 15,
+        "tied_capital_eur": 979.95,
+        "discount_pct": 20,
+        "weeks_to_clear": 38.7,
+        "price_at_deepest_eur": 72.58,
+        "unit_cost_eur": 65.33,
+        "below_cost": false
+      },
+      {
+        "sku": "SKU-PT-0209",
+        "name": "PetNord Bowl, large",
+        "category": "accessories",
+        "current_stock": 135,
+        "excess_units": 103,
+        "tied_capital_eur": 966.14,
+        "discount_pct": 20,
+        "weeks_to_clear": 17.4,
+        "price_at_deepest_eur": 13.64,
+        "unit_cost_eur": 9.38,
+        "below_cost": false
+      },
+      {
+        "sku": "SKU-PT-0279",
+        "name": "Hill's Science Plan Indoor Chicken Cat Food 15kg, classic recipe",
+        "category": "dry-food",
+        "current_stock": 18,
+        "excess_units": 12,
+        "tied_capital_eur": 905.76,
+        "discount_pct": 20,
+        "weeks_to_clear": 19.7,
+        "price_at_deepest_eur": 83.86,
+        "unit_cost_eur": 75.48,
+        "below_cost": false
+      },
+      {
+        "sku": "SKU-PT-0293",
+        "name": "Hill's Science Plan Indoor Whitefish Cat Food 12kg",
+        "category": "dry-food",
+        "current_stock": 20,
+        "excess_units": 14,
+        "tied_capital_eur": 870.66,
+        "discount_pct": 20,
+        "weeks_to_clear": 27.7,
+        "price_at_deepest_eur": 69.1,
+        "unit_cost_eur": 62.19,
+        "below_cost": false
+      },
+      {
+        "sku": "SKU-PT-0307",
+        "name": "Acana Senior Turkey Cat Food 7kg",
+        "category": "dry-food",
+        "current_stock": 28,
+        "excess_units": 22,
+        "tied_capital_eur": 816.2,
+        "discount_pct": 20,
+        "weeks_to_clear": 42.8,
+        "price_at_deepest_eur": 41.22,
+        "unit_cost_eur": 37.1,
+        "below_cost": false
+      },
+      {
+        "sku": "SKU-PT-0043",
+        "name": "Eukanuba Chicken Dog Food 7kg",
+        "category": "dry-food",
+        "current_stock": 30,
+        "excess_units": 24,
+        "tied_capital_eur": 674.16,
+        "discount_pct": 20,
+        "weeks_to_clear": 26.8,
+        "price_at_deepest_eur": 31.22,
+        "unit_cost_eur": 28.09,
+        "below_cost": false
+      }
+    ],
     "top_movers": [
       {
         "sku": "SKU-PT-0287",
@@ -3431,48 +3615,48 @@
         "offset": 0
       }
     },
-    "last_response_ms": 11696
+    "last_response_ms": 26358
   },
   "timings": [
     [
       "_search",
-      3.82
+      3.46
     ],
     [
       "_search",
-      10.03
+      10.55
     ],
     [
       "_search",
-      121.17
+      115.36
     ],
     [
       "_search",
-      184.79
+      125.61
     ],
     [
       "_search",
-      235.1
+      139.84
     ],
     [
       "_search",
-      5.86
+      6.3
     ],
     [
       "_search",
-      69.29
+      79.35
     ],
     [
       "_search",
-      69.05
+      70.94
     ],
     [
       "_search",
-      82.77
+      69.65
     ],
     [
       "_search",
-      3.55
+      3.68
     ]
   ]
 }

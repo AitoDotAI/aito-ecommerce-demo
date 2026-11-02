@@ -231,6 +231,28 @@ def test_the_segment_route_adds_a_period_against_the_one_before_and_says_when_th
     assert api.get("/api/customer-profiles/segment", params={"start": months[-1], "end": months[0]}).status_code == 400
 
 
+def test_a_period_with_nothing_ticked_adds_what_was_bought_and_which_segments_moved_against_the_period_before(release):
+    """The Preferences and Other segments tabs have nothing to compare a segment with when none is ticked; the period before is what they read."""
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+
+    from src.customer_profile_routes import router
+
+    app = FastAPI()
+    app.include_router(router)
+    api = TestClient(app)
+    months = api.get("/api/customer-profiles/segment").json()["trend"]["selected"]["months"]
+    span = {"start": months[-6], "end": months[-1]}
+
+    everyone = api.get("/api/customer-profiles/segment", params=span).json()["period"]
+    ticked = api.get("/api/customer-profiles/segment", params={"c": "pets:dog", **span}).json()["period"]
+
+    assert {r["kind"] for r in everyone["preferences"]} == {"Category", "Brand"}
+    assert all(r["customers"] >= MIN_GROUP for r in everyone["segments"]) and everyone["segments"]
+    assert {"trait", "value", "change", "z", "clear"} <= set(everyone["segments"][0])
+    assert "preferences" not in ticked and "segments" not in ticked, "with a segment ticked the tabs compare it with the customers outside it"
+
+
 def test_a_customer_can_be_selected_by_region_by_a_category_and_by_a_brand_they_bought():
     from src.customer_selection import FILTERS
 

@@ -13,6 +13,7 @@ import pytest
 
 from src import cache
 from src.aito_client import AitoError
+from src.demand_evaluation import TEST_MONTHS, months_up_to
 from src.demand_forecast import LATEST_MONTH
 from src.demand_service import get_demand
 
@@ -24,14 +25,11 @@ def _row(sku: str, month: str, units: int, last: int, bucket: str, last_bucket: 
             "category": "dry-food", "brand": "Acme", "season": "spring"}
 
 
-# Two SKUs over two months. In the latest month SKU-A stayed in its
-# range (8-15 → 8-15) and SKU-B jumped (4-7 → 16-31): naive gets 1 of 2.
-PANEL = [
-    _row("SKU-A", "2026-03", 9, 4, "8-15", "4-7"),
-    _row("SKU-A", LATEST_MONTH, 12, 9, "8-15", "8-15"),
-    _row("SKU-B", "2026-03", 5, 0, "4-7", "0"),
-    _row("SKU-B", LATEST_MONTH, 20, 5, "16-31", "4-7"),
-]
+# Two SKUs over the seven test months, the same in each. In a test month SKU-A stayed
+# in its range (8-15 → 8-15) and SKU-B jumped (4-7 → 16-31): naive gets 1 of 2.
+PANEL = [row for month in months_up_to(LATEST_MONTH, TEST_MONTHS) for row in (
+    _row("SKU-A", month, 12, 9, "8-15", "8-15"),
+    _row("SKU-B", month, 20, 5, "16-31", "4-7"))]
 
 
 class FakeAito:
@@ -94,15 +92,24 @@ def test_forecast_conditions_on_last_months_units_not_the_unseen_month():
     assert {w["product_sku"]: w["units_last_month"] for w in wheres} == {"SKU-A": 12, "SKU-B": 20}
 
 
-def test_accuracy_trains_on_earlier_months_and_tests_on_the_latest():
+def test_accuracy_tests_each_of_the_last_months_with_a_model_trained_only_on_the_months_before_it():
     fake = FakeAito()
     get_demand(fake, top_n=2)
-    (call,) = _calls(fake, "evaluate")
-    assert call["predict_field"] == "units_bucket"
-    assert call["test"] == {"month": LATEST_MONTH}
-    assert call["train"] == {"month": {"$not": LATEST_MONTH}}
-    assert call["where"]["units_last_month_bucket"] == {"$get": "units_last_month_bucket"}
-    assert "month" not in call["where"]
+    calls = _calls(fake, "evaluate")
+    assert [c["test"]["month"] for c in calls] == months_up_to(LATEST_MONTH, TEST_MONTHS)
+    assert calls[-1]["test"] == {"month": LATEST_MONTH}
+    for call in calls:
+        assert call["predict_field"] == "units_bucket"
+        assert call["train"] == {"month": {"$lt": call["test"]["month"]}}, "a month later than the test month must never be in training"
+        assert "month" not in call["where"]
+
+
+def test_the_forecast_is_tested_on_what_drives_demand_not_on_the_ids_that_only_dilute_it():
+    fake = FakeAito()
+    get_demand(fake, top_n=2)
+    (where, *_) = [c["where"] for c in _calls(fake, "evaluate")]
+    assert set(where) == {"units_last_month_bucket", "season", "category", "product_state.rating_band", "product_state.age"}
+    assert where["product_state.rating_band"] == {"$get": "product_state.rating_band"}
 
 
 def test_page_reports_the_naive_forecast_on_the_same_test_rows():
@@ -110,7 +117,7 @@ def test_page_reports_the_naive_forecast_on_the_same_test_rows():
     SKU-B jumped: 1 of 2. The model must be shown next to this number."""
     evaluation = get_demand(FakeAito(), top_n=2).evaluation
     assert evaluation.naive_accuracy == 0.5
-    assert evaluation.n == 2
+    assert evaluation.n == 2 * TEST_MONTHS and evaluation.months == TEST_MONTHS
     assert evaluation.accuracy == 0.5 and evaluation.base_accuracy == 0.5
 
 

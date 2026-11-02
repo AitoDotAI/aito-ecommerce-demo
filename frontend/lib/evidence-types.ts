@@ -52,7 +52,7 @@ export interface ModelChecksFile {
   threshold_pp: number;
   models: ModelCheck[];
   churn: HeldOutAccuracy & { features: string[] };
-  demand: HeldOutAccuracy & { naive_accuracy: number; test_month: string };
+  demand: HeldOutAccuracy & { naive_accuracy: number; test_month: string; months: number };
 }
 
 // ── Search relevance ─────────────────────────────────────────────────

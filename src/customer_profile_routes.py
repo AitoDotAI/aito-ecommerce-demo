@@ -15,6 +15,7 @@ from fastapi.responses import JSONResponse
 
 from src.customer_journey import journey
 from src.customer_period import NoPreviousPeriod, compare
+from src.customer_period_mix import preference_changes, segment_changes
 from src.customer_relations import MIN_GROUP
 from src.customer_rows import page_of
 from src.customer_selection import members, parse, ranking_for, view
@@ -63,8 +64,17 @@ def _period(parsed: list[tuple[str, str]], months: list[str], start: str, end: s
     """The period against the one before it, for the selection and for everyone; a period with no room before it says why instead."""
     customers = facts()["customers"]
     try:
-        own = compare([customers[cid] for cid in members(customers, parsed)], months, start, end)
-        return {**own, "all": compare(list(customers.values()), months, start, end)["figures"]}
+        ids = members(customers, parsed)
+        own = compare([customers[cid] for cid in ids], months, start, end)
+        out = {**own, "all": compare(list(customers.values()), months, start, end)["figures"]}
+        if not parsed:
+            # Nothing ticked: there is no "outside" to compare a segment with, so the Preferences and Other segments tabs read the period against the one before.
+            stored = rows()
+            # A diet only shows the catalogue; "status" is defined by ordering, so a period without orders would only repeat its definition.
+            conditions = [k for k in _selection(())["options"] if not k.startswith(("diets:", "status:"))]
+            out["preferences"] = preference_changes(stored["customers"], stored["products"], ids, months, start, end)
+            out["segments"] = segment_changes(customers, months, start, end, conditions, MIN_GROUP)
+        return out
     except NoPreviousPeriod as error:
         return {"from": start, "to": end, "previous": None, "reason": str(error)}
 
