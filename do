@@ -147,6 +147,7 @@ Data
   load-data         Upload schema + fixtures to Aito
   env-new          <env> [--apply]: a new env for a data release, a copy-on-write branch of master (dry run without --apply)
   env-load          Drop and reload every table into a named env (needs AITO_ENV=<env>; refuses master)
+  env-promote       <env> [--apply]: back master up, then promote the loaded release env onto it (dry run without --apply; ADR 0035)
   reset-data        Drop and reload all Aito tables + warm the cache
   optimize          Merge batch segments on all tables for faster reads
   clear-cache       Clear in-memory + Aito persistent prediction cache
@@ -337,6 +338,13 @@ cmd_env_new() {
   cd "$SCRIPT_DIR"
   _show_target
   uv run python -m scripts.new_env "$@"
+}
+
+cmd_env_promote() {
+  # The cutover's data half (ADR 0035): a write to master on the shared instance, after a backup, and only for an env that is the release.
+  cd "$SCRIPT_DIR"
+  _show_target
+  PYTHONPATH=. uv run python -m scripts.promote_env "$@"
 }
 
 cmd_env_load() {
@@ -942,6 +950,7 @@ case "${1:-help}" in
   load-data)         shift; cmd_load_data "$@" ;;
   env-new)           shift; cmd_env_new "$@" ;;
   env-load)          shift; cmd_env_load "$@" ;;
+  env-promote)       shift; cmd_env_promote "$@" ;;
   reset-data)        shift; cmd_reset_data "$@" ;;
   clear-cache)       cmd_clear_cache ;;
   warm-cache)        cmd_warm_cache ;;
