@@ -307,7 +307,7 @@ export function supplyPanel(): AitoPanelConfig {
     description:
       `Stock bands, the reorder quantity, the revenue at risk and the tied capital are arithmetic on the ` +
       `<code style="color:var(--aito-teal);">inventory</code> read below and on what each SKU sold over the last three ` +
-      `months: observed sales, because Aito's per-product forecast only ties the naive rule (Evidence › Model checks). ` +
+      `months: observed sales, because Aito's per-product forecast does not beat the naive rule (Evidence › Model checks). ` +
       `For the largest overstock, Aito's <code style="color:var(--aito-teal);">_estimate units_sold</code> with ` +
       `<code style="color:var(--aito-teal);">model: "regression"</code> at five prices ` +
       `finds the shallowest markdown that clears the excess. Price bands come from one ` +
