@@ -154,10 +154,13 @@ def test_the_held_out_calibration_figure_says_which_release_it_was_measured_on()
 
 
 def test_the_supply_card_names_the_baseline_the_forecast_test_uses_and_says_what_the_snapshot_shows():
-    """The card once said the forecast 'tied' a last-three-months rule; the test compares ranges against last month's."""
-    evaluation = json.loads((ROOT / "data" / "precomputed" / "v2-master" / "demand.json").read_text(encoding="utf-8"))["data"]["evaluation"]
+    """The card says Aito's forecast was not clearly better than 'the same range as last month': the difference's interval must reach 0."""
+    from src.evidence.wording import unpaired_difference
 
-    assert evaluation["accuracy"] <= evaluation["naive_accuracy"], "the card says Aito did not beat the simple rule"
+    evaluation = json.loads((ROOT / "data" / "precomputed" / "v2-master" / "demand.json").read_text(encoding="utf-8"))["data"]["evaluation"]
+    _, low, _ = unpaired_difference(evaluation["accuracy"], evaluation["naive_accuracy"], evaluation["n"])
+
+    assert low <= 0, "the card says Aito was not clearly better than the simple rule; the interval no longer reaches 0"
     assert says("frontend/app/supply/page.tsx", 'against "the same range as last month"')
-    assert says("frontend/app/supply/page.tsx", "It did not beat it")
+    assert says("frontend/app/supply/page.tsx", "It was not clearly better")
     assert not says("frontend/app/supply/page.tsx", "It tied")

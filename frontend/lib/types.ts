@@ -503,6 +503,11 @@ export interface SupplyPriceOutlier {
   above_band_pct: number;
 }
 
+export interface SupplyEndOfLine {
+  sku: string; name: string; category: string; current_stock: number; excess_units: number; tied_capital_eur: number; discount_pct: number;
+  weeks_to_clear: number | null; price_at_deepest_eur: number; unit_cost_eur: number; below_cost: boolean;
+}
+
 export interface SupplyResponse {
   planning_month: string;
   band_counts: { critical: number; low: number; ok: number; overstock: number };
@@ -520,6 +525,7 @@ export interface SupplyResponse {
   };
   reorder_queue: SupplyReorderRow[];
   overstock: SupplyOverstockRow[];
+  end_of_line: SupplyEndOfLine[];
   top_movers: SupplyMoverRow[];
   price_outliers: SupplyPriceOutlier[];
   last_query: { endpoint: string; body: Record<string, unknown> };

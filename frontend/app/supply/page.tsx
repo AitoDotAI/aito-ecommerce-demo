@@ -11,6 +11,7 @@ import ErrorState from "@/components/shell/ErrorState";
 import DecisionCard, { monthName } from "@/components/owner/DecisionCard";
 import ReorderTable from "@/components/supply/ReorderTable";
 import OverstockTable from "@/components/supply/OverstockTable";
+import EndOfLine from "@/components/supply/EndOfLine";
 import { PriceOutliers, TopMovers } from "@/components/supply/MoversAndOutliers";
 import type { SupplyResponse } from "@/lib/types";
 
@@ -61,11 +62,11 @@ function SupplyView() {
       {error && <ErrorState title="Couldn't load Supply" message={`Aito returned an error. ${error}`} command="./do load-data" />}
       {!data && !error && <div className="card" style={{ height: 160, background: "var(--border-light)" }} />}
 
-      {data && data.planning_month === undefined && (
+      {data && (data.planning_month === undefined || data.end_of_line === undefined) && (
         <ErrorState title="Supply's snapshot predates a change" message="The stored Supply answer has the old shape (a forecast). Take the precompute snapshots again." command="./do precompute --as master" />
       )}
 
-      {data && data.planning_month !== undefined && (
+      {data && data.planning_month !== undefined && data.end_of_line !== undefined && (
         <>
           <div className="two-col">
             <DecisionCard
@@ -75,7 +76,7 @@ function SupplyView() {
                 of its sales can&apos;t be served without them. The orders total {data.reorder.units} units,{" "}
                 {fmtEur(data.reorder.order_cost_eur)} at cost.
               </>}
-              note={`We tested Aito's per-product forecast against "the same range as last month". It did not beat it, so the reorder list uses the simple rule of the last three months' sales; Aito does what it is better at: which markdown clears the overstock. Each order covers those three months' sales plus safety stock.`}
+              note={`We tested Aito's per-product forecast, with the product's stars, age and the season, against "the same range as last month". It was not clearly better, so the reorder list uses the simple rule of the last three months' sales; Aito does what it is better at: which markdown clears the overstock. Each order covers those three months' sales plus safety stock.`}
               evidenceHref={MODEL_CHECKS}
             />
             <DecisionCard
@@ -96,6 +97,8 @@ function SupplyView() {
             <div className="card-title">Overstock · the {data.overstock.length} with the most capital tied up</div>
             <OverstockTable rows={data.overstock} highlight={sku} />
           </div>
+
+          <EndOfLine rows={data.end_of_line} scored={data.overstock_decision.scored} />
 
           <div className="two-col">
             <div className="card">

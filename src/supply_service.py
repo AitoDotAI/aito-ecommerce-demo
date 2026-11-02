@@ -32,6 +32,7 @@ from src.catalogue_reads import products_by_sku, read_all, rows_by_sku
 from src.demand_forecast import FORECAST_MONTH
 from src.markdown_proposal import excess_units, propose_markdown
 from src.price_bands import price_band
+from src.supply_end_of_line import end_of_line
 from src.supply_rows import (
     MoverRow, OverstockRow, PriceOutlier, ReorderRow, overstock_decision, reorder_decision, stock_band,
 )
@@ -48,6 +49,7 @@ class SupplyResponse:
     overstock_decision: dict        # tied capital, and what markdowns would clear
     reorder_queue: list[ReorderRow]
     overstock: list[OverstockRow]
+    end_of_line: list[dict]         # scored overstock that will not clear at the deepest markdown and has no season ahead (ADR 0061)
     top_movers: list[MoverRow]
     price_outliers: list[PriceOutlier]
     last_query: dict
@@ -95,6 +97,7 @@ def get_supply(client: AitoClient) -> SupplyResponse:
             skus=len(overstock), tied_capital_eur=sum(_tied_capital(r) for r in overstock), rows=overstock_rows),
         reorder_queue=reorder_queue,
         overstock=overstock_rows,
+        end_of_line=end_of_line(overstock_rows, sales, FORECAST_MONTH),
         top_movers=top_movers,
         price_outliers=outliers,
         last_query={"endpoint": "_search", "body": {"from": "inventory", "limit": 1000, "offset": 0}},

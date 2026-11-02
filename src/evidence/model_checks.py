@@ -26,7 +26,7 @@ from dataclasses import asdict
 from src.aito_client import AitoClient, AitoError
 from src.churn_evaluation import evaluate_churn
 from src.config import load_config
-from src.demand_evaluation import evaluate_demand
+from src.demand_evaluation import evaluate_demand_months
 from src.demand_forecast import LATEST_MONTH
 from src.eval_service import PASS_THRESHOLD_PP, run_evaluation
 from src.evidence import result_file
@@ -42,12 +42,13 @@ def churn_model(client: AitoClient) -> dict:
 
 
 def evaluate_demand_model(client: AitoClient) -> dict:
-    e = evaluate_demand(client, LATEST_MONTH)
+    e = evaluate_demand_months(client, LATEST_MONTH)
     return {"label": "Next month's sales range", "table": "monthly_sales", "predict": "units_bucket",
             **asdict(e), "test_month": LATEST_MONTH,
             # Said for this page: Supply's unit forecast is an `_estimate`, which _evaluate can't score yet.
-            "method": f"Aito predicting each product's sales range (0, 1, 2-3, 4-7, 8-15, 16-31, 32+) in "
-                      f"{LATEST_MONTH} from last month's range and the product, trained on every earlier month. "
+            "method": f"Aito predicting each product's sales range (0, 1, 2-3, 4-7, 8-15, 16-31, 32+) in each of the {e.months} months "
+                      f"up to {LATEST_MONTH} from last month's range, the season, the category and the product's stars band and age, each "
+                      "month trained only on the months before it, the scores pooled. "
                       "It scores the range, not Supply's unit forecast, which _evaluate can't score yet."}
 
 

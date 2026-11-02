@@ -1530,11 +1530,12 @@
       }
     ],
     "evaluation": {
-      "accuracy": 0.4103,
-      "naive_accuracy": 0.4407,
-      "base_accuracy": 0.1444,
-      "n": 658,
-      "method": "Scores Aito predicting each month's sales range (0, 1, 2-3, 4-7, 8-15, 16-31, 32+) from last month's range and the product, not the unit forecast in the table. Time split: trained on every month before 2026-04, tested on 2026-04."
+      "accuracy": 0.4111,
+      "naive_accuracy": 0.3938,
+      "base_accuracy": 0.1906,
+      "n": 4586,
+      "method": "Scores Aito predicting each month's sales range (0, 1, 2-3, 4-7, 8-15, 16-31, 32+) from last month's range, the season, the category and the product's stars band and age, not the unit forecast in the table. Time split: each of the 7 months up to 2026-04 is tested by a model trained only on the months before it; the scores are pooled.",
+      "months": 7
     },
     "last_query": {
       "endpoint": "_estimate",
@@ -1555,36 +1556,84 @@
         ]
       }
     },
-    "last_response_ms": 15590
+    "last_response_ms": 54043
   },
   "timings": [
     [
       "_search",
-      105.63
+      108.16
     ],
     [
       "_search",
-      124.19
+      134.22
     ],
     [
       "_search",
-      139.39
+      152.97
     ],
     [
       "_search",
-      6.02
+      8.04
     ],
     [
       "_search",
-      10.63
+      16.14
     ],
     [
       "_evaluate",
-      11701.3
+      5458.9
     ],
     [
       "_search",
-      1.94
+      2.55
+    ],
+    [
+      "_evaluate",
+      5781.8
+    ],
+    [
+      "_search",
+      1.65
+    ],
+    [
+      "_evaluate",
+      6412.64
+    ],
+    [
+      "_search",
+      1.49
+    ],
+    [
+      "_evaluate",
+      6523.13
+    ],
+    [
+      "_search",
+      1.95
+    ],
+    [
+      "_evaluate",
+      5794.03
+    ],
+    [
+      "_search",
+      2.66
+    ],
+    [
+      "_evaluate",
+      5680.43
+    ],
+    [
+      "_search",
+      1.53
+    ],
+    [
+      "_evaluate",
+      6283.12
+    ],
+    [
+      "_search",
+      1.72
     ]
   ]
 }

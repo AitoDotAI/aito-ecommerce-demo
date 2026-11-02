@@ -130,7 +130,7 @@ function ModelChecksView() {
         <RunFacts
           run={data.run}
           n={`${data.models.map((m) => `${m.label}: ${m.n}`).join("; ")}; churn: ${data.churn.n} ordering customer-months; ` +
-             `demand: ${data.demand.n} products in ${data.demand.test_month}`}
+             `demand: ${data.demand.n} product-months, the ${data.demand.months} months up to ${data.demand.test_month}`}
           method={<>
             Aito&apos;s <code>_evaluate</code> holds rows out, predicts each from the rest and counts the right answers.
             The intervals are 95 % normal intervals. A difference against a baseline treats the two accuracies as
