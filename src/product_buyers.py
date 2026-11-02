@@ -118,7 +118,7 @@ def _shopper_profiles() -> dict:
     for shopper in SHOPPERS:
         c = customers[shopper.customer_id]
         profiles[shopper] = {
-            "pets": set(c["pets"].split()),
+            "pets": set(c.get("pets", "").split()),     # most customers declare no pets
             "dog_size": {c["dog_size"]} if c.get("dog_size") else set(),
             "diet": {c["diet"]} if c.get("diet") else set(),
             "region": {c["region"]},

@@ -95,14 +95,19 @@ def delete_table(client: AitoClient, table: str) -> None:
 # ── Public API ─────────────────────────────────────────────────────
 
 
-def run(*, reset: bool = False, tables: list[str] | None = None) -> None:
+def run(*, reset: bool = False, tables: list[str] | None = None, refuse_master: bool = False) -> None:
     """Bring up the PetNord DB.
 
     `tables` filters both delete and upload sets. Order is
     preserved from `SCHEMAS` (link-target first); for delete the
     order is reversed so linkers are dropped before their targets.
+    `refuse_master` (`./do env-load`) stops before any write unless
+    the config points at a named env.
     """
     config = load_config()
+    if refuse_master and config.aito_env == "master":
+        print("Refusing: this load replaces every table, and the target env is master. Set AITO_ENV.")
+        sys.exit(1)
     client = AitoClient(config)
 
     if not client.check_connectivity():
@@ -200,4 +205,4 @@ if __name__ == "__main__":
     else:
         reset = "--reset" in sys.argv
         tables = _parse_tables_arg(sys.argv)
-        run(reset=reset, tables=tables)
+        run(reset=reset, tables=tables, refuse_master="--refuse-master" in sys.argv)

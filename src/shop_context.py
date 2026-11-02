@@ -58,6 +58,16 @@ def shopper_where(pets: str, cart: list[dict], month: str) -> dict:
     return where
 
 
+def shopper_where_from_orders(pets: str, cart: list[dict], month: str) -> dict:
+    """`shopper_where` for a household that declared no pet profile (most don't,
+    ADR 0045): the pet types of its earlier orders, as `contexts.pets_from_orders`
+    records them, in place of the declared pets. Identity-free, so it also serves
+    a shopper who declined tracking, who has no contexts to match."""
+    where = shopper_where(pets, cart, month)
+    where["context.pets_from_orders"] = where.pop("context.customer.pets")
+    return where
+
+
 def pets_filter(pets: str) -> dict:
     """The household's declared pets as a filter on the candidates: a cat
     household is shown cat products. A rule, like the diet: Aito saw dog

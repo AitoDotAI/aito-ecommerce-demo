@@ -1,15 +1,18 @@
 """What happens to the catalogue over time, and each product's state per month (ADR 0032).
 
-The planted effects, checked by `tests/test_product_states_data.py`
-against `docs/verification/product-states-prereg.md`:
+The planted effects, checked by `tests/test_product_states_data.py` and
+`./do planted-effects` against `docs/verification/product-states-prereg.md`:
 
-  P1  An offer converts an impression, most for budget shoppers.
-  P2  Launches: 50 products appear mid-window; new, they are picked more,
-      take share from their rivals, and flexible shoppers take to them.
+  P2  Launches: 50 products appear mid-window; new, they are picked more
+      and take share from their rivals.
   P3  Price rises: 60 products get one list-price rise; demand follows
       the product's elasticity.
-  P4  Stars sell: an impression converts by the stars shown that month.
   P5  A dog's size steers the pack size of its food.
+
+How a state moves an impression (an offer, the stars, being new, a label,
+low stock) depends on the shopper's hidden sensitivities since ADR 0038:
+`data/sensitivities.py`. A state's label and stock come from
+`data/shop_levers.py`.
 
 Everything here is decided from its own seeded RNG, before any order, so
 orders respond to the catalogue rather than the other way round.
@@ -21,7 +24,8 @@ import random
 import re
 from dataclasses import dataclass
 
-from data import shoppers
+from data.planted_switches import stream
+from data.shop_levers import review_count_band
 
 N_LAUNCHES = 50
 LAUNCH_WINDOW = ("2024-11", "2026-01")
@@ -50,9 +54,6 @@ DEMO_ANCHORS = frozenset({
 })
 
 OFFER_MIN_PCT = 10.0         # below this, a discount is list-price noise, not an offer
-OFFER_ODDS = {"budget": 2.5, "mid": 1.8, "premium": 1.2}                     # P1
-NEW_ODDS = {"flexible": 1.6, "loyal": 1.0}                                   # P2
-STARS_ODDS = {"5": 1.3, "4": 1.15, "3": 1.0, "1-2": 0.8, "unrated": 0.9}     # P4
 PACK_FIT = 2.5                                                               # P5
 LARGE_PACK_KG = 7.0
 SMALL_PACK_KG = 2.0
@@ -180,36 +181,6 @@ def discount_band(discount_pct: float) -> str:
     return "15-20" if discount_pct < 20 else "20+"
 
 
-def ratings_by_month(reviews: list, months: list[str]) -> dict[tuple[str, str], str]:
-    """(sku, month) → the rating band its reviews created before the month give."""
-    by_sku: dict[str, list] = {}
-    for r in reviews:
-        by_sku.setdefault(r.product_sku, []).append(r)
-    bands: dict[tuple[str, str], str] = {}
-    for sku, rows in by_sku.items():
-        for month in months:
-            earlier = [r.rating for r in rows if r.created_at < month]
-            if earlier:
-                bands[(sku, month)] = shoppers.rating_band(sum(earlier) / len(earlier))
-    return bands
-
-
-def impression_odds(state, customer) -> tuple[float, float]:
-    """(conversion odds, click odds) the product's state gives this shopper: P1, P2, P4."""
-    odds = click_odds = 1.0
-    if state.on_offer:
-        odds *= OFFER_ODDS[customer.lifestyle]
-        click_odds *= OFFER_ODDS[customer.lifestyle]
-    if state.age == "new":
-        odds *= NEW_ODDS[customer.brand_loyalty]
-        click_odds *= NEW_ODDS[customer.brand_loyalty]
-    # Stars are seen before the click. On the cart and purchase steps alone
-    # they saturate: those sit near their caps (prereg, first null run).
-    odds *= STARS_ODDS[state.rating_band]
-    click_odds *= STARS_ODDS[state.rating_band]
-    return odds, click_odds
-
-
 @dataclass
 class ProductState:
     """One product as it was in one month: what a shopper saw (ADR 0032).
@@ -226,33 +197,43 @@ class ProductState:
     age: str                   # "new" (first NEW_MONTHS on sale), "established"
     rival_launched: bool       # a product of the same pet and category launched in the last 3 months
     price_change: str          # "rise" (list price raised in the last 3 months), "none"
+    # ADR 0038: what the shop set or lived with this month.
+    label: str                 # "none", "recommended", "staff_pick", "popular"
+    stock: str                 # "in_stock", "low"
+    review_count_band: str     # "none", "1-4", "5-19", "20+": reviews created before the month
 
 
-def gen_product_states(rng: random.Random, products: list, months: list[str], events: CatalogueEvents,
-                       discount: dict[tuple[str, str], float],
-                       ratings: dict[tuple[str, str], str]) -> list[ProductState]:
-    """Every product in every month it is on sale. A ±2 % noise on the
-    price keeps Aito's k-NN from reading a crisp ridge (ADR 0027)."""
+def states_for_month(seed: int, month: str, products: list, events: CatalogueEvents,
+                     discount: dict[tuple[str, str], float], stars: dict[str, tuple[str, int]],
+                     labels: dict[str, str], low_stock: set[str]) -> list[ProductState]:
+    """Every product on sale in `month`, as a shopper sees it at the month's
+    start (ADR 0045: the month's sales follow from it). `stars` maps a SKU to
+    (rating band, review count) from reviews written before the month. A ±2 %
+    noise on the price keeps Aito's k-NN from reading a crisp ridge (ADR 0027)."""
     out = []
     for p in products:
-        for month in months:
-            if not events.on_sale(p.sku, month):
-                continue
-            list_price = events.list_price(p.sku, month)
-            ratio = (1.0 - discount.get((p.sku, month), 0.0)) * (1.0 + rng.uniform(-0.02, 0.02))
-            discount_pct = round((1.0 - ratio) * 100, 1)
-            out.append(ProductState(
-                product_state_id=f"{p.sku}-{month}",
-                product_sku=p.sku,
-                month=month,
-                price_eur=round(list_price * ratio, 2),
-                list_price_eur=list_price,
-                discount_pct=discount_pct,
-                on_offer=discount_pct >= OFFER_MIN_PCT,
-                discount_band=discount_band(discount_pct),
-                rating_band=ratings.get((p.sku, month), "unrated"),
-                age="new" if events.is_new(p.sku, month) else "established",
-                rival_launched=events.rival_launched(p.sku, month),
-                price_change="rise" if events.recently_raised(p.sku, month) else "none",
-            ))
+        if not events.on_sale(p.sku, month):
+            continue
+        list_price = events.list_price(p.sku, month)
+        noise = stream(seed, "price-noise", p.sku, month).uniform(-0.02, 0.02)
+        ratio = (1.0 - discount.get((p.sku, month), 0.0)) * (1.0 + noise)
+        discount_pct = round((1.0 - ratio) * 100, 1)
+        band, n_reviews = stars.get(p.sku, ("unrated", 0))
+        out.append(ProductState(
+            product_state_id=f"{p.sku}-{month}",
+            product_sku=p.sku,
+            month=month,
+            price_eur=round(list_price * ratio, 2),
+            list_price_eur=list_price,
+            discount_pct=discount_pct,
+            on_offer=discount_pct >= OFFER_MIN_PCT,
+            discount_band=discount_band(discount_pct),
+            rating_band=band,
+            age="new" if events.is_new(p.sku, month) else "established",
+            rival_launched=events.rival_launched(p.sku, month),
+            price_change="rise" if events.recently_raised(p.sku, month) else "none",
+            label=labels.get(p.sku, "none"),
+            stock="low" if p.sku in low_stock else "in_stock",
+            review_count_band=review_count_band(n_reviews),
+        ))
     return out

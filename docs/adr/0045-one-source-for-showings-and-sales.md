@@ -100,3 +100,29 @@ Each showing's purchase odds carry every price effect, and nothing else adds uni
 - The largest generator change since ADR 0030. Orders change, so every order-side check
   re-runs.
 - The demo's Monday data (release 1) keeps the folded curve until release 2 is live.
+
+
+## Notes
+
+### Amendment (2026-10-24): the placement confound in purchase rates
+
+Probed on env `release2` (`docs/aito-cheatsheet.md`, "Data release 2").
+
+- **Since the rebuild, most purchases are `buy_again` showings.** What the
+  household came for is bought 80–90 % of the time. A `list` showing, the
+  shop's ranked results, is bought 7–12 % of the time.
+- **A whole-table offer lift reads backwards.** Offered products sit on lists
+  more, so over all showings the purchase rate is 23.5 % with no offer and
+  20.4 % at 20 %+ off. Within lists it is 6.96 % and 11.6 %. Adding
+  `placement: list` to `where` doesn't repair it: the other lifts keep their
+  whole-table values or drop out of `$why`.
+- **Direction for release 2's Product view.** Its what-ifs ask `_predict
+  purchased` over a population restricted to list showings: a nested `from`
+  `{"from": "impressions", "where": {"placement": "list"}}`. On the probe it
+  matches the observed counts exactly (band 20+: `$p` 0.1160, observed 0.1161).
+- **It is a new shape,** so it gets its own cheatsheet entry and is probed
+  before a view uses it. Its calibration is pre-registered, with the tolerance
+  fixed before it is run, in `actionable-states-prereg.md`
+  ("Q7 on list showings: calibration"). Nothing is built yet.
+- **Not delivered by this ADR:** the double effect's `price_index` slope
+  (O4) waits on the engine; see the prereg.

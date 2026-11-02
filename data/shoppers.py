@@ -9,8 +9,9 @@ the result against the thresholds in
 - **Guided kit (S2).** Add-ons follow the kit in order.
 - **Seasons (S4).** Treats and toys before Christmas, grooming and health
   care in summer.
-- **Ratings matter (S5).** Some products are poorly made: they review
-  badly, get switched away from, and convert less.
+- **Ratings matter (S5).** Some products are poorly made (ADR 0039's
+  `poor` quality, `data/review_chain.py`): they review badly, get switched
+  away from, and convert less.
 - **Basket context (S6).** What's in the basket makes its complements
   more likely to be bought.
 - **Real search queries (S7).** Words from the products' own names.
@@ -18,7 +19,6 @@ the result against the thresholds in
 
 from __future__ import annotations
 
-import hashlib
 import random
 
 from data import lifecycle
@@ -108,19 +108,9 @@ def season_factor(category: str, month: str) -> float:
 
 # ── S5: poorly made products ────────────────────────────────────────
 
-POOR_SHARE = 0.15
-POOR_SWITCH_P = 0.50            # a poorly made staple is switched away from this often
-POOR_CONVERSION_ODDS = 0.35     # an impression of one converts at these odds
-RATING_WEIGHTS = {
-    True:  {1: 0.35, 2: 0.30, 3: 0.20, 4: 0.10, 5: 0.05},
-    False: {1: 0.05, 2: 0.10, 3: 0.20, 4: 0.30, 5: 0.35},
-}
-
-
-def is_poorly_made(sku: str) -> bool:
-    """Fixed per SKU from a hash, not the RNG, so tests can name the same
-    products without re-running the generator."""
-    return int(hashlib.md5(sku.encode()).hexdigest(), 16) % 100 < POOR_SHARE * 100
+# A poorly made staple (`review_chain.quality(sku) == "poor"`) is switched
+# away from this often. How it reviews and converts is ADR 0039's chain.
+POOR_SWITCH_P = 0.50
 
 
 def rating_band(avg_rating: float | None) -> str:
@@ -187,7 +177,8 @@ def query_phrases(products: list) -> dict[str, list]:
     """Every 2–3 word phrase from a product's type (its name without brand
     or size) that at least MIN_QUERY_MATCHES product names contain,
     mapped to those products."""
-    names = [(p, p.name.lower()) for p in products]
+    # A variant follows a comma ("Trixie Exercise Wheel, small"): words, not punctuation.
+    names = [(p, p.name.lower().replace(",", "")) for p in products]
     phrases: dict[str, list] = {}
     for p in products:
         words = lifecycle.item_type(p.name, p.brand).lower().split()

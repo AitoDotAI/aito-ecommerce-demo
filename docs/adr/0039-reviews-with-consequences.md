@@ -73,7 +73,7 @@ thresholds are pre-registered in `docs/verification/actionable-states-prereg.md`
 | Table | Change |
 |---|---|
 | `reviews` | gains `replied` (Boolean), `order_line` (link). `churn_within_90d` is computed from the churn that actually followed, not copied |
-| `nps_responses` | new: `customer` (link), `month`, `score`, `nps_group` (`promoter` 9–10, `passive` 7–8, `detractor` 0–6), `order` (link, the order surveyed) |
+| `nps_responses` | new: `customer` (link), `month`, `score`, `nps_group` (`promoter` 9–10, `passive` 7–8, `detractor` 0–6), `surveyed_order` (link, the order surveyed; see the amendment) |
 | `order_lines` | gains `incident` (Boolean, delivery). The experience stays hidden, as a shop only sees it through reviews, NPS and returns |
 | `customer_months` | gains `nps_latest_group`, `had_negative_review`, `review_replied` |
 
@@ -86,7 +86,7 @@ interval:
 |---|---|
 | on CTR | `_relate clicked` on `impressions`, by `product_state.rating_band` |
 | on purchases | the same for `purchased` |
-| on NPS | `_relate nps_group = detractor` on `nps_responses`, by `order`'s product's rating band, and by the respondent having written a negative review |
+| on NPS | `_relate nps_group = detractor` on `nps_responses`, by `surveyed_order`'s product's rating band, and by the respondent having written a negative review |
 | on churn | `_relate churned_in_3_months` on `customer_months`, by `had_negative_review` and `review_replied` |
 | on demand | `_estimate units` on `monthly_sales`, with `$why`'s rating-band factor (ADR 0032's Q4 form) |
 | on pricing | the price what-if (ADR 0029) for the same product at its real stars and at one band lower |
@@ -143,3 +143,29 @@ of them left."
 - Churn's drivers change, so the Churn and Win-back views' planted
   effects are re-checked.
 - Two more tables, in the same release as ADR 0038.
+
+## Amendment (2026-10-24): the reply's effect on churn is a finding, not the headline
+
+**Context.** The data release's offline checks
+(`docs/verification/actionable-states-prereg.md`, results) find R4's churn
+rise as planted, but small in what a shop observes.
+
+- **Seen by a shop:** the share of bad-experience orders after which the
+  customer never orders again is ×1.16–1.20 against its null (R4c, seeds 42,
+  7, 99). The hidden hazard reads ×1.7–2.1 (R4a).
+- **The reply:** writers of a replied negative review churned within 3
+  months at 0.697 of the rate without the reply's effect, pooled over the
+  three seeds. That is 23 against 33 churners among 398 writers (R4b).
+- At that size, the Reviews view's replied ÷ unreplied interval will
+  probably span 1.
+
+**Decision.**
+- The Reviews view shows replied ÷ unreplied churn with its interval.
+- When the interval spans 1, the view says "a tie".
+- It is not the view's headline unless its interval excludes 1.
+- The headline action above stands as the planted mechanism. The view
+  states it only as far as the data resolves it.
+
+**Also:** `nps_responses.order` is named `surveyed_order`, so the column is
+clear of any reserved word in Aito.
+

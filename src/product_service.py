@@ -43,11 +43,12 @@ CATALOG_FILE = Path(__file__).resolve().parent.parent / "data" / "products.json"
 # The product the view opens on. Picked from the data for its story: of
 # the products that had an offer, a price rise and a rival's launch in
 # their 24 months, and are at list price in the latest month, it sold the
-# most units. PetNord Grain Free Daily Dental Treats 120g: 20 %+ off in
-# December 2024, a price rise in January 2025, a rival in June 2025, and
-# dental treats are what dog dry-food buyers add (Patterns › Baskets).
-# `tests/test_product_service.py` checks that story against the data.
-DEFAULT_SKU = "SKU-PT-0192"
+# most units. PetNord Grain Free Daily Dental Treats 80g (data release 2): a
+# price rise in May 2025, a rival in June 2025, 20 %+ off in September 2025
+# and March 2026, and dental treats are what dog dry-food buyers add
+# (Patterns › Baskets). `tests/test_product_service.py` checks that story
+# against the data.
+DEFAULT_SKU = "SKU-PT-0194"
 
 
 @dataclass

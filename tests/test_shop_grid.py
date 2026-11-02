@@ -121,3 +121,27 @@ def test_in_the_sandbox_the_levered_sku_wins_its_name_and_its_rank_change_counts
     assert [i.sku for i in grid.items] == ["SKU-0563", "SKU-W", "SKU-F"]
     # Its name was the 2nd card before the lever, now the 1st: "↑ 1", not "↑ 3".
     assert grid.items[0].measured_rank == 2 and grid.items[0].same_name_skus == ["SKU-0564"]
+
+
+@pytest.mark.parametrize("shopper_key", ["eemil", "juhani"])
+def test_a_shopper_without_a_pet_profile_is_ranked_from_the_pets_of_their_orders(shopper_key):
+    # Eemil declared no pets; Juhani declined tracking too, so he has no contexts and
+    # nothing but his orders to read. Both used to fail on `customer["pets"]`.
+    fake = FakeAito([product("SKU-A", 0.5)])
+
+    grid = get_shop_grid(fake, shopper_key, "2026-04", [])
+
+    where = fake.recommends[0]
+    assert where["context.pets_from_orders"] == {"$and": [{"$match": "cat"}]}
+    assert "context.customer.pets" not in where and "context.customer" not in where
+    assert where["product_sku.pet_type"] == {"$or": ["cat"]}
+    assert [i.sku for i in grid.items] == ["SKU-A"]
+
+
+def test_a_shopper_without_a_profile_or_an_order_is_refused_loudly():
+    from src.shop_ranking import UnknownShopperProfileError
+
+    fake = FakeAito([product("SKU-A", 0.5)])
+
+    with pytest.raises(UnknownShopperProfileError, match="CUST-01896"):
+        get_shop_grid(fake, "eemil", "2024-05", [])   # the fake's earliest order is 2025-11

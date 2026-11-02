@@ -27,9 +27,10 @@ def test_the_default_product_has_the_story_its_comment_tells():
     states = [s for s in json.loads((DATA / "product_states.json").read_text()) if s["product_sku"] == SKU]
     by_month = {s["month"]: s for s in states}
 
-    assert by_month["2024-12"]["discount_band"] == "20+"
-    assert by_month["2025-01"]["price_change"] == "rise"
+    # Data release 2's story (src/product_service.py's comment).
+    assert by_month["2025-05"]["price_change"] == "rise" and by_month["2025-04"]["price_change"] == "none"
     assert by_month["2025-06"]["rival_launched"] and not by_month["2025-05"]["rival_launched"]
+    assert by_month["2025-09"]["discount_band"] == "20+" and by_month["2026-03"]["discount_band"] == "20+"
     assert by_month["2026-04"]["discount_band"] == "none"
 
 

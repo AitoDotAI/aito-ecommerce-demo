@@ -966,8 +966,8 @@ def _search_session(session_id: str):
     customer = next(c for c in json.loads((data / "customers.json").read_text())
                     if c["customer_id"] == context["customer"])
     return Session(session_id=session_id, customer=context["customer"], month=context["month"],
-                   query=context["search_query"], pets=customer["pets"], rule=customer.get("diet"),
-                   cart=tuple((context.get("basket") or "").split()),
+                   query=context["search_query"], pets=customer.get("pets"),
+                   pets_from_orders=context.get("pets_from_orders"), rule=customer.get("diet"), cart=(),
                    last_order=tuple((context.get("prev_basket") or "").split()), prior_orders=0,
                    bought=frozenset())
 
@@ -977,8 +977,8 @@ def test_a_nested_from_leaves_the_scored_session_out(client):
     so a held-out ranking never reads the purchase it is scored on."""
     from src.personalised_search.rankings import held_out
 
-    assert _count(client, {"context": "SESS-000694"}) > 0
-    res = client.search(held_out("SESS-000694"), where={"context": "SESS-000694"}, limit=0)
+    assert _count(client, {"context": "SESS-000037"}) > 0
+    res = client.search(held_out("SESS-000037"), where={"context": "SESS-000037"}, limit=0)
     assert res["total"] == 0
 
 
@@ -987,7 +987,7 @@ def test_the_shops_search_held_out_scores_every_allowed_match_and_keeps_the_rule
     name match the household's rule allows, and none for rule-breaking food."""
     from src.personalised_search.rankings import shop_search_p, text_lift
 
-    session = _search_session("SESS-008388")          # "dog food", a `sensitive` household
+    session = _search_session("SESS-000136")          # "cat food", a `sensitive` household
     p = shop_search_p(client, session, list(text_lift(client, session.query)))
     rows = client.search("products", where={"sku": {"$or": list(p)}},
                          select=["sku", "name", "category", "pet_type"], limit=len(p))["hits"]
@@ -1000,7 +1000,7 @@ def test_the_history_form_held_out_returns_distinct_products(client):
     """Smart Search's one-query blend, `get product_sku` over a nested `from`."""
     from src.personalised_search.rankings import history_form_ranking
 
-    ranked = history_form_ranking(client, _search_session("SESS-000694"), 20)
+    ranked = history_form_ranking(client, _search_session("SESS-000037"), 20)
     assert len(ranked) == 20 and len(set(ranked)) == 20
 
 
@@ -1008,7 +1008,7 @@ def test_the_just_bought_reask_runs_in_a_batch_over_a_nested_from(client):
     from src.personalised_search.rankings import held_out, shop_context
     from src.shop_ranking import _p_true
 
-    session = _search_session("SESS-008388")
+    session = _search_session("SESS-000136")
     sku = session.last_order[0]
     [answer] = client.batch([{"from": held_out(session.session_id), "predict": "purchased",
                               "where": {**shop_context(session), "product_sku": sku, "just_bought": True}}])

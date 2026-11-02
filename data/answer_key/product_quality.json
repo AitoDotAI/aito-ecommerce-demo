@@ -1,0 +1,2634 @@
+[
+  {
+    "sku": "SKU-PT-0001",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0002",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0003",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0004",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0005",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0006",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0007",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0008",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0009",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0010",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0011",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0012",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0013",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0014",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0015",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0016",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0017",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0018",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0019",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0020",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0021",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0022",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0023",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0024",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0025",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0026",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0027",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0028",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0029",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0030",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0031",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0032",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0033",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0034",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0035",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0036",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0037",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0038",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0039",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0040",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0041",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0042",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0043",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0044",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0045",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0046",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0047",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0048",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0049",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0050",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0051",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0052",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0053",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0054",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0055",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0056",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0057",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0058",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0059",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0060",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0061",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0062",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0063",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0064",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0065",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0066",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0067",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0068",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0069",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0070",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0071",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0072",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0073",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0074",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0075",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0076",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0077",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0078",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0079",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0080",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0081",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0082",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0083",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0084",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0085",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0086",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0087",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0088",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0089",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0090",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0091",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0092",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0093",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0094",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0095",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0096",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0097",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0098",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0099",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0100",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0101",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0102",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0103",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0104",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0105",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0106",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0107",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0108",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0109",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0110",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0111",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0112",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0113",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0114",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0115",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0116",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0117",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0118",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0119",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0120",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0121",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0122",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0123",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0124",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0125",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0126",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0127",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0128",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0129",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0130",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0131",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0132",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0133",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0134",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0135",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0136",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0137",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0138",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0139",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0140",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0141",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0142",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0143",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0144",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0145",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0146",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0147",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0148",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0149",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0150",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0151",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0152",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0153",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0154",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0155",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0156",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0157",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0158",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0159",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0160",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0161",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0162",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0163",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0164",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0165",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0166",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0167",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0168",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0169",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0170",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0171",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0172",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0173",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0174",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0175",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0176",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0177",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0178",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0179",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0180",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0181",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0182",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0183",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0184",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0185",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0186",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0187",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0188",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0189",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0190",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0191",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0192",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0193",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0194",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0195",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0196",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0197",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0198",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0199",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0200",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0201",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0202",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0203",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0204",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0205",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0206",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0207",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0208",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0209",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0210",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0211",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0212",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0213",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0214",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0215",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0216",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0217",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0218",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0219",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0220",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0221",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0222",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0223",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0224",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0225",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0226",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0227",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0228",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0229",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0230",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0231",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0232",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0233",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0234",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0235",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0236",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0237",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0238",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0239",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0240",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0241",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0242",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0243",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0244",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0245",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0246",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0247",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0248",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0249",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0250",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0251",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0252",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0253",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0254",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0255",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0256",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0257",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0258",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0259",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0260",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0261",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0262",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0263",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0264",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0265",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0266",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0267",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0268",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0269",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0270",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0271",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0272",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0273",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0274",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0275",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0276",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0277",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0278",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0279",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0280",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0281",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0282",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0283",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0284",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0285",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0286",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0287",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0288",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0289",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0290",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0291",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0292",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0293",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0294",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0295",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0296",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0297",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0298",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0299",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0300",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0301",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0302",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0303",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0304",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0305",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0306",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0307",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0308",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0309",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0310",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0311",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0312",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0313",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0314",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0315",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0316",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0317",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0318",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0319",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0320",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0321",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0322",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0323",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0324",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0325",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0326",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0327",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0328",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0329",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0330",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0331",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0332",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0333",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0334",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0335",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0336",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0337",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0338",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0339",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0340",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0341",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0342",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0343",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0344",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0345",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0346",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0347",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0348",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0349",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0350",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0351",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0352",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0353",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0354",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0355",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0356",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0357",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0358",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0359",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0360",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0361",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0362",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0363",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0364",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0365",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0366",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0367",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0368",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0369",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0370",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0371",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0372",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0373",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0374",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0375",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0376",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0377",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0378",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0379",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0380",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0381",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0382",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0383",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0384",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0385",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0386",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0387",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0388",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0389",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0390",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0391",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0392",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0393",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0394",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0395",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0396",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0397",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0398",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0399",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0400",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0401",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0402",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0403",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0404",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0405",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0406",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0407",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0408",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0409",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0410",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0411",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0412",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0413",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0414",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0415",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0416",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0417",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0418",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0419",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0420",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0421",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0422",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0423",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0424",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0425",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0426",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0427",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0428",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0429",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0430",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0431",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0432",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0433",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0434",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0435",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0436",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0437",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0438",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0439",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0440",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0441",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0442",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0443",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0444",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0445",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0446",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0447",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0448",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0449",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0450",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0451",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0452",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0453",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0454",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0455",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0456",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0457",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0458",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0459",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0460",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0461",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0462",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0463",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0464",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0465",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0466",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0467",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0468",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0469",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0470",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0471",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0472",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0473",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0474",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0475",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0476",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0477",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0478",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0479",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0480",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0481",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0482",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0483",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0484",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0485",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0486",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0487",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0488",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0489",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0490",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0491",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0492",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0493",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0494",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0495",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0496",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0497",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0498",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0499",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0500",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0501",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0502",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0503",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0504",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0505",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0506",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0507",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0508",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0509",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0510",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0511",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0512",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0513",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0514",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0515",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0516",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0517",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0518",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0519",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0520",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0521",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0522",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0523",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0524",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0525",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0526",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0527",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0528",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0529",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0530",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0531",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0532",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0533",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0534",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0535",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0536",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0537",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0538",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0539",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0540",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0541",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0542",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0543",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0544",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0545",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0546",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0547",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0548",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0549",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0550",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0551",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0552",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0553",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0554",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0555",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0556",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0557",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0558",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0559",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0560",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0561",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0562",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0563",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0564",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0565",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0566",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0567",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0568",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0569",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0570",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0571",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0572",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0573",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0574",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0575",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0576",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0577",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0578",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0579",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0580",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0581",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0582",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0583",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0584",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0585",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0586",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0587",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0588",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0589",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0590",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0591",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0592",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0593",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0594",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0595",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0596",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0597",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0598",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0599",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0600",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0601",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0602",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0603",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0604",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0605",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0606",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0607",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0608",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0609",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0610",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0611",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0612",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0613",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0614",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0615",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0616",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0617",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0618",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0619",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0620",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0621",
+    "quality": "poor"
+  },
+  {
+    "sku": "SKU-PT-0622",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0623",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0624",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0625",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0626",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0627",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0628",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0629",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0630",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0631",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0632",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0633",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0634",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0635",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0636",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0637",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0638",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0639",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0640",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0641",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0642",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0643",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0644",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0645",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0646",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0647",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0648",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0649",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0650",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0651",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0652",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0653",
+    "quality": "good"
+  },
+  {
+    "sku": "SKU-PT-0654",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0655",
+    "quality": "ok"
+  },
+  {
+    "sku": "SKU-PT-0656",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0657",
+    "quality": "excellent"
+  },
+  {
+    "sku": "SKU-PT-0658",
+    "quality": "good"
+  }
+]
