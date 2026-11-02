@@ -20,6 +20,7 @@ import math
 import random
 from collections import Counter
 import dataclasses
+import os
 from dataclasses import dataclass, asdict, field
 from datetime import date
 from pathlib import Path
@@ -3434,6 +3435,9 @@ def _print_impression_funnel(impressions: list[Impression]) -> None:
 
 def main() -> None:
     rng = random.Random(RNG_SEED)
+    if os.environ.get("DEMAND_DYNAMICS") == "1":
+        # ADR 0062: the harder dataset, for an env of its own; the committed fixtures are generated without it.
+        planted_switches.ON.update(D1=True, D2=True, D3=True)
     print(f"Generating PetNord fixtures (seed={RNG_SEED})...")
 
     products = gen_products(rng)
@@ -3450,6 +3454,8 @@ def main() -> None:
     # ADR 0062: demand that moves over time; each part acts only when its switch is on.
     events = dataclasses.replace(events, dynamics=demand_dynamics.plan(RNG_SEED, products, _MONTH_WINDOW, events.launch_month,
                                                                        catalogue_events.DEMO_ANCHORS))
+    if planted_switches.ON["D1"]:
+        demand_dynamics.label_seasonal_ware(products, events.dynamics)
     # ADR 0039: orders month by month, with what each led to: experiences,
     # reviews (whose stars the next month's orders see), NPS answers, churn.
     # ADR 0044: consent decides what is recorded of the sessions below.

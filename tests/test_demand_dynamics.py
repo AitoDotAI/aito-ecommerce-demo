@@ -56,3 +56,13 @@ def test_a_fairly_priced_good_launch_takes_off_and_a_dear_poor_one_flops(switche
 
 def test_the_plan_is_the_same_for_the_same_seed():
     assert plan().seasonal == plan().seasonal and plan().trend == plan().trend
+
+
+def test_seasonal_ware_says_so_in_its_name_and_tags(switches):
+    switches["D1"] = True
+    dynamics = plan()
+    sku, season = next(iter(dynamics.seasonal.items()))
+    product = next(p for p in PRODUCTS if p.sku == sku)
+    product.name, product.tags = "Squeaky Ball", "durable"
+    demand_dynamics.label_seasonal_ware([product], dynamics)
+    assert season.capitalize() in product.name and product.tags == f"durable {season}-ware"

@@ -65,6 +65,16 @@ class Dynamics:
         return 1.0 + (2.0 * strength - 1.0) * ramp if strength >= 1 else 0.4 + (1.0 - 0.4) * strength
 
 
+def label_seasonal_ware(products: list, dynamics: Dynamics) -> None:
+    """A shop says what is seasonal ware: the name carries the edition and the tags the season, so a model can read it."""
+    edition = {"winter": "Winter Edition", "summer": "Summer Edition", "christmas": "Christmas Edition"}
+    for p in products:
+        season = dynamics.seasonal.get(p.sku)
+        if season:
+            p.name = f"{p.name} – {edition[season]}"
+            p.tags = f"{p.tags} {season}-ware".strip()
+
+
 def _season_weight(season: str, month: int) -> float:
     peak, width = SEASON_SHAPES[season]
     distance = min(abs(month - peak), 12 - abs(month - peak))
