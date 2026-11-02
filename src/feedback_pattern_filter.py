@@ -1,4 +1,4 @@
-"""Which reviews and NPS answers have a pattern from the Feedback tab's lists (`data/feedback_patterns.json`).
+"""Which reviews and NPS answers have a pattern from the Feedback tab's lists (`data/evidence/feedback-patterns.json`).
 
 A pattern is a list of clauses, all of which a row must satisfy: a field with a value (`product_sku.brand` = "PetNord"), or a text field with a word
 (`text` contains "damaged"). The group (reviews of 1–2 stars, NPS detractors) is one more condition. An unknown field raises: a pattern that cannot be

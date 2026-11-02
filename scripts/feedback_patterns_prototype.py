@@ -4,7 +4,7 @@
 
 For two groups (reviews of 1–2 stars; NPS detractors) it lists candidate patterns: a product, a brand with a category, a brand with a word of the product name,
 and a word of the text. Each row has the counts from `_search` (the rows in the group that have the pattern, the rows with it overall) and a chance from them,
-and beside them what Aito's own `_relate` reports for the same pattern, so the two can be compared. Writes data/feedback_patterns.json.
+and beside them what Aito's own `_relate` reports for the same pattern, so the two can be compared. Writes data/evidence/feedback-patterns.json.
 """
 from __future__ import annotations
 
@@ -133,7 +133,7 @@ def main() -> None:
             rows.sort(key=lambda r: r["p"])
         out[name] = {"title": group["title"], "rows": size, "of": n, "sections": sections}
         print(name, size, "of", n, {k: len(v) for k, v in sections.items()})
-    (ROOT / "data" / "feedback_patterns.json").write_text(json.dumps(out, ensure_ascii=False, indent=1) + "\n")
+    (ROOT / "data" / "evidence" / "feedback-patterns.json").write_text(json.dumps(out, ensure_ascii=False, indent=1) + "\n")
 
 
 if __name__ == "__main__":
