@@ -33,6 +33,13 @@ category and season, momentum, age and stars all come out as no clear difference
 affected, so the noise of small counts dominates the average. Where the drivers should matter, on products in their first three months, age and stars beat the rule by 4.3 units
 (± 3.0, 49 product-months) on the new data and not clearly on the old (−1.9 ± 4.4). That is a small sample.
 
+### Slice by slice, with the columns a shop would have (4 added to `monthly_sales`, only in this dataset)
+
+`in_season`, `trend`, `months_on_sale` and `price_vs_category` are written only with the dynamics on (nullable in the schema). On an env of the dataset (`harder-demand`), Aito's `_evaluate` of the sales range, pooled over
+the last seven months, against "the same range as last month": seasonal ware 44.0 % against 40.9 %, launches 37.9 % against 39.1 %, trending products 42.5 % against 48.4 %. None is a clear win; the slices have 250–330 rows.
+Scored in units instead (mean absolute error against the three-month rate, adjustment fitted on earlier months within the slice): launches by months on sale **−0.73 ± 0.52 units (better)**;
+trending products by trend −0.42 ± 0.49 and seasonal ware by season flag +0.41 ± 0.36 (no clear difference or worse). So the one place the drivers earn their keep is a new product's first months.
+
 ## Acceptance criteria
 
 - With `D1`–`D3` off, `./do generate-fixtures` writes the committed fixtures byte for byte (checked: no diff).

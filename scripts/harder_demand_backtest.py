@@ -30,8 +30,9 @@ def main(directories: list[Path]) -> None:
         sales = json.loads((directory / "monthly_sales.json").read_text())
         states = {(p["product_sku"], p["month"]): p for p in json.loads((directory / "product_states.json").read_text())}
         units: dict[str, dict[str, int]] = defaultdict(dict)
-        category = {}
+        category, signals = {}, {}
         for r in sales:
+            signals[(r["product_sku"], r["month"])] = (r.get("in_season"), r.get("trend"), r.get("months_on_sale"), r.get("price_vs_category"))
             units[r["product_sku"]][r["month"]] = r["units_sold"]
             category[r["product_sku"]] = r["category"]
         months = sorted({r["month"] for r in sales})
@@ -48,7 +49,7 @@ def main(directories: list[Path]) -> None:
                 year_ago = by_month.get(months[i - 12]) if i >= 12 else None
                 recent = [by_month.get(months[i - k], 0) for k in range(6, 0, -1)]
                 slope = (sum((k - 2.5) * v for k, v in enumerate(recent)) / 17.5) if i >= 6 else 0.0
-                out.append({"rate": rate, "trend": max(0.0, sum(recent[-3:]) / 3 + 2 * slope), "growth": max(0.0, last + slope), "actual": by_month[months[i]], "category": category[sku], "season": SEASON[months[i][-2:]],
+                out.append({"sku": sku, "signals": signals.get((sku, months[i])), "rate": rate, "trend": max(0.0, sum(recent[-3:]) / 3 + 2 * slope), "growth": max(0.0, last + slope), "actual": by_month[months[i]], "category": category[sku], "season": SEASON[months[i][-2:]],
                             "age": state["age"], "stars": state["rating_band"], "momentum": momentum(last, rate), "year_ago": year_ago, "last": last})
             return out
 
@@ -59,10 +60,10 @@ def main(directories: list[Path]) -> None:
             "all of them": lambda r: (r["category"], r["season"], r["momentum"], r["age"]),
         }
 
-        def fit(until: int, key) -> dict:
+        def fit(until: int, key, member=lambda r: True) -> dict:
             sold, rate = defaultdict(float), defaultdict(float)
             for i in range(3, until):
-                for r in rows(i):
+                for r in filter(member, rows(i)):
                     sold[key(r)] += r["actual"]
                     rate[key(r)] += r["rate"]
             return {k: sold[k] / rate[k] for k in rate if rate[k] > 0}
@@ -72,6 +73,8 @@ def main(directories: list[Path]) -> None:
             factors = {i: fit(i, key) for i in range(len(months) - TEST_MONTHS, len(months))}
             report(name, [abs(r["actual"] - r["rate"] * factors[i].get(key(r), 1.0)) - abs(r["actual"] - r["rate"])
                           for i in factors for r in rows(i)])
+        if sales[0].get("in_season") is not None:
+            slice_report(directory, sales, months, rows, fit)
         # Where the drivers should matter most: the products that are new.
         key = keys["age, stars"]
         factors = {i: fit(i, key) for i in range(len(months) - TEST_MONTHS, len(months))}
@@ -93,6 +96,25 @@ def report(name: str, gaps: list[float]) -> None:
     half = 1.96 * math.sqrt(sum((g - mean) ** 2 for g in gaps) / (n - 1) / n)
     verdict = "better" if mean + half < 0 else "worse" if mean - half > 0 else "no clear difference"
     print(f"  {name:46} minus the plain three-month rate, mean absolute error in units: {mean:+.3f} ± {half:.3f} over {n} product-months ({verdict})")
+
+
+
+def slice_report(directory: Path, sales: list, months: list, rows, fit) -> None:
+    """The slices of the harder dataset, each with the columns a shop would have for it, scored by error in units against the plain rate."""
+    from scripts.harder_demand_evaluate import slices
+    named = slices(directory)
+    sliced = {
+        "seasonal ware": (lambda r: r["sku"] in named["seasonal ware"], {"in season": lambda r: r["signals"][0],
+                                                                         "in season, trend": lambda r: r["signals"][:2]}),
+        "trending products": (lambda r: r["sku"] in named["trending products"], {"trend": lambda r: r["signals"][1]}),
+        "launches": (lambda r: r["sku"] in named["launches"], {"months on sale": lambda r: r["signals"][2],
+                                                               "months on sale, price": lambda r: r["signals"][2:]}),
+    }
+    for name, (member, adjustments) in sliced.items():
+        for label, key in adjustments.items():
+            factors = {i: fit(i, key, member) for i in range(len(months) - TEST_MONTHS, len(months))}
+            report(f"{name}: by {label}", [abs(r["actual"] - r["rate"] * factors[i].get(key(r), 1.0)) - abs(r["actual"] - r["rate"])
+                                          for i in factors for r in rows(i) if member(r)])
 
 
 if __name__ == "__main__":
