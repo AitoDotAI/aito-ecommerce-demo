@@ -75,6 +75,30 @@ def label_seasonal_ware(products: list, dynamics: Dynamics) -> None:
             p.tags = f"{p.tags} {season}-ware".strip()
 
 
+def switched_on() -> bool:
+    return any(planted_switches.ON[name] for name in ("D1", "D2", "D3"))
+
+
+def sales_signals(dynamics: Dynamics, sku: str, month: str, launch_month: str | None, price_ratio: float,
+                  units_last_month_rank: int, units_before_rank: int | None) -> dict[str, str]:
+    """The columns a shop's own system would have beside a month's sales, each an interaction a model reads as one value:
+    whether seasonal ware is in its season, which way the sales were heading, how long a launch has been on sale, how dear it is."""
+    if sku in dynamics.seasonal:
+        in_season = "in season" if _season_weight(dynamics.seasonal[sku], int(month[5:])) >= (PEAK + OFF) / 2 else "out of season"
+    else:
+        in_season = "not seasonal"
+    if units_before_rank is None:
+        trend = "no history"
+    else:
+        trend = "up" if units_last_month_rank > units_before_rank else "down" if units_last_month_rank < units_before_rank else "flat"
+    if launch_month is None:
+        on_sale = "established"
+    else:
+        on_sale = f"{min(dynamics.months.index(month) - dynamics.months.index(launch_month), LAUNCH_MONTHS)}" + ("+" if dynamics.months.index(month) - dynamics.months.index(launch_month) >= LAUNCH_MONTHS else "")
+    price = "cheaper than its category" if price_ratio < 0.85 else "dearer than its category" if price_ratio > 1.2 else "typical price"
+    return {"in_season": in_season, "trend": trend, "months_on_sale": on_sale, "price_vs_category": price}
+
+
 def _season_weight(season: str, month: int) -> float:
     peak, width = SEASON_SHAPES[season]
     distance = min(abs(month - peak), 12 - abs(month - peak))

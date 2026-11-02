@@ -21,8 +21,10 @@ from src.demand_evaluation import TEST_MONTHS, months_up_to
 
 BASE = ("units_last_month_bucket", "season", "category", "product_state.rating_band", "product_state.age")
 FEATURE_SETS = {"stars, age, season, category": BASE,
-                "+ tags": BASE + ("product_sku.tags",),
-                "+ price index, offer": BASE + ("price_index", "product_state.on_offer")}
+                "+ in season": BASE + ("in_season",),
+                "+ trend": BASE + ("trend",),
+                "+ months on sale, price": BASE + ("months_on_sale", "price_vs_category"),
+                "+ all four": BASE + ("in_season", "trend", "months_on_sale", "price_vs_category")}
 
 
 def slices(fixtures: Path) -> dict[str, set[str]]:

@@ -66,3 +66,16 @@ def test_seasonal_ware_says_so_in_its_name_and_tags(switches):
     product.name, product.tags = "Squeaky Ball", "durable"
     demand_dynamics.label_seasonal_ware([product], dynamics)
     assert season.capitalize() in product.name and product.tags == f"durable {season}-ware"
+
+
+def test_sales_signals_say_what_a_shop_would_see(switches):
+    switches["D1"] = True
+    dynamics = plan({"SKU-001": "2024-08"})
+    winter = next(sku for sku, season in dynamics.seasonal.items() if season == "winter")
+    in_winter = demand_dynamics.sales_signals(dynamics, winter, "2025-01", None, 1.0, 3, 1)
+    in_summer = demand_dynamics.sales_signals(dynamics, winter, "2025-07", None, 1.0, 1, 1)
+    launch = demand_dynamics.sales_signals(dynamics, "SKU-001", "2024-11", "2024-08", 0.7, 0, None)
+    assert (in_winter["in_season"], in_winter["trend"]) == ("in season", "up")
+    assert (in_summer["in_season"], in_summer["trend"]) == ("out of season", "flat")
+    assert (launch["months_on_sale"], launch["trend"]) == ("3", "no history")
+    assert launch["price_vs_category"] == "cheaper than its category"

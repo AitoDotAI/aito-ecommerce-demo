@@ -20,6 +20,7 @@ import math
 import random
 from collections import Counter
 import dataclasses
+import statistics
 import os
 from dataclasses import dataclass, asdict, field
 from datetime import date
@@ -540,6 +541,11 @@ class MonthlySale:
     ad_level: str = "none"
     units_index: float | None = None
     showings_index: float | None = None
+    # ADR 0062: written only with the demand dynamics on (data/demand_dynamics.py `sales_signals`).
+    in_season: str | None = None
+    trend: str | None = None
+    months_on_sale: str | None = None
+    price_vs_category: str | None = None
 
 
 @dataclass
@@ -2734,6 +2740,10 @@ def gen_monthly_sales(
     # turned from no sales into some.
     empty = {"units": 0, "revenue": 0.0, "customers": set()}
     out: list[MonthlySale] = []
+    rank = {label: i for i, (_, label) in enumerate(UNITS_RANGES)}
+    rank["32+"] = len(UNITS_RANGES)
+    median_price = {key: statistics.median(p.price_eur for p in products if (p.pet_type, p.category) == key)
+                    for key in {(p.pet_type, p.category) for p in products}}
     for sku, month in sorted((p.sku, m) for p in products for m in _MONTH_WINDOW
                              if events.on_sale(p.sku, m)):
         prod = sku_to_product[sku]
@@ -2742,6 +2752,9 @@ def gen_monthly_sales(
         units = int(data["units"])
         previous = agg.get((sku, _add_months(month, -1)))
         units_last_month = int(previous["units"]) if previous else 0
+        two_months_ago = _add_months(month, -2)
+        units_before_rank = (rank[units_range(int(agg.get((sku, two_months_ago), empty)["units"]))]
+                             if two_months_ago in _MONTH_WINDOW and events.on_sale(sku, two_months_ago) else None)
         revenue = _round_eur(data["revenue"])
         price = _round_eur(revenue / units) if units > 0 else _round_eur(prod.price_eur)
         out.append(MonthlySale(
@@ -2760,6 +2773,10 @@ def gen_monthly_sales(
             units_bucket=units_range(units),
             units_last_month_bucket=units_range(units_last_month),
             product_state=f"{sku}-{month}",
+            **(demand_dynamics.sales_signals(events.dynamics, sku, month, events.launch_month.get(sku),
+                                             prod.price_eur / median_price[(prod.pet_type, prod.category)],
+                                             rank[units_range(units_last_month)], units_before_rank)
+               if demand_dynamics.switched_on() else {}),
         ))
     return out
 

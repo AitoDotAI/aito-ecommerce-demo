@@ -404,6 +404,12 @@ SCHEMAS: dict[str, dict] = {
             "units_index":         {"type": "Decimal", "nullable": True},
             # ADR 0050: showings ÷ the product's mean before it, the funnel's first step.
             "showings_index":      {"type": "Decimal", "nullable": True},
+            # ADR 0062: what a shop's own system records beside a month's sales, as one value each. Only in a
+            # dataset generated with the demand dynamics on.
+            "in_season":           {"type": "String",  "nullable": True},
+            "trend":               {"type": "String",  "nullable": True},
+            "months_on_sale":      {"type": "String",  "nullable": True},
+            "price_vs_category":   {"type": "String",  "nullable": True},
         },
     },
     # 8. inventory — per-SKU stock snapshot. Drives the Inventory
