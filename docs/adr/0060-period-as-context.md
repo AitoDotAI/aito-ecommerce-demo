@@ -1,6 +1,6 @@
 # ADR 0060: The period as context in Analytics: figures, preferences, similar segments and feedback modelled within the window
 
-**Status:** Proposed. 2026-11-02, Antti: "including the temporal span and its context in the analytics and data views... if it performs well enough. E.g. the funnel would be modeled to the temporal window AND segment within the temporal context, preferences, similar segments, feedback etc. would be modeled similarly."
+**Status:** Accepted in part (2026-11-02, Antti: "you can do those in the order you prefer"). Built: with only a period picked, Preferences and Other segments compare the period with the one before it; the preference backtest (docs/verification/period-context.md) says history predicts as well as a window, so a window is shown as a description, not as the default. Not built: the rest of the views and the funnel for a segment and a window. Proposed 2026-11-02, Antti: "including the temporal span and its context in the analytics and data views... if it performs well enough. E.g. the funnel would be modeled to the temporal window AND segment within the temporal context, preferences, similar segments, feedback etc. would be modeled similarly."
 **Date:** 2026-11-02
 **Deciders:** Antti
 

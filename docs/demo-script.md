@@ -55,7 +55,7 @@ tracking, and that the model's top action is the generator's best for 81 % of cu
 
 A different order from the owner's walk-through below: it starts from what a shopper sees and ends on how well it works.
 Shop (Be Anna: what the shop suggests, and the query behind it) → Retention (who is about to leave, the ranked next action and what it adds) →
-Shopkeeper (rules that act when the evidence is there, and the conversations of the agent that answers questions) → Analytics (tick conditions to build a segment, compare by profit per customer or NPS, drag a period on its trend to set it against the rest, see how they were acquired) →
+Shopkeeper (rules that act when the evidence is there, and the conversations of the agent that answers questions) → Analytics (tick conditions to build a segment, compare by profit per customer or NPS, drag a period on its trend to set it against the one before it: with nothing ticked, Preferences shows what gained or lost share of the units bought and Other segments which segments moved more than the rest, see how they were acquired) →
 Supply (reorder on observed sales; the markdown sweep is the Aito part) → Product (what a discount or price change does) →
 Evidence (every number against a baseline, including the model that fails honestly). Every screen shows its query in the right panel.
 Say once, early: all data is synthetic with planted effects; what is tested is whether Aito finds them.
@@ -75,8 +75,13 @@ place, in how far a markdown moves the stock."
 | €27,691 tied up in 79 overstocked products | say only the €27,691. Don't present the markdown split ("14 won't clear, none worth marking down") as a finding: it is the units model by price alone, which counts neither an offer's lift on purchases when shown (×1.79 at 20 %+) nor the higher place it earns in the shop, so it understates an offer and contradicts Product's "put it on offer" | the same `_estimate` at 5–20 % off, over 13 weeks; price only |
 
 **Caveat (the page's one line):** the quantities assume May sells like the last
-three months: observed sales, not a forecast. Aito's per-product forecast does not beat
-last month's naive rule, which is why it sets no quantity here. **How well? →** opens the model checks.
+three months: observed sales, not a forecast. Aito's per-product forecast, given the product's stars, age and the
+season, ties last month's naive rule (+1.7 points, the interval spans 0), and an adjustment by those drivers is no better
+on units, which is why no forecast sets a quantity here. **How well? →** opens the model checks.
+
+**Then (the second lever):** below the overstock table, **Candidates to end** lists the largest overstocked products that
+will not clear even at the deepest markdown and had no season in the months ahead a year ago: "instead of adjusting supply,
+adjust demand: stop reordering these and sell them down". It recommends; the shop decides.
 
 **Check first:** the page shows 833 units. If it shows 664 units, or a "forecast" column, it is serving the snapshot
 from before Supply moved to observed sales; if 730 units and €11,682, release 3a's: `./do precompute` has not been run
