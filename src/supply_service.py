@@ -7,7 +7,7 @@ Markdown and Price's fair-band table. It leads with two decisions:
      a month over the last three months (observed), the quantity that
      covers it plus safety stock, and the revenue the stock can't cover if
      next month sells like those three. Not a forecast: Aito's per-product
-     forecast ties the naive rule (Evidence › Model checks).
+     forecast did not beat the naive rule (Evidence › Model checks).
   2. Overstock: the SKUs far above their reorder point, the capital tied
      in their excess, and for the largest, the markdown that clears it
      (`markdown_proposal.py`).
