@@ -322,9 +322,19 @@ def test_an_aito_snapshot_missing_a_key_the_code_needs_falls_back_to_the_committ
 
 def test_an_aito_snapshot_with_the_keys_is_served_as_before(tmp_path, monkeypatch):
     monkeypatch.setattr(store, "_FALLBACK_DIR", tmp_path)
-    store._aito = _aito_holding("supply", {"data": {"planning_month": "2026-05", "from": "aito"}, "timings": []})
+    store._aito = _aito_holding("supply", {"data": {"planning_month": "2026-05", "end_of_line": [], "from": "aito"}, "timings": []})
 
     assert store.get("supply")["data"]["from"] == "aito"
+
+
+def test_a_supply_snapshot_from_before_the_list_of_lines_to_end_is_not_served(tmp_path, monkeypatch):
+    """The shared Aito keeps the old row until `./do precompute` runs; the committed one, which has the list, is served meanwhile (ADR 0061)."""
+    monkeypatch.setattr(store, "_FALLBACK_DIR", tmp_path)
+    (tmp_path / "v1-master").mkdir()
+    (tmp_path / "v1-master" / "supply.json").write_text(json.dumps({"data": {"planning_month": "2026-05", "end_of_line": [], "from": "git"}, "timings": []}))
+    store._aito = _aito_holding("supply", {"data": {"planning_month": "2026-05", "from": "aito"}, "timings": []})
+
+    assert store.get("supply")["data"]["from"] == "git"
 
 
 def test_a_view_with_no_required_keys_is_served_from_aito_whatever_it_holds(tmp_path, monkeypatch):
