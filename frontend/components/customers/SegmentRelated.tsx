@@ -59,6 +59,11 @@ export default function SegmentRelated({ view }: { view: SegmentView }) {
         ))}
       </div>
       {visible.length === 0 && <div className="card-sub">Nothing to show.</div>}
+      {visible.length > 0 && (
+        <div className="card-sub" style={{ display: "grid", gridTemplateColumns: "minmax(120px, 1.3fr) minmax(60px, 0.8fr) minmax(110px, 140px) 64px", gap: 8, fontSize: 12, margin: "6px 0 2px" }}>
+          <span>Kind · name</span><span>Fewer ← → more than the rest</span><span>Points (this segment vs the rest)</span><span>Pattern?</span>
+        </div>
+      )}
       {shown.map((r) => <Bar key={`${r.kind}:${r.label}`} r={r} scale={scale} />)}
       <div style={{ display: "flex", gap: 8, marginTop: 6 }}>
         {visible.length > LIST_LENGTH && (
@@ -74,7 +79,7 @@ export default function SegmentRelated({ view }: { view: SegmentView }) {
 function Bar({ r, scale }: { r: Related; scale: number }) {
   const width = `${(Math.abs(r.points) / scale) * 50}%`;
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "minmax(120px, 1.3fr) minmax(60px, 0.8fr) minmax(110px, 140px) 44px", gap: 8, alignItems: "center", fontSize: 13, margin: "3px 0", }}>
+    <div style={{ display: "grid", gridTemplateColumns: "minmax(120px, 1.3fr) minmax(60px, 0.8fr) minmax(110px, 140px) 64px", gap: 8, alignItems: "center", fontSize: 13, margin: "3px 0", }}>
       <span><span className="card-sub">{r.kind} · </span>{r.label}</span>
       <span style={{ position: "relative", height: 12, background: "var(--border-light)", borderRadius: 3 }}>
         <span style={{ position: "absolute", left: "50%", top: 0, bottom: 0, width: 1, background: "var(--border)" }} />

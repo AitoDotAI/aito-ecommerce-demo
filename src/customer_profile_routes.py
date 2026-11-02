@@ -116,7 +116,7 @@ def customer_journey(c: list[str] = Query(default=[])):
 
 @router.get("/api/customer-profiles/rows")
 def customer_rows(tab: str = "sales", c: list[str] = Query(default=[]), start: str | None = None, end: str | None = None,
-                  offset: int = 0, limit: int = 50):
+                  offset: int = 0, limit: int = 50, pattern: str | None = None):
     """One page of the raw rows behind the selection `c` (`tab`: sales, orders or feedback), only the months `start` to `end` when
     they are given. A selection under the minimum size answers with its size and no rows; a row never says who it is about."""
     try:
@@ -131,7 +131,7 @@ def customer_rows(tab: str = "sales", c: list[str] = Query(default=[]), start: s
             if start not in all_months or end not in all_months or start > end:
                 raise ValueError(f"Not a period of the data: {start!r} to {end!r}; the data runs {all_months[0]} to {all_months[-1]}")
             months = {m for m in all_months if start <= m <= end}
-        return {**page_of(rows(), reviews(), answers(), chosen, tab, months, offset, limit), "too_small": False, "customers": len(chosen)}
+        return {**page_of(rows(), reviews(), answers(), chosen, tab, months, offset, limit, pattern), "too_small": False, "customers": len(chosen)}
     except ValueError as error:
         return JSONResponse(status_code=400, content={"error": str(error)})
 

@@ -25,11 +25,16 @@ export default function SegmentOthers({ view, kpi, onTick }: { view: SegmentView
           (defined by ordering), are left out. Tick one to look at it.
         </div>
         {moved.length === 0 && <div className="card-sub">No segment is large enough to compare.</div>}
+        {moved.length > 0 && (
+          <div className="card-sub" style={{ display: "grid", gridTemplateColumns: "minmax(120px, 1.2fr) minmax(60px, 0.8fr) minmax(110px, 140px) 64px auto", gap: 8, fontSize: 12, margin: "6px 0 2px" }}>
+            <span>Segment</span><span>Spends less ← → more than outside</span><span>Per customer, vs outside</span><span>Pattern?</span><span />
+          </div>
+        )}
         {moved.map((s) => {
           const condition = `${s.trait}:${s.value}`;
           const gap = s.gap_eur;
           return (
-            <div key={condition} style={{ display: "grid", gridTemplateColumns: "minmax(120px, 1.2fr) minmax(60px, 0.8fr) minmax(110px, 140px) 44px auto", gap: 8, alignItems: "center", fontSize: 13, margin: "3px 0" }}>
+            <div key={condition} style={{ display: "grid", gridTemplateColumns: "minmax(120px, 1.2fr) minmax(60px, 0.8fr) minmax(110px, 140px) 64px auto", gap: 8, alignItems: "center", fontSize: 13, margin: "3px 0" }}>
               <span><span className="card-sub">{TRAIT_TITLE[s.trait]} · </span>{s.value}</span>
               <span style={{ position: "relative", height: 12, background: "var(--border-light)", borderRadius: 3 }}>
                 <span style={{ position: "absolute", left: "50%", top: 0, bottom: 0, width: 1, background: "var(--border)" }} />

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { apiFetch, fmtEur } from "@/lib/api";
+import type { FeedbackFilter } from "@/components/customers/SegmentFeedbackPatterns";
 
 const TABS = [{ id: "sales", label: "Sales by product" }, { id: "orders", label: "Orders" }, { id: "reviews", label: "Reviews" }, { id: "nps", label: "NPS answers" }] as const;
 type TabId = (typeof TABS)[number]["id"];
@@ -38,18 +39,27 @@ const COLUMNS: Record<TabId, { key: string; label: string; right?: boolean; form
  * The raw rows behind the selection (ADR 0055), full width under both panes: sales by product, orders, and the individual reviews and NPS answers
  * of the selected customers, only the months of the chosen period when there is one. A row says what happened and never who it happened to.
  */
-export default function RawData({ conditions, from, to }: { conditions: string[]; from: string; to: string }) {
+export default function RawData({ conditions, from, to, pattern, onClearPattern }: { conditions: string[]; from: string; to: string; pattern: FeedbackFilter | null; onClearPattern: () => void }) {
   const [tab, setTab] = useState<TabId>("sales");
   const [offset, setOffset] = useState(0);
   const [page, setPage] = useState<Page | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const selection = JSON.stringify([conditions, from, to, tab]);
+  const selection = JSON.stringify([conditions, from, to, tab, pattern?.spec]);
+  // Choosing a pattern shows the rows it is about: the reviews or the NPS answers, scrolled into view.
+  useEffect(() => {
+    if (!pattern) return;
+    setTab(pattern.tab);
+    document.getElementById("raw-data")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [pattern]);
 
   useEffect(() => { setOffset(0); }, [selection]);
   useEffect(() => {
+    let current = true;   // a slower earlier answer must not replace a later one (the tab and the pattern change together)
     const parts = [`tab=${tab}`, `limit=${PAGE}`, `offset=${offset}`, ...conditions.map((c) => `c=${encodeURIComponent(c)}`)];
     if (from && to) parts.push(`start=${from}`, `end=${to}`);
-    apiFetch<Page>(`/api/customer-profiles/rows?${parts.join("&")}`).then((p) => { setPage(p); setError(null); }).catch((e) => setError(String(e)));
+    if (pattern && pattern.tab === tab) parts.push(`pattern=${encodeURIComponent(JSON.stringify(pattern.spec))}`);
+    apiFetch<Page>(`/api/customer-profiles/rows?${parts.join("&")}`).then((p) => { if (current) { setPage(p); setError(null); } }).catch((e) => { if (current) setError(String(e)); });
+    return () => { current = false; };
     // `selection` stands for the conditions, the period and the tab, which the request reads.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selection, offset]);
@@ -57,7 +67,7 @@ export default function RawData({ conditions, from, to }: { conditions: string[]
   const columns = COLUMNS[tab];
   const last = page ? Math.min(offset + PAGE, page.total) : 0;
   return (
-    <div className="card" style={{ marginTop: 12 }}>
+    <div className="card" id="raw-data" style={{ marginTop: 12 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
         <div className="card-title" style={{ margin: 0 }}>The data behind it{from && to ? `, ${from} … ${to}` : ""}</div>
         <div role="tablist" aria-label="Raw data" style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
@@ -67,6 +77,12 @@ export default function RawData({ conditions, from, to }: { conditions: string[]
           ))}
         </div>
       </div>
+      {pattern && (
+        <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13, background: "rgba(0, 168, 150, 0.15)", borderRadius: 12, padding: "2px 4px 2px 12px" }}>
+          <span>Only {pattern.spec.group === "stars" ? "reviews of 1–2 stars" : "detractors' answers"} with: <strong>{pattern.label}</strong></span>
+          <button className="btn btn-ghost" style={{ padding: "0 8px", fontSize: 12 }} onClick={onClearPattern} aria-label="Clear the pattern filter">×</button>
+        </div>
+      )}
       {error && <div className="card-sub" style={{ marginTop: 8 }}>{error}</div>}
       {page && !page.too_small && (
         <>

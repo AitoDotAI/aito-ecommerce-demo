@@ -8,7 +8,10 @@ who it happened to: no name, no customer id, no contact detail. A selection unde
 
 from __future__ import annotations
 
+import json
 from collections import defaultdict
+
+from src.feedback_pattern_filter import answer_has, review_has
 
 TABS = ("sales", "orders", "reviews", "nps")
 PAGE_MAX = 100
@@ -34,14 +37,20 @@ def build_rows(customer_ids: set[str], orders: list[dict], order_lines: list[dic
 
 
 def page_of(rows: dict, reviews: list[dict], answers: list[dict], customer_ids: list[str], tab: str, months: set[str] | None,
-            offset: int, limit: int) -> dict:
-    """One page of a tab for the customers `customer_ids`, in `months` only when given."""
+            offset: int, limit: int, pattern: str | None = None) -> dict:
+    """One page of a tab for the customers `customer_ids`, in `months` only when given. `pattern` is a JSON pattern from the Feedback tab's lists:
+    the reviews and NPS answers tabs then list only the rows that have it (`src/feedback_pattern_filter.py`)."""
     if tab not in TABS:
         raise ValueError(f"No tab {tab!r}; the tabs are {', '.join(TABS)}")
     if not 1 <= limit <= PAGE_MAX or offset < 0:
         raise ValueError(f"A page is 1 to {PAGE_MAX} rows (limit) from a row that is not negative (offset); got limit {limit}, offset {offset}")
+    spec = json.loads(pattern) if pattern else None
+    if spec is not None and tab not in ("reviews", "nps"):
+        raise ValueError(f"A feedback pattern filters the reviews and NPS answers tabs, not {tab!r}")
     selected = set(customer_ids)
     keep = (lambda month: True) if months is None else (lambda month: month in months)
+    if spec is not None:
+        reviews, answers = [r for r in reviews if review_has(spec, r)] if tab == "reviews" else reviews, [a for a in answers if answer_has(spec, a)] if tab == "nps" else answers
     listed = {"sales": _sales, "orders": _orders, "reviews": _reviews, "nps": _nps}[tab](rows, reviews, answers, selected, keep)
     return {"tab": tab, "total": len(listed), "offset": offset, "rows": listed[offset:offset + limit]}
 
