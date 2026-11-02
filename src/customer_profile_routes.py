@@ -60,6 +60,18 @@ def _selection(conditions: tuple[str, ...]) -> dict:
     return view(facts(), parse(list(conditions)), actions(), reviews(), answers(), _summary())
 
 
+@lru_cache(maxsize=64)
+def _everyone_mix(months: tuple[str, ...], start: str, end: str) -> tuple[list, list]:
+    """The Preferences and Other segments tabs for a period with nothing ticked. The stored facts never change while the app runs and the
+    count reads every customer's lines (about 10 s on the test host), so each period is counted once."""
+    customers = facts()["customers"]
+    stored = rows()
+    # A diet only shows the catalogue; "status" is defined by ordering, so a period without orders would only repeat its definition.
+    conditions = [k for k in _selection(())["options"] if not k.startswith(("diets:", "status:"))]
+    return (preference_changes(stored["customers"], stored["products"], set(customers), list(months), start, end),
+            segment_changes(customers, list(months), start, end, conditions, MIN_GROUP))
+
+
 def _period(parsed: list[tuple[str, str]], months: list[str], start: str, end: str) -> dict:
     """The period against the one before it, for the selection and for everyone; a period with no room before it says why instead."""
     customers = facts()["customers"]
@@ -69,11 +81,7 @@ def _period(parsed: list[tuple[str, str]], months: list[str], start: str, end: s
         out = {**own, "all": compare(list(customers.values()), months, start, end)["figures"]}
         if not parsed:
             # Nothing ticked: there is no "outside" to compare a segment with, so the Preferences and Other segments tabs read the period against the one before.
-            stored = rows()
-            # A diet only shows the catalogue; "status" is defined by ordering, so a period without orders would only repeat its definition.
-            conditions = [k for k in _selection(())["options"] if not k.startswith(("diets:", "status:"))]
-            out["preferences"] = preference_changes(stored["customers"], stored["products"], ids, months, start, end)
-            out["segments"] = segment_changes(customers, months, start, end, conditions, MIN_GROUP)
+            out["preferences"], out["segments"] = _everyone_mix(tuple(months), start, end)
         return out
     except NoPreviousPeriod as error:
         return {"from": start, "to": end, "previous": None, "reason": str(error)}
