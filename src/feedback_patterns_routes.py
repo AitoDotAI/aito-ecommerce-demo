@@ -5,7 +5,7 @@ from pathlib import Path
 
 from fastapi import APIRouter
 
-PATTERNS = Path(__file__).resolve().parent.parent / "data" / "feedback_patterns.json"
+PATTERNS = Path(__file__).resolve().parent.parent / "data" / "evidence" / "feedback-patterns.json"
 
 router = APIRouter()
 
