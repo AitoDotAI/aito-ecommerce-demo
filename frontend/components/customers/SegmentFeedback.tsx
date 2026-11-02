@@ -1,24 +1,43 @@
 "use client";
 
+import { useState } from "react";
+
 import Pattern from "@/components/customers/Pattern";
+import SegmentFeedbackPatterns, { PATTERN_SECTIONS } from "@/components/customers/SegmentFeedbackPatterns";
 import { zOfShares } from "@/lib/pattern";
 import type { FeedbackRow, SegmentView } from "@/lib/customer-profiles";
 
-/** What the segment says: how much it writes, what it writes about, and how likely it is to recommend the shop. */
+const VIEWS = [["rules", "Rules"], ["words", "Words"], ["products", "Products"], ["lines", "Product lines"], ["shares", "Reviews and answers"]] as const;
+const SECTION_OF = { rules: PATTERN_SECTIONS[0][0], words: PATTERN_SECTIONS[1][0], products: PATTERN_SECTIONS[2][0], lines: PATTERN_SECTIONS[3][0] };
+
+/** What the segment says: the figures, then one view at a time: what stands out among poor feedback (rules, words, products, product lines), or the share of each kind of review and answer. */
 export default function SegmentFeedback({ view }: { view: SegmentView }) {
   if (!view.feedback) return null;
   const { selected: entry, all } = view.feedback;
+  const [which, setWhich] = useState<(typeof VIEWS)[number][0]>("rules");
   const everyone = view.conditions.length === 0;
   const scale = Math.max(30, ...entry.rows.map((r) => Math.abs(r.points ?? 0)));
   return (
     <div className="card">
-      <div className="card-title">What they say: reviews about products, and the NPS survey after an order</div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: 8 }}>
+        <div className="card-title" style={{ margin: 0 }}>What they say: reviews about products, and the NPS survey after an order</div>
+        <span style={{ display: "inline-flex", gap: 4, flexWrap: "wrap" }}>
+          {VIEWS.map(([id, label]) => (
+            <button key={id} aria-pressed={which === id} onClick={() => setWhich(id)} style={{
+              cursor: "pointer", borderRadius: 12, padding: "2px 10px", font: "inherit", fontSize: 12, color: "var(--text)",
+              border: `1px solid ${which === id ? "var(--aito-teal)" : "var(--border)"}`, background: which === id ? "rgba(0, 168, 150, 0.15)" : "transparent" }}>{label}</button>
+          ))}
+        </span>
+      </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 12, margin: "6px 0 10px" }}>
         <Kpi label="Wrote reviews" value={`${Math.round((entry.reviewers / entry.customers) * 100)} %`} note={`${entry.reviews} reviews${everyone ? "" : `, all ${Math.round((all.reviewers / all.customers) * 100)} %`}`} />
         <Kpi label="Average rating" value={entry.mean_rating === null ? "–" : entry.mean_rating.toFixed(2)} note={everyone ? "stars" : `all ${all.mean_rating?.toFixed(2)}`} />
         <Kpi label="NPS" value={entry.nps === null ? "–" : `${entry.nps > 0 ? "+" : ""}${entry.nps}`}
           note={entry.nps === null ? `only ${entry.nps_respondents} answers` : `${entry.nps_respondents} answers${everyone ? "" : `, all ${all.nps !== null && all.nps > 0 ? "+" : ""}${all.nps}`}`} />
       </div>
+      {which !== "shares" && <SegmentFeedbackPatterns section={SECTION_OF[which]} />}
+      {which === "shares" && (
+        <>
       <div className="card-sub" style={{ marginBottom: 8, lineHeight: 1.5 }}>
         {everyone
           ? "Of all profiled customers, how many wrote each kind of review and answered each way in the NPS survey."
@@ -33,6 +52,8 @@ export default function SegmentFeedback({ view }: { view: SegmentView }) {
         </div>
       )}
       {entry.rows.map((r) => <Row key={r.label} r={r} scale={scale} everyone={everyone} />)}
+        </>
+      )}
     </div>
   );
 }

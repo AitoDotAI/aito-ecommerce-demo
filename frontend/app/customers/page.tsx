@@ -15,7 +15,6 @@ import SegmentJourney from "@/components/customers/SegmentJourney";
 import SegmentKpis from "@/components/customers/SegmentKpis";
 import SegmentHeader from "@/components/customers/SegmentHeader";
 import SegmentHighlights from "@/components/customers/SegmentHighlights";
-import SegmentFeedbackPatterns from "@/components/customers/SegmentFeedbackPatterns";
 import SegmentPeriod from "@/components/customers/SegmentPeriod";
 import SegmentOthers from "@/components/customers/SegmentOthers";
 import SegmentRelated from "@/components/customers/SegmentRelated";
@@ -116,7 +115,7 @@ function CustomersView() {
                tab === "journey" ? <SegmentJourney conditions={view.conditions} /> :
                tab === "channels" ? <SegmentAcquisition view={view} /> :
                tab === "actions" ? <SegmentResponse summary={summary} view={view} /> :
-               tab === "feedback" ? <div className="two-col" style={{ alignItems: "start", marginBottom: 0 }}><SegmentFeedback view={view} /><SegmentFeedbackPatterns /></div> :
+               tab === "feedback" ? <SegmentFeedback view={view} /> :
                tab === "figures" ? <SegmentKpis summary={summary} view={view} /> :
                <SegmentHighlights summary={summary} view={view} />}
               <div className="card-sub">

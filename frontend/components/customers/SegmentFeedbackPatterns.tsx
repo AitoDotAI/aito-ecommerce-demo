@@ -8,8 +8,8 @@ interface PatternRow { label: string; k: number; overall: number; p: number; lif
 interface Group { title: string; rows: number; of: number; sections: Record<string, PatternRow[]> }
 
 const SHOWN = 10;
-const SECTIONS = ["mined by Aito ($patterns)", "words mined by Aito ($patterns)", "products", "brand and product-name word"];
-const SECTION_TITLE: Record<string, string> = { "mined by Aito ($patterns)": "Rules", "words mined by Aito ($patterns)": "Words", products: "Products", "brand and product-name word": "Product lines" };
+export const PATTERN_SECTIONS = [["mined by Aito ($patterns)", "Rules"], ["words mined by Aito ($patterns)", "Words"], ["products", "Products"], ["brand and product-name word", "Product lines"]] as const;
+const SECTION_TITLE: Record<string, string> = Object.fromEntries(PATTERN_SECTIONS);
 const pill = (on: boolean) => ({ cursor: "pointer", borderRadius: 12, padding: "2px 10px", font: "inherit", fontSize: 12, color: "var(--text)",
   border: `1px solid ${on ? "var(--aito-teal)" : "var(--border)"}`, background: on ? "rgba(0, 168, 150, 0.15)" : "transparent" });
 const chance = (p: number) => (p < 1e-4 ? "< 0.0001" : p.toFixed(4));
@@ -18,27 +18,20 @@ const chance = (p: number) => (p < 1e-4 ? "< 0.0001" : p.toFixed(4));
  * What stands out among poor reviews and detractors: products, product lines and AND-rules that are over-represented, with the rows behind each and whether
  * it is clear (the chance of luck, times the number of candidates tried, is under 5 %). Prototype: it covers all customers, not the selected segment.
  */
-export default function SegmentFeedbackPatterns() {
+export default function SegmentFeedbackPatterns({ section }: { section: string }) {
   const [data, setData] = useState<Record<string, Group> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [groupKey, setGroupKey] = useState("stars");
-  const [section, setSection] = useState(SECTIONS[0]);
   useEffect(() => { apiFetch<Record<string, Group>>("/api/feedback-patterns").then(setData).catch((e) => setError(String(e))); }, []);
-  if (error) return <div className="card card-sub">{error}</div>;
-  if (!data) return <div className="card" style={{ height: 160, background: "var(--border-light)" }} />;
+  if (error) return <div className="card-sub">{error}</div>;
+  if (!data) return <div style={{ height: 160, background: "var(--border-light)", borderRadius: 6 }} />;
   const group = data[groupKey];
   const rows = group.sections[section] ?? [];
   const tests = rows.length;
   const shown = [...rows].sort((a, b) => a.p - b.p).slice(0, SHOWN);
   return (
-    <div className="card">
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: 8 }}>
-        <div className="card-title" style={{ margin: 0 }}>What stands out among poor feedback</div>
-        <span style={{ display: "inline-flex", gap: 4, flexWrap: "wrap" }}>
-          {SECTIONS.map((sec) => <button key={sec} aria-pressed={section === sec} onClick={() => setSection(sec)} style={pill(section === sec)}>{SECTION_TITLE[sec]}</button>)}
-        </span>
-      </div>
-      <div style={{ display: "inline-flex", gap: 4, margin: "8px 0 4px", flexWrap: "wrap" }}>
+    <div>
+      <div style={{ display: "inline-flex", gap: 4, margin: "0 0 4px", flexWrap: "wrap" }}>
         {Object.entries(data).map(([key, g]) => <button key={key} aria-pressed={groupKey === key} onClick={() => setGroupKey(key)} style={pill(groupKey === key)}>{g.title}</button>)}
       </div>
       <div className="card-sub" style={{ lineHeight: 1.5, marginBottom: 6 }}>
