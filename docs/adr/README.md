@@ -63,6 +63,7 @@ the starting point.
 | 0057 | [The stock routine as a rule, and the first real agent: product entry](0057-stock-rule-and-product-entry-agent.md) | Accepted, part 1 built |
 | 0058 | [Feedback with text and context: NPS comments, reviews that read like their stars, and metadata inferred from them](0058-feedback-text.md) | Accepted |
 | 0059 | [The journey of a segment: the months around the last order, those who left against those who stayed](0059-customer-journey.md) | Accepted |
+| 0060 | [The period as context in Analytics: figures, preferences, similar segments and feedback modelled within the window](0060-period-as-context.md) | Proposed |
 
 ADRs are externally legible — an outside developer should understand
 the decision and its rationale without project-internal context. Keep
