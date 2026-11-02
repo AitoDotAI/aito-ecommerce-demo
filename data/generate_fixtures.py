@@ -20,13 +20,15 @@ import math
 import random
 from collections import Counter
 import dataclasses
+import statistics
+import os
 from dataclasses import dataclass, asdict, field
 from datetime import date
 from pathlib import Path
 from typing import Callable, Iterable, Iterator
 
 from data import customer_actions as customer_actions_module
-from data import (acquisition, catalogue_events, feedback_text, incidents, lifecycle, listing, merchandising, observable, person_data, planted_switches,
+from data import (acquisition, catalogue_events, demand_dynamics, feedback_text, incidents, lifecycle, listing, merchandising, observable, person_data, planted_switches,
                   review_chain, sensitivities, shop_levers, shoppers)
 from data.planted_switches import stream
 
@@ -539,6 +541,11 @@ class MonthlySale:
     ad_level: str = "none"
     units_index: float | None = None
     showings_index: float | None = None
+    # ADR 0062: written only with the demand dynamics on (data/demand_dynamics.py `sales_signals`).
+    in_season: str | None = None
+    trend: str | None = None
+    months_on_sale: str | None = None
+    price_vs_category: str | None = None
 
 
 @dataclass
@@ -2733,6 +2740,10 @@ def gen_monthly_sales(
     # turned from no sales into some.
     empty = {"units": 0, "revenue": 0.0, "customers": set()}
     out: list[MonthlySale] = []
+    rank = {label: i for i, (_, label) in enumerate(UNITS_RANGES)}
+    rank["32+"] = len(UNITS_RANGES)
+    median_price = {key: statistics.median(p.price_eur for p in products if (p.pet_type, p.category) == key)
+                    for key in {(p.pet_type, p.category) for p in products}}
     for sku, month in sorted((p.sku, m) for p in products for m in _MONTH_WINDOW
                              if events.on_sale(p.sku, m)):
         prod = sku_to_product[sku]
@@ -2741,6 +2752,9 @@ def gen_monthly_sales(
         units = int(data["units"])
         previous = agg.get((sku, _add_months(month, -1)))
         units_last_month = int(previous["units"]) if previous else 0
+        two_months_ago = _add_months(month, -2)
+        units_before_rank = (rank[units_range(int(agg.get((sku, two_months_ago), empty)["units"]))]
+                             if two_months_ago in _MONTH_WINDOW and events.on_sale(sku, two_months_ago) else None)
         revenue = _round_eur(data["revenue"])
         price = _round_eur(revenue / units) if units > 0 else _round_eur(prod.price_eur)
         out.append(MonthlySale(
@@ -2759,6 +2773,10 @@ def gen_monthly_sales(
             units_bucket=units_range(units),
             units_last_month_bucket=units_range(units_last_month),
             product_state=f"{sku}-{month}",
+            **(demand_dynamics.sales_signals(events.dynamics, sku, month, events.launch_month.get(sku),
+                                             prod.price_eur / median_price[(prod.pet_type, prod.category)],
+                                             rank[units_range(units_last_month)], units_before_rank)
+               if demand_dynamics.switched_on() else {}),
         ))
     return out
 
@@ -3434,6 +3452,9 @@ def _print_impression_funnel(impressions: list[Impression]) -> None:
 
 def main() -> None:
     rng = random.Random(RNG_SEED)
+    if os.environ.get("DEMAND_DYNAMICS") == "1":
+        # ADR 0062: the harder dataset, for an env of its own; the committed fixtures are generated without it.
+        planted_switches.ON.update(D1=True, D2=True, D3=True)
     print(f"Generating PetNord fixtures (seed={RNG_SEED})...")
 
     products = gen_products(rng)
@@ -3447,6 +3468,11 @@ def main() -> None:
                                                     promotions.mispriced)
     # ADR 0056: planted incidents, found in the catalogue by name; each acts only when its switch is on.
     events = dataclasses.replace(events, incidents=incidents.plan(products, catalogue_events.DEMO_ANCHORS))
+    # ADR 0062: demand that moves over time; each part acts only when its switch is on.
+    events = dataclasses.replace(events, dynamics=demand_dynamics.plan(RNG_SEED, products, _MONTH_WINDOW, events.launch_month,
+                                                                       catalogue_events.DEMO_ANCHORS))
+    if planted_switches.ON["D1"]:
+        demand_dynamics.label_seasonal_ware(products, events.dynamics)
     # ADR 0039: orders month by month, with what each led to: experiences,
     # reviews (whose stars the next month's orders see), NPS answers, churn.
     # ADR 0044: consent decides what is recorded of the sessions below.

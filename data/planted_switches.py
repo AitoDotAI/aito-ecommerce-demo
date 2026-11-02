@@ -66,6 +66,10 @@ ON: dict[str, bool] = {
     # ADR 0058: the words of feedback, on since data release 4.
     "T1": True,       # an NPS answer may carry a comment, from the causes of the order
     "T2": True,       # a review's text reads like its stars and names its product
+    # ADR 0062: demand that moves over time. Off in the committed fixtures; the harder-demand dataset turns them on.
+    "D1": False,      # seasonal ware: products that sell in one season
+    "D2": False,      # trends: products that rise or fade month after month
+    "D3": False,      # launches that become hits or flops by price and quality
     # ADR 0044: what a person declares.
     "C1": True,        # declared interests follow the hidden traits
 }
