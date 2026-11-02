@@ -40,6 +40,10 @@ the last seven months, against "the same range as last month": seasonal ware 44.
 Scored in units instead (mean absolute error against the three-month rate, adjustment fitted on earlier months within the slice): launches by months on sale **−0.73 ± 0.52 units (better)**;
 trending products by trend −0.42 ± 0.49 and seasonal ware by season flag +0.41 ± 0.36 (no clear difference or worse). So the one place the drivers earn their keep is a new product's first months.
 
+**Guarded.** An adjustment is used for a month only if, fitted on the months before the last of its fitting months, it beat the plain rate on that last month; otherwise the plain rate stands (only earlier months are looked at).
+With the guard no slice is clearly worse than the rule: launches by months on sale −0.73 ± 0.52 (better), trending products −0.41 ± 0.46, seasonal ware +0.17 ± 0.33 (both no clear difference). Seasonal ware stays the weak case: a season flag
+and last month's flag did no better.
+
 ## Acceptance criteria
 
 - With `D1`–`D3` off, `./do generate-fixtures` writes the committed fixtures byte for byte (checked: no diff).

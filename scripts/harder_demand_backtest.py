@@ -104,8 +104,7 @@ def slice_report(directory: Path, sales: list, months: list, rows, fit) -> None:
     from scripts.harder_demand_evaluate import slices
     named = slices(directory)
     sliced = {
-        "seasonal ware": (lambda r: r["sku"] in named["seasonal ware"], {"in season": lambda r: r["signals"][0],
-                                                                         "in season, trend": lambda r: r["signals"][:2]}),
+        "seasonal ware": (lambda r: r["sku"] in named["seasonal ware"], {"in season": lambda r: r["signals"][0]}),
         "trending products": (lambda r: r["sku"] in named["trending products"], {"trend": lambda r: r["signals"][1]}),
         "launches": (lambda r: r["sku"] in named["launches"], {"months on sale": lambda r: r["signals"][2],
                                                                "months on sale, price": lambda r: r["signals"][2:]}),
@@ -113,8 +112,17 @@ def slice_report(directory: Path, sales: list, months: list, rows, fit) -> None:
     for name, (member, adjustments) in sliced.items():
         for label, key in adjustments.items():
             factors = {i: fit(i, key, member) for i in range(len(months) - TEST_MONTHS, len(months))}
-            report(f"{name}: by {label}", [abs(r["actual"] - r["rate"] * factors[i].get(key(r), 1.0)) - abs(r["actual"] - r["rate"])
-                                          for i in factors for r in rows(i) if member(r)])
+            gap = lambda r, f: abs(r["actual"] - r["rate"] * f.get(key(r), 1.0)) - abs(r["actual"] - r["rate"])
+            report(f"{name}: by {label}", [gap(r, factors[i]) for i in factors for r in rows(i) if member(r)])
+            # Guarded: the adjustment is used for a month only if, fitted on the months before the last of the months it was fitted on,
+            # it beat the plain rate on that last month. Otherwise the plain rate stands. Still only earlier months are looked at.
+            guarded = []
+            for i in factors:
+                trial = fit(i - 1, key, member)
+                held_out = [gap(r, trial) for r in rows(i - 1) if member(r)]
+                use = held_out and sum(held_out) < 0
+                guarded += [gap(r, factors[i]) if use else 0.0 for r in rows(i) if member(r)]
+            report(f"{name}: by {label}, guarded", guarded)
 
 
 if __name__ == "__main__":
