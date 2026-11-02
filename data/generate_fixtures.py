@@ -26,7 +26,7 @@ from pathlib import Path
 from typing import Callable, Iterable, Iterator
 
 from data import customer_actions as customer_actions_module
-from data import (acquisition, catalogue_events, feedback_text, incidents, lifecycle, listing, merchandising, observable, person_data, planted_switches,
+from data import (acquisition, catalogue_events, demand_dynamics, feedback_text, incidents, lifecycle, listing, merchandising, observable, person_data, planted_switches,
                   review_chain, sensitivities, shop_levers, shoppers)
 from data.planted_switches import stream
 
@@ -3447,6 +3447,9 @@ def main() -> None:
                                                     promotions.mispriced)
     # ADR 0056: planted incidents, found in the catalogue by name; each acts only when its switch is on.
     events = dataclasses.replace(events, incidents=incidents.plan(products, catalogue_events.DEMO_ANCHORS))
+    # ADR 0062: demand that moves over time; each part acts only when its switch is on.
+    events = dataclasses.replace(events, dynamics=demand_dynamics.plan(RNG_SEED, products, _MONTH_WINDOW, events.launch_month,
+                                                                       catalogue_events.DEMO_ANCHORS))
     # ADR 0039: orders month by month, with what each led to: experiences,
     # reviews (whose stars the next month's orders see), NPS answers, churn.
     # ADR 0044: consent decides what is recorded of the sessions below.

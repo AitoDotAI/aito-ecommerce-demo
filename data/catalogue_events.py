@@ -71,6 +71,7 @@ class CatalogueEvents:
     recent_launches: dict[tuple[tuple[str, str], str], frozenset[str]]
     listing: listing_plan.Listing | None = None     # ADR 0049: list price policy, pictures, description, ads
     incidents: tuple = ()                           # ADR 0056: planted incidents (data/incidents.py)
+    dynamics: object = None                         # ADR 0062: seasonal ware, trends, launch trajectories (data/demand_dynamics.py)
 
     def on_sale(self, sku: str, month: str) -> bool:
         return month >= self.launch_month.get(sku, "")
@@ -115,10 +116,15 @@ class CatalogueEvents:
     def pick_factor(self, sku: str, month: str, hit: bool = True) -> float:
         """How much more (or less) often an order picks this product this month,
         besides price: a new product pulls (P2), and takes share from its rivals."""
+        if self.dynamics is not None:
+            shaped = self.dynamics.launch_factor(sku, month, self.launch_month[sku]) if sku in self.launch_month and self.on_sale(sku, month) else None
+            if shaped is not None:
+                return shaped
+        over_time = self.dynamics.factor(sku, month, self.launch_month.get(sku)) if self.dynamics is not None else 1.0
         if self.is_new(sku, month):
-            return LAUNCH_PICK_FACTOR
+            return LAUNCH_PICK_FACTOR * over_time
         base = RIVAL_PICK_FACTOR if self.rival_launched(sku, month) else 1.0
-        return base * (incidents_module.pick_factor(self.incidents, sku, month) if hit else 1.0)
+        return base * over_time * (incidents_module.pick_factor(self.incidents, sku, month) if hit else 1.0)
 
 
 def plan_catalogue_events(rng: random.Random, products: list, months: list[str],
