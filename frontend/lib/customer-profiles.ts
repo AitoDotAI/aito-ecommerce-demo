@@ -64,7 +64,12 @@ export interface PeriodComparison {
   previous: { from: string; to: string } | null; reason?: string;
   months?: number; context_customers?: number;
   figures?: Record<KpiId, PeriodFigure>; all?: Record<KpiId, PeriodFigure>;
+  /** Only with nothing ticked: what was bought, and which segments moved, against the period before (ADR 0060). */
+  preferences?: PeriodPreference[]; segments?: PeriodSegment[];
 }
+
+export interface PeriodPreference { kind: string; label: string; points: number; margin_points: number; clear: boolean; share: number; share_others: number; customers: number }
+export interface PeriodSegment { trait: string; value: string; customers: number; this: number | null; previous: number | null; change: number | null; gap_eur: number; z: number; clear: boolean }
 
 export interface FeedbackPair { selected: FeedbackEntry; all: FeedbackEntry }
 

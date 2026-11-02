@@ -30,8 +30,11 @@ export function relatedItems(view: SegmentView): Related[] {
 export default function SegmentRelated({ view }: { view: SegmentView }) {
   const [kind, setKind] = useState<string | null>(null);
   const [more, setMore] = useState(false);
-  if (view.conditions.length === 0) return <div className="card card-sub">Pick a segment to see what goes with it.</div>;
-  const all = relatedItems(view);
+  const inPeriod = view.conditions.length === 0 && view.period?.previous != null && view.period.preferences !== undefined;
+  if (view.conditions.length === 0 && !inPeriod) return <div className="card card-sub">Pick a segment, or a period on the graph, to see what goes with it.</div>;
+  const all = inPeriod
+    ? view.period!.preferences!.map((r) => ({ kind: r.kind, label: r.label, points: r.points, margin: r.margin_points, clear: r.clear, share: r.share, shareOthers: r.share_others }))
+    : relatedItems(view);
   const kinds = [...new Set(all.map((r) => r.kind))];
   const visible = all.filter((r) => (kind === null || r.kind === kind));
   const shown = more ? visible : visible.slice(0, LIST_LENGTH);
@@ -40,10 +43,12 @@ export default function SegmentRelated({ view }: { view: SegmentView }) {
     <div className="card">
       <div className="card-title">Preferences</div>
       <div className="card-sub" style={{ marginBottom: 8, lineHeight: 1.5 }}>
-        How many more (or fewer) points of this segment bought each category, brand or product than the customers outside it who
-        buy for the same pet. "Pattern?" says whether the difference is a pattern
-        in the data or could be luck; hover for the chance. Many pairs are compared, so the bar for "Yes" is high, and at product level
-        most sit below it. Clear ones first.
+        {inPeriod
+          ? `Each category's and brand's share of what customers bought in ${view.period!.from} to ${view.period!.to}, against its share in the same number of months before it
+             (${view.period!.previous!.from} to ${view.period!.previous!.to}): the points it gained or lost. A share of what was bought, so a busier period does not lift everything; units are counted as independent, so the margins are a floor. `
+          : `How many more (or fewer) points of this segment bought each category, brand or product than the customers outside it who buy for the same pet. `}
+        "Pattern?" says whether the difference is a pattern
+        in the data or could be luck; hover for the chance. Many pairs are compared, so the bar for "Yes" is high{inPeriod ? "" : ", and at product level most sit below it"}. Clear ones first.
       </div>
       <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 8 }}>
         {[null, ...kinds].map((k) => (

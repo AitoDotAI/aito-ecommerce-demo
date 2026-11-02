@@ -11,7 +11,39 @@ import { TRAIT_TITLE, type KpiId, type SegmentView } from "@/lib/customer-profil
  */
 export default function SegmentOthers({ view, kpi, onTick }: { view: SegmentView; kpi: KpiId; onTick: (condition: string) => void }) {
   if (view.conditions.length === 0) {
-    return <div className="card card-sub">Tick a segment to see how it relates to the others.</div>;
+    const period = view.period;
+    if (period?.previous == null || period.segments === undefined) return <div className="card card-sub">Tick a segment, or pick a period on the graph, to see how segments relate and move.</div>;
+    const moved = period.segments;
+    const top = Math.max(5, ...moved.map((s) => Math.abs(s.gap_eur)));
+    return (
+      <div className="card">
+        <div className="card-title">Segments that moved</div>
+        <div className="card-sub" style={{ marginBottom: 8, lineHeight: 1.5 }}>
+          Which segments' customers spent more, or less, in {period.from} to {period.to} than in the {period.months} month{period.months === 1 ? "" : "s"} before it ({period.previous.from} to {period.previous.to}),
+          compared with the customers outside the segment. When the whole shop grows every segment does, so the bar shows how much <em>more or less</em> each customer's spend changed than outside the
+          segment. "Pattern?" says whether that is a pattern in the data or could be luck; hover for the chance. Segments with fewer than {view.min_customers ?? 30} customers on either side, and "status"
+          (defined by ordering), are left out. Tick one to look at it.
+        </div>
+        {moved.length === 0 && <div className="card-sub">No segment is large enough to compare.</div>}
+        {moved.map((s) => {
+          const condition = `${s.trait}:${s.value}`;
+          const gap = s.gap_eur;
+          return (
+            <div key={condition} style={{ display: "grid", gridTemplateColumns: "minmax(120px, 1.2fr) minmax(60px, 0.8fr) minmax(110px, 140px) 44px auto", gap: 8, alignItems: "center", fontSize: 13, margin: "3px 0" }}>
+              <span><span className="card-sub">{TRAIT_TITLE[s.trait]} · </span>{s.value}</span>
+              <span style={{ position: "relative", height: 12, background: "var(--border-light)", borderRadius: 3 }}>
+                <span style={{ position: "absolute", left: "50%", top: 0, bottom: 0, width: 1, background: "var(--border)" }} />
+                <span style={{ position: "absolute", top: 2, bottom: 2, borderRadius: 2, background: gap >= 0 ? "var(--aito-teal)" : "var(--cta)",
+                  ...(gap >= 0 ? { left: "50%", width: `${(Math.abs(gap) / top) * 50}%` } : { right: "50%", width: `${(Math.abs(gap) / top) * 50}%` }) }} />
+              </span>
+              <span className="card-sub">{gap > 0 ? "+" : "−"}€{Math.abs(Math.round(gap))} vs outside ({s.previous === null ? "–" : `€${Math.round(s.previous)}`} → {s.this === null ? "–" : `€${Math.round(s.this)}`} each)</span>
+              <Pattern z={s.z} detail={`${gap > 0 ? "+" : "−"}€${Math.abs(Math.round(gap))} per customer`} />
+              <button className="btn btn-ghost" style={{ padding: "1px 8px", fontSize: 12 }} onClick={() => onTick(condition)}>Tick</button>
+            </div>
+          );
+        })}
+      </div>
+    );
   }
   const spec = kpiSpec(kpi);
   const rows = [...(view.relations ?? [])].sort((a, b) => Number(b.clear) - Number(a.clear) || Math.abs(b.points) - Math.abs(a.points));
