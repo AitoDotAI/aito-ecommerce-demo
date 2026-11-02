@@ -27,6 +27,11 @@ export default function SegmentFeedback({ view }: { view: SegmentView }) {
         Simulated reviews and answers.
       </div>
       {entry.rows.length === 0 && <div className="card-sub">Too few customers in this segment to compare.</div>}
+      {!everyone && entry.rows.length > 0 && (
+        <div className="card-sub" style={{ display: "grid", gridTemplateColumns: "minmax(120px, 1.3fr) minmax(60px, 0.8fr) minmax(110px, 140px) 64px", gap: 8, fontSize: 12, margin: "6px 0 2px" }}>
+          <span>Review or answer</span><span>Fewer ← → more than the rest</span><span>Points (this segment vs the rest)</span><span>Pattern?</span>
+        </div>
+      )}
       {entry.rows.map((r) => <Row key={r.label} r={r} scale={scale} everyone={everyone} />)}
     </div>
   );
@@ -56,7 +61,7 @@ function Row({ r, scale, everyone }: { r: FeedbackRow; scale: number; everyone: 
   }
   const width = `${(Math.abs(r.points) / scale) * 50}%`;
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "minmax(120px, 1.3fr) minmax(60px, 0.8fr) minmax(110px, 140px) 44px", gap: 8, alignItems: "center", fontSize: 13, margin: "3px 0" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "minmax(120px, 1.3fr) minmax(60px, 0.8fr) minmax(110px, 140px) 64px", gap: 8, alignItems: "center", fontSize: 13, margin: "3px 0" }}>
       <span>{r.label}</span>
       <span style={{ position: "relative", height: 12, background: "var(--border-light)", borderRadius: 3 }}>
         <span style={{ position: "absolute", left: "50%", top: 0, bottom: 0, width: 1, background: "var(--border)" }} />
