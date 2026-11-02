@@ -14,6 +14,7 @@ import SegmentFeedback from "@/components/customers/SegmentFeedback";
 import SegmentJourney from "@/components/customers/SegmentJourney";
 import SegmentKpis from "@/components/customers/SegmentKpis";
 import SegmentHeader from "@/components/customers/SegmentHeader";
+import type { FeedbackFilter } from "@/components/customers/SegmentFeedbackPatterns";
 import SegmentHighlights from "@/components/customers/SegmentHighlights";
 import SegmentPeriod from "@/components/customers/SegmentPeriod";
 import SegmentOthers from "@/components/customers/SegmentOthers";
@@ -45,6 +46,9 @@ function CustomersView() {
   const [view, setView] = useState<SegmentView | null>(null);
   const [seg, setSeg] = useUrlState("seg", "");
   const [tab, setTab] = useUrlState("tab", "highlights");
+  // A pattern chosen in the Feedback tab filters the data below it; leaving the tab clears it.
+  const [feedbackFilter, setFeedbackFilter] = useState<FeedbackFilter | null>(null);
+  useEffect(() => { setFeedbackFilter(null); }, [tab]);
   const [kpi, setKpi] = useUrlState("kpi", "revenue_eur");
   const [from] = useUrlState("from", "");
   const [to] = useUrlState("to", "");
@@ -115,7 +119,7 @@ function CustomersView() {
                tab === "journey" ? <SegmentJourney conditions={view.conditions} /> :
                tab === "channels" ? <SegmentAcquisition view={view} /> :
                tab === "actions" ? <SegmentResponse summary={summary} view={view} /> :
-               tab === "feedback" ? <SegmentFeedback view={view} /> :
+               tab === "feedback" ? <SegmentFeedback view={view} selected={feedbackFilter} onSelect={setFeedbackFilter} /> :
                tab === "figures" ? <SegmentKpis summary={summary} view={view} /> :
                <SegmentHighlights summary={summary} view={view} />}
               <div className="card-sub">
@@ -134,7 +138,7 @@ function CustomersView() {
           )}
           {!view && !error && <div className="card segment-details" style={{ height: 240, background: "var(--border-light)" }} />}
         </div>
-        {view && !view.too_small && <RawData conditions={view.conditions} from={from} to={to} />}
+        {view && !view.too_small && <RawData conditions={view.conditions} from={from} to={to} pattern={feedbackFilter} onClearPattern={() => setFeedbackFilter(null)} />}
         </>
       )}
     </div>

@@ -62,31 +62,36 @@ def main() -> None:
         n, size = total(table, {}), total(table, where)
         sections: dict[str, list] = {"mined by Aito ($patterns)": [], "products": [], "brand and category": [], "brand and product-name word": [], "words": [], "words mined by Aito ($patterns)": []}
 
-        def row(label: str, k: int, overall: int, aito: dict | None, products_in: int | None = None) -> dict:
-            return {"label": label, "k": k, "overall": overall, "p": p_upper(k, size, overall, n) if overall else 1.0,
+        def row(label: str, k: int, overall: int, aito: dict | None, products_in: int | None = None, clauses: list | None = None) -> dict:
+            # `clauses` say which rows have the pattern, in a form the Customers view can filter its feedback rows by (src/feedback_pattern_filter.py).
+            return {"label": label, "k": k, "overall": overall, "clauses": clauses or [], "p": p_upper(k, size, overall, n) if overall else 1.0,
                     "lift": (k / size) / (overall / n) if overall else None, "aito": aito, "products": products_in}
 
         aito_row = lambda hit: {"lift": hit["lift"], "fOnCondition": hit["fs"]["fOnCondition"], "fCondition": hit["fs"]["fCondition"], "f": hit["fs"]["f"], "n": hit["fs"]["n"]}
         for hit in client.relate(table, where, link[:-1], limit=700)["hits"]:
             fs = hit["fs"]
-            sections["products"].append(row(related_value(hit, link[:-1]), int(fs["fOnCondition"]), int(fs["f"]), aito_row(hit)))
+            sections["products"].append(row(related_value(hit, link[:-1]), int(fs["fOnCondition"]), int(fs["f"]), aito_row(hit),
+                                            clauses=[{"field": link[:-1], "value": related_value(hit, link[:-1])}]))
         for hit in client.relate(table, where, TEXT_FIELD[table], limit=400)["hits"]:
             fs = hit["fs"]
-            sections["words"].append(row(related_value(hit, TEXT_FIELD[table]), int(fs["fOnCondition"]), int(fs["f"]), aito_row(hit)))
+            sections["words"].append(row(related_value(hit, TEXT_FIELD[table]), int(fs["fOnCondition"]), int(fs["f"]), aito_row(hit),
+                                          clauses=[{"field": TEXT_FIELD[table], "word": related_value(hit, TEXT_FIELD[table])}]))
 
         def one(item):
             (kind, brand, other), skus = item
             if kind == "category":
+                clauses = [{"field": f"{link}brand", "value": brand}, {"field": f"{link}category", "value": other}]
                 pattern = {f"{link}brand": brand, f"{link}category": other}
                 relate = {"$and": [{f"{link}brand": brand}, {f"{link}category": other}]}
             else:
+                clauses = [{"field": f"{link}brand", "value": brand}, {"field": f"{link}name", "word": other}]
                 pattern = {f"{link}brand": brand, f"{link}name": {"$match": other}}
                 relate = {"$and": [{f"{link}brand": brand}, {f"{link}name": {"$match": other}}]}
             overall = total(table, pattern)
             if not overall:
                 return None
             hits = client.relate(table, where, relate, limit=1)["hits"]
-            return kind, row(f"{brand} · {other}", total(table, {**pattern, **where}), overall, aito_row(hits[0]) if hits else None, len(skus))
+            return kind, row(f"{brand} · {other}", total(table, {**pattern, **where}), overall, aito_row(hits[0]) if hits else None, len(skus), clauses)
 
         with ThreadPoolExecutor(8) as pool:
             for result in pool.map(one, pairs.items()):
@@ -111,7 +116,8 @@ def main() -> None:
                         if label not in seen and overall:
                             seen.add(label)
                             sections["words mined by Aito ($patterns)"].append(row(f"{label}  [→ {next(iter(target))}={next(iter(target.values()))}]",
-                                total(table, {"$and": [pattern, target]}), overall, {"lift": hit["lift"]}))
+                                total(table, {"$and": [pattern, target]}), overall, {"lift": hit["lift"]},
+                                clauses=[{"field": next(iter(text_clauses[0])), "word": w} for w in words] + [{"field": f, "value": v} for f, v in others.items()]))
                         continue
                     label = " AND ".join(f"{next(iter(c))}={next(iter(c.values()))}" for c in clauses)
                     if label in seen:
@@ -121,7 +127,8 @@ def main() -> None:
                     overall = total(table, pattern)
                     if overall:
                         sections["mined by Aito ($patterns)"].append(row(f"{label}  [→ {next(iter(target))}={next(iter(target.values()))}]",
-                                                                      total(table, {**pattern, **where}), overall, {"lift": hit["lift"]}))
+                                                                      total(table, {**pattern, **where}), overall, {"lift": hit["lift"]},
+                                                                      clauses=[{"field": f, "value": v} for f, v in pattern.items()]))
         for rows in sections.values():
             rows.sort(key=lambda r: r["p"])
         out[name] = {"title": group["title"], "rows": size, "of": n, "sections": sections}

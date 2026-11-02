@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import Pattern from "@/components/customers/Pattern";
-import SegmentFeedbackPatterns, { PATTERN_SECTIONS } from "@/components/customers/SegmentFeedbackPatterns";
+import SegmentFeedbackPatterns, { PATTERN_SECTIONS, type FeedbackFilter } from "@/components/customers/SegmentFeedbackPatterns";
 import { zOfShares } from "@/lib/pattern";
 import type { FeedbackRow, SegmentView } from "@/lib/customer-profiles";
 
@@ -11,7 +11,7 @@ const VIEWS = [["rules", "Rules"], ["words", "Words"], ["products", "Products"],
 const SECTION_OF = { rules: PATTERN_SECTIONS[0][0], words: PATTERN_SECTIONS[1][0], products: PATTERN_SECTIONS[2][0], lines: PATTERN_SECTIONS[3][0] };
 
 /** What the segment says: the figures, then one view at a time: what stands out among poor feedback (rules, words, products, product lines), or the share of each kind of review and answer. */
-export default function SegmentFeedback({ view }: { view: SegmentView }) {
+export default function SegmentFeedback({ view, selected, onSelect }: { view: SegmentView; selected: FeedbackFilter | null; onSelect: (filter: FeedbackFilter | null) => void }) {
   if (!view.feedback) return null;
   const { selected: entry, all } = view.feedback;
   const [which, setWhich] = useState<(typeof VIEWS)[number][0]>("rules");
@@ -35,7 +35,7 @@ export default function SegmentFeedback({ view }: { view: SegmentView }) {
         <Kpi label="NPS" value={entry.nps === null ? "–" : `${entry.nps > 0 ? "+" : ""}${entry.nps}`}
           note={entry.nps === null ? `only ${entry.nps_respondents} answers` : `${entry.nps_respondents} answers${everyone ? "" : `, all ${all.nps !== null && all.nps > 0 ? "+" : ""}${all.nps}`}`} />
       </div>
-      {which !== "shares" && <SegmentFeedbackPatterns section={SECTION_OF[which]} />}
+      {which !== "shares" && <SegmentFeedbackPatterns section={SECTION_OF[which]} selected={selected} onSelect={onSelect} />}
       {which === "shares" && (
         <>
       <div className="card-sub" style={{ marginBottom: 8, lineHeight: 1.5 }}>
