@@ -20,6 +20,17 @@ from src.aito_compat import related_value
 from src.config import load_config
 
 ROOT = Path(__file__).resolve().parent.parent
+
+# Words that carry no meaning of their own are left out of the word lists: Aito indexes them like any other word, so they top the lists by sheer
+# frequency. Negations ("not", "no", "nothing") stay, because "not disappointed" says something.
+STOP_WORDS = frozenset("""a an the and or but if so as of to in on at for with from by about into than then too very just
+    is are was were be been am do does did have has had having will would could should can may might got get
+    i me my mine we us our you your it its this that these those he she they them their there here what when which who how
+    after before again once all any some much more most such own same other another""".split())
+
+
+def is_stop_word(word: str) -> bool:
+    return word.strip(".,:;!?()\"'").lower() in STOP_WORDS
 # `targets` are what `$patterns` mines rules for (it takes one value at a time); `field_sets` are the candidate fields it may combine.
 GROUPS = {
     "stars": {"title": "Reviews of 1–2 stars", "table": "reviews", "where": {"rating": {"$lte": 2}}, "link": "product_sku.",
@@ -74,6 +85,8 @@ def main() -> None:
                                             clauses=[{"field": link[:-1], "value": related_value(hit, link[:-1])}]))
         for hit in client.relate(table, where, TEXT_FIELD[table], limit=400)["hits"]:
             fs = hit["fs"]
+            if is_stop_word(related_value(hit, TEXT_FIELD[table])):
+                continue
             sections["words"].append(row(related_value(hit, TEXT_FIELD[table]), int(fs["fOnCondition"]), int(fs["f"]), aito_row(hit),
                                           clauses=[{"field": TEXT_FIELD[table], "word": related_value(hit, TEXT_FIELD[table])}]))
 
@@ -108,7 +121,9 @@ def main() -> None:
                     text_clauses = [c for c in clauses if next(iter(c)) in ("text", "comment")]
                     if text_clauses:
                         # A Text field comes back as words (`{"$has": word}`); the exact count is a phrase match on each word.
-                        words = [next(iter(c.values()))["$has"] for c in text_clauses]
+                        words = [w for w in (next(iter(c.values()))["$has"] for c in text_clauses) if not is_stop_word(w)]
+                        if not words:
+                            continue
                         others = {next(iter(c)): next(iter(c.values())) for c in clauses if c not in text_clauses}
                         label = " · ".join(words) + "".join(f" AND {k}={v}" for k, v in others.items())
                         pattern = {"$and": [{next(iter(text_clauses[0])): {"$match": w}} for w in words] + [{k: v} for k, v in others.items()]}
