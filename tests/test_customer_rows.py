@@ -116,3 +116,37 @@ def test_a_selection_under_the_minimum_size_shows_no_rows():
 def test_a_bad_tab_or_period_or_page_is_a_400():
     for params in ({"tab": "customers"}, {"start": "2026-03", "end": "2026-01"}, {"limit": 1000}, {"start": "2026-01"}):
         assert api().get("/api/customer-profiles/rows", params=params).status_code == 400, params
+
+
+def test_every_tab_holds_only_the_selected_segments_data_counted_independently_from_the_fixtures():
+    """Sales, orders, reviews and NPS answers of a segment are those of its customers and nobody else's (not the whole shop's)."""
+    import json
+    from pathlib import Path
+
+    from src.customer_selection import members, parse
+    from src.customer_selection_data import facts
+
+    data = Path(__file__).resolve().parent.parent / "data"
+    chosen = set(members(facts()["customers"], parse(["pets:dog", "price:mixed"])))
+    everyone = set(facts()["customers"])
+    orders = [o for o in json.loads((data / "orders.json").read_text()) if o["customer_id"] in chosen]
+    order_ids = {o["order_id"] for o in orders}
+    lines = [ln for ln in json.loads((data / "order_lines.json").read_text()) if ln["order_id"] in order_ids]
+    reviews = [r for r in json.loads((data / "reviews.json").read_text()) if r["customer_id"] in chosen]
+    answers = [a for a in json.loads((data / "nps_responses.json").read_text()) if a["customer"] in chosen]
+
+    def total(tab: str, customers: list[str]) -> int:
+        params = [("tab", tab), ("limit", 1)] + [("c", c) for c in customers]
+        return api().get("/api/customer-profiles/rows", params=params).json()["total"]
+
+    conditions = ["pets:dog", "price:mixed"]
+    assert total("orders", conditions) == len(orders)
+    assert total("reviews", conditions) == len(reviews)
+    assert total("nps", conditions) == len(answers)
+    sku_units = {}
+    for ln in lines:
+        sku_units[ln["product_sku"]] = sku_units.get(ln["product_sku"], 0) + (0 if ln["returned"] else ln["qty"])
+    sales = api().get("/api/customer-profiles/rows", params=[("tab", "sales"), ("limit", 100)] + [("c", c) for c in conditions]).json()
+    assert sum(r["units"] for r in sales["rows"]) <= sum(sku_units.values())
+    assert total("orders", conditions) < total("orders", []), "a segment is not the whole shop"
+    assert len(chosen) < len(everyone)
