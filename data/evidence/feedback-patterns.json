@@ -14365,69 +14365,6 @@
      "products": null
     },
     {
-     "label": "was",
-     "k": 216,
-     "overall": 314,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "was"
-      }
-     ],
-     "p": 7.129468111447436e-128,
-     "lift": 5.292311191992721,
-     "aito": {
-      "lift": 5.22480648990016,
-      "fOnCondition": 216.0,
-      "fCondition": 672.0,
-      "f": 314.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "of",
-     "k": 296,
-     "overall": 637,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "of"
-      }
-     ],
-     "p": 1.2971534103856008e-115,
-     "lift": 3.574979442326381,
-     "aito": {
-      "lift": 3.542340623666342,
-      "fOnCondition": 296.0,
-      "fCondition": 672.0,
-      "f": 637.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "it.",
-     "k": 260,
-     "overall": 503,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "it."
-      }
-     ],
-     "p": 4.0100739621610946e-113,
-     "lift": 3.9767348291205153,
-     "aito": {
-      "lift": 3.935003202537458,
-      "fOnCondition": 260.0,
-      "fCondition": 672.0,
-      "f": 503.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
      "label": "off",
      "k": 115,
      "overall": 115,
@@ -14465,48 +14402,6 @@
       "fOnCondition": 111.0,
       "fCondition": 672.0,
       "f": 111.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "and",
-     "k": 149,
-     "overall": 193,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "and"
-      }
-     ],
-     "p": 8.308563532231226e-98,
-     "lift": 5.939504687885517,
-     "aito": {
-      "lift": 5.805987026429658,
-      "fOnCondition": 149.0,
-      "fCondition": 672.0,
-      "f": 193.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "would",
-     "k": 81,
-     "overall": 81,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "would"
-      }
-     ],
-     "p": 2.064617337521436e-74,
-     "lift": 7.693452380952381,
-     "aito": {
-      "lift": 7.22924227516139,
-      "fOnCondition": 81.0,
-      "fCondition": 672.0,
-      "f": 81.0,
       "n": 5170.0
      },
      "products": null
@@ -14612,48 +14507,6 @@
       "fOnCondition": 72.0,
       "fCondition": 672.0,
       "f": 72.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "to",
-     "k": 72,
-     "overall": 72,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "to"
-      }
-     ],
-     "p": 5.02562263529006e-66,
-     "lift": 7.6934523809523805,
-     "aito": {
-      "lift": 7.129976549607988,
-      "fOnCondition": 72.0,
-      "fCondition": 672.0,
-      "f": 72.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "it",
-     "k": 71,
-     "overall": 71,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "it"
-      }
-     ],
-     "p": 4.263835244115583e-65,
-     "lift": 7.6934523809523805,
-     "aito": {
-      "lift": 7.116899781019897,
-      "fOnCondition": 71.0,
-      "fCondition": 672.0,
-      "f": 71.0,
       "n": 5170.0
      },
      "products": null
@@ -14785,90 +14638,6 @@
      "products": null
     },
     {
-     "label": "too",
-     "k": 66,
-     "overall": 66,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "too"
-      }
-     ],
-     "p": 1.8336813259100628e-60,
-     "lift": 7.693452380952381,
-     "aito": {
-      "lift": 7.04376515244436,
-      "fOnCondition": 66.0,
-      "fCondition": 672.0,
-      "f": 66.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "when",
-     "k": 66,
-     "overall": 66,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "when"
-      }
-     ],
-     "p": 1.8336813259100628e-60,
-     "lift": 7.693452380952381,
-     "aito": {
-      "lift": 7.04376515244436,
-      "fOnCondition": 66.0,
-      "fCondition": 672.0,
-      "f": 66.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "Mine",
-     "k": 65,
-     "overall": 65,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "Mine"
-      }
-     ],
-     "p": 1.5421652667014478e-59,
-     "lift": 7.693452380952381,
-     "aito": {
-      "lift": 7.027399510960799,
-      "fOnCondition": 65.0,
-      "fCondition": 672.0,
-      "f": 65.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "did",
-     "k": 65,
-     "overall": 65,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "did"
-      }
-     ],
-     "p": 1.5421652667014478e-59,
-     "lift": 7.693452380952381,
-     "aito": {
-      "lift": 7.027399510960799,
-      "fOnCondition": 65.0,
-      "fCondition": 672.0,
-      "f": 65.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
      "label": "really",
      "k": 65,
      "overall": 65,
@@ -14918,27 +14687,6 @@
       {
        "field": "text",
        "word": "Contents"
-      }
-     ],
-     "p": 7.604531443538334e-56,
-     "lift": 7.6934523809523805,
-     "aito": {
-      "lift": 6.955078842271892,
-      "fOnCondition": 61.0,
-      "fCondition": 672.0,
-      "f": 61.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "are",
-     "k": 61,
-     "overall": 61,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "are"
       }
      ],
      "p": 7.604531443538334e-56,
@@ -15037,27 +14785,6 @@
      "products": null
     },
     {
-     "label": "much",
-     "k": 54,
-     "overall": 54,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "much"
-      }
-     ],
-     "p": 2.0878199426666182e-49,
-     "lift": 7.693452380952381,
-     "aito": {
-      "lift": 6.7956785756765585,
-      "fOnCondition": 54.0,
-      "fCondition": 672.0,
-      "f": 54.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
      "label": "worse",
      "k": 54,
      "overall": 54,
@@ -15074,27 +14801,6 @@
       "fOnCondition": 54.0,
       "fCondition": 672.0,
       "f": 54.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "I",
-     "k": 109,
-     "overall": 211,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "I"
-      }
-     ],
-     "p": 7.321677954231763e-44,
-     "lift": 3.9743426991649744,
-     "aito": {
-      "lift": 3.8108581829795147,
-      "fOnCondition": 109.0,
-      "fCondition": 672.0,
-      "f": 211.0,
       "n": 5170.0
      },
      "products": null
@@ -15142,27 +14848,6 @@
      "products": null
     },
     {
-     "label": "at",
-     "k": 45,
-     "overall": 45,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "at"
-      }
-     ],
-     "p": 3.5770637173433926e-41,
-     "lift": 7.6934523809523805,
-     "aito": {
-      "lift": 6.5005534310637305,
-      "fOnCondition": 45.0,
-      "fCondition": 672.0,
-      "f": 45.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
      "label": "chart.",
      "k": 45,
      "overall": 45,
@@ -15179,48 +14864,6 @@
       "fOnCondition": 45.0,
       "fCondition": 672.0,
       "f": 45.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "all;",
-     "k": 44,
-     "overall": 44,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "all;"
-      }
-     ],
-     "p": 2.919749779473272e-40,
-     "lift": 7.693452380952381,
-     "aito": {
-      "lift": 6.459087060727441,
-      "fOnCondition": 44.0,
-      "fCondition": 672.0,
-      "f": 44.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "does",
-     "k": 44,
-     "overall": 44,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "does"
-      }
-     ],
-     "p": 2.919749779473272e-40,
-     "lift": 7.693452380952381,
-     "aito": {
-      "lift": 6.459087060727441,
-      "fOnCondition": 44.0,
-      "fCondition": 672.0,
-      "f": 44.0,
       "n": 5170.0
      },
      "products": null
@@ -15415,27 +15058,6 @@
      "products": null
     },
     {
-     "label": "than",
-     "k": 54,
-     "overall": 123,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "than"
-      }
-     ],
-     "p": 1.0114130339549667e-17,
-     "lift": 3.377613240418119,
-     "aito": {
-      "lift": 2.92960919126926,
-      "fOnCondition": 54.0,
-      "fCondition": 672.0,
-      "f": 123.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
      "label": "suitable",
      "k": 65,
      "overall": 209,
@@ -15494,48 +15116,6 @@
       "fOnCondition": 24.0,
       "fCondition": 672.0,
       "f": 53.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "this",
-     "k": 7,
-     "overall": 7,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "this"
-      }
-     ],
-     "p": 6.09958427572961e-07,
-     "lift": 7.6934523809523805,
-     "aito": {
-      "lift": 3.863484901175774,
-      "fOnCondition": 7.0,
-      "fCondition": 672.0,
-      "f": 7.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "another",
-     "k": 6,
-     "overall": 6,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "another"
-      }
-     ],
-     "p": 4.729467447443256e-06,
-     "lift": 7.693452380952381,
-     "aito": {
-      "lift": 3.794842352172186,
-      "fOnCondition": 6.0,
-      "fCondition": 672.0,
-      "f": 6.0,
       "n": 5170.0
      },
      "products": null
@@ -15709,27 +15289,6 @@
      "products": null
     },
     {
-     "label": "The",
-     "k": 309,
-     "overall": 1983,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "The"
-      }
-     ],
-     "p": 9.289939046834187e-06,
-     "lift": 1.1988284345508249,
-     "aito": {
-      "lift": 1.15329216561889,
-      "fOnCondition": 309.0,
-      "fCondition": 672.0,
-      "f": 1983.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
      "label": "150g",
      "k": 52,
      "overall": 223,
@@ -15898,27 +15457,6 @@
      "products": null
     },
     {
-     "label": "A",
-     "k": 4,
-     "overall": 4,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "A"
-      }
-     ],
-     "p": 0.0002832270128211746,
-     "lift": 7.6934523809523805,
-     "aito": {
-      "lift": 3.575186195360708,
-      "fOnCondition": 4.0,
-      "fCondition": 672.0,
-      "f": 4.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
      "label": "Refunded,",
      "k": 4,
      "overall": 4,
@@ -15968,27 +15506,6 @@
       {
        "field": "text",
        "word": "batch"
-      }
-     ],
-     "p": 0.0002832270128211746,
-     "lift": 7.6934523809523805,
-     "aito": {
-      "lift": 3.575186195360708,
-      "fOnCondition": 4.0,
-      "fCondition": 672.0,
-      "f": 4.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "do",
-     "k": 4,
-     "overall": 4,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "do"
       }
      ],
      "p": 0.0002832270128211746,
@@ -16171,27 +15688,6 @@
      "products": null
     },
     {
-     "label": "the",
-     "k": 475,
-     "overall": 3399,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "the"
-      }
-     ],
-     "p": 0.002011622830640326,
-     "lift": 1.0751367699183234,
-     "aito": {
-      "lift": 1.0439001648357602,
-      "fOnCondition": 475.0,
-      "fCondition": 672.0,
-      "f": 3399.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
      "label": "dogs",
      "k": 26,
      "overall": 116,
@@ -16313,27 +15809,6 @@
       "fOnCondition": 57.0,
       "fCondition": 672.0,
       "f": 313.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "my",
-     "k": 236,
-     "overall": 1588,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "my"
-      }
-     ],
-     "p": 0.004862402633449777,
-     "lift": 1.1433594218543839,
-     "aito": {
-      "lift": 1.0788217198418208,
-      "fOnCondition": 236.0,
-      "fCondition": 672.0,
-      "f": 1588.0,
       "n": 5170.0
      },
      "products": null
@@ -16906,27 +16381,6 @@
      "products": null
     },
     {
-     "label": "After",
-     "k": 1,
-     "overall": 1,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "After"
-      }
-     ],
-     "p": 0.12998065764032052,
-     "lift": 7.6934523809523805,
-     "aito": {
-      "lift": 2.4219913721004422,
-      "fOnCondition": 1.0,
-      "fCondition": 672.0,
-      "f": 1.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
      "label": "Treatment,",
      "k": 1,
      "overall": 1,
@@ -16955,48 +16409,6 @@
       {
        "field": "text",
        "word": "Tunnel"
-      }
-     ],
-     "p": 0.12998065764032052,
-     "lift": 7.6934523809523805,
-     "aito": {
-      "lift": 2.4219913721004422,
-      "fOnCondition": 1.0,
-      "fCondition": 672.0,
-      "f": 1.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "after",
-     "k": 1,
-     "overall": 1,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "after"
-      }
-     ],
-     "p": 0.12998065764032052,
-     "lift": 7.6934523809523805,
-     "aito": {
-      "lift": 2.4219913721004422,
-      "fOnCondition": 1.0,
-      "fCondition": 672.0,
-      "f": 1.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "again.",
-     "k": 1,
-     "overall": 1,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "again."
       }
      ],
      "p": 0.12998065764032052,
@@ -17074,27 +16486,6 @@
      "products": null
     },
     {
-     "label": "got",
-     "k": 1,
-     "overall": 1,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "got"
-      }
-     ],
-     "p": 0.12998065764032052,
-     "lift": 7.6934523809523805,
-     "aito": {
-      "lift": 2.4219913721004422,
-      "fOnCondition": 1.0,
-      "fCondition": 672.0,
-      "f": 1.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
      "label": "ill",
      "k": 1,
      "overall": 1,
@@ -17123,27 +16514,6 @@
       {
        "field": "text",
        "word": "multipack"
-      }
-     ],
-     "p": 0.12998065764032052,
-     "lift": 7.6934523809523805,
-     "aito": {
-      "lift": 2.4219913721004422,
-      "fOnCondition": 1.0,
-      "fCondition": 672.0,
-      "f": 1.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "once",
-     "k": 1,
-     "overall": 1,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "once"
       }
      ],
      "p": 0.12998065764032052,
@@ -17207,27 +16577,6 @@
       {
        "field": "text",
        "word": "vet."
-      }
-     ],
-     "p": 0.12998065764032052,
-     "lift": 7.6934523809523805,
-     "aito": {
-      "lift": 2.4219913721004422,
-      "fOnCondition": 1.0,
-      "fCondition": 672.0,
-      "f": 1.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "will",
-     "k": 1,
-     "overall": 1,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "will"
       }
      ],
      "p": 0.12998065764032052,
@@ -17489,27 +16838,6 @@
       "fOnCondition": 41.0,
       "fCondition": 672.0,
       "f": 276.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "Is",
-     "k": 65,
-     "overall": 452,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "Is"
-      }
-     ],
-     "p": 0.19872887403865813,
-     "lift": 1.1063593025705858,
-     "aito": {
-      "lift": 1.0515648529206567,
-      "fOnCondition": 65.0,
-      "fCondition": 672.0,
-      "f": 452.0,
       "n": 5170.0
      },
      "products": null
@@ -19489,27 +18817,6 @@
      "products": null
     },
     {
-     "label": "for",
-     "k": 106,
-     "overall": 947,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "for"
-      }
-     ],
-     "p": 0.9715398957923018,
-     "lift": 0.8611467290189571,
-     "aito": {
-      "lift": 0.9298124165456686,
-      "fOnCondition": 106.0,
-      "fCondition": 672.0,
-      "f": 947.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
      "label": "80g",
      "k": 1,
      "overall": 26,
@@ -19762,27 +19069,6 @@
      "products": null
     },
     {
-     "label": "what",
-     "k": 61,
-     "overall": 643,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "what"
-      }
-     ],
-     "p": 0.9986114159518276,
-     "lift": 0.7298609568244093,
-     "aito": {
-      "lift": 0.8641039555842452,
-      "fOnCondition": 61.0,
-      "fCondition": 672.0,
-      "f": 643.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
      "label": "400g:",
      "k": 1,
      "overall": 51,
@@ -19951,27 +19237,6 @@
      "products": null
     },
     {
-     "label": "is",
-     "k": 139,
-     "overall": 1462,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "is"
-      }
-     ],
-     "p": 0.9999994066771934,
-     "lift": 0.7314568269168131,
-     "aito": {
-      "lift": 0.7884776015060224,
-      "fOnCondition": 139.0,
-      "fCondition": 672.0,
-      "f": 1462.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
      "label": "cat",
      "k": 91,
      "overall": 1119,
@@ -20012,130 +19277,17 @@
       "n": 5170.0
      },
      "products": null
-    },
-    {
-     "label": "a",
-     "k": 65,
-     "overall": 947,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "a"
-      }
-     ],
-     "p": 0.9999999999857219,
-     "lift": 0.5280616734550209,
-     "aito": {
-      "lift": 0.5999587293165959,
-      "fOnCondition": 65.0,
-      "fCondition": 672.0,
-      "f": 947.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "My",
-     "k": 1,
-     "overall": 841,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "My"
-      }
-     ],
-     "p": 0.9999999999937694,
-     "lift": 0.009147981428005209,
-     "aito": {
-      "lift": 0.056956781491470564,
-      "fOnCondition": 1.0,
-      "fCondition": 672.0,
-      "f": 841.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "but",
-     "k": 4,
-     "overall": 296,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "but"
-      }
-     ],
-     "p": 0.9999999999950894,
-     "lift": 0.10396557271557272,
-     "aito": {
-      "lift": 0.3406130773389522,
-      "fOnCondition": 4.0,
-      "fCondition": 672.0,
-      "f": 296.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "have",
-     "k": 6,
-     "overall": 633,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "have"
-      }
-     ],
-     "p": 0.999999999997032,
-     "lift": 0.07292371925073346,
-     "aito": {
-      "lift": 0.15086406710112285,
-      "fOnCondition": 6.0,
-      "fCondition": 672.0,
-      "f": 633.0,
-      "n": 5170.0
-     },
-     "products": null
-    },
-    {
-     "label": "We",
-     "k": 1,
-     "overall": 241,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "We"
-      }
-     ],
-     "p": 0.9999999999983228,
-     "lift": 0.03192303892511361,
-     "aito": {
-      "lift": 0.32979201529182617,
-      "fOnCondition": 1.0,
-      "fCondition": 672.0,
-      "f": 241.0,
-      "n": 5170.0
-     },
-     "products": null
     }
    ],
    "words mined by Aito ($patterns)": [
     {
-     "label": "not · was · it. AND category=quality  [→ rating=1]",
-     "k": 41,
-     "overall": 77,
+     "label": "not AND category=quality  [→ rating=1]",
+     "k": 73,
+     "overall": 253,
      "clauses": [
       {
        "field": "text",
        "word": "not"
-      },
-      {
-       "field": "text",
-       "word": "was"
-      },
-      {
-       "field": "text",
-       "word": "it."
       },
       {
        "field": "category",
@@ -20146,143 +19298,10 @@
        "value": 1
       }
      ],
-     "p": 1.818889158005256e-17,
-     "lift": 4.096513605442176,
+     "p": 5.601231043671143e-12,
+     "lift": 2.2198498964803313,
      "aito": {
       "lift": 8.457712153680108
-     },
-     "products": null
-    },
-    {
-     "label": "of · was AND category=shipping  [→ rating=2]",
-     "k": 39,
-     "overall": 164,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "of"
-      },
-      {
-       "field": "text",
-       "word": "was"
-      },
-      {
-       "field": "category",
-       "value": "shipping"
-      },
-      {
-       "field": "rating",
-       "value": 2
-      }
-     ],
-     "p": 9.091932493835028e-05,
-     "lift": 1.8295405052264808,
-     "aito": {
-      "lift": 2.695369847311298
-     },
-     "products": null
-    },
-    {
-     "label": "was · of AND category=shipping  [→ rating=1]",
-     "k": 27,
-     "overall": 164,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "was"
-      },
-      {
-       "field": "text",
-       "word": "of"
-      },
-      {
-       "field": "category",
-       "value": "shipping"
-      },
-      {
-       "field": "rating",
-       "value": 1
-      }
-     ],
-     "p": 0.11272215431963138,
-     "lift": 1.2666049651567943,
-     "aito": {
-      "lift": 2.1936569837281725
-     },
-     "products": null
-    },
-    {
-     "label": "we AND category=praise  [→ rating=1]",
-     "k": 0,
-     "overall": 1209,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "we"
-      },
-      {
-       "field": "category",
-       "value": "praise"
-      },
-      {
-       "field": "rating",
-       "value": 1
-      }
-     ],
-     "p": 0.9999999999938185,
-     "lift": 0.0,
-     "aito": {
-      "lift": 0.10971225900884819
-     },
-     "products": null
-    },
-    {
-     "label": "it. · of  [→ rating=1]",
-     "k": 3,
-     "overall": 247,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "it."
-      },
-      {
-       "field": "text",
-       "word": "of"
-      },
-      {
-       "field": "rating",
-       "value": 1
-      }
-     ],
-     "p": 0.9999999999994157,
-     "lift": 0.09344274146905726,
-     "aito": {
-      "lift": 0.6068066877758117
-     },
-     "products": null
-    },
-    {
-     "label": "of · it.  [→ rating=2]",
-     "k": 1,
-     "overall": 247,
-     "clauses": [
-      {
-       "field": "text",
-       "word": "of"
-      },
-      {
-       "field": "text",
-       "word": "it."
-      },
-      {
-       "field": "rating",
-       "value": 2
-      }
-     ],
-     "p": 0.9999999999997873,
-     "lift": 0.03114758048968575,
-     "aito": {
-      "lift": 0.5273791421857505
      },
      "products": null
     }
@@ -33380,27 +32399,6 @@
    ],
    "words": [
     {
-     "label": "I",
-     "k": 256,
-     "overall": 299,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "I"
-      }
-     ],
-     "p": 2.308374507664553e-109,
-     "lift": 3.101494778513412,
-     "aito": {
-      "lift": 3.0669245947615296,
-      "fOnCondition": 256.0,
-      "fCondition": 882.0,
-      "f": 299.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
      "label": "not",
      "k": 187,
      "overall": 197,
@@ -33485,27 +32483,6 @@
      "products": null
     },
     {
-     "label": "before",
-     "k": 86,
-     "overall": 86,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "before"
-      }
-     ],
-     "p": 3.6834764559387835e-50,
-     "lift": 3.622448979591837,
-     "aito": {
-      "lift": 3.381286191363513,
-      "fOnCondition": 86.0,
-      "fCondition": 882.0,
-      "f": 86.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
      "label": "ordering",
      "k": 86,
      "overall": 86,
@@ -33564,27 +32541,6 @@
       "fOnCondition": 86.0,
       "fCondition": 882.0,
       "f": 86.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
-     "label": "was",
-     "k": 225,
-     "overall": 374,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "was"
-      }
-     ],
-     "p": 2.4409283984110674e-45,
-     "lift": 2.1792808032303834,
-     "aito": {
-      "lift": 2.1435942316577736,
-      "fOnCondition": 225.0,
-      "fCondition": 882.0,
-      "f": 374.0,
       "n": 3195.0
      },
      "products": null
@@ -33653,27 +32609,6 @@
      "products": null
     },
     {
-     "label": "it.",
-     "k": 91,
-     "overall": 98,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "it."
-      }
-     ],
-     "p": 7.2579752328908545e-44,
-     "lift": 3.3637026239067054,
-     "aito": {
-      "lift": 3.1567715993210963,
-      "fOnCondition": 91.0,
-      "fCondition": 882.0,
-      "f": 98.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
      "label": "eat",
      "k": 89,
      "overall": 96,
@@ -33716,132 +32651,6 @@
      "products": null
     },
     {
-     "label": "would",
-     "k": 89,
-     "overall": 96,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "would"
-      }
-     ],
-     "p": 9.565163032198632e-43,
-     "lift": 3.3583120748299318,
-     "aito": {
-      "lift": 3.1438730624210494,
-      "fOnCondition": 89.0,
-      "fCondition": 882.0,
-      "f": 96.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
-     "label": "what",
-     "k": 116,
-     "overall": 189,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "what"
-      }
-     ],
-     "p": 1.1780829353874998e-23,
-     "lift": 2.2233020192203865,
-     "aito": {
-      "lift": 2.1148958065191894,
-      "fOnCondition": 116.0,
-      "fCondition": 882.0,
-      "f": 189.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
-     "label": "again.",
-     "k": 86,
-     "overall": 137,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "again."
-      }
-     ],
-     "p": 1.5065399767905298e-18,
-     "lift": 2.273946074780277,
-     "aito": {
-      "lift": 2.096181350545227,
-      "fOnCondition": 86.0,
-      "fCondition": 882.0,
-      "f": 137.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
-     "label": "will",
-     "k": 86,
-     "overall": 137,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "will"
-      }
-     ],
-     "p": 1.5065399767905298e-18,
-     "lift": 2.273946074780277,
-     "aito": {
-      "lift": 2.096181350545227,
-      "fOnCondition": 86.0,
-      "fCondition": 882.0,
-      "f": 137.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
-     "label": "and",
-     "k": 136,
-     "overall": 264,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "and"
-      }
-     ],
-     "p": 6.627005403150684e-18,
-     "lift": 1.8661100803957946,
-     "aito": {
-      "lift": 1.7854774497521262,
-      "fOnCondition": 136.0,
-      "fCondition": 882.0,
-      "f": 264.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
-     "label": "with",
-     "k": 98,
-     "overall": 168,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "with"
-      }
-     ],
-     "p": 8.319748839493063e-18,
-     "lift": 2.113095238095238,
-     "aito": {
-      "lift": 1.9729372119090447,
-      "fOnCondition": 98.0,
-      "fCondition": 882.0,
-      "f": 168.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
      "label": "late",
      "k": 47,
      "overall": 59,
@@ -33863,48 +32672,6 @@
      "products": null
     },
     {
-     "label": "my",
-     "k": 95,
-     "overall": 166,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "my"
-      }
-     ],
-     "p": 1.6413255851590466e-16,
-     "lift": 2.0730882714531593,
-     "aito": {
-      "lift": 1.926755934965742,
-      "fOnCondition": 95.0,
-      "fCondition": 882.0,
-      "f": 166.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
-     "label": "the",
-     "k": 249,
-     "overall": 616,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "the"
-      }
-     ],
-     "p": 9.594925749319902e-15,
-     "lift": 1.4642691492181288,
-     "aito": {
-      "lift": 1.4307959728088195,
-      "fOnCondition": 249.0,
-      "fCondition": 882.0,
-      "f": 616.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
      "label": "back.",
      "k": 66,
      "overall": 108,
@@ -33912,27 +32679,6 @@
       {
        "field": "comment",
        "word": "back."
-      }
-     ],
-     "p": 1.2874712411065052e-13,
-     "lift": 2.2137188208616783,
-     "aito": {
-      "lift": 1.9506424520930314,
-      "fOnCondition": 66.0,
-      "fCondition": 882.0,
-      "f": 108.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
-     "label": "had",
-     "k": 66,
-     "overall": 108,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "had"
       }
      ],
      "p": 1.2874712411065052e-13,
@@ -34047,27 +32793,6 @@
       "fOnCondition": 30.0,
       "fCondition": 882.0,
       "f": 37.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
-     "label": "is",
-     "k": 160,
-     "overall": 416,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "is"
-      }
-     ],
-     "p": 1.5859312312215906e-07,
-     "lift": 1.3932496075353218,
-     "aito": {
-      "lift": 1.3243074978014095,
-      "fOnCondition": 160.0,
-      "fCondition": 882.0,
-      "f": 416.0,
       "n": 3195.0
      },
      "products": null
@@ -34341,27 +33066,6 @@
       "fOnCondition": 101.0,
       "fCondition": 882.0,
       "f": 270.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
-     "label": "to",
-     "k": 66,
-     "overall": 167,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "to"
-      }
-     ],
-     "p": 0.00040976050827767977,
-     "lift": 1.431626542832702,
-     "aito": {
-      "lift": 1.2252098155335582,
-      "fOnCondition": 66.0,
-      "fCondition": 882.0,
-      "f": 167.0,
       "n": 3195.0
      },
      "products": null
@@ -34724,27 +33428,6 @@
      "products": null
     },
     {
-     "label": "have",
-     "k": 3,
-     "overall": 3,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "have"
-      }
-     ],
-     "p": 0.02098565229337901,
-     "lift": 3.622448979591837,
-     "aito": {
-      "lift": 1.8585792406382426,
-      "fOnCondition": 3.0,
-      "fCondition": 882.0,
-      "f": 3.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
      "label": "smelled",
      "k": 3,
      "overall": 3,
@@ -35060,27 +33743,6 @@
      "products": null
     },
     {
-     "label": "after",
-     "k": 2,
-     "overall": 2,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "after"
-      }
-     ],
-     "p": 0.07614453155999373,
-     "lift": 3.6224489795918373,
-     "aito": {
-      "lift": 1.7076259916784375,
-      "fOnCondition": 2.0,
-      "fCondition": 882.0,
-      "f": 2.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
      "label": "feeding",
      "k": 2,
      "overall": 2,
@@ -35088,27 +33750,6 @@
       {
        "field": "comment",
        "word": "feeding"
-      }
-     ],
-     "p": 0.07614453155999373,
-     "lift": 3.6224489795918373,
-     "aito": {
-      "lift": 1.7076259916784375,
-      "fOnCondition": 2.0,
-      "fCondition": 882.0,
-      "f": 2.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
-     "label": "got",
-     "k": 2,
-     "overall": 2,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "got"
       }
      ],
      "p": 0.07614453155999373,
@@ -35643,27 +34284,6 @@
       "fOnCondition": 19.0,
       "fCondition": 882.0,
       "f": 58.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
-     "label": "The",
-     "k": 242,
-     "overall": 845,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "The"
-      }
-     ],
-     "p": 0.22962657496930178,
-     "lift": 1.0374350923801474,
-     "aito": {
-      "lift": 1.0181657623868476,
-      "fOnCondition": 242.0,
-      "fCondition": 882.0,
-      "f": 845.0,
       "n": 3195.0
      },
      "products": null
@@ -37286,27 +35906,6 @@
      "products": null
     },
     {
-     "label": "just",
-     "k": 18,
-     "overall": 88,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "just"
-      }
-     ],
-     "p": 0.9533011275795158,
-     "lift": 0.7409554730983302,
-     "aito": {
-      "lift": 0.8663584469136835,
-      "fOnCondition": 18.0,
-      "fCondition": 882.0,
-      "f": 88.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
      "label": "needed.",
      "k": 18,
      "overall": 88,
@@ -37314,27 +35913,6 @@
       {
        "field": "comment",
        "word": "needed."
-      }
-     ],
-     "p": 0.9533011275795158,
-     "lift": 0.7409554730983302,
-     "aito": {
-      "lift": 0.8663584469136835,
-      "fOnCondition": 18.0,
-      "fCondition": 882.0,
-      "f": 88.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
-     "label": "we",
-     "k": 18,
-     "overall": 88,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "we"
       }
      ],
      "p": 0.9533011275795158,
@@ -37475,27 +36053,6 @@
      "products": null
     },
     {
-     "label": "does",
-     "k": 66,
-     "overall": 311,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "does"
-      }
-     ],
-     "p": 0.997256444957776,
-     "lift": 0.7687512303956952,
-     "aito": {
-      "lift": 0.8831890165902735,
-      "fOnCondition": 66.0,
-      "fCondition": 882.0,
-      "f": 311.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
      "label": "job.",
      "k": 66,
      "overall": 311,
@@ -37512,27 +36069,6 @@
       "fOnCondition": 66.0,
       "fCondition": 882.0,
       "f": 311.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
-     "label": "My",
-     "k": 11,
-     "overall": 78,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "My"
-      }
-     ],
-     "p": 0.9986961677949842,
-     "lift": 0.510858189429618,
-     "aito": {
-      "lift": 0.7522256818062562,
-      "fOnCondition": 11.0,
-      "fCondition": 882.0,
-      "f": 78.0,
       "n": 3195.0
      },
      "products": null
@@ -37662,60 +36198,14 @@
       "n": 3195.0
      },
      "products": null
-    },
-    {
-     "label": "it",
-     "k": 6,
-     "overall": 70,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "it"
-      }
-     ],
-     "p": 0.9999845435845426,
-     "lift": 0.3104956268221574,
-     "aito": {
-      "lift": 0.6530793510578301,
-      "fOnCondition": 6.0,
-      "fCondition": 882.0,
-      "f": 70.0,
-      "n": 3195.0
-     },
-     "products": null
-    },
-    {
-     "label": "We",
-     "k": 2,
-     "overall": 53,
-     "clauses": [
-      {
-       "field": "comment",
-       "word": "We"
-      }
-     ],
-     "p": 0.9999993271143999,
-     "lift": 0.1366961879091259,
-     "aito": {
-      "lift": 0.5670903328710243,
-      "fOnCondition": 2.0,
-      "fCondition": 882.0,
-      "f": 53.0,
-      "n": 3195.0
-     },
-     "products": null
     }
    ],
    "words mined by Aito ($patterns)": [
     {
-     "label": "I · not · disappointed · quality · expected. · was  [→ nps_group=detractor]",
+     "label": "not · disappointed · quality · expected.  [→ nps_group=detractor]",
      "k": 98,
      "overall": 101,
      "clauses": [
-      {
-       "field": "comment",
-       "word": "I"
-      },
       {
        "field": "comment",
        "word": "not"
@@ -37731,10 +36221,6 @@
       {
        "field": "comment",
        "word": "expected."
-      },
-      {
-       "field": "comment",
-       "word": "was"
       }
      ],
      "p": 1.925975326074294e-52,
@@ -37745,14 +36231,10 @@
      "products": null
     },
     {
-     "label": "I · not · disappointed · was · think · twice  [→ nps_group=detractor]",
+     "label": "not · disappointed · think · twice  [→ nps_group=detractor]",
      "k": 16,
      "overall": 16,
      "clauses": [
-      {
-       "field": "comment",
-       "word": "I"
-      },
       {
        "field": "comment",
        "word": "not"
@@ -37760,10 +36242,6 @@
       {
        "field": "comment",
        "word": "disappointed"
-      },
-      {
-       "field": "comment",
-       "word": "was"
       },
       {
        "field": "comment",
