@@ -150,3 +150,17 @@ def test_every_tab_holds_only_the_selected_segments_data_counted_independently_f
     assert sum(r["units"] for r in sales["rows"]) <= sum(sku_units.values())
     assert total("orders", conditions) < total("orders", []), "a segment is not the whole shop"
     assert len(chosen) < len(everyone)
+
+
+def test_a_pattern_lists_every_row_it_counts_not_only_those_of_profiled_customers():
+    """The Feedback tab's lists count all reviews, so the rows behind a pattern must be those same reviews (7 of 7, not the 2 by profiled customers)."""
+    spec = {"group": "stars", "clauses": [{"field": "category", "value": "shipping"}, {"field": "product_sku", "value": "SKU-PT-0202"}]}
+    body = api().get("/api/customer-profiles/rows", params={"tab": "reviews", "pattern": json.dumps(spec)}).json()
+
+    assert body["total"] == 7 and "CUST-" not in json.dumps(body)
+
+
+def test_a_pattern_is_refused_together_with_a_segment_or_period_it_would_ignore():
+    spec = json.dumps({"group": "stars", "clauses": []})
+    for extra in ({"c": "pets:dog"}, {"start": "2026-01", "end": "2026-03"}):
+        assert api().get("/api/customer-profiles/rows", params={"tab": "reviews", "pattern": spec, **extra}).status_code == 400, extra

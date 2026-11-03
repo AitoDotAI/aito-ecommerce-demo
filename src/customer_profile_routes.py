@@ -128,6 +128,8 @@ def customer_rows(tab: str = "sales", c: list[str] = Query(default=[]), start: s
     """One page of the raw rows behind the selection `c` (`tab`: sales, orders or feedback), only the months `start` to `end` when
     they are given. A selection under the minimum size answers with its size and no rows; a row never says who it is about."""
     try:
+        if pattern is not None:
+            return _pattern_rows(tab, c, start, end, offset, limit, pattern)
         parsed = parse(c)
         customers = facts()["customers"]
         chosen = members(customers, parsed)
@@ -142,6 +144,15 @@ def customer_rows(tab: str = "sales", c: list[str] = Query(default=[]), start: s
         return {**page_of(rows(), reviews(), answers(), chosen, tab, months, offset, limit, pattern), "too_small": False, "customers": len(chosen)}
     except ValueError as error:
         return JSONResponse(status_code=400, content={"error": str(error)})
+
+
+def _pattern_rows(tab: str, c: list[str], start: str | None, end: str | None, offset: int, limit: int, pattern: str) -> dict:
+    """The reviews or NPS answers a Feedback-tab pattern counts. Those lists cover every customer, so these rows do too, not only the profiled ones
+    (a row never says who it is about); a segment or period would silently change the count, so asking for one is refused."""
+    if c or start is not None or end is not None:
+        raise ValueError("A pattern covers all customers and all months; do not combine it with a segment (c) or a period (start, end)")
+    everyone = {r["customer_id"] for r in reviews()} | {a["customer"] for a in answers()}
+    return {**page_of(rows(), reviews(), answers(), list(everyone), tab, None, offset, limit, pattern), "too_small": False, "customers": len(everyone)}
 
 
 @router.get("/api/customer-profiles/ranking")

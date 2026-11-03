@@ -20140,6 +20140,10 @@
       {
        "field": "category",
        "value": "quality"
+      },
+      {
+       "field": "rating",
+       "value": 1
       }
      ],
      "p": 1.818889158005256e-17,
@@ -20165,6 +20169,10 @@
       {
        "field": "category",
        "value": "shipping"
+      },
+      {
+       "field": "rating",
+       "value": 2
       }
      ],
      "p": 9.091932493835028e-05,
@@ -20190,6 +20198,10 @@
       {
        "field": "category",
        "value": "shipping"
+      },
+      {
+       "field": "rating",
+       "value": 1
       }
      ],
      "p": 0.11272215431963138,
@@ -20211,6 +20223,10 @@
       {
        "field": "category",
        "value": "praise"
+      },
+      {
+       "field": "rating",
+       "value": 1
       }
      ],
      "p": 0.9999999999938185,
@@ -20232,6 +20248,10 @@
       {
        "field": "text",
        "word": "of"
+      },
+      {
+       "field": "rating",
+       "value": 1
       }
      ],
      "p": 0.9999999999994157,
@@ -20253,6 +20273,10 @@
       {
        "field": "text",
        "word": "it."
+      },
+      {
+       "field": "rating",
+       "value": 2
       }
      ],
      "p": 0.9999999999997873,

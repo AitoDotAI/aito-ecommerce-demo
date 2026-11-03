@@ -117,7 +117,8 @@ def main() -> None:
                             seen.add(label)
                             sections["words mined by Aito ($patterns)"].append(row(f"{label}  [→ {next(iter(target))}={next(iter(target.values()))}]",
                                 total(table, {"$and": [pattern, target]}), overall, {"lift": hit["lift"]},
-                                clauses=[{"field": next(iter(text_clauses[0])), "word": w} for w in words] + [{"field": f, "value": v} for f, v in others.items()]))
+                                clauses=[{"field": next(iter(text_clauses[0])), "word": w} for w in words] + [{"field": f, "value": v} for f, v in others.items()]
+                                        + ([{"field": "rating", "value": target["rating"]}] if "rating" in target else [])))   # k counts this one rating, so the rows do
                         continue
                     label = " AND ".join(f"{next(iter(c))}={next(iter(c.values()))}" for c in clauses)
                     if label in seen:
