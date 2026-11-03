@@ -9,7 +9,7 @@ interface PatternRow { clauses: Record<string, string>[]; label: string; k: numb
 interface Group { title: string; rows: number; of: number; sections: Record<string, PatternRow[]> }
 
 const SHOWN = 10;
-export const PATTERN_SECTIONS = [["mined by Aito ($patterns)", "Rules"], ["themes", "Themes"], ["products", "Products"], ["brand and product-name word", "Product lines"]] as const;
+export const PATTERN_SECTIONS = [["mined by Aito ($patterns)", "Patterns"], ["themes", "Themes"], ["products and themes", "Products × themes"], ["products", "Products"], ["brand and product-name word", "Product lines"]] as const;
 const SECTION_TITLE: Record<string, string> = Object.fromEntries(PATTERN_SECTIONS);
 const pill = (on: boolean) => ({ cursor: "pointer", borderRadius: 12, padding: "2px 10px", font: "inherit", fontSize: 12, color: "var(--text)",
   border: `1px solid ${on ? "var(--aito-teal)" : "var(--border)"}`, background: on ? "rgba(0, 168, 150, 0.15)" : "transparent" });
@@ -40,7 +40,8 @@ export default function SegmentFeedbackPatterns({ section, selected, onSelect }:
       <div className="card-sub" style={{ lineHeight: 1.5, marginBottom: 6 }}>
         Among {group.rows.toLocaleString("en-GB")} of {group.of.toLocaleString("en-GB")} rows, which {SECTION_TITLE[section].toLowerCase()} come up more than luck explains.
         {" "}{tests} tried, {rows.filter((r) => r.p * tests < 0.05).length} clear. <strong>Clear?</strong> is Yes when the chance of luck, counted over everything tried in this list, is under 5 %.
-        Click a row to see its reviews or answers in the data below. Covers all customers, not the selected segment.
+        {section === "products and themes" && " Here \"of\" is all the product's reviews or answers, and the chance is that of a product of that size holding so many of the theme's rows: a complaint is rare outside poor feedback, so a big product is not unusual just for having many."}
+        {" "}Click a row to see its reviews or answers in the data below. Covers all customers, not the selected segment.
       </div>
       <div className="scroll-x">
         <table style={{ width: "100%", fontSize: 12.5, borderCollapse: "collapse" }}>
