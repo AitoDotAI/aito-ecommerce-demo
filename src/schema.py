@@ -315,6 +315,9 @@ SCHEMAS: dict[str, dict] = {
             # from a single free-form text input. See ADR 0012.
             "text":        {"type": "Text",    "nullable": False,
                             "analyzer": "whitespace"},
+            # What the text is about, as space-separated tags (src/feedback_themes.py): a Text column so `$patterns` can mine themes beside brand,
+            # product line and month. Null on a review typed in live (the sandbox's levers), which no rule has read.
+            "themes":      {"type": "Text",    "nullable": True, "analyzer": "whitespace"},
             "category":    {"type": "String",  "nullable": False},
             "sentiment":   {"type": "String",  "nullable": False},
             "assigned_to": {"type": "String",  "nullable": False},
@@ -346,6 +349,8 @@ SCHEMAS: dict[str, dict] = {
             "score":           {"type": "Int",    "nullable": False},
             # What the respondent wrote beside the score (ADR 0058): Text, so `_predict` can read the topics and the product it mentions.
             "comment":         {"type": "Text",   "nullable": True, "analyzer": "whitespace"},
+            # The comment's theme tags (src/feedback_themes.py); absent when there is no comment.
+            "themes":          {"type": "Text",   "nullable": True, "analyzer": "whitespace"},
             # promoter (9–10) | passive (7–8) | detractor (0–6)
             "nps_group":       {"type": "String", "nullable": False},
             # `_relate` cannot follow an order to its lines (one-to-many), so the order's
