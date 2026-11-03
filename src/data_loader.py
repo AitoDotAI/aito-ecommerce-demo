@@ -30,6 +30,7 @@ from pathlib import Path
 from src.aito_client import AitoClient, AitoError
 from src.chained_baskets import link_contexts, link_orders
 from src.config import load_config
+from src.feedback_themes import themes_of
 from src.schema import SCHEMAS
 from src.showing_split import split_showings
 
@@ -53,6 +54,10 @@ def load_fixture(table: str) -> list[dict]:
         return link_orders(_read_fixture("orders"), {p["sku"]: p for p in _read_fixture("products")})
     if table == "contexts":
         return link_contexts(_read_fixture("contexts"), _read_fixture("orders"))
+    if table == "reviews":
+        return [{**r, "themes": " ".join(themes_of(r["text"]))} for r in _read_fixture(table)]
+    if table == "nps_responses":
+        return [{**a, "themes": " ".join(themes_of(a["comment"]))} if a.get("comment") else a for a in _read_fixture(table)]
     return _read_fixture(table)
 
 

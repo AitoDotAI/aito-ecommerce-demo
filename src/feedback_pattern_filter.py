@@ -12,6 +12,8 @@ import re
 from functools import lru_cache
 from pathlib import Path
 
+from src.feedback_themes import themes_of
+
 DATA = Path(__file__).resolve().parent.parent / "data"
 # Aito splits `reviews.text` and `nps_responses.comment` on spaces ("damaged." and "damaged" are two words; schema analyzer "whitespace"),
 # and a product's name with its default analyzer, which drops punctuation ("Bowl, medium" has the word "Bowl").
@@ -37,6 +39,8 @@ def _product_attribute(sku: str, attribute: str):
 
 def _review_field(review: dict, field: str):
     """The value of a pattern's field on a review: its own columns, or an attribute of its product."""
+    if field == "themes":
+        return " ".join(themes_of(review["text"]))
     if field in ("product_sku", "category", "created_at", "text", "rating"):
         return review[field]
     return _product_attribute(review["product_sku"], field.removeprefix("product_sku."))
@@ -50,6 +54,8 @@ def _answer_field(answer: dict, field: str):
         return _rating_band()[answer["product_state"]]
     if field == "comment":
         return answer.get("comment") or ""
+    if field == "themes":
+        return " ".join(themes_of(answer.get("comment")))
     if field == "month":
         return answer["month"]
     return _product_attribute(sku, field.removeprefix("product_state.product_sku."))

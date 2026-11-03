@@ -50,3 +50,12 @@ def test_a_product_name_word_is_a_word_without_its_punctuation_as_aitos_default_
 def _bowl_sku():
     from src.feedback_pattern_filter import _products
     return next(sku for sku, p in _products().items() if "Bowl," in p["name"] and p["brand"] == "PetNord")
+
+
+def test_a_review_and_an_answer_have_the_theme_tags_of_their_message():
+    late = {"field": "themes", "word": "late-delivery"}
+
+    assert review_has(spec("stars", late, {"field": "themes", "word": "damaged-packaging"}), {**REVIEW, "text": "The Kong Ball arrived late and the box was damaged."})
+    assert not review_has(spec("stars", late), {**REVIEW, "text": "Packaging of the Kong Ball was crushed when it came."})
+    assert answer_has(spec("detractors", {"field": "themes", "word": "losing-trust"}), {**ANSWER, "comment": "I will think twice before ordering again."})
+    assert not answer_has(spec("detractors", {"field": "themes", "word": "losing-trust"}), {**ANSWER, "comment": None})
