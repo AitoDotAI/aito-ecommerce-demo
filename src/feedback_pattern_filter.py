@@ -13,7 +13,9 @@ from functools import lru_cache
 from pathlib import Path
 
 DATA = Path(__file__).resolve().parent.parent / "data"
-WORDS = re.compile(r"[A-Za-z][A-Za-z-]+")
+# Aito splits `reviews.text` and `nps_responses.comment` on spaces ("damaged." and "damaged" are two words; schema analyzer "whitespace"),
+# and a product's name with its default analyzer, which drops punctuation ("Bowl, medium" has the word "Bowl").
+NAME_WORDS = re.compile(r"[A-Za-z][A-Za-z-]+")
 PRODUCT_FIELDS = ("brand", "category", "pet_type")
 
 
@@ -35,7 +37,7 @@ def _product_attribute(sku: str, attribute: str):
 
 def _review_field(review: dict, field: str):
     """The value of a pattern's field on a review: its own columns, or an attribute of its product."""
-    if field in ("product_sku", "category", "created_at", "text"):
+    if field in ("product_sku", "category", "created_at", "text", "rating"):
         return review[field]
     return _product_attribute(review["product_sku"], field.removeprefix("product_sku."))
 
@@ -57,7 +59,8 @@ def _has_all(clauses: list[dict], field_of) -> bool:
     for clause in clauses:
         value = field_of(clause["field"])
         if "word" in clause:
-            if clause["word"] not in WORDS.findall(value) + value.split():
+            words = NAME_WORDS.findall(value) if clause["field"].endswith("name") else value.split()
+            if clause["word"] not in words:
                 return False
         elif value != clause["value"]:
             return False

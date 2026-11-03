@@ -44,7 +44,9 @@ export default function RawData({ conditions, from, to, pattern, onClearPattern 
   const [offset, setOffset] = useState(0);
   const [page, setPage] = useState<Page | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const selection = JSON.stringify([conditions, from, to, tab, pattern?.spec]);
+  // A pattern's lists cover all customers and months, so the rows behind it do too, whatever segment or period is chosen.
+  const byPattern = pattern !== null && pattern.tab === tab;
+  const selection = JSON.stringify([byPattern ? [] : conditions, byPattern ? "" : from, byPattern ? "" : to, tab, pattern?.spec]);
   // Choosing a pattern shows the rows it is about: the reviews or the NPS answers, scrolled into view.
   useEffect(() => {
     if (!pattern) return;
@@ -55,9 +57,12 @@ export default function RawData({ conditions, from, to, pattern, onClearPattern 
   useEffect(() => { setOffset(0); }, [selection]);
   useEffect(() => {
     let current = true;   // a slower earlier answer must not replace a later one (the tab and the pattern change together)
-    const parts = [`tab=${tab}`, `limit=${PAGE}`, `offset=${offset}`, ...conditions.map((c) => `c=${encodeURIComponent(c)}`)];
-    if (from && to) parts.push(`start=${from}`, `end=${to}`);
+    const parts = [`tab=${tab}`, `limit=${PAGE}`, `offset=${offset}`];
     if (pattern && pattern.tab === tab) parts.push(`pattern=${encodeURIComponent(JSON.stringify(pattern.spec))}`);
+    else {
+      parts.push(...conditions.map((c) => `c=${encodeURIComponent(c)}`));
+      if (from && to) parts.push(`start=${from}`, `end=${to}`);
+    }
     apiFetch<Page>(`/api/customer-profiles/rows?${parts.join("&")}`).then((p) => { if (current) { setPage(p); setError(null); } }).catch((e) => { if (current) setError(String(e)); });
     return () => { current = false; };
     // `selection` stands for the conditions, the period and the tab, which the request reads.
@@ -69,7 +74,7 @@ export default function RawData({ conditions, from, to, pattern, onClearPattern 
   return (
     <div className="card" id="raw-data" style={{ marginTop: 12 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-        <div className="card-title" style={{ margin: 0 }}>The data behind it{from && to ? `, ${from} … ${to}` : ""}</div>
+        <div className="card-title" style={{ margin: 0 }}>The data behind it{from && to && !byPattern ? `, ${from} … ${to}` : ""}</div>
         <div role="tablist" aria-label="Raw data" style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           {TABS.map((t) => (
             <button key={t.id} role="tab" aria-selected={tab === t.id} className={`toggle-btn${tab === t.id ? " active" : ""}`} onClick={() => setTab(t.id)}
@@ -79,7 +84,7 @@ export default function RawData({ conditions, from, to, pattern, onClearPattern 
       </div>
       {pattern && (
         <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13, background: "rgba(0, 168, 150, 0.15)", borderRadius: 12, padding: "2px 4px 2px 12px" }}>
-          <span>Only {pattern.spec.group === "stars" ? "reviews of 1–2 stars" : "detractors' answers"} with: <strong>{pattern.label}</strong></span>
+          <span>Only {pattern.spec.group === "stars" ? "reviews of 1–2 stars" : "detractors' answers"} with: <strong>{pattern.label}</strong> (all customers, all months)</span>
           <button className="btn btn-ghost" style={{ padding: "0 8px", fontSize: 12 }} onClick={onClearPattern} aria-label="Clear the pattern filter">×</button>
         </div>
       )}
@@ -113,7 +118,7 @@ export default function RawData({ conditions, from, to, pattern, onClearPattern 
               <button className="btn btn-ghost" style={{ padding: "2px 10px", fontSize: 12 }} disabled={last >= page.total} onClick={() => setOffset(offset + PAGE)}>Next</button>
             </span>
           </div>
-          <div className="card-sub" style={{ marginTop: 4 }}>Rows of the customers who consented to profiling. A row says what happened, not who it happened to.</div>
+          <div className="card-sub" style={{ marginTop: 4 }}>{byPattern ? "Every review or answer the pattern counts, from all customers. A row says what happened, not who it happened to." : "Rows of the customers who consented to profiling. A row says what happened, not who it happened to."}</div>
         </>
       )}
     </div>

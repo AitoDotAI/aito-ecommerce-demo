@@ -16,9 +16,11 @@ def test_a_review_has_a_product_and_a_topic_when_both_clauses_hold():
     assert not review_has(spec("stars", {"field": "product_sku", "value": "SKU-PT-0202"}, {"field": "category", "value": "quality"}), REVIEW)
 
 
-def test_a_review_has_a_word_of_its_text_whole_and_with_its_punctuation():
-    assert review_has(spec("stars", {"field": "text", "word": "damaged"}), REVIEW)
+def test_a_review_has_a_word_as_aito_counts_it_a_space_separated_token_with_its_punctuation():
+    """Aito's text index splits on spaces: "damaged." is one word and "damaged" another, so the rows behind a word match the count Aito gave."""
+    assert review_has(spec("stars", {"field": "text", "word": "late"}), REVIEW)
     assert review_has(spec("stars", {"field": "text", "word": "damaged."}), REVIEW)
+    assert not review_has(spec("stars", {"field": "text", "word": "damaged"}), REVIEW)
     assert not review_has(spec("stars", {"field": "text", "word": "dam"}), REVIEW)
 
 
@@ -39,3 +41,12 @@ def test_a_pattern_for_the_other_tab_is_refused_not_matched():
 def test_an_unknown_product_field_is_refused_not_matched():
     with pytest.raises(ValueError, match="Cannot filter by the product field"):
         review_has(spec("stars", {"field": "product_sku.colour", "value": "red"}), REVIEW)
+
+
+def test_a_product_name_word_is_a_word_without_its_punctuation_as_aitos_default_analyzer_has_it():
+    assert review_has(spec("stars", {"field": "product_sku.brand", "value": "PetNord"}, {"field": "product_sku.name", "word": "Bowl"}), {**REVIEW, "product_sku": _bowl_sku()})
+
+
+def _bowl_sku():
+    from src.feedback_pattern_filter import _products
+    return next(sku for sku, p in _products().items() if "Bowl," in p["name"] and p["brand"] == "PetNord")
