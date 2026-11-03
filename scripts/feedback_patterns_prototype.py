@@ -18,6 +18,7 @@ from pathlib import Path
 from src.aito_client import AitoClient
 from src.aito_compat import related_value
 from src.config import load_config
+from src.feedback_themes import THEMES
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -54,6 +55,9 @@ def main() -> None:
             if word not in product["brand"].split():
                 pairs[("word", product["brand"], word)].append(product["sku"])
     pairs = {key: skus for key, skus in pairs.items() if len(skus) >= MIN_PRODUCTS}
+    names = {product["sku"]: product["name"] for product in products}
+    # A product is shown by its name: a code (SKU-PT-0202) says nothing to the reader.
+    named = lambda label: re.sub(r"(?:product_state\.)?product_sku=(SKU-PT-\d+)", lambda m: f"product={names[m.group(1)]}", label)
 
     def total(table: str, where: dict) -> int:
         return client.search(table, where=where or None, limit=1)["total"]
@@ -62,7 +66,7 @@ def main() -> None:
     for name, group in GROUPS.items():
         table, where, link = group["table"], group["where"], group["link"]
         n, size = total(table, {}), total(table, where)
-        sections: dict[str, list] = {"mined by Aito ($patterns)": [], "products": [], "brand and category": [], "brand and product-name word": [], "themes": [], "themes mined by Aito ($patterns)": []}
+        sections: dict[str, list] = {"mined by Aito ($patterns)": [], "products": [], "brand and category": [], "brand and product-name word": [], "themes": [], "themes mined by Aito ($patterns)": [], "products and themes": []}
 
         def row(label: str, k: int, overall: int, aito: dict | None, products_in: int | None = None, clauses: list | None = None) -> dict:
             # `clauses` say which rows have the pattern, in a form the Customers view can filter its feedback rows by (src/feedback_pattern_filter.py).
@@ -72,12 +76,27 @@ def main() -> None:
         aito_row = lambda hit: {"lift": hit["lift"], "fOnCondition": hit["fs"]["fOnCondition"], "fCondition": hit["fs"]["fCondition"], "f": hit["fs"]["f"], "n": hit["fs"]["n"]}
         for hit in client.relate(table, where, link[:-1], limit=700)["hits"]:
             fs = hit["fs"]
-            sections["products"].append(row(related_value(hit, link[:-1]), int(fs["fOnCondition"]), int(fs["f"]), aito_row(hit),
+            sections["products"].append(row(names[related_value(hit, link[:-1])], int(fs["fOnCondition"]), int(fs["f"]), aito_row(hit),
                                             clauses=[{"field": link[:-1], "value": related_value(hit, link[:-1])}]))
         for hit in client.relate(table, where, TEXT_FIELD[table], limit=400)["hits"]:
             fs = hit["fs"]
             sections["themes"].append(row(related_value(hit, TEXT_FIELD[table]), int(fs["fOnCondition"]), int(fs["f"]), aito_row(hit),
                                           clauses=[{"field": TEXT_FIELD[table], "word": related_value(hit, TEXT_FIELD[table])}]))
+
+        # Where a complaint concentrates: for each theme, Aito's `_relate` over the product gives the rows of the product that have the theme (fOnCondition),
+        # the rows with the theme (fCondition) and the product's rows (f). The chance is that of a product with that many rows holding so many of the
+        # theme's rows, not of the group holding them: a complaint theme only occurs in poor feedback, so a large product would otherwise look unusual for its size.
+        for theme in THEMES:
+            for hit in client.relate(table, {TEXT_FIELD[table]: {"$match": theme}}, link[:-1], limit=700)["hits"]:
+                fs = hit["fs"]
+                sku = related_value(hit, link[:-1])
+                in_group = total(table, {link[:-1]: sku, TEXT_FIELD[table]: {"$match": theme}, **where})
+                if in_group < 2:
+                    continue
+                share, expected = in_group / fs["f"], fs["fCondition"] / fs["n"]
+                sections["products and themes"].append({
+                    "label": f"{names[sku]} AND {theme}", "k": in_group, "overall": int(fs["f"]), "clauses": [{"field": link[:-1], "value": sku}, {"field": TEXT_FIELD[table], "word": theme}],
+                    "p": p_upper(in_group, int(fs["f"]), int(fs["fCondition"]), int(fs["n"])), "lift": share / expected if expected else None, "aito": {"lift": hit["lift"]}, "products": None})
 
         def one(item):
             (kind, brand, other), skus = item
@@ -135,6 +154,8 @@ def main() -> None:
                                                                       total(table, {**pattern, **where}), overall, {"lift": hit["lift"]},
                                                                       clauses=[{"field": f, "value": v} for f, v in pattern.items()]))
         for rows in sections.values():
+            for r in rows:
+                r["label"] = named(r["label"])
             rows.sort(key=lambda r: r["p"])
         out[name] = {"title": group["title"], "rows": size, "of": n, "sections": sections}
         print(name, size, "of", n, {k: len(v) for k, v in sections.items()})
