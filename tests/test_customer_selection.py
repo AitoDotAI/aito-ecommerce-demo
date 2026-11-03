@@ -7,7 +7,7 @@ from src.customer_selection_data import actions, answers, facts, reviews, summar
 
 
 def customer(**own) -> dict:
-    return {"offer": "mostly", "price": "mixed", "rating": "average ratings", "margin": "high-margin", "status": "active", "pets": ["dog"], "diets": [], "region": "helsinki", "categories": [], "brands": [], "review_topics": [], "review_stars": [], "nps_groups": [],
+    return {"offer": "mostly", "price": "mixed", "rating": "average ratings", "margin": "high-margin", "status": "active", "pets": ["dog"], "diets": [], "region": "helsinki", "categories": [], "brands": [], "review_topics": [], "review_stars": [], "nps_groups": [], "themes": [],
             "churned": False, "total_spent_eur": 10.0, "net_revenue_eur": 10.0, "gross_profit_eur": 3.0, "gross_profit_12m_eur": 3.0,
             "profit_eur": 3.0, "funnel": [4, 3, 2, 1], "first": None, "months": {}, "nps": [],
             "bought": {"dog": {"categories": [], "brands": [], "products": []}, "cat": {"categories": [], "brands": [], "products": []}}, **own}
@@ -256,7 +256,7 @@ def test_a_period_with_nothing_ticked_adds_what_was_bought_and_which_segments_mo
 def test_a_customer_can_be_selected_by_region_by_a_category_and_by_a_brand_they_bought():
     from src.customer_selection import FILTERS
 
-    assert FILTERS == ("region", "category", "brand", "review", "stars", "nps")
+    assert FILTERS == ("region", "category", "brand", "review", "stars", "nps", "theme")
     customers = {"A": customer(region="helsinki", categories=["dry-food", "toys"], brands=["Acana"]),
                  "B": customer(region="turku", categories=["dry-food"], brands=["Orijen", "Acana"]),
                  "C": customer(region="helsinki", categories=["litter"], brands=["Orijen"])}
@@ -344,3 +344,28 @@ def test_the_stored_facts_say_which_star_ratings_each_customer_wrote():
 
     for cid, c in facts()["customers"].items():
         assert c["review_stars"] == sorted(written.get(cid, set()), reverse=True), cid
+
+
+def test_a_customer_can_be_selected_by_the_theme_they_wrote_about():
+    customers = {"A": customer(themes=["late-delivery", "damaged-packaging"]), "B": customer(themes=["late-delivery"]), "C": customer(themes=[])}
+
+    assert members(customers, parse(["theme:late-delivery"])) == ["A", "B"]
+    assert members(customers, parse(["theme:damaged-packaging", "theme:late-delivery"])) == ["A"]
+    assert {"theme:late-delivery", "theme:damaged-packaging"} <= set(options(customers, parse([])))
+
+
+def test_the_stored_facts_list_the_themes_of_each_customers_reviews_and_survey_comments(release):
+    import json
+    from pathlib import Path
+
+    from src.feedback_themes import themes_of
+
+    data = Path(__file__).resolve().parent.parent / "data"
+    written: dict[str, set[str]] = {}
+    for r in json.loads((data / "reviews.json").read_text()):
+        written.setdefault(r["customer_id"], set()).update(themes_of(r["text"]))
+    for a in json.loads((data / "nps_responses.json").read_text()):
+        written.setdefault(a["customer"], set()).update(themes_of(a.get("comment")))
+
+    assert all(c["themes"] == sorted(written.get(cid, ())) for cid, c in release[0]["customers"].items())
+    assert any(c["themes"] for c in release[0]["customers"].values())

@@ -10,6 +10,8 @@ from __future__ import annotations
 
 from collections import defaultdict
 
+from src.feedback_themes import themes_of
+
 PET_KINDS = ("categories", "brands", "products")
 
 
@@ -36,11 +38,15 @@ def build_facts(traits: list[dict], customers: dict[str, dict], funnel: dict[str
     nps: dict[str, list] = defaultdict(list)
     for a in answers:
         nps[a["customer"]].append([a["month"], a["nps_group"]])
+    themes: dict[str, set[str]] = defaultdict(set)   # what each customer wrote about, in reviews and in survey comments (src/feedback_themes.py)
+    for a in answers:
+        themes[a["customer"]].update(themes_of(a.get("comment")))
     topics: dict[str, set[str]] = defaultdict(set)
     stars: dict[str, set[str]] = defaultdict(set)
     for r in reviews:
         topics[r["customer_id"]].add(r["category"])
         stars[r["customer_id"]].add(str(r["rating"]))
+        themes[r["customer_id"]].update(themes_of(r["text"]))
     out = {}
     for t in traits:
         if not t["profiled"]:
@@ -60,6 +66,7 @@ def build_facts(traits: list[dict], customers: dict[str, dict], funnel: dict[str
             "nps": sorted(nps.get(cid, [])),
             "review_topics": sorted(topics.get(cid, ())),
             "review_stars": sorted(stars.get(cid, ()), reverse=True),
+            "themes": sorted(themes.get(cid, ())),
             "nps_groups": sorted({group for _, group in nps.get(cid, [])}),
             "bought": {pet: {kind: sorted(items[kind]) for kind in PET_KINDS} for pet, items in bought[cid].items()},
         }

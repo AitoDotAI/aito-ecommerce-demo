@@ -16,7 +16,7 @@ const chance = (p: number) => (p < 1e-4 ? "< 0.0001" : p.toFixed(4));
 
 /** A prototype for judging pattern search by eye: counted numbers beside Aito's own `_relate` numbers, sorted by chance or by lift. */
 function FeedbackPatterns() {
-  usePagePanel(null, { title: "Feedback patterns (prototype)", description: "Which products, brands and words stand out among poor reviews and detractors.", breadcrumb: "Prototype › Feedback patterns" });
+  usePagePanel(null, { title: "Feedback patterns (prototype)", description: "Which products, brands and themes stand out among poor reviews and detractors.", breadcrumb: "Prototype › Feedback patterns" });
   const [data, setData] = useState<Record<string, Group> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [groupKey, setGroupKey] = useState("stars");

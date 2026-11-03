@@ -9,7 +9,7 @@ interface PatternRow { clauses: Record<string, string>[]; label: string; k: numb
 interface Group { title: string; rows: number; of: number; sections: Record<string, PatternRow[]> }
 
 const SHOWN = 10;
-export const PATTERN_SECTIONS = [["mined by Aito ($patterns)", "Rules"], ["words mined by Aito ($patterns)", "Words"], ["products", "Products"], ["brand and product-name word", "Product lines"]] as const;
+export const PATTERN_SECTIONS = [["mined by Aito ($patterns)", "Rules"], ["themes", "Themes"], ["products", "Products"], ["brand and product-name word", "Product lines"]] as const;
 const SECTION_TITLE: Record<string, string> = Object.fromEntries(PATTERN_SECTIONS);
 const pill = (on: boolean) => ({ cursor: "pointer", borderRadius: 12, padding: "2px 10px", font: "inherit", fontSize: 12, color: "var(--text)",
   border: `1px solid ${on ? "var(--aito-teal)" : "var(--border)"}`, background: on ? "rgba(0, 168, 150, 0.15)" : "transparent" });

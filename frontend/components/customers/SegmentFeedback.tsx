@@ -7,10 +7,10 @@ import SegmentFeedbackPatterns, { PATTERN_SECTIONS, type FeedbackFilter } from "
 import { zOfShares } from "@/lib/pattern";
 import type { FeedbackRow, SegmentView } from "@/lib/customer-profiles";
 
-const VIEWS = [["rules", "Rules"], ["words", "Words"], ["products", "Products"], ["lines", "Product lines"], ["shares", "Reviews and answers"]] as const;
-const SECTION_OF = { rules: PATTERN_SECTIONS[0][0], words: PATTERN_SECTIONS[1][0], products: PATTERN_SECTIONS[2][0], lines: PATTERN_SECTIONS[3][0] };
+const VIEWS = [["rules", "Rules"], ["themes", "Themes"], ["products", "Products"], ["lines", "Product lines"], ["shares", "Reviews and answers"]] as const;
+const SECTION_OF = { rules: PATTERN_SECTIONS[0][0], themes: PATTERN_SECTIONS[1][0], products: PATTERN_SECTIONS[2][0], lines: PATTERN_SECTIONS[3][0] };
 
-/** What the segment says: the figures, then one view at a time: what stands out among poor feedback (rules, words, products, product lines), or the share of each kind of review and answer. */
+/** What the segment says: the figures, then one view at a time: what stands out among poor feedback (rules, themes, products, product lines), or the share of each kind of review and answer. */
 export default function SegmentFeedback({ view, selected, onSelect }: { view: SegmentView; selected: FeedbackFilter | null; onSelect: (filter: FeedbackFilter | null) => void }) {
   if (!view.feedback) return null;
   const { selected: entry, all } = view.feedback;

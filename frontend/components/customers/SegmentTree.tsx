@@ -9,7 +9,7 @@ import { TREE, TRAIT_TITLE, describe, type KpiId, type ProfilesSummary, type Seg
 const TABS = [{ id: "behaviour", label: "Behaviour", traits: ["offer", "price", "rating", "margin", "status", "pets", "diets"] },
               { id: "products", label: "Products", traits: ["category", "brand"] },
               { id: "where", label: "Where", traits: ["region"] },
-              { id: "feedback", label: "Feedback", traits: ["review", "stars", "nps"] }] as const;
+              { id: "feedback", label: "Feedback", traits: ["theme", "review", "stars", "nps"] }] as const;
 type TabId = (typeof TABS)[number]["id"];
 
 /**
@@ -113,6 +113,9 @@ export default function SegmentTree({ summary, view, conditions, kpi, onKpi, onT
         )}
         {tab === "feedback" && (
           <div style={{ marginTop: 10 }}>
+            <div style={{ fontWeight: 700, fontSize: 13 }}>{TRAIT_TITLE.theme}</div>
+            <div className="card-sub" style={{ fontSize: 12 }}>Customers who raised that concern, or said that, in a review or in a survey comment. A message can be about several things.</div>
+            <div style={{ margin: "6px 0 10px 8px" }}>{listed("theme").map((c) => row(c, c.slice("theme:".length)))}</div>
             <div style={{ fontWeight: 700, fontSize: 13 }}>{TRAIT_TITLE.review}</div>
             <div className="card-sub" style={{ fontSize: 12 }}>Customers who wrote at least one review of that kind about a product. A review is about a product; the topic is what it says.</div>
             <div style={{ margin: "6px 0 10px 8px" }}>{listed("review").map((c) => row(c, c.slice("review:".length)))}</div>
