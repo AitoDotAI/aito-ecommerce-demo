@@ -66,7 +66,7 @@ the starting point.
 | 0060 | [The period as context in Analytics: figures, preferences, similar segments and feedback modelled within the window](0060-period-as-context.md) | Accepted in part |
 | 0061 | [Supply follows what drives demand, and the second lever: ending a line that does not move](0061-supply-follows-demand.md) | Accepted in part |
 | 0062 | [A dataset where demand moves: seasonal ware, trends, hit and flop launches](0062-demand-that-moves.md) | Proposed |
-| 0063 | [Feedback text is indexed with Aito's English analyzer, and word patterns show the real phrase](0063-english-analyzer-for-feedback-text.md) | Proposed |
+| 0063 | [Feedback text is indexed with Aito's English analyzer](0063-english-analyzer-for-feedback-text.md) | Accepted, not yet applied |
 
 ADRs are externally legible — an outside developer should understand
 the decision and its rationale without project-internal context. Keep
