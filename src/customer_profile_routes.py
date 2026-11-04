@@ -18,6 +18,7 @@ from src.customer_period import NoPreviousPeriod, compare
 from src.customer_period_mix import preference_changes, segment_changes
 from src.customer_relations import MIN_GROUP
 from src.customer_rows import page_of
+from src.feedback_patterns_routes import stored_patterns
 from src.feedback_segment_patterns import segment_patterns
 from src.customer_selection import members, parse, ranking_for, view
 from src.customer_selection_data import actions, answers, catalogue, facts, journeys, reviews, rows
@@ -166,13 +167,13 @@ def _feedback_patterns(conditions: tuple[str, ...]) -> dict:
     chosen = members(facts()["customers"], parse(list(conditions)))
     if len(chosen) < MIN_GROUP:
         return {"too_small": True, "customers": len(chosen), "min_customers": MIN_GROUP}
-    return {"too_small": False, "customers": len(chosen), **segment_patterns(reviews(), answers(), set(chosen), catalogue())}
+    return {"too_small": False, "customers": len(chosen), **segment_patterns(reviews(), answers(), set(chosen), catalogue(), stored_patterns())}
 
 
 @router.get("/api/customer-profiles/feedback-patterns")
 def customer_feedback_patterns(c: list[str] = Query(default=[])):
     """The Feedback tab's pattern lists (themes, products, products with a theme, product lines) counted over the reviews and NPS answers of the
-    profiled customers who meet every condition `c`. The AND-rules Aito mines are stored for all customers only (`/api/feedback-patterns`)."""
+    profiled customers who meet every condition `c`. The AND-rules Aito mined over all customers (`/api/feedback-patterns`) are the same, recounted in the segment."""
     try:
         return _feedback_patterns(tuple(f"{t}:{v}" for t, v in parse(c)))
     except ValueError as error:

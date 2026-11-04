@@ -182,3 +182,13 @@ def test_a_segments_lists_differ_from_everyones_and_a_tiny_segment_is_not_listed
 def test_a_pattern_is_refused_together_with_a_period_it_would_ignore():
     spec = json.dumps({"group": "stars", "clauses": []})
     assert api().get("/api/customer-profiles/rows", params={"tab": "reviews", "pattern": spec, "start": "2026-01", "end": "2026-03"}).status_code == 400
+
+
+def test_a_mined_pattern_recounted_in_a_segment_has_as_many_rows_as_its_count():
+    conditions = [("c", "pets:dog")]
+    lists = api().get("/api/customer-profiles/feedback-patterns", params=conditions).json()
+    rule = next(r for r in lists["stars"]["sections"]["mined by Aito ($patterns)"] if r["k"] > 0)
+    spec = {"group": "stars", "clauses": rule["clauses"]}
+    rows = api().get("/api/customer-profiles/rows", params=[("tab", "reviews"), ("pattern", json.dumps(spec)), *conditions]).json()
+
+    assert rows["total"] == rule["k"]

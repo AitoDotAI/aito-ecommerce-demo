@@ -10,7 +10,11 @@ PATTERNS = Path(__file__).resolve().parent.parent / "data" / "evidence" / "feedb
 router = APIRouter()
 
 
-@router.get("/api/feedback-patterns")
-def feedback_patterns() -> dict:
+def stored_patterns() -> dict:
     assert PATTERNS.exists(), f"{PATTERNS} is missing: run `uv run python scripts/feedback_patterns_prototype.py`"
     return json.loads(PATTERNS.read_text())
+
+
+@router.get("/api/feedback-patterns")
+def feedback_patterns() -> dict:
+    return stored_patterns()

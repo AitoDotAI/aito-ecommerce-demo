@@ -83,3 +83,23 @@ def test_rows_are_ordered_by_the_chance_of_luck_smallest_first():
 
 def test_no_customers_gives_empty_lists():
     assert all(rows == [] for rows in sections(set()).values())
+
+
+MINED = {"stars": {"sections": {"mined by Aito ($patterns)": [
+    {"label": "category=shipping AND product=Acme Dog Food Large", "k": 99, "overall": 99, "p": 0.5, "lift": 1.0, "aito": {"lift": 2.0}, "products": None,
+     "clauses": [{"field": "product_sku", "value": "SKU-A"}, {"field": "themes", "word": "damaged-packaging"}]}]}},
+    "detractors": {"sections": {"mined by Aito ($patterns)": []}}}
+
+
+def test_a_mined_pattern_is_recounted_in_the_segment_with_new_counts_chance_and_lift():
+    north = {f"N{i}" for i in range(6)}
+    out = segment_patterns(REVIEWS, ANSWERS, north, PRODUCTS, MINED)["stars"]["sections"]["mined by Aito ($patterns)"]
+    assert len(out) == 1 and out[0]["label"] == "category=shipping AND product=Acme Dog Food Large"
+    assert (out[0]["k"], out[0]["overall"]) == (4, 4)
+    assert out[0]["p"] < 0.5 and out[0]["aito"] is None
+
+
+def test_a_mined_pattern_the_segment_has_no_rows_for_is_kept_with_zero_rows():
+    south = {"S0", "S1", "S2"}
+    out = segment_patterns(REVIEWS, ANSWERS, south, PRODUCTS, MINED)["stars"]["sections"]["mined by Aito ($patterns)"]
+    assert (out[0]["k"], out[0]["overall"], out[0]["p"], out[0]["lift"]) == (0, 0, 1.0, None)
