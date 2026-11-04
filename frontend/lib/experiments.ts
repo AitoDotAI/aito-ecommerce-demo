@@ -21,6 +21,11 @@ export interface PersonalChoice {
   gain_percent: number; interval_percent: [number, number]; ceiling_gain_percent: number; share_of_gap: number | null; verdict: PersonVerdict;
   profit_per_showing: { control: number; winner: number; personal: number; oracle: number };
 }
+/** `/api/experiments/{id}/plan`: what a split, a floor and a guardrail would mean for one experiment (`src/experiment_plan.py`). */
+export interface Plan {
+  monthly_showings: number; testing: { profit_per_month: number }; decided: { arm: string; profit_per_month: number }; all_control: { profit_per_month: number };
+  cost_of_testing_per_month: number; months_to_clear: number | null; guardrail: { trips: boolean; limit_eur: number; upper_end_eur: number }; verdict_now: ArmVerdict;
+}
 export interface ExperimentsData { months: string[]; held_out_month: string; experiments: Experiment[]; per_person: Record<Kind, PersonalChoice> }
 
 /** The two arms of each kind, control first. */

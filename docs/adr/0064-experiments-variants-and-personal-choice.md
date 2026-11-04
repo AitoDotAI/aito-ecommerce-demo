@@ -1,6 +1,6 @@
 # ADR 0064: Experiments — variants of a product, and a choice made per person
 
-**Status:** Accepted (2026-11-04, Antti: "Can you implement the adr?"). Slices 1 and 2 built; slice 3 (controls, serving in the Shop) open. Proposed on 2026-11-04 as: "Let's test this. We will also need some kind of Experiments page to control the A/B testing and person specific optimizations … this doesn't need to be about prices as such (we could have separate personal offers for emails, some special section or something else that is compliant), but it can also be the titles, images, internal product ad overall and such.")
+**Status:** Accepted (2026-11-04, Antti: "Can you implement the adr?"). Slices 1 and 2 built; slice 3 built as what-if controls (serving variants in the Shop is not built). Proposed on 2026-11-04 as: "Let's test this. We will also need some kind of Experiments page to control the A/B testing and person specific optimizations … this doesn't need to be about prices as such (we could have separate personal offers for emails, some special section or something else that is compliant), but it can also be the titles, images, internal product ad overall and such.")
 **Date:** 2026-11-04
 **Deciders:** Antti
 **Builds on:** ADR 0032 (product states), ADR 0038 (labels assigned at random), ADR 0051 (actions and their outcomes, "none" as an action), ADR 0021 (impressions)
@@ -97,7 +97,7 @@ A new Experiments page in the Operate section and a line in `docs/demo-script.md
 
 1. The generator adds variants and randomised showings to the main data (a data release), with an answer key for the planted reactions.
 2. The Experiments page, read-only: the results, the decision and the per-person gain with its interval, from stored files.
-3. The controls and serving a variant in the Shop.
+3. The controls, and serving a variant in the Shop. Built as what-if controls only (Amendment 3).
 
 ## Amendment 1 (2026-11-04): slice 1 as built
 
@@ -123,7 +123,7 @@ A new Experiments page in the Operate section and a line in `docs/demo-script.md
 
 - `scripts/experiments_evidence.py` writes `data/evidence/experiments.json` (`./do experiments-evidence`): each arm's showings and purchases counted in Aito,
   the difference of the second arm from the control with a 95 % interval, and per kind whether choosing per person pays, on the last month, which a branch
-  of master holding the earlier showings had not learned from. The Experiments page (`/experiments`, Operate) reads it; the controls are not built.
+  of master holding the earlier showings had not learned from. The Experiments page (`/experiments`, Operate) reads it; the what-if controls came in slice 3 (Amendment 3).
 - **In the demo's world choosing per person does not pay with these signals** (held-out month, 1,500 shoppers and products per kind): titles +1.7 %
   (0.5 to 3.0, a small gain), offers 0 % (Aito chooses the control for everybody, as the plain test does: even the affiliate visitors' offer lift of
   ×1.9 is under the ≈×2 an offer must beat to pay for its margin on the products tested), images −2.2 % (−3.0 to −1.4: six source levels with a thin difference between them
@@ -132,3 +132,14 @@ A new Experiments page in the Operate section and a line in `docs/demo-script.md
 - Most experiments are `no clear difference` after four months: about 6,000 showings an arm and a purchase rate near 5 % do not separate a 10 %
   difference in profit per showing from luck. EXP-02 (a title) is the clear one and was decided early; a decision taken after two months on a smaller
   count is the kind the page's interval is there to question.
+
+## Amendment 3 (2026-11-04): slice 3 as built, what-if controls
+
+- **The controls are projections, not switches.** The demo reads stored evidence and the Shop serves no experiment arm, so a start, stop or split
+  could change nothing real. Instead each experiment with showings gets a "What if" panel: the share of showings on the second arm while testing, the exploration floor once
+  a winner is decided, and a guardrail (how much less than the control the second arm may earn). `GET /api/experiments/{id}/plan` (`src/experiment_plan.py`) answers from the counted arms:
+  profit a month at that split, with the control for everybody, and with the better arm decided (floor kept on the other); the cost of testing on against deciding now;
+  the further months a clear answer needs at that split (normal approximation, stays as measured; none within three years says so); and whether the guardrail would trip
+  (the upper end of the difference's interval below minus the limit, so a guardrail needs the data to say the arm is worse).
+- **Drafts have no panel** (nothing to project from; the route answers 400). A split, floor or guardrail out of range is refused with the range.
+- **Not built: serving variants in the Shop and a real start/stop/decide.** That needs writes (a sandbox branch as in ADR 0043) and simulated showings so the evidence moves. Open.

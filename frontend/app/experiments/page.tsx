@@ -9,6 +9,7 @@ import { usePagePanel } from "@/components/shell/ShellState";
 import ErrorState from "@/components/shell/ErrorState";
 import ExperimentDetail from "@/components/experiments/ExperimentDetail";
 import ExperimentList from "@/components/experiments/ExperimentList";
+import PlanControls from "@/components/experiments/PlanControls";
 import PersonalChoice from "@/components/experiments/PersonalChoice";
 import { useUrlState } from "@/lib/use-url-state";
 
@@ -45,6 +46,7 @@ function Experiments() {
         <ExperimentList experiments={data.experiments} selected={selected.experiment_id} onSelect={setChosen} />
         <div style={{ display: "grid", gap: 12, minWidth: 0 }}>
           <ExperimentDetail e={selected} />
+          {selected.status !== "draft" && <PlanControls key={selected.experiment_id} e={selected} />}
           <PersonalChoice kind={selected.kind} result={data.per_person[selected.kind]} arms={ARMS[selected.kind]} />
         </div>
       </div>

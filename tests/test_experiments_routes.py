@@ -39,3 +39,14 @@ def test_each_kind_says_whether_choosing_per_person_pays_with_an_interval_and_wh
         assert low <= result["gain_percent"] <= high
         assert result["ceiling_gain_percent"] >= result["gain_percent"], kind
         assert result["levels"] and result["held_out_month"] == body()["held_out_month"]
+
+
+def test_the_plan_route_answers_for_a_running_experiment_and_refuses_a_draft_and_a_bad_split():
+    client = TestClient(app)
+    running = next(e for e in body()["experiments"] if e["status"] == "running")["experiment_id"]
+    draft = next(e for e in body()["experiments"] if e["status"] == "draft")["experiment_id"]
+    ok = client.get(f"/api/experiments/{running}/plan", params={"allocation": 0.3, "floor": 0.1, "guardrail": 10})
+    assert ok.status_code == 200 and {"testing", "decided", "all_control", "months_to_clear", "guardrail"} <= set(ok.json())
+    assert client.get(f"/api/experiments/{draft}/plan").status_code == 400
+    assert client.get(f"/api/experiments/{running}/plan", params={"allocation": 1.5}).status_code == 400
+    assert client.get("/api/experiments/EXP-99/plan").status_code == 404
