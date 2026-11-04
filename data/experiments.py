@@ -8,8 +8,12 @@ The planted reactions, hidden in the answer key and found by the tests (`data/an
 purchase on each arm):
 
   X1  an offer lifts the chance ×2.6 for a shopper with high discount sensitivity (ADR 0038), ×1.4 for mid, ×1.05 for low
-  X2  a benefit-led title lifts it ×1.5 for a high health focus, ×1.15 for medium, and lowers it to ×0.95 for low
-  X3  a lifestyle image lifts it ×1.4 for a shopper with high newness sensitivity, ×1.15 for mid, ×1.0 for low
+  X2  a benefit-led title lifts it ×1.5 for a high health focus, ×1.1 for medium, and puts off a low one (×0.6: claims read as noise)
+  X3  a lifestyle image lifts it ×1.4 for a shopper with high newness sensitivity, ×1.1 for mid, and puts off a low one (×0.75: they want the product)
+
+The first draft had ×0.95 and ×1.0 for the low levels. Then neither arm was ever worse for anyone, so a plain winner was also the best choice for every
+shopper and choosing per person could not pay for titles or images. A reaction that differs in sign between people is what the page exists to find,
+so the low levels were set to put some shoppers off; the ADR says so.
 
 The shop sees none of that. What it can observe goes on each showing as `signal`: the share of the shopper's lines bought on offer (offer), the
 share of wellness diets among what they bought (title), the source of their first visit (image).
@@ -25,15 +29,15 @@ from data.planted_switches import stream
 KINDS = ("offer", "title", "image")
 ARMS = {"offer": ("list", "offer"), "title": ("plain", "benefit"), "image": ("packshot", "lifestyle")}
 OFFER_SHARE = 0.85                         # the offer arm's price, as a share of the list price
-LIFT = {"offer": {"high": 2.6, "mid": 1.4, "low": 1.05}, "title": {"high": 1.5, "medium": 1.15, "low": 0.95},
-        "image": {"high": 1.4, "mid": 1.15, "low": 1.0}}
+LIFT = {"offer": {"high": 2.6, "mid": 1.4, "low": 1.05}, "title": {"high": 1.5, "medium": 1.1, "low": 0.6},
+        "image": {"high": 1.4, "mid": 1.1, "low": 0.75}}
 MONTHS = 4                                 # the last four months of the data; the evidence holds the last out
 EXPERIMENTS = 12
 DRAFTS = 2                                 # the last two have no showings yet
 DECIDED = {"offer": 1, "title": 1}         # how many of each kind are decided after two months (the first of the kind in rank order)
 DECIDED_AFTER = 2                          # months of 50/50 before a decision
 SERVE_WINNER = 0.9                         # after a decision the winner is shown at 90 %, the rest still at random
-SHOWINGS_PER_MONTH = 2
+SHOWINGS_PER_MONTH = 4
 BASE_CHANCE = (0.03, 0.09)                 # a product's chance of a purchase on a showing before the arm's lift
 BENEFIT = {"dry-food": "complete daily nutrition", "wet-food": "real meat, no fillers", "treats": "a reward that is good for them",
            "toys": "built to last", "litter": "low dust, fast clumping", "health": "vet-recommended care",

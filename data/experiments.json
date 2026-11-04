@@ -7,7 +7,7 @@
     "status": "decided",
     "started_month": "2026-01",
     "decided_month": "2026-02",
-    "decided_arm": "list",
+    "decided_arm": "offer",
     "allocation": 0.5,
     "explore_floor": 0.1,
     "signal": "offer_buyer"

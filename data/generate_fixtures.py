@@ -3562,7 +3562,7 @@ def main() -> None:
     write_json(DATA_DIR / "action_contexts.json", action_contexts)
     for table in ("experiments", "experiment_variants"):
         write_json(DATA_DIR / f"{table}.json", experiment_tables[table])
-    # About 28 k rows: one line each, so the file stays small enough to commit.
+    # About 140 k rows: one line each, so the file stays small enough to commit.
     with (DATA_DIR / "experiment_showings.json").open("w", encoding="utf-8") as fh:
         fh.write("[\n" + ",\n".join(json.dumps(row, ensure_ascii=False) for row in experiment_tables["experiment_showings"]) + "\n]\n")
     write_json(DATA_DIR / "contexts.json", contexts)
