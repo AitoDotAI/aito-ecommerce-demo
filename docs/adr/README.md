@@ -67,6 +67,7 @@ the starting point.
 | 0061 | [Supply follows what drives demand, and the second lever: ending a line that does not move](0061-supply-follows-demand.md) | Accepted in part |
 | 0062 | [A dataset where demand moves: seasonal ware, trends, hit and flop launches](0062-demand-that-moves.md) | Proposed |
 | 0063 | [Feedback text is indexed with Aito's English analyzer](0063-english-analyzer-for-feedback-text.md) | Accepted, not yet applied |
+| 0064 | [Experiments — variants of a product, and a choice made per person](0064-experiments-variants-and-personal-choice.md) | Proposed |
 
 ADRs are externally legible — an outside developer should understand
 the decision and its rationale without project-internal context. Keep
