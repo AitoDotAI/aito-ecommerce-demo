@@ -309,6 +309,22 @@ answer and the tokens: this is where a model works, read-only, and it replays wi
 yet. The numbers are those of the stored run for the current data release; a run
 stored for another release shows a "stale" notice.
 
+## 5c. Experiments: which arm, and for whom (about 1 minute)
+
+Operate → Experiments. Twelve A/B tests on how a product is shown (an offer, a title, an image), ten with showings, two drafts. Open the
+cat litter offer (EXP-01): the 15 % off arm sells at 9.8 % against 5.0 %, and earns the same €0.17 per showing, because it earns €1.69 a sale
+against €3.37. Say that a test counts profit, not purchases. Then the interval bar: most experiments say "no clear difference" after four months
+and that is the page being honest, not empty.
+
+Below it, "Choosing per person": the table says how much better the second arm sells for each kind of shopper (for offers, by where the first visit
+came from), and the sentence under it compares Aito's per-person choice with the plain winner on a month Aito had not learned from. In this data it
+does not pay (titles +1.7 %, a small gain; offers 0; images −2.2 %), and the page says "keep the plain winner" with the +5 to +12 % a perfect signal
+would earn. That is the point to make: a person-specific choice is only as good as the signal about the person.
+
+**Check first:** twelve experiments in the list, EXP-02 (Trixie Collar, large) is "Decided" with the benefit-led title ahead, EXP-11 and EXP-12 are drafts.
+
+**Recovery:** if the page says it couldn't load the experiments, `./do experiments-evidence` rewrites the stored file (needs env `experiments-evidence`).
+
 ## 6. How well? Evidence: the close (about 1 minute)
 
 **Click:** the sidebar's **Evidence**, then **Business reorders** (Real

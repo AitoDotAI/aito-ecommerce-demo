@@ -1,0 +1,826 @@
+{
+ "months": [
+  "2026-01",
+  "2026-02",
+  "2026-03",
+  "2026-04"
+ ],
+ "held_out_month": "2026-04",
+ "experiments": [
+  {
+   "experiment_id": "EXP-01",
+   "product_sku": "SKU-PT-0483",
+   "kind": "offer",
+   "hypothesis": "A 15 % offer on PetNord Clumping Clay Cat Litter 7kg, unscented earns more profit than it gives away in margin.",
+   "status": "decided",
+   "started_month": "2026-01",
+   "decided_month": "2026-02",
+   "decided_arm": "offer",
+   "allocation": 0.5,
+   "explore_floor": 0.1,
+   "signal": "first_source",
+   "product": "PetNord Clumping Clay Cat Litter 7kg, unscented",
+   "arms": [
+    {
+     "arm": "list",
+     "is_control": true,
+     "price_eur": 11.23,
+     "margin_eur": 3.37,
+     "title": "PetNord Clumping Clay Cat Litter 7kg, unscented",
+     "image": "SKU-PT-0483-packshot.jpg",
+     "showings": 3490,
+     "purchases": 174,
+     "rate": 0.0498567335243553,
+     "profit_per_showing": 0.16801719197707737
+    },
+    {
+     "arm": "offer",
+     "is_control": false,
+     "price_eur": 9.55,
+     "margin_eur": 1.69,
+     "title": "PetNord Clumping Clay Cat Litter 7kg, unscented",
+     "image": "SKU-PT-0483-packshot.jpg",
+     "showings": 9182,
+     "purchases": 898,
+     "rate": 0.0978000435634938,
+     "profit_per_showing": 0.16528207362230452
+    }
+   ],
+   "difference": {
+    "delta": -0.0027351183547728586,
+    "interval": [
+     -0.029147692236676268,
+     0.02367745552713055
+    ]
+   },
+   "verdict": "no clear difference"
+  },
+  {
+   "experiment_id": "EXP-02",
+   "product_sku": "SKU-PT-0213",
+   "kind": "title",
+   "hypothesis": "A title that leads with the benefit sells Trixie Collar, large better than its plain name.",
+   "status": "decided",
+   "started_month": "2026-01",
+   "decided_month": "2026-02",
+   "decided_arm": "benefit",
+   "allocation": 0.5,
+   "explore_floor": 0.1,
+   "signal": "wellness_share",
+   "product": "Trixie Collar, large",
+   "arms": [
+    {
+     "arm": "plain",
+     "is_control": true,
+     "price_eur": 20.71,
+     "margin_eur": 9.32,
+     "title": "Trixie Collar, large",
+     "image": "SKU-PT-0213-packshot.jpg",
+     "showings": 4441,
+     "purchases": 201,
+     "rate": 0.045260076559333486,
+     "profit_per_showing": 0.4218239135329881
+    },
+    {
+     "arm": "benefit",
+     "is_control": false,
+     "price_eur": 20.71,
+     "margin_eur": 9.32,
+     "title": "Trixie Collar, large: made for everyday comfort",
+     "image": "SKU-PT-0213-packshot.jpg",
+     "showings": 11815,
+     "purchases": 654,
+     "rate": 0.05535336436732967,
+     "profit_per_showing": 0.5158933559035125
+    }
+   ],
+   "difference": {
+    "delta": 0.09406944237052439,
+    "interval": [
+     0.025340506211338973,
+     0.1627983785297098
+    ]
+   },
+   "verdict": "second arm better"
+  },
+  {
+   "experiment_id": "EXP-03",
+   "product_sku": "SKU-PT-0491",
+   "kind": "image",
+   "hypothesis": "A lifestyle image sells PetNord Recycled Paper Cat Litter 7kg, unscented better than the pack shot.",
+   "status": "running",
+   "started_month": "2026-01",
+   "allocation": 0.5,
+   "explore_floor": 0.1,
+   "signal": "first_source",
+   "product": "PetNord Recycled Paper Cat Litter 7kg, unscented",
+   "arms": [
+    {
+     "arm": "packshot",
+     "is_control": true,
+     "price_eur": 11.4,
+     "margin_eur": 3.42,
+     "title": "PetNord Recycled Paper Cat Litter 7kg, unscented",
+     "image": "SKU-PT-0491-packshot.jpg",
+     "showings": 6332,
+     "purchases": 523,
+     "rate": 0.08259633607075174,
+     "profit_per_showing": 0.28247946936197094
+    },
+    {
+     "arm": "lifestyle",
+     "is_control": false,
+     "price_eur": 11.4,
+     "margin_eur": 3.42,
+     "title": "PetNord Recycled Paper Cat Litter 7kg, unscented",
+     "image": "SKU-PT-0491-lifestyle.jpg",
+     "showings": 6340,
+     "purchases": 582,
+     "rate": 0.09179810725552051,
+     "profit_per_showing": 0.31394952681388016
+    }
+   ],
+   "difference": {
+    "delta": 0.03147005745190923,
+    "interval": [
+     -0.0021242099849642787,
+     0.06506432488878273
+    ]
+   },
+   "verdict": "no clear difference"
+  },
+  {
+   "experiment_id": "EXP-04",
+   "product_sku": "SKU-PT-0490",
+   "kind": "offer",
+   "hypothesis": "A 15 % offer on PetNord Silica Crystals Cat Litter 7kg, value pack earns more profit than it gives away in margin.",
+   "status": "running",
+   "started_month": "2026-01",
+   "allocation": 0.5,
+   "explore_floor": 0.1,
+   "signal": "first_source",
+   "product": "PetNord Silica Crystals Cat Litter 7kg, value pack",
+   "arms": [
+    {
+     "arm": "list",
+     "is_control": true,
+     "price_eur": 9.22,
+     "margin_eur": 2.77,
+     "title": "PetNord Silica Crystals Cat Litter 7kg, value pack",
+     "image": "SKU-PT-0490-packshot.jpg",
+     "showings": 6317,
+     "purchases": 506,
+     "rate": 0.080101313914833,
+     "profit_per_showing": 0.2218806395440874
+    },
+    {
+     "arm": "offer",
+     "is_control": false,
+     "price_eur": 7.84,
+     "margin_eur": 1.39,
+     "title": "PetNord Silica Crystals Cat Litter 7kg, value pack",
+     "image": "SKU-PT-0490-packshot.jpg",
+     "showings": 6355,
+     "purchases": 851,
+     "rate": 0.13391030684500393,
+     "profit_per_showing": 0.18613532651455544
+    }
+   ],
+   "difference": {
+    "delta": -0.03574531302953196,
+    "interval": [
+     -0.05763788871652748,
+     -0.01385273734253644
+    ]
+   },
+   "verdict": "control better"
+  },
+  {
+   "experiment_id": "EXP-05",
+   "product_sku": "SKU-PT-0211",
+   "kind": "title",
+   "hypothesis": "A title that leads with the benefit sells Trixie Collar, small better than its plain name.",
+   "status": "running",
+   "started_month": "2026-01",
+   "allocation": 0.5,
+   "explore_floor": 0.1,
+   "signal": "wellness_share",
+   "product": "Trixie Collar, small",
+   "arms": [
+    {
+     "arm": "plain",
+     "is_control": true,
+     "price_eur": 20.05,
+     "margin_eur": 9.02,
+     "title": "Trixie Collar, small",
+     "image": "SKU-PT-0211-packshot.jpg",
+     "showings": 8095,
+     "purchases": 701,
+     "rate": 0.08659666460778258,
+     "profit_per_showing": 0.7811019147621988
+    },
+    {
+     "arm": "benefit",
+     "is_control": false,
+     "price_eur": 20.05,
+     "margin_eur": 9.02,
+     "title": "Trixie Collar, small: made for everyday comfort",
+     "image": "SKU-PT-0211-packshot.jpg",
+     "showings": 8161,
+     "purchases": 746,
+     "rate": 0.09141036637666952,
+     "profit_per_showing": 0.824521504717559
+    }
+   ],
+   "difference": {
+    "delta": 0.043419589955360216,
+    "interval": [
+     -0.035541701074931695,
+     0.12238088098565213
+    ]
+   },
+   "verdict": "no clear difference"
+  },
+  {
+   "experiment_id": "EXP-06",
+   "product_sku": "SKU-PT-0212",
+   "kind": "image",
+   "hypothesis": "A lifestyle image sells Trixie Collar, medium better than the pack shot.",
+   "status": "running",
+   "started_month": "2026-01",
+   "allocation": 0.5,
+   "explore_floor": 0.1,
+   "signal": "first_source",
+   "product": "Trixie Collar, medium",
+   "arms": [
+    {
+     "arm": "packshot",
+     "is_control": true,
+     "price_eur": 24.87,
+     "margin_eur": 11.19,
+     "title": "Trixie Collar, medium",
+     "image": "SKU-PT-0212-packshot.jpg",
+     "showings": 8175,
+     "purchases": 388,
+     "rate": 0.04746177370030581,
+     "profit_per_showing": 0.531097247706422
+    },
+    {
+     "arm": "lifestyle",
+     "is_control": false,
+     "price_eur": 24.87,
+     "margin_eur": 11.19,
+     "title": "Trixie Collar, medium",
+     "image": "SKU-PT-0212-lifestyle.jpg",
+     "showings": 8081,
+     "purchases": 414,
+     "rate": 0.05123128325702265,
+     "profit_per_showing": 0.5732780596460834
+    }
+   ],
+   "difference": {
+    "delta": 0.04218081193966139,
+    "interval": [
+     -0.032341276151537576,
+     0.11670290003086035
+    ]
+   },
+   "verdict": "no clear difference"
+  },
+  {
+   "experiment_id": "EXP-07",
+   "product_sku": "SKU-PT-0487",
+   "kind": "offer",
+   "hypothesis": "A 15 % offer on PetNord Silica Crystals Cat Litter 7kg, lavender scent earns more profit than it gives away in margin.",
+   "status": "running",
+   "started_month": "2026-01",
+   "allocation": 0.5,
+   "explore_floor": 0.1,
+   "signal": "first_source",
+   "product": "PetNord Silica Crystals Cat Litter 7kg, lavender scent",
+   "arms": [
+    {
+     "arm": "list",
+     "is_control": true,
+     "price_eur": 12.49,
+     "margin_eur": 3.75,
+     "title": "PetNord Silica Crystals Cat Litter 7kg, lavender scent",
+     "image": "SKU-PT-0487-packshot.jpg",
+     "showings": 6365,
+     "purchases": 416,
+     "rate": 0.06535742340926944,
+     "profit_per_showing": 0.2450903377847604
+    },
+    {
+     "arm": "offer",
+     "is_control": false,
+     "price_eur": 10.62,
+     "margin_eur": 1.88,
+     "title": "PetNord Silica Crystals Cat Litter 7kg, lavender scent",
+     "image": "SKU-PT-0487-packshot.jpg",
+     "showings": 6307,
+     "purchases": 813,
+     "rate": 0.12890439194545744,
+     "profit_per_showing": 0.24234025685745997
+    }
+   ],
+   "difference": {
+    "delta": -0.002750080927300419,
+    "interval": [
+     -0.03032173738339475,
+     0.024821575528793913
+    ]
+   },
+   "verdict": "no clear difference"
+  },
+  {
+   "experiment_id": "EXP-08",
+   "product_sku": "SKU-PT-0203",
+   "kind": "title",
+   "hypothesis": "A title that leads with the benefit sells PetNord Collar better than its plain name.",
+   "status": "running",
+   "started_month": "2026-01",
+   "allocation": 0.5,
+   "explore_floor": 0.1,
+   "signal": "wellness_share",
+   "product": "PetNord Collar",
+   "arms": [
+    {
+     "arm": "plain",
+     "is_control": true,
+     "price_eur": 21.11,
+     "margin_eur": 9.5,
+     "title": "PetNord Collar",
+     "image": "SKU-PT-0203-packshot.jpg",
+     "showings": 8200,
+     "purchases": 286,
+     "rate": 0.03487804878048781,
+     "profit_per_showing": 0.33134146341463416
+    },
+    {
+     "arm": "benefit",
+     "is_control": false,
+     "price_eur": 21.11,
+     "margin_eur": 9.5,
+     "title": "PetNord Collar: made for everyday comfort",
+     "image": "SKU-PT-0203-packshot.jpg",
+     "showings": 8056,
+     "purchases": 317,
+     "rate": 0.03934955312810328,
+     "profit_per_showing": 0.3738207547169812
+    }
+   ],
+   "difference": {
+    "delta": 0.04247929130234701,
+    "interval": [
+     -0.01274829790747508,
+     0.09770688051216911
+    ]
+   },
+   "verdict": "no clear difference"
+  },
+  {
+   "experiment_id": "EXP-09",
+   "product_sku": "SKU-PT-0500",
+   "kind": "image",
+   "hypothesis": "A lifestyle image sells Trixie Scratching Post better than the pack shot.",
+   "status": "running",
+   "started_month": "2026-01",
+   "allocation": 0.5,
+   "explore_floor": 0.1,
+   "signal": "first_source",
+   "product": "Trixie Scratching Post",
+   "arms": [
+    {
+     "arm": "packshot",
+     "is_control": true,
+     "price_eur": 18.5,
+     "margin_eur": 8.32,
+     "title": "Trixie Scratching Post",
+     "image": "SKU-PT-0500-packshot.jpg",
+     "showings": 6270,
+     "purchases": 478,
+     "rate": 0.07623604465709728,
+     "profit_per_showing": 0.6342838915470494
+    },
+    {
+     "arm": "lifestyle",
+     "is_control": false,
+     "price_eur": 18.5,
+     "margin_eur": 8.32,
+     "title": "Trixie Scratching Post",
+     "image": "SKU-PT-0500-lifestyle.jpg",
+     "showings": 6402,
+     "purchases": 529,
+     "rate": 0.08263042799125274,
+     "profit_per_showing": 0.6874851608872228
+    }
+   ],
+   "difference": {
+    "delta": 0.05320126934017333,
+    "interval": [
+     -0.02512827062173993,
+     0.1315308093020866
+    ]
+   },
+   "verdict": "no clear difference"
+  },
+  {
+   "experiment_id": "EXP-10",
+   "product_sku": "SKU-PT-0489",
+   "kind": "offer",
+   "hypothesis": "A 15 % offer on PetNord Silica Crystals Cat Litter 12kg earns more profit than it gives away in margin.",
+   "status": "running",
+   "started_month": "2026-01",
+   "allocation": 0.5,
+   "explore_floor": 0.1,
+   "signal": "first_source",
+   "product": "PetNord Silica Crystals Cat Litter 12kg",
+   "arms": [
+    {
+     "arm": "list",
+     "is_control": true,
+     "price_eur": 17.84,
+     "margin_eur": 5.35,
+     "title": "PetNord Silica Crystals Cat Litter 12kg",
+     "image": "SKU-PT-0489-packshot.jpg",
+     "showings": 6332,
+     "purchases": 342,
+     "rate": 0.0540113708149084,
+     "profit_per_showing": 0.2889608338597599
+    },
+    {
+     "arm": "offer",
+     "is_control": false,
+     "price_eur": 15.16,
+     "margin_eur": 2.67,
+     "title": "PetNord Silica Crystals Cat Litter 12kg",
+     "image": "SKU-PT-0489-packshot.jpg",
+     "showings": 6340,
+     "purchases": 614,
+     "rate": 0.09684542586750788,
+     "profit_per_showing": 0.25857728706624605
+    }
+   ],
+   "difference": {
+    "delta": -0.03038354679351385,
+    "interval": [
+     -0.06595150192029661,
+     0.005184408333268907
+    ]
+   },
+   "verdict": "no clear difference"
+  },
+  {
+   "experiment_id": "EXP-11",
+   "product_sku": "SKU-PT-0496",
+   "kind": "title",
+   "hypothesis": "A title that leads with the benefit sells PetNord Bowl, natural wood better than its plain name.",
+   "status": "draft",
+   "allocation": 0.5,
+   "explore_floor": 0.1,
+   "signal": "wellness_share",
+   "product": "PetNord Bowl, natural wood",
+   "arms": [
+    {
+     "arm": "plain",
+     "is_control": true,
+     "price_eur": 20.29,
+     "margin_eur": 9.13,
+     "title": "PetNord Bowl, natural wood",
+     "image": "SKU-PT-0496-packshot.jpg",
+     "showings": 0,
+     "purchases": 0,
+     "rate": 0.0,
+     "profit_per_showing": 0.0
+    },
+    {
+     "arm": "benefit",
+     "is_control": false,
+     "price_eur": 20.29,
+     "margin_eur": 9.13,
+     "title": "PetNord Bowl, natural wood: made for everyday comfort",
+     "image": "SKU-PT-0496-packshot.jpg",
+     "showings": 0,
+     "purchases": 0,
+     "rate": 0.0,
+     "profit_per_showing": 0.0
+    }
+   ],
+   "difference": null,
+   "verdict": null
+  },
+  {
+   "experiment_id": "EXP-12",
+   "product_sku": "SKU-PT-0501",
+   "kind": "image",
+   "hypothesis": "A lifestyle image sells Trixie Bowl, large better than the pack shot.",
+   "status": "draft",
+   "allocation": 0.5,
+   "explore_floor": 0.1,
+   "signal": "first_source",
+   "product": "Trixie Bowl, large",
+   "arms": [
+    {
+     "arm": "packshot",
+     "is_control": true,
+     "price_eur": 19.45,
+     "margin_eur": 8.75,
+     "title": "Trixie Bowl, large",
+     "image": "SKU-PT-0501-packshot.jpg",
+     "showings": 0,
+     "purchases": 0,
+     "rate": 0.0,
+     "profit_per_showing": 0.0
+    },
+    {
+     "arm": "lifestyle",
+     "is_control": false,
+     "price_eur": 19.45,
+     "margin_eur": 8.75,
+     "title": "Trixie Bowl, large",
+     "image": "SKU-PT-0501-lifestyle.jpg",
+     "showings": 0,
+     "purchases": 0,
+     "rate": 0.0,
+     "profit_per_showing": 0.0
+    }
+   ],
+   "difference": null,
+   "verdict": null
+  }
+ ],
+ "per_person": {
+  "offer": {
+   "signal": "first_source",
+   "levels": [
+    {
+     "signal": "affiliate",
+     "list": {
+      "showings": 2243,
+      "rate": 0.07757467677218012
+     },
+     "offer": {
+      "showings": 2557,
+      "rate": 0.14626515447790378
+     },
+     "lift": 1.8854755258272309
+    },
+    {
+     "signal": "direct",
+     "list": {
+      "showings": 3370,
+      "rate": 0.05845697329376855
+     },
+     "offer": {
+      "showings": 3926,
+      "rate": 0.1044319918492104
+     },
+     "lift": 1.7864762057453758
+    },
+    {
+     "signal": "email",
+     "list": {
+      "showings": 1371,
+      "rate": 0.06272793581327499
+     },
+     "offer": {
+      "showings": 1557,
+      "rate": 0.10854206807964033
+     },
+     "lift": 1.7303625039207777
+    },
+    {
+     "signal": "organic_search",
+     "list": {
+      "showings": 5469,
+      "rate": 0.05704882062534284
+     },
+     "offer": {
+      "showings": 6387,
+      "rate": 0.11335525285736653
+     },
+     "lift": 1.9869867880671075
+    },
+    {
+     "signal": "paid_search",
+     "list": {
+      "showings": 3596,
+      "rate": 0.06312569521690768
+     },
+     "offer": {
+      "showings": 4228,
+      "rate": 0.1097445600756859
+     },
+     "lift": 1.7385085375866365
+    },
+    {
+     "signal": "social",
+     "list": {
+      "showings": 1542,
+      "rate": 0.07782101167315175
+     },
+     "offer": {
+      "showings": 1770,
+      "rate": 0.09661016949152543
+     },
+     "lift": 1.2414406779661018
+    }
+   ],
+   "experiments": [
+    "EXP-01",
+    "EXP-04",
+    "EXP-07",
+    "EXP-10"
+   ],
+   "held_out_month": "2026-04",
+   "gain_percent": 0.0,
+   "interval_percent": [
+    0.0,
+    0.0
+   ],
+   "pairs": 1500,
+   "profit_per_showing": {
+    "control": 0.238513314,
+    "winner": 0.238513314,
+    "personal": 0.238513314,
+    "oracle": 0.26541159266666736
+   },
+   "share_of_gap": 0.0,
+   "ceiling_gain_percent": 11.27747471014023,
+   "verdict": "keep the plain winner"
+  },
+  "title": {
+   "signal": "wellness_share",
+   "levels": [
+    {
+     "signal": "most",
+     "plain": {
+      "showings": 6625,
+      "rate": 0.05418867924528302
+     },
+     "benefit": {
+      "showings": 8171,
+      "rate": 0.06523069391751316
+     },
+     "lift": 1.2037697693691494
+    },
+    {
+     "signal": "none",
+     "plain": {
+      "showings": 1872,
+      "rate": 0.04861111111111111
+     },
+     "benefit": {
+      "showings": 2376,
+      "rate": 0.05597643097643098
+     },
+     "lift": 1.1515151515151516
+    },
+    {
+     "signal": "some",
+     "plain": {
+      "showings": 7944,
+      "rate": 0.05966767371601209
+     },
+     "benefit": {
+      "showings": 9552,
+      "rate": 0.05600921273031826
+     },
+     "lift": 0.9386860462650807
+    },
+    {
+     "signal": "unknown",
+     "plain": {
+      "showings": 17,
+      "rate": 0.0
+     },
+     "benefit": {
+      "showings": 19,
+      "rate": 0.0
+     },
+     "lift": null
+    }
+   ],
+   "experiments": [
+    "EXP-02",
+    "EXP-05",
+    "EXP-08"
+   ],
+   "held_out_month": "2026-04",
+   "gain_percent": 1.7248971599825507,
+   "interval_percent": [
+    0.5286293877107981,
+    3.0091881772359415
+   ],
+   "pairs": 1500,
+   "profit_per_showing": {
+    "control": 0.5332508599999934,
+    "winner": 0.5598692813333291,
+    "personal": 0.569526450666663,
+    "oracle": 0.6247513013333297
+   },
+   "share_of_gap": 0.14884199556878386,
+   "ceiling_gain_percent": 11.588780124796981,
+   "verdict": "small gain"
+  },
+  "image": {
+   "signal": "first_source",
+   "levels": [
+    {
+     "signal": "affiliate",
+     "packshot": {
+      "showings": 1874,
+      "rate": 0.0768409818569904
+     },
+     "lifestyle": {
+      "showings": 1918,
+      "rate": 0.08185610010427528
+     },
+     "lift": 1.0652661916348047
+    },
+    {
+     "signal": "direct",
+     "packshot": {
+      "showings": 3039,
+      "rate": 0.0654820664692333
+     },
+     "lifestyle": {
+      "showings": 3153,
+      "rate": 0.06850618458610847
+     },
+     "lift": 1.0461823867195157
+    },
+    {
+     "signal": "email",
+     "packshot": {
+      "showings": 1267,
+      "rate": 0.06629834254143646
+     },
+     "lifestyle": {
+      "showings": 1241,
+      "rate": 0.0717163577759871
+     },
+     "lift": 1.0817217297878055
+    },
+    {
+     "signal": "organic_search",
+     "packshot": {
+      "showings": 4837,
+      "rate": 0.07091172214182344
+     },
+     "lifestyle": {
+      "showings": 4811,
+      "rate": 0.0690085221367699
+     },
+     "lift": 0.9731609958471021
+    },
+    {
+     "signal": "paid_search",
+     "packshot": {
+      "showings": 3214,
+      "rate": 0.06689483509645301
+     },
+     "lifestyle": {
+      "showings": 3110,
+      "rate": 0.08392282958199357
+     },
+     "lift": 1.2545487175652434
+    },
+    {
+     "signal": "social",
+     "packshot": {
+      "showings": 1310,
+      "rate": 0.05419847328244275
+     },
+     "lifestyle": {
+      "showings": 1426,
+      "rate": 0.07784011220196353
+     },
+     "lift": 1.436204887106651
+    }
+   ],
+   "experiments": [
+    "EXP-03",
+    "EXP-06",
+    "EXP-09"
+   ],
+   "held_out_month": "2026-04",
+   "gain_percent": -2.2280666518235916,
+   "interval_percent": [
+    -2.96935455341419,
+    -1.3581188281580752
+   ],
+   "pairs": 1500,
+   "profit_per_showing": {
+    "control": 0.4866645753333324,
+    "winner": 0.5451372526666637,
+    "personal": 0.5329912313333314,
+    "oracle": 0.5753513406666633
+   },
+   "share_of_gap": -0.40199860850780866,
+   "ceiling_gain_percent": 5.5424735426171035,
+   "verdict": "keep the plain winner"
+  }
+ }
+}

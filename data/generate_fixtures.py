@@ -3535,7 +3535,6 @@ def main() -> None:
         [{"customer_id": c.customer_id, "consent": c.consent_behavioural, "pets": list(c.pets), "first_source": c.first_source,
           "hidden": {"discount": c.sensitivities["discount"], "health_focus": c.health_focus, "newness": c.sensitivities["newness"]}} for c in customers],
         [plain(p) for p in products], {i["sku"]: i["unit_cost_eur"] for i in map(plain, inventory)}, units_sold,
-        {a.customer_id: a.offer_buyer for a in action_contexts},
         experiments_module.wellness_shares([plain(ln) for ln in lines], [plain(o) for o in orders],
                                            {p.sku: p.dietary for p in products}, WELLNESS_DIETARIES),
         _MONTH_WINDOW[-experiments_module.MONTHS:])

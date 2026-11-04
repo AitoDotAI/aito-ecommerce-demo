@@ -15,8 +15,9 @@ The first draft had ×0.95 and ×1.0 for the low levels. Then neither arm was ev
 shopper and choosing per person could not pay for titles or images. A reaction that differs in sign between people is what the page exists to find,
 so the low levels were set to put some shoppers off; the ADR says so.
 
-The shop sees none of that. What it can observe goes on each showing as `signal`: the share of the shopper's lines bought on offer (offer), the
-share of wellness diets among what they bought (title), the source of their first visit (image).
+The shop sees none of that. What it can observe goes on each showing as `signal`: the source of the shopper's first visit (offer and image: affiliate
+visitors are discount hunters and social visitors chase what is new, ADR 0040) and the share of wellness diets among what they bought (title). The
+share of lines bought on offer was tried for offers and predicts the discount sensitivity far worse than the source does, so the source is used.
 """
 
 from __future__ import annotations
@@ -42,7 +43,7 @@ BASE_CHANCE = (0.03, 0.09)                 # a product's chance of a purchase on
 BENEFIT = {"dry-food": "complete daily nutrition", "wet-food": "real meat, no fillers", "treats": "a reward that is good for them",
            "toys": "built to last", "litter": "low dust, fast clumping", "health": "vet-recommended care",
            "grooming": "gentle on skin and coat", "accessories": "made for everyday comfort"}
-SIGNAL_OF = {"offer": "offer_buyer", "title": "wellness_share", "image": "first_source"}
+SIGNAL_OF = {"offer": "first_source", "title": "wellness_share", "image": "first_source"}
 
 
 @dataclass(frozen=True)
@@ -83,13 +84,9 @@ def wellness_shares(lines: list[dict], orders: list[dict], dietary: dict[str, st
     return {c: "none" if w == 0 else "some" if w / n < 0.5 else "most" for c, (w, n) in counts.items()}
 
 
-def signal_of(kind: str, customer: dict, offer_buyer: dict[str, str], wellness_band: dict[str, str]) -> str:
-    """What the shop can see about this customer for this kind of experiment; `unknown` when they have not ordered."""
-    if kind == "offer":
-        return offer_buyer.get(customer["customer_id"], "unknown")
-    if kind == "title":
-        return wellness_band.get(customer["customer_id"], "unknown")
-    return customer["first_source"]
+def signal_of(kind: str, customer: dict, wellness_band: dict[str, str]) -> str:
+    """What the shop can see about this customer for this kind of experiment; `unknown` when a title's signal has no orders to read."""
+    return wellness_band.get(customer["customer_id"], "unknown") if kind == "title" else customer["first_source"]
 
 
 def true_chance(kind: str, arm: str, base: float, hidden: dict[str, str]) -> float:
@@ -104,7 +101,7 @@ def margin(kind: str, arm: str, price: float, cost: float) -> float:
 
 
 def gen_experiments(seed: int, customers: list[dict], products: list[dict], unit_cost: dict[str, float], units_sold: dict[str, int],
-                    offer_buyer: dict[str, str], wellness_band: dict[str, str], months: list[str]) -> dict[str, list[dict]]:
+                    wellness_band: dict[str, str], months: list[str]) -> dict[str, list[dict]]:
     """The three tables and the answer key's chances. `customers` carry the hidden levels (`discount`, `health_focus`, `newness`), their `pets`,
     `first_source` and `consent`; only customers who consented to behavioural profiling are shown anything (ADR 0044). `months` are the months the
     experiments ran, the last of which the evidence holds out."""
@@ -134,7 +131,7 @@ def gen_experiments(seed: int, customers: list[dict], products: list[dict], unit
                 for n in range(SHOWINGS_PER_MONTH):
                     arm = winner if winner and rng.random() < SERVE_WINNER else rng.choice((first, second))
                     chance = chances[plan.experiment_id][customer["customer_id"]][(first, second).index(arm)]
-                    signal = signal_of(plan.kind, customer, offer_buyer, wellness_band)
+                    signal = signal_of(plan.kind, customer, wellness_band)
                     showings.append({"showing_id": f"{plan.experiment_id}-{customer['customer_id']}-{month}-{n}", "experiment": plan.experiment_id,
                                      "product_sku": plan.sku, "customer": customer["customer_id"], "month": month,
                                      "variant": f"{plan.experiment_id}:{arm}", "purchased": rng.random() < chance,

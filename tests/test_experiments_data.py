@@ -21,7 +21,7 @@ def customer(i: int, consent: bool = True, level: str = "mid") -> dict:
 
 def small_world() -> dict:
     customers = [customer(i, consent=i % 5 != 0, level=("high", "mid", "low")[i % 3]) for i in range(300)]
-    return gen_experiments(1, customers, PRODUCTS, COST, UNITS, {}, {}, MONTHS)
+    return gen_experiments(1, customers, PRODUCTS, COST, UNITS, {}, MONTHS)
 
 
 def test_twelve_experiments_are_planned_on_the_best_sellers_of_three_kinds_two_of_them_drafts_and_two_decided():
@@ -60,12 +60,12 @@ def test_the_planted_lift_applies_to_the_second_arm_only():
     assert true_chance("title", "benefit", 0.05, hidden) < 0.05      # a low health focus is put off by a benefit-led title
 
 
-def test_what_the_shop_sees_is_the_offer_share_the_wellness_share_or_the_first_source():
+def test_what_the_shop_sees_is_the_first_source_for_offers_and_images_and_the_wellness_share_for_titles():
     c = {"customer_id": "C1", "first_source": "social"}
-    assert signal_of("offer", c, {"C1": "mostly"}, {}) == "mostly"
-    assert signal_of("title", c, {}, {"C1": "some"}) == "some"
-    assert signal_of("image", c, {}, {}) == "social"
-    assert signal_of("offer", c, {}, {}) == "unknown"
+    assert signal_of("offer", c, {"C1": "some"}) == "social"
+    assert signal_of("image", c, {}) == "social"
+    assert signal_of("title", c, {"C1": "some"}) == "some"
+    assert signal_of("title", c, {}) == "unknown"
 
 
 def test_wellness_share_bands_count_kept_lines_only():

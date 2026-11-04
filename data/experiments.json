@@ -10,7 +10,7 @@
     "decided_arm": "offer",
     "allocation": 0.5,
     "explore_floor": 0.1,
-    "signal": "offer_buyer"
+    "signal": "first_source"
   },
   {
     "experiment_id": "EXP-02",
@@ -45,7 +45,7 @@
     "started_month": "2026-01",
     "allocation": 0.5,
     "explore_floor": 0.1,
-    "signal": "offer_buyer"
+    "signal": "first_source"
   },
   {
     "experiment_id": "EXP-05",
@@ -78,7 +78,7 @@
     "started_month": "2026-01",
     "allocation": 0.5,
     "explore_floor": 0.1,
-    "signal": "offer_buyer"
+    "signal": "first_source"
   },
   {
     "experiment_id": "EXP-08",
@@ -111,7 +111,7 @@
     "started_month": "2026-01",
     "allocation": 0.5,
     "explore_floor": 0.1,
-    "signal": "offer_buyer"
+    "signal": "first_source"
   },
   {
     "experiment_id": "EXP-11",

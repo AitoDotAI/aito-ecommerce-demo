@@ -372,6 +372,26 @@ export function shopkeeperPanel(): AitoPanelConfig {
 }
 
 
+export function experimentsPanel(): AitoPanelConfig {
+  return {
+    operation: "Experiments",
+    endpoints: ["_predict", "_search"],
+    description:
+      `Each arm's showings and purchases are counted with <code style="color:var(--aito-teal);">_search</code>. Choosing per person is ` +
+      `a <code style="color:var(--aito-teal);">_predict purchased</code> for each arm, where the evidence is the shopper's signal crossed with the arm ` +
+      `shown (<code style="color:var(--aito-teal);">signal_arm</code>), not the shopper and the arm as two separate columns: Aito adds evidence column by ` +
+      `column, so only a crossed key can say that an arm works for one kind of shopper and not for another. The app weighs each answer by the arm's margin.`,
+    query: `${k('"predict"')}: ${s('"purchased"')},
+${n('"from"')}: ${s('"experiment_showings"')},
+${n('"where"')}: {
+  ${n('"signal_arm"')}: ${s('"mostly|offer"')},
+  ${n('"product_sku"')}: ${s('"SKU-PT-0490"')}
+}`,
+    links: LEARN_MORE_LINKS,
+  };
+}
+
+
 export function customersPanel(): AitoPanelConfig {
   return {
     operation: "Analytics",
