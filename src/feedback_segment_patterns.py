@@ -11,11 +11,13 @@ import math
 import re
 from collections import Counter, defaultdict
 
+from src.feedback_pattern_filter import answer_matches, review_matches
 from src.feedback_themes import THEMES, themes_of
 
 MIN_PRODUCTS = 3
 MIN_POOR_ROWS = 2   # a product with a theme needs at least two poor rows before it is a candidate
 NAME_WORDS = re.compile(r"[A-Za-z][A-Za-z-]+")
+MINED_SECTIONS = ("mined by Aito ($patterns)", "themes mined by Aito ($patterns)")
 GROUPS = {
     "stars": {"title": "Reviews of 1–2 stars", "link": "product_sku"},
     "detractors": {"title": "NPS detractors (score 0–6)", "link": "product_state.product_sku"},
@@ -28,14 +30,36 @@ def p_upper(k: int, group: int, overall: int, n: int) -> float:
     return min(1.0, sum(math.exp(lc(overall, x) + lc(n - overall, group - x) - lc(n, group)) for x in range(k, min(group, overall) + 1)))
 
 
-def segment_patterns(reviews: list[dict], answers: list[dict], customers: set[str], products: dict[str, dict]) -> dict:
-    """The lists for reviews of 1–2 stars and for NPS detractors among `customers`, in the shape of the stored `feedback-patterns.json`."""
+def segment_patterns(reviews: list[dict], answers: list[dict], customers: set[str], products: dict[str, dict], mined: dict | None = None) -> dict:
+    """The lists for reviews of 1–2 stars and for NPS detractors among `customers`, in the shape of the stored `feedback-patterns.json`.
+    `mined` is that stored file: its patterns (the AND-rules Aito found over all customers) are recounted in the segment, so they stay the same and their numbers change."""
     stars = [(r["product_sku"], themes_of(r["text"]), r["rating"] <= 2) for r in reviews if r["customer_id"] in customers]
     detractors = [(a["product_state"].rsplit("-", 2)[0], themes_of(a.get("comment")), a["nps_group"] == "detractor")
                   for a in answers if a["customer"] in customers]
-    return {name: {"title": GROUPS[name]["title"], "rows": sum(poor for _, _, poor in rows), "of": len(rows),
-                   "sections": _sections(rows, GROUPS[name]["link"], products)}
-            for name, rows in (("stars", stars), ("detractors", detractors))}
+    kept = {"stars": ([r for r in reviews if r["customer_id"] in customers], lambda r: r["rating"] <= 2, review_matches),
+            "detractors": ([a for a in answers if a["customer"] in customers], lambda a: a["nps_group"] == "detractor", answer_matches)}
+    out = {}
+    for name, rows in (("stars", stars), ("detractors", detractors)):
+        sections = _sections(rows, GROUPS[name]["link"], products)
+        for section, stored in (mined or {}).get(name, {}).get("sections", {}).items():
+            if section not in MINED_SECTIONS:
+                continue
+            sections[section] = _recount(stored, len(rows), sum(poor for _, _, poor in rows), *kept[name])
+        out[name] = {"title": GROUPS[name]["title"], "rows": sum(poor for _, _, poor in rows), "of": len(rows), "sections": sections}
+    return out
+
+
+def _recount(stored: list[dict], n: int, size: int, rows: list[dict], is_poor, matches) -> list[dict]:
+    """Each stored pattern with its counts, chance and lift taken from the segment's `rows`; a pattern with none stays, with zero rows and chance 1."""
+    out = []
+    for pattern in stored:
+        # A stored rule for one star rating carries that rating as a clause; the rows with the pattern, whatever the rating, do not.
+        overall_clauses = [c for c in pattern["clauses"] if c["field"] != "rating"]
+        overall = sum(matches(overall_clauses, r) for r in rows)
+        k = sum(is_poor(r) and matches(pattern["clauses"], r) for r in rows)
+        out.append({**pattern, "k": k, "overall": overall, "p": p_upper(k, size, overall, n) if overall else 1.0,
+                    "lift": (k / size) / (overall / n) if overall and size else None, "aito": None})
+    return sorted(out, key=lambda r: r["p"])
 
 
 def _sections(rows: list[tuple[str, list[str], bool]], link: str, products: dict[str, dict]) -> dict[str, list[dict]]:

@@ -37,7 +37,7 @@ def _product_attribute(sku: str, attribute: str):
     return _products()[sku][attribute]
 
 
-def _review_field(review: dict, field: str):
+def review_field(review: dict, field: str):
     """The value of a pattern's field on a review: its own columns, or an attribute of its product."""
     if field == "themes":
         return " ".join(themes_of(review["text"]))
@@ -46,7 +46,7 @@ def _review_field(review: dict, field: str):
     return _product_attribute(review["product_sku"], field.removeprefix("product_sku."))
 
 
-def _answer_field(answer: dict, field: str):
+def answer_field(answer: dict, field: str):
     sku = answer["product_state"].rsplit("-", 2)[0]
     if field == "product_state.product_sku":
         return sku
@@ -73,16 +73,26 @@ def _has_all(clauses: list[dict], field_of) -> bool:
     return True
 
 
+def review_matches(clauses: list[dict], review: dict) -> bool:
+    """Whether a review from `reviews.json` satisfies every clause, whatever its rating."""
+    return _has_all(clauses, lambda field: review_field(review, field))
+
+
+def answer_matches(clauses: list[dict], answer: dict) -> bool:
+    """Whether an NPS answer from `nps_responses.json` satisfies every clause, whatever its group."""
+    return _has_all(clauses, lambda field: answer_field(answer, field))
+
+
 def review_has(spec: dict, review: dict) -> bool:
     """Whether a review from `reviews.json` is of 1–2 stars and has the pattern `spec` = {"group": "stars", "clauses": [...]}."""
     _check(spec, "stars")
-    return review["rating"] <= 2 and _has_all(spec["clauses"], lambda field: _review_field(review, field))
+    return review["rating"] <= 2 and review_matches(spec["clauses"], review)
 
 
 def answer_has(spec: dict, answer: dict) -> bool:
     """Whether an NPS answer from `nps_responses.json` is a detractor's and has the pattern `spec` = {"group": "detractors", "clauses": [...]}."""
     _check(spec, "detractors")
-    return answer["nps_group"] == "detractor" and _has_all(spec["clauses"], lambda field: _answer_field(answer, field))
+    return answer["nps_group"] == "detractor" and answer_matches(spec["clauses"], answer)
 
 
 def _check(spec: dict, group: str) -> None:

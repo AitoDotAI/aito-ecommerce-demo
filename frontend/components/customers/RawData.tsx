@@ -44,11 +44,10 @@ export default function RawData({ conditions, from, to, pattern, onClearPattern 
   const [offset, setOffset] = useState(0);
   const [page, setPage] = useState<Page | null>(null);
   const [error, setError] = useState<string | null>(null);
-  // A pattern's lists cover all months, so the rows behind it do too, whatever period is chosen. They cover the ticked segment, except the mined
-  // rules, which are stored for all customers (`pattern.everyone`).
+  // A pattern's lists cover all months, so the rows behind it do too, whatever period is chosen; they cover the ticked segment.
   const byPattern = pattern !== null && pattern.tab === tab;
-  const segment = byPattern && pattern.everyone ? [] : conditions;
-  const selection = JSON.stringify([byPattern ? segment : conditions, byPattern ? "" : from, byPattern ? "" : to, tab, pattern?.spec]);
+  const segment = conditions;
+  const selection = JSON.stringify([conditions, byPattern ? "" : from, byPattern ? "" : to, tab, pattern?.spec]);
   // Choosing a pattern shows the rows it is about: the reviews or the NPS answers, scrolled into view.
   useEffect(() => {
     if (!pattern) return;
@@ -86,7 +85,7 @@ export default function RawData({ conditions, from, to, pattern, onClearPattern 
       </div>
       {pattern && (
         <div style={{ marginTop: 8, display: "inline-flex", alignItems: "center", gap: 8, fontSize: 13, background: "rgba(0, 168, 150, 0.15)", borderRadius: 12, padding: "2px 4px 2px 12px" }}>
-          <span>Only {pattern.spec.group === "stars" ? "reviews of 1–2 stars" : "detractors' answers"} with: <strong>{pattern.label}</strong> ({pattern.everyone || conditions.length === 0 ? "all customers" : "this segment"}, all months)</span>
+          <span>Only {pattern.spec.group === "stars" ? "reviews of 1–2 stars" : "detractors' answers"} with: <strong>{pattern.label}</strong> ({conditions.length === 0 ? "all customers" : "this segment"}, all months)</span>
           <button className="btn btn-ghost" style={{ padding: "0 8px", fontSize: 12 }} onClick={onClearPattern} aria-label="Clear the pattern filter">×</button>
         </div>
       )}
@@ -120,7 +119,7 @@ export default function RawData({ conditions, from, to, pattern, onClearPattern 
               <button className="btn btn-ghost" style={{ padding: "2px 10px", fontSize: 12 }} disabled={last >= page.total} onClick={() => setOffset(offset + PAGE)}>Next</button>
             </span>
           </div>
-          <div className="card-sub" style={{ marginTop: 4 }}>{byPattern ? `Every review or answer the pattern counts, from ${pattern.everyone || conditions.length === 0 ? "all customers" : "this segment"}. A row says what happened, not who it happened to.` : "Rows of the customers who consented to profiling. A row says what happened, not who it happened to."}</div>
+          <div className="card-sub" style={{ marginTop: 4 }}>{byPattern ? `Every review or answer the pattern counts, from ${conditions.length === 0 ? "all customers" : "this segment"}. A row says what happened, not who it happened to.` : "Rows of the customers who consented to profiling. A row says what happened, not who it happened to."}</div>
         </>
       )}
     </div>

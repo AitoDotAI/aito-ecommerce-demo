@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { apiFetch } from "@/lib/api";
 
-export interface FeedbackFilter { tab: "reviews" | "nps"; label: string; everyone: boolean; spec: { group: string; clauses: Record<string, string>[] } }
+export interface FeedbackFilter { tab: "reviews" | "nps"; label: string; spec: { group: string; clauses: Record<string, string>[] } }
 interface PatternRow { clauses: Record<string, string>[]; label: string; k: number; overall: number; p: number; lift: number | null; aito: { lift: number } | null; products: number | null }
 interface Group { title: string; rows: number; of: number; sections: Record<string, PatternRow[]> }
 type Lists = Record<string, Group> & { too_small?: boolean; customers?: number; min_customers?: number }
@@ -19,13 +19,13 @@ const chance = (p: number) => (p < 1e-4 ? "< 0.0001" : p.toFixed(4));
 /**
  * What stands out among poor reviews and detractors: products, product lines and AND-rules that are over-represented, with the rows behind each and whether
  * it is clear (the chance of luck, times the number of candidates tried, is under 5 %). Prototype: with a segment ticked the lists are counted over that
- * segment's reviews and answers, except the AND-rules Aito mines, which are stored for all customers only.
+ * segment's reviews and answers; the AND-rules Aito mined over all customers are the same rules, recounted in the segment.
  */
 export default function SegmentFeedbackPatterns({ section, conditions, selected, onSelect }: { section: string; conditions: string[]; selected: FeedbackFilter | null; onSelect: (filter: FeedbackFilter | null) => void }) {
   const [data, setData] = useState<Lists | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [groupKey, setGroupKey] = useState("stars");
-  const everyone = conditions.length === 0 || section === PATTERN_SECTIONS[0][0];
+  const everyone = conditions.length === 0;
   const key = JSON.stringify([everyone, everyone ? [] : conditions]);
   useEffect(() => {
     let current = true;
@@ -43,7 +43,7 @@ export default function SegmentFeedbackPatterns({ section, conditions, selected,
   const rows = group.sections[section] ?? [];
   const tests = rows.length;
   const labelOf = (r: PatternRow) => r.label.replace(/product_state\.|product_sku\./g, "").replace(/\s+\[→.*\]$/, "");
-  const filterOf = (r: PatternRow): FeedbackFilter => ({ tab: groupKey === "stars" ? "reviews" : "nps", label: labelOf(r), everyone, spec: { group: groupKey, clauses: r.clauses } });
+  const filterOf = (r: PatternRow): FeedbackFilter => ({ tab: groupKey === "stars" ? "reviews" : "nps", label: labelOf(r), spec: { group: groupKey, clauses: r.clauses } });
   const shown = [...rows].sort((a, b) => a.p - b.p).slice(0, SHOWN);
   return (
     <div>
@@ -54,7 +54,7 @@ export default function SegmentFeedbackPatterns({ section, conditions, selected,
         Among {group.rows.toLocaleString("en-GB")} of {group.of.toLocaleString("en-GB")} rows, which {SECTION_TITLE[section].toLowerCase()} come up more than luck explains.
         {" "}{tests} tried, {rows.filter((r) => r.p * tests < 0.05).length} clear. <strong>Clear?</strong> is Yes when the chance of luck, counted over everything tried in this list, is under 5 %.
         {section === "products and themes" && " Here \"of\" is all the product's reviews or answers, and the chance is that of a product of that size holding so many of the theme's rows: a complaint is rare outside poor feedback, so a big product is not unusual just for having many."}
-        {" "}Click a row to see its reviews or answers in the data below. {conditions.length === 0 ? "Covers all customers." : everyone ? "These rules are mined by Aito for all customers, not for the selected segment; the other lists follow the segment." : "Counted over the selected segment's reviews and answers."}
+        {" "}Click a row to see its reviews or answers in the data below. {everyone ? "Covers all customers." : section === PATTERN_SECTIONS[0][0] ? "The rules are the ones Aito mined over all customers, recounted in the selected segment: the same patterns, the segment's numbers." : "Counted over the selected segment's reviews and answers."}
       </div>
       <div className="scroll-x">
         <table style={{ width: "100%", fontSize: 12.5, borderCollapse: "collapse" }}>
