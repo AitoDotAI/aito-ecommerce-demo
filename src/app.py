@@ -32,6 +32,7 @@ from src.ask_routes import router as ask_router
 from src.shopkeeper_routes import router as shopkeeper_router
 from src.customer_profile_routes import router as customer_profile_router
 from src.feedback_patterns_routes import router as feedback_patterns_router
+from src.experiments_routes import router as experiments_router
 from src.lever_routes import router as lever_router
 from src.sandbox_config import load_sandbox_setting
 from src.sandbox_envs import SandboxBranches, SandboxEnvError
@@ -259,6 +260,7 @@ app.include_router(ask_router)
 app.include_router(shopkeeper_router)
 app.include_router(customer_profile_router)
 app.include_router(feedback_patterns_router)
+app.include_router(experiments_router)
 
 
 @app.middleware("http")

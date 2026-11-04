@@ -46,3 +46,11 @@ predicts who reacts. A shopper's own few purchases are too thin (10 % of the gap
 - Report the gain of choosing per person against the plain winner with its interval, and switch it on only where the interval is above zero.
 - Caveats: one synthetic world, one seed; the lifts are the planted ones (offer ×2.6 / 1.4 / 1.05 by discount sensitivity, title ×1.5 / 0.95,
   image ×1.4 / 1.0); P1 here is learned from 211,200 showings, a smaller experiment would decide worse.
+
+## In the demo's data (slice 2, 2026-11-04)
+
+The same question, asked of the main demo's experiments (`docs/adr/0064` Amendment 2; the signals are what the shop observes there, not a planted proxy):
+choosing per person did not pay with those signals (titles +1.7 %, offers 0 %, images −2.2 %), against ceilings of 5.5–11.6 %. That is the probe's finding
+read from the other side: Aito learns the arm's effect for a group when the key holds the group, and the groups an observed signal makes here are
+too alike (an offer's lift is ×1.7–2.0 at five of the six first sources, ×1.2 for social) or too small (six sources). A signal as good as the 70 % proxy of the probe would clear
+the bar; none of the signals the demo's customers have does.

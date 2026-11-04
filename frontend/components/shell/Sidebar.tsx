@@ -56,6 +56,7 @@ const NAV: NavHeading[] = [
           { href: "/product-filling", label: "Product filling", icon: "⚡" },
           { href: "/review-triage",   label: "Review triage",   icon: "💬" },
           { href: "/shopkeeper",      label: "Shopkeeper",      icon: "🤖" },
+          { href: "/experiments",     label: "Experiments",     icon: "🧪" },
         ],
       },
     ],
