@@ -18,8 +18,9 @@ from src.customer_period import NoPreviousPeriod, compare
 from src.customer_period_mix import preference_changes, segment_changes
 from src.customer_relations import MIN_GROUP
 from src.customer_rows import page_of
+from src.feedback_segment_patterns import segment_patterns
 from src.customer_selection import members, parse, ranking_for, view
-from src.customer_selection_data import actions, answers, facts, journeys, reviews, rows
+from src.customer_selection_data import actions, answers, catalogue, facts, journeys, reviews, rows
 from src.demo_mode import requested_sandbox
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -147,12 +148,35 @@ def customer_rows(tab: str = "sales", c: list[str] = Query(default=[]), start: s
 
 
 def _pattern_rows(tab: str, c: list[str], start: str | None, end: str | None, offset: int, limit: int, pattern: str) -> dict:
-    """The reviews or NPS answers a Feedback-tab pattern counts. Those lists cover every customer, so these rows do too, not only the profiled ones
-    (a row never says who it is about); a segment or period would silently change the count, so asking for one is refused."""
-    if c or start is not None or end is not None:
-        raise ValueError("A pattern covers all customers and all months; do not combine it with a segment (c) or a period (start, end)")
-    everyone = {r["customer_id"] for r in reviews()} | {a["customer"] for a in answers()}
-    return {**page_of(rows(), reviews(), answers(), list(everyone), tab, None, offset, limit, pattern), "too_small": False, "customers": len(everyone)}
+    """The reviews or NPS answers a Feedback-tab pattern counts. Those lists cover all customers, or the profiled customers of the ticked segment, so these
+    rows do too, and a row never says who it is about; a period would silently change the count, so asking for one is refused."""
+    if start is not None or end is not None:
+        raise ValueError("A pattern covers all months; do not combine it with a period (start, end)")
+    if c:
+        chosen = members(facts()["customers"], parse(c))
+        if len(chosen) < MIN_GROUP:
+            return {"tab": tab, "too_small": True, "customers": len(chosen), "min_customers": MIN_GROUP, "total": 0, "rows": []}
+    else:
+        chosen = list({r["customer_id"] for r in reviews()} | {a["customer"] for a in answers()})
+    return {**page_of(rows(), reviews(), answers(), list(chosen), tab, None, offset, limit, pattern), "too_small": False, "customers": len(chosen)}
+
+
+@lru_cache(maxsize=64)
+def _feedback_patterns(conditions: tuple[str, ...]) -> dict:
+    chosen = members(facts()["customers"], parse(list(conditions)))
+    if len(chosen) < MIN_GROUP:
+        return {"too_small": True, "customers": len(chosen), "min_customers": MIN_GROUP}
+    return {"too_small": False, "customers": len(chosen), **segment_patterns(reviews(), answers(), set(chosen), catalogue())}
+
+
+@router.get("/api/customer-profiles/feedback-patterns")
+def customer_feedback_patterns(c: list[str] = Query(default=[])):
+    """The Feedback tab's pattern lists (themes, products, products with a theme, product lines) counted over the reviews and NPS answers of the
+    profiled customers who meet every condition `c`. The AND-rules Aito mines are stored for all customers only (`/api/feedback-patterns`)."""
+    try:
+        return _feedback_patterns(tuple(f"{t}:{v}" for t, v in parse(c)))
+    except ValueError as error:
+        return JSONResponse(status_code=400, content={"error": str(error)})
 
 
 @router.get("/api/customer-profiles/ranking")

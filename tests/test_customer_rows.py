@@ -160,7 +160,25 @@ def test_a_pattern_lists_every_row_it_counts_not_only_those_of_profiled_customer
     assert body["total"] == 7 and "CUST-" not in json.dumps(body)
 
 
-def test_a_pattern_is_refused_together_with_a_segment_or_period_it_would_ignore():
+def test_a_pattern_with_a_segment_lists_the_segments_rows_the_segments_list_counts():
+    """With a segment ticked the Feedback tab's lists count that segment's reviews, and the rows behind a pattern are the same reviews."""
+    conditions = ["pets:dog"]
+    lists = api().get("/api/customer-profiles/feedback-patterns", params=[("c", c) for c in conditions]).json()
+    theme = next(r for r in lists["stars"]["sections"]["themes"] if r["k"] >= 3)
+    spec = {"group": "stars", "clauses": theme["clauses"]}
+    rows = api().get("/api/customer-profiles/rows", params=[("tab", "reviews"), ("pattern", json.dumps(spec))] + [("c", c) for c in conditions]).json()
+
+    assert rows["total"] == theme["k"]
+
+
+def test_a_segments_lists_differ_from_everyones_and_a_tiny_segment_is_not_listed():
+    everyone = api().get("/api/customer-profiles/feedback-patterns").json()
+    dogs = api().get("/api/customer-profiles/feedback-patterns", params=[("c", "pets:dog")]).json()
+    assert dogs["stars"]["of"] < everyone["stars"]["of"]
+    tiny = api().get("/api/customer-profiles/feedback-patterns", params=[("c", "pets:dog"), ("c", "pets:cat"), ("c", "price:mixed"), ("c", "offer:mostly"), ("c", "status:lapsed")]).json()
+    assert tiny.get("too_small") is True and "stars" not in tiny
+
+
+def test_a_pattern_is_refused_together_with_a_period_it_would_ignore():
     spec = json.dumps({"group": "stars", "clauses": []})
-    for extra in ({"c": "pets:dog"}, {"start": "2026-01", "end": "2026-03"}):
-        assert api().get("/api/customer-profiles/rows", params={"tab": "reviews", "pattern": spec, **extra}).status_code == 400, extra
+    assert api().get("/api/customer-profiles/rows", params={"tab": "reviews", "pattern": spec, "start": "2026-01", "end": "2026-03"}).status_code == 400
