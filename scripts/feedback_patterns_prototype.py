@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import collections
 import json
-import math
 import re
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -18,6 +17,7 @@ from pathlib import Path
 from src.aito_client import AitoClient
 from src.aito_compat import related_value
 from src.config import load_config
+from src.feedback_segment_patterns import p_upper
 from src.feedback_themes import THEMES
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -37,12 +37,6 @@ GROUPS = {
 # The text itself is not mined: what a message is about is its theme tags (src/feedback_themes.py), a column Aito can mine like any other.
 TEXT_FIELD = {"reviews": "themes", "nps_responses": "themes"}
 MIN_PRODUCTS = 3
-
-
-def p_upper(k: int, group: int, overall: int, n: int) -> float:
-    """The chance that a group of `group` rows drawn at random from `n` rows holds `k` or more of the `overall` rows that have the pattern."""
-    lc = lambda a, b: math.lgamma(a + 1) - math.lgamma(b + 1) - math.lgamma(a - b + 1)
-    return min(1.0, sum(math.exp(lc(overall, x) + lc(n - overall, group - x) - lc(n, group)) for x in range(k, min(group, overall) + 1)))
 
 
 def main() -> None:

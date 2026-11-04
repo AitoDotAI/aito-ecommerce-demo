@@ -35,7 +35,7 @@ export default function SegmentFeedback({ view, selected, onSelect }: { view: Se
         <Kpi label="NPS" value={entry.nps === null ? "–" : `${entry.nps > 0 ? "+" : ""}${entry.nps}`}
           note={entry.nps === null ? `only ${entry.nps_respondents} answers` : `${entry.nps_respondents} answers${everyone ? "" : `, all ${all.nps !== null && all.nps > 0 ? "+" : ""}${all.nps}`}`} />
       </div>
-      {which !== "shares" && <SegmentFeedbackPatterns section={SECTION_OF[which]} selected={selected} onSelect={onSelect} />}
+      {which !== "shares" && <SegmentFeedbackPatterns section={SECTION_OF[which]} conditions={view.conditions} selected={selected} onSelect={onSelect} />}
       {which === "shares" && (
         <>
       <div className="card-sub" style={{ marginBottom: 8, lineHeight: 1.5 }}>

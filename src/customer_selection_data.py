@@ -47,3 +47,8 @@ def reviews() -> list[dict]:
 @lru_cache(maxsize=1)
 def answers() -> list[dict]:
     return _read(DATA / "nps_responses.json")
+
+
+@lru_cache(maxsize=1)
+def catalogue() -> dict[str, dict]:
+    return {p["sku"]: p for p in _read(DATA / "products.json")}
