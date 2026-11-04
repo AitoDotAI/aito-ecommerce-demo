@@ -1,0 +1,136 @@
+[
+  {
+    "experiment_id": "EXP-01",
+    "product_sku": "SKU-PT-0483",
+    "kind": "offer",
+    "hypothesis": "A 15 % offer on PetNord Clumping Clay Cat Litter 7kg, unscented earns more profit than it gives away in margin.",
+    "status": "decided",
+    "started_month": "2026-01",
+    "decided_month": "2026-02",
+    "decided_arm": "offer",
+    "allocation": 0.5,
+    "explore_floor": 0.1,
+    "signal": "offer_buyer"
+  },
+  {
+    "experiment_id": "EXP-02",
+    "product_sku": "SKU-PT-0213",
+    "kind": "title",
+    "hypothesis": "A title that leads with the benefit sells Trixie Collar, large better than its plain name.",
+    "status": "decided",
+    "started_month": "2026-01",
+    "decided_month": "2026-02",
+    "decided_arm": "benefit",
+    "allocation": 0.5,
+    "explore_floor": 0.1,
+    "signal": "wellness_share"
+  },
+  {
+    "experiment_id": "EXP-03",
+    "product_sku": "SKU-PT-0491",
+    "kind": "image",
+    "hypothesis": "A lifestyle image sells PetNord Recycled Paper Cat Litter 7kg, unscented better than the pack shot.",
+    "status": "running",
+    "started_month": "2026-01",
+    "allocation": 0.5,
+    "explore_floor": 0.1,
+    "signal": "first_source"
+  },
+  {
+    "experiment_id": "EXP-04",
+    "product_sku": "SKU-PT-0490",
+    "kind": "offer",
+    "hypothesis": "A 15 % offer on PetNord Silica Crystals Cat Litter 7kg, value pack earns more profit than it gives away in margin.",
+    "status": "running",
+    "started_month": "2026-01",
+    "allocation": 0.5,
+    "explore_floor": 0.1,
+    "signal": "offer_buyer"
+  },
+  {
+    "experiment_id": "EXP-05",
+    "product_sku": "SKU-PT-0211",
+    "kind": "title",
+    "hypothesis": "A title that leads with the benefit sells Trixie Collar, small better than its plain name.",
+    "status": "running",
+    "started_month": "2026-01",
+    "allocation": 0.5,
+    "explore_floor": 0.1,
+    "signal": "wellness_share"
+  },
+  {
+    "experiment_id": "EXP-06",
+    "product_sku": "SKU-PT-0212",
+    "kind": "image",
+    "hypothesis": "A lifestyle image sells Trixie Collar, medium better than the pack shot.",
+    "status": "running",
+    "started_month": "2026-01",
+    "allocation": 0.5,
+    "explore_floor": 0.1,
+    "signal": "first_source"
+  },
+  {
+    "experiment_id": "EXP-07",
+    "product_sku": "SKU-PT-0487",
+    "kind": "offer",
+    "hypothesis": "A 15 % offer on PetNord Silica Crystals Cat Litter 7kg, lavender scent earns more profit than it gives away in margin.",
+    "status": "running",
+    "started_month": "2026-01",
+    "allocation": 0.5,
+    "explore_floor": 0.1,
+    "signal": "offer_buyer"
+  },
+  {
+    "experiment_id": "EXP-08",
+    "product_sku": "SKU-PT-0203",
+    "kind": "title",
+    "hypothesis": "A title that leads with the benefit sells PetNord Collar better than its plain name.",
+    "status": "running",
+    "started_month": "2026-01",
+    "allocation": 0.5,
+    "explore_floor": 0.1,
+    "signal": "wellness_share"
+  },
+  {
+    "experiment_id": "EXP-09",
+    "product_sku": "SKU-PT-0500",
+    "kind": "image",
+    "hypothesis": "A lifestyle image sells Trixie Scratching Post better than the pack shot.",
+    "status": "running",
+    "started_month": "2026-01",
+    "allocation": 0.5,
+    "explore_floor": 0.1,
+    "signal": "first_source"
+  },
+  {
+    "experiment_id": "EXP-10",
+    "product_sku": "SKU-PT-0489",
+    "kind": "offer",
+    "hypothesis": "A 15 % offer on PetNord Silica Crystals Cat Litter 12kg earns more profit than it gives away in margin.",
+    "status": "running",
+    "started_month": "2026-01",
+    "allocation": 0.5,
+    "explore_floor": 0.1,
+    "signal": "offer_buyer"
+  },
+  {
+    "experiment_id": "EXP-11",
+    "product_sku": "SKU-PT-0496",
+    "kind": "title",
+    "hypothesis": "A title that leads with the benefit sells PetNord Bowl, natural wood better than its plain name.",
+    "status": "draft",
+    "allocation": 0.5,
+    "explore_floor": 0.1,
+    "signal": "wellness_share"
+  },
+  {
+    "experiment_id": "EXP-12",
+    "product_sku": "SKU-PT-0501",
+    "kind": "image",
+    "hypothesis": "A lifestyle image sells Trixie Bowl, large better than the pack shot.",
+    "status": "draft",
+    "allocation": 0.5,
+    "explore_floor": 0.1,
+    "signal": "first_source"
+  }
+]

@@ -28,6 +28,7 @@ from pathlib import Path
 from typing import Callable, Iterable, Iterator
 
 from data import customer_actions as customer_actions_module
+from data import experiments as experiments_module
 from data import (acquisition, catalogue_events, demand_dynamics, feedback_text, incidents, lifecycle, listing, merchandising, observable, person_data, planted_switches,
                   review_chain, sensitivities, shop_levers, shoppers)
 from data.planted_switches import stream
@@ -3522,6 +3523,23 @@ def main() -> None:
     action_contexts = customer_actions_module.gen_action_contexts(
         customers, orders, lines, product_states, history.nps, winback_campaigns, _MONTH_WINDOW)
 
+    # ADR 0064: the shop's A/B tests on how a product is shown, apart from the orders.
+    plain = lambda row: dataclasses.asdict(row) if dataclasses.is_dataclass(row) else row
+    last_year = set(_MONTH_WINDOW[-12:])
+    units_sold: dict[str, int] = {}
+    for sale in map(plain, monthly_sales):
+        if sale["month"] in last_year:
+            units_sold[sale["product_sku"]] = units_sold.get(sale["product_sku"], 0) + sale["units_sold"]
+    experiment_tables = experiments_module.gen_experiments(
+        RNG_SEED,
+        [{"customer_id": c.customer_id, "consent": c.consent_behavioural, "pets": list(c.pets), "first_source": c.first_source,
+          "hidden": {"discount": c.sensitivities["discount"], "health_focus": c.health_focus, "newness": c.sensitivities["newness"]}} for c in customers],
+        [plain(p) for p in products], {i["sku"]: i["unit_cost_eur"] for i in map(plain, inventory)}, units_sold,
+        {a.customer_id: a.offer_buyer for a in action_contexts},
+        experiments_module.wellness_shares([plain(ln) for ln in lines], [plain(o) for o in orders],
+                                           {p.sku: p.dietary for p in products}, WELLNESS_DIETARIES),
+        _MONTH_WINDOW[-experiments_module.MONTHS:])
+
     # Visits, and the products they showed with the funnel outcome: the
     # recommendation surfaces' conversion KPI (`_recommend goal:
     # {purchased: true}`, ADR 0021), and ADR 0040's never-buy visitors.
@@ -3542,11 +3560,17 @@ def main() -> None:
     write_json(DATA_DIR / "winback_campaigns.json", winback_campaigns)
     write_json(DATA_DIR / "customer_actions.json", customer_actions)
     write_json(DATA_DIR / "action_contexts.json", action_contexts)
+    for table in ("experiments", "experiment_variants"):
+        write_json(DATA_DIR / f"{table}.json", experiment_tables[table])
+    # About 140 k rows: one line each, so the file stays small enough to commit.
+    with (DATA_DIR / "experiment_showings.json").open("w", encoding="utf-8") as fh:
+        fh.write("[\n" + ",\n".join(json.dumps(row, ensure_ascii=False) for row in experiment_tables["experiment_showings"]) + "\n]\n")
     write_json(DATA_DIR / "contexts.json", contexts)
     # The generator's answer key, for the data checks; Aito never sees it.
     answer_key = DATA_DIR / "answer_key"
     answer_key.mkdir(exist_ok=True)
     write_json(answer_key / "customer_traits.json", [observable.answer_key_row(c) for c in customers])
+    (answer_key / "experiment_chances.json").write_text(json.dumps(experiment_tables["chances"], separators=(",", ":")) + "\n")
     write_json(answer_key / "product_quality.json",
                [{"sku": p.sku, "quality": review_chain.quality(p.sku)} for p in products])
     write_json(answer_key / "line_experiences.json",
@@ -3570,6 +3594,7 @@ def main() -> None:
     print(f"  winback         {len(winback_campaigns):>6}")
     print(f"  customer_actions{len(customer_actions):>6}")
     print(f"  action_contexts {len(action_contexts):>6}")
+    print(f"  experiments     {len(experiment_tables['experiments']):>6}  ({len(experiment_tables['experiment_showings'])} showings)")
     print(f"  product_states  {len(product_states):>6}")
     print(f"  contexts        {len(contexts):>6}  ({sum(c.customer is None for c in contexts)} before a first order)")
     print(f"  impressions     {len(impressions):>6}")

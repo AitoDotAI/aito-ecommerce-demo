@@ -27,6 +27,8 @@ data/impressions.json
 # Since ADR 0040 the contexts hold the visits of visitors who never buy:
 # ~100 k rows, ~37 MB. Generated with the impressions, by the same seed.
 data/contexts.json
+# ADR 0064: ~140 k experiment showings, ~30 MB, generated with the rest by the same seed.
+data/experiment_showings.json
 
 .DS_Store
 .idea/
