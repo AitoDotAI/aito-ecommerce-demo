@@ -511,6 +511,56 @@ SCHEMAS: dict[str, dict] = {
             "tracking_consent": {"type": "String", "nullable": False},
         },
     },
+    # 6e. experiments, experiment_variants, experiment_showings — A/B tests on how a product is
+    # shown: an offer, a title or an image (ADR 0064). Simulated; the shop's orders do not include
+    # these purchases. `signal` is what the shop observes of the shopper for the experiment's kind;
+    # `signal_arm` crosses it with the arm shown ("mostly|offer"), because Aito adds evidence
+    # column by column and an arm that works for one signal and not another is visible only through it.
+    "experiments": {
+        "type": "table",
+        "columns": {
+            "experiment_id": {"type": "String", "nullable": False},
+            "product_sku":   {"type": "String", "nullable": False, "link": "products.sku"},
+            "kind":          {"type": "String", "nullable": False},
+            "hypothesis":    {"type": "String", "nullable": False},
+            "status":        {"type": "String", "nullable": False},
+            "started_month": {"type": "String", "nullable": True},
+            "decided_month": {"type": "String", "nullable": True},
+            "decided_arm":   {"type": "String", "nullable": True},
+            "allocation":    {"type": "Decimal", "nullable": False},
+            "explore_floor": {"type": "Decimal", "nullable": False},
+            "signal":        {"type": "String", "nullable": False},
+        },
+    },
+    "experiment_variants": {
+        "type": "table",
+        "columns": {
+            "variant_id":  {"type": "String", "nullable": False},
+            "experiment":  {"type": "String", "nullable": False, "link": "experiments.experiment_id"},
+            "product_sku": {"type": "String", "nullable": False, "link": "products.sku"},
+            "kind":        {"type": "String", "nullable": False},
+            "arm":         {"type": "String", "nullable": False},
+            "is_control":  {"type": "Boolean", "nullable": False},
+            "price_eur":   {"type": "Decimal", "nullable": False},
+            "margin_eur":  {"type": "Decimal", "nullable": False},
+            "title":       {"type": "String", "nullable": False},
+            "image":       {"type": "String", "nullable": False},
+        },
+    },
+    "experiment_showings": {
+        "type": "table",
+        "columns": {
+            "showing_id":  {"type": "String", "nullable": False},
+            "experiment":  {"type": "String", "nullable": False, "link": "experiments.experiment_id"},
+            "product_sku": {"type": "String", "nullable": False, "link": "products.sku"},
+            "customer":    {"type": "String", "nullable": False, "link": "customers.customer_id"},
+            "month":       {"type": "String", "nullable": False},
+            "variant":     {"type": "String", "nullable": False, "link": "experiment_variants.variant_id"},
+            "purchased":   {"type": "Boolean", "nullable": False},
+            "signal":      {"type": "String", "nullable": False},
+            "signal_arm":  {"type": "String", "nullable": False},
+        },
+    },
     # 7. customer_months — panel data, one row per customer per month.
     # Drives Retention's churn score (`src/churn_risk.py`). Loaded last
     # because it links to customers.
