@@ -15,6 +15,11 @@ import * as amplitude from "@amplitude/analytics-browser";
 
 const SURFACE = "ecommerce-demo";
 
+/** Phone or desktop by the width at the first event, kept for the session so turning a phone does not change it. A hint for comparing phone visitors
+ *  before and after the first-visit tour; Amplitude's own device type from the user agent is the better cut. */
+let sessionDevice: "mobile" | "desktop" | undefined;
+const device = () => (sessionDevice ??= window.innerWidth <= 900 ? "mobile" : "desktop");
+
 type Props = Record<string, unknown>;
 type Traits = Record<string, unknown>;
 
@@ -78,14 +83,14 @@ export function initAnalytics(): void {
 
 export function trackPage(pageName: string, properties: Props = {}): void {
   if (typeof window === "undefined") return;
-  const withSurface = { ...properties, surface: SURFACE };
+  const withSurface = { ...properties, surface: SURFACE, device: device() };
   amplitude.track(`Page View: ${pageName}`, withSurface);
   gtagSafe("event", "page_view", { page_title: pageName, ...withSurface });
 }
 
 export function trackEvent(event: string, properties: Props = {}): void {
   if (typeof window === "undefined") return;
-  const withSurface = { ...properties, surface: SURFACE };
+  const withSurface = { ...properties, surface: SURFACE, device: device() };
   amplitude.track(event, withSurface);
   gtagSafe("event", event, withSurface);
 }

@@ -33,10 +33,13 @@ interface ShellState {
   pageDescription: string;
   breadcrumb: string;
   demoMode: boolean;       // presentation mode (lib/demo-mode.ts)
+  demoKnown: boolean;      // `demoMode` has been decided (the URL or the server answered), so something that must not start in a demo can wait for it
 }
 
 interface ShellActions {
   toggleSidebar: () => void;
+  /** Show or hide the desktop sidebar for now, without saving the visitor's collapse preference (the first-visit tour uses it). */
+  previewSidebar: (open: boolean) => void;
   toggleAito: () => void;
   closeMobile: () => void;
   setPanel: (config: AitoPanelConfig | null) => void;
@@ -47,7 +50,7 @@ const ShellContext = createContext<(ShellState & ShellActions) | null>(null);
 
 const MOBILE_WIDTH = 900;
 
-const isMobile = () =>
+export const isMobile = () =>
   typeof window !== "undefined" && window.innerWidth <= MOBILE_WIDTH;
 
 
@@ -62,6 +65,7 @@ export function ShellProvider({ children }: { children: ReactNode }) {
   );
   const [breadcrumb, setBreadcrumb] = useState("Dashboard");
   const [demoMode, setDemoMode] = useState(false);
+  const [demoKnown, setDemoKnown] = useState(false);
 
   // Persist desktop collapse state so a refresh doesn't surprise
   // the visitor. Mobile drawer state stays ephemeral.
@@ -78,9 +82,9 @@ export function ShellProvider({ children }: { children: ReactNode }) {
   // choice for later sessions; the panel's tab still opens it.
   useEffect(() => {
     const choice = tabDemoChoice();
-    if (choice !== null) { setDemoMode(choice); return; }
+    if (choice !== null) { setDemoMode(choice); setDemoKnown(true); return; }
     let current = true;
-    serverDemoMode().then((on) => { if (current) setDemoMode(on); });
+    serverDemoMode().then((on) => { if (current) { setDemoMode(on); setDemoKnown(true); } });
     return () => { current = false; };
   }, []);
   useEffect(() => {
@@ -111,6 +115,8 @@ export function ShellProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const previewSidebar = useCallback((open: boolean) => setSidebarCollapsed(!open), []);
+
   const closeMobile = useCallback(() => setMobileOpen(null), []);
 
   const setPage = useCallback((title: string, description?: string, breadcrumbLabel?: string) => {
@@ -128,15 +134,17 @@ export function ShellProvider({ children }: { children: ReactNode }) {
     pageDescription,
     breadcrumb,
     demoMode,
+    demoKnown,
     toggleSidebar,
+    previewSidebar,
     toggleAito,
     closeMobile,
     setPanel,
     setPage,
   }), [
     sidebarCollapsed, aitoCollapsed, mobileOpen, panel,
-    pageTitle, pageDescription, breadcrumb, demoMode,
-    toggleSidebar, toggleAito, closeMobile, setPage,
+    pageTitle, pageDescription, breadcrumb, demoMode, demoKnown,
+    toggleSidebar, previewSidebar, toggleAito, closeMobile, setPage,
   ]);
 
   return <ShellContext.Provider value={value}>{children}</ShellContext.Provider>;
