@@ -2,7 +2,7 @@
  "id": "winback",
  "routine": "winback",
  "title": "Weekly win-back run",
- "release": "release4",
+ "release": "experiments-data",
  "snapshot_digest": "a68f085842ec6ac8",
  "as_of_month": "2026-04",
  "simulated": true,

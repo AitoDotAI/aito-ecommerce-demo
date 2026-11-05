@@ -1,11 +1,14 @@
 {
-  "env": "release4",
+  "env": "experiments-data",
   "counts": {
     "action_contexts": 2999,
     "contexts": 61143,
     "customer_actions": 5651,
     "customer_months": 27003,
     "customers": 3000,
+    "experiment_showings": 141056,
+    "experiment_variants": 24,
+    "experiments": 12,
     "impressions": 42974,
     "inventory": 658,
     "monthly_sales": 15157,
