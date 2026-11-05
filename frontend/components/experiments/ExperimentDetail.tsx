@@ -54,7 +54,6 @@ export default function ExperimentDetail({ e }: { e: Experiment }) {
             {contradicted && <strong style={{ color: "var(--cta)" }}> The data since says the other arm is better.</strong>}</>
         )}
       </div>
-      <div className="card-sub" style={{ marginTop: 8 }}>Starting, stopping and the allocation are set in the data for now; the controls come in a later slice (ADR 0064).</div>
     </div>
   );
 }

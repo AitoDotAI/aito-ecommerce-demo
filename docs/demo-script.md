@@ -321,6 +321,8 @@ came from), and the sentence under it compares Aito's per-person choice with the
 does not pay (titles +1.7 %, a small gain; offers 0; images −2.2 %), and the page says "keep the plain winner" with the +5 to +12 % a perfect signal
 would earn. That is the point to make: a person-specific choice is only as good as the signal about the person.
 
+Under the arms, "What if": three sliders (share on the second arm, exploration floor, guardrail) project profit a month for the chosen split against deciding now, and the months a clear answer still needs. Say it is a projection from the counted showings; the Shop does not serve these arms. Move the split to 10 % on a running experiment and the wait grows.
+
 **Check first:** twelve experiments in the list, EXP-02 (Trixie Collar, large) is "Decided" with the benefit-led title ahead, EXP-11 and EXP-12 are drafts.
 
 **Recovery:** if the page says it couldn't load the experiments, `./do experiments-evidence` rewrites the stored file (needs env `experiments-evidence`).
