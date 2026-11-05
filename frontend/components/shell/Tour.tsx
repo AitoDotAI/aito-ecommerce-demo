@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 import { trackEvent } from "@/lib/analytics";
 import { VIEWS } from "@/lib/nav";
-import { markSeen, shouldAutoStart, stepsFor, viewForPath, type Step, type Store } from "@/lib/tour";
+import { autoStart, stepsFor, viewForPath, type Step, type Store } from "@/lib/tour";
 import { isMobile, useShell } from "./ShellState";
 
 export const START_TOUR_EVENT = "ecom:start-tour";
@@ -29,22 +29,29 @@ function target(step: Step): Element | null {
 }
 
 /**
- * The first-visit tour: three steps, skippable at each, shown once (lib/tour.ts has the rules). On a phone the menu step opens
- * the drawer, and the card sits below it (see `.tour-card` in globals.css), so it never covers what it points at.
- * "Take the tour" in the sidebar starts it again.
+ * The first-visit tour: three steps, skippable at each, shown once (lib/tour.ts has the rules). The menu step shows the menu: on a phone it
+ * opens the drawer, on a desktop with the sidebar collapsed it expands it for the step. The card sits below the drawer (`.tour-card` in
+ * globals.css), so it never covers what it points at. Going to another view, or closing the drawer, ends or moves the step on, so the card
+ * never describes a menu that is not there. "Take the tour" in the sidebar starts it again.
  */
 export default function Tour() {
   const pathname = usePathname();
-  const { mobileOpen, toggleSidebar, closeMobile, demoMode } = useShell();
+  const { mobileOpen, sidebarCollapsed, toggleSidebar, closeMobile, demoMode } = useShell();
   const [steps, setSteps] = useState<Step[]>([]);
   const [index, setIndex] = useState<number | null>(null);
   const card = useRef<HTMLDivElement>(null);
-  const latest = useRef({ pathname, mobileOpen, demoMode });
-  latest.current = { pathname, mobileOpen, demoMode };
+  const returnFocus = useRef<HTMLElement | null>(null);
+  const expandedByTour = useRef(false);   // the desktop sidebar was collapsed and the menu step expanded it
+  const sawDrawerOpen = useRef(false);
+  const startedOn = useRef(pathname);
+  const latest = useRef({ pathname, mobileOpen, sidebarCollapsed, demoMode });
+  latest.current = { pathname, mobileOpen, sidebarCollapsed, demoMode };
 
   const begin = useCallback((auto: boolean) => {
     const view = viewForPath(latest.current.pathname, VIEWS);
-    setSteps(stepsFor({ view, viewCount: VIEWS.length }));
+    startedOn.current = latest.current.pathname;
+    returnFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    setSteps(stepsFor({ view, viewCount: VIEWS.length, touch: isMobile() }));
     setIndex(0);
     trackEvent("tour_started", { view: view?.label ?? latest.current.pathname, auto });
   }, []);
@@ -52,9 +59,7 @@ export default function Tour() {
   // First visit: start by itself, once, unless the visitor is being shown the demo (`?demo=`).
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (latest.current.demoMode || !shouldAutoStart(storage())) return;
-      markSeen(storage());
-      begin(true);
+      if (autoStart({ store: storage(), demoMode: latest.current.demoMode })) begin(true);
     }, AUTO_START_DELAY_MS);
     return () => clearTimeout(timer);
   }, [begin]);
@@ -68,14 +73,37 @@ export default function Tour() {
   const step = index === null ? null : steps[index];
   const stepId = step?.id;
 
-  // What the step points at: outlined, and on a phone the menu step opens the drawer (and the next one closes it).
+  const restoreMenu = useCallback(() => {
+    if (isMobile() && latest.current.mobileOpen === "sidebar") closeMobile();
+    if (expandedByTour.current) { expandedByTour.current = false; toggleSidebar(); }
+  }, [closeMobile, toggleSidebar]);
+
+  const finish = useCallback((how: "tour_skipped" | "tour_completed", reason?: string) => {
+    trackEvent(how, { at_step: index === null ? null : index + 1, of: steps.length, ...(reason ? { reason } : {}) });
+    document.querySelectorAll(`.${SPOT}`).forEach((el) => el.classList.remove(SPOT));
+    restoreMenu();
+    setIndex(null);
+    returnFocus.current?.focus();
+  }, [index, steps.length, restoreMenu]);
+
+  const go = useCallback((next: number) => {
+    setIndex(next);
+    trackEvent("tour_step", { step: next + 1, of: steps.length, id: steps[next].id });
+  }, [steps]);
+
+  // What the step points at: outlined; the menu step opens the menu where it is not showing, and the next step puts it back.
   useEffect(() => {
     document.querySelectorAll(`.${SPOT}`).forEach((el) => el.classList.remove(SPOT));
+    sawDrawerOpen.current = false;
     if (!step) return;
     target(step)?.classList.add(SPOT);
-    const open = latest.current.mobileOpen === "sidebar";
-    if (isMobile() && step.id === "menu" && !open) toggleSidebar();
-    if (isMobile() && step.id !== "menu" && open) closeMobile();
+    if (step.id === "menu") {
+      if (isMobile() && latest.current.mobileOpen !== "sidebar") toggleSidebar();
+      if (!isMobile() && latest.current.sidebarCollapsed) { expandedByTour.current = true; toggleSidebar(); }
+    } else {
+      restoreMenu();
+    }
+    card.current?.focus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stepId]);
 
@@ -87,25 +115,36 @@ export default function Tour() {
     return () => { root.classList.remove("tour-menu"); };
   }, [stepId]);
 
-  const finish = useCallback((how: "tour_skipped" | "tour_completed") => {
-    trackEvent(how, { at_step: index === null ? null : index + 1, of: steps.length });
-    document.querySelectorAll(`.${SPOT}`).forEach((el) => el.classList.remove(SPOT));
-    if (isMobile() && latest.current.mobileOpen === "sidebar") closeMobile();
-    setIndex(null);
-  }, [index, steps.length, closeMobile]);
+  // Escape closes the tour wherever the focus is.
+  useEffect(() => {
+    if (index === null) return;
+    const close = (press: KeyboardEvent) => { if (press.key === "Escape") finish("tour_skipped", "escape"); };
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
+  }, [index, finish]);
 
-  const go = (next: number) => {
-    setIndex(next);
-    trackEvent("tour_step", { step: next + 1, of: steps.length, id: steps[next].id });
-  };
+  // Going to another view ends the tour: its steps were written for the page it started on.
+  useEffect(() => {
+    if (index !== null && pathname !== startedOn.current) finish("tour_skipped", "left_the_view");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  // The visitor closed the drawer (the backdrop, or ☰) during the menu step: the menu is no longer what the card describes, so move on.
+  useEffect(() => {
+    if (stepId !== "menu" || !isMobile() || index === null) return;
+    if (mobileOpen === "sidebar") { sawDrawerOpen.current = true; return; }
+    if (sawDrawerOpen.current && index < steps.length - 1) go(index + 1);
+  }, [mobileOpen, stepId, index, steps.length, go]);
 
   if (!step || index === null) return null;
   const last = index === steps.length - 1;
   return (
-    <div className="tour-card" ref={card} role="dialog" aria-label="Tour of the demo" aria-live="polite">
+    <div
+      className="tour-card" ref={card} role="dialog" aria-labelledby="tour-title" tabIndex={-1}
+    >
       <div className="tour-count">{index + 1} of {steps.length}</div>
-      <div className="tour-title">{step.title}</div>
-      <div className="tour-text">{step.text}</div>
+      <div className="tour-title" id="tour-title">{step.title}</div>
+      <div className="tour-text" aria-live="polite">{step.text}</div>
       <div className="tour-actions">
         <button type="button" className="tour-skip" onClick={() => finish("tour_skipped")}>{last ? "Close" : "Skip tour"}</button>
         <button type="button" className="tour-next" onClick={() => (last ? finish("tour_completed") : go(index + 1))}>{last ? "Done" : "Next"}</button>

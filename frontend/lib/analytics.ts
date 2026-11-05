@@ -15,8 +15,10 @@ import * as amplitude from "@amplitude/analytics-browser";
 
 const SURFACE = "ecommerce-demo";
 
-/** Phone or desktop, on every event, so views per session can be compared for phones before and after the first-visit tour. */
-const device = () => (window.innerWidth <= 900 ? "mobile" : "desktop");
+/** Phone or desktop by the width at the first event, kept for the session so turning a phone does not change it. A hint for comparing phone visitors
+ *  before and after the first-visit tour; Amplitude's own device type from the user agent is the better cut. */
+let sessionDevice: "mobile" | "desktop" | undefined;
+const device = () => (sessionDevice ??= window.innerWidth <= 900 ? "mobile" : "desktop");
 
 type Props = Record<string, unknown>;
 type Traits = Record<string, unknown>;
