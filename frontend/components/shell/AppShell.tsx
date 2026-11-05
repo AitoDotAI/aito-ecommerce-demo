@@ -9,6 +9,7 @@ import HiddenView from "./HiddenView";
 import SandboxBanner from "./SandboxBanner";
 import Sidebar from "./Sidebar";
 import TopBar from "./TopBar";
+import Tour from "./Tour";
 import { ShellProvider, useShell } from "./ShellState";
 
 
@@ -55,6 +56,7 @@ function ShellChrome({ children }: { children: ReactNode }) {
         </main>
         <AitoPanel />
       </div>
+      <Tour />
     </>
   );
 }

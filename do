@@ -163,6 +163,7 @@ Data
   sandbox-list      The live sandboxes and when they expire (read-only)
   sandbox-time      Time the lever → Shop loop 5× on a throwaway branch (deleted after)
   customer-profiles Rewrite the stored customer profiles from the release's fixtures (offline, ADR 0053)
+  frontend-test     The frontend's rule tests (node --test: the first-visit tour's logic, no browser)
   experiments-evidence Rewrite the Experiments page's stored evidence (reads Aito; needs env experiments-evidence, ADR 0064)
   record-conversations ["question"]: store the predefined Ask-the-store conversations that are missing (keys from the dotenv file; a model run each, ADR 0054)
   agent-runs        Rewrite the stored shopkeeper runs from the committed retention snapshot (offline, ADR 0052)
@@ -470,6 +471,11 @@ precompute_all(client, verbose=True, write_as_env=os.environ['WRITE_AS'] or None
 cmd_customer_profiles() {
   cd "$SCRIPT_DIR"
   uv run python scripts/generate_customer_profiles.py
+}
+
+cmd_frontend_test() {
+  cd "$SCRIPT_DIR/frontend"
+  node --test tests/*.test.mts
 }
 
 cmd_experiments_evidence() {
@@ -977,6 +983,7 @@ case "${1:-help}" in
   sandbox-list)      cmd_sandbox list ;;
   sandbox-time)      cmd_sandbox time ;;
   customer-profiles) cmd_customer_profiles ;;
+  frontend-test) cmd_frontend_test ;;
   experiments-evidence) cmd_experiments_evidence ;;
   record-conversations) shift; cmd_record_conversations "$@" ;;
   agent-runs)        cmd_agent_runs ;;

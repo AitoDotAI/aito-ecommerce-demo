@@ -47,7 +47,7 @@ const ShellContext = createContext<(ShellState & ShellActions) | null>(null);
 
 const MOBILE_WIDTH = 900;
 
-const isMobile = () =>
+export const isMobile = () =>
   typeof window !== "undefined" && window.innerWidth <= MOBILE_WIDTH;
 
 

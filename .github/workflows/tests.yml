@@ -38,4 +38,6 @@ jobs:
         working-directory: frontend
       - run: npx tsc --noEmit
         working-directory: frontend
+      - run: node --test tests/*.test.mts
+        working-directory: frontend
       - run: uv run pytest tests -q --ignore=tests/test_aito_check.py --ignore=tests/test_live_smoke.py --ignore=tests/test_claims_live.py

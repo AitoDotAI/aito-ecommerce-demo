@@ -876,3 +876,32 @@ a { color: inherit; text-decoration: none; }
 .two-pane { display: grid; grid-template-columns: minmax(240px, 1fr) minmax(0, 2fr); gap: 16px; align-items: start; }
 .two-pane > * { min-width: 0; }
 @media (max-width: 800px) { .two-pane { grid-template-columns: minmax(0, 1fr); } }
+
+/* ── First-visit tour (components/shell/Tour.tsx, lib/tour.ts) ──────
+   A card at the bottom of the screen. On a phone it stays above the Aito button
+   (bottom right), and on the menu step the drawer is cut short by the card's height,
+   so the card never sits on what it points at. */
+.tour-card {
+  position: fixed; left: 16px; right: 16px; bottom: 80px; z-index: 230;
+  background: var(--white); color: var(--text); border: 1px solid var(--border); border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28); padding: 14px 16px;
+}
+@media (min-width: 901px) {
+  .tour-card { left: calc(var(--sidebar-w) + 24px); right: auto; bottom: 24px; width: 360px; }
+}
+.tour-count { font-size: 11px; color: var(--text-muted); }
+.tour-title { font-size: 15px; font-weight: 700; margin: 2px 0 4px; }
+.tour-text { font-size: 13px; line-height: 1.5; }
+.tour-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+.tour-skip { background: none; border: none; color: var(--text-muted); font: inherit; font-size: 13px; cursor: pointer; padding: 8px 4px; }
+.tour-next { background: var(--cta); color: var(--text); border: none; border-radius: 8px; font: inherit; font-size: 13px; font-weight: 600; padding: 9px 18px; cursor: pointer; }
+.tour-spot { outline: 3px solid var(--cta); outline-offset: -3px; }
+@media (max-width: 900px) {
+  .tour-menu .sidebar { bottom: calc(var(--tour-card-h, 150px) + 80px); }
+}
+.tour-link {
+  display: block; width: 100%; margin-bottom: 8px; padding: 8px 10px; text-align: left; cursor: pointer;
+  background: transparent; color: rgba(255, 255, 255, 0.85); font: inherit; font-size: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 8px;
+}
+.tour-link:hover { background: rgba(255, 255, 255, 0.08); }
