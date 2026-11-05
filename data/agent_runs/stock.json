@@ -2,7 +2,7 @@
  "id": "stock",
  "routine": "stock",
  "title": "Stock-aware morning check",
- "release": "release4",
+ "release": "experiments-data",
  "as_of_month": "2026-05",
  "simulated": true,
  "source": "data/precomputed/v2-master/supply.json (the snapshot Supply serves)",

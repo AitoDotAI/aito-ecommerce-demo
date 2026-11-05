@@ -143,3 +143,12 @@ A new Experiments page in the Operate section and a line in `docs/demo-script.md
   (the upper end of the difference's interval below minus the limit, so a guardrail needs the data to say the arm is worse).
 - **Drafts have no panel** (nothing to project from; the route answers 400). A split, floor or guardrail out of range is refused with the range.
 - **Not built: serving variants in the Shop and a real start/stop/decide.** That needs writes (a sandbox branch as in ADR 0043) and simulated showings so the evidence moves. Open.
+
+## Amendment 4 (2026-11-05): data release 5
+
+The three experiment tables ship as data release 5, under the env name `experiments-data` (the env that already holds them: a branch of master plus
+`experiments`, `experiment_variants`, `experiment_showings`). `data/release-env.json` names it and counts the tables; the stored customer profiles and shopkeeper runs
+were rewritten offline (`./do customer-profiles`, `./do agent-runs`) so they carry the new release name and are not served as stale. Nothing else in the data changed:
+every earlier table has the count it had in `release4`. The app does not query the new tables, so this release only matters to what is built on them next (serving
+variants in the Shop). As ADR 0035 says, the app answers 503 on data routes until master matches `release-env.json`, so this merges and deploys **together with** the
+promote (the aito-azure cutover), not before it.
