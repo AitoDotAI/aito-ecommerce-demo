@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 import { trackEvent } from "@/lib/analytics";
 import { VIEWS } from "@/lib/nav";
-import { autoStart, stepsFor, viewForPath, type Step, type Store } from "@/lib/tour";
+import { autoStart, choseAView, escapeClosesTour, stepsFor, viewForPath, type Step, type Store } from "@/lib/tour";
 import { isMobile, useShell } from "./ShellState";
 
 export const START_TOUR_EVENT = "ecom:start-tour";
@@ -36,12 +36,12 @@ function target(step: Step): Element | null {
  */
 export default function Tour() {
   const pathname = usePathname();
-  const { mobileOpen, sidebarCollapsed, toggleSidebar, closeMobile, demoMode } = useShell();
+  const { mobileOpen, sidebarCollapsed, toggleSidebar, previewSidebar, closeMobile, demoMode, demoKnown } = useShell();
   const [steps, setSteps] = useState<Step[]>([]);
   const [index, setIndex] = useState<number | null>(null);
   const card = useRef<HTMLDivElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
-  const expandedByTour = useRef(false);   // the desktop sidebar was collapsed and the menu step expanded it
+  const expandedByTour = useRef(false);   // the desktop sidebar was collapsed and the menu step showed it, without saving that (previewSidebar)
   const sawDrawerOpen = useRef(false);
   const startedOn = useRef(pathname);
   const latest = useRef({ pathname, mobileOpen, sidebarCollapsed, demoMode });
@@ -56,13 +56,14 @@ export default function Tour() {
     trackEvent("tour_started", { view: view?.label ?? latest.current.pathname, auto });
   }, []);
 
-  // First visit: start by itself, once, unless the visitor is being shown the demo (`?demo=`).
+  // First visit: start by itself, once, unless the visitor is being shown the demo (`?demo=` or the server's DEMO_MODE, which may answer late).
   useEffect(() => {
+    if (!demoKnown) return;
     const timer = setTimeout(() => {
       if (autoStart({ store: storage(), demoMode: latest.current.demoMode })) begin(true);
     }, AUTO_START_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [begin]);
+  }, [begin, demoKnown]);
 
   useEffect(() => {
     const start = () => { closeMobile(); begin(false); };
@@ -75,8 +76,11 @@ export default function Tour() {
 
   const restoreMenu = useCallback(() => {
     if (isMobile() && latest.current.mobileOpen === "sidebar") closeMobile();
-    if (expandedByTour.current) { expandedByTour.current = false; toggleSidebar(); }
-  }, [closeMobile, toggleSidebar]);
+    if (expandedByTour.current) {
+      expandedByTour.current = false;
+      if (!latest.current.sidebarCollapsed) previewSidebar(false);   // still the tour's doing: the visitor has not collapsed it themselves
+    }
+  }, [closeMobile, previewSidebar]);
 
   const finish = useCallback((how: "tour_skipped" | "tour_completed", reason?: string) => {
     trackEvent(how, { at_step: index === null ? null : index + 1, of: steps.length, ...(reason ? { reason } : {}) });
@@ -99,7 +103,7 @@ export default function Tour() {
     target(step)?.classList.add(SPOT);
     if (step.id === "menu") {
       if (isMobile() && latest.current.mobileOpen !== "sidebar") toggleSidebar();
-      if (!isMobile() && latest.current.sidebarCollapsed) { expandedByTour.current = true; toggleSidebar(); }
+      if (!isMobile() && latest.current.sidebarCollapsed) { expandedByTour.current = true; previewSidebar(true); }
     } else {
       restoreMenu();
     }
@@ -118,9 +122,20 @@ export default function Tour() {
   // Escape closes the tour wherever the focus is.
   useEffect(() => {
     if (index === null) return;
-    const close = (press: KeyboardEvent) => { if (press.key === "Escape") finish("tour_skipped", "escape"); };
+    const close = (press: KeyboardEvent) => {
+      const dialogs = document.querySelectorAll('[role="dialog"]:not(.tour-card)').length;
+      if (press.key === "Escape" && escapeClosesTour(dialogs)) finish("tour_skipped", "escape");
+    };
     window.addEventListener("keydown", close);
     return () => window.removeEventListener("keydown", close);
+  }, [index, finish]);
+
+  // Tapping a view in the menu ends the tour there. Without this the drawer closing would be read as the visitor moving on to the next step.
+  useEffect(() => {
+    if (index === null) return;
+    const tapped = (tap: MouseEvent) => { if (choseAView(tap.target instanceof Element ? tap.target : null)) finish("tour_skipped", "chose_a_view"); };
+    document.addEventListener("click", tapped, true);
+    return () => document.removeEventListener("click", tapped, true);
   }, [index, finish]);
 
   // Going to another view ends the tour: its steps were written for the page it started on.

@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { autoStart, markSeen, shouldAutoStart, stepsFor, viewForPath, type View } from "../lib/tour.ts";
+import { MENU_LINK, autoStart, choseAView, escapeClosesTour, markSeen, shouldAutoStart, stepsFor, viewForPath, type View } from "../lib/tour.ts";
 
 const VIEWS: View[] = [
   { href: "/", label: "Overview" }, { href: "/retention", label: "Retention" }, { href: "/evidence", label: "Index" }, { href: "/evidence/model-checks", label: "Model checks" },
@@ -79,4 +79,17 @@ test("a demo being presented (?demo=) does not start the tour and does not use u
 
 test("broken storage does not start the tour and does not throw", () => {
   assert.equal(autoStart({ store: broken, demoMode: false }), false);
+});
+
+test("a tap on a view in the menu is recognised, a tap elsewhere is not", () => {
+  const inMenu = { closest: (selector: string) => (selector === MENU_LINK ? {} : null) };
+  const elsewhere = { closest: () => null };
+  assert.equal(choseAView(inMenu), true);
+  assert.equal(choseAView(elsewhere), false);
+  assert.equal(choseAView(null), false);
+});
+
+test("Escape closes the tour only when no other dialog is open to take it", () => {
+  assert.equal(escapeClosesTour(0), true);
+  assert.equal(escapeClosesTour(1), false);
 });

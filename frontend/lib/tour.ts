@@ -39,6 +39,19 @@ export function autoStart({ store, demoMode }: { store: Store | undefined; demoM
   return true;
 }
 
+/** A view's link in the menu. */
+export const MENU_LINK = ".sidebar .nav-item";
+
+/** Whether a tap landed on a view in the menu. That ends the tour at once, rather than letting the drawer's closing be read as a step. */
+export function choseAView(target: { closest(selector: string): unknown } | null): boolean {
+  return Boolean(target?.closest(MENU_LINK));
+}
+
+/** Escape belongs to an open dialog (a product, the Retention actions) before the tour. */
+export function escapeClosesTour(otherDialogsOpen: number): boolean {
+  return otherDialogsOpen === 0;
+}
+
 /** The view a path belongs to: the longest href it equals or sits under. A static export's trailing slash is ignored. */
 export function viewForPath(pathname: string, views: View[]): View | undefined {
   const path = pathname.replace(/\/+$/, "") || "/";
