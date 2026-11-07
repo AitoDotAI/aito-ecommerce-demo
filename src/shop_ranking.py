@@ -184,6 +184,12 @@ def ranked_items(client: AitoClient, scope: ShopScope, where: dict, limit: int) 
     """The `_recommend` for `where`, with reasons, facts and the just-bought re-ask, by P."""
     hits = client.recommend("impressions", where, "product_sku", {"purchased": True},
                             select=PRODUCT_FIELDS + ["$p", "$why"], limit=limit)["hits"]
+    return items_from_hits(client, scope, hits)
+
+
+def items_from_hits(client: AitoClient, scope: ShopScope, hits: list[dict], *, link: str = "product_sku",
+                    state_ids: dict[str, str] | None = None) -> list[ShopItem]:
+    """Cards for `hits` (a product's fields, `$p` and `$why`), by P. `state_ids`: the state each product was ranked as."""
     # The month's states and the re-ask of the last order's items in the hits are independent: one round trip.
     just_bought = [h["sku"] for h in hits if h["sku"] in set(scope.last_order_skus)]
     with ThreadPoolExecutor(max_workers=2) as pool:
@@ -192,7 +198,8 @@ def ranked_items(client: AitoClient, scope: ShopScope, where: dict, limit: int) 
         p_now = reask.result() if reask else {}
     offers = offers_of(states)
     items = [_item(h, scope.context, states.get(h["sku"]), offers.get(h["sku"]), scope.rule is not None, scope.pets.split(),
-                   LAST_ORDER if scope.recent_basket == "cart" and not scope.cart else CART)
+                   LAST_ORDER if scope.recent_basket == "cart" and not scope.cart else CART,
+                   link=link, item=(state_ids or {}).get(h["sku"]))
              for h in hits]
     items = [replace(i, p=p_now[i.sku], p_if_new=i.p, why_explanation=None) if i.sku in p_now else i for i in items]
     return sorted(items, key=lambda i: -i.p)
@@ -227,9 +234,9 @@ def _p_true(answer: dict, sku: str) -> float:
 
 
 def _item(hit: dict, context: dict, state: dict | None, offer_pct: float | None, has_rule: bool, pets: list[str],
-          cart_label: str = CART) -> ShopItem:
+          cart_label: str = CART, *, link: str = "product_sku", item: str | None = None) -> ShopItem:
     rating = hit.get("avg_rating")
-    reasons = reasons_for(hit["$why"], hit["sku"], cart_label)
+    reasons = reasons_for(hit["$why"], hit["sku"], cart_label, link=link, item=item)
     if hit["pet_type"] not in pets:
         # Search shows other pets' products too (a gift). The declared pets can
         # still lift one, on a handful of impressions, but "fits your pets" it doesn't.

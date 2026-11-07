@@ -4,7 +4,7 @@
  *  shop's own history without a pets filter, starting from the last order. Both are experiments the held-out
  *  sweeps did not favour (ADR 0033, last-basket-prereg.md), so the measurement is stated beside them. */
 export type LastOrder = "" | "cart" | "path" | "path2";
-export type StateRank = "" | "offer" | "change";
+export type StateRank = "" | "offer" | "change" | "native";
 export type Personalisation = "history" | "history-pets" | "pets";
 
 export default function ShopSettings({ personalisation, lastOrder, season, month, months, stateRank, onPersonalisation, onLastOrder, onSeason, onMonth, onStateRank }: {
@@ -48,6 +48,7 @@ export default function ShopSettings({ personalisation, lastOrder, season, month
           <option value="">Not used: Aito&apos;s order only</option>
           <option value="offer">Offers lift: score × the offer band&apos;s lift</option>
           <option value="change">Changes lift: what is new since last month (offer, stars)</option>
+          <option value="native">Ranked as this month&apos;s state: Aito asked about the state, not the product</option>
         </select>
       </label>
       <label style={{ display: "flex", alignItems: "center", gap: 6 }}>

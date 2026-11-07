@@ -511,7 +511,7 @@ def shop_shoppers_endpoint():
 def shop_grid_endpoint(request: Request, shopper: str, month: str = Query(pattern=MONTH), cart: str = "",
                        identity: bool = False, trust: bool = False,
                        recent: Literal["", "cart", "path", "path2"] = "", season: bool = True,
-                       state: Literal["", "offer", "change"] = ""):
+                       state: Literal["", "offer", "change", "native"] = ""):
     """What to show this shopper now: `_recommend` with profile, month and
     cart as context, the household rule as a filter, recency re-asked. In
     sandbox mode for 2026-05, re-scored by the levers' states (ADR 0043)."""

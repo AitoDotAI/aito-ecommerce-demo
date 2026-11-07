@@ -53,7 +53,7 @@ function ShopView() {
   // The season (the month as evidence) is off by default; the Month select is in the ⚙, shown with it on. A
   // sandbox needs its own month, so it keeps the select. Without the season the month is the latest one.
   const [stateParam] = useUrlState("state", "");
-  const stateRank = (["offer", "change"].includes(stateParam) ? stateParam : "") as StateRank;
+  const stateRank = (["offer", "change", "native"].includes(stateParam) ? stateParam : "") as StateRank;
   const [seasonParam] = useUrlState("season", "0");
   const season = seasonParam === "1";
   const month = season || sandbox ? monthParam : "2026-04";
@@ -231,7 +231,17 @@ function ShopView() {
               Ranked by Aito for {shopperName}: {personalisation === "pets" ? "a household with these pets" : "their own history"}
               {lastOrder && shown && shown.cart.length === 0 ? ", starting from their last order" : ""}, {season ? `, ${monthLabel(month)}` : ""} and this cart
             </div>
-            {shown && shown.state && !shown.rescored && (
+            {shown && shown.state === "native" && !shown.rescored && (
+              <div className="card card-sub" style={{ marginBottom: 8, fontSize: 12 }}>
+                <strong>Product state in the ranking:</strong> Aito ranks {monthLabel(month)}&apos;s states of the products
+                (their price, offer and stars that month), not the products.
+                <FinePrint>
+                  {" "}One <code>_recommend product_state</code>; nothing is re-scored afterwards. A state with few showings
+                  has little evidence of its own, which is why the product&apos;s history matters too (ADR 0065).
+                </FinePrint>
+              </div>
+            )}
+            {shown && shown.state && shown.state !== "native" && !shown.rescored && (
               <div className="card card-sub" style={{ marginBottom: 8, fontSize: 12 }}>
                 <strong>Product state in the ranking:</strong> the top 40 by Aito, re-scored by {monthLabel(month)}&apos;s
                 {shown.state === "offer" ? " offer band" : " offer and star changes since last month"}.

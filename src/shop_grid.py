@@ -15,6 +15,7 @@ from src.same_name import one_per_name
 from src.shop_context import pets_filter
 from src.shop_ranking import PRODUCT_FIELDS, ShopItem, ranked_items, shop_scope
 from src.shop_rescore import RESCORED, rescore, state_rescore
+from src.shop_state_ranking import state_body, state_ranked_items
 
 GRID_SIZE = 12
 CANDIDATES = 16     # ranked before the just-bought re-ask and one card per name: measured on every persona, the 12th card came from candidate 13 at most (2026-10-27)
@@ -30,7 +31,7 @@ class ShopGrid:
     last_order_skus: list[str]
     last_query: dict
     rescored: bool = False   # re-scored by the sandbox's 2026-05 states (ADR 0043)
-    state: str = ""          # the month's state in the ranking: "offer" or "change" (src/shop_rescore.py), or not used
+    state: str = ""          # the month's state in the ranking: "offer" or "change" (src/shop_rescore.py), "native" (src/shop_state_ranking.py), or not used
     identity: bool = False   # also conditioned on the customer themselves (the experiment)
     trust: bool = False      # ...and not narrowed to the household's pets
     recent: str = ""         # how the last order entered the query: "", cart, path, path2 (shop_ranking)
@@ -50,14 +51,18 @@ def get_shop_grid(client: AitoClient, shopper_key: str, month: str, cart_skus: l
     # `trust`: with the customer in the query, let their own history decide and don't also filter by pets.
     # A thin history then shows other pets' products (a guinea pig household sees dog treats).
     where = scope.where() if identity and trust else {**scope.where(), **pets_filter(scope.pets)}
-    candidates = RESCORED if rescored or state else CANDIDATES
-    items = ranked_items(client, scope, where, candidates)
-    items = (_rescored(client, items, month) if rescored else
-             _state_ranked(client, items, month, state) if state else one_per_name(items))
+    native = state == "native"       # ranked as the month's states (ADR 0065), not re-scored afterwards
+    candidates = RESCORED if rescored or (state and not native) else CANDIDATES
+    if native:
+        items = one_per_name(state_ranked_items(client, scope, where, candidates))
+    else:
+        items = ranked_items(client, scope, where, candidates)
+        items = (_rescored(client, items, month) if rescored else
+                 _state_ranked(client, items, month, state) if state else one_per_name(items))
     return ShopGrid(
         shopper=scope.shopper.to_dict(), month=month, rule=scope.rule, cart=scope.cart,
         items=items[:GRID_SIZE], last_order_skus=scope.last_order_skus,
-        last_query={"endpoint": "_recommend", "body": {
+        last_query={"endpoint": "_recommend", "body": state_body(where, month, candidates) if native else {
             "from": "impressions", "where": where, "recommend": "product_sku",
             "goal": {"purchased": True}, "select": PRODUCT_FIELDS + ["$p", "$why"], "limit": candidates}},
         rescored=rescored, identity=identity, trust=identity and trust, recent=recent, state=state,

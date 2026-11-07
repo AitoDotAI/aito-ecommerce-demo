@@ -51,10 +51,12 @@ class Reason:
     lift: float   # how much it multiplies this product's odds of a purchase
 
 
-def reasons_for(why: dict, sku: str, cart_label: str = CART) -> list[Reason]:
-    """The largest lifts behind `sku`'s probability, each at least MIN_REASON_LIFT."""
+def reasons_for(why: dict, sku: str, cart_label: str = CART, *, link: str = "product_sku", item: str | None = None) -> list[Reason]:
+    """The largest lifts behind `sku`'s probability, each at least MIN_REASON_LIFT.
+
+    The hit's own lift is on its `link`: the product, or (ADR 0065) the product's state, whose id is `item`."""
     own = [f for f in why["factors"]
-           if f["type"] == "hitPropositionLift" and f["proposition"] == {"product_sku": {"$has": sku}}]
+           if f["type"] == "hitPropositionLift" and f["proposition"] == {link: {"$has": item or sku}}]
     if not own:
         return []
     if len(own) > 1:
