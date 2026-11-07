@@ -64,6 +64,25 @@ card shows the state it was ranked on (price, offer, stars).
    the Shop's precompute. The target is the product ranking's latency plus no
    more than 50 %, measured warm and cold on the test host.
 
+### The state's data model (data release 6)
+
+- **Versions.** A state row carries `begin_version` and `end_version` (numbers; the open end is a large sentinel, because
+  a null cannot be compared with `$lt`). Whenever a product's state is updated, the version increases: the old row's end
+  is closed and a new row opens. `product_state_id` is the SKU plus the version. "Latest" is the open row; an evaluation
+  passes the version its context saw, as a literal: `product_state.begin_version: {"$lte": V}, product_state.end_version:
+  {"$gt": V}`. (`$gte` and `$lt` through the link work on 2.12.0, checked locally.) Impressions keep linking to the exact
+  version they were shown with. This also lets a price change inside a month have a state of its own.
+- **Cold start.** A new version has no showings. A state target ranks only rows with impressions, so a price cut would
+  make a product vanish from the ranking at the moment it matters. The prior therefore comes from the product.
+- **The product's attributes on the state.** A `product_state` target's `basedOn` names only its own table's columns
+  (`product_sku.tags` is a 400 on 2.12.0), so the state row also carries its product's tags, category, brand, pet type
+  and name. `basedOn: ["product_sku", tags, category, brand, pet_type]`: the product supplies the prior; the state's own
+  showings add information once it has been on display for weeks. A multi-hop `basedOn` (`product_sku.tags`) from core
+  would remove the copy; it is a request, not a dependency.
+- **Probabilities.** `basedOn` inflates the top `$p` (0.83–0.99 against a base rate of 0.14, on a local slice). The order
+  may hold while the number cannot be shown as it is; the held-out Brier decides, and the card shows a probability only if
+  it calibrates.
+
 ## Aito usage
 
 `_recommend` with a `product_state` target and a `where` on the target's link
@@ -84,6 +103,8 @@ price band", not the product's.
   ranking's by more than 0.01, and Brier no worse by more than 0.005, or the
   mode is not made the default (the result is reported either way).
 - Warm latency is no more than 1.5 × the product ranking's.
+- The held-out sweep is reported split by how long a state has been shown (showings per state): the state ranking is
+  expected to match or beat the product ranking on well-shown states and to fall back to its prior on thin ones.
 - A booktest holds the query shape and a fake-client test holds the mapping
   from state hits to cards.
 
