@@ -117,11 +117,18 @@ def run(n_sessions: int, out_path: str) -> None:
             key = (imp["product_state"], fold_of(customer))
             shown_in_fold[key] = shown_in_fold.get(key, 0) + 1
     results: dict[str, dict] = {v.name: {"hit": [], "ms": [], "terms": []} for v in VARIANTS}
+    undeclared = 0
     for session in sample_sessions(n_sessions):
         customer = customers[session["customer"]]
+        if not customer.get("pets"):
+            # The query asks for the household's declared pets; most customers declare none (the Shop then
+            # falls back to pets_from_orders, a different query). Counted and printed, not silently dropped.
+            undeclared += 1
+            continue
         fold = fold_of(session["customer"])
         for variant in VARIANTS:
             score_session(client, variant, session, customer, products, fold, shown_total, shown_in_fold, results[variant.name])
+    print(f"sessions skipped, customer declares no pets: {undeclared}")
     report = {}
     for variant in VARIANTS:
         r = results[variant.name]
