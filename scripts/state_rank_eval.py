@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import statistics
 import sys
 import time
@@ -51,6 +52,12 @@ VARIANTS = (
     Variant("state basedOn sku", "product_state", ("product_sku",)),
     Variant("state basedOn product attributes", "product_state", ("p_tags", "p_category", "p_pet_type", "p_brand")),
     Variant("state basedOn sku + attributes", "product_state", ("product_sku", "p_tags", "p_category", "p_pet_type", "p_brand")),
+    Variant("blend product x state", "blend", candidates=50),
+    Variant("state basedOn tags", "product_state", ("p_tags",)),
+    Variant("state basedOn category+pet", "product_state", ("p_category", "p_pet_type")),
+    Variant("state basedOn brand", "product_state", ("p_brand",)),
+    Variant("state basedOn name", "product_state", ("p_name",)),
+    Variant("state basedOn tags+brand", "product_state", ("p_tags", "p_brand")),
 )
 
 
@@ -116,7 +123,9 @@ def run(n_sessions: int, out_path: str) -> None:
         if customer:
             key = (imp["product_state"], fold_of(customer))
             shown_in_fold[key] = shown_in_fold.get(key, 0) + 1
-    results: dict[str, dict] = {v.name: {"hit": [], "ms": [], "terms": []} for v in VARIANTS}
+    only = os.environ.get("STATE_EVAL_ONLY")   # comma-separated variant names, to iterate on a few
+    variants = tuple(v for v in VARIANTS if not only or v.name in only.split(","))
+    results: dict[str, dict] = {v.name: {"hit": [], "ms": [], "terms": []} for v in variants}
     undeclared = 0
     for session in sample_sessions(n_sessions):
         customer = customers[session["customer"]]
@@ -126,11 +135,11 @@ def run(n_sessions: int, out_path: str) -> None:
             undeclared += 1
             continue
         fold = fold_of(session["customer"])
-        for variant in VARIANTS:
+        for variant in variants:
             score_session(client, variant, session, customer, products, fold, shown_total, shown_in_fold, results[variant.name])
     print(f"sessions skipped, customer declares no pets: {undeclared}")
     report = {}
-    for variant in VARIANTS:
+    for variant in variants:
         r = results[variant.name]
         ms = sorted(r["ms"])
         report[variant.name] = {"hit@10": statistics.mean(r["hit"]), "brier": statistics.mean(e for _, e in r["terms"]),
@@ -143,7 +152,46 @@ def run(n_sessions: int, out_path: str) -> None:
               + "  ".join(f"{b} {v:.4f}" for b, v in sorted(row["brier_by_exposure"].items())))
 
 
+def asked(client, target, session, customer, fold, extra=None, limit=TOP, based_on=()):
+    """One `_recommend` over the held-out population, for the product or for its state: {sku: P}."""
+    via = "product_sku." if target == "product_sku" else "product_state.product_sku."
+    where = {**context_where(session, customer["pets"]), **candidate_filters(session, customer["pets"], customer.get("diet"), via), **(extra or {})}
+    if target == "product_state":
+        where["product_state.month"] = session["month"]
+    key, sku_field = ("sku", "sku") if target == "product_sku" else ("product_state_id", "product_sku")
+    hits = client.recommend(held_out(fold), where, target, {"purchased": True}, select=[key, sku_field, "$p"],
+                            based_on=list(based_on) or None, limit=limit)["hits"]
+    return {h[sku_field]: h["$p"] for h in hits}
+
+
+def score_blend(client, variant, session, customer, products, fold, shown_total, shown_in_fold, into) -> None:
+    """Geometric mean of the product's P and its state's P: the product is the prior, the state adds what it has seen."""
+    started = time.perf_counter()
+    prior = asked(client, "product_sku", session, customer, fold, limit=variant.candidates)
+    state = asked(client, "product_state", session, customer, fold, limit=variant.candidates)
+    into["ms"].append((time.perf_counter() - started) * 1000)   # serial here; the Shop could ask both at once
+    blended = {sku: (prior[sku] * state[sku]) ** 0.5 for sku in prior.keys() & state.keys()}
+    top = sorted(blended, key=blended.get, reverse=True)[:TOP]
+    bought = {r["product_sku"] for r in session["shown"] if r["purchased"]}
+    into["hit"].append(int(bool(bought & set(top))))
+    shown = [r for r in session["shown"] if not breaks_rule(products[r["product_sku"]], customer.get("diet"))
+             and products[r["product_sku"]]["pet_type"] in customer["pets"].split()
+             and r["product_sku"] not in (session.get("basket") or "").split()]
+    skus = sorted({r["product_sku"] for r in shown})
+    if not skus:
+        return
+    prior = asked(client, "product_sku", session, customer, fold, {"product_sku": {"$or": skus}}, limit=len(skus))
+    state = asked(client, "product_state", session, customer, fold, {"product_state.product_sku": {"$or": skus}}, limit=len(skus))
+    for r in shown:
+        sku = r["product_sku"]
+        if sku in prior and sku in state:
+            outside = shown_total[r["product_state"]] - shown_in_fold.get((r["product_state"], fold), 0)
+            into["terms"].append((exposure_bucket(outside), ((prior[sku] * state[sku]) ** 0.5 - r["purchased"]) ** 2))
+
+
 def score_session(client, variant, session, customer, products, fold, shown_total, shown_in_fold, into) -> None:
+    if variant.target == "blend":
+        return score_blend(client, variant, session, customer, products, fold, shown_total, shown_in_fold, into)
     via = "product_sku." if variant.target == "product_sku" else "product_state.product_sku."
     where = {**context_where(session, customer["pets"]), **candidate_filters(session, customer["pets"], customer.get("diet"), via)}
     if variant.target == "product_state":
