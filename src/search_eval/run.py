@@ -21,6 +21,7 @@ would sit on top of that level and fail at random; the check is relative.
 from __future__ import annotations
 
 import json
+import os
 import random
 import statistics
 import sys
@@ -32,6 +33,8 @@ from src.config import load_config
 from src.evidence.result_file import run_info
 from src.search_service import TEXT_THETA
 from src.search_eval import arms as A
+from src.search_eval.arms_shop import (household_violations, on_pet_share, personas_told_apart, pets_of, query_word_misses,
+                                       shop_arms)
 from src.search_eval.metrics import mrr, ndcg_at_k, paired_bootstrap_ci, precision_at_k, recall_at_k
 from src.search_eval.relevance import judge, load_products, load_queries
 from src.search_eval.theta_selection import out_of_sample_report
@@ -54,6 +57,36 @@ def _score(ranked: list[str], labels: dict[str, int]) -> dict:
     return {"ndcg10": ndcg_at_k(ranked, labels, 10), "p5": precision_at_k(ranked, labels, 5),
             "r20": recall_at_k(ranked, labels, 20), "mrr": mrr(ranked, labels),
             "zero": 1.0 if not ranked else 0.0}
+
+
+def _print_profile_fit(arms: dict, rows: dict, queries: list[dict], products: list[dict]) -> None:
+    """The judged labels ignore the persona, so the two things the Shop search must get right are checked here:
+    1. correctly filtered: top-10 hits of another pet, and hits naming none of the query's words (both want 0);
+    2. visibly fit to the profile: the share of the top 10 that is the persona's pets, and for how many
+       queries the personas' top 5 differ."""
+    from src.search_service import PERSONAS
+    pet_type_of = {p["sku"]: p["pet_type"] for p in products}
+    name_of = {p["sku"]: p["name"] for p in products}
+    print("arm                                                      wrong-pet hits  no-word hits  on-pet share  queries told apart")
+    families = {}
+    for name in arms:
+        if "[" in name and name.rsplit("[", 1)[1].rstrip("]") in PERSONAS:
+            families.setdefault(name.split("[")[0], []).append(name)
+    for family, names in families.items():
+        wrong = nowords = 0
+        shares, apart = [], 0
+        for q in queries:
+            tops = {}
+            for name in names:
+                pid = name.rsplit("[", 1)[1].rstrip("]")
+                ranked, pets = rows[name][q["id"]]["ranked"], pets_of(PERSONAS[pid].customer_id)
+                wrong += household_violations(ranked, pets, pet_type_of)
+                nowords += query_word_misses(ranked, q["q"], name_of)
+                if (share := on_pet_share(ranked, pets, pet_type_of)) is not None:
+                    shares.append(share)
+                tops[pid] = ranked
+            apart += personas_told_apart(tops)
+        print(f"{family:56s} {wrong:14d} {nowords:13d} {statistics.mean(shares):13.3f} {apart:11d} of {len(queries)}")
 
 
 def _shuffled(labels: dict[str, int], skus: list[str], seed: str) -> dict[str, int]:
@@ -84,6 +117,9 @@ def run() -> int:
     for theta in THETAS:
         for pid in PERSONA_IDS:
             arms[f"right θ{theta}[{pid}]"] = A.right_blend(pid, theta)
+    shop_eval = os.environ.get("SEARCH_EVAL_SHOP") == "1"   # the Shop-search arms, after a local probe
+    if shop_eval:
+        arms.update(shop_arms(PERSONA_IDS))
     arms["random (control)"] = A.random_control(skus)
     arms["table order (control)"] = A.table_order_control(skus)
     rows, latency = {}, {}
@@ -94,6 +130,8 @@ def run() -> int:
             ranked = arm(client, q["q"], K)
             latency[name].append((time.perf_counter() - t) * 1000)
             rows[name][q["id"]] = {"ranked": ranked, **_score(ranked, labels[q["id"]])}
+    if shop_eval:
+        _print_profile_fit(arms, rows, queries, products)
 
     best = max((n for n in arms if "control" not in n),
                key=lambda n: statistics.mean(r["ndcg10"] for r in rows[n].values()))
