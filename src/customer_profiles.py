@@ -6,7 +6,7 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-from src.customer_profit import distribution, gross_margin, margin_bands, profit_by_customer
+from src.customer_profit import cost_facts, distribution, gross_margin, margin_bands, profit_by_customer
 from src.customer_acquisition import first_sessions
 from src.customer_facts import build_facts, monthly_orders
 from src.customer_journey import build_events
@@ -98,5 +98,7 @@ def build() -> tuple[dict, list[dict], dict]:
                         {sku: p["name"] for sku, p in products.items()}, _load("reviews"))
     summary = {"release": release, "simulated": True, **segments(traits, customers), "gross_margin": round(margin, 3), "margin_cut": margin_cut,
                "ranking_variables": [{"id": var, "label": label(var)} for var in facts["shares"]],
-               "profit_distribution": distribution(profits, sorted(profiled_ids)), "definitions": definitions()}
+               "profit_distribution": distribution(profits, sorted(profiled_ids)), "definitions": definitions(),
+               "cost_facts": cost_facts(_load("order_lines"), states, {i["sku"]: i["unit_cost_eur"] for i in _load("inventory")},
+                                        {sku: p["price_eur"] for sku, p in products.items()})}
     return summary, traits, facts

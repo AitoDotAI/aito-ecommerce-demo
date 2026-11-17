@@ -124,8 +124,9 @@ function CustomersView() {
                <SegmentHighlights summary={summary} view={view} />}
               <div className="card-sub">
                 Profit: price paid less unit cost on the lines kept (returned lines earn nothing), less the shop&apos;s action costs; no delivery
-                or payment cost is in the data. Unit cost is the inventory&apos;s current cost per product (about two-thirds of the base price)
-                applied to two years of sales, and 165 kept lines were sold below it. ± is half the 95 % bootstrap interval of profit per
+                or payment cost is in the data. Unit cost is the inventory&apos;s current cost per product (about {Math.round(summary.cost_facts.unit_cost_share_of_list_price * 100)} % of
+                the list price) applied to two years of sales, and {summary.cost_facts.lines_below_cost.toLocaleString("en-GB")} of
+                {" "}{summary.cost_facts.kept_lines.toLocaleString("en-GB")} kept lines were sold below it. ± is half the 95 % bootstrap interval of profit per
                 customer: a few customers earn much of it. Margin: a customer is high-margin when the gross margin of what they bought is at
                 or above the median customer&apos;s ({Math.round(summary.margin_cut * 100)} %). Pets and diets overlap.
               </div>

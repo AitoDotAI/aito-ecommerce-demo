@@ -40,6 +40,7 @@ export interface ProfilesSummary {
   profiled_revenue_eur: number; profiled_profit_eur: number; gross_margin: number; margin_cut: number;
   ranking_variables: { id: string; label: string }[];
   profit_distribution: { customers: number; median_eur: number; top_tenth_share: number; losing_money: number };
+  cost_facts: { kept_lines: number; lines_below_cost: number; unit_cost_share_of_list_price: number };
   overall: Segment; definitions: Record<string, string>;
   by_trait: Record<"offer" | "price" | "rating" | "margin" | "status" | "pets" | "diets", Segment[]>;
 }

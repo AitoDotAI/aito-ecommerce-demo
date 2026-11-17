@@ -695,5 +695,10 @@
   "_pets": "They bought at least one product for this pet.",
   "_diets": "They bought at least 2 lines of food made for this diet (the pet's diet, from the product's tag).",
   "_all": "Needs 3 or more purchased lines for the shopping traits."
+ },
+ "cost_facts": {
+  "kept_lines": 34955,
+  "lines_below_cost": 169,
+  "unit_cost_share_of_list_price": 0.68
  }
 }

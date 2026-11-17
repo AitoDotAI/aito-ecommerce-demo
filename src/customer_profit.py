@@ -41,6 +41,18 @@ def profit_by_customer(order_lines: list[dict], orders: dict[str, dict], states:
     return dict(out)
 
 
+def cost_facts(order_lines: list[dict], states: dict[str, dict], unit_cost: dict[str, float],
+               list_price: dict[str, float]) -> dict:
+    """What the profit figures assume about cost, counted from the fixtures so the page's footnote cannot go stale:
+    how many kept lines were sold below their unit cost, and the unit cost's share of the list price (median product)."""
+    kept = [ln for ln in order_lines if not ln["returned"]]
+    below = sum(states[ln["product_state"]]["price_eur"] * ln["qty"] < unit_cost[ln["product_sku"]] * ln["qty"] for ln in kept)
+    shares = sorted(unit_cost[sku] / list_price[sku] for sku in unit_cost)
+    mid = len(shares) // 2
+    median = shares[mid] if len(shares) % 2 else (shares[mid - 1] + shares[mid]) / 2
+    return {"kept_lines": len(kept), "lines_below_cost": below, "unit_cost_share_of_list_price": round(median, 3)}
+
+
 def gross_margin(by_customer: dict[str, dict]) -> float:
     revenue = sum(c["net_revenue_eur"] for c in by_customer.values())
     return sum(c["gross_profit_eur"] for c in by_customer.values()) / revenue
