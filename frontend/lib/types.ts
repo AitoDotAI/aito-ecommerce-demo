@@ -988,6 +988,7 @@ export interface AcquisitionSource {
 export interface AcquisitionSection {
   sources: AcquisitionSource[];
   regular_basket: ShopLiftRow[];
+  regular_basket_significance: ShopSignificance;
   queries_sent: number;
   example_query: { from: string; where: Record<string, unknown>; relate: string; limit: number };
 }
