@@ -45,14 +45,16 @@ Rows that are (a) already and need nothing: churn risk `$p` and `$why`, the Rete
 
 | Feature | Unlocks | Today |
 |---|---|---|
-| **E1. Interval / p-value on `_relate` hits** (and on `_aggregate` means); optionally cluster-robust (by customer) and multiple-test corrected | rows 1, 4, 8, 11 and every lift on Patterns, Customers, Acquisition | nothing in `aito-core/docs` or `api-docs` ("interval", "bootstrap" find only benchmark prose) |
-| **E2. Proportion interval on counts** (Wilson), if not part of E1 | row 8 | none |
-| **E3. Bootstrap / quantile / median aggregate** | row 4 (and "median €", "top tenth earns" on Customers) | none; `_aggregate` has `$mean` + `standardError` |
+| **E1. Interval / p-value on `_relate` hits** (and on `_aggregate` means); optionally cluster-robust (by customer) and multiple-test corrected | rows 1, 4, 8, 11 and every lift on Patterns, Customers, Acquisition | nothing in `aito-core/docs` or `api-docs` ("interval", "bootstrap" find only benchmark prose); board td-20261117223415378201 |
+| **E2. Proportion interval on counts** (Wilson), if not part of E1 | row 8 | none; board td-20261117223415593424 |
+| **E3. Bootstrap / quantile / median aggregate** | row 4 (and "median €", "top tenth earns" on Customers) | none; `_aggregate` has `$mean` + `standardError`; board td-20261117223415833092 |
 | **E4. `_relate` over a numeric range or band** | row 12 | reported (td-20261003142449808722) |
-| **E5. `_relate` over a restricted population** (nested `from`) | row 11 | 501 on 2.11.4 |
-| **E6. Aggregate over predictions** (count of rows with P > x, mean P) | row 9 ("54 of 2,034") | `PREDICTION` is per-row only |
-| **E7. SQL: conditional/GREATEST scalar, aggregate expression with `GROUP BY`, per-group stddev, grouped `count(DISTINCT)`; window functions and subqueries** | rows 6, 7, 15; Customers journeys, rolling NPS, monthly churn, quintile ranking | listed "Not supported yet" (`sql-support.md`) |
-| **E8. Training on all showings, or surface-conditioned estimates** | row 5 | not documented |
+| **E5. `_relate` over a restricted population** (nested `from`) | row 11 | 501 on 2.11.4; board td-20261117223416066405 |
+| **E6. Aggregate over predictions** (count of rows with P > x, mean P) | row 9 ("54 of 2,034") | `PREDICTION` is per-row only; board td-20261117223416309975 |
+| **E7. SQL: conditional/GREATEST scalar, aggregate expression with `GROUP BY`, per-group stddev, grouped `count(DISTINCT)`; window functions and subqueries** | rows 6, 7, 15; Customers journeys, rolling NPS, monthly churn, quintile ranking | listed "Not supported yet" (`sql-support.md`); board td-20261117223416558306 |
+| **E8. Training on all showings, or surface-conditioned estimates** | row 5 | not documented; board td-20261117223416786594 |
+
+Board tickets (role aito-core, unclaimed) are linked in the last column. E7 also records two gaps found on a local engine on 2026-11-18: `ORDER BY` an aggregate fails, and subqueries are not supported. The Overview numbers matched SQL 31 of 31 cells (`docs/verification/analytics-audit-fixes.md`).
 
 **Data-model changes (not engine features), cheaper and ours to do:** per-customer derived columns (revenue, profit, action costs) on `customers`; derived flag columns on `customer_months` for Tells; a banded tenure column; a stored `recent_units` column for Supply.
 
