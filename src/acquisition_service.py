@@ -24,7 +24,7 @@ from dataclasses import asdict, dataclass
 from src.aito_client import AitoClient, AitoError
 from src.aito_compat import related_value
 from src.timing import submit_in_request
-from src.lift_rows import LiftRow, candidates_from_hits, judge, relate_hits
+from src.lift_rows import LiftRow, Significance, candidates_from_hits, judge, relate_hits
 
 SOURCES = ("organic_search", "paid_search", "direct", "email", "affiliate", "social")
 LANDING_LIMIT = 30
@@ -76,6 +76,7 @@ class SourceRow:
 class Acquisition:
     sources: list[SourceRow]
     regular_basket: list[LiftRow]   # first-basket words over- or under-represented among regulars
+    regular_basket_significance: Significance   # how many were tested, and the z that cost: the rows above are the survivors
     queries_sent: int
     example_query: dict
 
@@ -134,5 +135,6 @@ def get_acquisition(client: AitoClient) -> Acquisition:
             "limit": BASKET_LIMIT}
     hits = relate_hits(client, body)
     # One customer is one row, so the rows are independent: a design effect of 1.
-    basket, _ = judge(candidates_from_hits("first_basket_categories", hits, 1.0))
-    return Acquisition(sources=rows, regular_basket=basket, queries_sent=len(queries) + len(SOURCES) + 1, example_query=body)
+    basket, significance = judge(candidates_from_hits("first_basket_categories", hits, 1.0))
+    return Acquisition(sources=rows, regular_basket=basket, regular_basket_significance=significance,
+                       queries_sent=len(queries) + len(SOURCES) + 1, example_query=body)

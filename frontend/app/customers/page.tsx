@@ -22,6 +22,7 @@ import SegmentRelated from "@/components/customers/SegmentRelated";
 import SegmentResponse from "@/components/customers/SegmentResponse";
 import SegmentTree from "@/components/customers/SegmentTree";
 import SegmentTrend from "@/components/customers/SegmentTrend";
+import { costFootnote } from "@/lib/cost-footnote";
 
 const TABS = [
   { id: "highlights", label: "Highlights" }, { id: "figures", label: "Figures" }, { id: "preferences", label: "Preferences" }, { id: "others", label: "Other segments" },
@@ -124,8 +125,7 @@ function CustomersView() {
                <SegmentHighlights summary={summary} view={view} />}
               <div className="card-sub">
                 Profit: price paid less unit cost on the lines kept (returned lines earn nothing), less the shop&apos;s action costs; no delivery
-                or payment cost is in the data. Unit cost is the inventory&apos;s current cost per product (about two-thirds of the base price)
-                applied to two years of sales, and 165 kept lines were sold below it. ± is half the 95 % bootstrap interval of profit per
+                or payment cost is in the data. Unit cost is the inventory&apos;s current cost per product {costFootnote(summary.cost_facts)} ± is half the 95 % bootstrap interval of profit per
                 customer: a few customers earn much of it. Margin: a customer is high-margin when the gross margin of what they bought is at
                 or above the median customer&apos;s ({Math.round(summary.margin_cut * 100)} %). Pets and diets overlap.
               </div>

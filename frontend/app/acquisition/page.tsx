@@ -71,7 +71,7 @@ export default function AcquisitionPage() {
           <Card title="What the first basket says" sub="First-basket categories over- or under-represented among customers who became regular">
             <LiftList rows={data.regular_basket} unit="regulars" />
             {data.regular_basket.length === 0 && <div className="card-sub">No first-basket category clears the bar.</div>}
-            <Threshold significance={{ tested: data.regular_basket.length, z: 1.96, family_confidence: 0.95 }}
+            <Threshold significance={data.regular_basket_significance}
                        designEffect="one row per customer, so no clustering" />
           </Card>
         </>

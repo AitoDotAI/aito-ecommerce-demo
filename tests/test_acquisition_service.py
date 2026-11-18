@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.acquisition_service import source_row, wilson
+from src.acquisition_service import SOURCES, get_acquisition, source_row, wilson
 from src.aito_client import AitoError
 
 
@@ -19,9 +19,9 @@ def test_a_rate_over_no_rows_fails_loudly():
         wilson(0, 0)
 
 
-def answers(*, regular_lift=1.37, true_hit=True):
+def answers(*, regular_lift=1.37, true_hit=True, source="organic_search"):
     hit = {"feature": True, "$p": 0.7,
-           "$why": {"factors": [{"type": "relatedPropositionLift", "proposition": {"first_source": "organic_search"},
+           "$why": {"factors": [{"type": "relatedPropositionLift", "proposition": {"first_source": source},
                                  "value": regular_lift}]}}
     return [{"total": 970}, {"total": 30}, {"total": 100}, {"total": 70},
             {"hits": [hit] if true_hit else [{"feature": False, "$p": 0.3}]}]
@@ -48,3 +48,30 @@ def test_a_prediction_without_a_true_hit_or_without_the_sources_lift_fails_loudl
     wrong[4]["hits"][0]["$why"]["factors"] = []
     with pytest.raises(AitoError, match="expected one"):
         source_row("organic_search", wrong, landing())
+
+
+class BasketClient:
+    """Answers `get_acquisition`: every source reads the same counts; the regulars' first baskets hold six
+    categories with enough rows to be tested, two of which differ from the rest by far."""
+
+    def batch(self, queries):
+        per_source = len(queries) // len(SOURCES)
+        return [a for source in SOURCES for a in answers(source=source)][:per_source * len(SOURCES)]
+
+    def relate(self, *, table, where, relate_field, limit):
+        if relate_field == "landing_category":
+            return {"hits": landing()}
+        strong = {"fs": {"fOnCondition": 150, "fCondition": 300, "f": 200, "n": 1000}, "lift": 2.5}
+        weak = {"fs": {"fOnCondition": 60, "fCondition": 300, "f": 200, "n": 1000}, "lift": 1.0}
+        return {"hits": [{"related": {relate_field: {"$has": f"category-{i}"}}, **(strong if i < 2 else weak)}
+                         for i in range(6)]}
+
+
+def test_the_first_basket_threshold_counts_the_categories_tested_not_the_rows_shown():
+    acquisition = get_acquisition(BasketClient())
+
+    shown = len(acquisition.regular_basket)
+    significance = acquisition.regular_basket_significance
+    assert shown == 2                       # only two clear the bar ...
+    assert significance.tested == 6         # ... of the six that were tested,
+    assert significance.z == pytest.approx(2.64, abs=0.01)   # at the Bonferroni z for six tests, not 1.96

@@ -669,3 +669,24 @@ def test_a_profile_with_a_margin_band_is_in_the_margin_segment():
     profile = {**traits([("A", True)] * 4), "margin": "high-margin", "status": "active"}
 
     assert "margin:high-margin" in segment_keys(profile)
+
+
+def test_cost_facts_count_kept_lines_sold_below_unit_cost_and_give_the_costs_share_of_list_price():
+    from src.customer_profit import cost_facts
+    states = {"a-cheap": {"price_eur": 4.0}, "a-list": {"price_eur": 7.5}, "b-list": {"price_eur": 10.0}}
+    lines = [{"product_sku": "A", "product_state": "a-cheap", "qty": 2, "returned": False},   # paid 8 for goods costing 10: below
+             {"product_sku": "A", "product_state": "a-cheap", "qty": 1, "returned": True},    # returned: earns nothing, not counted
+             {"product_sku": "A", "product_state": "a-list", "qty": 1, "returned": False},    # 7.5 over a cost of 5
+             {"product_sku": "B", "product_state": "b-list", "qty": 1, "returned": False}]    # 10 over a cost of 5
+    facts = cost_facts(lines, states, {"A": 5.0, "B": 5.0}, {"A": 7.5, "B": 10.0})
+
+    assert facts["lines_below_cost"] == 1
+    assert facts["unit_cost_share_of_list_price"] == pytest.approx((5 / 7.5 + 5 / 10) / 2, abs=0.001)   # the median of two is their mean
+    assert facts["kept_lines"] == 3
+
+
+def test_the_stored_summary_states_its_cost_facts_as_the_fixtures_give_them():
+    stored = json.loads((PROFILES / "summary.json").read_text())["cost_facts"]
+
+    assert stored["lines_below_cost"] > 0 and 0.5 < stored["unit_cost_share_of_list_price"] < 0.8
+    assert stored == build()[0]["cost_facts"]
