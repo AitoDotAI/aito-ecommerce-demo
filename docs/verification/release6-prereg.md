@@ -101,6 +101,55 @@ The strip length, list depth and checkout count are chosen on seed 42 ONLY, so t
 (section 2). They are written here as an amendment, and only then is F1 run on the held-out seeds 7 and 99. Seed 42 is not a test
 of F1, since the values were fitted on it.
 
+### Power check for S3 (CPO 2026-11-24, before any run)
+
+The question: how many purchased LIST showings does each per-showing effect need, at its release-5 size, to be detected at 80 % power
+(two-sided 5 %)? The test is on the log of the rate ratio. At low rates Var(ln r) ≈ 1/x_A + 1/x_B, where x_A and x_B are the
+purchases in its two groups. So the share of release 5's purchases needed is q = 7.85 · (1/x_A + 1/x_B) / (ln r)², and the
+purchases needed are q × 5,958. Under A3 the sample is drawn uniformly within a placement, so every group keeps its share.
+
+The groups come from this repo's own metric functions. `release6/power_check.py` wraps `_rate` and records each call; it is read-only
+on the data directory. Release 5 has 42,968 list showings with a customer and 5,958 purchases. The output is in `release6/power-release5.json`.
+
+| effect | release-5 ratio | purchases / showings in its two groups | purchases needed at 80 % |
+|:--|:--|:--|:--|
+| `state_effect_metrics.random_label_contrast('low',)` | 0.972 | 141 of 1087 / 1222 of 9161 | 473,516 |
+| `state_effect_metrics.newness_contrast('mid',)` | 1.15 | 75 of 403 / 143 of 884 | 48,384 |
+| `state_effect_metrics.newness_contrast('low',)` | 1.221 | 56 of 270 / 97 of 571 | 33,059 |
+| `state_effect_metrics.stars_contrast('low',)` | 1.241 | 185 of 1368 / 45 of 413 | 27,683 |
+| `state_effect_metrics.offer_contrast('low',)` | 1.169 | 345 of 2618 / 698 of 6190 | 8,339 |
+| `state_effect_metrics.popular_label_contrast('low',)` | 1.365 | 124 of 681 / 1222 of 9161 | 4,290 |
+| `state_effect_metrics.random_label_contrast('mid',)` | 1.213 | 338 of 2153 / 2335 of 18036 | 4,262 |
+| `state_effect_metrics.newness_contrast('high',)` | 1.732 | 123 of 360 / 143 of 725 | 2,343 |
+| `planted_effect_metrics.stars_sell` | 1.263 | 1302 of 7588 / 629 of 4629 | 2,026 |
+| `state_effect_metrics.stars_contrast('mid',)` | 1.74 | 617 of 3668 / 108 of 1117 | 1,660 |
+| `state_effect_metrics.random_label_contrast('high',)` | 1.633 | 215 of 1053 / 1100 of 8797 | 1,082 |
+| `review_effect_metrics.poor_quality_contrast` | 0.624 | 224 of 2532 / 5734 of 40436 | 975 |
+| `state_effect_metrics.stars_contrast('high',)` | 3.282 | 519 of 2646 / 49 of 820 | 740 |
+| `planted_effect_metrics.offer_ratio('premium',)` | 1.495 | 697 of 3483 / 1230 of 9187 | 651 |
+| `planted_effect_metrics.kit_owned_item` | 0.011 | 4 of 1152 / 407 of 1339 | 591 |
+| `state_effect_metrics.popular_label_contrast('mid',)` | 1.755 | 306 of 1347 / 2335 of 18036 | 547 |
+| `state_effect_metrics.popular_label_contrast('high',)` | 2.168 | 177 of 653 / 1100 of 8797 | 513 |
+| `state_effect_metrics.offer_contrast('mid',)` | 1.59 | 935 of 4885 / 1449 of 12035 | 383 |
+| `planted_effect_metrics.offer_ratio('budget',)` | 2.008 | 598 of 2712 / 690 of 6285 | 301 |
+| `planted_effect_metrics.kit_next_item` | 5.494 | 335 of 614 / 72 of 725 | 272 |
+| `planted_effect_metrics.offer_ratio('mid',)` | 1.729 | 1159 of 6334 / 1584 of 14967 | 234 |
+| `state_effect_metrics.offer_contrast('high',)` | 2.102 | 1174 of 5026 / 1357 of 12214 | 135 |
+
+What this means for A3 at the upper half of the cited list band (0.00275 to 0.005):
+- **Small profile** (about 300,000 showings, about 85 % list): about 700 to 1,300 list purchases. That powers only the effects that need
+  1,300 or fewer: the strong arms of offers, popular labels and stars, K1, poor quality, and the high random label. `stars_sell`
+  (2,026), the high newness arm (2,343), `popular_label_contrast('low')` (4,290) and `random_label_contrast('mid')` (4,262) will
+  be UNDERPOWERED on the small profile. **This is stated now, before any run.**
+- **Large profile** (about 1,000,000 showings): about 2,300 to 4,300 list purchases. At the top of the band that powers every effect
+  listed down to about 4,300.
+- Four arms need more purchases than release 5 itself holds (share > 1: `random_label_contrast('low')`, `newness_contrast('mid'|'low')`
+  and `stars_contrast('low')`). They are weak or null arms, unpowered in release 5 too, so they are not judged in S3 at all.
+- So S3 is JUDGED on the large profile. On the small profile it is reported, and an effect below its needed count is marked
+  UNDERPOWERED, never a pass.
+- The approximation ignores non-purchase variance, which is fine at these rates. It slightly understates the need where rates are
+  higher, as in release 5's 8 %.
+
 ## 4. How C2 is planted: the brand mapping
 
 The house label `PetNord` stays: it is the fictional shop's own. Every other brand maps to an invented name of the same tier and
@@ -166,7 +215,7 @@ passes on release 5 checks nothing.
 | F2 | the funnel's order (purchased ⇒ added to cart ⇒ clicked) on every impression; ADR 0045's tests (units sold = purchased order lines; every purchased impression has its order line) | 100 %; the tests pass unchanged |
 | S1 | orders, order lines, customers, reviews, NPS answers of release 6 small against release 5 | the check applies the mapping to RELEASE 5's rows and compares the result with release 6's rows as generated: byte-identical. The generator applies the mapping when it writes the names, so no draw sees a different string; a draw that depends on a name's length or characters would break this, and the check is what shows there is none |
 | S2 | every planted effect of this repo judged on sales (ADR 0056 incidents, the churn tells, the experiments) | the same verdicts as release 5 (they read the same rows) |
-| S3 | every planted effect judged on showings (listing odds, the price curve, position, K1) | the same direction, and its ratio within ±10 % of release 5's (PROPOSED: no basis beyond being tighter than the effects' own sizes; the CPO sets it). The absolute rates are reported, not judged |
+| S3 | every planted effect judged on showings (listing odds, the price curve, position, K1), JUDGED on the large profile; reported on the small one with each effect below its needed count (power check, section 2) marked UNDERPOWERED | the same direction, and its ratio within ±10 % of release 5's (PROPOSED: no basis beyond being tighter than the effects' own sizes; the CPO sets it). The absolute rates are reported, not judged |
 | B1 | no release-5 brand name in any file of release 6 (whole word, case-insensitive; also `Hill's` with a typographic apostrophe, though release 5 writes only the ASCII one) | none |
 | B2 | the mapping is one to one, keeps tier and categories, and no invented name equals a release-5 name or another invented one | holds |
 | B4 | judged fixtures outside the generator that quote release-5 brands (`data/search_eval/queries.json`, `queries_heldout.json`, `src/search_eval/relevance.py`, and tests such as `test_price_what_if.py`, `test_feedback_segment_patterns.py`, `test_why_processor.py`) | any run against release 6 reads them through the same mapping (a release-6 copy, or the mapping applied on load); a run against release 6 that meets a release-5 brand in a judged query fails, it never judges a brand that no longer exists |
