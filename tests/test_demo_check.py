@@ -5,7 +5,7 @@ measuring machine, and a 2.4 s TCP connect after a fast lookup.
 """
 import pytest
 
-from scripts.demo_check import Call, parse_curl_timing, stage_durations, slow_stage, verdict
+from scripts.demo_check import Call, curl_command, parse_curl_timing, stage_durations, slow_stage, verdict
 
 
 def line(dns=0.01, connect=0.03, tls=0.08, ttfb=0.20, total=0.25, status=200, size=116):
@@ -83,3 +83,11 @@ def test_a_connect_stall_is_blamed_on_the_network_or_the_host_proxy():
 def test_a_line_that_is_not_seven_numbers_fails_loudly():
     with pytest.raises(ValueError, match="/api/version"):
         parse_curl_timing("/api/version", "0.1 0.2 curl: (28) timed out")
+
+
+def test_the_check_asks_for_gzip_like_a_browser_does():
+    # feedback-patterns is 435 KB raw and 65 KB on the wire: without Accept-Encoding the transfer stage measures a payload no visitor receives
+    command = curl_command("https://ecommerce.aito.ai", "/api/feedback-patterns")
+
+    assert "--compressed" in command
+    assert command[-1] == "https://ecommerce.aito.ai/api/feedback-patterns"

@@ -96,9 +96,13 @@ def verdict(calls: list[Call]) -> str:
             + "; ".join(f"{stage}: {WHOSE[stage]}" for stage in stages) + "). Run it again: a stall that does not repeat is intermittent.")
 
 
+def curl_command(base: str, path: str) -> list[str]:
+    # --compressed sends Accept-Encoding like a browser: the host gzips (435 KB raw is 65 KB on the wire).
+    return ["curl", "-s", "--compressed", "-o", "/dev/null", "-m", "60", "-w", CURL_FORMAT, base + path]
+
+
 def run_curl(base: str, path: str) -> Call:
-    result = subprocess.run(["curl", "-s", "-o", "/dev/null", "-m", "60", "-w", CURL_FORMAT, base + path],
-                            capture_output=True, text=True, check=False)
+    result = subprocess.run(curl_command(base, path), capture_output=True, text=True, check=False)
     if result.returncode != 0:
         raise RuntimeError(f"curl failed for {base + path} (exit {result.returncode}): {result.stderr.strip()}")
     return parse_curl_timing(path, result.stdout)
