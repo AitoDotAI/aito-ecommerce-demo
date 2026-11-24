@@ -125,7 +125,7 @@ passes on release 5 checks nothing.
 
 | # | check | pass when |
 |:--|:--|:--|
-| R0 | the default run, and `data/` as committed | byte-identical to release 5's recorded sha256 (every file) |
+| R0 | the default run, and the generator-written files listed in section 0 | byte-identical to release 5's recorded sha256 (each listed file) |
 | F1 | purchases per showing, overall and per placement, release 6 small | inside the band of section 2 on the held-out seeds 7 and 99 (seed 42 was used to choose the values; section 3) |
 | F2 | the funnel's order (purchased ⇒ added to cart ⇒ clicked) on every impression; ADR 0045's tests (units sold = purchased order lines; every purchased impression has its order line) | 100 %; the tests pass unchanged |
 | S1 | orders, order lines, customers, reviews, NPS answers of release 6 small against release 5 | the check applies the mapping to RELEASE 5's rows and compares the result with release 6's rows as generated: byte-identical. The generator applies the mapping when it writes the names, so no draw sees a different string; a draw that depends on a name's length or characters would break this, and the check is what shows there is none |
