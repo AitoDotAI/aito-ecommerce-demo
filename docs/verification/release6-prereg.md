@@ -45,15 +45,39 @@ Measured on release 5, seed 42 (2026-11-24): 94,536 impressions, purchases per s
 lines (the rest are `direct` sessions, ADR 0045). The two near-certain surfaces drive the overall rate: today a buy-again or
 checkout showing is recorded almost only when it is bought.
 
-Proposed, for the CPO and Antti to set. These are not measured and come from no cited source. They are the orders of magnitude a
-merchant would recognise:
+Proposed, for the CPO and Antti to set, from the public sources below (searched 2026-11-24). Where a bound rests on an
+assumption that no source states, the assumption is marked.
 
-| placement | purchases per showing |
-|:--|:--|
-| `list` (landing, category, search, for you, bought together) | 0.01 to 0.04 |
-| `buy_again` | 0.10 to 0.30 |
-| `checkout` | 0.03 to 0.15 |
-| all showings | 0.02 to 0.08 |
+| # | source | what it measures | figure |
+|:--|:--|:--|:--|
+| S1 | Ma et al., *Entire Space Multi-Task Model* (ESMM), Alibaba, SIGIR 2018, https://arxiv.org/abs/1804.07931, Table 1 | impressions, clicks and purchases in Taobao's recommender feed | public set 84M impressions, 3.4M clicks, 18k purchases: **purchase per impression 0.00021**, click per impression 0.040, purchase per click 0.0053. The only source measured per impression; a large marketplace, so a low anchor |
+| S2 | OTTO RecSys dataset, 2022, https://github.com/otto-de/recsys-dataset | session events | 194.7M clicks (product views), 5.10M orders: **order per product view 0.026** |
+| S3 | Coveo SIGIR eCom 2021 Data Challenge, https://arxiv.org/abs/2104.09423 | browsing sessions of a mid-sized shop | 10.43M product interactions, 77.8k purchases: **0.0075 per interaction**; 0.016 per session |
+| S4 | Li et al., *A Next Basket Recommendation Reality Check*, ACM TOIS 2023, https://arxiv.org/abs/2109.14233 | a personal top-10 of earlier purchases (a buy-again strip) against the NEXT basket | precision@10 derived from the reported recall@10 × basket size ÷ 10: TaFeng 0.067, Dunnhumby 0.17, Instacart 0.31, GIVEN that an order follows |
+| S5 | Digismoothie, *Upsell benchmarks 2026* (3,199 Shopify stores, 218.6M offer views), https://www.digismoothie.com/blog/upsell-benchmarks | median take rate per offer view | checkout 0.004; slide cart 0.014; cart pop-up 0.019; product page 0.024 (vendor data, one app's stores) |
+
+Derived band (purchases per showing):
+
+| placement | band | from |
+|:--|:--|:--|
+| `list` (landing, category, search, for you, bought together) | 0.0005 to 0.005 | S1 per impression 0.0002 (low); S1's 4 % click × S2's 2.6 % purchase per view = 0.001 (central); the upper bound 5× the central for a small consumable-heavy shop is an ASSUMPTION |
+| `buy_again` | 0.02 to 0.10 | S4's 0.17 to 0.31 for replenishment baskets × the chance the visit orders at all; that chance (5 to 30 % for a returning customer) is an ASSUMPTION; no source here gives it |
+| `checkout` | 0.003 to 0.02 | S5: checkout 0.004 to cart offers 0.019 |
+| all showings | 0.002 to 0.015 | the mix: e.g. 85 % list, 10 % buy again, 5 % checkout at the central rates gives 0.007 |
+
+Release 5 is 16 to 160 times above the list band and far above the others, so F1 fails first there, as it must.
+
+**OPEN, for the CPO: the cited band and mechanism A do not fit together as written.** Under A the 21,457 purchased showings stay,
+so an overall rate of 0.002 to 0.015 needs 1.4 to 10.7 million showings in the SMALL profile (0.4 to 3 GB of JSON). The large
+profile's 1,000,000 impressions with ~150,000 orders likewise mean that well under 5 % of its order lines can come from a logged
+showing. Realistic data has exactly that shape: most of a pet shop's sales (reorders, direct visits) are not purchases of a
+showing. So the proposal becomes **A3**: the sales stay byte-identical (S1 and S2 unchanged); a purchase that today is a
+`buy_again` or `checkout` showing, and most `list` purchases, are recorded as purchases in a `direct` session (ADR 0045 allows
+it), and only a SAMPLE of them stays a purchased showing. The sample is drawn from its own keyed stream and is stratified by
+placement, so that, with the unbought showings added as in A, the small profile holds about 300,000 showings at the central
+rates and the large one about 1,000,000. The cost is power: effects judged per showing then rest on roughly 2,000 purchased
+showings in the small profile instead of 21,457, so S3 is judged with intervals, and an effect whose interval then spans its
+release-5 value is reported as UNDERPOWERED rather than failed.
 
 ## 3. How C1 is planted (proposed: add the unbought showings, keep the sales)
 
@@ -80,8 +104,8 @@ of F1, since the values were fitted on it.
 ## 4. How C2 is planted: the brand mapping
 
 The house label `PetNord` stays: it is the fictional shop's own. Every other brand maps to an invented name of the same tier and
-categories (`PREMIUM_BRANDS`, `MASS_BRANDS` and `BRAND_CATEGORIES` are re-keyed, not reshaped). The mapping (PROPOSED; each name
-is checked against a trademark and web search before the release is cut, and replaced here if it is taken):
+categories (`PREMIUM_BRANDS`, `MASS_BRANDS` and `BRAND_CATEGORIES` are re-keyed, not reshaped). The mapping, PROPOSED for
+Antti's final OK, after the checks below:
 
 | release 5 | release 6 | tier |
 |:--|:--|:--|
@@ -91,14 +115,26 @@ is checked against a trademark and web search before the release is cut, and rep
 | Orijen | Wildmarrow | premium |
 | Eukanuba | Kestrova | mass |
 | Whiskas | Purrsy | mass |
-| Felix | Mizzo | neutral |
+| Felix | Nyamzo | neutral |
 | Sheba | Velvetbowl | neutral |
 | Whimzees | Chewbrite Twists | neutral |
-| Kong | Bounderoo | mass |
-| Trixie | Pikkutassu | mass |
-| JBL | Clearfin | mass |
+| Kong | Fetchaboo | mass |
+| Trixie | Tassuliini | mass |
+| JBL | Rippleward | mass |
 | Tetra | Aquadotte | mass |
-| Beaphar | Herbaro | mass |
+| Beaphar | Herbellon | mass |
+
+Name checks (2026-11-24, public only): for each name, a web search on the exact name (and with "pet" or "brand"), the USPTO
+register through Trademarkia's public mirror, and a fetch of the `.com` (or `.fi`) domain. EUIPO, TMview and WIPO's Global Brand
+Database could not be read without a browser or a captcha, so **the EU and Finnish registers are NOT checked**; Antti decides
+whether that is enough for a Nordic demo. Five first proposals had a live user and were replaced: Mizzo (mizzo.com, a live shop
+for kitchen taps and sinks), Bounderoo (bounderoo.com, a crypto trading site), Pikkutassu (pikkutassu.fi, a daycare in Kajaani),
+Clearfin (ClearFin, a fintech company; Clearfin Security, UK) and Herbaro (a herbal cream; a Pokémon's German name). One
+replacement, Miuvo, was a live US mark (class 10) and was dropped. The rest had no hit in any of the three: Aurelian Vet (the
+bare word "Aurelian" is a live mark in law, devices and skin care, none in pets), Fernholm Nutrition Plan (fernholm.com is an
+empty placeholder; also a surname), Tundrafield, Wildmarrow (the domain is registered, with nothing served), Kestrova, Purrsy
+(purrsy.com is for sale; neighbours Purrpy and Purry exist), Velvetbowl, Chewbrite Twists, Aquadotte, Nyamzo, Fetchaboo,
+Tassuliini, Rippleward and Herbellon.
 
 The names are applied where the generator writes them: product names (`_compose_name`), tags, review and NPS texts
 (`feedback_text.py`), the answer key and the evidence files the release writes. Docs, ADRs, screenshots, precomputed snapshots
