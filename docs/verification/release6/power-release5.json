@@ -1,0 +1,358 @@
+{
+ "list_impressions": 42968,
+ "list_purchases": 5958,
+ "effects": [
+  {
+   "metric": "state_effect_metrics.random_label_contrast('low',)",
+   "ratio": 0.972,
+   "groups": [
+    [
+     1087,
+     141
+    ],
+    [
+     9161,
+     1222
+    ]
+   ],
+   "share_needed": 79.476,
+   "list_purchases_needed": 473516
+  },
+  {
+   "metric": "state_effect_metrics.newness_contrast('mid',)",
+   "ratio": 1.15,
+   "groups": [
+    [
+     403,
+     75
+    ],
+    [
+     884,
+     143
+    ]
+   ],
+   "share_needed": 8.121,
+   "list_purchases_needed": 48384
+  },
+  {
+   "metric": "state_effect_metrics.newness_contrast('low',)",
+   "ratio": 1.221,
+   "groups": [
+    [
+     270,
+     56
+    ],
+    [
+     571,
+     97
+    ]
+   ],
+   "share_needed": 5.549,
+   "list_purchases_needed": 33059
+  },
+  {
+   "metric": "state_effect_metrics.stars_contrast('low',)",
+   "ratio": 1.241,
+   "groups": [
+    [
+     1368,
+     185
+    ],
+    [
+     413,
+     45
+    ]
+   ],
+   "share_needed": 4.646,
+   "list_purchases_needed": 27683
+  },
+  {
+   "metric": "state_effect_metrics.offer_contrast('low',)",
+   "ratio": 1.169,
+   "groups": [
+    [
+     2618,
+     345
+    ],
+    [
+     6190,
+     698
+    ]
+   ],
+   "share_needed": 1.4,
+   "list_purchases_needed": 8339
+  },
+  {
+   "metric": "state_effect_metrics.popular_label_contrast('low',)",
+   "ratio": 1.365,
+   "groups": [
+    [
+     681,
+     124
+    ],
+    [
+     9161,
+     1222
+    ]
+   ],
+   "share_needed": 0.72,
+   "list_purchases_needed": 4290
+  },
+  {
+   "metric": "state_effect_metrics.random_label_contrast('mid',)",
+   "ratio": 1.213,
+   "groups": [
+    [
+     2153,
+     338
+    ],
+    [
+     18036,
+     2335
+    ]
+   ],
+   "share_needed": 0.715,
+   "list_purchases_needed": 4262
+  },
+  {
+   "metric": "state_effect_metrics.newness_contrast('high',)",
+   "ratio": 1.732,
+   "groups": [
+    [
+     360,
+     123
+    ],
+    [
+     725,
+     143
+    ]
+   ],
+   "share_needed": 0.393,
+   "list_purchases_needed": 2343
+  },
+  {
+   "metric": "planted_effect_metrics.stars_sell",
+   "ratio": 1.263,
+   "groups": [
+    [
+     7588,
+     1302
+    ],
+    [
+     4629,
+     629
+    ]
+   ],
+   "share_needed": 0.34,
+   "list_purchases_needed": 2026
+  },
+  {
+   "metric": "state_effect_metrics.stars_contrast('mid',)",
+   "ratio": 1.74,
+   "groups": [
+    [
+     3668,
+     617
+    ],
+    [
+     1117,
+     108
+    ]
+   ],
+   "share_needed": 0.279,
+   "list_purchases_needed": 1660
+  },
+  {
+   "metric": "state_effect_metrics.random_label_contrast('high',)",
+   "ratio": 1.633,
+   "groups": [
+    [
+     1053,
+     215
+    ],
+    [
+     8797,
+     1100
+    ]
+   ],
+   "share_needed": 0.182,
+   "list_purchases_needed": 1082
+  },
+  {
+   "metric": "review_effect_metrics.poor_quality_contrast",
+   "ratio": 0.624,
+   "groups": [
+    [
+     2532,
+     224
+    ],
+    [
+     40436,
+     5734
+    ]
+   ],
+   "share_needed": 0.164,
+   "list_purchases_needed": 975
+  },
+  {
+   "metric": "state_effect_metrics.stars_contrast('high',)",
+   "ratio": 3.282,
+   "groups": [
+    [
+     2646,
+     519
+    ],
+    [
+     820,
+     49
+    ]
+   ],
+   "share_needed": 0.124,
+   "list_purchases_needed": 740
+  },
+  {
+   "metric": "planted_effect_metrics.offer_ratio('premium',)",
+   "ratio": 1.495,
+   "groups": [
+    [
+     3483,
+     697
+    ],
+    [
+     9187,
+     1230
+    ]
+   ],
+   "share_needed": 0.109,
+   "list_purchases_needed": 651
+  },
+  {
+   "metric": "planted_effect_metrics.kit_owned_item",
+   "ratio": 0.011,
+   "groups": [
+    [
+     1152,
+     4
+    ],
+    [
+     1339,
+     407
+    ]
+   ],
+   "share_needed": 0.099,
+   "list_purchases_needed": 591
+  },
+  {
+   "metric": "state_effect_metrics.popular_label_contrast('mid',)",
+   "ratio": 1.755,
+   "groups": [
+    [
+     1347,
+     306
+    ],
+    [
+     18036,
+     2335
+    ]
+   ],
+   "share_needed": 0.092,
+   "list_purchases_needed": 547
+  },
+  {
+   "metric": "state_effect_metrics.popular_label_contrast('high',)",
+   "ratio": 2.168,
+   "groups": [
+    [
+     653,
+     177
+    ],
+    [
+     8797,
+     1100
+    ]
+   ],
+   "share_needed": 0.086,
+   "list_purchases_needed": 513
+  },
+  {
+   "metric": "state_effect_metrics.offer_contrast('mid',)",
+   "ratio": 1.59,
+   "groups": [
+    [
+     4885,
+     935
+    ],
+    [
+     12035,
+     1449
+    ]
+   ],
+   "share_needed": 0.064,
+   "list_purchases_needed": 383
+  },
+  {
+   "metric": "planted_effect_metrics.offer_ratio('budget',)",
+   "ratio": 2.008,
+   "groups": [
+    [
+     2712,
+     598
+    ],
+    [
+     6285,
+     690
+    ]
+   ],
+   "share_needed": 0.05,
+   "list_purchases_needed": 301
+  },
+  {
+   "metric": "planted_effect_metrics.kit_next_item",
+   "ratio": 5.494,
+   "groups": [
+    [
+     614,
+     335
+    ],
+    [
+     725,
+     72
+    ]
+   ],
+   "share_needed": 0.046,
+   "list_purchases_needed": 272
+  },
+  {
+   "metric": "planted_effect_metrics.offer_ratio('mid',)",
+   "ratio": 1.729,
+   "groups": [
+    [
+     6334,
+     1159
+    ],
+    [
+     14967,
+     1584
+    ]
+   ],
+   "share_needed": 0.039,
+   "list_purchases_needed": 234
+  },
+  {
+   "metric": "state_effect_metrics.offer_contrast('high',)",
+   "ratio": 2.102,
+   "groups": [
+    [
+     5026,
+     1174
+    ],
+    [
+     12214,
+     1357
+    ]
+   ],
+   "share_needed": 0.023,
+   "list_purchases_needed": 135
+  }
+ ]
+}
