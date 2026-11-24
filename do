@@ -185,6 +185,7 @@ Quality
   v2-env            Stage the v2 (Rep2) env — ADR 0025 (dry run unless --apply)
   verify <feature>  Run the adversary Playwright agent for one feature
   verify-demo       End-to-end demo-path check
+  demo-check        Timing check before a demo: DNS, connect, TLS, wait and transfer per call, read-only
   verify-mobile     Mobile sweep of every view: screenshots, then an overflow check that fails on any overflow
   test-urls         Build the static export; check every view's link opens as shared
   planted-incidents Generate fixtures with the planted incidents (ADR 0056) and one null each, 3 seeds; judge them (~1 h)
@@ -778,6 +779,13 @@ cmd_verify_demo() {
   python3 scripts/live_smoke.py "$@"
 }
 
+cmd_demo_check() {
+  # Run a few minutes before a demo. Splits each call's time into DNS, connect, TLS, wait and
+  # transfer and says whose a slow stage is. scripts/demo_check.py; read-only GETs.
+  cd "$SCRIPT_DIR"
+  python3 scripts/demo_check.py "$@"
+}
+
 cmd_test_urls() {
   # A pasted link must open a view exactly as shared, and back/forward must
   # step through choices. Serves the static export and intercepts the API, so
@@ -995,6 +1003,7 @@ case "${1:-help}" in
   v2-env)          cmd_v2_env "${@:2}" ;;
   verify)            shift; cmd_verify "$@" ;;
   verify-demo)       cmd_verify_demo ;;
+  demo-check)        shift; cmd_demo_check "$@" ;;
   verify-mobile)     cmd_verify_mobile ;;
   test-urls)         cmd_test_urls ;;
   planted-incidents) cmd_planted_incidents ;;

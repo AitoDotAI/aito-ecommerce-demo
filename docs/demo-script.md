@@ -49,6 +49,10 @@ best action for one customer; say that an ad is only offered to customers who co
 tracking, and that the model's top action is the generator's best for 81 % of customers
 (`docs/verification/action-recovery.md`).
 
+**Five minutes before a call:** run `./do demo-check`. It makes read-only GETs to the demo's views, splits each call's
+time into DNS, connect, TLS, wait and transfer, and ends with one line: READY, or SLOW with whose stage it was. A slow
+DNS lookup is the resolver of the machine you ran it on, not the demo; run it again, since stalls are intermittent.
+
 ---
 
 ## Partner tour (platforms and agencies, about 6 minutes)
