@@ -78,3 +78,14 @@ A failed check is reported as failed, with its numbers; nothing is moved.
 aito-core's benches pin this repo at ce14ff2 and 45067d5 and are unaffected.
 Once merged, every fresh generation from this repo carries M1. Regenerating
 the Cartman demo data and loading it into the shared env are Antti's steps.
+
+## Amendment 1, 2026-11-27 20:59Z (before any check was computed)
+
+Seed 5113 cannot be generated at all: on `origin/main` a9361ab, with M1
+absent, `generate_fixtures` stops in the incident planner
+(`AssertionError: incident line dog/dry-food/None/('Salmon',) has 2 SKUs, need 3`;
+ADR 0056's incidents need anchor lines a seed's catalogue may lack). A fresh
+seed that does not generate on main is replaced by the **smallest seed above
+it that generates on main**, found by generating on main only, with no check
+read. Nothing else changes. M1-0 had already been run (seeds 42 and 7: all 24
+files byte-identical to main).
