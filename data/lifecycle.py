@@ -25,7 +25,10 @@ This module holds the rules that replace both:
 from __future__ import annotations
 
 import random
+from collections import Counter
 from dataclasses import dataclass
+
+from data import planted_switches
 
 # Item types (a product's name without brand and size) bought once.
 DURABLE_TYPES = frozenset({
@@ -90,6 +93,11 @@ N_MISPRICED = 15
 MISPRICED_CATEGORIES = frozenset({"dry-food", "wet-food", "treats", "litter"})
 MISPRICING_MARKUP = (1.15, 1.25)
 MISPRICED_PROMO_P = 0.80
+# M1 (docs/verification/misplaced-promotions-prereg.md): promotions that give
+# the discount away and move nothing, drawn among the SKUs on offer at least
+# this often and not mispriced.
+N_MISPLACED = 15
+MISPLACED_MIN_MONTHS = 3
 
 
 def item_type(name: str, brand: str) -> str:
@@ -136,6 +144,7 @@ class Promotions:
     discount: dict[tuple[str, str], float]   # (sku, month) → 0 or 0.10-0.25
     elasticity: dict[str, float]             # sku → ε in [−2, −1]
     mispriced: frozenset[str]
+    misplaced: frozenset[str] = frozenset()  # M1: the discount is given and moves nothing
 
     def demand_factor(self, sku: str, month: str) -> float:
         """How much more often a SKU is picked this month: (price / list)^ε."""
@@ -160,3 +169,13 @@ def plan_promotions(rng: random.Random, products: list, months: list[str]) -> Pr
             if rng.random() < promo_p:
                 discount[(p.sku, m)] = rng.uniform(*PROMO_DEPTH)
     return Promotions(discount=discount, elasticity=elasticity, mispriced=mispriced)
+
+
+def plan_misplaced(seed: int, promotions: Promotions) -> frozenset[str]:
+    """M1: the SKUs whose promotions move nothing, on their own RNG, so the
+    calendar and every other draw stay where they were."""
+    months_on_offer = Counter(sku for sku, _ in promotions.discount)
+    pool = sorted(sku for sku, n in months_on_offer.items()
+                  if n >= MISPLACED_MIN_MONTHS and sku not in promotions.mispriced)
+    assert len(pool) >= N_MISPLACED, f"only {len(pool)} SKUs can carry a misplaced promotion"
+    return frozenset(planted_switches.stream(seed, "M1").sample(pool, N_MISPLACED))

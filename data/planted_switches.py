@@ -70,6 +70,8 @@ ON: dict[str, bool] = {
     "D1": False,      # seasonal ware: products that sell in one season
     "D2": False,      # trends: products that rise or fade month after month
     "D3": False,      # launches that become hits or flops by price and quality
+    # docs/verification/misplaced-promotions-prereg.md: some promotions move nothing.
+    "M1": True,       # misplaced promotions: the discount is given, shoppers and the ranker see full price
     # ADR 0044: what a person declares.
     "C1": True,        # declared interests follow the hidden traits
 }
