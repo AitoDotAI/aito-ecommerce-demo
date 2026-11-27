@@ -2120,10 +2120,24 @@ def _buy_again(shop: _Shop, life: _Household, rng: random.Random, month: str) ->
     return wanted
 
 
+def _felt(promotions: lifecycle.Promotions, state):
+    """The state as a shopper and the shop's ranker meet it: a misplaced
+    promotion (M1) reaches nobody, so its product is met at full price. What is
+    recorded and paid stays the discounted state."""
+    if state.product_sku not in promotions.misplaced or not state.on_offer:
+        return state
+    return dataclasses.replace(state, on_offer=False, discount_pct=0.0, discount_band="none")
+
+
+def _misplaced(seed: int, promotions: lifecycle.Promotions) -> frozenset[str]:
+    """M1's SKUs, or none with its switch off."""
+    return lifecycle.plan_misplaced(seed, promotions) if planted_switches.ON["M1"] else frozenset()
+
+
 def _price_and_state_odds(shop, customer: Customer, product: Product, state) -> tuple[float, float, float]:
     """(click, cart-and-purchase, purchase-only) odds from the product's state,
     its price and its quality: every price effect sits here (ADR 0045)."""
-    click, odds, purchase_only = sensitivities.state_odds(state, customer.sensitivities)
+    click, odds, purchase_only = sensitivities.state_odds(_felt(shop.promotions, state), customer.sensitivities)
     if incidents.withdrawn(shop.events.incidents, product.sku, state.month):
         # ADR 0056 (E1): the recalled line stays listed and nothing sells. It is not taken out of anyone's pool: that would move the random
         # draws of the demo's hand-calibrated personas from the month it is pulled.
@@ -2250,7 +2264,7 @@ def _show_list(shop: _Shop, life: _Household, rng: random.Random, month: str, su
 
     # What a good recommender would surface (65 %) and filler (35 %), each
     # weighted by the shop's merchandising: an offer is shown more.
-    merch = [_merchandising_weight(shop.events, p, shop.states[month][p.sku], customer.customer_id not in shop.persona_ids) for p in pool]
+    merch = [_merchandising_weight(shop.events, p, _felt(shop.promotions, shop.states[month][p.sku]), customer.customer_id not in shop.persona_ids) for p in pool]
     weights = [w * m for w, m in zip(_browse_weights(pool, customer, life.pet_type_weights, life.cat_bias), merch)]
     filler = [shoppers.browse_weight(p.name, p.pet_type, p.category, customer.diet_rule) * m
               for p, m in zip(pool, merch)]
@@ -3350,7 +3364,7 @@ def _never_buy_visits(world: _ImpressionWorld, first_orders: Counter) -> list[in
             continue
         pool = _landing_pool(world, rng, month, landing, landing_category, shopper, pet_type_weights, cat_bias)
         n_shown = min(rng.randint(*acquisition.LANDING_PAGE_PRODUCTS), len(pool))
-        weights = [w * _merchandising_weight(world.events, p, world.state_of[(p.sku, month)])
+        weights = [w * _merchandising_weight(world.events, p, _felt(world.promotions, world.state_of[(p.sku, month)]))
                    for p, w in zip(pool, _browse_weights(pool, shopper, pet_type_weights, cat_bias))]
         shown: list[Product] = []
         while len(shown) < n_shown:
@@ -3382,7 +3396,7 @@ def _landing_pool(world: _ImpressionWorld, rng: random.Random, month: str, landi
         pool = [p for p in world.phrases[query] if (p.sku, month) in world.state_of]
     elif landing == "offer":
         pool = [p for p in world.by_cat_in[month].get(landing_category, catalogue)
-                if world.state_of[(p.sku, month)].on_offer]
+                if _felt(world.promotions, world.state_of[(p.sku, month)]).on_offer]
     elif landing in ("product", "category"):
         pool = list(world.by_cat_in[month].get(landing_category, []))
     else:
@@ -3464,6 +3478,8 @@ def main() -> None:
     # ADR 0027: promotions are decided before any order, on their own
     # RNG, so demand can respond to price rather than price to demand.
     promotions = lifecycle.plan_promotions(random.Random(RNG_SEED + 27), products, _MONTH_WINDOW)
+    # M1: some of them move nothing (docs/verification/misplaced-promotions-prereg.md).
+    promotions = dataclasses.replace(promotions, misplaced=_misplaced(RNG_SEED, promotions))
     # ADR 0032: launches and price rises, decided before any order too.
     events = catalogue_events.plan_catalogue_events(random.Random(RNG_SEED + 32), products, _MONTH_WINDOW,
                                                     promotions.mispriced)
@@ -3576,6 +3592,8 @@ def main() -> None:
                [{"line_id": line_id, "experience": e} for line_id, e in history.experience_of.items()])
     if planted_switches.ON["T1"]:
         write_json(answer_key / "nps_comments.json", [{"nps_response_id": rid, **truth} for rid, truth in sorted(history.comment_truth.items())])
+    if planted_switches.ON["M1"]:
+        write_json(answer_key / "misplaced_promotions.json", [{"sku": sku} for sku in sorted(promotions.misplaced)])
     if any(planted_switches.ON[i] for i in ("E1", "E2", "E3", "E4")):
         write_json(answer_key / "incidents.json", incidents.answer_key_rows(events.incidents, history.incident_hits))
     write_json(DATA_DIR / "impressions.json", impressions)
