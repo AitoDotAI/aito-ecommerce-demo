@@ -1,0 +1,57 @@
+{
+  "generations": 6,
+  "bars": {
+    "M1-a": {
+      "value": 0.8464072989025734,
+      "pass": false,
+      "n": 27,
+      "bar": "within [0.9, 1.1]"
+    },
+    "M1-b": {
+      "value": 1.314338168102203,
+      "pass": true,
+      "n": 1501,
+      "bar": ">= 1.2"
+    },
+    "MW-1": {
+      "value": 0,
+      "n": 26,
+      "bar": "<= 5 %",
+      "pass": true
+    },
+    "MW-2": {
+      "value": 0.07692307692307693,
+      "n": 26,
+      "bar": "<= 15 %",
+      "pass": true
+    },
+    "MW-3": {
+      "value": 0.1445349698444609,
+      "n": 1454,
+      "bar": ">= 5 points",
+      "pass": true
+    }
+  },
+  "controls": 3017,
+  "controlsGeo": 1.1756677797411639,
+  "misplacedGeo": 0.9950937898575041,
+  "workingGeo": 1.5452250359217856,
+  "refusedMonths": 3,
+  "months": 48,
+  "counts": {
+    "misplaced": {
+      "judged": 26,
+      "sureHigher": 0,
+      "likelyHigher": 2,
+      "sureLower": 1,
+      "likelyLower": 4
+    },
+    "working": {
+      "judged": 1454,
+      "sureHigher": 78,
+      "likelyHigher": 244,
+      "sureLower": 7,
+      "likelyLower": 60
+    }
+  }
+}
